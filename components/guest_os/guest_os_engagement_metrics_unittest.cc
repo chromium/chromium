@@ -46,8 +46,8 @@ class GuestOsEngagementMetricsTest : public testing::Test {
     ash::SessionManagerClient::InitializeFakeInMemory();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
-    matched_window_.reset(aura::test::CreateTestWindowWithId(0, nullptr));
-    non_matched_window_.reset(aura::test::CreateTestWindowWithId(0, nullptr));
+    matched_window_ = aura::test::CreateTestWindow();
+    non_matched_window_ = aura::test::CreateTestWindow();
 
     prefs::RegisterEngagementProfilePrefs(pref_service_->registry(),
                                           kPrefPrefix);

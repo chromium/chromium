@@ -21,8 +21,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptShowParamsTest,
   // As the context window is parented to a root, the parent is valid.
   EXPECT_FALSE(params.WasParentDestroyed());
 
-  std::unique_ptr<aura::Window> window_with_no_root_ancestor(
-      aura::test::CreateTestWindowWithId(11, nullptr));
+  std::unique_ptr<aura::Window> window_with_no_root_ancestor =
+      aura::test::CreateTestWindow({.window_id = 11});
   ExtensionInstallPromptShowParams params2(GetProfile(),
                                            window_with_no_root_ancestor.get());
   // As `window_with_no_root_ancestor` is not parented to a root, it should
