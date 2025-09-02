@@ -389,6 +389,10 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 - (void)logoDownloaded:(const search_provider_logos::Logo*)logo
         callbackReason:
             (search_provider_logos::LogoCallbackReason)callbackReason {
+  if (!_logoService) {
+    // The mediator was disconnected.
+    return;
+  }
   switch (callbackReason) {
     case search_provider_logos::LogoCallbackReason::DETERMINED:
       [self updateLogo:logo animate:YES];
