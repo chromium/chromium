@@ -258,6 +258,10 @@ body {
   align-items: flex-start;
 }
 
+#checkbox-controls .checkbox-column:last-of-type {
+  margin-right: 40px;
+}
+
 #checkbox-controls label {
   display: flex;
   align-items: center;
