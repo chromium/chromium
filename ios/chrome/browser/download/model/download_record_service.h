@@ -59,6 +59,13 @@ class DownloadRecordService : public KeyedService,
       const std::string& download_id,
       CompletionCallback callback = CompletionCallback());
 
+  // Updates the file path for a download record by ID.
+  // Callback is invoked on the calling thread.
+  void UpdateDownloadFilePathAsync(
+      const std::string& download_id,
+      const base::FilePath& file_path,
+      CompletionCallback callback = CompletionCallback());
+
   // Gets download task by ID.
   web::DownloadTask* GetDownloadTaskById(std::string_view download_id) const;
 
@@ -93,6 +100,9 @@ class DownloadRecordService : public KeyedService,
   bool DeleteRecord(std::string_view id);
   bool UpdateRecordsState(const std::vector<std::string>& download_ids,
                           web::DownloadTask::State new_state);
+  std::optional<DownloadRecord> UpdateFilePathInRecord(
+      const std::string& download_id,
+      const base::FilePath& file_path);
 
   // Cache query operations, called on database_task_runner_.
   std::vector<DownloadRecord> GetAllFromCache();

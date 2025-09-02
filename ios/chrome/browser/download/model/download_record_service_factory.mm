@@ -24,8 +24,7 @@ DownloadRecordService* DownloadRecordServiceFactory::GetForProfile(
 
 DownloadRecordServiceFactory::DownloadRecordServiceFactory()
     : ProfileKeyedServiceFactoryIOS("IOSDownloadRecordService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
-}
+                                    ProfileSelection::kRedirectedInIncognito) {}
 
 DownloadRecordServiceFactory::~DownloadRecordServiceFactory() = default;
 

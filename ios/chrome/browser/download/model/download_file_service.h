@@ -9,10 +9,13 @@
 
 #import "base/files/file_path.h"
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/keyed_service/core/keyed_service.h"
+
+class DownloadRecordService;
 
 // Service that manages download file operations independently of UI components.
 // Ensures reliable file operations even if UI elements are destroyed during
@@ -25,7 +28,8 @@ class DownloadFileService : public KeyedService {
                               const base::FilePath& source_path,
                               const base::FilePath& final_path)>;
 
-  DownloadFileService();
+  // Constructor accepts DownloadRecordService pointer (may be nullptr).
+  explicit DownloadFileService(DownloadRecordService* download_record_service);
 
   DownloadFileService(const DownloadFileService&) = delete;
   DownloadFileService& operator=(const DownloadFileService&) = delete;
@@ -75,6 +79,9 @@ class DownloadFileService : public KeyedService {
 
   // Task runner for file operations.
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+
+  // Download record service for persistent storage operations.
+  raw_ptr<DownloadRecordService> download_record_service_ = nullptr;
 
   // Sequence checker for main thread operations.
   SEQUENCE_CHECKER(main_sequence_checker_);

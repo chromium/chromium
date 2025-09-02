@@ -12,11 +12,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/uuid.h"
+#import "ios/chrome/browser/download/model/download_record_service.h"
 
-DownloadFileService::DownloadFileService()
+DownloadFileService::DownloadFileService(
+    DownloadRecordService* download_record_service)
     : file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+      download_record_service_(download_record_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 }
 
@@ -79,7 +82,10 @@ void DownloadFileService::OnFileMoveComplete(
     bool move_success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
-  // TODO(crbug.com/441900733): Record final path via DownloadRecordService.
+  if (move_success && download_record_service_) {
+    download_record_service_->UpdateDownloadFilePathAsync(download_id,
+                                                          destination_path);
+  }
 
   if (callback) {
     std::move(callback).Run(move_success, download_id, source_path,

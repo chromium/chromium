@@ -120,6 +120,31 @@ void DownloadRecordService::RemoveDownloadByIdAsync(
           weak_ptr_factory_.GetWeakPtr(), download_id, std::move(callback)));
 }
 
+void DownloadRecordService::UpdateDownloadFilePathAsync(
+    const std::string& download_id,
+    const base::FilePath& file_path,
+    CompletionCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  database_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&DownloadRecordService::UpdateFilePathInRecord,
+                     base::Unretained(this), download_id, file_path),
+      base::BindOnce(
+          [](base::WeakPtr<DownloadRecordService> service,
+             CompletionCallback callback,
+             std::optional<DownloadRecord> updated_record) {
+            bool success = updated_record.has_value();
+            if (service && success) {
+              service->NotifyDownloadUpdated(updated_record.value());
+            }
+            if (callback) {
+              std::move(callback).Run(success);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 web::DownloadTask* DownloadRecordService::GetDownloadTaskById(
     std::string_view download_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
@@ -351,6 +376,33 @@ bool DownloadRecordService::UpdateRecordsState(
   }
 
   return false;
+}
+
+std::optional<DownloadRecord> DownloadRecordService::UpdateFilePathInRecord(
+    const std::string& download_id,
+    const base::FilePath& file_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
+
+  auto it = database_cache_.find(download_id);
+  if (it == database_cache_.end()) {
+    return std::nullopt;
+  }
+
+  // Update the file path in the cached record.
+  DownloadRecord updated_record = it->second;
+  updated_record.file_path = file_path;
+
+  // Update database and cache.
+  if (!database_ || !database_->IsInitialized()) {
+    return std::nullopt;
+  }
+
+  if (database_->UpdateDownloadRecord(updated_record)) {
+    database_cache_[download_id] = updated_record;
+    return updated_record;
+  }
+
+  return std::nullopt;
 }
 
 bool DownloadRecordService::DeleteRecord(std::string_view id) {
