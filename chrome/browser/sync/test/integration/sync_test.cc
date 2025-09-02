@@ -1115,7 +1115,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // OS sync types run in transport mode.
-  allowed_types.PutAll({syncer::APP_LIST, syncer::ARC_PACKAGE,
+  allowed_types.PutAll({syncer::APP_LIST, syncer::ARC_PACKAGE, syncer::WEB_APPS,
                         syncer::OS_PREFERENCES,
                         syncer::OS_PRIORITY_PREFERENCES});
 #endif  // BUILDFLAG(IS_CHROMEOS)
