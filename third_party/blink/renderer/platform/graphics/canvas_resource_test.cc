@@ -95,6 +95,10 @@ TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {
   ASSERT_TRUE(unpremul_canvas_resource->PrepareTransferableResource(
       &resource, &release_callback, /*needs_verified_synctoken=*/false));
   EXPECT_EQ(resource.alpha_type, kUnpremul_SkAlphaType);
+
+  // InitializeSharedGpuContextRaster() requires SharedGpuContext::Reset()
+  // at TearDown().
+  SharedGpuContext::Reset();
 }
 
 }  // namespace blink
