@@ -223,6 +223,8 @@ struct IconsWithSizeAny {
 struct DialogImageInfo {
   DialogImageInfo();
   ~DialogImageInfo();
+  DialogImageInfo(const DialogImageInfo& dialog_image_info);
+  DialogImageInfo& operator=(const DialogImageInfo& dialog_image_info);
   DialogImageInfo(DialogImageInfo&& dialog_image_info);
   DialogImageInfo& operator=(DialogImageInfo&& dialog_image_info);
 
@@ -525,6 +527,8 @@ bool operator==(const WebAppShortcutsMenuItemInfo::Icon& icon1,
 
 bool operator==(const WebAppShortcutsMenuItemInfo& shortcut_info1,
                 const WebAppShortcutsMenuItemInfo& shortcut_info2);
+
+bool operator==(const DialogImageInfo& info1, const DialogImageInfo& info2);
 
 }  // namespace web_app
 

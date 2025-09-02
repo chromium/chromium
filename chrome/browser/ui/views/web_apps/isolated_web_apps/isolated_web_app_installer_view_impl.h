@@ -23,8 +23,11 @@ namespace views {
 class Widget;
 }  // namespace views
 
+class SkBitmap;
+
 namespace web_app {
 
+class InstallerDialogView;
 class DisabledView;
 class GetMetadataView;
 class InstallView;
@@ -74,6 +77,9 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
                                  const ui::ImageModel& icon,
                                  std::optional<int> ok_label);
 
+  void OnIconMaskedUpdateAppIcon(InstallerDialogView* view,
+                                 SkBitmap masked_bitmap);
+
   void ShowChildView(views::View* view);
 
   void OnChildDialogDestroying();
@@ -87,6 +93,7 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   raw_ptr<InstallSuccessView> install_success_view_;
 
   bool dialog_visible_;
+  bool icon_masked_ = false;
 
   base::WeakPtrFactory<IsolatedWebAppInstallerViewImpl> weak_ptr_factory_{this};
 };

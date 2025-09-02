@@ -21,6 +21,7 @@
 #include "ui/gfx/native_window_types.h"
 
 class Profile;
+class SkBitmap;
 
 namespace views {
 class DialogDelegate;
@@ -58,7 +59,7 @@ class IsolatedWebAppInstallerViewController
   // Adds or updates the Isolated Web App Installer window to ChromeOS Shelf.
   void AddOrUpdateWindowToShelf();
 
-  void SetIcon(gfx::ImageSkia icon);
+  void SetIcon(gfx::ImageSkia icon, bool trigger_masking);
 
   void SetViewForTesting(IsolatedWebAppInstallerView* view);
 
@@ -95,6 +96,7 @@ class IsolatedWebAppInstallerViewController
   void OnGetMetadataProgressUpdated(double progress);
   void OnInstallabilityChecked(InstallabilityChecker::Result result);
   void OnInstallProgressUpdated(double progress);
+  void OnIconMaskedUpdateShelf(SkBitmap mask_bitmap);
 
   void OnInstallComplete(
       base::expected<InstallIsolatedWebAppCommandSuccess,

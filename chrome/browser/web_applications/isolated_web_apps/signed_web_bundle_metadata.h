@@ -42,7 +42,7 @@ class SignedWebBundleMetadata {
       const IwaSourceBundleWithMode& source,
       const std::u16string& app_name,
       const IwaVersion& version,
-      const IconBitmaps& icons);
+      DialogImageInfo image_info);
 
   ~SignedWebBundleMetadata();
   SignedWebBundleMetadata(const SignedWebBundleMetadata&);
@@ -56,7 +56,7 @@ class SignedWebBundleMetadata {
 
   const IwaVersion& version() const { return version_; }
 
-  const IconBitmaps& icons() const { return icons_; }
+  const DialogImageInfo& image_info() const { return image_info_; }
 
   bool operator==(const SignedWebBundleMetadata& other) const;
 
@@ -65,12 +65,12 @@ class SignedWebBundleMetadata {
                           const IwaSourceBundleWithMode& source,
                           const std::u16string& app_name,
                           const IwaVersion& version,
-                          const IconBitmaps& icons);
+                          DialogImageInfo image_info);
 
   IsolatedWebAppUrlInfo url_info_;
   std::u16string app_name_;
   IwaVersion version_;
-  IconBitmaps icons_;
+  DialogImageInfo image_info_;
 };
 
 }  // namespace web_app

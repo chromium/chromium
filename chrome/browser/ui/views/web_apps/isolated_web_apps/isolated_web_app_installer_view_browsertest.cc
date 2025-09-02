@@ -86,13 +86,14 @@ const TestParam kTestParam[] = {
 };
 
 SignedWebBundleMetadata CreateTestMetadata() {
-  IconBitmaps icons;
-  AddGeneratedIcon(&icons.any, 32, SK_ColorBLUE);
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
+  AddGeneratedIcon(&image_info.bitmaps, 32, SK_ColorBLUE);
   return SignedWebBundleMetadata::CreateForTesting(
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           web_package::SignedWebBundleId::CreateRandomForProxyMode()),
       IwaSourceBundleProdMode(base::FilePath()), u"Test Isolated Web App",
-      *IwaVersion::Create("0.0.1"), icons);
+      *IwaVersion::Create("0.0.1"), std::move(image_info));
 }
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test

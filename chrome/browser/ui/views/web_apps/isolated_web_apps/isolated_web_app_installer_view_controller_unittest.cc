@@ -100,11 +100,13 @@ IsolatedWebAppUrlInfo CreateAndWriteTestBundle(
 
 SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
                                        const std::string& version) {
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       web_package::SignedWebBundleId::CreateRandomForProxyMode());
   return SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(base::FilePath()), app_name,
-      *IwaVersion::Create(version), IconBitmaps());
+      *IwaVersion::Create(version), std::move(image_info));
 }
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& iwa_url,
@@ -450,10 +452,12 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
   MockIconAndPageState(url_info, "1.0");
 
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      *IwaVersion::Create("1.0"), IconBitmaps());
+      *IwaVersion::Create("1.0"), std::move(image_info));
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
@@ -484,10 +488,12 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
   IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
   MockIconAndPageState(url_info, "1.0");
 
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      *IwaVersion::Create("1.0"), IconBitmaps());
+      *IwaVersion::Create("1.0"), std::move(image_info));
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
@@ -526,9 +532,12 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   MockIconAndPageState(url_info, "1.0");
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
+
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
       url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
-      *IwaVersion::Create("2.0"), IconBitmaps());
+      *IwaVersion::Create("2.0"), std::move(image_info));
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
   model.SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
