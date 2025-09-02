@@ -6,10 +6,16 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h"
+#import "base/ios/ns_range.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet_delegate.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -17,7 +23,6 @@
 
 namespace {
 
-CGFloat const kUnderTitleViewHeightPadding = 50;
 CGFloat const kVerticalSpacing = 20;
 CGFloat const kTitleContainerCornerRadius = 15;
 CGFloat const kTitleContainerTopPadding = 33;
@@ -30,6 +35,57 @@ CGFloat const kAnimationTranslationOffset = 5;
 CGFloat const kAnimationScalFactor = 0.5;
 CGFloat const kHalfSheetCornerRadius = 20;
 CGFloat const kHalfSheetFullHeightProportion = 0.9;
+CGFloat const kIncognitoStackWidthOffset = 32.0;
+CGFloat const kHorizontalPadding = 20.0;
+CGFloat const kButtonHeight = 50;
+
+NSString* const kPrimaryActionAccessibilityIdentifier =
+    @"PrimaryActionAccessibilityIdentifier";
+
+NSString* const kTitleAccessibilityIdentifier = @"TitleAccessibilityIdentifier";
+
+// Helpers copied from IncognitoView.mm
+// TODO(crbug.com/442531250): Merge the common utils between
+// `YoutubeIncognitoSheet` and `IncognitoView`.
+UIFont* BodyFont() {
+  return [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+}
+
+UIFont* BoldBodyFont() {
+  UIFontDescriptor* baseDescriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline];
+  UIFontDescriptor* styleDescriptor = [baseDescriptor
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  return [UIFont fontWithDescriptor:styleDescriptor size:0.0];
+}
+
+NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
+  listString = [listString stringByReplacingOccurrencesOfString:@"<ul>"
+                                                     withString:@""];
+  listString = [listString stringByReplacingOccurrencesOfString:@"</ul>"
+                                                     withString:@""];
+  listString = [listString
+      stringByReplacingOccurrencesOfString:@"\n *<li>"
+                                withString:@"\n\u2022  "
+                                   options:NSRegularExpressionSearch
+                                     range:NSMakeRange(0, [listString length])];
+  listString = [listString
+      stringByTrimmingCharactersInSet:[NSCharacterSet
+                                          whitespaceAndNewlineCharacterSet]];
+  const StringWithTag parsedString =
+      ParseStringWithTag(listString, @"<em>", @"</em>");
+  NSMutableAttributedString* attributedText =
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
+  [attributedText addAttribute:NSFontAttributeName
+                         value:BodyFont()
+                         range:NSMakeRange(0, attributedText.length)];
+  if (parsedString.range.location != NSNotFound) {
+    [attributedText addAttribute:NSFontAttributeName
+                           value:BoldBodyFont()
+                           range:parsedString.range];
+  }
+  return attributedText;
+}
 
 }  // namespace
 
@@ -38,59 +94,140 @@ CGFloat const kHalfSheetFullHeightProportion = 0.9;
 }
 
 - (instancetype)init {
-  self = [super init];
-  return self;
+  return [super initWithNibName:nil bundle:nil];
 }
 
 - (void)viewDidLoad {
-  self.actionHandler = self;
-  self.topAlignedLayout = YES;
-  self.showDismissBarButton = NO;
+  [super viewDidLoad];
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-  self.aboveTitleView = [self animatedTitleView];
+  self.view.backgroundColor = [UIColor systemBackgroundColor];
 
-  self.titleString =
-      l10n_util::GetNSString(IDS_IOS_YOUTUBE_INCOGNITO_SHEET_TITLE);
-  self.primaryActionString = l10n_util::GetNSString(
-      IDS_IOS_YOUTUBE_INCOGNITO_SHEET_PRIMARY_BUTTON_TITLE);
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:scrollView];
 
-  self.titleTextStyle = UIFontTextStyleTitle3;
-  self.scrollEnabled = YES;
-  self.customSpacing = kVerticalSpacing;
-  [self displayGradientView:YES];
+  UIStackView* mainStackView = [[UIStackView alloc] init];
+  mainStackView.axis = UILayoutConstraintAxisVertical;
+  mainStackView.spacing = kVerticalSpacing;
+  mainStackView.alignment = UIStackViewAlignmentCenter;
+  mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [scrollView addSubview:mainStackView];
 
-  UIView* underTitleView = [[UIView alloc] init];
-  underTitleView.translatesAutoresizingMaskIntoConstraints = NO;
+  UIView* animatedTitleView = [self animatedTitleView];
+  [mainStackView addArrangedSubview:animatedTitleView];
 
-  IncognitoView* incognitoView =
-      [[IncognitoView alloc] initWithFrame:CGRectZero
-             showTopIncognitoImageAndTitle:NO
-                 stackViewHorizontalMargin:0
-                         stackViewMaxWidth:CGFLOAT_MAX];
-  incognitoView.bounces = NO;
-  incognitoView.URLLoaderDelegate = self.URLLoaderDelegate;
-  incognitoView.showsHorizontalScrollIndicator = NO;
-  incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
-  [underTitleView addSubview:incognitoView];
+  UILabel* titleLabel = [self createTitleLabel];
+  [mainStackView addArrangedSubview:titleLabel];
+  [mainStackView setCustomSpacing:kVerticalSpacing afterView:titleLabel];
 
-  self.underTitleView = underTitleView;
+  // Manually recreated IncognitoView content
+  UIStackView* incognitoContentStackView = [[UIStackView alloc] init];
+  incognitoContentStackView.axis = UILayoutConstraintAxisVertical;
+  incognitoContentStackView.spacing = kVerticalSpacing;
+  incognitoContentStackView.alignment = UIStackViewAlignmentLeading;
+  [mainStackView addArrangedSubview:incognitoContentStackView];
+
+  UIColor* bodyTextColor = [UIColor colorNamed:kTextSecondaryColor];
+  UIColor* linkTextColor = [UIColor colorNamed:kBlueColor];
+
+  UILabel* subtitleLabel = [[UILabel alloc] init];
+  subtitleLabel.font = BodyFont();
+  subtitleLabel.textColor = bodyTextColor;
+  subtitleLabel.numberOfLines = 0;
+  subtitleLabel.text =
+      l10n_util::GetNSString(IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST);
+  subtitleLabel.adjustsFontForContentSizeCategory = YES;
+
+  UIButton* learnMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  [learnMoreButton
+      setTitle:l10n_util::GetNSString(IDS_NEW_TAB_OTR_LEARN_MORE_LINK)
+      forState:UIControlStateNormal];
+  [learnMoreButton setTitleColor:linkTextColor forState:UIControlStateNormal];
+  learnMoreButton.titleLabel.font = BodyFont();
+  learnMoreButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+  [learnMoreButton addTarget:self
+                      action:@selector(learnMoreButtonPressed)
+            forControlEvents:UIControlEventTouchUpInside];
+
+  UIStackView* subtitleStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ subtitleLabel, learnMoreButton ]];
+  subtitleStackView.axis = UILayoutConstraintAxisVertical;
+  subtitleStackView.spacing = 0;
+  subtitleStackView.alignment = UIStackViewAlignmentLeading;
+  [incognitoContentStackView addArrangedSubview:subtitleStackView];
+
+  NSAttributedString* notSavedText = FormatHTMLListForUILabel(
+      l10n_util::GetNSString(IDS_NEW_TAB_OTR_NOT_SAVED));
+  UILabel* notSavedLabel = [[UILabel alloc] init];
+  notSavedLabel.numberOfLines = 0;
+  notSavedLabel.attributedText = notSavedText;
+  notSavedLabel.textColor = bodyTextColor;
+  [incognitoContentStackView addArrangedSubview:notSavedLabel];
+
+  NSAttributedString* visibleDataText =
+      FormatHTMLListForUILabel(l10n_util::GetNSString(IDS_NEW_TAB_OTR_VISIBLE));
+  UILabel* visibleDataLabel = [[UILabel alloc] init];
+  visibleDataLabel.numberOfLines = 0;
+  visibleDataLabel.attributedText = visibleDataText;
+  visibleDataLabel.textColor = bodyTextColor;
+  [incognitoContentStackView addArrangedSubview:visibleDataLabel];
+  // End of recreated content
+
+  UIButton* primaryButton = [self createPrimaryActionButton];
+
+  [self.view addSubview:primaryButton];
+
+  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+
+  // Only apply a width offset if the device is Ipad.
+  CGFloat incognitoStackWidthOffset =
+      (idiom == UIUserInterfaceIdiomPad) ? kIncognitoStackWidthOffset : 0;
+
   [NSLayoutConstraint activateConstraints:@[
-    [underTitleView.heightAnchor
-        constraintEqualToAnchor:incognitoView.contentLayoutGuide.heightAnchor
-                       constant:-kUnderTitleViewHeightPadding],
-    [incognitoView.heightAnchor
-        constraintEqualToAnchor:incognitoView.contentLayoutGuide.heightAnchor],
-    [incognitoView.centerYAnchor
-        constraintEqualToAnchor:underTitleView.centerYAnchor],
-    [incognitoView.centerXAnchor
-        constraintEqualToAnchor:underTitleView.centerXAnchor],
-    [incognitoView.widthAnchor
-        constraintEqualToAnchor:underTitleView.widthAnchor],
+    [scrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [scrollView.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [scrollView.bottomAnchor constraintEqualToAnchor:primaryButton.topAnchor
+                                            constant:-kVerticalSpacing],
+
+    [mainStackView.topAnchor
+        constraintEqualToAnchor:scrollView.contentLayoutGuide.topAnchor],
+    [mainStackView.bottomAnchor
+        constraintEqualToAnchor:scrollView.contentLayoutGuide.bottomAnchor],
+    [mainStackView.leadingAnchor
+        constraintEqualToAnchor:scrollView.frameLayoutGuide.leadingAnchor
+                       constant:kHorizontalPadding],
+    [mainStackView.trailingAnchor
+        constraintEqualToAnchor:scrollView.frameLayoutGuide.trailingAnchor
+                       constant:-kHorizontalPadding],
+
+    [incognitoContentStackView.widthAnchor
+        constraintEqualToAnchor:mainStackView.widthAnchor
+                       constant:-incognitoStackWidthOffset],
+
+    [primaryButton.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
+                       constant:kHorizontalPadding],
+    [primaryButton.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
+                       constant:-kHorizontalPadding],
+    [primaryButton.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
+                       constant:-kVerticalSpacing],
+    [primaryButton.heightAnchor constraintEqualToConstant:kButtonHeight]
   ]];
 
-  [super viewDidLoad];
   [self setUpBottomSheetPresentationController];
   [self setUpBottomSheetDetents];
+}
+
+- (void)primaryButtonTapped {
+  [self.delegate didTapPrimaryActionButton];
+}
+
+- (void)learnMoreButtonPressed {
+  [self.URLLoaderDelegate loadURLInTab:GetLearnMoreIncognitoUrl()];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -104,20 +241,6 @@ CGFloat const kHalfSheetFullHeightProportion = 0.9;
                    }
                    completion:nil];
 }
-
-- (void)customizeSubtitle:(UITextView*)subtitle {
-  subtitle.textAlignment = NSTextAlignmentNatural;
-  subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-}
-
-#pragma mark - ConfirmationAlertActionHandler
-
-- (void)confirmationAlertPrimaryAction {
-  // `Got it` button was clicked.
-  [self.delegate didTapPrimaryActionButton];
-}
-
-#pragma mark - Private
 
 // Configures the bottom sheet's presentation controller appearance.
 - (void)setUpBottomSheetPresentationController {
@@ -204,6 +327,41 @@ CGFloat const kHalfSheetFullHeightProportion = 0.9;
       CGAffineTransformScale(CGAffineTransformIdentity, kAnimationScalFactor,
                              kAnimationScalFactor),
       CGAffineTransformMakeTranslation(translationX, translationY));
+}
+
+- (ChromeButton*)createPrimaryActionButton {
+  ChromeButton* primaryActionButton = PrimaryActionButton();
+  [primaryActionButton addTarget:self
+                          action:@selector(primaryButtonTapped)
+                forControlEvents:UIControlEventTouchUpInside];
+  SetConfigurationTitle(
+      primaryActionButton,
+      l10n_util::GetNSString(
+          IDS_IOS_YOUTUBE_INCOGNITO_SHEET_PRIMARY_BUTTON_TITLE));
+  primaryActionButton.accessibilityIdentifier =
+      kPrimaryActionAccessibilityIdentifier;
+
+  return primaryActionButton;
+}
+
+- (UILabel*)createTitleLabel {
+  UILabel* title = [[UILabel alloc] init];
+  title.numberOfLines = 0;
+  UIFontDescriptor* descriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleTitle3];
+  UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize
+                                   weight:UIFontWeightBold];
+  UIFontMetrics* fontMetrics =
+      [UIFontMetrics metricsForTextStyle:UIFontTextStyleTitle3];
+  title.font = [fontMetrics scaledFontForFont:font];
+  title.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  title.text = l10n_util::GetNSString(IDS_IOS_YOUTUBE_INCOGNITO_SHEET_TITLE);
+  title.textAlignment = NSTextAlignmentCenter;
+  title.translatesAutoresizingMaskIntoConstraints = NO;
+  title.adjustsFontForContentSizeCategory = YES;
+  title.accessibilityIdentifier = kTitleAccessibilityIdentifier;
+  title.accessibilityTraits = UIAccessibilityTraitHeader;
+  return title;
 }
 
 @end
