@@ -30,7 +30,7 @@ namespace gpu {
 GpuMemoryBufferImplDXGI::~GpuMemoryBufferImplDXGI() {
   base::AutoLock auto_lock(map_lock_);
   CHECK(!async_mapping_in_progress_);
-  DCHECK_EQ(map_count_, 0u);
+  CHECK_EQ(map_count_, 0u);
 }
 
 std::unique_ptr<GpuMemoryBufferImplDXGI>
