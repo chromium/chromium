@@ -251,8 +251,6 @@ bool HomeModulesCardRegistry::IsEphemeralTipsModuleLabel(
          EnhancedSafeBrowsingEphemeralModule::IsModuleLabel(label) ||
          SavePasswordsEphemeralModule::IsModuleLabel(label) ||
          LensEphemeralModule::IsModuleLabel(label) ||
-         LensEphemeralModule::IsModuleLabel(label) ||
-         AppBundlePromoEphemeralModule::IsModuleLabel(label) ||
          DefaultBrowserPromoEphemeralModule::IsModuleLabel(label);
 #else
   return false;
