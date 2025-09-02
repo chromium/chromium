@@ -61,6 +61,12 @@ bool AppBundlePromoEphemeralModule::IsModuleLabel(std::string_view label) {
 }
 
 bool AppBundlePromoEphemeralModule::IsEnabled(int impression_count) {
+  // If the feature is not force enabled or enabled in the base feature list,
+  // return `false`.
+  if (!base::FeatureList::IsEnabled(features::kAppBundlePromoEphemeralCard)) {
+    return false;
+  }
+
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -71,14 +77,8 @@ bool AppBundlePromoEphemeralModule::IsEnabled(int impression_count) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
-  // If the feature is not force enabled or enabled in the base feature list,
-  // return `false`.
-  if (!base::FeatureList::IsEnabled(features::kAppBundlePromoEphemeralCard)) {
-    return false;
-  }
-
-  // Return `false` if the card has reached its impression limit, otherwise
-  // return `true`.
+  // Handles showing the module based on whether its maximum impression count
+  // has been met.
   return impression_count < features::kMaxAppBundlePromoImpressions.Get();
 }
 
