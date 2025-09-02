@@ -731,9 +731,7 @@ class AttributionSrcLoaderInBrowserMigrationEnabledTest
  public:
   AttributionSrcLoaderInBrowserMigrationEnabledTest() {
     scoped_feature_list_.InitWithFeatures(
-        {blink::features::kKeepAliveInBrowserMigration,
-         blink::features::kAttributionReportingInBrowserMigration},
-        {});
+        {blink::features::kKeepAliveInBrowserMigration}, {});
   }
 
  private:

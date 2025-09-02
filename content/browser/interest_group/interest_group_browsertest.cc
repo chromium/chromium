@@ -799,9 +799,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeTrustedSignalsKVv2ContextualData, {}},
          {features::kFledgeTextConversionHelpers, {}},
          {network::features::kAdAuctionEventRegistration, {}},
-         // Needed for reliable handling of click ARA (and hence clickiness)
-         // events.
-         {blink::features::kAttributionReportingInBrowserMigration, {}},
          {blink::features::kFledgeClickiness, {}},
          {network::features::kPopulatePermissionsPolicyOnRequest, {}}},
         /*disabled_features=*/

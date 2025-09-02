@@ -1001,8 +1001,7 @@ class KeepAliveURLAttributionReportingBrowserTest
   const FeaturesType& GetEnabledFeatures() override {
     static const FeaturesType enabled_features =
         GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            {{blink::features::kKeepAliveInBrowserMigration, {}},
-             {blink::features::kAttributionReportingInBrowserMigration, {}}});
+            {{blink::features::kKeepAliveInBrowserMigration, {}}});
     return enabled_features;
   }
 };

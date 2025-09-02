@@ -465,8 +465,6 @@ class AttributionsBrowserTest : public AttributionsBrowserTestBase,
     if (enable_in_browser_migration) {
       enabled_features.emplace_back(
           blink::features::kKeepAliveInBrowserMigration);
-      enabled_features.emplace_back(
-          blink::features::kAttributionReportingInBrowserMigration);
     } else {
       disabled_features.emplace_back(
           blink::features::kKeepAliveInBrowserMigration);
@@ -1842,9 +1840,7 @@ class AttributionsBrowserTestWithKeepAliveMigration
  public:
   AttributionsBrowserTestWithKeepAliveMigration() {
     scoped_feature_list_.InitWithFeatures(
-        {blink::features::kKeepAliveInBrowserMigration,
-         blink::features::kAttributionReportingInBrowserMigration},
-        {});
+        {blink::features::kKeepAliveInBrowserMigration}, {});
   }
 
  private:

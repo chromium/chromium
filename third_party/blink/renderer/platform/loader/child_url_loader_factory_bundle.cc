@@ -259,11 +259,7 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
     FetchUtils::LogFetchKeepAliveRequestSentToServiceMetric(request);
   }
   if (request.keepalive && keep_alive_loader_factory_ &&
-      base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration) &&
-      (request.attribution_reporting_eligibility ==
-           network::mojom::AttributionReportingEligibility::kUnset ||
-       base::FeatureList::IsEnabled(
-           features::kAttributionReportingInBrowserMigration))) {
+      base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration)) {
     keep_alive_loader_factory_->CreateLoaderAndStart(
         std::move(loader), request_id, options, request, std::move(client),
         traffic_annotation);

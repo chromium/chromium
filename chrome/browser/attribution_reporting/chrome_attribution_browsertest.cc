@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <string_view>
-#include <tuple>
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,7 +33,6 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/gurl.h"
 
@@ -243,35 +241,24 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
 
 class ChromeAttributionTriggerUseCounterBrowserTest
     : public ChromeAttributionBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, std::string_view>> {
+      public ::testing::WithParamInterface<std::string_view> {
  public:
-  ChromeAttributionTriggerUseCounterBrowserTest() {
-    if (std::get<0>(GetParam())) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kAttributionReportingInBrowserMigration);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kAttributionReportingInBrowserMigration);
-    }
-  }
+  ChromeAttributionTriggerUseCounterBrowserTest() = default;
 
  protected:
   void RegisterTrigger(content::WebContents* web_contents) {
-    ChromeAttributionBrowserTest::RegisterTrigger(web_contents,
-                                                  std::get<1>(GetParam()));
+    ChromeAttributionBrowserTest::RegisterTrigger(web_contents, GetParam());
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ChromeAttributionTriggerUseCounterBrowserTest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Values("createAttributionSrcImg($1);",
-                                         "createTrackingPixel($1);",
-                                         R"(fetch($1, {keepalive: true}))")));
+INSTANTIATE_TEST_SUITE_P(,
+                         ChromeAttributionTriggerUseCounterBrowserTest,
+                         ::testing::Values("createAttributionSrcImg($1);",
+                                           "createTrackingPixel($1);",
+                                           R"(fetch($1, {keepalive: true}))"));
 
 IN_PROC_BROWSER_TEST_P(ChromeAttributionTriggerUseCounterBrowserTest,
                        UseCounterRecorded) {

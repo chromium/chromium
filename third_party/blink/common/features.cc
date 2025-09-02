@@ -1076,9 +1076,6 @@ BASE_FEATURE(KalmanHeuristics, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(KeepAliveInBrowserMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(AttributionReportingInBrowserMigration,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(LimitLayerMergeDistance, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(size_t,
                    kLayerMergeDistanceLimit,

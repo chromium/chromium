@@ -56,9 +56,7 @@ class AttributionTriggerRegistrationBrowserTest
     const bool enable_in_browser_migration = GetParam();
     if (enable_in_browser_migration) {
       scoped_feature_list_.InitWithFeatures(
-          {blink::features::kKeepAliveInBrowserMigration,
-           blink::features::kAttributionReportingInBrowserMigration},
-          {});
+          {blink::features::kKeepAliveInBrowserMigration}, {});
     } else {
       scoped_feature_list_.InitAndDisableFeature(
           {blink::features::kKeepAliveInBrowserMigration});

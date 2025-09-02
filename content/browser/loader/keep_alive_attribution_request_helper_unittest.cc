@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -39,7 +38,6 @@
 #include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -83,10 +81,6 @@ class KeepAliveAttributionRequestHelperTest : public RenderViewHostTestHarness {
         scoped_api_state_setting_(
             AttributionOsLevelManager::ScopedApiStateForTesting(
                 AttributionOsLevelManager::ApiState::kEnabled)) {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kKeepAliveInBrowserMigration,
-         blink::features::kAttributionReportingInBrowserMigration},
-        {});
   }
 
   void SetUp() override {
@@ -119,10 +113,6 @@ class KeepAliveAttributionRequestHelperTest : public RenderViewHostTestHarness {
     return mock_attribution_manager_;
   }
 
-  base::test::ScopedFeatureList& scoped_feature_list() {
-    return scoped_feature_list_;
-  }
-
   std::unique_ptr<KeepAliveAttributionRequestHelper> CreateValidHelper(
       const GURL& reporting_url,
       AttributionReportingEligibility eligibility =
@@ -150,7 +140,6 @@ class KeepAliveAttributionRequestHelperTest : public RenderViewHostTestHarness {
         ->OverrideAttributionManagerForTesting(std::move(manager));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting_;
 
   raw_ptr<MockAttributionManager> mock_attribution_manager_;
@@ -415,23 +404,6 @@ TEST_F(KeepAliveAttributionRequestHelperTest, HelperNotNeeded) {
     ASSERT_TRUE(context.has_value());
     auto helper = KeepAliveAttributionRequestHelper::CreateIfNeeded(
         AttributionReportingEligibility::kEmpty, reporting_url,
-        /*attribution_src_token=*/std::nullopt, "devtools-request-id",
-        context.value());
-    EXPECT_EQ(helper, nullptr);
-  }
-
-  {  // kAttributionReportingInBrowserMigration disabled
-    scoped_feature_list().Reset();
-    scoped_feature_list().InitAndDisableFeature(
-        blink::features::kAttributionReportingInBrowserMigration);
-    const GURL source_url("https://secure.test");
-    test_web_contents()->NavigateAndCommit(source_url);
-
-    auto context = AttributionSuitableContext::Create(
-        test_web_contents()->GetPrimaryMainFrame());
-    ASSERT_TRUE(context.has_value());
-    auto helper = KeepAliveAttributionRequestHelper::CreateIfNeeded(
-        AttributionReportingEligibility::kEventSourceOrTrigger, reporting_url,
         /*attribution_src_token=*/std::nullopt, "devtools-request-id",
         context.value());
     EXPECT_EQ(helper, nullptr);

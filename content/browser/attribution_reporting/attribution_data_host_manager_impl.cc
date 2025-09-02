@@ -251,11 +251,9 @@ void RecordNavigationSourceScopesLimitOutcome(
 }
 
 bool BackgroundRegistrationsEnabled() {
-  return (base::FeatureList::IsEnabled(
-              blink::features::kKeepAliveInBrowserMigration) ||
-          base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI)) &&
-         base::FeatureList::IsEnabled(
-             blink::features::kAttributionReportingInBrowserMigration);
+  return base::FeatureList::IsEnabled(
+             blink::features::kKeepAliveInBrowserMigration) ||
+         base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI);
 }
 
 constexpr size_t kMaxDeferredReceiversPerNavigation = 30;

@@ -467,9 +467,7 @@ class KeepAliveURLLoaderServiceTest : public KeepAliveURLLoaderServiceTestBase {
  protected:
   void SetUp() override {
     feature_list().InitWithFeatures(
-        {blink::features::kKeepAliveInBrowserMigration,
-         blink::features::kAttributionReportingInBrowserMigration},
-        {});
+        {blink::features::kKeepAliveInBrowserMigration}, {});
     KeepAliveURLLoaderServiceTestBase::SetUp();
   }
 };
@@ -1334,7 +1332,6 @@ class FetchLaterKeepAliveURLLoaderServiceTest
   void SetUp() override {
     feature_list().InitWithFeaturesAndParameters(
         {{blink::features::kFetchLaterAPI, {}},
-         {blink::features::kAttributionReportingInBrowserMigration, {}},
          {blink::features::kKeepAliveInBrowserMigration,
           {{"disconnected_loader_timeout_seconds",
             base::NumberToString(
@@ -1580,7 +1577,6 @@ class KeepAliveURLLoaderServiceRetryTest
   void SetUp() override {
     feature_list().InitWithFeaturesAndParameters(
         {{blink::features::kKeepAliveInBrowserMigration, {}},
-         {blink::features::kAttributionReportingInBrowserMigration, {}},
          {blink::features::kFetchRetry,
           {
               {"max_retry_count",

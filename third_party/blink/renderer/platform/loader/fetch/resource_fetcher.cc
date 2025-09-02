@@ -1640,12 +1640,8 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       unfreezable_task_runner_;
   if (network_request.keepalive &&
-      (!base::FeatureList::IsEnabled(
-           blink::features::kKeepAliveInBrowserMigration) ||
-       (network_request.attribution_reporting_eligibility !=
-            network::mojom::AttributionReportingEligibility::kUnset &&
-        !base::FeatureList::IsEnabled(
-            features::kAttributionReportingInBrowserMigration)))) {
+      !base::FeatureList::IsEnabled(
+          blink::features::kKeepAliveInBrowserMigration)) {
     // Set the `task_runner` to the `AgentGroupScheduler`'s task-runner for
     // keepalive fetches because we want it to keep running even after the
     // frame is detached. It's pretty fragile to do that with the
@@ -2223,9 +2219,7 @@ void ResourceFetcher::ClearContext() {
 
   if (!loaders_.empty() || !non_blocking_loaders_.empty()) {
     CHECK(!base::FeatureList::IsEnabled(
-              blink::features::kKeepAliveInBrowserMigration) ||
-          !base::FeatureList::IsEnabled(
-              blink::features::kAttributionReportingInBrowserMigration));
+        blink::features::kKeepAliveInBrowserMigration));
     // There are some keepalive requests.
 
     // The use of WrapPersistent creates a reference cycle intentionally,

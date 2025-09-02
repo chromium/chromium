@@ -274,11 +274,7 @@ LoaderFactoryForFrame::MaybeIssueKeepAliveHandle(
     const network::ResourceRequest& network_request) {
   mojo::PendingRemote<mojom::blink::KeepAliveHandle> pending_remote;
   if (network_request.keepalive &&
-      (!base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration) ||
-       (network_request.attribution_reporting_eligibility !=
-            network::mojom::AttributionReportingEligibility::kUnset &&
-        !base::FeatureList::IsEnabled(
-            features::kAttributionReportingInBrowserMigration))) &&
+      !base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration) &&
       keep_alive_handle_factory_.is_bound() &&
       !network_request.is_fetch_later_api) {
     keep_alive_handle_factory_->IssueKeepAliveHandle(

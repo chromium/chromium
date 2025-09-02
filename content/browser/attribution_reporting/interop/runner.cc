@@ -458,8 +458,7 @@ RunAttributionInteropSimulation(
                                 &AttributionSimulationEvent::time));
 
   std::vector<base::test::FeatureRefAndParams> enabled_features(
-      {{blink::features::kKeepAliveInBrowserMigration, {}},
-       {blink::features::kAttributionReportingInBrowserMigration, {}}});
+      {{blink::features::kKeepAliveInBrowserMigration, {}}});
 
   std::optional<AttributionOsLevelManager::ScopedApiStateForTesting>
       scoped_api_state;

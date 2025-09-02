@@ -3412,8 +3412,6 @@ class AttributionDataHostManagerImplWithInBrowserMigrationTest
       std::vector<base::test::FeatureRef> enabled_features = {}) {
     enabled_features.emplace_back(
         blink::features::kKeepAliveInBrowserMigration);
-    enabled_features.emplace_back(
-        blink::features::kAttributionReportingInBrowserMigration);
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }
 
