@@ -627,7 +627,7 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    #tryjob = try_.job(),
+    tryjob = try_.job(),
     use_clang_coverage = True,
     xcode = xcode.xcode_default,
 )
