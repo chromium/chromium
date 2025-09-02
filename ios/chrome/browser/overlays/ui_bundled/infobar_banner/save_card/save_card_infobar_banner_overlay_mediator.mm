@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
@@ -18,6 +16,8 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -75,16 +75,16 @@
         delegate->expiration_date_year(), delegate->card_cvc()));
 
     // Create and show the snackbar message.
-    MDCSnackbarMessage* message = [self createCardSavedSnackbarMessage];
+    SnackbarMessage* message = [self createCardSavedSnackbarMessage];
     if (message) {
-      [self.snackbarCommandsHandler showSnackbarMessage:message];
+      [self.snackbarCommandsHandler showCustomSnackbarMessage:message];
     }
 
     [self dismissOverlay];
   }
 }
 
-- (MDCSnackbarMessage*)createCardSavedSnackbarMessage {
+- (SnackbarMessage*)createCardSavedSnackbarMessage {
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
   if (!delegate) {
@@ -93,15 +93,11 @@
   NSString* titleText = base::SysUTF16ToNSString(
       l10n_util::GetStringUTF16(IDS_IOS_AUTOFILL_CARD_SAVED));
 
-  NSString* subTitleText = base::SysUTF16ToNSString(delegate->card_label());
-  NSString* messageText =
-      [NSString stringWithFormat:@"%@\n%@", titleText, subTitleText];
-
-  MDCSnackbarMessage* message =
-      [MDCSnackbarMessage messageWithText:messageText];
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:titleText];
+  message.subtitle = base::SysUTF16ToNSString(delegate->card_label());
 
   // "Got it" button
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.title = base::SysUTF16ToNSString(
       l10n_util::GetStringUTF16(IDS_IOS_AUTOFILL_SAVE_CARD_GOT_IT));
   message.action = action;

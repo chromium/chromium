@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
@@ -23,6 +21,8 @@
 #import "ios/chrome/browser/infobars/ui_bundled/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -247,19 +247,19 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest, ShowSnackbarForLocalSave) {
       .WillOnce(testing::Return(true));
 
   // Expected snackbar message content.
-  NSString* titleText = base::SysUTF16ToNSString(
+  NSString* expectedTitleText = base::SysUTF16ToNSString(
       l10n_util::GetStringUTF16(IDS_IOS_AUTOFILL_CARD_SAVED));
-  NSString* subTitleText = base::SysUTF16ToNSString(delegate_->card_label());
-  NSString* expectedMessageText =
-      [NSString stringWithFormat:@"%@\n%@", titleText, subTitleText];
+  NSString* expectedSubtitleText =
+      base::SysUTF16ToNSString(delegate_->card_label());
   NSString* expectedButtonText = base::SysUTF16ToNSString(
       l10n_util::GetStringUTF16(IDS_IOS_AUTOFILL_SAVE_CARD_GOT_IT));
 
   // Set up expectation for the snackbar message.
   OCMExpect([mock_snackbar_commands_handler_
-      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
-                                      MDCSnackbarMessage* message) {
-        EXPECT_NSEQ(expectedMessageText, message.text);
+      showCustomSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
+                                            SnackbarMessage* message) {
+        EXPECT_NSEQ(expectedTitleText, message.title);
+        EXPECT_NSEQ(expectedSubtitleText, message.subtitle);
         // Check that action is not nil, "Got it" button is present.
         EXPECT_NE(message.action, nil);
         if (message.action) {
@@ -280,7 +280,8 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest, NoSnackbarForUploadSave) {
   OCMExpect([mediator_ presentInfobarModalFromBanner]);
   // No expectation on mock_snackbar_commands_handler_ as it shouldn't be
   // called.
-  OCMReject([mock_snackbar_commands_handler_ showSnackbarMessage:OCMOCK_ANY]);
+  OCMReject(
+      [mock_snackbar_commands_handler_ showCustomSnackbarMessage:OCMOCK_ANY]);
 
   [mediator_ bannerInfobarButtonWasPressed:nil];
 }
