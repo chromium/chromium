@@ -421,15 +421,13 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     std::string debug_label) {
   DCHECK(IsValidSharedMemoryBufferFormat(size, format));
 
-  SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, ToBufferFormat(format))) {
-    DLOG(ERROR) << "Failed to create SharedMemoryRegionWrapper";
+  auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
+      mailbox, format, size, color_space, surface_origin, alpha_type,
+      GetShmSharedImageUsage(usage), debug_label,
+      /*is_thread_safe=*/false, std::move(handle));
+  if (!shm_backing) {
     return nullptr;
   }
-
-  auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type,
-      GetShmSharedImageUsage(usage), debug_label, std::move(shm_wrapper));
   shm_backing->SetNotRefCounted();
 
   return base::WrapUnique(new CompoundImageBacking(
