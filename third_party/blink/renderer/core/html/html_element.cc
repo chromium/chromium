@@ -1995,7 +1995,10 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
       DCHECK_EQ(upstream_invoker->InterestForElement(), this);
       DCHECK_NE(upstream_invoker->GetInvokerData()->GetInterestState(),
                 InterestState::kNoInterest);
-      upstream_invoker->LoseInterestNow();
+      // We're already closing this popover, so don't try to close it again.
+      upstream_invoker->LoseInterestNow(
+          InterestLostCancelable::kCancelable,
+          InterestLostPopoverBehavior::kDontClosePopovers);
     }
 
     // The 'loseinterest' event handler could have changed this popover, e.g. by
@@ -2576,7 +2579,8 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
       ShowInterestNow();
     } else {
       CHECK_EQ(GetInterestState(), InterestState::kFullInterest);
-      LoseInterestNow();
+      LoseInterestNow(InterestLostCancelable::kCancelable,
+                      InterestLostPopoverBehavior::kClosePopovers);
     }
     return true;
   } else if (command == CommandEventType::kToggleFullscreen) {

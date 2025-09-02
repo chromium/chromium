@@ -1719,7 +1719,9 @@ bool Element::InterestGained(Element* target) {
   return true;
 }
 
-bool Element::InterestLost(Element* target) {
+bool Element::InterestLost(Element* target,
+                           InterestLostCancelable cancelable,
+                           InterestLostPopoverBehavior behavior) {
   CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
       GetDocument().GetExecutionContext()));
 
@@ -1727,8 +1729,11 @@ bool Element::InterestLost(Element* target) {
     return false;
   }
 
-  Event* lose_interest_event = InterestEvent::Create(
-      event_type_names::kLoseinterest, this, Event::Cancelable::kYes);
+  Event* lose_interest_event =
+      InterestEvent::Create(event_type_names::kLoseinterest, this,
+                            cancelable == InterestLostCancelable::kCancelable
+                                ? Event::Cancelable::kYes
+                                : Event::Cancelable::kNo);
   target->DispatchEvent(*lose_interest_event);
   if (lose_interest_event->defaultPrevented()) {
     return false;
@@ -1741,16 +1746,18 @@ bool Element::InterestLost(Element* target) {
   }
 
   // If the target is a popover, hide it.
-  if (auto* popover = DynamicTo<HTMLElement>(target);
-      popover && popover->PopoverType() != PopoverValueType::kNone) {
-    if (popover->IsPopoverReady(PopoverTriggerAction::kHide,
-                                /*exception_state=*/nullptr,
-                                /*include_event_handler_text=*/true,
-                                &GetDocument())) {
-      popover->HidePopoverInternal(
-          /*invoker=*/this, HidePopoverFocusBehavior::kFocusPreviousElement,
-          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-          /*exception_state=*/nullptr);
+  if (behavior == InterestLostPopoverBehavior::kClosePopovers) {
+    if (auto* popover = DynamicTo<HTMLElement>(target);
+        popover && popover->PopoverType() != PopoverValueType::kNone) {
+      if (popover->IsPopoverReady(PopoverTriggerAction::kHide,
+                                  /*exception_state=*/nullptr,
+                                  /*include_event_handler_text=*/true,
+                                  &GetDocument())) {
+        popover->HidePopoverInternal(
+            /*invoker=*/this, HidePopoverFocusBehavior::kFocusPreviousElement,
+            HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+            /*exception_state=*/nullptr);
+      }
     }
   }
   return true;
@@ -7839,13 +7846,14 @@ void Element::ShowInterestNow() {
   InterestGained(InterestForElement());
 }
 
-void Element::LoseInterestNow() {
+void Element::LoseInterestNow(InterestLostCancelable cancelable,
+                              InterestLostPopoverBehavior behavior) {
   DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
       GetDocument().GetExecutionContext()));
   Element* target = InterestForElement();
   DCHECK_EQ(GetInvokerData()->ActiveInterestTarget(), target);
   DCHECK_EQ(GetInterestState(), InterestState::kFullInterest);
-  InterestLost(target);
+  InterestLost(target, cancelable, behavior);
 }
 
 bool Element::IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const {

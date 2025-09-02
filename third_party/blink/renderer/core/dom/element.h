@@ -1184,13 +1184,26 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     kFullInterest,
   };
 
+  enum class InterestLostCancelable {
+    kNotCancelable,
+    kCancelable,
+  };
+  enum class InterestLostPopoverBehavior {
+    kDontClosePopovers,
+    kClosePopovers,
+  };
+
   // Implementation of the `interestfor` feature. These are called on the
   // element with the `interestfor` attribute, and not on the target itself.
   // These are called when interest is actually gained or lost on the element,
   // e.g. after any hover-delays. They return true if the event was *not*
   // cancelled, and the action was performed.
   bool InterestGained(Element* target);
-  bool InterestLost(Element* target);
+  bool InterestLost(
+      Element* target,
+      InterestLostCancelable = InterestLostCancelable::kCancelable,
+      InterestLostPopoverBehavior =
+          InterestLostPopoverBehavior::kClosePopovers);
 
   // Returns the target of the `interestfor` attribute, if any, and only if
   // the element supports this attribute. For example, `interestfor` is not
@@ -1213,7 +1226,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // be set on the element. Element must already be an an interest invoker that
   // has interest, or a DCHECK will fail. If the target of the interest invoker
   // is a popover, the popover will be hidden.
-  void LoseInterestNow();
+  void LoseInterestNow(InterestLostCancelable, InterestLostPopoverBehavior);
 
   // Returns true if any of its (non-inclusive) flat tree descendants is
   // keyboard focusable. Note that this is quite slow, since it traverses the
