@@ -24,8 +24,6 @@
 
 namespace autofill {
 
-using form_util::ExtractOption;
-
 namespace {
 
 // Determines whether the form is interesting enough to be sent to the browser

@@ -996,7 +996,7 @@ TEST_P(AutofillAgentSubmissionTest,
   FormFieldData form_field;
   form_util::WebFormControlElementToFormFieldForTesting(
       blink::WebFormElement(), field, &autofill_agent().field_data_manager(),
-      {}, &form_field);
+      &form_field);
 
   form_field.set_value(u"autofilled");
   form_field.set_is_autofilled(true);

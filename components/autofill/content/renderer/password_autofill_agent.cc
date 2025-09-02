@@ -102,7 +102,6 @@ namespace autofill {
 
 namespace {
 
-using form_util::ExtractOption;
 using form_util::GetFieldRendererId;
 using form_util::GetFormByRendererId;
 using form_util::GetFormControlByRendererId;
@@ -1210,8 +1209,7 @@ PasswordAutofillAgent::CreateSuggestionRequest(
           user_input, field_data_manager(),
           autofill_agent_->GetCallTimerState(
               CallTimerState::CallSite::kShowSuggestionPopup),
-          autofill_agent_->button_titles_cache(),
-          /*extract_options=*/{}, form_cache);
+          autofill_agent_->button_titles_cache(), form_cache);
   if (!form_and_field) {
     return std::nullopt;
   }

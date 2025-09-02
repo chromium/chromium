@@ -441,10 +441,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // cleared in this method.
   void OnFormNoLongerSubmittable();
 
-  // Amends the given `extract_options` with datalists if required.
-  DenseSet<form_util::ExtractOption> MaybeExtractDatalist(
-      DenseSet<form_util::ExtractOption> extract_options);
-
   // Helpers for SelectFieldOptionsChanged() and
   // DataListOptionsChanged(), which get called after a timer that is restarted
   // when another event of the same type started.

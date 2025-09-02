@@ -1889,15 +1889,14 @@ std::vector<WebFormControlElement> GetOwnedFormControls(
   return form_controls;
 }
 
-// Fills out a FormField object from a given autofillable WebFormControlElement.
-// |extract_options|: See the enum ExtractOption above for details. Field
-// properties will be copied from |field_data_manager|, if the argument is not
-// null and has entry for |element| (see properties in FieldPropertiesFlags).
+// Populates out a FormField object from a given autofillable
+// WebFormControlElement. Field properties are copied from |field_data_manager|,
+// if the argument is not null and has entry for |element| (see properties in
+// FieldPropertiesFlags).
 void WebFormControlElementToFormField(
     const WebFormElement& form_element,
     const WebFormControlElement& element,
     const FieldDataManager* field_data_manager,
-    DenseSet<ExtractOption> extract_options,
     FormFieldData* field,
     ShadowFieldData* shadow_data) {
   DCHECK(field);
@@ -2065,8 +2064,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const WebDocument& document,
     const WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
-    ButtonTitlesCache* button_titles_cache,
-    DenseSet<ExtractOption> extract_options) {
+    ButtonTitlesCache* button_titles_cache) {
   CHECK(!form_element || form_element.GetDocument() == document,
         base::NotFatalUntil::M142);
 
@@ -2124,8 +2122,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     fields.emplace_back();
     shadow_fields.emplace_back();
     WebFormControlElementToFormField(form_element, control_element,
-                                     &field_data_manager, extract_options,
-                                     &fields.back(), &shadow_fields.back());
+                                     &field_data_manager, &fields.back(),
+                                     &shadow_fields.back());
 
     // Finds the last frame that precedes |control_element|.
     while (next_iframe < iframe_elements.size() &&
@@ -2246,12 +2244,10 @@ std::optional<FormData> ExtractFormData(
     const WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
-    ButtonTitlesCache* button_titles_cache,
-    DenseSet<ExtractOption> extract_options) {
+    ButtonTitlesCache* button_titles_cache) {
   ScopedCallTimer timer("ExtractFormData", timer_state);
   return ExtractFormDataWithFieldsAndFrames(
-      document, form_element, field_data_manager, button_titles_cache,
-      extract_options);
+      document, form_element, field_data_manager, button_titles_cache);
 }
 
 GURL GetCanonicalActionForForm(const WebFormElement& form) {
@@ -2419,7 +2415,6 @@ FindFormAndFieldForFormControlElement(
     const FieldDataManager& field_data_manager,
     const CallTimerState& timer_state,
     form_util::ButtonTitlesCache* button_titles_cache,
-    DenseSet<ExtractOption> extract_options,
     const SynchronousFormCache& form_cache) {
   DCHECK(element);
 
@@ -2429,17 +2424,16 @@ FindFormAndFieldForFormControlElement(
 
   WebDocument document = element.GetDocument();
   WebFormElement owning_form = element.GetOwningFormForAutofill();
-  std::optional<FormData> form = form_cache.GetOrExtractForm(
-      document, owning_form, field_data_manager, timer_state,
-      button_titles_cache, extract_options);
+  std::optional<FormData> form =
+      form_cache.GetOrExtractForm(document, owning_form, field_data_manager,
+                                  timer_state, button_titles_cache);
   const bool extract_form_data_succeeded = form.has_value();
 
   if (!form) {
     // If we couldn't extract the form, ignore the fields other than `element`.
     // This gives Autocomplete and other handlers the chance to handle it.
     FormFieldData field;
-    WebFormControlElementToFormField(owning_form, element, nullptr,
-                                     extract_options, &field,
+    WebFormControlElementToFormField(owning_form, element, nullptr, &field,
                                      /*shadow_data=*/nullptr);
     form.emplace();
     form->set_fields({std::move(field)});
@@ -3075,10 +3069,9 @@ void WebFormControlElementToFormFieldForTesting(  // IN-TEST
     const WebFormElement& form_element,
     const WebFormControlElement& element,
     const FieldDataManager* field_data_manager,
-    DenseSet<ExtractOption> extract_options,
     FormFieldData* field) {
   WebFormControlElementToFormField(form_element, element, field_data_manager,
-                                   extract_options, field,
+                                   field,
                                    /*shadow_data=*/nullptr);
 }
 
