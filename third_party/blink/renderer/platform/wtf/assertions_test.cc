@@ -8,7 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(AssertionsTest, Assertions) {
   DCHECK(true);
@@ -36,4 +36,4 @@ TEST(AssertionsTest, Assertions) {
   EXPECT_DEATH_IF_SUPPORTED(SECURITY_CHECK(false), "");
 }
 
-}  // namespace WTF
+}  // namespace blink
