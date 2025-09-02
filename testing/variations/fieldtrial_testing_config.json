@@ -3186,6 +3186,13 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "PasswordChangeCanceledSurveyTriggerId": "yMCuP6M4o0ugnJ3q1cK0PhQKJ1tX",
+                        "PasswordChangeDelayedSurveyTriggerId": "h68mSmrgL0ugnJ3q1cK0R6FWDDMV",
+                        "PasswordChangeErrorSurveyTriggerId": "QA4ECrqpN0ugnJ3q1cK0U1jrufAq",
+                        "PasswordChangeSuccessSurveyTriggerId": "JkkpCGkZT0ugnJ3q1cK0W48wvGnr",
+                        "probability": "1.0"
+                    },
                     "enable_features": [
                         "ApplyClientsideModelPredictionsForPasswordTypes",
                         "CheckLoginStateBeforePasswordChange",
