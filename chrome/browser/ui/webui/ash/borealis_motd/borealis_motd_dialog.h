@@ -10,6 +10,10 @@
 #include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace borealis {
 
 // Show Borealis MOTD dialog if features::kBorealis is enabled before the
@@ -44,7 +48,8 @@ class BorealisMOTDDialog : public ui::WebDialogDelegate {
   ~BorealisMOTDDialog() override;
 
  private:
-  explicit BorealisMOTDDialog(base::OnceCallback<void()>);
+  BorealisMOTDDialog(base::OnceCallback<void()>,
+                     content::BrowserContext* context);
   // ui::WebDialogDelegate:
   void OnDialogClosed(const std::string& json_retval) override;
   void OnLoadingStateChanged(content::WebContents* source) override;

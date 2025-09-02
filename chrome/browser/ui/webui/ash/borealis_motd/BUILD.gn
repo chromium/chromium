@@ -10,15 +10,16 @@ static_library("borealis_motd") {
     "borealis_motd_dialog.h",
   ]
 
-  public_deps = [
+  deps = [
+    "//ash",
     "//ash/strings:strings_grit",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/common",
+    "//chrome/browser/resources/chromeos/borealis_motd:resources",
+    "//chrome/common:chrome_features",
     "//content/public/browser",
     "//content/public/common",
+    "//ui/views/controls/webview",
     "//ui/web_dialogs",
     "//ui/webui",
   ]
-
-  deps = [ "//chrome/browser/resources/chromeos/borealis_motd:resources" ]
 }

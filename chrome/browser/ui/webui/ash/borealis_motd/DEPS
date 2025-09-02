@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/shell.h",
   "+ash/strings",
 
   # Existing dependencies within //chrome. There is an active effort to
