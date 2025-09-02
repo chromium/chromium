@@ -1295,7 +1295,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
 
   AuthenticatorData authenticator_data(
       rp_id_hash, !mutable_state()->unset_up_bit,
-      mutable_state()->unset_uv_bit ? false : user_verified,
+      user_verified && !mutable_state()->unset_uv_bit,
       mutable_state()->default_backup_eligibility,
       mutable_state()->default_backup_state,
       /*sign_counter=*/01ul,
@@ -1678,8 +1678,8 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
 
     AuthenticatorData authenticator_data(
         rp_id_hash,
-        mutable_state()->unset_up_bit ? false : request.user_presence_required,
-        mutable_state()->unset_uv_bit ? false : user_verified,
+        request.user_presence_required && !mutable_state()->unset_up_bit,
+        user_verified && !mutable_state()->unset_uv_bit,
         registration.second->backup_eligible, registration.second->backup_state,
         registration.second->counter, std::move(opt_attested_cred_data),
         std::move(extensions));
