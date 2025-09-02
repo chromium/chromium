@@ -879,14 +879,6 @@ void TreeView::UpdateSelection(TreeModelNode* model_node,
     active_node_ = node;
   }
 
-  if (selection_changed) {
-    SchedulePaintForNode(selected_node_);
-    SetAccessibleSelectionForNode(selected_node_, false);
-    selected_node_ = node;
-    SetAccessibleSelectionForNode(selected_node_, true);
-    SchedulePaintForNode(selected_node_);
-  }
-
   if (active_changed && node) {
     // GetForegroundBoundsForNode() returns RTL-flipped coordinates for paint.
     // Un-flip before passing to ScrollRectToVisible(), which uses layout
@@ -910,11 +902,14 @@ void TreeView::UpdateSelection(TreeModelNode* model_node,
   }
 
   if (selection_changed) {
+    SchedulePaintForNode(selected_node_);
+    SetAccessibleSelectionForNode(selected_node_, false);
+    selected_node_ = node;
+    SetAccessibleSelectionForNode(selected_node_, true);
+    SchedulePaintForNode(selected_node_);
     AXVirtualView* ax_selected_view =
         node ? node->accessibility_view() : nullptr;
-    if (ax_selected_view) {
-      ax_selected_view->NotifyEvent(ax::mojom::Event::kSelection, true);
-    } else {
+    if (!ax_selected_view) {
       NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
     }
   }
