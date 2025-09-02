@@ -3763,7 +3763,7 @@
   },
   {
     "name": "enable-ipad-feed-ghost-cards",
-    "owners": [ "adamta@google.com", "bling-pandamonium@google.com" ],
+    "owners": [ "ginnyhuang@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -4853,7 +4853,7 @@
       "nicolasmacbeth@google.com",
       "bling-alchemy-eng@google.com"
     ],
-    "expiry_milestone": 142
+    "expiry_milestone": 160
   },
   {
     "name": "enhanced-safe-browsing-promo",
@@ -5137,7 +5137,7 @@
   },
   {
     "name": "feed-background-refresh-ios",
-    "owners": [ "adamta@google.com", "bling-pandamonium@google.com" ],
+    "owners": [ "ginnyhuang@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -5147,7 +5147,7 @@
   },
   {
     "name": "feed-discofeed-endpoint",
-    "owners": [ "//chrome/android/feed/OWNERS", "freedjm@chromium.org" ],
+    "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 140
   },
   {
