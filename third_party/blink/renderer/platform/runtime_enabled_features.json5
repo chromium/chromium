@@ -5033,6 +5033,9 @@
     {
       name: "TouchDragOnShortPress",
       depends_on: ["TouchDragAndDrop"],
+      status: {
+        "Win": "experimental",
+      },
     },
     // Many websites disable mouse support when touch APIs are available.  We'd
     // like to enable this always but can't until more websites fix this bug.

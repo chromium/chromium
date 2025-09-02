@@ -733,6 +733,10 @@ bool MouseEventManager::HandleDragDropIfPossible(
   ResetDragSource();
   mouse_down_pos_ = frame_->View()->ConvertFromRootFrame(
       gfx::ToFlooredPoint(mouse_drag_event.PositionInRootFrame()));
+  // TODO(crbug.com/435174491): HandleDrag returns whether or not the
+  // application handled the drag attempt, not whether or not a drag started.
+  // `GestureManager` assumes that if this function returns `true` a drag has
+  // started.
   return HandleDrag(mev, gesture_event.primary_pointer_type ==
                                  blink::WebPointerProperties::PointerType::kPen
                              ? DragAndDropToolType::kStylusViaGesture
@@ -846,7 +850,7 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
   return selection_controller_drag_result;
 }
 
-// TODO(mustaq@chromium.org): The return value here is questionable.  Why even a
+// TODO(crbug.com/435174491): The return value here is questionable.  Why even a
 // failing `TryStartDrag()` below returns a `true` here?
 bool MouseEventManager::HandleDrag(const MouseEventWithHitTestResults& event,
                                    DragAndDropToolType initiator) {

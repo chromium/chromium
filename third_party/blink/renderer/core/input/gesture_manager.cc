@@ -143,6 +143,13 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
     }
   }
 
+  // Long presses are the only gesture that could happen with an ongoing drag.
+  // We clear the flag on any other gesture in case the gesture manager didn't
+  // receive a drag end event for any reason.
+  if (gesture_event.GetType() != WebInputEvent::Type::kGestureLongPress) {
+    drag_in_progress_ = false;
+  }
+
   switch (gesture_event.GetType()) {
     case WebInputEvent::Type::kGestureTapDown:
       return HandleGestureTapDown(targeted_event);
@@ -408,7 +415,6 @@ WebInputEventResult GestureManager::HandleGestureTap(
 
 WebInputEventResult GestureManager::HandleGestureShortPress(
     const GestureEventWithHitTestResults& targeted_event) {
-  drag_in_progress_ = false;
   if (frame_->GetSettings() &&
       frame_->GetSettings()->GetTouchDragDropEnabled() &&
       RuntimeEnabledFeatures::TouchDragOnShortPressEnabled() &&
@@ -435,8 +441,9 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
   gesture_context_menu_deferred_ = false;
 
-  if (RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
-    if (drag_in_progress_ && DragEndOpensContextMenu()) {
+  if (RuntimeEnabledFeatures::TouchDragOnShortPressEnabled() &&
+      drag_in_progress_) {
+    if (DragEndOpensContextMenu()) {
       gesture_context_menu_deferred_ = true;
       return WebInputEventResult::kNotHandled;
     }
