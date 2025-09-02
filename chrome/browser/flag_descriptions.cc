@@ -6325,6 +6325,11 @@ const char kEnableExclusiveAccessManagerName[] =
 const char kEnableExclusiveAccessManagerDescription[] =
     "Enables the integrated handling of the fullscreen, pointer and keyboard "
     "locks. Unifies the UI for the mentioned features.";
+
+const char kAndroidWebAppMenuButtonName[] = "Enable minimal ui menu button";
+const char kAndroidWebAppMenuButtonDescription[] =
+    "Display minimal ui menu button for PWAs on devices that support "
+    "desktop windowing.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows, Mac and Android  --------------------------------------------------

@@ -11009,6 +11009,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-language-detection-dynamic"/>
   <int value="-1168836114" label="AndroidTabDeclutterAutoDelete:enabled"/>
   <int value="-1168123287" label="WebRTC-FrameBuffer3:disabled"/>
+  <int value="-1168016146" label="AndroidWebAppMenuButton:enabled"/>
   <int value="-1167992523" label="DesktopPWAsCustomTabUI:disabled"/>
   <int value="-1167716837"
       label="VisitedURLRankingHistoryVisibilityScoreFilter:enabled"/>
@@ -13917,6 +13918,7 @@ from previous Chrome versions.
       label="RequestDesktopSiteExceptionsDowngrade:enabled"/>
   <int value="-107735009" label="AndroidGoogleSansText:disabled"/>
   <int value="-106870929" label="Webium:disabled"/>
+  <int value="-106789551" label="AndroidWebAppMenuButton:disabled"/>
   <int value="-106676514" label="LensOverlayEntrypointLabelAlt:enabled"/>
   <int value="-106631643" label="TurnOffStreamingMediaCachingAlways:disabled"/>
   <int value="-106373261" label="PaintPreviewDemo:enabled"/>

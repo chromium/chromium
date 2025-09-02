@@ -4033,6 +4033,14 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-minimal-ui-menu-button",
+    "owners": [
+      "aixba@google.com",
+      "capabilities-team@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-missive-storage-config",
     "owners" : [ "chrome-reporting-team@google.com", "lbaraz@chromium.org" ],
     "expiry_milestone": 130
