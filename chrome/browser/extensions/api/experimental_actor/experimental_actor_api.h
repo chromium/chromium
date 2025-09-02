@@ -13,8 +13,6 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "extensions/browser/extension_function.h"
 
-class Browser;
-
 namespace extensions {
 
 // Base class for all experimental actor functions. See idl for more details.
@@ -29,31 +27,6 @@ class ExperimentalActorApiFunction : public ExtensionFunction {
  protected:
   ~ExperimentalActorApiFunction() override;
   bool PreRunValidation(std::string* error) override;
-};
-
-// Starts an actor task.
-class ExperimentalActorStartTaskFunction : public ExperimentalActorApiFunction {
- public:
-  ExperimentalActorStartTaskFunction();
-
-  ExperimentalActorStartTaskFunction(
-      const ExperimentalActorStartTaskFunction&) = delete;
-  ExperimentalActorStartTaskFunction& operator=(
-      const ExperimentalActorStartTaskFunction&) = delete;
-
- protected:
-  ~ExperimentalActorStartTaskFunction() override;
-  ResponseAction Run() override;
-  void OnTaskStarted(actor::TaskId task_id, int32_t tab_id);
-  void OnTabCreated(
-      base::WeakPtr<Browser> browser,
-      actor::TaskId task_id,
-      actor::mojom::ActionResultCode result_code,
-      std::optional<size_t> index_of_failed_action,
-      std::vector<actor::ActionResultWithLatencyInfo> action_results);
-
-  DECLARE_EXTENSION_FUNCTION("experimentalActor.startTask",
-                             EXPERIMENTALACTOR_STARTTASK)
 };
 
 // Stops an actor task.
@@ -72,27 +45,6 @@ class ExperimentalActorStopTaskFunction : public ExperimentalActorApiFunction {
 
   DECLARE_EXTENSION_FUNCTION("experimentalActor.stopTask",
                              EXPERIMENTALACTOR_STOPTASK)
-};
-
-// Executes an actor action.
-class ExperimentalActorExecuteActionFunction
-    : public ExperimentalActorApiFunction {
- public:
-  ExperimentalActorExecuteActionFunction();
-
-  ExperimentalActorExecuteActionFunction(
-      const ExperimentalActorExecuteActionFunction&) = delete;
-  ExperimentalActorExecuteActionFunction& operator=(
-      const ExperimentalActorExecuteActionFunction&) = delete;
-
- protected:
-  ~ExperimentalActorExecuteActionFunction() override;
-  ResponseAction Run() override;
-  void OnResponseReceived(
-      optimization_guide::proto::BrowserActionResult response);
-
-  DECLARE_EXTENSION_FUNCTION("experimentalActor.executeAction",
-                             EXPERIMENTALACTOR_EXECUTEACTION)
 };
 
 class ExperimentalActorCreateTaskFunction

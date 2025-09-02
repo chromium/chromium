@@ -25,8 +25,6 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/extensions/api/experimental_actor.h"
 #include "chrome/common/extensions/api/tabs.h"
@@ -132,94 +130,6 @@ bool ExperimentalActorApiFunction::PreRunValidation(std::string* error) {
   return true;
 }
 
-ExperimentalActorStartTaskFunction::ExperimentalActorStartTaskFunction() =
-    default;
-
-ExperimentalActorStartTaskFunction::~ExperimentalActorStartTaskFunction() =
-    default;
-
-ExtensionFunction::ResponseAction ExperimentalActorStartTaskFunction::Run() {
-  auto params = api::experimental_actor::StartTask::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  optimization_guide::proto::BrowserStartTask task;
-  if (!task.ParseFromArray(params->start_task_proto.data(),
-                           params->start_task_proto.size())) {
-    return RespondNow(
-        Error("Parsing optimization_guide::proto::BrowserStartTask failed."));
-  }
-
-  // Convert from extension tab ids to TabHandles.
-  int32_t tab_handle =
-      ConvertSessionTabIdToTabHandle(task.tab_id(), browser_context());
-
-  auto* actor_service = actor::ActorKeyedService::Get(browser_context());
-
-  actor::TaskId task_id = actor_service->CreateTask();
-
-  // If a tab_id wasn't specified, create a new one.
-  // TODO(crbug.com/411462297): The client of this API should create a new tab
-  // themselves using the CreateTabAction and this code can be removed.
-  if (!tab_handle) {
-    // Get the most recently active browser for this profile.
-    Browser* browser = chrome::FindTabbedBrowser(
-        Profile::FromBrowserContext(browser_context()),
-        /*match_original_profiles=*/false);
-    // If no browser exists create one.
-    if (!browser) {
-      browser = Browser::Create(
-          Browser::CreateParams(Profile::FromBrowserContext(browser_context()),
-                                /*user_gesture=*/false));
-    }
-
-    std::unique_ptr<actor::ToolRequest> create_tab =
-        std::make_unique<actor::CreateTabToolRequest>(
-            browser->session_id().id(),
-            WindowOpenDisposition::NEW_FOREGROUND_TAB);
-    std::vector<std::unique_ptr<actor::ToolRequest>> actions;
-    actions.push_back(std::move(create_tab));
-    actor_service->PerformActions(
-        task_id, std::move(actions),
-        base::BindOnce(&ExperimentalActorStartTaskFunction::OnTabCreated, this,
-                       browser->AsWeakPtr(), task_id));
-  } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ExperimentalActorStartTaskFunction::OnTaskStarted, this,
-                       task_id, tab_handle));
-  }
-
-  return RespondLater();
-}
-
-void ExperimentalActorStartTaskFunction::OnTaskStarted(actor::TaskId task_id,
-                                                       int32_t tab_id) {
-  optimization_guide::proto::BrowserStartTaskResult result;
-  result.set_task_id(task_id.value());
-  result.set_tab_id(tab_id);
-  result.set_status(optimization_guide::proto::BrowserStartTaskResult::SUCCESS);
-
-  std::vector<uint8_t> data_buffer(result.ByteSizeLong());
-  result.SerializeToArray(&data_buffer[0], result.ByteSizeLong());
-  Respond(ArgumentList(api::experimental_actor::StartTask::Results::Create(
-      std::move(data_buffer))));
-}
-
-void ExperimentalActorStartTaskFunction::OnTabCreated(
-    base::WeakPtr<Browser> browser,
-    actor::TaskId task_id,
-    actor::mojom::ActionResultCode result_code,
-    std::optional<size_t> index_of_failed_action,
-    std::vector<actor::ActionResultWithLatencyInfo> action_results) {
-  int32_t tab_id = 0;
-  // CreateTask assumes it always succeeds but we won't have a tab if the
-  // browser is closed during creation.
-  if (browser) {
-    tab_id =
-        browser->tab_strip_model()->GetActiveTab()->GetHandle().raw_value();
-  }
-  OnTaskStarted(actor::TaskId(task_id), tab_id);
-}
-
 ExperimentalActorStopTaskFunction::ExperimentalActorStopTaskFunction() =
     default;
 
@@ -235,80 +145,6 @@ ExtensionFunction::ResponseAction ExperimentalActorStopTaskFunction::Run() {
   actor_service->StopTask(actor::TaskId(params->task_id), /*success=*/true);
   return RespondNow(
       ArgumentList(api::experimental_actor::StopTask::Results::Create()));
-}
-
-ExperimentalActorExecuteActionFunction::
-    ExperimentalActorExecuteActionFunction() = default;
-
-ExperimentalActorExecuteActionFunction::
-    ~ExperimentalActorExecuteActionFunction() = default;
-
-ExtensionFunction::ResponseAction
-ExperimentalActorExecuteActionFunction::Run() {
-#if !BUILDFLAG(ENABLE_GLIC)
-  return RespondNow(
-      Error("Execute action not supported for this build configuration."));
-#else
-  auto params = api::experimental_actor::ExecuteAction::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  optimization_guide::proto::BrowserAction action;
-  if (!action.ParseFromArray(params->browser_action_proto.data(),
-                             params->browser_action_proto.size())) {
-    return RespondNow(
-        Error("Parsing optimization_guide::proto::BrowserAction failed."));
-  }
-
-  int32_t tab_handle =
-      ConvertSessionTabIdToTabHandle(action.tab_id(), browser_context());
-  action.set_tab_id(tab_handle);
-
-  auto* actor_service =
-      actor::ActorKeyedServiceFactory::GetActorKeyedService(browser_context());
-
-  actor_service->GetJournal().Log(
-      GURL(), actor::TaskId(action.task_id()),
-      actor::mojom::JournalTrack::kActor, "ExperimentalActorExecutAction",
-      absl::StrFormat("Proto: %s", actor::ToBase64(action)));
-
-  // BuildToolRequest looks for tab_ids on the individual action structs since
-  // that's where Glic puts them. However, the extension puts the tab_id on the
-  // BrowserAction itself. Use the BrowserAction's tab_id as the fallback tab so
-  // that, if Action doesn't provide a tab_id we'll use the
-  // BrowserAction.tab_id. This path should go away once extension clients are
-  // migrated to PerformActions.
-  tabs::TabInterface* browser_action_tab =
-      action.has_tab_id() ? tabs::TabHandle(action.tab_id()).Get() : nullptr;
-
-  actor::BuildToolRequestResult requests =
-      actor::BuildToolRequest(action, browser_action_tab);
-
-  if (!requests.has_value()) {
-    return RespondNow(
-        Error("Failed to convert BrowserAction to ToolRequests."));
-  }
-
-  actor_service->ExecuteAction(
-      actor::TaskId(action.task_id()), std::move(requests.value()),
-      base::BindOnce(
-          &ExperimentalActorExecuteActionFunction::OnResponseReceived, this));
-
-  return RespondLater();
-#endif
-}
-
-void ExperimentalActorExecuteActionFunction::OnResponseReceived(
-    optimization_guide::proto::BrowserActionResult response) {
-  // Convert from tab handle to session tab id.
-  int32_t session_tab_id =
-      ConvertTabHandleToSessionTabId(response.tab_id(), browser_context());
-  response.set_tab_id(session_tab_id);
-
-  std::vector<uint8_t> data_buffer(response.ByteSizeLong());
-  if (!data_buffer.empty()) {
-    response.SerializeToArray(&data_buffer[0], response.ByteSizeLong());
-  }
-  Respond(ArgumentList(api::experimental_actor::ExecuteAction::Results::Create(
-      std::move(data_buffer))));
 }
 
 ExperimentalActorCreateTaskFunction::ExperimentalActorCreateTaskFunction() =
