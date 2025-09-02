@@ -183,12 +183,12 @@ void DownloadRecordService::OnDownloadUpdated(web::DownloadTask* task) {
                      base::Unretained(this), updated_record),
       base::BindOnce(
           [](base::WeakPtr<DownloadRecordService> service,
-             const DownloadRecord& record, bool success) {
-            if (service && success) {
-              service->NotifyDownloadUpdated(record);
+             std::optional<DownloadRecord> record_opt) {
+            if (service && record_opt.has_value()) {
+              service->NotifyDownloadUpdated(record_opt.value());
             }
           },
-          weak_ptr_factory_.GetWeakPtr(), updated_record));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DownloadRecordService::OnDownloadDestroyed(web::DownloadTask* task) {
@@ -225,23 +225,7 @@ bool DownloadRecordService::ShouldPersistUpdate(
   // Persist only if critical fields have changed.
   // Progress fields (received_bytes, progress_percent) are not persisted to
   // database.
-  return new_record.state != cached_record.state ||
-         new_record.file_path != cached_record.file_path ||
-         new_record.response_path != cached_record.response_path ||
-         new_record.completed_time != cached_record.completed_time ||
-         new_record.http_code != cached_record.http_code ||
-         new_record.error_code != cached_record.error_code ||
-         new_record.original_url != cached_record.original_url ||
-         new_record.redirected_url != cached_record.redirected_url ||
-         new_record.file_name != cached_record.file_name ||
-         new_record.original_mime_type != cached_record.original_mime_type ||
-         new_record.mime_type != cached_record.mime_type ||
-         new_record.content_disposition != cached_record.content_disposition ||
-         new_record.originating_host != cached_record.originating_host ||
-         new_record.http_method != cached_record.http_method ||
-         new_record.total_bytes != cached_record.total_bytes ||
-         new_record.has_performed_background_download !=
-             cached_record.has_performed_background_download;
+  return !new_record.EqualsExcludingProgress(cached_record);
 }
 
 void DownloadRecordService::InitializeDatabase(
@@ -320,34 +304,40 @@ bool DownloadRecordService::InsertRecord(const DownloadRecord& record) {
   return false;
 }
 
-bool DownloadRecordService::UpdateRecord(const DownloadRecord& updated_record) {
+std::optional<DownloadRecord> DownloadRecordService::UpdateRecord(
+    const DownloadRecord& updated_record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
-  auto it = database_cache_.find(updated_record.download_id);
-  if (it == database_cache_.end()) {
-    return false;
+  auto existing_record_opt = GetByIdFromCache(updated_record.download_id);
+  if (!existing_record_opt.has_value()) {
+    return std::nullopt;
   }
 
+  // Preserve created_time from existing record.
+  DownloadRecord record_to_update = updated_record;
+  record_to_update.created_time = existing_record_opt.value().created_time;
+
   // Checks if we need to persist this update to database.
-  bool needs_database_update = ShouldPersistUpdate(updated_record, it->second);
+  bool needs_database_update =
+      ShouldPersistUpdate(record_to_update, existing_record_opt.value());
 
   if (!needs_database_update) {
     // No database update needed, just updates cache.
-    database_cache_[updated_record.download_id] = updated_record;
-    return true;
+    database_cache_[updated_record.download_id] = record_to_update;
+    return record_to_update;
   }
 
   // Needs to update database.
   if (!database_ || !database_->IsInitialized()) {
-    return false;
+    return std::nullopt;
   }
 
-  if (database_->UpdateDownloadRecord(updated_record)) {
-    database_cache_[updated_record.download_id] = updated_record;
-    return true;
+  if (database_->UpdateDownloadRecord(record_to_update)) {
+    database_cache_[updated_record.download_id] = record_to_update;
+    return record_to_update;
   }
 
-  return false;
+  return std::nullopt;
 }
 
 bool DownloadRecordService::UpdateRecordsState(
@@ -383,26 +373,16 @@ std::optional<DownloadRecord> DownloadRecordService::UpdateFilePathInRecord(
     const base::FilePath& file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
-  auto it = database_cache_.find(download_id);
-  if (it == database_cache_.end()) {
+  auto existing_record_opt = GetByIdFromCache(download_id);
+  if (!existing_record_opt.has_value()) {
     return std::nullopt;
   }
 
-  // Update the file path in the cached record.
-  DownloadRecord updated_record = it->second;
+  // Create updated record with new file path.
+  DownloadRecord updated_record = existing_record_opt.value();
   updated_record.file_path = file_path;
 
-  // Update database and cache.
-  if (!database_ || !database_->IsInitialized()) {
-    return std::nullopt;
-  }
-
-  if (database_->UpdateDownloadRecord(updated_record)) {
-    database_cache_[download_id] = updated_record;
-    return updated_record;
-  }
-
-  return std::nullopt;
+  return UpdateRecord(updated_record);
 }
 
 bool DownloadRecordService::DeleteRecord(std::string_view id) {
@@ -430,10 +410,6 @@ bool DownloadRecordService::DeleteRecord(std::string_view id) {
 std::vector<DownloadRecord> DownloadRecordService::GetAllFromCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
-  if (!database_ || !database_->IsInitialized()) {
-    return {};
-  }
-
   std::vector<DownloadRecord> records;
   records.reserve(database_cache_.size());
 
@@ -447,10 +423,6 @@ std::vector<DownloadRecord> DownloadRecordService::GetAllFromCache() {
 std::optional<DownloadRecord> DownloadRecordService::GetByIdFromCache(
     std::string_view download_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
-
-  if (!database_ || !database_->IsInitialized()) {
-    return std::nullopt;
-  }
 
   auto it = database_cache_.find(std::string(download_id));
   if (it != database_cache_.end()) {

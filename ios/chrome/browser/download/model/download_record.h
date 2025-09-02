@@ -26,6 +26,10 @@ struct DownloadRecord {
   bool operator==(const DownloadRecord& other) const;
   bool operator!=(const DownloadRecord& other) const;
 
+  // Compares records excluding progress fields (received_bytes,
+  // progress_percent).
+  bool EqualsExcludingProgress(const DownloadRecord& other) const;
+
   // Unique identifier for this download.
   std::string download_id;
   // Original download URL.
@@ -66,6 +70,12 @@ struct DownloadRecord {
   web::DownloadTask::State state = web::DownloadTask::State::kNotStarted;
   // Whether this download has performed background download.
   bool has_performed_background_download = false;
+
+ private:
+  // Compares all fields between records. Set `include_progress_fields` to false
+  // to exclude volatile progress fields (received_bytes, progress_percent).
+  bool CompareFields(const DownloadRecord& other,
+                     bool include_progress_fields) const;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_RECORD_H_

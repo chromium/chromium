@@ -96,7 +96,7 @@ class DownloadRecordService : public KeyedService,
 
   // Database CRUD operations, called on database_task_runner_.
   bool InsertRecord(const DownloadRecord& record);
-  bool UpdateRecord(const DownloadRecord& record);
+  std::optional<DownloadRecord> UpdateRecord(const DownloadRecord& record);
   bool DeleteRecord(std::string_view id);
   bool UpdateRecordsState(const std::vector<std::string>& download_ids,
                           web::DownloadTask::State new_state);
