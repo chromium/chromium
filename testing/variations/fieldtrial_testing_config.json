@@ -10017,6 +10017,22 @@
             ]
         }
     ],
+    "EnablePreferencesAccountStorageChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnablePreferencesAccountStorage",
+                        "SyncSupportAlwaysSyncingPriorityPreferences"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnablePrintWatermark": [
         {
             "platforms": [
