@@ -154,9 +154,6 @@ void InfoBarManager::RemoveInfoBarInternal(InfoBar* infobar, bool animate) {
   DCHECK(infobar);
 
   auto i = std::ranges::find(infobars_, infobar);
-  // TODO(crbug.com/): Temporarily a CHECK instead of a DCHECK CHECK() in order
-  // to help diagnose suspected memory smashing caused by invalid call of this
-  // method happening in production code on iOS.
   CHECK(i != infobars_.end());
 
   // Remove the infobar before notifying, so that if any observers call back to
