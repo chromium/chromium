@@ -173,12 +173,11 @@ void PrepareStrokeGeometry(const TextPainter::SvgTextPaintState& state,
       case SvgPaintMode::kText:
         stroke_scale_factor = state.InlineText().ScalingFactor();
         break;
-      case SvgPaintMode::kTextDecoration: {
-        LayoutSVGInlineText::ComputeNewScaledFontForStyle(layout_parent,
-                                                          stroke_scale_factor);
+      case SvgPaintMode::kTextDecoration:
+        stroke_scale_factor =
+            LayoutSVGInlineText::ComputeFontScale(layout_parent);
         DCHECK(stroke_scale_factor);
         break;
-      }
     }
   }
 

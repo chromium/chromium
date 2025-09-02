@@ -47,6 +47,7 @@ class LayoutSVGInlineText final : public LayoutText {
     return *scaled_font_;
   }
   void UpdateScaledFont();
+  static float ComputeFontScale(const LayoutObject&);
   static const Font* ComputeNewScaledFontForStyle(const LayoutObject&,
                                                   float& scaling_factor);
 
