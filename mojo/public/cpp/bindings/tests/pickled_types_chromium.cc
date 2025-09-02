@@ -52,8 +52,5 @@ IPC_ENUM_TRAITS_MAX_VALUE(mojo::test::PickledEnumChromium,
 #include "ipc/param_traits_read_macros.h"
 IPC_ENUM_TRAITS_MAX_VALUE(mojo::test::PickledEnumChromium,
                           mojo::test::PickledEnumChromium::VALUE_2)
-#include "ipc/param_traits_log_macros.h"
-IPC_ENUM_TRAITS_MAX_VALUE(mojo::test::PickledEnumChromium,
-                          mojo::test::PickledEnumChromium::VALUE_2)
 
 }  // namespace IPC

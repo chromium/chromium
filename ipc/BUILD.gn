@@ -19,7 +19,6 @@ component("ipc") {
     "ipc_message_utils.h",
     "ipc_mojo_param_traits.cc",
     "ipc_mojo_param_traits.h",
-    "param_traits_log_macros.h",
     "param_traits_macros.h",
     "param_traits_read_macros.h",
     "param_traits_write_macros.h",

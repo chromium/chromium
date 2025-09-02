@@ -49,11 +49,6 @@
 //     namespace IPC {
 //     #include "path/to/YYY_message_generator.h"
 //     }  // namespace IPC
-//     // Generate param traits log methods.
-//     #include "ipc/param_traits_log_macros.h"
-//     namespace IPC {
-//     #include "path/to/YYY_message_generator.h"
-//     }  // namespace IPC
 //
 // In cases where manual generation is required, in your XXX_messages.cc
 // file, put the following after all the includes for param types:

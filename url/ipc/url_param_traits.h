@@ -25,7 +25,6 @@ struct URL_IPC_EXPORT ParamTraits<GURL> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

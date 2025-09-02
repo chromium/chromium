@@ -24,7 +24,6 @@ struct GFX_IPC_COLOR_EXPORT ParamTraits<gfx::ColorSpace> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -34,7 +33,6 @@ struct GFX_IPC_COLOR_EXPORT ParamTraits<gfx::DisplayColorSpaces> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

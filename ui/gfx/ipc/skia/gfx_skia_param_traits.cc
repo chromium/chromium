@@ -26,13 +26,6 @@ namespace IPC {
 #include "ui/gfx/ipc/skia/gfx_skia_param_traits_macros.h"
 }  // namespace IPC
 
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
-namespace IPC {
-#undef UI_GFX_IPC_SKIA_GFX_SKIA_PARAM_TRAITS_MACROS_H_
-#include "ui/gfx/ipc/skia/gfx_skia_param_traits_macros.h"
-}  // namespace IPC
-
 namespace IPC {
 
 void ParamTraits<SkImageInfo>::Write(base::Pickle* m, const SkImageInfo& p) {
@@ -56,10 +49,6 @@ bool ParamTraits<SkImageInfo>::Read(const base::Pickle* m,
 
   *r = SkImageInfo::Make(width, height, color_type, alpha_type);
   return true;
-}
-
-void ParamTraits<SkImageInfo>::Log(const SkImageInfo& p, std::string* l) {
-  l->append("<SkImageInfo>");
 }
 
 void ParamTraits<SkBitmap>::Write(base::Pickle* m, const SkBitmap& p) {
@@ -89,11 +78,6 @@ bool ParamTraits<SkBitmap>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<SkBitmap>::Log(const SkBitmap& p, std::string* l) {
-  l->append("<SkBitmap>");
-  LogParam(p.info(), l);
-}
-
 void ParamTraits<gfx::Transform>::Write(base::Pickle* m, const param_type& p) {
   float column_major_data[16];
   p.GetColMajorF(column_major_data);
@@ -110,10 +94,6 @@ bool ParamTraits<gfx::Transform>::Read(const base::Pickle* m,
   *r = gfx::Transform::ColMajorF(
       reinterpret_cast<const float*>(column_major_data));
   return true;
-}
-
-void ParamTraits<gfx::Transform>::Log(const param_type& p, std::string* l) {
-  l->append(p.ToString());
 }
 
 }  // namespace IPC

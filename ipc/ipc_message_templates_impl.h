@@ -36,19 +36,6 @@ bool MessageT<Meta, std::tuple<Ins...>, void>::Read(const Message* msg,
   return ReadParam(msg, &iter, p);
 }
 
-template <typename Meta, typename... Ins>
-void MessageT<Meta, std::tuple<Ins...>, void>::Log(std::string* name,
-                                                    const Message* msg,
-                                                    std::string* l) {
-  if (name)
-    *name = Meta::kName;
-  if (!msg || !l)
-    return;
-  Param p;
-  if (Read(msg, &p))
-    LogParam(p, l);
-}
-
 template <typename Meta, typename... Ins, typename... Outs>
 MessageT<Meta, std::tuple<Ins...>, std::tuple<Outs...>>::MessageT(
     Routing routing,
@@ -84,26 +71,6 @@ void MessageT<Meta,
               std::tuple<Outs...>>::WriteReplyParams(Message* reply,
                                                       const Outs&... outs) {
   WriteParam(reply, std::tie(outs...));
-}
-
-template <typename Meta, typename... Ins, typename... Outs>
-void MessageT<Meta, std::tuple<Ins...>, std::tuple<Outs...>>::Log(
-    std::string* name,
-    const Message* msg,
-    std::string* l) {
-  if (name)
-    *name = Meta::kName;
-  if (!msg || !l)
-    return;
-  if (msg->is_sync()) {
-    SendParam p;
-    if (ReadSendParam(msg, &p))
-      LogParam(p, l);
-  } else {
-    ReplyParam p;
-    if (ReadReplyParam(msg, &p))
-      LogParam(p, l);
-  }
 }
 
 }  // namespace IPC

@@ -25,10 +25,3 @@ namespace IPC {
 namespace IPC {
 #include "network_ipc_param_traits.h"
 }  // namespace IPC
-
-// Generate param traits log methods.
-#undef SERVICES_NETWORK_PUBLIC_CPP_NETWORK_IPC_PARAM_TRAITS_H_
-#include "ipc/param_traits_log_macros.h"
-namespace IPC {
-#include "network_ipc_param_traits.h"
-}  // namespace IPC

@@ -21,7 +21,6 @@ struct GFX_IPC_BUFFER_TYPES_EXPORT ParamTraits<gfx::BufferUsageAndFormat> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

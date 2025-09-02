@@ -40,8 +40,6 @@
     static bool Read(const base::Pickle* m,                         \
                      base::PickleIterator* iter,                    \
                      param_type* p);                                \
-    static void Log(const param_type& p, std::string* l);           \
-                                                                    \
    private:                                                         \
     template <class P>                                              \
     static bool ReadParamF(const base::Pickle* m,                   \

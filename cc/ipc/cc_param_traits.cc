@@ -16,10 +16,3 @@ namespace IPC {
 #undef CC_IPC_CC_PARAM_TRAITS_MACROS_H_
 #include "cc/ipc/cc_param_traits_macros.h"
 }  // namespace IPC
-
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
-namespace IPC {
-#undef CC_IPC_CC_PARAM_TRAITS_MACROS_H_
-#include "cc/ipc/cc_param_traits_macros.h"
-}  // namespace IPC

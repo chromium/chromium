@@ -26,7 +26,6 @@ struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::SyncToken> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -36,7 +35,6 @@ struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::Mailbox> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -46,7 +44,6 @@ struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::MailboxHolder> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -56,7 +53,6 @@ struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::VulkanYCbCrInfo> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -66,7 +62,6 @@ struct GPU_IPC_COMMON_EXPORT ParamTraits<gpu::GpuMemoryBufferFormatSet> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

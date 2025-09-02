@@ -32,7 +32,6 @@ struct GFX_IPC_EXPORT ParamTraits<gfx::Range> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 #if BUILDFLAG(IS_APPLE)
@@ -47,7 +46,6 @@ struct GFX_IPC_EXPORT ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -57,7 +55,6 @@ struct GFX_IPC_EXPORT ParamTraits<gfx::ScopedIOSurface> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -68,7 +65,6 @@ struct GFX_IPC_EXPORT ParamTraits<gfx::SelectionBound> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

@@ -35,13 +35,6 @@ bool ParamTraits<mojo::MessagePipeHandle>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<mojo::MessagePipeHandle>::Log(const param_type& p,
-                                               std::string* l) {
-  l->append("mojo::MessagePipeHandle(");
-  LogParam(static_cast<uint64_t>(p.value()), l);
-  l->append(")");
-}
-
 void ParamTraits<mojo::DataPipeConsumerHandle>::Write(base::Pickle* m,
                                                       const param_type& p) {
   WriteParam(m, p.is_valid());
@@ -83,13 +76,6 @@ bool ParamTraits<mojo::DataPipeConsumerHandle>::Read(const base::Pickle* m,
   DCHECK(handle.is_valid());
   *r = handle.release();
   return true;
-}
-
-void ParamTraits<mojo::DataPipeConsumerHandle>::Log(const param_type& p,
-                                                    std::string* l) {
-  l->append("mojo::DataPipeConsumerHandle(");
-  LogParam(static_cast<uint64_t>(p.value()), l);
-  l->append(")");
 }
 
 }  // namespace IPC

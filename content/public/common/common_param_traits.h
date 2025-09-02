@@ -49,7 +49,6 @@ struct CONTENT_EXPORT ParamTraits<blink::PageState> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -79,9 +78,6 @@ struct ParamTraits<gfx::NativeWindow> {
     }
     return result;
 #endif
-  }
-  static void Log(const param_type& p, std::string* l) {
-    l->append("<gfx::NativeWindow>");
   }
 };
 

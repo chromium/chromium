@@ -50,8 +50,5 @@ IPC_ENUM_TRAITS_MAX_VALUE(mojo::test::PickledEnumBlink,
 #include "ipc/param_traits_read_macros.h"
 IPC_ENUM_TRAITS_MAX_VALUE(mojo::test::PickledEnumBlink,
                           mojo::test::PickledEnumBlink::VALUE_1)
-#include "ipc/param_traits_log_macros.h"
-IPC_ENUM_TRAITS_MAX_VALUE(mojo::test::PickledEnumBlink,
-                          mojo::test::PickledEnumBlink::VALUE_1)
 
 }  // namespace IPC

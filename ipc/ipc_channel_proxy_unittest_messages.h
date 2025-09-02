@@ -24,7 +24,6 @@ struct ParamTraits<BadType> {
                    BadType* r) {
     return false;
   }
-  static void Log(const BadType& p, std::string* l) {}
 };
 
 }

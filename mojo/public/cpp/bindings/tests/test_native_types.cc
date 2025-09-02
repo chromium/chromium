@@ -61,10 +61,6 @@ bool ParamTraits<mojo::test::TestNativeStruct>::Read(const base::Pickle* m,
 }
 
 // static
-void ParamTraits<mojo::test::TestNativeStruct>::Log(const param_type& p,
-                                                    std::string* l) {}
-
-// static
 void ParamTraits<mojo::test::TestNativeStructWithAttachments>::Write(
     Message* m,
     const param_type& p) {
@@ -89,10 +85,5 @@ bool ParamTraits<mojo::test::TestNativeStructWithAttachments>::Read(
   r->set_pipe(std::move(pipe));
   return true;
 }
-
-// static
-void ParamTraits<mojo::test::TestNativeStructWithAttachments>::Log(
-    const param_type& p,
-    std::string* l) {}
 
 }  // namespace IPC

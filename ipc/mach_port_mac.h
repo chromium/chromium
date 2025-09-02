@@ -77,7 +77,6 @@ struct IPC_MESSAGE_SUPPORT_EXPORT ParamTraits<MachPortMac> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

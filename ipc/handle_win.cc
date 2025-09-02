@@ -59,9 +59,4 @@ bool ParamTraits<HandleWin>::Read(const base::Pickle* m,
   return true;
 }
 
-// static
-void ParamTraits<HandleWin>::Log(const param_type& p, std::string* l) {
-  l->append(base::StringPrintf("0x%p", p.get_handle()));
-}
-
 }  // namespace IPC

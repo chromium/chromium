@@ -20,9 +20,3 @@ namespace IPC {
 #include "chrome/common/common_message_generator.h"
 }  // namespace IPC
 
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
-#include "chrome/common/safe_browsing/protobuf_message_log_macros.h"
-namespace IPC {
-#include "chrome/common/common_message_generator.h"
-}  // namespace IPC

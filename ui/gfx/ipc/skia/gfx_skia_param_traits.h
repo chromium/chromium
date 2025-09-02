@@ -33,7 +33,6 @@ struct GFX_SKIA_IPC_EXPORT ParamTraits<SkImageInfo> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -43,7 +42,6 @@ struct GFX_SKIA_IPC_EXPORT ParamTraits<SkBitmap> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -53,7 +51,6 @@ struct GFX_SKIA_IPC_EXPORT ParamTraits<gfx::Transform> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

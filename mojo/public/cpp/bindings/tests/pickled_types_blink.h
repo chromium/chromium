@@ -76,7 +76,6 @@ struct ParamTraits<mojo::test::PickledStructBlink> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l) {}
 };
 
 }  // namespace IPC

@@ -37,10 +37,6 @@ bool ParamTraits<gfx::Range>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<gfx::Range>::Log(const gfx::Range& r, std::string* l) {
-  l->append(base::StringPrintf("(%" PRIuS ", %" PRIuS ")", r.start(), r.end()));
-}
-
 #if BUILDFLAG(IS_APPLE)
 void ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort>::Write(
     base::Pickle* m,
@@ -58,13 +54,6 @@ bool ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort>::Read(
     return false;
   r->reset(mach_port_mac.get_mach_port());
   return true;
-}
-
-void ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort>::Log(
-    const param_type& p,
-    std::string* l) {
-  l->append("IOSurface Mach send right: ");
-  LogParam(p.get(), l);
 }
 
 void ParamTraits<gfx::ScopedIOSurface>::Write(base::Pickle* m,
@@ -88,16 +77,6 @@ bool ParamTraits<gfx::ScopedIOSurface>::Read(const base::Pickle* m,
   else
     r->reset();
   return true;
-}
-
-void ParamTraits<gfx::ScopedIOSurface>::Log(const param_type& p,
-                                            std::string* l) {
-  l->append("IOSurface(");
-  if (p) {
-    uint32_t io_surface_id = IOSurfaceGetID(p.get());
-    LogParam(io_surface_id, l);
-  }
-  l->append(")");
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -137,23 +116,6 @@ bool ParamTraits<gfx::SelectionBound>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<gfx::SelectionBound>::Log(const param_type& p,
-                                           std::string* l) {
-  l->append("gfx::SelectionBound(");
-  LogParam(static_cast<uint32_t>(p.type()), l);
-  l->append(", ");
-  LogParam(p.edge_start(), l);
-  l->append(", ");
-  LogParam(p.edge_end(), l);
-  l->append(", ");
-  LogParam(p.visible_edge_start(), l);
-  l->append(", ");
-  LogParam(p.visible_edge_end(), l);
-  l->append(", ");
-  LogParam(p.visible(), l);
-  l->append(")");
-}
-
 }  // namespace IPC
 
 // Generate param traits write methods.
@@ -165,13 +127,6 @@ namespace IPC {
 
 // Generate param traits read methods.
 #include "ipc/param_traits_read_macros.h"
-namespace IPC {
-#undef UI_GFX_IPC_GFX_PARAM_TRAITS_MACROS_H_
-#include "ui/gfx/ipc/gfx_param_traits_macros.h"
-}  // namespace IPC
-
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
 namespace IPC {
 #undef UI_GFX_IPC_GFX_PARAM_TRAITS_MACROS_H_
 #include "ui/gfx/ipc/gfx_param_traits_macros.h"

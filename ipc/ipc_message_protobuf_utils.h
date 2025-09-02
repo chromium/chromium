@@ -38,13 +38,6 @@ struct RepeatedFieldParamTraits {
     }
     return true;
   }
-  static void Log(const param_type& p, std::string* l) {
-    for (int i = 0; i < p.size(); ++i) {
-      if (i != 0)
-        l->append(" ");
-      LogParam(p.Get(i), l);
-    }
-  }
 };
 
 template <class P>

@@ -52,12 +52,4 @@ bool ParamTraits<media::BitstreamBuffer>::Read(const base::Pickle* m,
   return ReadParam(m, iter, &r->region_);
 }
 
-void ParamTraits<media::BitstreamBuffer>::Log(const param_type& p,
-                                              std::string* l) {
-  std::ostringstream oss;
-  oss << "id=" << p.id() << ", size=" << p.size() << ", presentation_timestamp="
-      << p.presentation_timestamp().ToInternalValue();
-  l->append(oss.str());
-}
-
 }  // namespace IPC

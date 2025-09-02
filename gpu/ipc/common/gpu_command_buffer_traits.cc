@@ -26,12 +26,6 @@ namespace IPC {
 #include "gpu/ipc/common/gpu_command_buffer_traits_multi.h"
 }  // namespace IPC
 
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
-namespace IPC {
-#include "gpu/ipc/common/gpu_command_buffer_traits_multi.h"
-}  // namespace IPC
-
 namespace IPC {
 
 void ParamTraits<gpu::SyncToken>::Write(base::Pickle* m, const param_type& p) {
@@ -69,12 +63,6 @@ bool ParamTraits<gpu::SyncToken>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<gpu::SyncToken>::Log(const param_type& p, std::string* l) {
-  *l += base::StringPrintf(
-      "[%" PRId8 ":%" PRIX64 "] %" PRIu64, p.namespace_id(),
-      p.command_buffer_id().GetUnsafeValue(), p.release_count());
-}
-
 void ParamTraits<gpu::Mailbox>::Write(base::Pickle* m, const param_type& p) {
   m->WriteBytes(p.name, sizeof(p.name));
 }
@@ -88,11 +76,6 @@ bool ParamTraits<gpu::Mailbox>::Read(const base::Pickle* m,
   DCHECK(bytes);
   UNSAFE_TODO(memcpy(p->name, bytes, sizeof(p->name)));
   return true;
-}
-
-void ParamTraits<gpu::Mailbox>::Log(const param_type& p, std::string* l) {
-  for (size_t i = 0; i < sizeof(p.name); ++i)
-    *l += base::StringPrintf("%02x", UNSAFE_TODO(p.name[i]));
 }
 
 void ParamTraits<gpu::MailboxHolder>::Write(base::Pickle* m,
@@ -109,12 +92,6 @@ bool ParamTraits<gpu::MailboxHolder>::Read(const base::Pickle* m,
       !ReadParam(m, iter, &p->texture_target))
     return false;
   return true;
-}
-
-void ParamTraits<gpu::MailboxHolder>::Log(const param_type& p, std::string* l) {
-  LogParam(p.mailbox, l);
-  LogParam(p.sync_token, l);
-  *l += base::StringPrintf(":%04x@", p.texture_target);
 }
 
 void ParamTraits<gpu::GpuMemoryBufferFormatSet>::Write(base::Pickle* m,
@@ -137,18 +114,6 @@ bool ParamTraits<gpu::GpuMemoryBufferFormatSet>::Read(
   }
   *p = gpu::GpuMemoryBufferFormatSet::FromEnumBitmask(bitmask);
   return true;
-}
-
-void ParamTraits<gpu::GpuMemoryBufferFormatSet>::Log(const param_type& p,
-                                                     std::string* l) {
-  std::string str;
-  for (gfx::BufferFormat format : p) {
-    if (!str.empty()) {
-      str += "|";
-    }
-    str += gfx::BufferFormatToString(format);
-  }
-  *l += str;
 }
 
 }  // namespace IPC

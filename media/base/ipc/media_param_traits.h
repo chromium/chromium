@@ -23,7 +23,6 @@ struct ParamTraits<media::AudioParameters> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -33,7 +32,6 @@ struct ParamTraits<media::AudioParameters::HardwareCapabilities> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -43,7 +41,6 @@ struct ParamTraits<media::EncryptionPattern> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

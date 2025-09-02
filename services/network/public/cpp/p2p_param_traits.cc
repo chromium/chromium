@@ -23,13 +23,6 @@ namespace IPC {
 #include "p2p_param_traits.h"
 }  // namespace IPC
 
-// Generate param traits log methods.
-#undef SERVICES_NETWORK_PUBLIC_CPP_P2P_PARAM_TRAITS_H_
-#include "ipc/param_traits_log_macros.h"
-namespace IPC {
-#include "p2p_param_traits.h"
-}  // namespace IPC
-
 namespace mojo {
 network::mojom::EcnMarking
 EnumTraits<network::mojom::EcnMarking, webrtc::EcnMarking>::ToMojom(

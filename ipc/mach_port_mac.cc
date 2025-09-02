@@ -38,9 +38,4 @@ bool ParamTraits<MachPortMac>::Read(const base::Pickle* m,
   return true;
 }
 
-// static
-void ParamTraits<MachPortMac>::Log(const param_type& p, std::string* l) {
-  l->append(base::StringPrintf("mach port: 0x%X", p.get_mach_port()));
-}
-
 }  // namespace IPC

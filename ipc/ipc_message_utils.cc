@@ -320,10 +320,6 @@ bool ReadValue(const base::Pickle* pickle,
 
 // -----------------------------------------------------------------------------
 
-void ParamTraits<bool>::Log(const param_type& p, std::string* l) {
-  l->append(p ? "true" : "false");
-}
-
 void ParamTraits<signed char>::Write(base::Pickle* m, const param_type& p) {
   m->WriteBytes(&p, sizeof(param_type));
 }
@@ -336,10 +332,6 @@ bool ParamTraits<signed char>::Read(const base::Pickle* m,
     return false;
   memcpy(r, data, sizeof(param_type));
   return true;
-}
-
-void ParamTraits<signed char>::Log(const param_type& p, std::string* l) {
-  l->append(base::NumberToString(p));
 }
 
 void ParamTraits<unsigned char>::Write(base::Pickle* m, const param_type& p) {
@@ -356,10 +348,6 @@ bool ParamTraits<unsigned char>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<unsigned char>::Log(const param_type& p, std::string* l) {
-  l->append(base::NumberToString(p));
-}
-
 void ParamTraits<unsigned short>::Write(base::Pickle* m, const param_type& p) {
   m->WriteBytes(&p, sizeof(param_type));
 }
@@ -372,42 +360,6 @@ bool ParamTraits<unsigned short>::Read(const base::Pickle* m,
     return false;
   memcpy(r, data, sizeof(param_type));
   return true;
-}
-
-void ParamTraits<unsigned short>::Log(const param_type& p, std::string* l) {
-  l->append(base::NumberToString(p));
-}
-
-void ParamTraits<int>::Log(const param_type& p, std::string* l) {
-  l->append(base::NumberToString(p));
-}
-
-void ParamTraits<unsigned int>::Log(const param_type& p, std::string* l) {
-  l->append(base::NumberToString(p));
-}
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_FUCHSIA) ||                                              \
-    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_64_BITS))
-void ParamTraits<long>::Log(const param_type& p, std::string* l) {
-  l->append(base::NumberToString(p));
-}
-
-void ParamTraits<unsigned long>::Log(const param_type& p, std::string* l) {
-  l->append(base::NumberToString(p));
-}
-#endif
-
-void ParamTraits<long long>::Log(const param_type& p, std::string* l) {
-  l->append(base::NumberToString(p));
-}
-
-void ParamTraits<unsigned long long>::Log(const param_type& p, std::string* l) {
-  l->append(base::NumberToString(p));
-}
-
-void ParamTraits<float>::Log(const param_type& p, std::string* l) {
-  l->append(base::StringPrintf("%e", p));
 }
 
 void ParamTraits<double>::Write(base::Pickle* m, const param_type& p) {
@@ -425,19 +377,6 @@ bool ParamTraits<double>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<double>::Log(const param_type& p, std::string* l) {
-  l->append(base::StringPrintf("%e", p));
-}
-
-
-void ParamTraits<std::string>::Log(const param_type& p, std::string* l) {
-  l->append(p);
-}
-
-void ParamTraits<std::u16string>::Log(const param_type& p, std::string* l) {
-  l->append(base::UTF16ToUTF8(p));
-}
-
 #if BUILDFLAG(IS_WIN)
 bool ParamTraits<std::wstring>::Read(const base::Pickle* m,
                                      base::PickleIterator* iter,
@@ -448,10 +387,6 @@ bool ParamTraits<std::wstring>::Read(const base::Pickle* m,
 
   *r = base::AsWString(piece16);
   return true;
-}
-
-void ParamTraits<std::wstring>::Log(const param_type& p, std::string* l) {
-  l->append(base::WideToUTF8(p));
 }
 #endif
 
@@ -466,10 +401,6 @@ bool ParamTraits<std::vector<char>>::Read(const base::Pickle* m,
   return ReadCharVector(m, iter, r);
 }
 
-void ParamTraits<std::vector<char>>::Log(const param_type& p, std::string* l) {
-  LogBytes(p, l);
-}
-
 void ParamTraits<std::vector<unsigned char>>::Write(base::Pickle* m,
                                                     const param_type& p) {
   WriteCharVector(m, p);
@@ -479,11 +410,6 @@ bool ParamTraits<std::vector<unsigned char>>::Read(const base::Pickle* m,
                                                    base::PickleIterator* iter,
                                                    param_type* r) {
   return ReadCharVector(m, iter, r);
-}
-
-void ParamTraits<std::vector<unsigned char> >::Log(const param_type& p,
-                                                   std::string* l) {
-  LogBytes(p, l);
 }
 
 void ParamTraits<std::vector<bool>>::Write(base::Pickle* m,
@@ -512,14 +438,6 @@ bool ParamTraits<std::vector<bool>>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<std::vector<bool> >::Log(const param_type& p, std::string* l) {
-  for (size_t i = 0; i < p.size(); ++i) {
-    if (i != 0)
-      l->push_back(' ');
-    LogParam(static_cast<bool>(p[i]), l);
-  }
-}
-
 void ParamTraits<base::Value::Dict>::Write(base::Pickle* m,
                                            const param_type& p) {
   WriteDictValue(p, 0, m);
@@ -529,12 +447,6 @@ bool ParamTraits<base::Value::Dict>::Read(const base::Pickle* m,
                                           base::PickleIterator* iter,
                                           param_type* r) {
   return ReadDictValue(m, iter, 0, r);
-}
-
-void ParamTraits<base::Value::Dict>::Log(const param_type& p, std::string* l) {
-  std::string json;
-  base::JSONWriter::Write(p, &json);
-  l->append(json);
 }
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -586,15 +498,6 @@ bool ParamTraits<base::FileDescriptor>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<base::FileDescriptor>::Log(const param_type& p,
-                                            std::string* l) {
-  if (p.auto_close) {
-    l->append(base::StringPrintf("FD(%d auto-close)", p.fd));
-  } else {
-    l->append(base::StringPrintf("FD(%d)", p.fd));
-  }
-}
-
 void ParamTraits<base::ScopedFD>::Write(base::Pickle* m, const param_type& p) {
   // This serialization must be kept in sync with
   // nacl_message_scanner.cc:WriteHandle().
@@ -636,10 +539,6 @@ bool ParamTraits<base::ScopedFD>::Read(const base::Pickle* m,
           ->TakePlatformFile());
   return true;
 }
-
-void ParamTraits<base::ScopedFD>::Log(const param_type& p, std::string* l) {
-  l->append(base::StringPrintf("ScopedFD(%d)", p.get()));
-}
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_WIN)
@@ -671,11 +570,6 @@ bool ParamTraits<base::win::ScopedHandle>::Read(const base::Pickle* m,
 
   r->Set(handle.get_handle());
   return true;
-}
-
-void ParamTraits<base::win::ScopedHandle>::Log(const param_type& p,
-                                               std::string* l) {
-  l->append(base::StringPrintf("ScopedHandle(%p)", p.Get()));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -721,10 +615,6 @@ bool ParamTraits<zx::vmo>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<zx::vmo>::Log(const param_type& p, std::string* l) {
-  l->append("ZirconVMO");
-}
-
 void ParamTraits<zx::channel>::Write(base::Pickle* m, const param_type& p) {
   // This serialization must be kept in sync with
   // nacl_message_scanner.cc:WriteHandle().
@@ -765,10 +655,6 @@ bool ParamTraits<zx::channel>::Read(const base::Pickle* m,
       static_cast<internal::HandleAttachmentFuchsia*>(attachment.get())
           ->Take());
   return true;
-}
-
-void ParamTraits<zx::channel>::Log(const param_type& p, std::string* l) {
-  l->append("ZirconChannel");
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
@@ -836,13 +722,6 @@ bool ParamTraits<base::android::ScopedHardwareBufferHandle>::Read(
       std::move(scoped_fd));
   return true;
 }
-
-void ParamTraits<base::android::ScopedHardwareBufferHandle>::Log(
-    const param_type& p,
-    std::string* l) {
-  l->append(base::StringPrintf("base::android::ScopedHardwareBufferHandle(%p)",
-                               p.get()));
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void ParamTraits<base::ReadOnlySharedMemoryRegion>::Write(base::Pickle* m,
@@ -865,13 +744,6 @@ bool ParamTraits<base::ReadOnlySharedMemoryRegion>::Read(
   return true;
 }
 
-void ParamTraits<base::ReadOnlySharedMemoryRegion>::Log(const param_type& p,
-                                                        std::string* l) {
-  *l = "<base::ReadOnlySharedMemoryRegion>";
-  // TODO(alexilin): currently there is no way to access underlying handle
-  // without destructing a ReadOnlySharedMemoryRegion instance.
-}
-
 void ParamTraits<base::WritableSharedMemoryRegion>::Write(base::Pickle* m,
                                                           const param_type& p) {
   base::subtle::PlatformSharedMemoryRegion handle =
@@ -892,13 +764,6 @@ bool ParamTraits<base::WritableSharedMemoryRegion>::Read(
   return true;
 }
 
-void ParamTraits<base::WritableSharedMemoryRegion>::Log(const param_type& p,
-                                                        std::string* l) {
-  *l = "<base::WritableSharedMemoryRegion>";
-  // TODO(alexilin): currently there is no way to access underlying handle
-  // without destructing a ReadOnlySharedMemoryRegion instance.
-}
-
 void ParamTraits<base::UnsafeSharedMemoryRegion>::Write(base::Pickle* m,
                                                         const param_type& p) {
   base::subtle::PlatformSharedMemoryRegion handle =
@@ -917,13 +782,6 @@ bool ParamTraits<base::UnsafeSharedMemoryRegion>::Read(
 
   *r = base::UnsafeSharedMemoryRegion::Deserialize(std::move(handle));
   return true;
-}
-
-void ParamTraits<base::UnsafeSharedMemoryRegion>::Log(const param_type& p,
-                                                      std::string* l) {
-  *l = "<base::UnsafeSharedMemoryRegion>";
-  // TODO(alexilin): currently there is no way to access underlying handle
-  // without destructing a ReadOnlySharedMemoryRegion instance.
 }
 
 void ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Write(
@@ -1053,37 +911,6 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
   return true;
 }
 
-void ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Log(
-    const param_type& p,
-    std::string* l) {
-#if BUILDFLAG(IS_FUCHSIA)
-  l->append("Handle: ");
-  LogParam(p.GetPlatformHandle()->get(), l);
-#elif BUILDFLAG(IS_WIN)
-  l->append("Handle: ");
-  LogParam(p.GetPlatformHandle(), l);
-#elif BUILDFLAG(IS_APPLE)
-  l->append("Mach port: ");
-  LogParam(p.GetPlatformHandle(), l);
-#elif BUILDFLAG(IS_ANDROID)
-  l->append("FD: ");
-  LogParam(p.GetPlatformHandle(), l);
-#elif BUILDFLAG(IS_POSIX)
-  base::subtle::FDPair h = p.GetPlatformHandle();
-  l->append("FD: ");
-  LogParam(h.fd, l);
-  l->append("Read-only FD: ");
-  LogParam(h.readonly_fd, l);
-#endif
-
-  l->append("Mode: ");
-  LogParam(p.GetMode(), l);
-  l->append("size: ");
-  LogParam(static_cast<uint64_t>(p.GetSize()), l);
-  l->append("GUID: ");
-  LogParam(p.GetGUID(), l);
-}
-
 void ParamTraits<base::subtle::PlatformSharedMemoryRegion::Mode>::Write(
     base::Pickle* m,
     const param_type& value) {
@@ -1105,12 +932,6 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion::Mode>::Read(
   }
   *p = static_cast<param_type>(value);
   return true;
-}
-
-void ParamTraits<base::subtle::PlatformSharedMemoryRegion::Mode>::Log(
-    const param_type& p,
-    std::string* l) {
-  LogParam(static_cast<int>(p), l);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1141,11 +962,6 @@ bool ParamTraits<PlatformFileForTransit>::Read(const base::Pickle* m,
   *r = PlatformFileForTransit(handle_win.get_handle());
   return true;
 }
-
-void ParamTraits<PlatformFileForTransit>::Log(const param_type& p,
-                                              std::string* l) {
-  LogParam(p.GetHandle(), l);
-}
 #endif  // BUILDFLAG(IS_WIN)
 
 void ParamTraits<base::FilePath>::Write(base::Pickle* m, const param_type& p) {
@@ -1156,10 +972,6 @@ bool ParamTraits<base::FilePath>::Read(const base::Pickle* m,
                                        base::PickleIterator* iter,
                                        param_type* r) {
   return r->ReadFromPickle(iter);
-}
-
-void ParamTraits<base::FilePath>::Log(const param_type& p, std::string* l) {
-  ParamTraits<base::FilePath::StringType>::Log(p.value(), l);
 }
 
 void ParamTraits<base::Value::List>::Write(base::Pickle* m,
@@ -1173,12 +985,6 @@ bool ParamTraits<base::Value::List>::Read(const base::Pickle* m,
   return ReadListValue(m, iter, 0, r);
 }
 
-void ParamTraits<base::Value::List>::Log(const param_type& p, std::string* l) {
-  std::string json;
-  base::JSONWriter::Write(p, &json);
-  l->append(json);
-}
-
 void ParamTraits<base::Value>::Write(base::Pickle* m, const param_type& p) {
   WriteValue(p, 0, m);
 }
@@ -1187,12 +993,6 @@ bool ParamTraits<base::Value>::Read(const base::Pickle* m,
                                     base::PickleIterator* iter,
                                     param_type* r) {
   return ReadValue(m, iter, 0, r);
-}
-
-void ParamTraits<base::Value>::Log(const param_type& p, std::string* l) {
-  std::string json;
-  base::JSONWriter::Write(p, &json);
-  l->append(json);
 }
 
 void ParamTraits<base::File::Info>::Write(base::Pickle* m,
@@ -1220,21 +1020,6 @@ bool ParamTraits<base::File::Info>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<base::File::Info>::Log(const param_type& p,
-                                        std::string* l) {
-  l->append("(");
-  LogParam(p.size, l);
-  l->append(",");
-  LogParam(p.is_directory, l);
-  l->append(",");
-  LogParam(p.last_modified.InSecondsFSinceUnixEpoch(), l);
-  l->append(",");
-  LogParam(p.last_accessed.InSecondsFSinceUnixEpoch(), l);
-  l->append(",");
-  LogParam(p.creation_time.InSecondsFSinceUnixEpoch(), l);
-  l->append(")");
-}
-
 void ParamTraits<base::Time>::Write(base::Pickle* m, const param_type& p) {
   ParamTraits<int64_t>::Write(m, p.ToInternalValue());
 }
@@ -1247,10 +1032,6 @@ bool ParamTraits<base::Time>::Read(const base::Pickle* m,
     return false;
   *r = base::Time::FromInternalValue(value);
   return true;
-}
-
-void ParamTraits<base::Time>::Log(const param_type& p, std::string* l) {
-  ParamTraits<int64_t>::Log(p.ToInternalValue(), l);
 }
 
 void ParamTraits<base::TimeDelta>::Write(base::Pickle* m, const param_type& p) {
@@ -1268,10 +1049,6 @@ bool ParamTraits<base::TimeDelta>::Read(const base::Pickle* m,
   return ret;
 }
 
-void ParamTraits<base::TimeDelta>::Log(const param_type& p, std::string* l) {
-  ParamTraits<int64_t>::Log(p.ToInternalValue(), l);
-}
-
 void ParamTraits<base::TimeTicks>::Write(base::Pickle* m, const param_type& p) {
   ParamTraits<int64_t>::Write(m, p.ToInternalValue());
 }
@@ -1285,10 +1062,6 @@ bool ParamTraits<base::TimeTicks>::Read(const base::Pickle* m,
     *r = base::TimeTicks::FromInternalValue(value);
 
   return ret;
-}
-
-void ParamTraits<base::TimeTicks>::Log(const param_type& p, std::string* l) {
-  ParamTraits<int64_t>::Log(p.ToInternalValue(), l);
 }
 
 // If base::UnguessableToken is no longer 128 bits, the IPC serialization logic
@@ -1325,11 +1098,6 @@ bool ParamTraits<base::UnguessableToken>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<base::UnguessableToken>::Log(const param_type& p,
-                                              std::string* l) {
-  l->append(p.ToString());
-}
-
 void ParamTraits<IPC::ChannelHandle>::Write(base::Pickle* m,
                                             const param_type& p) {
   WriteParam(m, p.mojo_handle);
@@ -1339,13 +1107,6 @@ bool ParamTraits<IPC::ChannelHandle>::Read(const base::Pickle* m,
                                            base::PickleIterator* iter,
                                            param_type* r) {
   return ReadParam(m, iter, &r->mojo_handle);
-}
-
-void ParamTraits<IPC::ChannelHandle>::Log(const param_type& p,
-                                          std::string* l) {
-  l->append("ChannelHandle(");
-  LogParam(p.mojo_handle, l);
-  l->append(")");
 }
 
 void ParamTraits<Message>::Write(base::Pickle* m, const Message& p) {
@@ -1391,10 +1152,6 @@ bool ParamTraits<Message>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<Message>::Log(const Message& p, std::string* l) {
-  l->append("<IPC::Message>");
-}
-
 #if BUILDFLAG(IS_WIN)
 // Note that HWNDs/HANDLE/HCURSOR/HACCEL etc are always 32 bits, even on 64
 // bit systems. That's why we use the Windows macros to convert to 32 bits.
@@ -1410,10 +1167,6 @@ bool ParamTraits<HANDLE>::Read(const base::Pickle* m,
     return false;
   *r = LongToHandle(temp);
   return true;
-}
-
-void ParamTraits<HANDLE>::Log(const param_type& p, std::string* l) {
-  l->append(base::StringPrintf("0x%p", p));
 }
 
 void ParamTraits<MSG>::Write(base::Pickle* m, const param_type& p) {
@@ -1434,11 +1187,6 @@ bool ParamTraits<MSG>::Read(const base::Pickle* m,
 
   return result;
 }
-
-void ParamTraits<MSG>::Log(const param_type& p, std::string* l) {
-  l->append("<MSG>");
-}
-
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace IPC

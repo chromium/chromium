@@ -24,13 +24,6 @@ namespace IPC {
 #include "chrome/common/safe_browsing/ipc_protobuf_message_test_messages.h"
 }  // namespace IPC
 
-// Generate ipc protobuf traits log methods.
-#include "chrome/common/safe_browsing/protobuf_message_log_macros.h"
-namespace IPC {
-#undef CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
-#include "chrome/common/safe_browsing/ipc_protobuf_message_test_messages.h"
-}  // namespace IPC
-
 class IPCProtobufMessageTest : public ::testing::TestWithParam<bool> {
  protected:
   IPCProtobufMessageTest() : field_is_present_(GetParam()) {}

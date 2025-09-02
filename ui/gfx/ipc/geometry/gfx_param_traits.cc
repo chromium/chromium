@@ -34,10 +34,6 @@ bool ParamTraits<gfx::Point>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<gfx::Point>::Log(const gfx::Point& p, std::string* l) {
-  l->append(base::StringPrintf("(%d, %d)", p.x(), p.y()));
-}
-
 void ParamTraits<gfx::PointF>::Write(base::Pickle* m, const gfx::PointF& p) {
   WriteParam(m, p.x());
   WriteParam(m, p.y());
@@ -52,10 +48,6 @@ bool ParamTraits<gfx::PointF>::Read(const base::Pickle* m,
   r->set_x(x);
   r->set_y(y);
   return true;
-}
-
-void ParamTraits<gfx::PointF>::Log(const gfx::PointF& p, std::string* l) {
-  l->append(base::StringPrintf("(%f, %f)", p.x(), p.y()));
 }
 
 void ParamTraits<gfx::Point3F>::Write(base::Pickle* m, const gfx::Point3F& p) {
@@ -75,10 +67,6 @@ bool ParamTraits<gfx::Point3F>::Read(const base::Pickle* m,
   r->set_y(y);
   r->set_z(z);
   return true;
-}
-
-void ParamTraits<gfx::Point3F>::Log(const gfx::Point3F& p, std::string* l) {
-  l->append(base::StringPrintf("(%f, %f, %f)", p.x(), p.y(), p.z()));
 }
 
 void ParamTraits<gfx::Size>::Write(base::Pickle* m, const gfx::Size& p) {
@@ -103,10 +91,6 @@ bool ParamTraits<gfx::Size>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<gfx::Size>::Log(const gfx::Size& p, std::string* l) {
-  l->append(base::StringPrintf("(%d, %d)", p.width(), p.height()));
-}
-
 void ParamTraits<gfx::SizeF>::Write(base::Pickle* m, const gfx::SizeF& p) {
   float values[2] = {p.width(), p.height()};
   m->WriteBytes(&values, sizeof(float) * 2);
@@ -122,10 +106,6 @@ bool ParamTraits<gfx::SizeF>::Read(const base::Pickle* m,
   r->set_width(values[0]);
   r->set_height(UNSAFE_TODO(values[1]));
   return true;
-}
-
-void ParamTraits<gfx::SizeF>::Log(const gfx::SizeF& p, std::string* l) {
-  l->append(base::StringPrintf("(%f, %f)", p.width(), p.height()));
 }
 
 void ParamTraits<gfx::Vector2d>::Write(base::Pickle* m,
@@ -146,10 +126,6 @@ bool ParamTraits<gfx::Vector2d>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<gfx::Vector2d>::Log(const gfx::Vector2d& v, std::string* l) {
-  l->append(base::StringPrintf("(%d, %d)", v.x(), v.y()));
-}
-
 void ParamTraits<gfx::Vector2dF>::Write(base::Pickle* m,
                                         const gfx::Vector2dF& p) {
   float values[2] = {p.x(), p.y()};
@@ -166,10 +142,6 @@ bool ParamTraits<gfx::Vector2dF>::Read(const base::Pickle* m,
   r->set_x(values[0]);
   r->set_y(UNSAFE_TODO(values[1]));
   return true;
-}
-
-void ParamTraits<gfx::Vector2dF>::Log(const gfx::Vector2dF& v, std::string* l) {
-  l->append(base::StringPrintf("(%f, %f)", v.x(), v.y()));
 }
 
 void ParamTraits<gfx::Rect>::Write(base::Pickle* m, const gfx::Rect& p) {
@@ -192,11 +164,6 @@ bool ParamTraits<gfx::Rect>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<gfx::Rect>::Log(const gfx::Rect& p, std::string* l) {
-  l->append(base::StringPrintf("(%d, %d, %d, %d)", p.x(), p.y(), p.width(),
-                               p.height()));
-}
-
 void ParamTraits<gfx::RectF>::Write(base::Pickle* m, const gfx::RectF& p) {
   float values[4] = {p.x(), p.y(), p.width(), p.height()};
   m->WriteBytes(&values, sizeof(float) * 4);
@@ -212,11 +179,6 @@ bool ParamTraits<gfx::RectF>::Read(const base::Pickle* m,
   r->SetRect(values[0], UNSAFE_TODO(values[1]), UNSAFE_TODO(values[2]),
              UNSAFE_TODO(values[3]));
   return true;
-}
-
-void ParamTraits<gfx::RectF>::Log(const gfx::RectF& p, std::string* l) {
-  l->append(base::StringPrintf("(%f, %f, %f, %f)", p.x(), p.y(), p.width(),
-                               p.height()));
 }
 
 }  // namespace IPC

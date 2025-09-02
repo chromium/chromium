@@ -44,7 +44,6 @@ struct CONTENT_EXPORT ParamTraits<blink::MessagePortChannel> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -54,7 +53,6 @@ struct CONTENT_EXPORT ParamTraits<blink::MessagePortDescriptor> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -64,7 +62,6 @@ struct CONTENT_EXPORT ParamTraits<blink::PolicyValue> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -74,7 +71,6 @@ struct CONTENT_EXPORT ParamTraits<ui::AXMode> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -84,7 +80,6 @@ struct CONTENT_EXPORT ParamTraits<viz::FrameSinkId> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -94,7 +89,6 @@ struct CONTENT_EXPORT ParamTraits<viz::LocalSurfaceId> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -104,7 +98,6 @@ struct CONTENT_EXPORT ParamTraits<viz::SurfaceId> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 template <>
@@ -114,7 +107,6 @@ struct CONTENT_EXPORT ParamTraits<viz::SurfaceInfo> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC
