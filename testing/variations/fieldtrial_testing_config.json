@@ -1142,6 +1142,21 @@
             ]
         }
     ],
+    "AndroidUseCorrectWindowBounds": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidUseCorrectWindowBounds"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidUseFrameIntervalDeciderAdaptiveFrameRate": [
         {
             "platforms": [
