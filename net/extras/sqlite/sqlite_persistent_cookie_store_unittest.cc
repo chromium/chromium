@@ -370,7 +370,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestInvalidVersionRecovery) {
     ASSERT_TRUE(meta_table.Init(&db, 1, 1));
     // Keep in sync with latest unsupported version from:
     // net/extras/sqlite/sqlite_persistent_cookie_store.cc
-    ASSERT_TRUE(meta_table.SetVersionNumber(17));
+    ASSERT_TRUE(meta_table.SetVersionNumber(18));
   }
 
   // Upon loading, the database should be reset to a good, blank state.
@@ -1694,13 +1694,13 @@ TEST_F(SQLitePersistentCookieStoreTest, CorruptStore) {
                                 sql::SqliteLoggedResultCode::kNotADatabase, 1);
 }
 
-bool CreateV18Schema(sql::Database* db) {
+bool CreateV19Schema(sql::Database* db) {
   sql::MetaTable meta_table;
-  if (!meta_table.Init(db, 18, 18)) {
+  if (!meta_table.Init(db, 19, 19)) {
     return false;
   }
 
-  // Version 18 schema
+  // Version 19 schema
   static constexpr char kCreateSql[] =
       "CREATE TABLE cookies("
       "creation_utc INTEGER NOT NULL,"
@@ -1938,11 +1938,7 @@ std::vector<CanonicalCookie> CookiesForMigrationTest() {
   return cookies;
 }
 
-// Versions 18, 19, and 20 use the same schema so they can reuse this function.
-// AddV20CookiesToDB (and future versions) need to set max_expiration_delta to
-// base::Days(400) to simulate expiration limits introduced in version 19.
-bool AddV18CookiesToDB(sql::Database* db,
-                       base::TimeDelta max_expiration_delta) {
+bool AddV19or20CookiesToDB(sql::Database* db) {
   std::vector<CanonicalCookie> cookies = CookiesForMigrationTest();
   sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE,
@@ -1959,7 +1955,7 @@ bool AddV18CookiesToDB(sql::Database* db,
     return false;
   }
   for (const CanonicalCookie& cookie : cookies) {
-    base::Time max_expiration(cookie.CreationDate() + max_expiration_delta);
+    base::Time max_expiration(cookie.CreationDate() + base::Days(400));
 
     statement.Reset(true);
     statement.BindTime(0, cookie.CreationDate());
@@ -1998,10 +1994,6 @@ bool AddV18CookiesToDB(sql::Database* db,
     }
   }
   return transaction.Commit();
-}
-
-bool AddV20CookiesToDB(sql::Database* db) {
-  return AddV18CookiesToDB(db, base::Days(400));
 }
 
 bool AddV21CookiesToDB(sql::Database* db) {
@@ -2320,29 +2312,6 @@ void ConfirmDatabaseVersionAfterMigration(const base::FilePath path,
   ASSERT_GE(GetDBCurrentVersionNumber(&connection), version);
 }
 
-TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion19) {
-  // Open db.
-  const base::FilePath database_path =
-      temp_dir_.GetPath().Append(kCookieFilename);
-  {
-    sql::Database connection(sql::test::kTestTag);
-    ASSERT_TRUE(connection.Open(database_path));
-    ASSERT_TRUE(CreateV18Schema(&connection));
-    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 18);
-    ASSERT_TRUE(AddV18CookiesToDB(&connection, base::TimeDelta::Max()));
-  }
-
-  CanonicalCookieVector read_in_cookies = CreateAndLoad(
-      /*crypt_cookies=*/false, /*restore_old_session_cookies=*/false);
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
-                                       /*expect_last_update_date=*/true));
-  DestroyStore();
-
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmDatabaseVersionAfterMigration(database_path, 19));
-}
-
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion20) {
   // Open db.
   const base::FilePath database_path =
@@ -2350,10 +2319,9 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion20) {
   {
     sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(database_path));
-    // V19's schema is the same as V18, so we can reuse the creation function.
-    ASSERT_TRUE(CreateV18Schema(&connection));
-    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 18);
-    ASSERT_TRUE(AddV18CookiesToDB(&connection, base::TimeDelta::Max()));
+    ASSERT_TRUE(CreateV19Schema(&connection));
+    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 19);
+    ASSERT_TRUE(AddV19or20CookiesToDB(&connection));
   }
 
   CanonicalCookieVector read_in_cookies = CreateAndLoad(
@@ -2376,7 +2344,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion21) {
     ASSERT_TRUE(connection.Open(database_path));
     ASSERT_TRUE(CreateV20Schema(&connection));
     ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 20);
-    ASSERT_TRUE(AddV20CookiesToDB(&connection));
+    ASSERT_TRUE(AddV19or20CookiesToDB(&connection));
   }
 
   CanonicalCookieVector read_in_cookies = CreateAndLoad(

@@ -197,14 +197,14 @@ namespace {
 // Version 21 - 2023/11/22 - https://crrev.com/c/5049032
 // Version 20 - 2023/11/14 - https://crrev.com/c/5030577
 // Version 19 - 2023/09/22 - https://crrev.com/c/4704672
-// Version 18 - 2022/04/19 - https://crrev.com/c/3594203
 //
 // Versions older than two years should be removed and marked as unsupported.
-// This was last done in February 2024. https://crrev.com/c/5300252
+// This was last done in September 2025. https://crrev.com/c/6819011
 // Be sure to update SQLitePersistentCookieStoreTest.TestInvalidVersionRecovery
 // to test the latest unsupported version number.
 //
 // Unsupported versions:
+// Version 18 - 2022/04/19 - https://crrev.com/c/3594203
 // Version 17 - 2022/01/25 - https://crrev.com/c/3416230
 // Version 16 - 2021/09/10 - https://crrev.com/c/3152897
 // Version 15 - 2021/07/01 - https://crrev.com/c/3001822
@@ -1147,38 +1147,6 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
 std::optional<int>
 SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
-
-  if (cur_version == 18) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV19");
-
-    sql::Statement update_statement(
-        db()->GetCachedStatement(SQL_FROM_HERE,
-                                 "UPDATE cookies SET expires_utc = ? WHERE "
-                                 "has_expires = 1 AND expires_utc > ?"));
-    if (!update_statement.is_valid()) {
-      return std::nullopt;
-    }
-
-    sql::Transaction transaction(db());
-    if (!transaction.Begin()) {
-      return std::nullopt;
-    }
-
-    base::Time expires_cap = base::Time::Now() + base::Days(400);
-    update_statement.BindTime(0, expires_cap);
-    update_statement.BindTime(1, expires_cap);
-    if (!update_statement.Run()) {
-      return std::nullopt;
-    }
-
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return std::nullopt;
-    }
-  }
 
   if (cur_version == 19) {
     SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV20");
