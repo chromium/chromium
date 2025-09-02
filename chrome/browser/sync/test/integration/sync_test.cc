@@ -88,6 +88,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/fake_oauth2_token_response.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/port_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -972,14 +973,8 @@ void SyncTest::WaitForDataModels(Profile* profile) {
 }
 
 void SyncTest::SetupMockGaiaResponses() {
-  test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth2_token_url().spec(),
-      R"({
-            "refresh_token": "rt1",
-            "access_token": "at1",
-            "expires_in": 3600,
-            "token_type": "Bearer"
-         })");
+  gaia::FakeOAuth2TokenResponse::Success("at1").AddToTestURLLoaderFactory(
+      test_url_loader_factory_);
   test_url_loader_factory_.AddResponse(
       GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
       "{ \"id\": \"12345\" }");
@@ -987,21 +982,9 @@ void SyncTest::SetupMockGaiaResponses() {
       GaiaUrls::GetInstance()->oauth2_revoke_url().spec(), "");
 }
 
-void SyncTest::SetOAuth2TokenResponse(const std::string& response_data,
-                                      net::HttpStatusCode status_code,
-                                      net::Error net_error) {
-  network::URLLoaderCompletionStatus completion_status(net_error);
-  completion_status.decoded_body_length = response_data.size();
-
-  std::string response = base::StringPrintf("HTTP/1.1 %d %s\r\n", status_code,
-                                            GetHttpReasonPhrase(status_code));
-  mojo::StructPtr<network::mojom::URLResponseHead> response_head =
-      network::mojom::URLResponseHead::New();
-  response_head->headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>(response);
-  test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth2_token_url(), std::move(response_head),
-      response_data, completion_status);
+void SyncTest::SetOAuth2TokenResponse(
+    const gaia::FakeOAuth2TokenResponse& response) {
+  response.AddToTestURLLoaderFactory(test_url_loader_factory_);
   base::RunLoop().RunUntilIdle();
 }
 

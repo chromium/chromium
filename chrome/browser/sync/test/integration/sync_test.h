@@ -75,6 +75,10 @@ namespace fake_server {
 class FakeServer;
 }  // namespace fake_server
 
+namespace gaia {
+class FakeOAuth2TokenResponse;
+}  // namespace gaia
+
 namespace syncer {
 class SyncServiceImpl;
 }  // namespace syncer
@@ -234,9 +238,7 @@ class SyncTest : public PlatformBrowserTest,
 
   // Sets the mock gaia response for when an OAuth2 token is requested.
   // Each call to this method will overwrite responses that were previously set.
-  void SetOAuth2TokenResponse(const std::string& response_data,
-                              net::HttpStatusCode response_code,
-                              net::Error net_error);
+  void SetOAuth2TokenResponse(const gaia::FakeOAuth2TokenResponse& response);
 
   // Triggers a migration for one or more datatypes, and waits
   // for the server to complete it.  This operation is available

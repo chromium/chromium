@@ -18,25 +18,11 @@
 #include "components/sync/service/sync_token_status.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/fake_oauth2_token_response.h"
 
 namespace {
 
 using sync_pb::SharingMessageSpecifics;
-
-constexpr char kEmptyOAuth2Token[] = "";
-
-constexpr char kInvalidGrantOAuth2Token[] = R"(
-    {
-      "error": "invalid_grant"
-    })";
-
-constexpr char kValidOAuth2Token[] = R"(
-    {
-      "refresh_token": "new_refresh_token",
-      "access_token": "new_access_token",
-      "expires_in": 3600,  // 1 hour.
-      "token_type": "Bearer"
-    })";
 
 MATCHER_P(HasErrorCode, expected_error_code, "") {
   return arg.error_code() == expected_error_code;
@@ -286,8 +272,8 @@ IN_PROC_BROWSER_TEST_F(
     ShouldTurnOffSharingMessageDataTypeOnPersistentAuthError) {
   ASSERT_TRUE(SetupSync());
   GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
-  SetOAuth2TokenResponse(kInvalidGrantOAuth2Token, net::HTTP_BAD_REQUEST,
-                         net::OK);
+  SetOAuth2TokenResponse(gaia::FakeOAuth2TokenResponse::OAuth2Error(
+      OAuth2Response::kInvalidGrant));
 
   SharingMessageCallbackChecker callback_checker(
       GetSyncService(0), sync_pb::SharingMessageCommitError::SYNC_TURNED_OFF);
@@ -311,8 +297,8 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(SetupSync());
   GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
-  SetOAuth2TokenResponse(kEmptyOAuth2Token, net::HTTP_INTERNAL_SERVER_ERROR,
-                         net::OK);
+  SetOAuth2TokenResponse(gaia::FakeOAuth2TokenResponse::OAuth2Error(
+      OAuth2Response::kInternalFailure));
 
   SharingMessageCallbackChecker callback_checker(
       GetSyncService(0), sync_pb::SharingMessageCommitError::NONE);
@@ -326,7 +312,8 @@ IN_PROC_BROWSER_TEST_F(
       callback_checker.GetCommitFinishedCallback());
 
   ASSERT_TRUE(RetryingAccessTokenFetchChecker(GetSyncService(0)).Wait());
-  SetOAuth2TokenResponse(kValidOAuth2Token, net::HTTP_OK, net::OK);
+  SetOAuth2TokenResponse(
+      gaia::FakeOAuth2TokenResponse::Success("new_access_token"));
   GetFakeServer()->ClearHttpError();
 
   EXPECT_TRUE(WaitForSharingMessage({specifics}));

@@ -215,6 +215,8 @@ static_library("test_support") {
     "gaia/fake_gaia.h",
     "gaia/fake_oauth2_access_token_manager.cc",
     "gaia/fake_oauth2_access_token_manager.h",
+    "gaia/fake_oauth2_token_response.cc",
+    "gaia/fake_oauth2_token_response.h",
     "gaia/gaia_auth_test_util.cc",
     "gaia/gaia_auth_test_util.h",
     "gaia/gaia_urls_overrider_for_testing.cc",
@@ -247,6 +249,7 @@ source_set("run_all_unittests") {
 
 test("google_apis_unittests") {
   sources = [
+    "gaia/fake_oauth2_token_response_unittest.cc",
     "gaia/gaia_auth_fetcher_unittest.cc",
     "gaia/gaia_auth_util_unittest.cc",
     "gaia/gaia_config_unittest.cc",
