@@ -1496,6 +1496,7 @@ Response NetworkHandler::Disable() {
   enable_third_party_cookie_restriction_ = false;
   disable_third_party_cookie_metadata_ = false;
   disable_third_party_cookie_heuristics_ = false;
+  SetIPProtectionProxyBypassEnabled(false);
   return Response::FallThrough();
 }
 
@@ -2419,6 +2420,8 @@ String BuildIpProxyStatus(ip_protection::IpProxyStatus status) {
       return protocol::Network::IpProxyStatusEnum::AuthTokensUnavailable;
     case ip_protection::IpProxyStatus::kUnavailable:
       return protocol::Network::IpProxyStatusEnum::Unavailable;
+    case ip_protection::IpProxyStatus::kBypassedByDevTools:
+      return protocol::Network::IpProxyStatusEnum::BypassedByDevTools;
   }
 }
 
@@ -3817,6 +3820,25 @@ void NetworkHandler::GetIPProtectionProxyStatus(
           std::move(callback));
 
   context->GetIpProxyStatus(std::move(internal_callback));
+}
+
+DispatchResponse NetworkHandler::SetIPProtectionProxyBypassEnabled(
+    bool bypass_proxy) {
+  if (!net::features::kIpPrivacyEnableIppPanelInDevTools.Get()) {
+    return DispatchResponse::InvalidRequest(
+        "Missing required flag to bypass IP Proxy.");
+  }
+  if (!client_->IsTrusted()) {
+    return DispatchResponse::InternalError();
+  }
+  if (!storage_partition_) {
+    return DispatchResponse::InternalError();
+  }
+
+  storage_partition_->GetNetworkContext()->SetBypassIpProtectionProxy(
+      bypass_proxy);
+
+  return Response::Success();
 }
 namespace {
 

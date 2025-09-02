@@ -238,7 +238,8 @@ enum class IpProxyStatus {
   kMaskedDomainListNotEnabled,
   kMaskedDomainListNotPopulated,
   kAuthTokensUnavailable,
-  kUnavailable
+  kUnavailable,
+  kBypassedByDevTools
 };
 }  // namespace ip_protection
 

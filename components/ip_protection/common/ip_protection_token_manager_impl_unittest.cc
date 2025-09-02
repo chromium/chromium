@@ -186,6 +186,8 @@ class MockIpProtectionCore : public IpProtectionCore {
   IpProxyStatus GetIpProxyStatus() override {
     return IpProxyStatus::kUnavailable;
   }
+  bool IsProxyBypassed() override { return false; }
+  void SetBypassProxy(bool bypass_proxy) override {}
 };
 
 class FakeCoreHost : public ip_protection::mojom::CoreHost {

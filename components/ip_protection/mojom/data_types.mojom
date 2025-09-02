@@ -107,5 +107,6 @@ enum IpProxyStatus {
   kMaskedDomainListNotEnabled,
   kMaskedDomainListNotPopulated,
   kAuthTokensUnavailable,
-  kUnavailable
+  kUnavailable,
+  kBypassedByDevTools
 };

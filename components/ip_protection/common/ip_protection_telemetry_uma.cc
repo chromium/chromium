@@ -167,6 +167,12 @@ void IpProtectionTelemetryUma::ProxyResolution(ProxyResolutionResult result) {
           /*are_auth_tokens_available=*/true,
           /*is_proxy_list_available=*/true);
       break;
+    case ProxyResolutionResult::kBypassedByDevTools:
+      eligibility = ProtectionEligibility::kEligible;
+      record_availability(
+          /*are_auth_tokens_available=*/true,
+          /*is_proxy_list_available=*/true);
+      break;
     case ProxyResolutionResult::kAttemptProxy:
       eligibility = ProtectionEligibility::kEligible;
       record_availability(

@@ -315,6 +315,12 @@ domain Network
       # Whether IP proxy is available
       IpProxyStatus status
 
+  # Sets bypass IP Protection Proxy boolean.
+  experimental command setIPProtectionProxyBypassEnabled
+    parameters
+      # Whether IP Proxy is being bypassed by devtools; false by default.
+      boolean enabled
+
   # The reason why request was blocked.
   type CorsError extends string
     enum

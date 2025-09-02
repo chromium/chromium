@@ -78,6 +78,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       mojo::PendingReceiver<mojom::TrustTokenQueryAnswerer> receiver,
       const url::Origin& top_frame_origin) override {}
   void GetIpProxyStatus(GetIpProxyStatusCallback callback) override {}
+  void SetBypassIpProtectionProxy(bool bypass_proxy) override {}
   void GetStoredTrustTokenCounts(
       GetStoredTrustTokenCountsCallback callback) override {}
   void GetPrivateStateTokenRedemptionRecords(

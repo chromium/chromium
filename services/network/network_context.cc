@@ -3553,6 +3553,12 @@ void NetworkContext::GetIpProxyStatus(GetIpProxyStatusCallback callback) {
   std::move(callback).Run(status);
 }
 
+void NetworkContext::SetBypassIpProtectionProxy(bool bypass_proxy) {
+  if (ip_protection_core()) {
+    ip_protection_core()->SetBypassProxy(bypass_proxy);
+  }
+}
+
 bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     const base::UnguessableToken& nonce,
     const GURL& url) const {

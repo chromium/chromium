@@ -315,7 +315,19 @@ void IpProtectionCoreImpl::SetTrackingProtectionContentSetting(
       content_settings::HostIndexedContentSettings::Create(settings);
 }
 
+// Gets the IP Proxy Status to be exposed in DevTools. Any new statuses should
+// also be added to ProxyResolutionResult and ClassifyRequest in
+// ip_protection_proxy_delegate.
 IpProxyStatus IpProtectionCoreImpl::GetIpProxyStatus() {
+  if (!net::features::kIpPrivacyEnableIppPanelInDevTools.Get()) {
+    return IpProxyStatus::kUnavailable;
+  }
+
+  // TODO(crbug.com/440167934): once unit and browser tests include a case where
+  // the MaskedDomainList is populated, move this check down
+  if (bypassed_by_devtools_) {
+    return IpProxyStatus::kBypassedByDevTools;
+  }
   // Checking conditions that may cause IP protection to not work when it is
   // eligible to be run
   if (!net::features::kIpPrivacyEnableIppInDevTools.Get() ||
@@ -333,6 +345,18 @@ IpProxyStatus IpProtectionCoreImpl::GetIpProxyStatus() {
   }
   return IsIpProtectionEnabled() ? IpProxyStatus::kOk
                                  : IpProxyStatus::kUnavailable;
+}
+
+bool IpProtectionCoreImpl::IsProxyBypassed() {
+  return bypassed_by_devtools_;
+}
+
+void IpProtectionCoreImpl::SetBypassProxy(bool bypass_proxy) {
+  // Only allow enabling IP Protection bypass from Devtools if
+  // kIpPrivacyEnableIppPanelInDevTools flag is enabled
+  if (net::features::kIpPrivacyEnableIppPanelInDevTools.Get()) {
+    bypassed_by_devtools_ = bypass_proxy;
+  }
 }
 
 }  // namespace ip_protection

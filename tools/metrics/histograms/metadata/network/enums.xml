@@ -687,6 +687,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="The request was resolved to the IP Protection proxies"/>
   <int value="8"
       label="A site exception created by User Bypass disables protections"/>
+  <int value="9"
+      label="The request bypassed the IP Protection proxies through DevTools"/>
 </enum>
 
 <enum name="IpProtectionTokenBatchRequestError">

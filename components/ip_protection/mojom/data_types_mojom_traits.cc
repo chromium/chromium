@@ -263,6 +263,8 @@ ip_protection::mojom::IpProxyStatus EnumTraits<
       return ip_protection::mojom::IpProxyStatus::kAuthTokensUnavailable;
     case ip_protection::IpProxyStatus::kUnavailable:
       return ip_protection::mojom::IpProxyStatus::kUnavailable;
+    case ip_protection::IpProxyStatus::kBypassedByDevTools:
+      return ip_protection::mojom::IpProxyStatus::kBypassedByDevTools;
   }
   NOTREACHED();
 }
@@ -290,6 +292,9 @@ bool EnumTraits<ip_protection::mojom::IpProxyStatus,
       return true;
     case ip_protection::mojom::IpProxyStatus::kUnavailable:
       *output = ip_protection::IpProxyStatus::kUnavailable;
+      return true;
+    case ip_protection::mojom::IpProxyStatus::kBypassedByDevTools:
+      *output = ip_protection::IpProxyStatus::kBypassedByDevTools;
       return true;
   }
   return false;

@@ -111,7 +111,8 @@
                             "loadNetworkResource",
                             "enableReportingApi",
                             "setCookieControls",
-                            "getIPProtectionProxyStatus"
+                            "getIPProtectionProxyStatus",
+                            "setIPProtectionProxyBypassEnabled"
                           ],
                 "async": ["getResponseBody", "getRequestPostData"]
             },

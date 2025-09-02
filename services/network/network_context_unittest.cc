@@ -5094,10 +5094,10 @@ TEST_F(NetworkContextActivateDohProbesTest, NotPrimaryContext) {
 TEST_F(NetworkContextTest,
        NetworkContextUpdatesIpProtectionCoreTrackingProtectionExceptions) {
   const std::string url = "http://foo.com";
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeaturesAndParameters(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
       {{net::features::kEnableIpProtectionProxy,
-        {{"IpPrivacyAlwaysCreateCore", "true"}}},
+        {{net::features::kIpPrivacyAlwaysCreateCore.name, "true"}}},
        {network::features::kMaskedDomainList, {}}},
       {});
 
@@ -5138,10 +5138,11 @@ TEST_F(NetworkContextTest,
 
 TEST_F(NetworkContextTest, IpProtectionCoreIPProxyStatusMdlNotPopulated) {
   const std::string url = "http://foo.com";
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeaturesAndParameters(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
       {{net::features::kEnableIpProtectionProxy,
-        {{"IpPrivacyAlwaysCreateCore", "true"}}},
+        {{net::features::kIpPrivacyAlwaysCreateCore.name, "true"},
+         {net::features::kIpPrivacyEnableIppPanelInDevTools.name, "true"}}},
        {network::features::kMaskedDomainList, {}}},
       {});
 
@@ -5159,19 +5160,9 @@ TEST_F(NetworkContextTest, IpProtectionCoreIPProxyStatusMdlNotPopulated) {
                                      base::Value(CONTENT_SETTING_ALLOW),
                                      content_settings::ProviderType::kNone,
                                      /*incognito=*/true, metadata.Clone())});
-    base::RunLoop run_loop;
-
-    ip_protection::IpProxyStatus received_status;
-
-    network_context->GetIpProxyStatus(base::BindOnce(
-        [](base::RunLoop* run_loop, ip_protection::IpProxyStatus* out_status,
-           ip_protection::IpProxyStatus status) {
-          *out_status = status;
-          run_loop->Quit();
-        },
-        &run_loop, &received_status));
-
-    run_loop.Run();
+    base::test::TestFuture<ip_protection::IpProxyStatus> future;
+    network_context->GetIpProxyStatus(future.GetCallback());
+    ip_protection::IpProxyStatus received_status = future.Get();
 
     EXPECT_EQ(received_status,
               ip_protection::IpProxyStatus::kMaskedDomainListNotPopulated);
@@ -5182,8 +5173,8 @@ TEST_F(NetworkContextTest, IpProtectionCoreIPProxyStatusMdlNotPopulated) {
 
 TEST_F(NetworkContextTest, IpProtectionCoreIPProxyStatusIPProxyFlagNotEnabled) {
   const std::string url = "http://foo.com";
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeaturesAndParameters(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
       {{network::features::kMaskedDomainList, {}}},
       {{net::features::kEnableIpProtectionProxy}});
 
@@ -5201,20 +5192,9 @@ TEST_F(NetworkContextTest, IpProtectionCoreIPProxyStatusIPProxyFlagNotEnabled) {
                                      base::Value(CONTENT_SETTING_ALLOW),
                                      content_settings::ProviderType::kNone,
                                      /*incognito=*/true, metadata.Clone())});
-    base::RunLoop run_loop;
-
-    ip_protection::IpProxyStatus received_status;
-
-    network_context->GetIpProxyStatus(base::BindOnce(
-        [](base::RunLoop* run_loop, ip_protection::IpProxyStatus* out_status,
-           ip_protection::IpProxyStatus status) {
-          *out_status = status;
-          run_loop->Quit();
-        },
-        &run_loop, &received_status));
-
-    // Wait for the callback to be executed.
-    run_loop.Run();
+    base::test::TestFuture<ip_protection::IpProxyStatus> future;
+    network_context->GetIpProxyStatus(future.GetCallback());
+    ip_protection::IpProxyStatus received_status = future.Get();
 
     EXPECT_EQ(received_status,
               ip_protection::IpProxyStatus::kFeatureNotEnabled);
@@ -5226,10 +5206,11 @@ TEST_F(NetworkContextTest, IpProtectionCoreIPProxyStatusIPProxyFlagNotEnabled) {
 
 TEST_F(NetworkContextTest, IpProtectionCoreIPProxyStatusMdlNotEnabled) {
   const std::string url = "http://foo.com";
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeaturesAndParameters(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
       {{net::features::kEnableIpProtectionProxy,
-        {{"IpPrivacyAlwaysCreateCore", "true"}}}},
+        {{net::features::kIpPrivacyAlwaysCreateCore.name, "true"},
+         {net::features::kIpPrivacyEnableIppPanelInDevTools.name, "true"}}}},
       {{network::features::kMaskedDomainList}});
 
   std::unique_ptr<NetworkContext> network_context =
@@ -5248,22 +5229,55 @@ TEST_F(NetworkContextTest, IpProtectionCoreIPProxyStatusMdlNotEnabled) {
                                      /*incognito=*/true, metadata.Clone())});
     base::RunLoop run_loop;
 
-    ip_protection::IpProxyStatus received_status;
-
-    network_context->GetIpProxyStatus(base::BindOnce(
-        [](base::RunLoop* run_loop, ip_protection::IpProxyStatus* out_status,
-           ip_protection::IpProxyStatus status) {
-          *out_status = status;
-          run_loop->Quit();
-        },
-        &run_loop, &received_status));
-
-    run_loop.Run();
+    base::test::TestFuture<ip_protection::IpProxyStatus> future;
+    network_context->GetIpProxyStatus(future.GetCallback());
+    ip_protection::IpProxyStatus received_status = future.Get();
 
     EXPECT_EQ(received_status,
               ip_protection::IpProxyStatus::kMaskedDomainListNotEnabled);
     // Verify that the MaskedDomainList feature is disabled.
     EXPECT_FALSE(base::FeatureList::IsEnabled(features::kMaskedDomainList));
+  }
+}
+
+TEST_F(NetworkContextTest, SetBypassIpProtectionProxyBypassesWhenEnabled) {
+  // Enable IP Protection and the Masked Domain List to ensure
+  // ip_protection_core() is created.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kEnableIpProtectionProxy,
+        {{net::features::kIpPrivacyAlwaysCreateCore.name, "true"},
+         {net::features::kIpPrivacyEnableIppPanelInDevTools.name, "true"}}},
+       {network::features::kMaskedDomainList, {}}},
+      {});
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  // Set the bypass and verify the status is kBypassedByDevTools.
+  {
+    network_context->SetBypassIpProtectionProxy(true);
+
+    base::test::TestFuture<ip_protection::IpProxyStatus> future;
+    network_context->GetIpProxyStatus(future.GetCallback());
+    ip_protection::IpProxyStatus received_status = future.Get();
+
+    EXPECT_EQ(received_status,
+              ip_protection::IpProxyStatus::kBypassedByDevTools);
+  }
+
+  // Unset the bypass and verify the status is kMaskedDomainListNotPopulated.
+  {
+    network_context->SetBypassIpProtectionProxy(false);
+
+    base::test::TestFuture<ip_protection::IpProxyStatus> future;
+    network_context->GetIpProxyStatus(future.GetCallback());
+    ip_protection::IpProxyStatus received_status = future.Get();
+    // In reality, the expected return should be kOk when MaskedDomainList is
+    // populated.
+    // TODO(crbug.com/440167934): include a case where the MaskedDomainList is
+    // populated, replace kMaskedDomainListNotPopulated with kOk.
+    EXPECT_EQ(received_status,
+              ip_protection::IpProxyStatus::kMaskedDomainListNotPopulated);
   }
 }
 
