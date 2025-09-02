@@ -70,9 +70,30 @@ class EventDispatchHelper {
 
   ~EventDispatchHelper();
 
-  void DispatchEventImpl(const std::string& restrict_to_extension_id,
+  void DispatchEventImpl(const ExtensionId& restrict_to_extension_id,
                          const GURL& restrict_to_url,
                          std::unique_ptr<Event> event);
+
+  // Attempts to dispatch the given `event` to the specified lazy `listener`.
+  // This will queue the event to be dispatched later if the lazy context
+  // is not currently running.
+  //
+  // NOTE: this method will not dispatch to a lazy listener if the context
+  // is active, so that it can be dispatched to the corresponding active
+  // (non-lazy) listener instead.
+  void DispatchEventToLazyListener(const ExtensionId& restrict_to_extension_id,
+                                   const GURL& restrict_to_url,
+                                   Event& event,
+                                   const EventListener* listener);
+
+  // Dispatches the given `event` to the specified active `listener`. Avoids
+  // dispatching if an event has already been queued for a lazy listener with
+  // the same context.
+  void DispatchEventToActiveListener(
+      const ExtensionId& restrict_to_extension_id,
+      const GURL& restrict_to_url,
+      const Event& event,
+      const EventListener* listener);
 
   // Possibly queues the lazy `event` for dispatch to `dispatch_context`.
   //
@@ -104,6 +125,16 @@ class EventDispatchHelper {
   // Returns whether or not an event listener identical for `dispatch_context`
   // is already queued for dispatch to a lazy listener.
   bool IsAlreadyQueued(const LazyContextId& dispatch_context) const;
+
+  // Returns true if the given `listener` meets dispatch restrictions. Events
+  // may be restricted to a particular extension ID or URL context.
+  //
+  // If `restrict_to_extension_id` is non-empty, the listener's extension ID
+  // must match it. If `restrict_to_url` is non-empty, the listener's URL must
+  // be same-origin with it.
+  bool ListenerMeetsRestrictions(const EventListener* listener,
+                                 const ExtensionId& restrict_to_extension_id,
+                                 const GURL& restrict_to_url) const;
 
   // Gets off-the-record browser context if
   //     - The extension has incognito mode set to "split"

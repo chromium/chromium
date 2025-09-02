@@ -44,7 +44,7 @@ void EventDispatchHelper::DispatchEvent(
     EventListenerMap& listeners,
     DispatchFunction dispatch_function,
     DispatchToProcessFunction dispatch_to_process_function,
-    const std::string& restrict_to_extension_id,
+    const ExtensionId& restrict_to_extension_id,
     const GURL& restrict_to_url,
     std::unique_ptr<Event> event) {
   const ExtensionRegistry* extension_registry =
@@ -58,7 +58,7 @@ void EventDispatchHelper::DispatchEvent(
 }
 
 void EventDispatchHelper::DispatchEventImpl(
-    const std::string& restrict_to_extension_id,
+    const ExtensionId& restrict_to_extension_id,
     const GURL& restrict_to_url,
     std::unique_ptr<Event> event) {
   std::set<const EventListener*> listeners(
@@ -71,64 +71,75 @@ void EventDispatchHelper::DispatchEventImpl(
   // the event we are dispatching here, we dispatch to the lazy listeners here
   // first.
   for (const EventListener* listener : listeners) {
-    if (!restrict_to_extension_id.empty() &&
-        restrict_to_extension_id != listener->extension_id()) {
-      continue;
-    }
-    if (!restrict_to_url.is_empty() &&
-        !url::IsSameOriginWith(restrict_to_url, listener->listener_url())) {
-      continue;
-    }
-    if (!listener->IsLazy()) {
-      continue;
-    }
-
-    // TODO(richardzh): Move cross browser context check (by calling
-    // EventRouter::CanDispatchEventToBrowserContext) to here. So the check
-    // happens before instead of during the dispatch.
-
-    // Lazy listeners don't have a process, take the stored browser context
-    // for lazy context.
-    TryQueueEventForLazyListener(
-        *event, LazyContextIdForListener(listener, *browser_context_),
-        listener->filter());
-
-    // Dispatch to lazy listener in the incognito context.
-    // We need to use the incognito context in the case of split-mode
-    // extensions.
-    BrowserContext* incognito_context =
-        GetIncognitoContextIfAccessible(listener->extension_id());
-    if (incognito_context) {
-      TryQueueEventForLazyListener(
-          *event, LazyContextIdForListener(listener, *incognito_context),
-          listener->filter());
+    if (listener->IsLazy()) {
+      DispatchEventToLazyListener(restrict_to_extension_id, restrict_to_url,
+                                  *event, listener);
     }
   }
 
   for (const EventListener* listener : listeners) {
-    if (!restrict_to_extension_id.empty() &&
-        restrict_to_extension_id != listener->extension_id()) {
-      continue;
+    if (!listener->IsLazy()) {
+      DispatchEventToActiveListener(restrict_to_extension_id, restrict_to_url,
+                                    *event, listener);
     }
-    if (!restrict_to_url.is_empty() &&
-        !url::IsSameOriginWith(restrict_to_url, listener->listener_url())) {
-      continue;
-    }
-    if (listener->IsLazy()) {
-      continue;
-    }
-    // Non-lazy listeners take the process browser context for
-    // lazy context
-    if (IsAlreadyQueued(LazyContextIdForListener(
-            listener, *listener->process()->GetBrowserContext()))) {
-      continue;
-    }
-
-    dispatch_to_process_function_.Run(
-        listener->extension_id(), listener->listener_url(), listener->process(),
-        listener->service_worker_version_id(), listener->worker_thread_id(),
-        *event, listener->filter(), false /* did_enqueue */);
   }
+}
+
+void EventDispatchHelper::DispatchEventToLazyListener(
+    const ExtensionId& restrict_to_extension_id,
+    const GURL& restrict_to_url,
+    Event& event,
+    const EventListener* listener) {
+  DCHECK(listener->IsLazy());
+  if (!ListenerMeetsRestrictions(listener, restrict_to_extension_id,
+                                 restrict_to_url)) {
+    return;
+  }
+
+  // TODO(richardzh): Move cross browser context check (by calling
+  // EventRouter::CanDispatchEventToBrowserContext) to here. So the check
+  // happens before instead of during the dispatch.
+
+  // Lazy listeners don't have a process, take the stored browser context
+  // for lazy context.
+  TryQueueEventForLazyListener(
+      event, LazyContextIdForListener(listener, *browser_context_),
+      listener->filter());
+
+  // Dispatch to lazy listener in the incognito context.
+  // We need to use the incognito context in the case of split-mode
+  // extensions.
+  BrowserContext* incognito_context =
+      GetIncognitoContextIfAccessible(listener->extension_id());
+  if (incognito_context) {
+    TryQueueEventForLazyListener(
+        event, LazyContextIdForListener(listener, *incognito_context),
+        listener->filter());
+  }
+}
+
+void EventDispatchHelper::DispatchEventToActiveListener(
+    const ExtensionId& restrict_to_extension_id,
+    const GURL& restrict_to_url,
+    const Event& event,
+    const EventListener* listener) {
+  DCHECK(!listener->IsLazy());
+  if (!ListenerMeetsRestrictions(listener, restrict_to_extension_id,
+                                 restrict_to_url)) {
+    return;
+  }
+
+  // Non-lazy listeners take the process browser context for
+  // lazy context.
+  if (IsAlreadyQueued(LazyContextIdForListener(
+          listener, *listener->process()->GetBrowserContext()))) {
+    return;
+  }
+
+  dispatch_to_process_function_.Run(
+      listener->extension_id(), listener->listener_url(), listener->process(),
+      listener->service_worker_version_id(), listener->worker_thread_id(),
+      event, listener->filter(), false /* did_enqueue */);
 }
 
 void EventDispatchHelper::TryQueueEventForLazyListener(
@@ -216,6 +227,23 @@ void EventDispatchHelper::RecordAlreadyQueued(
 bool EventDispatchHelper::IsAlreadyQueued(
     const LazyContextId& dispatch_context) const {
   return base::Contains(dispatched_ids_, dispatch_context);
+}
+
+bool EventDispatchHelper::ListenerMeetsRestrictions(
+    const EventListener* listener,
+    const ExtensionId& restrict_to_extension_id,
+    const GURL& restrict_to_url) const {
+  if (!restrict_to_extension_id.empty() &&
+      restrict_to_extension_id != listener->extension_id()) {
+    return false;
+  }
+
+  if (!restrict_to_url.is_empty() &&
+      !url::IsSameOriginWith(restrict_to_url, listener->listener_url())) {
+    return false;
+  }
+
+  return true;
 }
 
 BrowserContext* EventDispatchHelper::GetIncognitoContextIfAccessible(
