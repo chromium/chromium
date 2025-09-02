@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_utils.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -218,25 +219,14 @@ enum class IdentityConfirmationSnackbarDecision {
   id<SystemIdentity> systemIdentity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   DCHECK(systemIdentity);
-  UIImage* avatar = ChromeAccountManagerServiceFactory::GetForProfile(profile)
-                        ->GetIdentityAvatarWithIdentity(
-                            systemIdentity, IdentityAvatarSize::Regular);
-  PrefService* prefService = profile->GetPrefs();
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(profile);
-  ManagementState managementState =
-      GetManagementState(identityManager, authenticationService, prefService);
 
-  MDCSnackbarMessage* snackbarTitle =
-      [[IdentitySnackbarMessage alloc] initWithName:systemIdentity.userGivenName
-                                              email:systemIdentity.userEmail
-                                             avatar:avatar
-                                    managementState:managementState];
+  SnackbarMessage* message =
+      CreateIdentitySnackbarMessage(systemIdentity, browser);
 
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:snackbarTitle];
+  [snackbarCommandsHandler showCustomSnackbarMessageOverBrowserToolbar:message];
 }
 
 - (BOOL)isStartSurfaceWithBrowser:(Browser*)browser {

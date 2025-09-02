@@ -104,7 +104,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 - (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
   [self signinWithFakeIdentity:identity waitForSyncTransportActive:YES];
 
-  [SigninEarlGreyUI maybeDismissIdentityConfirmationSnackbarOnSignin:identity];
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:identity
+                                                   assertVisible:NO];
 }
 
 - (void)signinWithFakeManagedIdentityInPersonalProfile:

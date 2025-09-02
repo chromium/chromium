@@ -16,7 +16,6 @@ source_set("history_sync") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/ui/util/identity_snackbar",
     "//ios/chrome/browser/shared/ui/util/identity_snackbar:utils",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",

@@ -66,9 +66,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
               grey_accessibilityID(
                   kConsistencySigninPrimaryButtonAccessibilityIdentifier),
               grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
-  //  Dismiss signin in confirmation snackbar.
-  [SigninEarlGreyUI
-      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
+  // Dismiss signin in confirmation snackbar.
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fakeIdentity
+                                                   assertVisible:NO];
   // Verify that the History Sync Opt-In screen is shown.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
@@ -134,10 +134,10 @@ using chrome_test_util::SettingsSignInRowMatcher;
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
 
-  //  Dismiss signin confirmation snackbar if it covers the History Sync
-  //  Opt-In screen.
-  [SigninEarlGreyUI
-      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
+  // Dismiss signin confirmation snackbar if it covers the History Sync
+  // Opt-In screen.
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fakeIdentity
+                                                   assertVisible:NO];
 
   // Verify that the buttons of the History Sync screen have the same foreground
   // and background colors.
@@ -185,9 +185,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
               grey_accessibilityID(
                   kConsistencySigninPrimaryButtonAccessibilityIdentifier),
               grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
-  //  Dismiss signin in confirmation snackbar.
-  [SigninEarlGreyUI
-      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
+  // Dismiss signin in confirmation snackbar.
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fakeIdentity
+                                                   assertVisible:NO];
   // Accept History Sync.
   [[[EarlGrey selectElementWithMatcher:chrome_test_util::
                                            PromoScreenPrimaryButtonMatcher()]
@@ -210,9 +210,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
               grey_accessibilityID(
                   kConsistencySigninPrimaryButtonAccessibilityIdentifier),
               grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
-  //  Dismiss signin in confirmation snackbar.
-  [SigninEarlGreyUI
-      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
+  // Dismiss signin in confirmation snackbar.
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fakeIdentity
+                                                   assertVisible:NO];
   // History sync opt-in not visibled.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
@@ -252,9 +252,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
               grey_accessibilityID(
                   kConsistencySigninPrimaryButtonAccessibilityIdentifier),
               grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
-  //  Dismiss signin in confirmation snackbar.
-  [SigninEarlGreyUI
-      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
+  // Dismiss signin in confirmation snackbar.
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fakeIdentity
+                                                   assertVisible:NO];
   // Accept History Sync.
   [[[EarlGrey selectElementWithMatcher:chrome_test_util::
                                            PromoScreenPrimaryButtonMatcher()]
@@ -277,9 +277,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
               grey_accessibilityID(
                   kConsistencySigninPrimaryButtonAccessibilityIdentifier),
               grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
-  //  Dismiss signin in confirmation snackbar.
-  [SigninEarlGreyUI
-      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
+  // Dismiss signin in confirmation snackbar.
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fakeIdentity
+                                                   assertVisible:NO];
   [ChromeEarlGreyUI waitForAppToIdle];
   // History sync opt-in not visibled.
   [[EarlGrey
@@ -526,9 +526,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
                   kConsistencySigninPrimaryButtonAccessibilityIdentifier),
               grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
 
-  //  Dismiss signin in confirmation snackbar.
-  [SigninEarlGreyUI
-      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
+  // Dismiss signin in confirmation snackbar.
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fakeIdentity
+                                                   assertVisible:NO];
 
   // Verify that the History Sync Opt-In screen is shown.
   [[EarlGrey

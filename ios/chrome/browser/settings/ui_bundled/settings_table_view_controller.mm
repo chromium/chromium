@@ -172,7 +172,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   return CustomSettingsRootMulticolorSymbol(kGoogleIconSymbol);
 #else
-  return DefaultSettingsRootSymbol(@"gearshape.2");
+  return DefaultSettingsRootSymbol(kGearshape2Symbol);
 #endif
 }
 

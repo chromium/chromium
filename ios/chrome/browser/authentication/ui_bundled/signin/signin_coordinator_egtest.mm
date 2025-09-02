@@ -854,8 +854,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
               grey_accessibilityID(
                   kConsistencySigninPrimaryButtonAccessibilityIdentifier),
               grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
-  [SigninEarlGreyUI
-      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fakeIdentity
+                                                   assertVisible:NO];
   // Verify that the History Sync Opt-In screen is shown.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(

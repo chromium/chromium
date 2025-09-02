@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -86,9 +87,9 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
         performAction:grey_tap()];
   }
 
-  //  Dismiss identity signin confirmation snackbar if shown.
-  [SigninEarlGreyUI
-      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
+  // Dismiss identity signin confirmation snackbar if shown.
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fakeIdentity
+                                                   assertVisible:NO];
 
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey closeManagedAccountSignInDialogIfAny:fakeIdentity];
@@ -381,24 +382,31 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 
-+ (void)maybeDismissIdentityConfirmationSnackbarOnSignin:
-    (FakeSystemIdentity*)fakeIdentity {
-  NSString* signedInSnackbarTitle = l10n_util::GetNSStringF(
-      IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-      base::SysNSStringToUTF16(fakeIdentity.userGivenName));
-  NSError* error = nil;
-
++ (void)dismissSigninConfirmationSnackbarForIdentity:
+            (FakeSystemIdentity*)identity
+                                       assertVisible:(BOOL)assertVisible {
+  NSString* signedInSnackbarTitle =
+      l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+                              base::SysNSStringToUTF16(identity.userGivenName));
   id<GREYMatcher> snackbarMatcher = grey_allOf(
       chrome_test_util::SnackbarViewMatcher(),
       grey_descendant(grey_accessibilityLabel(signedInSnackbarTitle)), nil);
 
-  [[EarlGrey selectElementWithMatcher:snackbarMatcher]
-      assertWithMatcher:grey_interactable()
-                  error:&error];
-  if (error == nil) {
-    // Snackbar is presented, dismiss it.
+  if (assertVisible) {
+    [[EarlGrey selectElementWithMatcher:snackbarMatcher]
+        assertWithMatcher:grey_interactable()];
     [[EarlGrey selectElementWithMatcher:snackbarMatcher]
         performAction:grey_tap()];
+  } else {
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:snackbarMatcher]
+        assertWithMatcher:grey_interactable()
+                    error:&error];
+    if (error == nil) {
+      // Snackbar is presented, dismiss it.
+      [[EarlGrey selectElementWithMatcher:snackbarMatcher]
+          performAction:grey_tap()];
+    }
   }
 }
 

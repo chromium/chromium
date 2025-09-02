@@ -148,8 +148,8 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
                  chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI
-      maybeDismissIdentityConfirmationSnackbarOnSignin:fakeIdentity];
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fakeIdentity
+                                                   assertVisible:NO];
 
   // Check that a custom history & sync promo is displayed.
   [ChromeEarlGrey waitForMatcher:PromoScreenPrimaryButtonMatcher()];

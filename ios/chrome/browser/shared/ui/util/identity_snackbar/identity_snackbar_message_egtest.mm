@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message_test_utils.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
@@ -31,9 +30,6 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using signin::assertSnackbarNotShown;
-using signin::assertSnackbarShownAndDismissItWithIdentity;
-
 namespace {
 
 // The primary identity.
@@ -41,6 +37,18 @@ FakeSystemIdentity* const kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
 
 FakeSystemIdentity* const kSecondaryIdentity =
     [FakeSystemIdentity fakeIdentity2];
+
+// Asserts that the identity confirmation snackbar is not shown for `identity`.
+void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
+  NSString* signedInSnackbarTitle =
+      l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+                              base::SysNSStringToUTF16(identity.userGivenName));
+  id<GREYMatcher> snackbarMatcher = grey_allOf(
+      chrome_test_util::SnackbarViewMatcher(),
+      grey_descendant(grey_accessibilityLabel(signedInSnackbarTitle)), nil);
+  [[EarlGrey selectElementWithMatcher:snackbarMatcher]
+      assertWithMatcher:grey_nil()];
+}
 
 }  // namespace
 
@@ -132,7 +140,9 @@ FakeSystemIdentity* const kSecondaryIdentity =
 
   // Confirm the snackbar shows after 1 day of signing in with multi identities
   // on device.
-  assertSnackbarShownAndDismissItWithIdentity(kPrimaryIdentity);
+  [SigninEarlGreyUI
+      dismissSigninConfirmationSnackbarForIdentity:kPrimaryIdentity
+                                     assertVisible:YES];
 }
 
 // Verifies no identity confirmation snackbar shows on startup with only one
@@ -146,7 +156,7 @@ FakeSystemIdentity* const kSecondaryIdentity =
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
-  assertSnackbarNotShown(kPrimaryIdentity);
+  AssertSnackbarNotShownForIdentity(kPrimaryIdentity);
 }
 
 // Verifies no identity confirmation snackbar shows on startup when there is an
@@ -166,7 +176,7 @@ FakeSystemIdentity* const kSecondaryIdentity =
 
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  assertSnackbarNotShown(kPrimaryIdentity);
+  AssertSnackbarNotShownForIdentity(kPrimaryIdentity);
 }
 
 // Verifies identity confirmation snackbar on startup does not show after a
@@ -179,7 +189,7 @@ FakeSystemIdentity* const kSecondaryIdentity =
 
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  assertSnackbarNotShown(kPrimaryIdentity);
+  AssertSnackbarNotShownForIdentity(kPrimaryIdentity);
 }
 
 // Verifies identity confirmation snackbar shows on startup with multiple
@@ -198,25 +208,31 @@ FakeSystemIdentity* const kSecondaryIdentity =
   // Snackbar shows after 1 day of signing in.
   [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  assertSnackbarShownAndDismissItWithIdentity(kPrimaryIdentity);
+  [SigninEarlGreyUI
+      dismissSigninConfirmationSnackbarForIdentity:kPrimaryIdentity
+                                     assertVisible:YES];
 
   // Background then foreground the app again.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  assertSnackbarNotShown(kPrimaryIdentity);
+  AssertSnackbarNotShownForIdentity(kPrimaryIdentity);
 
   // Update params to be ready for a second display after 7 days.
   [self prepareSnackbarParamsForNextDisplayWithLastCount:1];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  assertSnackbarShownAndDismissItWithIdentity(kPrimaryIdentity);
+  [SigninEarlGreyUI
+      dismissSigninConfirmationSnackbarForIdentity:kPrimaryIdentity
+                                     assertVisible:YES];
 
   // Background then foreground the app again.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  assertSnackbarNotShown(kPrimaryIdentity);
+  AssertSnackbarNotShownForIdentity(kPrimaryIdentity);
 
   // Update params to be ready for a third display after 30 days.
   [self prepareSnackbarParamsForNextDisplayWithLastCount:2];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  assertSnackbarShownAndDismissItWithIdentity(kPrimaryIdentity);
+  [SigninEarlGreyUI
+      dismissSigninConfirmationSnackbarForIdentity:kPrimaryIdentity
+                                     assertVisible:YES];
 
   // Update params after third display.
   [self prepareSnackbarParamsForNextDisplayWithLastCount:3];
@@ -224,7 +240,7 @@ FakeSystemIdentity* const kSecondaryIdentity =
   // Background then foreground the app again, the snackbar does not show after
   // third display.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-  assertSnackbarNotShown(kPrimaryIdentity);
+  AssertSnackbarNotShownForIdentity(kPrimaryIdentity);
 }
 
 // Verifies identity confirmation snackbar does not show if NTP start surface
@@ -240,7 +256,7 @@ FakeSystemIdentity* const kSecondaryIdentity =
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
-  assertSnackbarNotShown(kPrimaryIdentity);
+  AssertSnackbarNotShownForIdentity(kPrimaryIdentity);
 }
 
 // Verifies identity confirmation snackbar does not show in incognito.
@@ -250,7 +266,7 @@ FakeSystemIdentity* const kSecondaryIdentity =
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
-  assertSnackbarNotShown(kPrimaryIdentity);
+  AssertSnackbarNotShownForIdentity(kPrimaryIdentity);
 }
 
 @end

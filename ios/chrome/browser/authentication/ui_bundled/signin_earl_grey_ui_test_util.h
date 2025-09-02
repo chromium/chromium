@@ -82,9 +82,12 @@
 + (void)addFakeAccountInFakeAddAccountMenu:(FakeSystemIdentity*)fakeIdentity
                    withUnknownCapabilities:(BOOL)unknownCapabilities;
 
-// Dismisses the identity confirmaiton snackbar on signin, if shown.
-+ (void)maybeDismissIdentityConfirmationSnackbarOnSignin:
-    (FakeSystemIdentity*)fakeIdentity;
+// Handles the identity confirmation snackbar. If `assertVisible` is YES,
+// the test will fail if the snackbar is not visible. Otherwise, it will
+// just check for its presence. If the snackbar is visible, it is dismissed.
++ (void)dismissSigninConfirmationSnackbarForIdentity:
+            (FakeSystemIdentity*)identity
+                                       assertVisible:(BOOL)assertVisible;
 
 @end
 

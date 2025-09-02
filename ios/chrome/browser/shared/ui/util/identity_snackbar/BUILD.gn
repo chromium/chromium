@@ -4,60 +4,30 @@
 
 import("//build/config/chrome_build.gni")
 
-source_set("identity_snackbar") {
+source_set("utils") {
   sources = [
-    "identity_snackbar_message.h",
-    "identity_snackbar_message.mm",
-    "identity_snackbar_message_view.h",
-    "identity_snackbar_message_view.mm",
+    "identity_snackbar_utils.h",
+    "identity_snackbar_utils.mm",
   ]
   deps = [
     "//base",
-    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy/model",
-    "//ios/chrome/browser/shared/model/profile:features",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
-    "//ios/third_party/material_components_ios",
-    "//ui/base",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
-source_set("utils") {
-  sources = [
-    "utils.h",
-    "utils.mm",
-  ]
-  deps = [
-    ":identity_snackbar",
     "//ios/chrome/browser/policy/ui_bundled:management_util",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:system_identity",
-    "//ios/third_party/material_components_ios",
-  ]
-}
-
-source_set("test_utils") {
-  testonly = true
-  sources = [
-    "identity_snackbar_message_test_utils.h",
-    "identity_snackbar_message_test_utils.mm",
-  ]
-  deps = [
-    "//base/test:test_support",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/signin/model:fake_system_identity",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/browser/snackbar/public",
+    "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
 }
@@ -67,7 +37,6 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "identity_snackbar_message_egtest.mm" ]
   deps = [
-    ":test_utils",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
@@ -82,11 +51,9 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin/model:test_constants",
     "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
     "//ui/base",
   ]
-  frameworks = [ "UIKit.framework" ]
 }

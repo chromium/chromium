@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message_test_utils.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -856,8 +855,9 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                                           PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
-  //  Dismiss signed in snackbar.
-  signin::assertSnackbarShownAndDismissItWithIdentity(managedIdentity);
+  // Dismiss signed in snackbar.
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:managedIdentity
+                                                   assertVisible:YES];
 
   // Confirm profile switched.
   GREYAssert([[ChromeEarlGrey currentProfileName]

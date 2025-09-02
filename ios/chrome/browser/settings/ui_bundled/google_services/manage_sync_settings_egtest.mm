@@ -73,8 +73,8 @@ void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
                       base::SysNSStringToUTF16(fake_identity.userGivenName))),
               grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
 
-  [SigninEarlGreyUI
-      maybeDismissIdentityConfirmationSnackbarOnSignin:fake_identity];
+  [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fake_identity
+                                                   assertVisible:NO];
 
   if (expect_history_sync_ui) {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::
