@@ -54,12 +54,18 @@ void StyleSheetCollection::FinishUpdateActiveStyleSheets(
   CreateRuleSets(GetDocument().GetStyleEngine(), medium, effective_mixins,
                  pending_active_style_sheets_, rule_set_diffs);
 
-  GetDocument().GetStyleEngine().ApplyRuleSetChanges(
-      *tree_scope_, active_style_sheets_, pending_active_style_sheets_,
-      rule_set_diffs);
+  // We need to clear this before ApplyRuleSetChanges(),
+  // as the inspector may call PrepareUpdateActiveStyleSheets()
+  // synchronously.
 
+  ActiveStyleSheetVector old_active_style_sheets =
+      std::move(active_style_sheets_);
   active_style_sheets_ = std::move(pending_active_style_sheets_);
   pending_active_style_sheets_.clear();
+
+  GetDocument().GetStyleEngine().ApplyRuleSetChanges(
+      *tree_scope_, old_active_style_sheets, active_style_sheets_,
+      rule_set_diffs);
 }
 
 // Creates RuleSets for everything in active_style_sheets.
