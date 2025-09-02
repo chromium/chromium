@@ -473,9 +473,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Notify observers of preferred contrast changes.
   virtual void NotifyOnPreferredContrastUpdated();
 
-  // Returns whether the user has an explicit contrast preference.
-  virtual bool UserHasContrastPreference() const;
-
   // Returns whether we are in forced colors mode, controlled by system
   // accessibility settings. Currently, Windows high contrast is the only system
   // setting that triggers forced colors mode.

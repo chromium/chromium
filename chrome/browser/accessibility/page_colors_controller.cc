@@ -62,7 +62,8 @@ void PageColorsController::OnPreferredContrastChanged() {
   DCHECK_LE(page_colors, ui::NativeTheme::PageColors::kMaxValue);
 
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  if (native_theme->UserHasContrastPreference()) {
+  if (native_theme->GetPreferredContrast() ==
+      ui::NativeTheme::PreferredContrast::kMore) {
     // If increased contrast just got turned on and page colors is 'Off', the
     // used value of Page Colors should be set to the default value which is
     // either 'Off' or 'High Contrast'.
@@ -106,7 +107,8 @@ void PageColorsController::OnPageColorsChanged() {
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (native_theme->UserHasContrastPreference()) {
+  if (native_theme->GetPreferredContrast() ==
+      ui::NativeTheme::PreferredContrast::kMore) {
     // When a user turns page colors 'Off' while high contrast is enabled at the
     // OS level, the default of Page Colors changes from 'HighContrast' to
     // 'Off'.
@@ -137,7 +139,8 @@ ui::NativeTheme::PageColors PageColorsController::CalculatePageColors() {
   // kApplyPageColorsOnlyOnIncreasedContrast is true and the OS is not in an
   // increased contrast mode.
   if (only_on_increased_contrast &&
-      !native_theme->UserHasContrastPreference()) {
+      native_theme->GetPreferredContrast() !=
+          ui::NativeTheme::PreferredContrast::kMore) {
     used_page_colors = ui::NativeTheme::PageColors::kOff;
   }
 

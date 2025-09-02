@@ -26,6 +26,7 @@
 
 #include <variant>
 
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
@@ -827,7 +828,8 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
       (Image::LoadPlatformResource(IDR_SEARCH_CANCEL_PRESSED_HC_LIGHT_MODE)));
   Image* color_scheme_adjusted_cancel_image;
   Image* color_scheme_adjusted_cancel_pressed_image;
-  if (ui::NativeTheme::GetInstanceForWeb()->UserHasContrastPreference()) {
+  if (ui::NativeTheme::GetInstanceForWeb()->GetPreferredContrast() ==
+      ui::NativeTheme::PreferredContrast::kMore) {
     // TODO(crbug.com/1159597): Ideally we want the cancel button to be the same
     // color as search field text. Since the cancel button is currently painted
     // with a .png, it can't be colored dynamically so currently our only

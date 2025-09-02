@@ -34,19 +34,14 @@ class TestNativeTheme : public NativeTheme {
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
-  bool UserHasContrastPreference() const override;
   bool ShouldUseDarkColors() const override;
   PreferredColorScheme GetPreferredColorScheme() const override;
 
   void SetDarkMode(bool dark_mode) { dark_mode_ = dark_mode; }
-  void SetUserHasContrastPreference(bool contrast_preference) {
-    contrast_preference_ = contrast_preference;
-  }
   void AddColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
 
  private:
   bool dark_mode_ = false;
-  bool contrast_preference_ = false;
 
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;

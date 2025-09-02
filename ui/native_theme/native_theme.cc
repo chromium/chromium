@@ -85,7 +85,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
   ui::ColorProviderKey key;
   key.color_mode = dark_mode ? ColorProviderKey::ColorMode::kDark
                              : ColorProviderKey::ColorMode::kLight;
-  key.contrast_mode = UserHasContrastPreference()
+  key.contrast_mode = GetPreferredContrast() == PreferredContrast::kMore
                           ? ColorProviderKey::ContrastMode::kHigh
                           : ColorProviderKey::ContrastMode::kNormal;
   key.forced_colors = get_forced_colors_key(InForcedColorsMode(), page_colors_);
@@ -238,11 +238,6 @@ bool NativeTheme::ShouldUseDarkColors() const {
   return should_use_dark_colors_;
 }
 
-bool NativeTheme::UserHasContrastPreference() const {
-  return GetPreferredContrast() !=
-         NativeTheme::PreferredContrast::kNoPreference;
-}
-
 bool NativeTheme::InForcedColorsMode() const {
   return forced_colors_;
 }
@@ -378,8 +373,6 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
       theme_to_update_->UpdateContrastRelatedStates(*observed_theme);
 
   if (notify_observers) {
-    DCHECK(theme_to_update_->UserHasContrastPreference() ||
-           !theme_to_update_->InForcedColorsMode());
     theme_to_update_->NotifyOnNativeThemeUpdated();
   }
 }

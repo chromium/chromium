@@ -80,6 +80,12 @@
 
 namespace {
 
+bool PrefersHighContrast(const views::View* view) {
+  const ui::NativeTheme* const native_theme = view->GetNativeTheme();
+  return native_theme && native_theme->GetPreferredContrast() ==
+                             ui::NativeTheme::PreferredContrast::kMore;
+}
+
 class OmniboxResultViewButton : public views::ImageButton {
   METADATA_HEADER(OmniboxResultViewButton, views::ImageButton)
 
@@ -336,12 +342,9 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
     OmniboxPartState part_state) {
   DCHECK(view);
 
-  const bool prefers_contrast =
-      view->GetNativeTheme() &&
-      view->GetNativeTheme()->UserHasContrastPreference();
-  // TODO(tapted): Consider using background()->SetColor() and
+  // TODO(tapted): Consider using background()->SetNativeControlColor() and
   // always have a background.
-  if (part_state == OmniboxPartState::NORMAL && !prefers_contrast) {
+  if (part_state == OmniboxPartState::NORMAL && !PrefersHighContrast(view)) {
     return nullptr;
   }
 
@@ -485,14 +488,12 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   // TODO(crbug.com/430318151): We should finish migrating this logic to live
   // entirely within OmniboxTextView, which should keep track of its own
   // OmniboxPart.
-  bool prefers_contrast =
-      GetNativeTheme() && GetNativeTheme()->UserHasContrastPreference();
   if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
     suggestion_view_->content()->ApplyTextColor(
         match_.IsIphSuggestion() || match_.IsToolbelt()
             ? kColorOmniboxResultsTextDimmed
             : kColorOmniboxText);
-  } else if (prefers_contrast || force_reapply_styles) {
+  } else if (force_reapply_styles || PrefersHighContrast(this)) {
     // Normally, OmniboxTextView caches its appearance, but in high contrast,
     // selected-ness changes the text colors, so the styling of the text part of
     // the results needs to be recomputed.

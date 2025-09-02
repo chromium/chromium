@@ -37,10 +37,6 @@ gfx::Rect TestNativeTheme::GetNinePatchAperture(Part part) const {
   return gfx::Rect();
 }
 
-bool TestNativeTheme::UserHasContrastPreference() const {
-  return contrast_preference_;
-}
-
 bool TestNativeTheme::ShouldUseDarkColors() const {
   return dark_mode_;
 }

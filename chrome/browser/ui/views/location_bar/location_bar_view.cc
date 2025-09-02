@@ -1217,7 +1217,8 @@ void LocationBarView::RefreshBackground() {
   const bool is_caret_visible = omnibox_view_->model()->is_caret_visible();
   const bool input_in_progress =
       omnibox_view_->model()->user_input_in_progress();
-  const bool high_contrast = GetNativeTheme()->UserHasContrastPreference();
+  const bool high_contrast = GetNativeTheme()->GetPreferredContrast() ==
+                             ui::NativeTheme::PreferredContrast::kMore;
 
   const auto* const color_provider = GetColorProvider();
   SkColor normal = color_provider->GetColor(kColorLocationBarBackground);

@@ -69,7 +69,6 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
   // increased contrast.
   native_theme->SetPreferredContrast(
       ui::NativeTheme::PreferredContrast::kNoPreference);
-  EXPECT_FALSE(native_theme->UserHasContrastPreference());
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kApplyPageColorsOnlyOnIncreasedContrast, true);
   browser()->profile()->GetPrefs()->SetInteger(
@@ -211,7 +210,6 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
   EXPECT_EQ(page_colors_pref, page_colors_state);
   EXPECT_FALSE(native_theme_web->InForcedColorsMode());
   EXPECT_FALSE(native_theme_web->ShouldUseDarkColors());
-  EXPECT_FALSE(native_theme_web->UserHasContrastPreference());
 
   // Setting Page colors to 'kHighContrast' while forced colors is false should
   // not affect any state.
@@ -220,7 +218,8 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kPageColors, ui::NativeTheme::PageColors::kHighContrast);
   EXPECT_FALSE(native_theme_web->InForcedColorsMode());
-  EXPECT_FALSE(native_theme_web->UserHasContrastPreference());
+  EXPECT_EQ(native_theme_web->GetPreferredContrast(),
+            ui::NativeTheme::PreferredContrast::kNoPreference);
 
 #if BUILDFLAG(IS_WIN)
   // On Windows, `kApplyPageColorsOnlyOnIncreasedContrast` is initially true, so
@@ -243,7 +242,8 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
   EXPECT_EQ(page_colors_pref, page_colors_state);
   EXPECT_TRUE(native_theme_web->InForcedColorsMode());
   EXPECT_TRUE(native_theme_web->ShouldUseDarkColors());
-  EXPECT_TRUE(native_theme_web->UserHasContrastPreference());
+  EXPECT_EQ(native_theme_web->GetPreferredContrast(),
+            ui::NativeTheme::PreferredContrast::kMore);
 
   // Changing Page colors to be a light theme (e.g. 'White') should make forced
   // colors to be true, uses dark colors to be false, contrast preference to be
@@ -257,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
   EXPECT_EQ(page_colors_pref, page_colors_state);
   EXPECT_TRUE(native_theme_web->InForcedColorsMode());
   EXPECT_FALSE(native_theme_web->ShouldUseDarkColors());
-  EXPECT_TRUE(native_theme_web->UserHasContrastPreference());
+  EXPECT_EQ(native_theme_web->GetPreferredContrast(),
+            ui::NativeTheme::PreferredContrast::kMore);
 
   // Setting Page colors to 'Off' while in an increased contrast state should
   // make the native theme instance for web's forced colors to be false,
@@ -273,7 +274,8 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
   EXPECT_EQ(page_colors_pref, ui::NativeTheme::PageColors::kOff);
   EXPECT_EQ(page_colors_pref, page_colors_state);
   EXPECT_FALSE(native_theme_web->InForcedColorsMode());
-  EXPECT_FALSE(native_theme_web->UserHasContrastPreference());
+  EXPECT_EQ(native_theme_web->GetPreferredContrast(),
+            ui::NativeTheme::PreferredContrast::kNoPreference);
   EXPECT_EQ(native_theme_web->ShouldUseDarkColors(),
             native_theme->ShouldUseDarkColors());
 
