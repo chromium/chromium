@@ -2986,70 +2986,40 @@ BrowserAutofillManager::GetCreditCardFormEventLogger() {
   return metrics_->credit_card_form_event_logger;
 }
 
+// TODO(crbug.com/409962888): Remove once the new suggestion generation logic is
+// launched.
 std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const FormData& form,
     const FormStructure& form_structure,
     const FormFieldData& trigger_field,
     const AutofillField& trigger_autofill_field,
     std::optional<std::string> plus_address_email_override) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  bool should_suppress =
-      client()
-          .GetPersonalDataManager()
-          .address_data_manager()
-          .AreAddressSuggestionsBlocked(
-              CalculateFormSignature(form),
-              CalculateFieldSignatureForField(trigger_field), form.url());
-  base::UmaHistogramBoolean("Autofill.Suggestion.StrikeSuppression.Address",
-                            should_suppress);
-  if (should_suppress &&
-      !base::FeatureList::IsEnabled(
-          features::test::kAutofillDisableSuggestionStrikeDatabase)) {
-    LOG_AF(log_manager()) << LoggingScope::kFilling
-                          << LogMessage::kSuggestionSuppressed
-                          << " Reason: strike limit reached.";
-    // If the user already reached the strike limit on this particular field,
-    // address suggestions are suppressed.
-    return {};
-  }
-#endif
+  std::vector<Suggestion> suggestions;
+  AddressSuggestionGenerator address_suggestion_generator(
+      client(), plus_address_email_override, form_filler_->GetWeakPtr(),
+      log_manager());
 
-  // If the user triggers suggestions on an autofilled field, field-by-field
-  // filling suggestions should be shown so that the user could easily correct
-  // values to something present in different stored addresses.
-  SuggestionType current_suggestion_type =
-      trigger_field.is_autofilled()
-          ? SuggestionType::kAddressFieldByFieldFilling
-          : SuggestionType::kAddressEntry;
+  auto on_suggestions_generated =
+      [&suggestions](
+          SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+        suggestions = std::move(returned_suggestions.second);
+      };
 
-  FieldTypeSet field_types = [&]() -> FieldTypeSet {
-    if (current_suggestion_type ==
-        SuggestionType::kAddressFieldByFieldFilling) {
-      return {trigger_autofill_field.Type().GetAddressType()};
-    }
-    // If the FormData and FormStructure do not have the same size, we assume
-    // as a fallback that all fields are fillable.
-    base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
-        skip_reasons;
-    if (form.fields().size() == form_structure.field_count()) {
-      skip_reasons = form_filler_->GetFieldFillingSkipReasons(
-          form.fields(), form_structure, trigger_autofill_field,
-          FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress);
-    }
-    FieldTypeSet field_types;
-    for (size_t i = 0; i < form_structure.field_count(); ++i) {
-      if (auto it = skip_reasons.find(form_structure.field(i)->global_id());
-          it == skip_reasons.end() || it->second.empty()) {
-        field_types.insert(form_structure.field(i)->Type().GetAddressType());
-      }
-    }
-    return field_types;
-  }();
+  auto on_suggestion_data_returned =
+      [&on_suggestions_generated, &form, &trigger_field, &form_structure,
+       &trigger_autofill_field, &address_suggestion_generator](
+          std::pair<FillingProduct,
+                    std::vector<SuggestionGenerator::SuggestionData>>
+              suggestion_data) {
+        address_suggestion_generator.GenerateSuggestions(
+            form, trigger_field, &form_structure, &trigger_autofill_field,
+            {std::move(suggestion_data)}, on_suggestions_generated);
+      };
 
-  return GetSuggestionsForProfiles(
-      client(), field_types, trigger_field,
-      trigger_autofill_field.Type().GetAddressType(), current_suggestion_type,
-      std::move(plus_address_email_override));
+  address_suggestion_generator.FetchSuggestionData(
+      form, trigger_field, &form_structure, &trigger_autofill_field, client(),
+      on_suggestion_data_returned);
+  return suggestions;
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(

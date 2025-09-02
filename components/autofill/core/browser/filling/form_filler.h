@@ -179,6 +179,10 @@ class FormFiller {
       base::optional_ref<const FormFieldData> field = std::nullopt,
       base::optional_ref<const std::u16string> old_value = std::nullopt);
 
+  base::WeakPtr<FormFiller> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   friend class FormFillerTestApi;
   friend class TestFormFiller;

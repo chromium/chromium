@@ -12,10 +12,12 @@
 
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -37,12 +39,15 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -264,6 +269,7 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
       Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
   suggestion.children.emplace_back(SuggestionType::kSeparator);
   for (const AutofillProfile& test_address : test_addresses) {
+    CHECK(test_address.is_devtools_testing_profile());
     const std::u16string test_address_country =
         test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale);
     suggestion.children.emplace_back(test_address_country,
@@ -499,6 +505,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
   std::vector<Suggestion::AutofillProfilePayload> payloads;
   payloads.reserve(profiles.size());
   for (AutofillProfile& profile : profiles) {
+    CHECK(!profile.is_devtools_testing_profile());
     std::u16string email_override;
     // If the following conditions are met:
     // - A plus address override is available
@@ -606,8 +613,18 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
   return suggestions;
 }
 
+SuggestionType GetSuggestionType(FormFieldData trigger_field) {
+  // If the user triggers suggestions on an autofilled field, field-by-field
+  // filling suggestions should be shown so that the user could easily correct
+  // values to something present in different stored addresses.
+  return trigger_field.is_autofilled()
+             ? SuggestionType::kAddressFieldByFieldFilling
+             : SuggestionType::kAddressEntry;
+}
+
 }  // namespace
 
+// TODO(crbug.com/409962888): Handle address suggestions on typing.
 std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
     const AddressDataManager& address_data_manager,
     const std::u16string& field_contents) {
@@ -728,42 +745,6 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   return suggestions;
 }
 
-std::vector<Suggestion> GetSuggestionsForProfiles(
-    const AutofillClient& client,
-    const FieldTypeSet& field_types,
-    const FormFieldData& trigger_field,
-    FieldType trigger_field_type,
-    SuggestionType suggestion_type,
-    std::optional<std::string> plus_address_email_override) {
-  CHECK(trigger_field.is_autofilled() ||
-        suggestion_type != SuggestionType::kAddressFieldByFieldFilling);
-  std::vector<AutofillProfile> profiles_to_suggest = GetProfilesToSuggest(
-      client.GetPersonalDataManager().address_data_manager(), trigger_field,
-      trigger_field_type, field_types);
-  const std::string gaia_email =
-      client.GetIdentityManager()
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .email;
-  std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
-      std::move(profiles_to_suggest), gaia_email, field_types, suggestion_type,
-      trigger_field_type, trigger_field, std::move(plus_address_email_override),
-      client.GetAppLocale());
-
-  // Add devtools test addresses suggestion if it exists. A suggestion will
-  // exist if devtools is open and therefore test addresses were set.
-  if (std::optional<Suggestion> test_addresses_suggestion =
-          GetSuggestionForTestAddresses(client.GetTestAddresses(),
-                                        client.GetAppLocale())) {
-    suggestions.push_back(std::move(*test_addresses_suggestion));
-  }
-  if (suggestions.empty()) {
-    return suggestions;
-  }
-  std::ranges::move(GetAddressFooterSuggestions(trigger_field.is_autofilled()),
-                    std::back_inserter(suggestions));
-  return suggestions;
-}
-
 Suggestion CreateManageAddressesSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
@@ -794,6 +775,188 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
                                        field_types, suggestion_type,
                                        trigger_field_type, trigger_field,
                                        plus_address_email_override, app_locale);
+}
+
+AddressSuggestionGenerator::AddressSuggestionGenerator(
+    const AutofillClient& client,
+    const std::optional<std::string>& plus_address_email_override,
+    base::WeakPtr<FormFiller> form_filler,
+    LogManager* log_manager)
+    : plus_address_email_override_(plus_address_email_override),
+      client_(client),
+      form_filler_(form_filler),
+      log_manager_(log_manager) {}
+
+AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
+
+void AddressSuggestionGenerator::FetchSuggestionData(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
+    const AutofillClient& client,
+    base::OnceCallback<
+        void(std::pair<FillingProduct,
+                       std::vector<SuggestionGenerator::SuggestionData>>)>
+        callback) {
+  FetchSuggestionData(
+      form, trigger_field, form_structure, trigger_autofill_field, client,
+      [&callback](std::pair<FillingProduct,
+                            std::vector<SuggestionGenerator::SuggestionData>>
+                      suggestion_data) {
+        std::move(callback).Run(std::move(suggestion_data));
+      });
+}
+
+void AddressSuggestionGenerator::GenerateSuggestions(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
+    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+        all_suggestion_data,
+    base::OnceCallback<void(ReturnedSuggestions)> callback) {
+  GenerateSuggestions(
+      form, trigger_field, form_structure, trigger_autofill_field,
+      all_suggestion_data,
+      [&callback](ReturnedSuggestions returned_suggestions) {
+        std::move(callback).Run(std::move(returned_suggestions));
+      });
+}
+
+void AddressSuggestionGenerator::FetchSuggestionData(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
+    const AutofillClient& client,
+    base::FunctionRef<
+        void(std::pair<FillingProduct,
+                       std::vector<SuggestionGenerator::SuggestionData>>)>
+        callback) {
+  if (!form_structure || !trigger_autofill_field) {
+    callback({FillingProduct::kAddress, {}});
+    return;
+  }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  bool should_suppress =
+      client.GetPersonalDataManager()
+          .address_data_manager()
+          .AreAddressSuggestionsBlocked(
+              CalculateFormSignature(form),
+              CalculateFieldSignatureForField(trigger_field), form.url());
+  base::UmaHistogramBoolean("Autofill.Suggestion.StrikeSuppression.Address",
+                            should_suppress);
+  if (should_suppress &&
+      !base::FeatureList::IsEnabled(
+          features::test::kAutofillDisableSuggestionStrikeDatabase)) {
+    if (log_manager_) {
+      LOG_AF(log_manager_) << LoggingScope::kFilling
+                           << LogMessage::kSuggestionSuppressed
+                           << " Reason: strike limit reached.";
+    }
+    // If the user already reached the strike limit on this particular field,
+    // address suggestions are suppressed.
+    callback({FillingProduct::kAddress, {}});
+    return;
+  }
+#endif
+
+  field_types_ = [&]() -> FieldTypeSet {
+    if (GetSuggestionType(trigger_field) ==
+        SuggestionType::kAddressFieldByFieldFilling) {
+      return {trigger_autofill_field->Type().GetAddressType()};
+    }
+    // If the FormData `form_data` and FormStructure `form` do not have the same
+    // size, we assume as a fallback that all fields are fillable.
+    base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+        skip_reasons;
+    if (form_filler_ && form.fields().size() == form_structure->field_count()) {
+      skip_reasons = form_filler_->GetFieldFillingSkipReasons(
+          form.fields(), *form_structure, *trigger_autofill_field,
+          FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress);
+    }
+    FieldTypeSet field_types;
+    for (size_t i = 0; i < form_structure->field_count(); ++i) {
+      if (auto it = skip_reasons.find(form_structure->field(i)->global_id());
+          it == skip_reasons.end() || it->second.empty()) {
+        field_types.insert(form_structure->field(i)->Type().GetAddressType());
+      }
+    }
+    return field_types;
+  }();
+
+  std::vector<AutofillProfile> profiles_to_suggest = GetProfilesToSuggest(
+      client.GetPersonalDataManager().address_data_manager(), trigger_field,
+      trigger_autofill_field->Type().GetAddressType(), field_types_);
+
+  std::vector<SuggestionGenerator::SuggestionData> suggestion_data =
+      base::ToVector(
+          std::move(profiles_to_suggest), [](AutofillProfile& profile) {
+            return SuggestionGenerator::SuggestionData(std::move(profile));
+          });
+
+  // Add devtools test addresses if it exists. A test addresses will
+  // exist if devtools is open and therefore test addresses were set.
+  for (AutofillProfile test_address : client.GetTestAddresses()) {
+    suggestion_data.emplace_back(test_address);
+  }
+
+  callback({FillingProduct::kAddress, std::move(suggestion_data)});
+}
+
+void AddressSuggestionGenerator::GenerateSuggestions(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
+    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+        all_suggestion_data,
+    base::FunctionRef<void(ReturnedSuggestions)> callback) {
+  if (!form_structure || !trigger_autofill_field ||
+      !client_->GetIdentityManager()) {
+    callback({FillingProduct::kAddress, {}});
+    return;
+  }
+
+  std::vector<SuggestionData> address_suggestion_data =
+      ExtractSuggestionDataForFillingProduct(all_suggestion_data,
+                                             FillingProduct::kAddress);
+
+  std::vector<AutofillProfile> profiles_to_suggest = base::ToVector(
+      std::move(address_suggestion_data), [](SuggestionData& suggestion_data) {
+        return std::get<AutofillProfile>(std::move(suggestion_data));
+      });
+
+  // Testing profiles were added last.
+  auto partition_it = std::ranges::find_if(
+      profiles_to_suggest, &AutofillProfile::is_devtools_testing_profile);
+
+  std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
+      std::vector(std::make_move_iterator(profiles_to_suggest.begin()),
+                  std::make_move_iterator(partition_it)),
+      client_->GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email,
+      field_types_, GetSuggestionType(trigger_field),
+      trigger_autofill_field->Type().GetAddressType(), trigger_field,
+      plus_address_email_override_, client_->GetAppLocale());
+
+  // Add devtools test addresses suggestion if it exists.
+  if (std::optional<Suggestion> test_addresses_suggestion =
+          GetSuggestionForTestAddresses(
+              std::vector(std::make_move_iterator(partition_it),
+                          std::make_move_iterator(profiles_to_suggest.end())),
+              client_->GetAppLocale())) {
+    suggestions.push_back(std::move(*test_addresses_suggestion));
+  }
+  if (suggestions.empty()) {
+    callback({FillingProduct::kAddress, {}});
+    return;
+  }
+  base::Extend(suggestions,
+               GetAddressFooterSuggestions(trigger_field.is_autofilled()));
+  callback({FillingProduct::kAddress, std::move(suggestions)});
 }
 
 }  // namespace autofill
