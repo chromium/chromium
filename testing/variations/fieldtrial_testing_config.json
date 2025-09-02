@@ -16673,9 +16673,11 @@
                     "enable_features": [
                         "AiModeOmniboxEntryPoint",
                         "AllowAiModeMatches",
+                        "LoadingSuggestionsAnimation",
                         "OmniboxHideAimEntrypointOnUserInput",
                         "OmniboxToolbelt",
-                        "OpenLensActionUITweaks"
+                        "OpenLensActionUITweaks",
+                        "SuggestionsFulfilledByLensSupported"
                     ]
                 }
             ]
