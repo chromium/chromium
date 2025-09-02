@@ -113,7 +113,6 @@ class PageTimingMetricsSender {
   void SetUpDroppedFramesReporting(
       base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames);
 
-  void InitiateUserInteractionTiming();
   mojom::SoftNavigationMetricsPtr GetSoftNavigationMetrics() {
     return soft_navigation_metrics_->Clone();
   }

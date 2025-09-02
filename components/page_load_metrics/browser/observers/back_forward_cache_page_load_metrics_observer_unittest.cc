@@ -656,17 +656,14 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest, UserInteractionLatency) {
 
   fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
 
-  page_load_metrics::mojom::UserInteractionLatenciesPtr
-      user_interaction_latencies_ptr = page_load_metrics::mojom::
-          UserInteractionLatencies::NewUserInteractionLatencies({});
-  auto& user_interaction_latencies =
-      user_interaction_latencies_ptr->get_user_interaction_latencies();
+  page_load_metrics::mojom::InputTiming input_timing;
+  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
   user_interaction_latencies.emplace_back(
       page_load_metrics::mojom::UserInteractionLatency::New(
           base::Milliseconds(3000), 0,
           current_time + base::Milliseconds(1000)));
   fake_delegate_->responsiveness_metrics_normalization_
-      .AddNewUserInteractionLatencies(1, *user_interaction_latencies_ptr);
+      .AddNewUserInteractionLatencies(user_interaction_latencies);
 
   observer_with_fake_delegate_->OnComplete(timing_);
 
@@ -772,17 +769,14 @@ TEST_F(BackForwardCachePageLoadMetricsObserverIncognitoTest,
 
   fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
 
-  page_load_metrics::mojom::UserInteractionLatenciesPtr
-      user_interaction_latencies_ptr = page_load_metrics::mojom::
-          UserInteractionLatencies::NewUserInteractionLatencies({});
-  auto& user_interaction_latencies =
-      user_interaction_latencies_ptr->get_user_interaction_latencies();
+  page_load_metrics::mojom::InputTiming input_timing;
+  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
   user_interaction_latencies.emplace_back(
       page_load_metrics::mojom::UserInteractionLatency::New(
           base::Milliseconds(3000), 0,
           current_time + base::Milliseconds(1000)));
   fake_delegate_->responsiveness_metrics_normalization_
-      .AddNewUserInteractionLatencies(1, *user_interaction_latencies_ptr);
+      .AddNewUserInteractionLatencies(user_interaction_latencies);
 
   observer_with_fake_delegate_->OnComplete(timing_);
 

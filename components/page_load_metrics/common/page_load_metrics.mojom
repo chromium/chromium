@@ -542,19 +542,8 @@ struct CpuTiming {
   mojo_base.mojom.TimeDelta task_time;
 };
 
-// Metrics about general input delay.
+// Data for user interaction latencies.
 struct InputTiming {
-
-  // The number of user interactions, including click, tap and key press.
-  uint64 num_interactions = 0;
-
-  // List of user interactions since last update.
-  // TODO(crbug.com/382949422): Remove the needless union wrapper.
-  UserInteractionLatencies max_event_durations;
-};
-
-// Data for user interaction latencies which can be meausred in different ways.
-union UserInteractionLatencies {
   array<UserInteractionLatency> user_interaction_latencies;
 };
 

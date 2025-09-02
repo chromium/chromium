@@ -74,10 +74,6 @@ using page_load_metrics::PageVisitFinalStatus;
 using testing::AnyNumber;
 using testing::Mock;
 using testing::Return;
-using UserInteractionLatenciesPtr =
-    page_load_metrics::mojom::UserInteractionLatenciesPtr;
-using UserInteractionLatencies =
-    page_load_metrics::mojom::UserInteractionLatencies;
 using UserInteractionLatency = page_load_metrics::mojom::UserInteractionLatency;
 
 namespace {
@@ -1304,18 +1300,14 @@ TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
   NavigateAndCommit(GURL(kTestUrl1));
 
   page_load_metrics::mojom::InputTiming input_timing;
-  input_timing.num_interactions = 3;
-  input_timing.max_event_durations =
-      UserInteractionLatencies::NewUserInteractionLatencies({});
-  auto& max_event_durations =
-      input_timing.max_event_durations->get_user_interaction_latencies();
+  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
 
   base::TimeTicks current_time = base::TimeTicks::Now();
-  max_event_durations.emplace_back(UserInteractionLatency::New(
+  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
       base::Milliseconds(50), 1, current_time + base::Milliseconds(1000)));
-  max_event_durations.emplace_back(UserInteractionLatency::New(
+  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
       base::Milliseconds(100), 2, current_time + base::Milliseconds(2000)));
-  max_event_durations.emplace_back(UserInteractionLatency::New(
+  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
       base::Milliseconds(150), 3, current_time + base::Milliseconds(3000)));
 
   tester()->SimulateInputTimingUpdate(input_timing);
@@ -1353,13 +1345,9 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   NavigateAndCommit(GURL(kTestUrl1));
 
   page_load_metrics::mojom::InputTiming input_timing;
-  input_timing.num_interactions = 3;
-  input_timing.max_event_durations =
-      UserInteractionLatencies::NewUserInteractionLatencies({});
-  auto& max_event_durations =
-      input_timing.max_event_durations->get_user_interaction_latencies();
+  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
 
-  max_event_durations.emplace_back(UserInteractionLatency::New(
+  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
       base::Milliseconds(50), 0, base::TimeTicks::Now()));
 
   tester()->SimulateInputTimingUpdate(input_timing);

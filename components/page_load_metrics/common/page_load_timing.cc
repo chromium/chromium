@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/common/page_load_timing.h"
+
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 
@@ -45,8 +46,7 @@ bool IsEmpty(const page_load_metrics::mojom::InteractiveTiming& timing) {
 }
 
 bool IsEmpty(const page_load_metrics::mojom::InputTiming& timing) {
-  // TODO(sullivan): Adjust this to be based on max_event_durations
-  return !timing.num_interactions;
+  return timing.user_interaction_latencies.empty();
 }
 
 bool IsEmpty(const page_load_metrics::mojom::PaintTiming& timing) {
