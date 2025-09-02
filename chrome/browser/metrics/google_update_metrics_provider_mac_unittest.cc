@@ -19,11 +19,11 @@ TEST(GoogleUpdateMetricsProviderMacTest, SetsVersions) {
   base::test::SingleThreadTaskEnvironment task_environment;
   updater::UpdateService::AppState app1;
   app1.app_id = updater::kUpdaterAppId;
-  app1.version = base::Version("1.2.3.4");
+  app1.version = "1.2.3.4";
   updater::UpdateService::AppState app2;
   app2.app_id = BrowserUpdaterClient::GetAppId();
   app2.ecp = BrowserUpdaterClient::GetExpectedEcp();
-  app2.version = base::Version("5.6.7.8");
+  app2.version = "5.6.7.8";
   {
     base::RunLoop loop;
     BrowserUpdaterClient::Create(

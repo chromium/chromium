@@ -569,7 +569,7 @@ MakeUpdateClientCrxStateChangeCallback(
         UpdateService::UpdateState update_state;
         update_state.app_id = crx_update_item.id;
         update_state.state = ToUpdateState(crx_update_item.state);
-        update_state.next_version = crx_update_item.next_version;
+        update_state.next_version = crx_update_item.next_version.GetString();
         update_state.downloaded_bytes = crx_update_item.downloaded_bytes;
         update_state.total_bytes = crx_update_item.total_bytes;
         update_state.install_progress = crx_update_item.install_progress;
@@ -826,7 +826,7 @@ void UpdateServiceImplImpl::GetAppStatesImpl(
   for (const std::string& app_id : app_ids) {
     AppState app_state;
     app_state.app_id = app_id;
-    app_state.version = persisted_data->GetProductVersion(app_id);
+    app_state.version = persisted_data->GetProductVersion(app_id).GetString();
     app_state.version_path = persisted_data->GetProductVersionPath(app_id);
     app_state.version_key = persisted_data->GetProductVersionKey(app_id);
     app_state.ap = persisted_data->GetAP(app_id);

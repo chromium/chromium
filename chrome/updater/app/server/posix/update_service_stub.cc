@@ -24,6 +24,7 @@
 #include "chrome/updater/ipc/ipc_security.h"
 #include "chrome/updater/mojom/updater_service.mojom-forward.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/update_service.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
@@ -34,24 +35,12 @@ namespace {
 
 [[nodiscard]] mojom::AppStatePtr MakeMojoAppState(
     const updater::UpdateService::AppState& app_state) {
-  return mojom::AppState::New(
-      app_state.app_id, app_state.version.GetString(), app_state.ap,
-      app_state.brand_code, app_state.brand_path, app_state.ecp,
-      app_state.ap_path, app_state.ap_key, app_state.version_path,
-      app_state.version_key, app_state.cohort);
+  return mojom::AppState::New(app_state);
 }
 
 [[nodiscard]] mojom::UpdateStatePtr MakeMojoUpdateState(
     const updater::UpdateService::UpdateState& update_state) {
-  return mojom::UpdateState::New(
-      update_state.app_id,
-      static_cast<mojom::UpdateState::State>(update_state.state),
-      update_state.next_version.GetString(), update_state.downloaded_bytes,
-      update_state.total_bytes, update_state.install_progress,
-      static_cast<mojom::UpdateService::ErrorCategory>(
-          update_state.error_category),
-      update_state.error_code, update_state.extra_code1,
-      update_state.installer_text, update_state.installer_cmd_line);
+  return mojom::UpdateState::New(update_state);
 }
 
 // A thin wrapper around a StateChangeObserver remote to allow for refcounting.

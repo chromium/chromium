@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/google_update_metrics_provider_mac.h"
 
 #include <optional>
+#include <string>
 
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,17 +25,17 @@ void GoogleUpdateMetricsProviderMac::ProvideSystemProfileMetrics(
   std::optional<updater::UpdateService::AppState> browser_state =
       BrowserUpdaterClient::GetLastKnownBrowserRegistration();
   if (browser_state) {
+    const std::string browser_state_cohort = browser_state->cohort.value_or("");
     base::UmaHistogramSparse("GoogleUpdate.InstallDetails.UpdateCohortId",
-                             base::PersistentHash(browser_state->cohort.substr(
-                                 0, browser_state->cohort.find_last_of(":"))));
-    google_update->mutable_client_status()->set_version(
-        browser_state->version.GetString());
+                             base::PersistentHash(browser_state_cohort.substr(
+                                 0, browser_state_cohort.find_last_of(":"))));
+    google_update->mutable_client_status()->set_version(browser_state->version);
   }
 
   std::optional<updater::UpdateService::AppState> updater_state =
       BrowserUpdaterClient::GetLastKnownUpdaterRegistration();
   if (updater_state) {
     google_update->mutable_google_update_status()->set_version(
-        updater_state->version.GetString());
+        updater_state->version);
   }
 }

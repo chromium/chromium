@@ -780,7 +780,7 @@ void AppInstallControllerImpl::StateChange(
 
     case UpdateService::UpdateState::State::kUpdateAvailable:
       install_progress_observer_ipc_->OnUpdateAvailable(
-          app_id_, app_name_, update_state.next_version);
+          app_id_, app_name_, base::Version(update_state.next_version));
       break;
 
     case UpdateService::UpdateState::State::kDownloading: {

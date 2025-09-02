@@ -1052,7 +1052,7 @@ void InstallAppViaService(UpdaterScope scope,
 
     CHECK_STATE_MEMBER_STRING(app_id);
     CHECK_STATE_MEMBER_INT(state);
-    CHECK_STATE_MEMBER_VERSION(next_version);
+    CHECK_STATE_MEMBER_STRING(next_version);
     CHECK_STATE_MEMBER_INT(downloaded_bytes);
     CHECK_STATE_MEMBER_INT(total_bytes);
     CHECK_STATE_MEMBER_INT(install_progress);
@@ -1094,7 +1094,7 @@ void GetAppStates(UpdaterScope updater_scope,
           const base::Value::Dict* expected = expected_state.GetIfDict();
           ASSERT_TRUE(expected);
           EXPECT_EQ(it->app_id, *expected->FindString("app_id"));
-          EXPECT_EQ(it->version.GetString(), *expected->FindString("version"));
+          EXPECT_EQ(it->version, *expected->FindString("version"));
           EXPECT_EQ(it->ap, *expected->FindString("ap"));
           EXPECT_EQ(it->brand_code, *expected->FindString("brand_code"));
 #if BUILDFLAG(IS_WIN)

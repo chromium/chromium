@@ -294,13 +294,13 @@ class KSAdminApp : public App {
 
 KSTicket* KSAdminApp::TicketFromAppState(
     const updater::UpdateService::AppState& state) {
-  return [[KSTicket alloc]
-      initWithAppId:base::SysUTF8ToNSString(state.app_id)
-            version:base::SysUTF8ToNSString(state.version.GetString())
-                ecp:state.ecp
-                tag:base::SysUTF8ToNSString(state.ap)
-          brandCode:base::SysUTF8ToNSString(state.brand_code)
-          brandPath:state.brand_path];
+  return
+      [[KSTicket alloc] initWithAppId:base::SysUTF8ToNSString(state.app_id)
+                              version:base::SysUTF8ToNSString(state.version)
+                                  ecp:state.ecp
+                                  tag:base::SysUTF8ToNSString(state.ap)
+                            brandCode:base::SysUTF8ToNSString(state.brand_code)
+                            brandPath:state.brand_path];
 }
 
 scoped_refptr<UpdateService> KSAdminApp::ServiceProxy(
@@ -612,8 +612,7 @@ void KSAdminApp::DoListAppUpdate(UpdaterScope scope) {
              const UpdateService::UpdateState& update_state) {
             if (update_state.state ==
                 UpdateService::UpdateState::State::kUpdateAvailable) {
-              update_check_result->set_next_version(
-                  update_state.next_version.GetString());
+              update_check_result->set_next_version(update_state.next_version);
             }
           },
           update_check_result),

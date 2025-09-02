@@ -127,8 +127,7 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
           FAILED(hr)) {
         return base::unexpected(hr);
       }
-      update_service_state.next_version =
-          base::Version(base::WideToUTF8(next_version.Get()));
+      update_service_state.next_version = base::WideToUTF8(next_version.Get());
     }
     {
       LONGLONG downloaded_bytes = -1;
@@ -377,7 +376,7 @@ class UpdaterAppStatesCallback
           HRESULT(hr)) {
         return base::unexpected(hr);
       }
-      app_state.version = base::Version(base::WideToUTF8(version.Get()));
+      app_state.version = base::WideToUTF8(version.Get());
     }
     {
       base::win::ScopedBstr ap;

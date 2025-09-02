@@ -526,8 +526,8 @@ void UpdaterUtilApp::ListApps() {
         if (OutputInJSONFormat()) {
           base::Value::Dict apps;
           for (updater::UpdateService::AppState app : states) {
-            apps.Set(app.app_id, base::Value::Dict().Set(
-                                     "version", app.version.GetString()));
+            apps.Set(app.app_id,
+                     base::Value::Dict().Set("version", app.version));
           }
           std::cout << ValueToJSONString(base::Value(std::move(apps)))
                     << std::endl;
@@ -535,7 +535,7 @@ void UpdaterUtilApp::ListApps() {
           std::cout << "Registered apps : {" << std::endl;
           for (updater::UpdateService::AppState app : states) {
             std::cout << "\t" << Quoted(app.app_id) << " = "
-                      << Quoted(app.version.GetString()) << ';' << std::endl;
+                      << Quoted(app.version) << ';' << std::endl;
           }
           std::cout << '}' << std::endl;
         }
@@ -557,10 +557,10 @@ void UpdaterUtilApp::FindApp(
             });
         LOG_IF(ERROR, it == std::end(states))
             << Quoted(app_id) << " is not a registered app.";
-        std::move(callback).Run(it == std::end(states)
-                                    ? nullptr
-                                    : base::MakeRefCounted<AppState>(
-                                          app_id, it->version.GetString()));
+        std::move(callback).Run(
+            it == std::end(states)
+                ? nullptr
+                : base::MakeRefCounted<AppState>(app_id, it->version));
       },
       app_id, std::move(callback)));
 }
@@ -592,8 +592,7 @@ void UpdaterUtilApp::DoListUpdate(scoped_refptr<AppState> app_state) {
              const UpdateService::UpdateState& update_state) {
             if (update_state.state ==
                 UpdateService::UpdateState::State::kUpdateAvailable) {
-              app_state->set_next_version(
-                  update_state.next_version.GetString());
+              app_state->set_next_version(update_state.next_version);
             }
           },
           app_state),

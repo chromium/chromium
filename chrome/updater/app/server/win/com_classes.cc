@@ -56,7 +56,7 @@ class UpdaterAppStateImpl : public IDispatchImpl<IUpdaterAppState> {
 
   HRESULT RuntimeClassInitialize(const UpdateService::AppState& app_state) {
     app_id_ = base::UTF8ToWide(app_state.app_id);
-    version_ = base::UTF8ToWide(app_state.version.GetString());
+    version_ = base::UTF8ToWide(app_state.version);
     ap_ = base::UTF8ToWide(app_state.ap);
     brand_code_ = base::UTF8ToWide(app_state.brand_code);
     brand_path_ = app_state.brand_path.value();
@@ -140,10 +140,9 @@ STDMETHODIMP UpdateStateImpl::get_appId(BSTR* app_id) {
 STDMETHODIMP UpdateStateImpl::get_nextVersion(BSTR* next_version) {
   CHECK(next_version);
   *next_version =
-      base::win::ScopedBstr(
-          update_state_.next_version.IsValid()
-              ? base::UTF8ToWide(update_state_.next_version.GetString())
-              : L"")
+      base::win::ScopedBstr(base::Version(update_state_.next_version).IsValid()
+                                ? base::UTF8ToWide(update_state_.next_version)
+                                : L"")
           .Release();
   return S_OK;
 }

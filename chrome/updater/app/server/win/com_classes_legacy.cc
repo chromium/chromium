@@ -35,6 +35,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
@@ -668,12 +669,13 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
     base::AutoLock lock{lock_};
 
-    if (!state_update_ || !state_update_->next_version.IsValid()) {
+    if (!state_update_ ||
+        !base::Version(state_update_->next_version).IsValid()) {
       return E_FAIL;
     }
 
     return MakeAndInitializeComObject<AppVersionWebImpl>(
-        next, base::UTF8ToWide(state_update_->next_version.GetString()));
+        next, base::UTF8ToWide(state_update_->next_version));
   }
 
   IFACEMETHODIMP get_command(BSTR command_id, IDispatch** command) override {
@@ -768,8 +770,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           break;
       }
 
-      available_version =
-          base::UTF8ToWide(state_update_->next_version.GetString());
+      available_version = base::UTF8ToWide(state_update_->next_version);
       bytes_downloaded = state_update_->downloaded_bytes;
       total_bytes_to_download = state_update_->total_bytes;
       install_progress_percentage = state_update_->install_progress;

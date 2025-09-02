@@ -50,7 +50,7 @@ class UpdaterIPCTestCase : public testing::Test {
   static std::vector<UpdateService::AppState> GetExampleAppStates() {
     UpdateService::AppState ex1;
     ex1.app_id = "ex1";
-    ex1.version = base::Version("9.19.20");
+    ex1.version = "9.19.20";
     ex1.ap = "foo";
     ex1.brand_code = "FooBarInc";
     ex1.brand_path = base::FilePath("/path/to/foo_bar");
@@ -58,7 +58,7 @@ class UpdaterIPCTestCase : public testing::Test {
 
     UpdateService::AppState ex2;
     ex2.app_id = "ex2";
-    ex2.version = base::Version("98.4.5");
+    ex2.version = "98.4.5";
     ex2.ap = "zaz";
     ex2.brand_code = "BazInc";
     ex2.brand_path = base::FilePath("/path/to/baz");
@@ -75,7 +75,7 @@ class UpdaterIPCTestCase : public testing::Test {
     UpdateService::UpdateState state2;
     state2.app_id = "ex2";
     state2.state = UpdateService::UpdateState::State::kDownloading;
-    state2.next_version = base::Version("3.14");
+    state2.next_version = "3.14";
     state2.downloaded_bytes = 1024;
     state2.total_bytes = 2048;
 
@@ -95,9 +95,11 @@ class UpdaterIPCTestCase : public testing::Test {
                                       const UpdateService::UpdateState& rhs) {
     EXPECT_EQ(lhs.app_id, rhs.app_id);
     EXPECT_EQ(lhs.state, rhs.state);
-    EXPECT_EQ(lhs.next_version.IsValid(), rhs.next_version.IsValid());
-    if (lhs.next_version.IsValid() && rhs.next_version.IsValid()) {
-      EXPECT_EQ(lhs.next_version, rhs.next_version);
+    const base::Version lhs_next_version = base::Version(lhs.next_version);
+    const base::Version rhs_next_version = base::Version(rhs.next_version);
+    EXPECT_EQ(lhs_next_version.IsValid(), rhs_next_version.IsValid());
+    if (lhs_next_version.IsValid() && rhs_next_version.IsValid()) {
+      EXPECT_EQ(lhs_next_version, rhs_next_version);
     }
     EXPECT_EQ(lhs.downloaded_bytes, rhs.downloaded_bytes);
     EXPECT_EQ(lhs.total_bytes, rhs.total_bytes);
@@ -427,7 +429,7 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
           ASSERT_EQ(app_states.size(), 2U);
 
           EXPECT_EQ(app_states[0].app_id, "ex1");
-          EXPECT_EQ(app_states[0].version, base::Version("9.19.20"));
+          EXPECT_EQ(app_states[0].version, "9.19.20");
           EXPECT_EQ(app_states[0].ap, "foo");
           EXPECT_EQ(app_states[0].brand_code, "FooBarInc");
           EXPECT_EQ(app_states[0].brand_path,
@@ -435,7 +437,7 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
           EXPECT_EQ(app_states[0].ecp, base::FilePath("path/to/foo_ecp"));
 
           EXPECT_EQ(app_states[1].app_id, "ex2");
-          EXPECT_EQ(app_states[1].version, base::Version("98.4.5"));
+          EXPECT_EQ(app_states[1].version, "98.4.5");
           EXPECT_EQ(app_states[1].ap, "zaz");
           EXPECT_EQ(app_states[1].brand_code, "BazInc");
           EXPECT_EQ(app_states[1].brand_path, base::FilePath("/path/to/baz"));

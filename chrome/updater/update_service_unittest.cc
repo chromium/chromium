@@ -4,6 +4,7 @@
 
 #include "chrome/updater/update_service.h"
 
+#include <sstream>
 #include <string>
 
 #include "base/version.h"
@@ -19,15 +20,17 @@ TEST(UpdateServiceTest, UpdateServiceState) {
   // Ignore version in the comparison, if both versions are not set.
   EXPECT_EQ(state1, state2);
 
-  state1.next_version = base::Version("1.0");
+  state1.next_version = "1.0";
   EXPECT_NE(state1, state2);
 
-  state2.next_version = base::Version("1.0");
+  state2.next_version = "1.0";
   EXPECT_EQ(state1, state2);
 
   state2.state = UpdateService::UpdateState::State::kUpdateError;
   EXPECT_NE(state1, state2);
-  EXPECT_EQ(::testing::PrintToString(state1),
+  std::ostringstream state1_stream;
+  state1_stream << state1;
+  EXPECT_EQ(state1_stream.str(),
             "UpdateState {app_id: , state: unknown, next_version: 1.0, "
             "downloaded_bytes: -1, total_bytes: -1, install_progress: -1, "
             "error_category: none, error_code: 0, extra_code1: 0}");
