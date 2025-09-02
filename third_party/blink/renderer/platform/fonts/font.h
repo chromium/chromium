@@ -202,6 +202,10 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
     EnsureFontFallbackList()->NullifyPrimarySimpleFontDataForTesting();
   }
 
+  // Reset `font_fallback_list_` to decouple `SimpleFontData`. This is
+  // required not to leak `SimpleFontData` via initial `ComputedStyle`.
+  void NullifyForTesting() { font_fallback_list_ = nullptr; }
+
   void ReportNotDefGlyph() const;
 
   void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,

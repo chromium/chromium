@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
@@ -198,6 +199,18 @@ void PageTestBase::SetupPageWithClients(
 void PageTestBase::TearDown() {
   dummy_page_holder_ = nullptr;
   MemoryCache::Get()->EvictResources();
+
+  // `SimpleFontData` is leaked because of
+  // `ComputedStyle::GetInitialStyleSingleton()`. i.e.
+  // `ComputedStyleBase::inherited_data_::font_` ->
+  // `Font::font_fallback_list_` -> `FontFallbackList::font_list_`. The leak
+  // may cause `Debug check failed: isolate == isolate_` while running
+  // `~SimpleFontData`. So we have to decouple FontFallbackList from the
+  // initial style. `FontFallbackList` will be recreated by
+  // `EnsureFallbackList()` if needed.
+  const_cast<ComputedStyle*>(ComputedStyle::GetInitialStyleSingleton())
+      ->GetFont()
+      ->NullifyForTesting();
 }
 
 Document& PageTestBase::GetDocument() const {
