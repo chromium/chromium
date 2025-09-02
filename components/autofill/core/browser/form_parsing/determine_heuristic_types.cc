@@ -4,10 +4,13 @@
 
 #include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
 
+#include <memory>
+
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
@@ -29,7 +32,7 @@ raw_ptr<const FormFieldData> to_form_field_data(
 // Classifies each field using the regular expressions. The classifications
 // are returned, but not assigned to the `fields_` yet. Use
 // `AssignBestFieldTypes()` to do so.
-FieldCandidatesMap ParseFieldTypesWithPatterns(FormStructure& form,
+FieldCandidatesMap ParseFieldTypesWithPatterns(const FormStructure& form,
                                                ParsingContext& context) {
   FieldCandidatesMap field_type_map;
 
@@ -60,22 +63,15 @@ FieldCandidatesMap ParseFieldTypesWithPatterns(FormStructure& form,
   return field_type_map;
 }
 
-// Assigns the best heuristic types from the `field_type_map` to the heuristic
-// types of the corresponding fields for the `pattern_source`.
-void AssignBestFieldTypes(
-    const FieldCandidatesMap& field_type_map,
-    HeuristicSource heuristic_source,
-    base::span<const std::unique_ptr<AutofillField>> fields) {
-  if (field_type_map.empty()) {
-    return;
-  }
+}  // namespace
 
-  // Fields can share the same field signature. This map records for each
-  // signature how many fields with the same signature have been observed.
-  auto field_rank_map = base::MakeFlatMap<FieldSignature, size_t>(
-      fields, std::less<>(), [](const std::unique_ptr<AutofillField>& field) {
-        return std::make_pair(field->GetFieldSignature(), 0);
-      });
+HeuristicPredictions::HeuristicPredictions(
+    HeuristicSource source,
+    const FieldCandidatesMap& field_type_map,
+    base::span<const std::unique_ptr<AutofillField>> fields)
+    : source_(source) {
+  const HeuristicSource active_source = GetActiveHeuristicSource();
+  std::vector<std::pair<FieldGlobalId, FieldType>> field_predictions;
   for (const auto& field : fields) {
     auto iter = field_type_map.find(field->global_id());
     if (iter == field_type_map.end()) {
@@ -83,25 +79,56 @@ void AssignBestFieldTypes(
     }
 
     const FieldCandidates& candidates = iter->second;
-    field->set_heuristic_type(heuristic_source, candidates.BestHeuristicType());
-    if (heuristic_source == GetActiveHeuristicSource()) {
+    if (source_ == active_source) {
       autofill_metrics::LogLocalHeuristicMatchedAttribute(
           candidates.BestHeuristicTypeReason());
     }
 
+    field_predictions.emplace_back(field->global_id(),
+                                   candidates.BestHeuristicType());
+  }
+  predictions_ = base::flat_map(std::move(field_predictions));
+}
+
+HeuristicPredictions::HeuristicPredictions(const HeuristicPredictions&) =
+    default;
+
+HeuristicPredictions::HeuristicPredictions(HeuristicPredictions&&) = default;
+
+HeuristicPredictions& HeuristicPredictions::operator=(
+    const HeuristicPredictions&) = default;
+
+HeuristicPredictions& HeuristicPredictions::operator=(HeuristicPredictions&&) =
+    default;
+
+HeuristicPredictions::~HeuristicPredictions() = default;
+
+void HeuristicPredictions::ApplyTo(
+    base::span<const std::unique_ptr<AutofillField>> fields) const {
+  // Fields can share the same field signature. This map records for each
+  // signature how many fields with the same signature have been observed.
+  auto field_rank_map = base::MakeFlatMap<FieldSignature, size_t>(
+      fields, std::less<>(), [](const std::unique_ptr<AutofillField>& field) {
+        return std::make_pair(field->GetFieldSignature(), 0);
+      });
+
+  for (const std::unique_ptr<AutofillField>& field : fields) {
+    auto it = predictions_.find(field->global_id());
+    if (it == predictions_.end()) {
+      continue;
+    }
+    field->set_heuristic_type(source_, it->second);
+
     const size_t field_rank = ++field_rank_map.at(field->GetFieldSignature());
     // Log the field type predicted from local heuristics.
     field->AppendLogEventIfNotRepeated(HeuristicPredictionFieldLogEvent{
-        .field_type = field->heuristic_type(heuristic_source),
-        .heuristic_source = heuristic_source,
-        .is_active_heuristic_source =
-            GetActiveHeuristicSource() == heuristic_source,
+        .field_type = field->heuristic_type(source_),
+        .heuristic_source = source_,
+        .is_active_heuristic_source = GetActiveHeuristicSource() == source_,
         .rank_in_field_signature_group = field_rank,
     });
   }
 }
-
-}  // namespace
 
 void DetermineHeuristicTypes(const GeoIpCountryCode& client_country,
                              const LanguageCode& current_page_language,
@@ -121,10 +148,10 @@ void DetermineHeuristicTypes(const GeoIpCountryCode& client_country,
                          PatternFile::kLegacy,
 #endif
                          GetActiveRegexFeatures(), log_manager);
-  FieldCandidatesMap regex_predictions =
-      ParseFieldTypesWithPatterns(form, context);
-  AssignBestFieldTypes(regex_predictions, HeuristicSource::kRegexes,
-                       form.fields());
+  HeuristicPredictions predictions = HeuristicPredictions(
+      HeuristicSource::kRegexes, ParseFieldTypesWithPatterns(form, context),
+      form.fields());
+  predictions.ApplyTo(form.fields());
 }
 
 }  // namespace autofill
