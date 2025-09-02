@@ -565,7 +565,7 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
-    cores = 32,
+    cores = "16|32",
     ssd = True,
     main_list_view = "try",
     properties = {
