@@ -115,6 +115,10 @@ class ProfileManagerIOS {
   // Returns the ProfileAttributesStorageIOS associated with this manager.
   virtual ProfileAttributesStorageIOS* GetProfileAttributesStorage() = 0;
 
+  // Returns the path to a given profile's data on disk. It is an error to call
+  // this method for a non-existent profile.
+  virtual base::FilePath GetProfilePath(std::string_view name) = 0;
+
  protected:
   ProfileManagerIOS() {}
 

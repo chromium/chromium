@@ -63,6 +63,7 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   bool IsProfileMarkedForDeletion(std::string_view name) const override;
   void PurgeProfilesMarkedForDeletion(base::OnceClosure callback) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
+  base::FilePath GetProfilePath(std::string_view name) override;
 
   // ProfileIOS::Delegate:
   void OnProfileCreationStarted(ProfileIOS* profile,

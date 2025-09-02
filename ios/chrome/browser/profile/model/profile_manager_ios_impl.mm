@@ -372,6 +372,12 @@ ProfileManagerIOSImpl::GetProfileAttributesStorage() {
   return &profile_attributes_storage_;
 }
 
+base::FilePath ProfileManagerIOSImpl::GetProfilePath(std::string_view name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(profile_attributes_storage_.HasProfileWithName(name));
+  return profile_data_dir_.Append(name);
+}
+
 void ProfileManagerIOSImpl::OnProfileCreationStarted(
     ProfileIOS* profile,
     CreationMode creation_mode) {

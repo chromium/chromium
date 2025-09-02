@@ -298,6 +298,10 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
     return &profile_attributes_storage_;
   }
 
+  base::FilePath GetProfilePath(std::string_view name) override {
+    NOTREACHED();
+  }
+
  private:
   ScopedProfileKeepAliveIOS CreateScopedProfileKeepAlive(ProfileIOS* profile) {
     return ScopedProfileKeepAliveIOS(CreatePassKey(), profile, {});

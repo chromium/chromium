@@ -50,6 +50,7 @@ class TestProfileManagerIOS : public ProfileManagerIOS {
   bool IsProfileMarkedForDeletion(std::string_view name) const override;
   void PurgeProfilesMarkedForDeletion(base::OnceClosure callback) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
+  base::FilePath GetProfilePath(std::string_view name) override;
 
   // Builds and adds a TestProfileIOS using `builder`. Asserts that no Profile
   // share the same name. Returns a pointer to the new object.

@@ -164,6 +164,11 @@ TestProfileManagerIOS::GetProfileAttributesStorage() {
   return &profile_attributes_storage_;
 }
 
+base::FilePath TestProfileManagerIOS::GetProfilePath(std::string_view name) {
+  CHECK(profile_attributes_storage_.HasProfileWithName(name));
+  return profile_data_dir_.Append(name);
+}
+
 TestProfileIOS* TestProfileManagerIOS::AddProfileWithBuilder(
     TestProfileIOS::Builder builder) {
   const std::string profile_name = builder.GetEffectiveName();
