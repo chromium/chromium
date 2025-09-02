@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/browser_window/internal/jni/AndroidBaseWindow_jni.h"
 #include "ui/android/window_android.h"
@@ -70,7 +71,9 @@ gfx::NativeWindow AndroidBaseWindow::GetNativeWindow() const {
 }
 
 gfx::Rect AndroidBaseWindow::GetRestoredBounds() const {
-  NOTREACHED();
+  // TODO(http://crbug.com/435478605): Implement this.
+  NOTIMPLEMENTED();
+  return gfx::Rect();
 }
 
 ui::mojom::WindowShowState AndroidBaseWindow::GetRestoredState() const {
