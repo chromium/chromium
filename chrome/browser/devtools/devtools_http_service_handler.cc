@@ -10,6 +10,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -24,23 +25,20 @@ DevToolsHttpServiceHandler::Result::operator=(Result&&) = default;
 DevToolsHttpServiceHandler::~DevToolsHttpServiceHandler() = default;
 DevToolsHttpServiceHandler::DevToolsHttpServiceHandler() = default;
 
-void DevToolsHttpServiceHandler::Request(Profile* profile,
-                                         const std::string& path,
-                                         const std::string& method,
-                                         const std::optional<std::string>& body,
-                                         Callback callback) {
+void DevToolsHttpServiceHandler::Request(
+    Profile* profile,
+    const DevToolsDispatchHttpRequestParams& params,
+    Callback callback) {
   CanMakeRequest(profile,
                  base::BindOnce(&DevToolsHttpServiceHandler::OnValidationDone,
                                 weak_factory_.GetWeakPtr(), std::move(callback),
-                                profile, path, method, body));
+                                profile, params));
 }
 
 void DevToolsHttpServiceHandler::OnValidationDone(
     Callback callback,
     Profile* profile,
-    const std::string& path,
-    const std::string& method,
-    const std::optional<std::string>& body,
+    const DevToolsDispatchHttpRequestParams& params,
     bool validation_success) {
   if (!validation_success) {
     auto result = std::make_unique<Result>();
@@ -58,7 +56,7 @@ void DevToolsHttpServiceHandler::OnValidationDone(
           "DevTools_dispatchHttpRequest", OAuthScopes(),
           base::BindOnce(&DevToolsHttpServiceHandler::OnTokenFetched,
                          weak_factory_.GetWeakPtr(), std::move(callback),
-                         profile, path, method, body, fetcher_id),
+                         profile, params, fetcher_id),
           signin::AccessTokenFetcher::Mode::kImmediate);
   access_token_fetchers_.insert({
       fetcher_id,
@@ -69,9 +67,7 @@ void DevToolsHttpServiceHandler::OnValidationDone(
 void DevToolsHttpServiceHandler::OnTokenFetched(
     Callback callback,
     Profile* profile,
-    const std::string& path,
-    const std::string& method,
-    const std::optional<std::string>& body,
+    const DevToolsDispatchHttpRequestParams& params,
     base::UnguessableToken fetcher_id,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
@@ -85,8 +81,15 @@ void DevToolsHttpServiceHandler::OnTokenFetched(
   }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = BaseURL().Resolve(path);
-  resource_request->method = method;
+  GURL url = BaseURL().Resolve(params.path);
+  for (const auto& pair : params.query_params) {
+    const std::string& key = pair.first;
+    for (const std::string& value : pair.second) {
+      url = net::AppendQueryParameter(url, key, value);
+    }
+  }
+  resource_request->url = url;
+  resource_request->method = params.method;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + access_token_info.token);
 
@@ -94,8 +97,9 @@ void DevToolsHttpServiceHandler::OnTokenFetched(
       std::move(resource_request), NetworkTrafficAnnotationTag());
   simple_url_loader->SetAllowHttpErrorResults(true);
 
-  if (body.has_value()) {
-    simple_url_loader->AttachStringForUpload(body.value(), "application/json");
+  if (params.body.has_value()) {
+    simple_url_loader->AttachStringForUpload(params.body.value(),
+                                             "application/json");
   }
 
   network::SimpleURLLoader* loader_ptr = simple_url_loader.get();

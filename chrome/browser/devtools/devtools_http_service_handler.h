@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -57,9 +58,7 @@ class DevToolsHttpServiceHandler {
   virtual ~DevToolsHttpServiceHandler();
 
   void Request(Profile* profile,
-               const std::string& path,
-               const std::string& method,
-               const std::optional<std::string>& body,
+               const DevToolsDispatchHttpRequestParams& params,
                Callback callback);
 
  private:
@@ -80,16 +79,12 @@ class DevToolsHttpServiceHandler {
 
   void OnValidationDone(Callback callback,
                         Profile* profile,
-                        const std::string& path,
-                        const std::string& method,
-                        const std::optional<std::string>& body,
+                        const DevToolsDispatchHttpRequestParams& params,
                         bool validation_success);
 
   void OnTokenFetched(Callback callback,
                       Profile* profile,
-                      const std::string& path,
-                      const std::string& method,
-                      const std::optional<std::string>& body,
+                      const DevToolsDispatchHttpRequestParams& params,
                       base::UnguessableToken fetcher_id,
                       GoogleServiceAuthError error,
                       signin::AccessTokenInfo access_token_info);

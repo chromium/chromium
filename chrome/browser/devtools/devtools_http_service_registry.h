@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
+#include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
 
 class Profile;
@@ -40,10 +40,7 @@ class DevToolsHttpServiceRegistry {
   };
 
   void Request(Profile* profile,
-               const std::string& service,
-               const std::string& path,
-               const std::string& method,
-               const std::optional<std::string>& body,
+               const DevToolsDispatchHttpRequestParams& params,
                DevToolsHttpServiceHandler::Callback callback);
 
   void AddForTesting(Service service) {

@@ -5,12 +5,17 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_DISPATCH_HTTP_REQUEST_PARAMS_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_DISPATCH_HTTP_REQUEST_PARAMS_H_
 
+#include <map>
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/values.h"
 
 struct DevToolsDispatchHttpRequestParams {
+  using QueryParams = base::flat_map<std::string, std::vector<std::string>>;
+
   DevToolsDispatchHttpRequestParams();
   ~DevToolsDispatchHttpRequestParams();
   DevToolsDispatchHttpRequestParams(const DevToolsDispatchHttpRequestParams&);
@@ -27,6 +32,7 @@ struct DevToolsDispatchHttpRequestParams {
   std::string path;
   std::string method;
   std::optional<std::string> body;
+  QueryParams query_params;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_DISPATCH_HTTP_REQUEST_PARAMS_H_

@@ -44,5 +44,22 @@ DevToolsDispatchHttpRequestParams::FromDict(const base::Value::Dict& dict) {
     params.body = *body;
   }
 
+  const base::Value::Dict* query_params_dict = dict.FindDict("queryParams");
+  if (query_params_dict) {
+    for (auto it : *query_params_dict) {
+      const std::string& key = it.first;
+      const base::Value& value = it.second;
+      if (value.is_string()) {
+        params.query_params[key].push_back(value.GetString());
+      } else if (value.is_list()) {
+        for (const auto& item : value.GetList()) {
+          if (item.is_string()) {
+            params.query_params[key].push_back(item.GetString());
+          }
+        }
+      }
+    }
+  }
+
   return params;
 }

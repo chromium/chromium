@@ -26,27 +26,27 @@ DevToolsHttpServiceRegistry::DevToolsHttpServiceRegistry() {
                                   {"/v1/registerClientEvent", "POST"},
                               },
                               std::make_unique<AidaServiceHandler>()));
-  services_.push_back(Service("gdpService",
-                              {
-                                  {"/v1beta1/profile:get", "GET"},
-                                  {"/v1beta1/eligibility:check", "GET"},
-                                  {"/v1beta1/profiles/me/awards", "GET"},
-                                  {"/v1beta1/profiles", "POST"},
-                                  {"/v1beta1/profiles/me/awards", "POST"},
-                              },
-                              std::make_unique<GdpServiceHandler>()));
+  services_.push_back(
+      Service("gdpService",
+              {
+                  {"/v1beta1/profile:get", "GET"},
+                  {"/v1beta1/eligibility:check", "GET"},
+                  {"/v1beta1/profiles/me/awards", "GET"},
+                  {"/v1beta1/profiles/me/awards:batchGet", "GET"},
+                  {"/v1beta1/profiles", "POST"},
+                  {"/v1beta1/profiles/me/awards", "POST"},
+              },
+              std::make_unique<GdpServiceHandler>()));
 }
 DevToolsHttpServiceRegistry::~DevToolsHttpServiceRegistry() = default;
 
 void DevToolsHttpServiceRegistry::Request(
     Profile* profile,
-    const std::string& service,
-    const std::string& path,
-    const std::string& method,
-    const std::optional<std::string>& body,
+    const DevToolsDispatchHttpRequestParams& params,
     DevToolsHttpServiceHandler::Callback callback) {
   // Service exists?
-  auto service_it = std::ranges::find(services_, service, &Service::service);
+  auto service_it =
+      std::ranges::find(services_, params.service, &Service::service);
   if (service_it == services_.end()) {
     auto result = std::make_unique<DevToolsHttpServiceHandler::Result>();
     result->error = DevToolsHttpServiceHandler::Result::Error::kServiceNotFound;
@@ -56,9 +56,9 @@ void DevToolsHttpServiceRegistry::Request(
 
   // Endpoint allowed?
   if (std::ranges::none_of(service_it->endpoints,
-                           [&path, &method](const Service::Endpoint& endpoint) {
-                             return endpoint.path == path &&
-                                    endpoint.method == method;
+                           [&params](const Service::Endpoint& endpoint) {
+                             return endpoint.path == params.path &&
+                                    endpoint.method == params.method;
                            })) {
     auto result = std::make_unique<DevToolsHttpServiceHandler::Result>();
     result->error = DevToolsHttpServiceHandler::Result::Error::kAccessDenied;
@@ -66,6 +66,5 @@ void DevToolsHttpServiceRegistry::Request(
     return;
   }
 
-  service_it->handler->Request(profile, path, method, body,
-                               std::move(callback));
+  service_it->handler->Request(profile, params, std::move(callback));
 }

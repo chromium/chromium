@@ -277,7 +277,9 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   //   `aidaService`).
   // - `path`: The specific API path (e.g., `/v1/aida:codeComplete`).
   // - `method`: The HTTP method (e.g., `POST`).
-  // - `body`: The request payload (or empty string).
+  // - `body`: The optional request payload.
+  // - `queryParams`: An optional dictionary of URL query parameters. Keys are
+  //   strings, and values can be either a string or an array of strings.
   //
   // Successful Response:
   // The callback will be invoked with a dictionary containing:

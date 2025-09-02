@@ -1080,7 +1080,7 @@ void DevToolsUIBindings::DispatchHttpRequest(
     DispatchCallback callback,
     const DevToolsDispatchHttpRequestParams& params) {
   http_service_registry_->Request(
-      profile_, params.service, params.path, params.method, params.body,
+      profile_, params,
       base::BindOnce(&DevToolsUIBindings::OnHttpRequestPerformed,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
