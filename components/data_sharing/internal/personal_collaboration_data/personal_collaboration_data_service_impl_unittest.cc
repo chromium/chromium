@@ -20,7 +20,6 @@ namespace data_sharing::personal_collaboration_data {
 namespace {
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::ReturnRef;
 
@@ -54,9 +53,9 @@ class PersonalCollaborationDataServiceImplTest : public testing::Test {
 
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-    EXPECT_CALL(mock_processor_, ModelReadyToSync).WillOnce(Invoke([&]() {
+    EXPECT_CALL(mock_processor_, ModelReadyToSync).WillOnce([&]() {
       quit_closure.Run();
-    }));
+    });
     EXPECT_CALL(mock_observer_, OnInitialized());
 
     service_ = std::make_unique<PersonalCollaborationDataServiceImpl>(
