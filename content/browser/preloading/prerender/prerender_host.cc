@@ -545,7 +545,8 @@ bool PrerenderHost::StartPrerendering() {
   load_url_params.referrer = attributes_.referrer;
 
   load_url_params.override_user_agent =
-      web_contents_->GetDelegate()->ShouldOverrideUserAgentForPrerender2();
+      web_contents_->GetDelegate()->ShouldOverrideUserAgentForPrerender2(
+          attributes_.prerendering_url);
 
   // TODO(https://crbug.com/1406149, https://crbug.com/1378921): Set
   // `override_user_agent` for Android. This field is determined on the Java

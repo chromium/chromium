@@ -39,6 +39,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwWebContentsDelegate_jni.h"
@@ -377,7 +378,7 @@ int AwWebContentsDelegate::AllowedPrerenderingCount(
 }
 
 content::NavigationController::UserAgentOverrideOption
-AwWebContentsDelegate::ShouldOverrideUserAgentForPrerender2() {
+AwWebContentsDelegate::ShouldOverrideUserAgentForPrerender2(const GURL& url) {
   // For WebView, always use the user agent override, which is set every time
   // the user agent in AwSettings is modified.
   return content::NavigationController::UA_OVERRIDE_TRUE;

@@ -52,6 +52,7 @@ import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.InvalidateTypes;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
@@ -633,6 +634,11 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         } else {
             ZoomController.zoomOut(wc);
         }
+    }
+
+    @Override
+    public @UserAgentOverrideOption int shouldOverrideUserAgentForPrerender2(GURL url) {
+        return mTab.calculateUserAgentOverrideOption(url);
     }
 
     @Override

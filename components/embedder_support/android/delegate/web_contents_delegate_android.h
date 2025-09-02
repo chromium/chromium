@@ -145,6 +145,8 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   content::BackForwardTransitionAnimationManager::FallbackUXConfig
   GetBackForwardTransitionFallbackUXConfig() override;
   void ContentsZoomChange(bool zoom_in) override;
+  content::NavigationController::UserAgentOverrideOption
+  ShouldOverrideUserAgentForPrerender2(const GURL& url) override;
 
  protected:
   base::android::ScopedJavaLocalRef<jobject> GetJavaDelegate(JNIEnv* env) const;

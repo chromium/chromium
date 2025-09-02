@@ -2556,7 +2556,7 @@ class TabImpl implements Tab {
         }
     }
 
-    private @UserAgentOverrideOption int calculateUserAgentOverrideOption(@Nullable GURL url) {
+    public @UserAgentOverrideOption int calculateUserAgentOverrideOption(@Nullable GURL url) {
         WebContents webContents = getWebContents();
         boolean currentRequestDesktopSite = TabUtils.isUsingDesktopUserAgent(webContents);
         // INHERIT means use the same UA that was used last time.

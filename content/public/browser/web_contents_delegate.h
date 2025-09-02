@@ -769,9 +769,11 @@ class CONTENT_EXPORT WebContentsDelegate {
   // WebContents::StartPrerendering().
   virtual int AllowedPrerenderingCount(WebContents& web_contents);
 
-  // Returns whether to override user agent for prerendering navigation.
+  // Returns whether to override user agent for prerendering navigation. `url`
+  // is the target URL of the request. This function can be called repeatedly
+  // for each URL in the redirect chain.
   virtual NavigationController::UserAgentOverrideOption
-  ShouldOverrideUserAgentForPrerender2();
+  ShouldOverrideUserAgentForPrerender2(const GURL& url);
 
   // Returns true if the embedder allows initiator and transition type mismatch
   // for prerender activation navigations that are embedder-initiated and have

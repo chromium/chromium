@@ -640,6 +640,10 @@ BASE_FEATURE(PrefetchPrerenderIntegration, base::FEATURE_DISABLED_BY_DEFAULT);
 // If explicitly disabled, prefetch proxy is not used.
 BASE_FEATURE(PrefetchProxy, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Killswitch for UA override issue fix (crbug.com/441612842) in preloading.
+BASE_FEATURE(PreloadingRespectUserAgentOverride,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the feature allows the prerender host to be reused for the
 // future same-site page prerender if marked as reusable.
 BASE_FEATURE(Prerender2ReuseHost, base::FEATURE_DISABLED_BY_DEFAULT);
