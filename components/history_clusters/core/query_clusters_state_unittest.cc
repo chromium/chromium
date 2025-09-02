@@ -23,7 +23,6 @@
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 using ::testing::SaveArg;
 
 namespace history_clusters {

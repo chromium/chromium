@@ -152,9 +152,9 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ScoreTrue) {
 
   // Above threshold.
   ON_CALL(session_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
-                  callback) { std::move(callback).Run(0.6); })));
+                  callback) { std::move(callback).Run(0.6); }));
 
   MlIntentClassifier intent_classifier(&executor_);
   {
@@ -174,9 +174,9 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ScoreFalse) {
 
   // below threshold.
   ON_CALL(session_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
-                  callback) { std::move(callback).Run(0.4); })));
+                  callback) { std::move(callback).Run(0.4); }));
 
   MlIntentClassifier intent_classifier(&executor_);
   {
@@ -196,9 +196,9 @@ TEST_F(HistoryEmbeddingsMlIntentClassifierTest, ScoreFailure) {
 
   // Null score
   ON_CALL(session_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
-                  callback) { std::move(callback).Run(std::nullopt); })));
+                  callback) { std::move(callback).Run(std::nullopt); }));
 
   MlIntentClassifier intent_classifier(&executor_);
   {

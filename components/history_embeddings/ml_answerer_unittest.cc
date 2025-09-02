@@ -101,9 +101,9 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerNoSession) {
   });
 
   ON_CALL(session_1_, GetSizeInTokens(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                  callback) { std::move(callback).Run(100); })));
+                  callback) { std::move(callback).Run(100); }));
 
   Answerer::Context context("1");
   context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
@@ -121,17 +121,17 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerExecutionFailure) {
   });
 
   ON_CALL(session_1_, GetSizeInTokens(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                  callback) { std::move(callback).Run(100); })));
+                  callback) { std::move(callback).Run(100); }));
 
   ON_CALL(session_1_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
-                  callback) { std::move(callback).Run(0.6); })));
+                  callback) { std::move(callback).Run(0.6); }));
 
   ON_CALL(session_1_, ExecuteModel(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
@@ -146,7 +146,7 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerExecutionFailure) {
                                     OptimizationGuideModelExecutionError::
                                         ModelExecutionError::kGenericFailure)),
                         /*provided_by_on_device=*/true, nullptr)));
-          })));
+          }));
 
   Answerer::Context context("1");
   context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
@@ -164,17 +164,17 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerSingleUrl) {
   });
 
   ON_CALL(session_1_, GetSizeInTokens(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                  callback) { std::move(callback).Run(100); })));
+                  callback) { std::move(callback).Run(100); }));
 
   ON_CALL(session_1_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
-                  callback) { std::move(callback).Run(0.6); })));
+                  callback) { std::move(callback).Run(0.6); }));
 
   ON_CALL(session_1_, ExecuteModel(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
@@ -184,7 +184,7 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerSingleUrl) {
                                OptimizationGuideModelStreamingExecutionResult(
                                    base::ok(MakeResponse("Answer_1")),
                                    /*provided_by_on_device=*/true, nullptr)));
-          })));
+          }));
 
   Answerer::Context context("1");
   context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
@@ -211,29 +211,29 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerMultipleUrls) {
       });
 
   ON_CALL(session_1_, GetSizeInTokens(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                  callback) { std::move(callback).Run(100); })));
+                  callback) { std::move(callback).Run(100); }));
 
   ON_CALL(session_2_, GetSizeInTokens(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                  callback) { std::move(callback).Run(100); })));
+                  callback) { std::move(callback).Run(100); }));
 
   ON_CALL(session_1_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
-                  callback) { std::move(callback).Run(0.6); })));
+                  callback) { std::move(callback).Run(0.6); }));
 
   ON_CALL(session_2_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
                   callback) {
             std::move(callback).Run(0.9);
-          })));  // Speculative decoding should continue with this session.
+          }));  // Speculative decoding should continue with this session.
 
   ON_CALL(session_2_, ExecuteModel(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
@@ -243,7 +243,7 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerMultipleUrls) {
                                OptimizationGuideModelStreamingExecutionResult(
                                    base::ok(MakeResponse("Answer_2")),
                                    /*provided_by_on_device=*/true, nullptr)));
-          })));
+          }));
 
   Answerer::Context context("1");
   context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
@@ -271,15 +271,15 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerUnanswerable) {
   });
 
   ON_CALL(session_1_, GetSizeInTokens(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                  callback) { std::move(callback).Run(100); })));
+                  callback) { std::move(callback).Run(100); }));
 
   // Below the default 0.5 threshold.
   ON_CALL(session_1_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
-                  callback) { std::move(callback).Run(0.3); })));
+                  callback) { std::move(callback).Run(0.3); }));
 
   Answerer::Context context("1");
   context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
@@ -296,15 +296,15 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerNullScores) {
   });
 
   ON_CALL(session_1_, GetSizeInTokens(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                  callback) { std::move(callback).Run(100); })));
+                  callback) { std::move(callback).Run(100); }));
 
   // Null score
   ON_CALL(session_1_, Score(_, _))
-      .WillByDefault(testing::WithArg<1>(testing::Invoke(
+      .WillByDefault(testing::WithArg<1>(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
-                  callback) { std::move(callback).Run(std::nullopt); })));
+                  callback) { std::move(callback).Run(std::nullopt); }));
 
   Answerer::Context context("1");
   context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
