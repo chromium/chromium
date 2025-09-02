@@ -32,26 +32,39 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.url.JUnitTestGURLs;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for {@link NtpSingleThemeCollectionCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
+    private static final String TEST_COLLECTION_ID = "Test Collection Id";
     private static final String TEST_COLLECTION_TITLE = "Test Collection";
+    private static final String NEW_TEST_COLLECTION_ID = "New Test Collection Id";
     private static final String NEW_TEST_COLLECTION_TITLE = "New Test Collection";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
+    @Mock private NtpThemeBridge mNtpThemeBridge;
+    @Mock private ImageFetcher mImageFetcher;
+    @Captor private ArgumentCaptor<Callback<List<CollectionImage>>> mCallbackCaptor;
 
     private NtpSingleThemeCollectionCoordinator mCoordinator;
     private Context mContext;
@@ -66,7 +79,12 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
         mCoordinator =
                 new NtpSingleThemeCollectionCoordinator(
-                        mContext, mBottomSheetDelegate, TEST_COLLECTION_TITLE);
+                        mContext,
+                        mBottomSheetDelegate,
+                        mNtpThemeBridge,
+                        mImageFetcher,
+                        TEST_COLLECTION_ID,
+                        TEST_COLLECTION_TITLE);
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate)
@@ -79,6 +97,24 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         assertNotNull(mBottomSheetView);
         TextView title = mBottomSheetView.findViewById(R.id.bottom_sheet_title);
         assertEquals(TEST_COLLECTION_TITLE, title.getText().toString());
+        verify(mNtpThemeBridge)
+                .getBackgroundImages(eq(TEST_COLLECTION_ID), mCallbackCaptor.capture());
+
+        NtpThemeCollectionsAdapter adapter = mCoordinator.getNtpThemeCollectionsAdapterForTesting();
+        NtpThemeCollectionsAdapter spiedAdapter = spy(adapter);
+        mCoordinator.setNtpThemeCollectionsAdapterForTesting(spiedAdapter);
+
+        List<CollectionImage> images = new ArrayList<>();
+        images.add(
+                new CollectionImage(
+                        TEST_COLLECTION_ID,
+                        JUnitTestGURLs.URL_1,
+                        JUnitTestGURLs.URL_1,
+                        new ArrayList<>(),
+                        JUnitTestGURLs.URL_1));
+        mCallbackCaptor.getValue().onResult(images);
+
+        verify(spiedAdapter).setItems(eq(images));
     }
 
     @Test
@@ -133,18 +169,33 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
     @Test
     public void testUpdateThemeCollection() {
+        verify(mNtpThemeBridge).getBackgroundImages(eq(TEST_COLLECTION_ID), any());
         TextView title = mCoordinator.getTitleForTesting();
         NtpThemeCollectionsAdapter adapter = mCoordinator.getNtpThemeCollectionsAdapterForTesting();
         NtpThemeCollectionsAdapter spiedAdapter = spy(adapter);
         mCoordinator.setNtpThemeCollectionsAdapterForTesting(spiedAdapter);
 
         // Title should not be updated with the same title.
-        mCoordinator.updateThemeCollection(TEST_COLLECTION_TITLE);
+        mCoordinator.updateThemeCollection(TEST_COLLECTION_ID, TEST_COLLECTION_TITLE);
+        // `getBackgroundImages` is called once in `setUp()`. No new call should be made.
+        verify(mNtpThemeBridge, times(1)).getBackgroundImages(any(), any());
         verify(spiedAdapter, times(0)).setItems(any());
 
         // Title should be updated with a new title.
-        mCoordinator.updateThemeCollection(NEW_TEST_COLLECTION_TITLE);
+        mCoordinator.updateThemeCollection(NEW_TEST_COLLECTION_ID, NEW_TEST_COLLECTION_TITLE);
         assertEquals(NEW_TEST_COLLECTION_TITLE, title.getText().toString());
-        verify(spiedAdapter).setItems(any());
+        verify(mNtpThemeBridge)
+                .getBackgroundImages(eq(NEW_TEST_COLLECTION_ID), mCallbackCaptor.capture());
+
+        List<CollectionImage> images = new ArrayList<>();
+        images.add(
+                new CollectionImage(
+                        NEW_TEST_COLLECTION_ID,
+                        JUnitTestGURLs.URL_1,
+                        JUnitTestGURLs.URL_1,
+                        new ArrayList<>(),
+                        JUnitTestGURLs.URL_1));
+        mCallbackCaptor.getValue().onResult(images);
+        verify(spiedAdapter).setItems(eq(images));
     }
 }

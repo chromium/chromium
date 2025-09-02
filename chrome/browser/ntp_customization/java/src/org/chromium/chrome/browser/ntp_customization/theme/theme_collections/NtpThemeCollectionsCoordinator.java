@@ -10,11 +10,9 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsAdapter.ThemeCollectionsItemType.THEME_COLLECTIONS_ITEM;
 
 import android.content.Context;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +22,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,19 +39,29 @@ public class NtpThemeCollectionsCoordinator {
     private static final String LEARN_MORE_CLICK_URL =
             "https://support.google.com/chrome/?p=new_tab";
 
-    private final List<Pair<String, Integer>> mThemeCollectionsList = new ArrayList<>();
+    private final List<BackgroundCollection> mThemeCollectionsList = new ArrayList<>();
     private final BottomSheetDelegate mBottomSheetDelegate;
     private final Context mContext;
     private final View mNtpThemeCollectionsBottomSheetView;
     private final View mBackButton;
     private final ImageView mLearnMoreButton;
     private final RecyclerView mThemeCollectionsBottomSheetRecyclerView;
+    private final NtpThemeBridge mNtpThemeBridge;
+    private final ImageFetcher mImageFetcher;
     private NtpThemeCollectionsAdapter mNtpThemeCollectionsAdapter;
     private @Nullable NtpSingleThemeCollectionCoordinator mNtpSingleThemeCollectionCoordinator;
 
-    public NtpThemeCollectionsCoordinator(Context context, BottomSheetDelegate delegate) {
+    public NtpThemeCollectionsCoordinator(
+            Context context, BottomSheetDelegate delegate, Profile profile) {
         mContext = context;
         mBottomSheetDelegate = delegate;
+
+        mNtpThemeBridge = new NtpThemeBridge(profile);
+        mImageFetcher =
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                        profile.getProfileKey(),
+                        GlobalDiscardableReferencePool.getReferencePool());
 
         mNtpThemeCollectionsBottomSheetView =
                 LayoutInflater.from(context)
@@ -67,8 +81,6 @@ public class NtpThemeCollectionsCoordinator {
         mLearnMoreButton = mNtpThemeCollectionsBottomSheetView.findViewById(R.id.learn_more_button);
         mLearnMoreButton.setOnClickListener(this::handleLearnMoreClick);
 
-        // TODO(crbug.com/423579377): Generate this theme collections list.
-
         // Build the RecyclerView containing theme collections in the bottom sheet.
         mThemeCollectionsBottomSheetRecyclerView =
                 mNtpThemeCollectionsBottomSheetView.findViewById(
@@ -79,11 +91,25 @@ public class NtpThemeCollectionsCoordinator {
                 new NtpThemeCollectionsAdapter(
                         mThemeCollectionsList,
                         THEME_COLLECTIONS_ITEM,
-                        this::handleThemeCollectionClick);
+                        this::handleThemeCollectionClick,
+                        mImageFetcher);
         mThemeCollectionsBottomSheetRecyclerView.setAdapter(mNtpThemeCollectionsAdapter);
+
+        // Fetches the theme collections.
+        mNtpThemeBridge.getBackgroundCollections(
+                (collections) -> {
+                    mThemeCollectionsList.clear();
+                    if (collections != null) {
+                        mThemeCollectionsList.addAll(collections);
+                    }
+                    mNtpThemeCollectionsAdapter.setItems(mThemeCollectionsList);
+                });
     }
 
     public void destroy() {
+        mNtpThemeBridge.destroy();
+        mImageFetcher.destroy();
+
         mBackButton.setOnClickListener(null);
         mLearnMoreButton.setOnClickListener(null);
 
@@ -96,25 +122,33 @@ public class NtpThemeCollectionsCoordinator {
         }
     }
 
-    void handleThemeCollectionClick(View view) {
-        TextView titleView = view.findViewById(R.id.theme_collection_title);
-        String themeCollectionTitle = "";
-        if (titleView != null) {
-            themeCollectionTitle = titleView.getText().toString();
-        }
+    private void handleThemeCollectionClick(View view) {
+        int position = mThemeCollectionsBottomSheetRecyclerView.getChildAdapterPosition(view);
+
+        if (position == RecyclerView.NO_POSITION) return;
+
+        BackgroundCollection collection = mThemeCollectionsList.get(position);
+        String collectionId = collection.id;
+        String themeCollectionTitle = collection.label;
 
         if (mNtpSingleThemeCollectionCoordinator != null) {
-            mNtpSingleThemeCollectionCoordinator.updateThemeCollection(themeCollectionTitle);
+            mNtpSingleThemeCollectionCoordinator.updateThemeCollection(
+                    collectionId, themeCollectionTitle);
         } else {
             mNtpSingleThemeCollectionCoordinator =
                     new NtpSingleThemeCollectionCoordinator(
-                            mContext, mBottomSheetDelegate, themeCollectionTitle);
+                            mContext,
+                            mBottomSheetDelegate,
+                            mNtpThemeBridge,
+                            mImageFetcher,
+                            collectionId,
+                            themeCollectionTitle);
         }
 
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.SINGLE_THEME_COLLECTION);
     }
 
-    void handleLearnMoreClick(View view) {
+    private void handleLearnMoreClick(View view) {
         launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
     }
 

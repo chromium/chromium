@@ -311,7 +311,10 @@ source_set("profiles_extra_parts_impl") {
     "//services/network/public/cpp",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/search/background",
+  ]
 
   if (is_android) {
     deps += [
@@ -334,7 +337,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
       "//chrome/browser/search",
-      "//chrome/browser/search/background",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/themes",
       "//chrome/browser/ui/global_error",

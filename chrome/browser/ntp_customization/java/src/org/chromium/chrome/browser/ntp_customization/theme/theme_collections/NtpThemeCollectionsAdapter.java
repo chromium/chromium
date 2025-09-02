@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.ntp_customization.theme.theme_collecti
 import static org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsAdapter.ThemeCollectionsItemType.THEME_COLLECTIONS_ITEM;
 
 import android.support.annotation.IntDef;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -37,6 +38,7 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
     private final List<Object> mItems;
     private final @ThemeCollectionsItemType int mThemeCollectionsItemType;
     private final View.@Nullable OnClickListener mOnClickListener;
+    private final ImageFetcher mImageFetcher;
     private @Nullable RecyclerView mRecyclerView;
 
     @IntDef({
@@ -54,18 +56,21 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
     /**
      * Constructor for the NTP theme collections adapter.
      *
-     * @param items A list of items to display. Can be of type List<Pair<String, Integer>> for items
-     *     with titles or List<Integer> for image-only items.
+     * @param items A list of items to display. Can be of type List<BackgroundCollection> for theme
+     *     collections or List<CollectionImage> for theme collection images.
      * @param themeCollectionsItemType The type of the theme collections items in the RecycleView.
      * @param onClickListener The {@link View.OnClickListener} for each theme collection item.
+     * @param imageFetcher The {@link ImageFetcher} to fetch the images.
      */
     public NtpThemeCollectionsAdapter(
             List<?> items,
             @ThemeCollectionsItemType int themeCollectionsItemType,
-            View.@Nullable OnClickListener onClickListener) {
+            View.@Nullable OnClickListener onClickListener,
+            ImageFetcher imageFetcher) {
         mItems = new ArrayList<>(items);
         mThemeCollectionsItemType = themeCollectionsItemType;
         mOnClickListener = onClickListener;
+        mImageFetcher = imageFetcher;
     }
 
     @Override
@@ -97,15 +102,17 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
 
         switch (holder.getItemViewType()) {
             case THEME_COLLECTIONS_ITEM:
-                Pair<String, Integer> collectionItem = (Pair<String, Integer>) mItems.get(position);
-                viewHolder.mTitle.setText(collectionItem.first);
-                viewHolder.mImage.setImageResource(collectionItem.second);
+                BackgroundCollection collectionItem = (BackgroundCollection) mItems.get(position);
+                viewHolder.mTitle.setText(collectionItem.label);
+                fetchImageWithPlaceholder(viewHolder, collectionItem.previewImageUrl);
                 break;
+
             case SINGLE_THEME_COLLECTION_ITEM:
-                Integer imageRes = (Integer) mItems.get(position);
-                viewHolder.mImage.setImageResource(imageRes);
+                CollectionImage imageItem = (CollectionImage) mItems.get(position);
                 viewHolder.mTitle.setVisibility(View.GONE);
+                fetchImageWithPlaceholder(viewHolder, imageItem.previewImageUrl);
                 break;
+
             default:
                 assert false : "Theme collections item type not supported!";
         }
@@ -143,10 +150,39 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
+    /**
+     * Asynchronously fetches an image from a URL and sets it on an ImageView. Handles view
+     * recycling by tagging the view with the URL and clearing any previous image.
+     *
+     * @param viewHolder The ViewHolder containing the ImageView.
+     * @param imageUrl The URL of the image to fetch.
+     */
+    private void fetchImageWithPlaceholder(ThemeCollectionViewHolder viewHolder, GURL imageUrl) {
+        // Set a tag on the ImageView to the URL of the image we're about to load. This helps us
+        // check if the view has been recycled for another item by the time the image has finished
+        // loading.
+        viewHolder.mImage.setTag(imageUrl);
+        // Clear the previous image to avoid showing stale images in recycled views.
+        viewHolder.mImage.setImageDrawable(null);
+
+        ImageFetcher.Params params =
+                ImageFetcher.Params.create(
+                        imageUrl, ImageFetcher.NTP_CUSTOMIZATION_THEME_COLLECTION_NAME);
+        mImageFetcher.fetchImage(
+                params,
+                (bitmap) -> {
+                    // Before setting the bitmap, check if the ImageView is still
+                    // supposed to display this image.
+                    if (imageUrl.equals(viewHolder.mImage.getTag()) && bitmap != null) {
+                        viewHolder.mImage.setImageBitmap(bitmap);
+                    }
+                });
+    }
+
     /** ViewHolder for items that include an image and an optional title. */
     public static class ThemeCollectionViewHolder extends RecyclerView.ViewHolder {
         final View mView;
-        final ImageView mImage;
+        ImageView mImage;
         final TextView mTitle;
 
         public ThemeCollectionViewHolder(@NonNull View itemView) {

@@ -1,0 +1,150 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ntp_customization.theme;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CollectionImage;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/** The JNI bridge that deal with theme collections for the NTP. */
+@NullMarked
+public class NtpThemeBridge {
+
+    private long mNativeNtpThemeBridge;
+
+    /**
+     * Constructs a new NtpThemeBridge.
+     *
+     * @param profile The profile for which this bridge is created.
+     */
+    public NtpThemeBridge(Profile profile) {
+        mNativeNtpThemeBridge = NtpThemeBridgeJni.get().init(profile);
+    }
+
+    /** Cleans up the C++ side of this class. */
+    public void destroy() {
+        assert mNativeNtpThemeBridge != 0;
+        NtpThemeBridgeJni.get().destroy(mNativeNtpThemeBridge);
+        mNativeNtpThemeBridge = 0;
+    }
+
+    /**
+     * Fetches the list of background collections.
+     *
+     * @param callback The callback to be invoked with the list of collections.
+     */
+    public void getBackgroundCollections(Callback<@Nullable List<BackgroundCollection>> callback) {
+        NtpThemeBridgeJni.get()
+                .getBackgroundCollections(
+                        mNativeNtpThemeBridge,
+                        new Callback<Object[]>() {
+                            @Override
+                            public void onResult(Object[] collections) {
+                                if (collections == null) {
+                                    callback.onResult(null);
+                                    return;
+                                }
+                                List<BackgroundCollection> collectionList = new ArrayList<>();
+                                for (Object o : collections) {
+                                    assert (o instanceof BackgroundCollection);
+
+                                    collectionList.add((BackgroundCollection) o);
+                                }
+                                callback.onResult(collectionList);
+                            }
+                        });
+    }
+
+    /**
+     * Fetches the list of images for a given collection.
+     *
+     * @param collectionId The ID of the collection to fetch images from.
+     * @param callback The callback to be invoked with the list of images.
+     */
+    public void getBackgroundImages(
+            String collectionId, Callback<@Nullable List<CollectionImage>> callback) {
+        NtpThemeBridgeJni.get()
+                .getBackgroundImages(
+                        mNativeNtpThemeBridge,
+                        collectionId,
+                        new Callback<Object[]>() {
+                            @Override
+                            public void onResult(Object[] images) {
+                                if (images == null) {
+                                    callback.onResult(null);
+                                    return;
+                                }
+                                List<CollectionImage> imageList = new ArrayList<>();
+                                for (Object o : images) {
+                                    assert (o instanceof CollectionImage);
+
+                                    imageList.add((CollectionImage) o);
+                                }
+                                callback.onResult(imageList);
+                            }
+                        });
+    }
+
+    /**
+     * Creates a {@link BackgroundCollection} object from native.
+     *
+     * @param id The ID of the collection.
+     * @param label The name of the collection.
+     * @param previewImageUrl The URL of a preview image for the collection.
+     * @return A new {@link BackgroundCollection} object.
+     */
+    @CalledByNative
+    static BackgroundCollection createCollection(String id, String label, GURL previewImageUrl) {
+        return new BackgroundCollection(id, label, previewImageUrl);
+    }
+
+    /**
+     * Creates a {@link CollectionImage} object from native.
+     *
+     * @param collectionId The ID of the collection this image belongs to.
+     * @param imageUrl The URL of the image.
+     * @param previewImageUrl The URL of a preview image.
+     * @param attribution An array of attribution strings.
+     * @param attributionUrl The URL for the attribution.
+     * @return A new {@link CollectionImage} object.
+     */
+    @CalledByNative
+    static CollectionImage createImage(
+            String collectionId,
+            GURL imageUrl,
+            GURL previewImageUrl,
+            String[] attribution,
+            GURL attributionUrl) {
+        return new CollectionImage(
+                collectionId,
+                imageUrl,
+                previewImageUrl,
+                Arrays.asList(attribution),
+                attributionUrl);
+    }
+
+    @NativeMethods
+    public interface Natives {
+        long init(Profile profile);
+
+        void destroy(long nativeNtpThemeBridge);
+
+        void getBackgroundCollections(long nativeNtpThemeBridge, Callback<Object[]> callback);
+
+        void getBackgroundImages(
+                long nativeNtpThemeBridge, String collectionId, Callback<Object[]> callback);
+    }
+}

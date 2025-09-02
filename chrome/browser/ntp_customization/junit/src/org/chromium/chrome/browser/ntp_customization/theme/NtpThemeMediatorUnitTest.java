@@ -59,6 +59,7 @@ public class NtpThemeMediatorUnitTest {
     private PropertyModel mThemePropertyModel;
     private NtpThemeMediator mMediator;
     private Activity mActivity;
+    @Mock private NtpThemeBridge.Natives mNtpThemeBridgeJniMock;
 
     @Before
     public void setUp() {
@@ -68,6 +69,9 @@ public class NtpThemeMediatorUnitTest {
         mBottomSheetPropertyModel =
                 new PropertyModel(NtpCustomizationViewProperties.BOTTOM_SHEET_KEYS);
         mThemePropertyModel = new PropertyModel(NtpThemeProperty.THEME_KEYS);
+
+        NtpThemeBridgeJni.setInstanceForTesting(mNtpThemeBridgeJniMock);
+        when(mNtpThemeBridgeJniMock.init(mProfile)).thenReturn(1L);
     }
 
     @Test

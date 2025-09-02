@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/ntp_customization/BottomSheetDelegate.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/BottomSheetListContainerView.java",
@@ -29,6 +31,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/CropImageView.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBottomSheetView.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBridge.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListItemView.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListThemeCollectionItemIconView.java",
@@ -39,12 +42,15 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/chrome_colors/NtpChromeColorsCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/chrome_colors/NtpThemeColorInfo.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/chrome_colors/NtpThemeColorUtils.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/BackgroundCollection.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/CollectionImage.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpSingleThemeCollectionCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsAdapter.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsCoordinator.java",
   ]
   deps = [
     ":java_resources",
+    "//base:base_java",
     "//base:callback_java",
     "//base:log_java",
     "//base:metrics_java",
@@ -54,6 +60,7 @@ android_library("java") {
     "//chrome/browser/feed/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/page_image_service/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/preferences:pref_service_java",
     "//chrome/browser/profiles/android:java",
@@ -67,10 +74,14 @@ android_library("java") {
     "//components/browser_ui/bottomsheet/android:java_resources",
     "//components/browser_ui/share/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/cached_flags:java",
+    "//components/embedder_support/android:simple_factory_key_java",
     "//components/embedder_support/android:util_java",
     "//components/feed/core/v2:feedv2_common_core_java",
+    "//components/image_fetcher:java",
+    "//components/page_image_service/mojom:mojo_bindings_java",
     "//components/prefs/android:java",
     "//components/search_engines/android:java",
     "//components/user_prefs/android:java",
@@ -84,11 +95,16 @@ android_library("java") {
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//ui/edge_to_edge:java",
     "//url:url_java",
   ]
   resources_package = "org.chromium.chrome.browser.ntp_customization"
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBridge.java" ]
 }
 
 android_resources("java_resources") {
@@ -142,6 +158,7 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ntp_customization"
+  srcjar_deps = [ ":jni_headers" ]
 
   sources = [
     "junit/src/org/chromium/chrome/browser/ntp_customization/BottomSheetListContainerViewBinderUnitTest.java",
@@ -163,6 +180,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsListContainerViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBottomSheetViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeBridgeUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListItemViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListThemeCollectionItemIconViewUnitTest.java",
@@ -172,6 +190,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/chrome_colors/NtpChromeColorsCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpSingleThemeCollectionCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsAdapterUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsCoordinatorUnitTest.java",
   ]
   deps = [
     ":java",
@@ -190,6 +209,7 @@ robolectric_library("junit") {
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
+    "//components/image_fetcher:java",
     "//components/prefs/android:java",
     "//third_party/android_deps:org_robolectric_shadows_framework_java",
     "//third_party/androidx:androidx_activity_activity_java",
@@ -197,6 +217,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",

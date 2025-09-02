@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
+import org.chromium.components.image_fetcher.ImageFetcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,17 +36,38 @@ public class NtpSingleThemeCollectionCoordinator {
     private static final String LEARN_MORE_CLICK_URL =
             "https://support.google.com/chrome/?p=new_tab";
 
+    private String mThemeCollectionId;
     private String mThemeCollectionTitle;
-    private final List<Integer> mThemeCollectionImageList = new ArrayList<>();
+    private final List<CollectionImage> mThemeCollectionImageList = new ArrayList<>();
     private final View mNtpSingleThemeCollectionBottomSheetView;
     private final View mBackButton;
     private final ImageView mLearnMoreButton;
     private final TextView mTitle;
     private final RecyclerView mSingleThemeCollectionBottomSheetRecyclerView;
     private NtpThemeCollectionsAdapter mNtpThemeCollectionsAdapter;
+    private final NtpThemeBridge mNtpThemeBridge;
+    private final ImageFetcher mImageFetcher;
 
+    /**
+     * Constructor for the single theme collection coordinator.
+     *
+     * @param context The context for inflating views and accessing resources.
+     * @param delegate The delegate to handle bottom sheet interactions.
+     * @param ntpThemeBridge The bridge to fetch theme data from native.
+     * @param imageFetcher The fetcher to retrieve images.
+     * @param collectionId The ID of the current theme collection to display.
+     * @param themeCollectionTitle The title of the current theme collection.
+     */
     NtpSingleThemeCollectionCoordinator(
-            Context context, BottomSheetDelegate delegate, String themeCollectionTitle) {
+            Context context,
+            BottomSheetDelegate delegate,
+            NtpThemeBridge ntpThemeBridge,
+            ImageFetcher imageFetcher,
+            String collectionId,
+            String themeCollectionTitle) {
+        mNtpThemeBridge = ntpThemeBridge;
+        mImageFetcher = imageFetcher;
+        mThemeCollectionId = collectionId;
         mThemeCollectionTitle = themeCollectionTitle;
 
         mNtpSingleThemeCollectionBottomSheetView =
@@ -71,8 +94,6 @@ public class NtpSingleThemeCollectionCoordinator {
         mTitle = mNtpSingleThemeCollectionBottomSheetView.findViewById(R.id.bottom_sheet_title);
         mTitle.setText(mThemeCollectionTitle);
 
-        // TODO(crbug.com/423579377): Generate this theme collection images list.
-
         // Build the RecyclerView containing the images of this particular theme collection in the
         // bottom sheet.
         mSingleThemeCollectionBottomSheetRecyclerView =
@@ -82,8 +103,14 @@ public class NtpSingleThemeCollectionCoordinator {
                 new GridLayoutManager(context, /* spanCount= */ 3));
         mNtpThemeCollectionsAdapter =
                 new NtpThemeCollectionsAdapter(
-                        mThemeCollectionImageList, SINGLE_THEME_COLLECTION_ITEM, null);
+                        mThemeCollectionImageList,
+                        SINGLE_THEME_COLLECTION_ITEM,
+                        /* onClickListener= */ null,
+                        mImageFetcher);
         mSingleThemeCollectionBottomSheetRecyclerView.setAdapter(mNtpThemeCollectionsAdapter);
+
+        // Fetches the images for the current collection.
+        fetchImagesForCollection();
     }
 
     void destroy() {
@@ -98,21 +125,35 @@ public class NtpSingleThemeCollectionCoordinator {
     /**
      * Updates the single theme collection bottom sheet based on the given theme collection type.
      */
-    void updateThemeCollection(String themeCollectionTitle) {
+    void updateThemeCollection(String collectionId, String themeCollectionTitle) {
         if (mThemeCollectionTitle.equals(themeCollectionTitle)) {
             return;
         }
 
+        mThemeCollectionId = collectionId;
         mThemeCollectionTitle = themeCollectionTitle;
-        mTitle.setText(mThemeCollectionTitle);
 
-        mThemeCollectionImageList.clear();
-        // TODO(crbug.com/423579377): Generate this theme collection images list.
-        mNtpThemeCollectionsAdapter.setItems(mThemeCollectionImageList);
+        mTitle.setText(mThemeCollectionTitle);
+        fetchImagesForCollection();
     }
 
     void handleLearnMoreClick(View view) {
         launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
+    }
+
+    /** Fetches the images for the current collection and updates the adapter. */
+    private void fetchImagesForCollection() {
+        mNtpThemeBridge.getBackgroundImages(
+                mThemeCollectionId,
+                (images) -> {
+                    mThemeCollectionImageList.clear();
+                    if (images != null
+                            && !images.isEmpty()
+                            && mThemeCollectionId.equals(images.get(0).collectionId)) {
+                        mThemeCollectionImageList.addAll(images);
+                    }
+                    mNtpThemeCollectionsAdapter.setItems(mThemeCollectionImageList);
+                });
     }
 
     NtpThemeCollectionsAdapter getNtpThemeCollectionsAdapterForTesting() {

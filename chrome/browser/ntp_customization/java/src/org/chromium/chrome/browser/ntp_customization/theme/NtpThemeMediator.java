@@ -46,6 +46,7 @@ public class NtpThemeMediator {
     // TODO(crbug.com/423579377): Update the url for learn more button.
     private static final String LEARN_MORE_CLICK_URL =
             "https://support.google.com/chrome/?p=new_tab";
+    private final Profile mProfile;
     private final PropertyModel mBottomSheetPropertyModel;
     private final PropertyModel mThemePropertyModel;
     private final BottomSheetDelegate mBottomSheetDelegate;
@@ -65,6 +66,7 @@ public class NtpThemeMediator {
             NtpCustomizationConfigManager ntpCustomizationConfigManager,
             @Nullable ActivityResultRegistry activityResultRegistry) {
         mContext = context;
+        mProfile = profile;
         mBottomSheetPropertyModel = bottomSheetPropertyModel;
         mThemePropertyModel = themePropertyModel;
         mBottomSheetDelegate = delegate;
@@ -202,7 +204,7 @@ public class NtpThemeMediator {
 
         if (mNtpThemeCollectionsCoordinator == null) {
             mNtpThemeCollectionsCoordinator =
-                    new NtpThemeCollectionsCoordinator(mContext, mBottomSheetDelegate);
+                    new NtpThemeCollectionsCoordinator(mContext, mBottomSheetDelegate, mProfile);
         }
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.THEME_COLLECTIONS);
     }
