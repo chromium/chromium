@@ -253,14 +253,19 @@ e.g. for backend with no large worker pool
 load("@builtin//struct.star", "module")
 
 def __platform_properties(ctx):
+    # fyi: this image is created by
+    # https://chromium.googlesource.com/infra/infra/+/refs/heads/main/rbe/images/siso-chromium/linux/Dockerfile
     container_image = "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:d7cb1ab14a0f20aa669c23f22c15a9dead761dcac19f43985bf9dd5f41fbef3a"
     return {
         "default": {
+            # set platform properties for your worker.
+            # it depends on how you configure your workers.
             "OSFamily": "Linux",
             "container-image": container_image,
-            "Pool": "linux_x64",
+            # e.g. to use worker in worker pool "linux_x64".
+            # "Pool": "linux_x64",
         },
-        # no Large workers. run locally.
+        # no Large workers. empty platform properties will run locally.
         "large": {},
     }
 
@@ -270,7 +275,9 @@ backend = module(
 )
 ```
 See
-[build/config/siso/backend_config/README.md](../../build/config/siso/backend_config/README.md).
+[build/config/siso/backend_config/README.md](../../build/config/siso/backend_config/README.md),
+[remote apis platform lexicon](https://github.com/bazelbuild/remote-apis/blob/main/build/bazel/remote/execution/v2/platform.md).
+Also check your REAPI documentations.
 
 Set `reapi_address`, `reapi_instance` and `reapi_backend_config_path` which
 is the path name for the your backend.star above.
