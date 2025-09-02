@@ -1288,7 +1288,9 @@ ExtensionFunction::ResponseAction DownloadsResumeFunction::Run() {
       browser_context(), include_incognito_information(), params->download_id);
   std::string error;
   if (InvalidId(download_item, &error) ||
-      Fault(download_item->IsPaused() && !download_item->CanResume(),
+      Fault(download_item->GetState() == DownloadItem::CANCELLED ||
+                (download_item->GetState() == DownloadItem::INTERRUPTED &&
+                 !download_item->CanResume()),
             download_extension_errors::kNotResumable, &error)) {
     return RespondNow(Error(std::move(error)));
   }
