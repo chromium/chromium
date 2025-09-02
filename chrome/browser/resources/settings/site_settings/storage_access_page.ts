@@ -9,11 +9,14 @@ import './storage_access_site_list.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {getTemplate} from './storage_access_page.html.js';
 
-export class StorageAccessPageElement extends PolymerElement {
+const StorageAccessPageElementBase = SettingsViewMixin(PolymerElement);
+
+export class StorageAccessPageElement extends StorageAccessPageElementBase {
   static get is() {
     return 'settings-storage-access-page';
   }
@@ -41,6 +44,11 @@ export class StorageAccessPageElement extends PolymerElement {
   }
 
   declare searchTerm: string;
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {

@@ -1,4 +1,7 @@
-  <style include="settings-shared site-settings-shared"></style>
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsStorageAccess}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}">
   <div class="content-settings-header secondary">
     $i18n{storageAccessDescription}
   </div>
@@ -26,3 +29,4 @@
       category-header="$i18n{storageAccessAllowedExceptions}"
       search-filter="[[searchTerm]]">
   </storage-access-site-list>
+</settings-subpage>

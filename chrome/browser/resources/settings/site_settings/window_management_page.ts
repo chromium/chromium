@@ -4,16 +4,21 @@
 
 import './settings_category_default_radio_group.js';
 import './site_settings_shared.css.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import './category_setting_exceptions.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {getTemplate} from './window_management_page.html.js';
 
-export class WindowManagementPageElement extends PolymerElement {
+const WindowManagementPageElementBase = SettingsViewMixin(PolymerElement);
+
+export class WindowManagementPageElement extends
+    WindowManagementPageElementBase {
   static get is() {
     return 'settings-window-management-page';
   }
@@ -35,6 +40,11 @@ export class WindowManagementPageElement extends PolymerElement {
   }
 
   declare searchTerm: string;
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {

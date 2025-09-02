@@ -1,4 +1,7 @@
-  <style include="settings-shared site-settings-shared"></style>
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsWindowManagement}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsWindowManagementDescription}
   </div>
@@ -16,3 +19,4 @@
           "$i18n{siteSettingsWindowManagementBlockedExceptions}"
       search-filter="[[searchTerm]]">
   </category-setting-exceptions>
+</settings-subpage>

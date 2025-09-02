@@ -124,12 +124,54 @@
   </template>
 
   <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_AR, currentRoute, inSearchMode)]]">
+    <settings-ar-page slot="view" id="siteSettingsAr" data-parent-view-id="old">
+    </settings-ar-page>
+  </template>
+
+  <template is="dom-if" if="[[autoPictureInPictureEnabled_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE, currentRoute, inSearchMode)]]">
+      <settings-auto-picture-in-picture-page slot="view"
+          id="siteSettingsAutoPictureInPicture" data-parent-view-id="old">
+      </settings-auto-picture-in-picture-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_AUTOMATIC_FULLSCREEN, currentRoute,
       inSearchMode)]]">
     <settings-automatic-full-screen-page slot="view"
         id="siteSettingsAutomaticFullscreen" data-parent-view-id="old"
         search-term="[[searchFilter_]]">
     </settings-automatic-full-screen-page>
+  </template>
+
+  <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_BLUETOOTH_SCANNING, currentRoute, inSearchMode)]]">
+      <settings-bluetooth-scanning-page slot="view"
+          id="siteSettingsBluetoothScanning" data-parent-view-id="old">
+      </settings-bluetooth-scanning-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[capturedSurfaceControlEnabled_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL, currentRoute, inSearchMode)]]">
+      <settings-captured-surface-control-page slot="view"
+          id="siteSettingsCapturedSurfaceControl" data-parent-view-id="old">
+      </settings-captured-surface-control-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[enableHandTrackingContentSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_HAND_TRACKING, currentRoute, inSearchMode)]]">
+      <settings-hand-tracking-page slot="view" id="siteSettingsHandTracking"
+          data-parent-view-id="old">
+      </settings-hand-tracking-page>
+    </template>
   </template>
 
   <template is="dom-if" if="[[renderView_(
@@ -139,6 +181,13 @@
         toggle-off-label="$i18n{siteSettingsHandlersBlocked}"
         toggle-on-label="$i18n{siteSettingsHandlersAskRecommended}">
     </protocol-handlers>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_IDLE_DETECTION, currentRoute, inSearchMode)]]">
+    <settings-idle-detection-page slot="view" id="siteSettingsIdleDetection"
+        data-parent-view-id="old">
+    </settings-idle-detection-page>
   </template>
 
   <template is="dom-if" if="[[enableKeyboardLockPrompt_]]">
@@ -159,6 +208,13 @@
           search-term="[[searchFilter_]]">
       </settings-local-network-access-page>
     </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_LOCAL_FONTS, currentRoute, inSearchMode)]]">
+    <settings-local-fonts-page slot="view" id="siteSettingsLocalFonts"
+        data-parent-view-id="old">
+    </settings-local-fonts-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(
@@ -189,6 +245,19 @@
     </settings-site-data>
   </template>
 
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_STORAGE_ACCESS, currentRoute, inSearchMode)]]">
+    <settings-storage-access-page slot="view" id="siteSettingsStorageAccess"
+        data-parent-view-id="old">
+    </settings-storage-access-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_VR, currentRoute, inSearchMode)]]">
+    <settings-vr-page slot="view" id="siteSettingsVr" data-parent-view-id="old">
+    </settings-vr-page>
+  </template>
+
   <template is="dom-if" if="[[enableWebAppInstallation_]]">
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_WEB_APP_INSTALLATION, currentRoute,
@@ -198,6 +267,13 @@
           search-term="[[searchFilter_]]">
       </settings-web-applications-page>
     </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_WINDOW_MANAGEMENT, currentRoute, inSearchMode)]]">
+    <settings-window-management-page slot="view"
+        id="siteSettingsWindowManagement" data-parent-view-id="old">
+    </settings-window-management-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(

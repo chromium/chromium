@@ -81,15 +81,18 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   // routes.
   r.SITE_SETTINGS_ADS = r.SITE_SETTINGS.createChild('ads');
   r.SITE_SETTINGS_AR = r.SITE_SETTINGS.createChild('ar');
+  r.SITE_SETTINGS_AR.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_AUTOMATIC_DOWNLOADS =
       r.SITE_SETTINGS.createChild('automaticDownloads');
   if (loadTimeData.getBoolean('autoPictureInPictureEnabled')) {
     r.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE =
         r.SITE_SETTINGS.createChild('autoPictureInPicture');
+    r.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE.hasMigratedToPlugin = true;
   }
   if (loadTimeData.getBoolean('capturedSurfaceControlEnabled')) {
     r.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL =
         r.SITE_SETTINGS.createChild('capturedSurfaceControl');
+    r.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL.hasMigratedToPlugin = true;
   }
   // <if expr="is_chromeos">
   if (loadTimeData.getBoolean('enableSmartCardReadersContentSetting')) {
@@ -104,8 +107,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_CLIPBOARD = r.SITE_SETTINGS.createChild('clipboard');
   if (loadTimeData.getBoolean('enableHandTrackingContentSetting')) {
     r.SITE_SETTINGS_HAND_TRACKING = r.SITE_SETTINGS.createChild('handTracking');
+    r.SITE_SETTINGS_HAND_TRACKING.hasMigratedToPlugin = true;
   }
   r.SITE_SETTINGS_IDLE_DETECTION = r.SITE_SETTINGS.createChild('idleDetection');
+  r.SITE_SETTINGS_IDLE_DETECTION.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_IMAGES = r.SITE_SETTINGS.createChild('images');
   r.SITE_SETTINGS_MIXEDSCRIPT = r.SITE_SETTINGS.createChild('insecureContent');
   r.SITE_SETTINGS_JAVASCRIPT = r.SITE_SETTINGS.createChild('javascript');
@@ -150,18 +155,22 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_SITE_DATA = r.SITE_SETTINGS.createChild('siteData');
   r.SITE_SETTINGS_SITE_DATA.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_VR = r.SITE_SETTINGS.createChild('vr');
+  r.SITE_SETTINGS_VR.hasMigratedToPlugin = true;
   if (loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures')) {
     r.SITE_SETTINGS_BLUETOOTH_SCANNING =
         r.SITE_SETTINGS.createChild('bluetoothScanning');
+    r.SITE_SETTINGS_BLUETOOTH_SCANNING.hasMigratedToPlugin = true;
   }
 
   r.SITE_SETTINGS_WINDOW_MANAGEMENT =
       r.SITE_SETTINGS.createChild('windowManagement');
+  r.SITE_SETTINGS_WINDOW_MANAGEMENT.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_FILE_SYSTEM_WRITE = r.SITE_SETTINGS.createChild('filesystem');
   r.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS =
       r.SITE_SETTINGS_FILE_SYSTEM_WRITE.createChild('siteDetails');
   r.SITE_SETTINGS_LOCAL_FONTS = r.SITE_SETTINGS.createChild('localFonts');
   r.SITE_SETTINGS_STORAGE_ACCESS = r.SITE_SETTINGS.createChild('storageAccess');
+  r.SITE_SETTINGS_STORAGE_ACCESS.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_AUTOMATIC_FULLSCREEN =
       r.SITE_SETTINGS.createChild('automaticFullScreen');
   r.SITE_SETTINGS_AUTOMATIC_FULLSCREEN.hasMigratedToPlugin = true;

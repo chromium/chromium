@@ -126,13 +126,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
-      enableHandTrackingContentSetting_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableHandTrackingContentSetting');
-        },
-      },
-
       enableFederatedIdentityApiContentSetting_: {
         type: Boolean,
         value() {
@@ -179,16 +172,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
-      },
-
-      autoPictureInPictureEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
-      },
-
-      capturedSurfaceControlEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
       },
 
       /**
@@ -296,7 +279,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private enableDeleteBrowsingDataRevamp_: boolean;
   declare private enableFederatedIdentityApiContentSetting_: boolean;
   declare private enablePaymentHandlerContentSetting_: boolean;
-  declare private enableHandTrackingContentSetting_: boolean;
   declare private enableExperimentalWebPlatformFeatures_: boolean;
   // <if expr="is_chromeos">
   declare private enableSmartCardReadersContentSetting_: boolean;
@@ -306,8 +288,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private isPrivacySandboxRestricted_: boolean;
   declare private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   private privateStateTokensEnabled_: boolean;
-  declare private autoPictureInPictureEnabled_: boolean;
-  declare private capturedSurfaceControlEnabled_: boolean;
   declare private enableWebAppInstallation_: boolean;
   declare private enableLocalNetworkAccessSetting_: boolean;
   declare private focusConfig_: FocusConfig;
@@ -506,15 +486,25 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         triggerId = 'securityLinkRow';
         break;
       case 'siteSettings':
+      case 'siteSettingsAr':
       case 'siteSettingsAutomaticFullscreen':
+      case 'siteSettingsAutoPictureInPicture':
+      case 'siteSettingsBluetoothScanning':
+      case 'siteSettingsCapturedSurfaceControl':
       case 'siteSettingsHandlers':
+      case 'siteSettingsHandTracking':
+      case 'siteSettingsIdleDetection':
       case 'siteSettingsKeyboardLock':
+      case 'siteSettingsLocalFonts':
       case 'siteSettingsLocalNetworkAccess':
       case 'siteSettingsLocation':
       case 'siteSettingsNotifications':
       case 'siteSettingsPdfDocuments':
       case 'siteSettingsSiteData':
+      case 'siteSettingsStorageAccess':
+      case 'siteSettingsVr':
       case 'siteSettingsWebAppInstallation':
+      case 'siteSettingsWindowManagement':
       case 'siteSettingsZoomLevels':
         triggerId = 'permissionsLinkRow';
         break;

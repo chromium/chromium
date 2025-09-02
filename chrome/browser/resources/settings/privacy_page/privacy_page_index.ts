@@ -79,6 +79,31 @@ export class SettingsPrivacyPageIndexElement extends
         value: false,
       },
 
+      autoPictureInPictureEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
+      },
+
+      capturedSurfaceControlEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
+      },
+
+      enableExperimentalWebPlatformFeatures_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'enableExperimentalWebPlatformFeatures');
+        },
+      },
+
+      enableHandTrackingContentSetting_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('enableHandTrackingContentSetting');
+        },
+      },
+
       enableIncognitoTrackingProtections_: {
         type: Boolean,
         value: () =>
@@ -88,9 +113,7 @@ export class SettingsPrivacyPageIndexElement extends
       enableSecurityKeysSubpage_: {
         type: Boolean,
         readOnly: true,
-        value: () => {
-          return loadTimeData.getBoolean('enableSecurityKeysSubpage');
-        },
+        value: () => loadTimeData.getBoolean('enableSecurityKeysSubpage'),
       },
 
       enableKeyboardLockPrompt_: {
@@ -136,6 +159,10 @@ export class SettingsPrivacyPageIndexElement extends
   declare private pageVisibility_: PageVisibility;
   declare private routes_: SettingsRoutes;
   declare private showPrivacyGuidePromo_: boolean;
+  declare private autoPictureInPictureEnabled_: boolean;
+  declare private capturedSurfaceControlEnabled_: boolean;
+  declare private enableExperimentalWebPlatformFeatures_: boolean;
+  declare private enableHandTrackingContentSetting_: boolean;
   declare private enableIncognitoTrackingProtections_: boolean;
   declare private enableKeyboardLockPrompt_: boolean;
   declare private enableLocalNetworkAccessSetting_: boolean;
@@ -199,13 +226,31 @@ export class SettingsPrivacyPageIndexElement extends
         return ['securityKeys'];
       case routes.SITE_SETTINGS:
         return ['siteSettings'];
+      case routes.SITE_SETTINGS_AR:
+        return ['siteSettingsAr'];
       case routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN:
         return ['siteSettingsAutomaticFullscreen'];
+      case routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE:
+        assert(this.autoPictureInPictureEnabled_);
+        return ['siteSettingsAutoPictureInPicture'];
+      case routes.SITE_SETTINGS_BLUETOOTH_SCANNING:
+        assert(this.enableExperimentalWebPlatformFeatures_);
+        return ['siteSettingsBluetoothScanning'];
+      case routes.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL:
+        assert(this.capturedSurfaceControlEnabled_);
+        return ['siteSettingsCapturedSurfaceControl'];
       case routes.SITE_SETTINGS_HANDLERS:
         return ['siteSettingsHandlers'];
+      case routes.SITE_SETTINGS_HAND_TRACKING:
+        assert(this.enableHandTrackingContentSetting_);
+        return ['siteSettingsHandTracking'];
+      case routes.SITE_SETTINGS_IDLE_DETECTION:
+        return ['siteSettingsIdleDetection'];
       case routes.SITE_SETTINGS_KEYBOARD_LOCK:
         assert(this.enableKeyboardLockPrompt_);
         return ['siteSettingsKeyboardLock'];
+      case routes.SITE_SETTINGS_LOCAL_FONTS:
+        return ['siteSettingsLocalFonts'];
       case routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS:
         assert(this.enableLocalNetworkAccessSetting_);
         return ['siteSettingsLocalNetworkAccess'];
@@ -217,9 +262,15 @@ export class SettingsPrivacyPageIndexElement extends
         return ['siteSettingsPdfDocuments'];
       case routes.SITE_SETTINGS_SITE_DATA:
         return ['siteSettingsSiteData'];
+      case routes.SITE_SETTINGS_STORAGE_ACCESS:
+        return ['siteSettingsStorageAccess'];
+      case routes.SITE_SETTINGS_VR:
+        return ['siteSettingsVr'];
       case routes.SITE_SETTINGS_WEB_APP_INSTALLATION:
         assert(this.enableWebAppInstallation_);
         return ['siteSettingsWebAppInstallation'];
+      case routes.SITE_SETTINGS_WINDOW_MANAGEMENT:
+        return ['siteSettingsWindowManagement'];
       case routes.SITE_SETTINGS_ZOOM_LEVELS:
         return ['siteSettingsZoomLevels'];
       case routes.SAFETY_HUB:

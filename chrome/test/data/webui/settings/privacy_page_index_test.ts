@@ -18,6 +18,10 @@ suite('PrivacyPageIndex', function() {
 
     loadTimeData.overrideValues(Object.assign(
         {
+          autoPictureInPictureEnabled: false,
+          capturedSurfaceControlEnabled: false,
+          enableExperimentalWebPlatformFeatures: false,
+          enableHandTrackingContentSetting: false,
           enableIncognitoTrackingProtections: false,
           enableKeyboardLockPrompt: false,
           enableLocalNetworkAccessSetting: false,
@@ -89,13 +93,28 @@ suite('PrivacyPageIndex', function() {
         parentViewId: 'old',
       },
       {
+        route: routes.SITE_SETTINGS_AR,
+        viewId: 'siteSettingsAr',
+        parentViewId: 'old',
+      },
+      {
         route: routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN,
         viewId: 'siteSettingsAutomaticFullscreen',
         parentViewId: 'old',
       },
       {
+        route: routes.SITE_SETTINGS_IDLE_DETECTION,
+        viewId: 'siteSettingsIdleDetection',
+        parentViewId: 'old',
+      },
+      {
         route: routes.SITE_SETTINGS_HANDLERS,
         viewId: 'siteSettingsHandlers',
+        parentViewId: 'old',
+      },
+      {
+        route: routes.SITE_SETTINGS_LOCAL_FONTS,
+        viewId: 'siteSettingsLocalFonts',
         parentViewId: 'old',
       },
       {
@@ -116,6 +135,21 @@ suite('PrivacyPageIndex', function() {
       {
         route: routes.SITE_SETTINGS_SITE_DATA,
         viewId: 'siteSettingsSiteData',
+        parentViewId: 'old',
+      },
+      {
+        route: routes.SITE_SETTINGS_STORAGE_ACCESS,
+        viewId: 'siteSettingsStorageAccess',
+        parentViewId: 'old',
+      },
+      {
+        route: routes.SITE_SETTINGS_VR,
+        viewId: 'siteSettingsVr',
+        parentViewId: 'old',
+      },
+      {
+        route: routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
+        viewId: 'siteSettingsWindowManagement',
         parentViewId: 'old',
       },
       {
@@ -198,6 +232,58 @@ suite('PrivacyPageIndex', function() {
     for (const {route, viewId} of routesToVisit) {
       await testActiveViewsForRoute(route, [viewId]);
     }
+  });
+
+  test('RoutingAutoPictureInPicture', async function() {
+    assertFalse(loadTimeData.getBoolean('autoPictureInPictureEnabled'));
+    await createPrivacyPageIndex({autoPictureInPictureEnabled: true});
+
+    const viewId = 'siteSettingsAutoPictureInPicture';
+    await testActiveViewsForRoute(
+        routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE, [viewId]);
+
+    // Test that data-parent-view is correctly populated.
+    assertTrue(!!index.$.viewManager.querySelector(
+        `#${viewId}[slot=view][data-parent-view-id=old]`));
+  });
+
+  test('RoutingBluetoothScanning', async function() {
+    assertFalse(
+        loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures'));
+    await createPrivacyPageIndex({enableExperimentalWebPlatformFeatures: true});
+
+    const viewId = 'siteSettingsBluetoothScanning';
+    await testActiveViewsForRoute(
+        routes.SITE_SETTINGS_BLUETOOTH_SCANNING, [viewId]);
+
+    // Test that data-parent-view is correctly populated.
+    assertTrue(!!index.$.viewManager.querySelector(
+        `#${viewId}[slot=view][data-parent-view-id=old]`));
+  });
+
+  test('RoutingCapturedSurfaceControl', async function() {
+    assertFalse(loadTimeData.getBoolean('capturedSurfaceControlEnabled'));
+    await createPrivacyPageIndex({capturedSurfaceControlEnabled: true});
+
+    const viewId = 'siteSettingsCapturedSurfaceControl';
+    await testActiveViewsForRoute(
+        routes.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL, [viewId]);
+
+    // Test that data-parent-view is correctly populated.
+    assertTrue(!!index.$.viewManager.querySelector(
+        `#${viewId}[slot=view][data-parent-view-id=old]`));
+  });
+
+  test('RoutingHandTracking', async function() {
+    assertFalse(loadTimeData.getBoolean('enableHandTrackingContentSetting'));
+    await createPrivacyPageIndex({enableHandTrackingContentSetting: true});
+
+    const viewId = 'siteSettingsHandTracking';
+    await testActiveViewsForRoute(routes.SITE_SETTINGS_HAND_TRACKING, [viewId]);
+
+    // Test that data-parent-view is correctly populated.
+    assertTrue(!!index.$.viewManager.querySelector(
+        `#${viewId}[slot=view][data-parent-view-id=old]`));
   });
 
   test('RoutingKeyboardLock', async function() {
