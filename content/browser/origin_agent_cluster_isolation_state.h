@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ORIGIN_AGENT_CLUSTER_ISOLATION_STATE_H_
 #define CONTENT_BROWSER_ORIGIN_AGENT_CLUSTER_ISOLATION_STATE_H_
 
-#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "content/browser/agent_cluster_key.h"
 #include "content/common/content_export.h"
 
