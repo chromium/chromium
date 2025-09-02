@@ -118,6 +118,7 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     response: {
       tabContextResult: TabContextResultPrivate,
     },
+    backgroundAllowed: true,
   },
   glicBrowserSetMaximumNumberOfPinnedTabs: {
     request: {
@@ -132,6 +133,7 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     response: {
       taskId: number,
     },
+    backgroundAllowed: true,
   },
   glicBrowserPerformActions: {
     request: {
@@ -140,18 +142,21 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     response: {
       actionsResult: ArrayBuffer,
     },
+    backgroundAllowed: true,
   },
   glicBrowserStopActorTask: {
     request: {
       taskId: number,
       stopReason: ActorTaskStopReason,
     },
+    backgroundAllowed: true,
   },
   glicBrowserPauseActorTask: {
     request: {
       taskId: number,
       pauseReason: ActorTaskPauseReason,
     },
+    backgroundAllowed: true,
   },
   glicBrowserResumeActorTask: {
     request: {
@@ -161,6 +166,7 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     response: {
       tabContextResult: TabContextResultPrivate,
     },
+    backgroundAllowed: true,
   },
   glicBrowserCaptureScreenshot: {
     response: {
@@ -570,6 +576,7 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
       taskId: number,
       state: ActorTaskState,
     },
+    backgroundAllowed: true,
   },
   glicWebClientPageMetadataChanged: {
     request: {

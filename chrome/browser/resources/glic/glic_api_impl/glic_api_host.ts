@@ -123,12 +123,6 @@ const BACKGROUND_RESPONSES: HostBackgroundResponseMap = {
   glicBrowserShowProfilePicker: {throws: true},
   glicBrowserGetContextFromFocusedTab: {throws: true},
   glicBrowserGetContextFromTab: {throws: true},
-  glicBrowserGetContextForActorFromTab: {throws: true},
-  glicBrowserCreateTask: {throws: true},
-  glicBrowserPerformActions: {throws: true},
-  glicBrowserStopActorTask: {throws: true},
-  glicBrowserPauseActorTask: {throws: true},
-  glicBrowserResumeActorTask: {throws: true},
   glicBrowserCaptureScreenshot: {throws: true},
   glicBrowserScrollTo: {
     does: () => {
@@ -329,7 +323,7 @@ class WebClientImpl implements WebClientInterface {
 
   notifyActorTaskStateChanged(taskId: number, state: ActorTaskStateMojo): void {
     const clientState = state as number as ActorTaskState;
-    this.sender.sendWhenActive(
+    this.sender.requestNoResponse(
         'glicWebClientNotifyActorTaskStateChanged',
         {taskId, state: clientState});
   }
