@@ -1134,7 +1134,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
         # Preserve historic default.
         if (not self._uses_base_instrumentation
             and not any(a in _VALID_ANNOTATIONS for a in annotations)):
-          annotations['MediumTest'] = None
+          annotations['MediumTest'] = {}
 
         inflated_tests.append({
             'class': clazz['class'],
