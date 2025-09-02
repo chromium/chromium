@@ -25,7 +25,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/native_theme/caption_style.h"
 #include "ui/native_theme/native_theme_observer.h"
 
 namespace cc {
@@ -510,9 +509,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // invert)
   virtual bool GetInvertedColors() const;
 
-  // Returns the system's caption style.
-  virtual std::optional<CaptionStyle> GetSystemCaptionStyle() const;
-
   // Updates contrast-related theme states such as `forced_colors_`,
   // `page_colors_`, `preferred_contrast_` and `prefers_reduced_transparency_`
   // based on the `observed_theme`. Returns true if there's an update to any of
@@ -654,8 +650,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
 
  private:
   // Observers to notify when the native theme changes.
-  base::ObserverList<NativeThemeObserver>::UncheckedAndDanglingUntriaged
-      native_theme_observers_;
+  base::ObserverList<NativeThemeObserver> native_theme_observers_;
 
   // User's primary color. Included in the `ColorProvider::Key` as the basis of
   // all generated colors.

@@ -316,10 +316,6 @@ NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {
                                 : PreferredContrast::kNoPreference;
 }
 
-std::optional<CaptionStyle> NativeTheme::GetSystemCaptionStyle() const {
-  return CaptionStyle::FromSystemSettings();
-}
-
 const std::map<NativeTheme::SystemThemeColor, SkColor>&
 NativeTheme::GetSystemColors() const {
   return system_colors_;
