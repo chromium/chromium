@@ -27,7 +27,6 @@
 #include "services/device/vibration/vibration_manager_impl.h"
 #include "services/device/wake_lock/wake_lock_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"

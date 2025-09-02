@@ -40,7 +40,6 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_pixmap.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/scoped_make_current_unsafe.h"
 
