@@ -262,6 +262,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Sandbox Engaged"/>
 </enum>
 
+<enum name="AndroidStorageSystemType">
+  <int value="0" label="UFS"/>
+  <int value="1" label="EMMC"/>
+  <int value="2" label="Unknown"/>
+  <int value="3" label="Undetermined">
+    Failed to determine storage type by falling through all checks.
+  </int>
+</enum>
+
 <enum name="AndroidThemeSettingsEntry">
   <summary>See Android.DarkTheme.ThemeSettingsEntry.</summary>
   <int value="0" label="Settings"/>

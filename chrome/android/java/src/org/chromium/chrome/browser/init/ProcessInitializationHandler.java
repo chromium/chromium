@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.PackageMetrics;
+import org.chromium.chrome.browser.metrics.StorageSystem;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.notifications.TrampolineActivityTracker;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
@@ -651,6 +652,8 @@ public class ProcessInitializationHandler {
         tasks.add(
                 () -> {
                     initAsyncDiskTask();
+
+                    StorageSystem.recordStorageType();
 
                     DefaultBrowserInfo.initBrowserFetcher();
 
