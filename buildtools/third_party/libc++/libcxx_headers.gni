@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "65a5746fb4cc5fd7fdd1773b0c50bc556ff8900a",
+    libcxx_revision == "23b5bc93867b93b73f7be97cf2e8a71e95770e07",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -795,7 +795,6 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__tree",
   "//third_party/libc++/src/include/__tuple/find_index.h",
   "//third_party/libc++/src/include/__tuple/ignore.h",
-  "//third_party/libc++/src/include/__tuple/make_tuple_types.h",
   "//third_party/libc++/src/include/__tuple/sfinae_helpers.h",
   "//third_party/libc++/src/include/__tuple/tuple_element.h",
   "//third_party/libc++/src/include/__tuple/tuple_like.h",
