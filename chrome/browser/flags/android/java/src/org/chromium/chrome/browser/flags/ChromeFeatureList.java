@@ -1631,7 +1631,7 @@ public abstract class ChromeFeatureList {
 
     public static final StringCachedFeatureParam sEdgeToEdgeEverywhereOemMinVersions =
             newStringCachedFeatureParam(
-                    EDGE_TO_EDGE_EVERYWHERE, "e2e_field_trial_oem_min_versions", "");
+                    EDGE_TO_EDGE_EVERYWHERE, "e2e_field_trial_oem_min_versions", "35");
 
     public static final StringCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions =
             newStringCachedFeatureParam(
@@ -1649,7 +1649,8 @@ public abstract class ChromeFeatureList {
                     EDGE_TO_EDGE_BOTTOM_CHIN, "e2e_field_trial_oem_list", "oppo,xiaomi");
 
     public static final StringCachedFeatureParam sEdgeToEdgeEverywhereOemList =
-            newStringCachedFeatureParam(EDGE_TO_EDGE_EVERYWHERE, "e2e_field_trial_oem_list", "");
+            newStringCachedFeatureParam(
+                    EDGE_TO_EDGE_EVERYWHERE, "e2e_field_trial_oem_list", "realme");
 
     public static final StringCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsOemList =
             newStringCachedFeatureParam(
