@@ -182,9 +182,9 @@ autofill::AutofillProfile CreateNewAutofillProfile(
       adm.IsEligibleForAddressAccountStorage()
           ? autofill::AutofillProfile::RecordType::kAccount
           : autofill::AutofillProfile::RecordType::kLocalOrSyncable;
-  AddressCountryCode address_country_code =
+  autofill::AddressCountryCode address_country_code =
       country_code.has_value()
-          ? AddressCountryCode(std::string(*country_code))
+          ? autofill::AddressCountryCode(std::string(*country_code))
           : autofill::i18n_model_definition::kLegacyHierarchyCountryCode;
   return autofill::AutofillProfile(record_type, address_country_code);
 }

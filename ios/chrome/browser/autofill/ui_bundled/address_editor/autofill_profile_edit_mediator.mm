@@ -401,9 +401,9 @@ constexpr std::array<autofill::FieldType, 3> kStaticFieldsTypes = {
   const variations::VariationsService* variations_service =
       GetApplicationContext()->GetVariationsService();
   countryModel.SetCountries(
-      GeoIpCountryCode(variations_service
-                           ? variations_service->GetLatestCountry()
-                           : std::string()),
+      autofill::GeoIpCountryCode(variations_service
+                                     ? variations_service->GetLatestCountry()
+                                     : std::string()),
       GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   const autofill::CountryComboboxModel::CountryVector& countriesVector =
       countryModel.countries();

@@ -36,7 +36,7 @@ TEST_F(CWVAutofillFormTest, Initialization) {
   autofill::FormData form_data = autofill::test::CreateTestAddressFormData();
   std::unique_ptr<autofill::FormStructure> form_structure =
       std::make_unique<autofill::FormStructure>(form_data);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+  form_structure->DetermineHeuristicTypes(autofill::GeoIpCountryCode(""),
                                           autofill::LanguageCode(""), nullptr);
   CWVAutofillForm* form =
       [[CWVAutofillForm alloc] initWithFormStructure:*form_structure];

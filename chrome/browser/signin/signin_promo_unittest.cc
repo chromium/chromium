@@ -348,7 +348,8 @@ class ShowSigninPromoTestWithFeatureFlags : public ShowPromoTest {
 
   autofill::AutofillProfile CreateAddress(
       const std::string& country_code = "US") {
-    return autofill::test::StandardProfile(AddressCountryCode(country_code));
+    return autofill::test::StandardProfile(
+        autofill::AddressCountryCode(country_code));
   }
 
  private:
