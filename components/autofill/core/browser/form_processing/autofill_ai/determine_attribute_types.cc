@@ -47,17 +47,25 @@ static_assert(!kNonInjectiveFieldTypes.contains_any(
 static_assert(!kNonInjectiveFieldTypes.contains_any(
     {DRIVERS_LICENSE_EXPIRATION_DATE, PASSPORT_NUMBER, VEHICLE_MODEL}));
 
-// AttributeType::field_type() must be mostly injective: distinct AttributeTypes
-// other than `kNonInjectiveFieldTypes` must be mapped to distinct FieldTypes.
-static_assert(
-    std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
-      return std::ranges::all_of(
-          DenseSet<AttributeType>::all(), [&a](AttributeType b) {
-            return a == b || a.field_type() != b.field_type() ||
-                   kNonInjectiveFieldTypes.contains(a.field_type()) ||
-                   kNonInjectiveFieldTypes.contains(b.field_type());
-          });
-    }));
+// Checks that AttributeType::field_type() is mostly injective:
+// distinct AttributeTypes other than those having field_type() in
+// `kNonInjectiveFieldTypes` must be mapped to distinct FieldTypes.
+consteval bool IsMostlyInjective() {
+  FieldTypeSet field_types;
+
+  for (AttributeType at : DenseSet<AttributeType>::all()) {
+    auto [_, inserted] = field_types.insert(at.field_type());
+    if (!inserted && !kNonInjectiveFieldTypes.contains(at.field_type())) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// AttributeType::field_type() must be mostly injective.
+static_assert(IsMostlyInjective(),
+              "AttributeType::field_type() is not mostly injective.");
 
 // A FieldType's static AttributeType is the unique AttributeType whose
 // AttributeType::field_type() is the field's FieldType.
