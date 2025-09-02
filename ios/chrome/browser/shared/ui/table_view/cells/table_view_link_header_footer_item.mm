@@ -148,14 +148,23 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
 - (void)setText:(NSString*)text
         withColor:(UIColor*)color
     textAlignment:(NSTextAlignment)textAlignment {
+  [self setText:text
+          withColor:color
+      textAlignment:textAlignment
+               font:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]];
+}
+
+- (void)setText:(NSString*)text
+        withColor:(UIColor*)color
+    textAlignment:(NSTextAlignment)textAlignment
+             font:(UIFont*)font {
   StringWithTags parsedString = ParseStringWithLinks(text);
   NSMutableParagraphStyle* paragraphStyle =
       [[NSMutableParagraphStyle alloc] init];
   paragraphStyle.alignment = textAlignment;
 
   NSDictionary* textAttributes = @{
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+    NSFontAttributeName : font,
     NSForegroundColorAttributeName : color,
     NSParagraphStyleAttributeName : paragraphStyle
   };
