@@ -1282,7 +1282,6 @@ bool LoginDatabase::Init(
     return false;
   }
 
-  TriggerIsEmptyCb();
   LogDatabaseInitError(INIT_OK);
 
   // Keep the database open if everything went well.
@@ -1348,7 +1347,6 @@ void LoginDatabase::ReportMetrics() {
 PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
                                                 AddCredentialError* error) {
   TRACE_EVENT0("passwords", "LoginDatabase::AddLogin");
-  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   if (error) {
     *error = AddCredentialError::kNone;
   }
@@ -1586,7 +1584,6 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
 bool LoginDatabase::RemoveLogin(const PasswordForm& form,
                                 PasswordStoreChangeList* changes) {
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLogin");
-  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   if (changes) {
     changes->clear();
   }
@@ -1624,7 +1621,6 @@ bool LoginDatabase::RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLoginByPrimaryKey");
   CHECK(changes);
 
-  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   changes->clear();
   sql::Statement s1(db_.GetCachedStatement(
       SQL_FROM_HERE, "SELECT * FROM logins WHERE id = ?"));
@@ -1658,7 +1654,6 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
     base::Time delete_end,
     PasswordStoreChangeList* changes) {
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLoginsCreatedBetween");
-  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   if (changes) {
     changes->clear();
   }
@@ -1909,12 +1904,6 @@ bool LoginDatabase::GetAllLoginsWithBlocklistSetting(
   return true;
 }
 
-bool LoginDatabase::IsEmpty() {
-  sql::Statement count_all_logins(db_.GetCachedStatement(
-      SQL_FROM_HERE, "SELECT EXISTS(SELECT 1 FROM logins)"));
-  return count_all_logins.Step() && count_all_logins.ColumnInt(0) == 0;
-}
-
 bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteAndRecreateDatabaseFile");
   DCHECK(db_.is_open());
@@ -1941,7 +1930,6 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteUndecryptableLogins");
-  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   // If the Keychain in MacOS or the real secret key in Linux is unavailable,
   // don't delete any logins.
   if (!OSCrypt::IsEncryptionAvailable()) {
@@ -2002,10 +1990,6 @@ void LoginDatabase::RollbackTransaction() {
 bool LoginDatabase::CommitTransaction() {
   TRACE_EVENT0("passwords", "LoginDatabase::CommitTransaction");
   return db_.CommitTransactionDeprecated();
-}
-
-void LoginDatabase::SetIsEmptyCb(IsEmptyCallback is_empty_cb) {
-  is_empty_cb_ = std::move(is_empty_cb);
 }
 
 LoginDatabase::SyncMetadataStore::SyncMetadataStore(sql::Database* db)
@@ -2518,12 +2502,6 @@ bool LoginDatabase::UpdatePasswordNotes(
     password_notes_table_.InsertOrReplace(primary_key, note);
   }
   return true;
-}
-
-void LoginDatabase::TriggerIsEmptyCb() {
-  if (is_empty_cb_) {
-    is_empty_cb_.Run(IsEmpty());
-  }
 }
 
 }  // namespace password_manager
