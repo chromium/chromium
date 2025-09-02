@@ -735,7 +735,6 @@ const CGFloat kTopDynamicIslandInset = 24;
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
   [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:NO];
-  [_bookmarksCoordinator dismissSnackbar];
   if (dismissOmnibox) {
     [self.omniboxCommandsHandler cancelOmniboxEdit];
   }
@@ -1017,7 +1016,6 @@ const CGFloat kTopDynamicIslandInset = 24;
     }
   }
 
-  [_bookmarksCoordinator dismissSnackbar];
   [super viewWillDisappear:animated];
 }
 

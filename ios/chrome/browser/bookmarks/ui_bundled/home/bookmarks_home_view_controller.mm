@@ -907,9 +907,9 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   DCHECK_GE(nodes.size(), 1u);
   base::RecordAction(base::UserMetricsAction(userAction));
   [self.snackbarCommandsHandler
-      showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                              nodes, _bookmarkModel.get(), self.profile,
-                              FROM_HERE)];
+      showCustomSnackbarMessage:
+          bookmark_utils_ios::DeleteBookmarksWithUndoToast(
+              nodes, _bookmarkModel.get(), self.profile, FROM_HERE)];
   [self setTableViewEditing:NO];
 }
 
@@ -1226,7 +1226,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (void)handleMoveNode:(const BookmarkNode*)node toPosition:(size_t)position {
   [self.snackbarCommandsHandler
-      showSnackbarMessage:
+      showCustomSnackbarMessage:
           bookmark_utils_ios::UpdateBookmarkPositionWithUndoToast(
               node, self.displayedFolderNode, position, _bookmarkModel.get(),
               self.profile)];
@@ -1292,13 +1292,14 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [self setTableViewEditing:NO];
   ProfileIOS* profile = self.profile;
   [self.snackbarCommandsHandler
-      showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
-                              editedNodesVector, _bookmarkModel.get(), folder,
-                              profile,
-                              AuthenticationServiceFactory::GetForProfile(
-                                  profile)
-                                  ->GetWeakPtr(),
-                              SyncServiceFactory::GetForProfile(profile))];
+      showCustomSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
+                                    editedNodesVector, _bookmarkModel.get(),
+                                    folder, profile,
+                                    AuthenticationServiceFactory::GetForProfile(
+                                        profile)
+                                        ->GetWeakPtr(),
+                                    SyncServiceFactory::GetForProfile(
+                                        profile))];
 }
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:
@@ -2954,7 +2955,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
 
   [self.snackbarCommandsHandler
-      showSnackbarMessage:
+      showCustomSnackbarMessage:
           bookmark_utils_ios::CreateBookmarkAtPositionWithUndoToast(
               base::SysUTF8ToNSString(URL.spec()), URL,
               self.displayedFolderNode, index, _bookmarkModel.get(),

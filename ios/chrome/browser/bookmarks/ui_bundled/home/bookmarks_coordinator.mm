@@ -243,9 +243,10 @@ enum class PresentedState {
   };
 
   [self.snackbarCommandsHandler
-      showSnackbarMessage:[self.mediator addBookmarkWithTitle:title
-                                                          URL:bookmarkedURL
-                                                   editAction:editAction]];
+      showCustomSnackbarMessage:[self.mediator
+                                    addBookmarkWithTitle:title
+                                                     URL:bookmarkedURL
+                                              editAction:editAction]];
 
   // Show non-modal sign-in promo for bookmarks if the feature is enabled.
   if (IsNonModalSignInPromoEnabled()) {
@@ -433,9 +434,7 @@ enum class PresentedState {
 
 - (void)dismissSnackbar {
   // Dismiss any bookmark related snackbar this controller could have presented.
-  [MDCSnackbarManager.defaultManager
-      dismissAndCallCompletionBlocksWithCategory:
-          bookmark_utils_ios::kBookmarksSnackbarCategory];
+  [self.snackbarCommandsHandler dismissAllSnackbars];
 }
 
 - (BOOL)canDismiss {
@@ -506,7 +505,8 @@ enum class PresentedState {
       bookmark_utils_ios::GetBookmarkStorageType(folder, _bookmarkModel.get());
   SetLastUsedBookmarkFolder(_profile->GetPrefs(), folder, type);
   [self.snackbarCommandsHandler
-      showSnackbarMessage:[self.mediator addBookmarks:_URLs toFolder:folder]];
+      showCustomSnackbarMessage:[self.mediator addBookmarks:_URLs
+                                                   toFolder:folder]];
   _URLs = nil;
 
   default_browser::NotifyBookmarkAddOrEdit(
@@ -621,8 +621,9 @@ enum class PresentedState {
   };
 
   [self.snackbarCommandsHandler
-      showSnackbarMessage:[self.mediator bulkAddBookmarksWithURLs:URLs
-                                                       viewAction:viewAction]];
+      showCustomSnackbarMessage:[self.mediator
+                                    bulkAddBookmarksWithURLs:URLs
+                                                  viewAction:viewAction]];
 }
 
 - (void)addOrEditBookmark:(URLWithTitle*)URLWithTitle {

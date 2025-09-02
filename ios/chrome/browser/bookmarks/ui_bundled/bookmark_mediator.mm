@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_mediator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -29,6 +27,8 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -80,9 +80,9 @@ using bookmarks::BookmarkNode;
   _syncService = nullptr;
 }
 
-- (MDCSnackbarMessage*)addBookmarkWithTitle:(NSString*)title
-                                        URL:(const GURL&)URL
-                                 editAction:(void (^)())editAction {
+- (SnackbarMessage*)addBookmarkWithTitle:(NSString*)title
+                                     URL:(const GURL&)URL
+                              editAction:(void (^)())editAction {
   RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts, _prefs);
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
 
@@ -91,24 +91,22 @@ using bookmarks::BookmarkNode;
   _bookmarkModel->AddNewURL(defaultFolder, defaultFolder->children().size(),
                             base::SysNSStringToUTF16(title), URL);
 
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.handler = editAction;
   action.title =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_SNACKBAR_EDIT_BOOKMARK);
-  action.accessibilityIdentifier = @"Edit";
 
   NSString* text = bookmark_utils_ios::messageForAddingBookmarksInFolder(
       defaultFolder, _bookmarkModel.get(), !IsLastUsedBookmarkFolderSet(_prefs),
       /*showCount=*/false, /*count=*/1, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(text);
+  SnackbarMessage* message = CreateCustomSnackbarMessage(text);
   message.action = action;
-  message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
   return message;
 }
 
-- (MDCSnackbarMessage*)bulkAddBookmarksWithURLs:(NSArray<NSURL*>*)URLs
-                                     viewAction:(void (^)())viewAction {
+- (SnackbarMessage*)bulkAddBookmarksWithURLs:(NSArray<NSURL*>*)URLs
+                                  viewAction:(void (^)())viewAction {
   DCHECK([URLs count] > 0);
   base::RecordAction(base::UserMetricsAction("IOSBookmarksAddedInBulk"));
 
@@ -146,7 +144,7 @@ using bookmarks::BookmarkNode;
                               successfullyAddedBookmarks);
 
   // Create snackbar message.
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.handler = viewAction;
   action.title =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_SNACKBAR_VIEW_BOOKMARKS);
@@ -157,15 +155,14 @@ using bookmarks::BookmarkNode;
       _syncService);
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(result);
+  SnackbarMessage* message = CreateCustomSnackbarMessage(result);
   message.action = action;
-  message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
 
   return message;
 }
 
-- (MDCSnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs
-                           toFolder:(const BookmarkNode*)folder {
+- (SnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs
+                        toFolder:(const BookmarkNode*)folder {
   for (URLWithTitle* urlWithTitle in URLs) {
     RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts,
                                 _prefs);
@@ -179,8 +176,7 @@ using bookmarks::BookmarkNode;
       folder, _bookmarkModel.get(), /*choosenByUser=*/YES,
       /*showCount=*/false, URLs.count, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(text);
-  message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
+  SnackbarMessage* message = CreateCustomSnackbarMessage(text);
   return message;
 }
 

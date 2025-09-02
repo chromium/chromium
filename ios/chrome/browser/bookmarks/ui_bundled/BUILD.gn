@@ -31,6 +31,7 @@ source_set("core") {
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/snackbar/public",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
@@ -69,9 +70,9 @@ source_set("utils") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/snackbar/public",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/common/ui/colors",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
 }
@@ -115,6 +116,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/snackbar/public",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//testing/gtest",
