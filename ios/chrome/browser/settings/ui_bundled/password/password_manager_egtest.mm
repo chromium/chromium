@@ -1734,7 +1734,13 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // storing just about enough passwords to ensure filling more than one page on
 // any device. To limit the effect of (2), custom large scrolling steps are
 // added to the usual scrolling actions.
-- (void)testManyPasswords {
+// TODO(crbug.com/442382530): Re-enable this test once it has been fixed.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testManyPasswords FLAKY_testManyPasswords
+#else
+#define MAYBE_testManyPasswords testManyPasswords
+#endif
+- (void)MAYBE_testManyPasswords {
   // Enough just to ensure filling more than one page on all devices.
   constexpr int kPasswordsCount = 15;
 
