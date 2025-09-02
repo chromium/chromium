@@ -195,6 +195,7 @@ component("mixers") {
     sources += [
       "win/css_system_color_mixer_win.cc",
       "win/native_color_mixers_win.cc",
+      "win/native_color_mixers_win.h",
     ]
     deps += [ ":accent_color_observer" ]
   }
