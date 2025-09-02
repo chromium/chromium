@@ -45,6 +45,7 @@ enum class BWGPromoConsentVariations {
   kDoublePage = 2,
   kSkipConsent = 3,
   kForceFRE = 4,
+  kSkipNewUserDelay = 5,
 };
 extern const char kBWGPromoConsentParams[];
 
@@ -53,6 +54,10 @@ BWGPromoConsentVariations BWGPromoConsentVariationsParam();
 
 // Returns YES if the promo should be forced.
 bool ShouldForceBWGPromo();
+
+// Returns YES if the Chrome FRE recency check should be skipped when evaluating
+// whether to show the Gemini on-navigation promo.
+bool ShouldSkipBWGPromoNewUserDelay();
 
 // Feature flag to enable BWG Promo Consent.
 BASE_DECLARE_FEATURE(kBWGPromoConsent);

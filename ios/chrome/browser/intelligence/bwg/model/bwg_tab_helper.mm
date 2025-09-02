@@ -210,7 +210,8 @@ void BwgTabHelper::PageLoaded(
   bool floaty_shown = profile->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent);
   bool bwg_promo_shown =
       profile->GetPrefs()->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
-  if (!IsFirstRunRecent(base::Days(1)) && !floaty_shown && !bwg_promo_shown) {
+  if ((!IsFirstRunRecent(base::Days(1)) || ShouldSkipBWGPromoNewUserDelay()) &&
+      !floaty_shown && !bwg_promo_shown) {
     [bwg_commands_handler_ showBWGPromoIfPageIsEligible];
   }
 }

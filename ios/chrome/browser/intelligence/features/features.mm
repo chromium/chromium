@@ -69,12 +69,20 @@ BWGPromoConsentVariations BWGPromoConsentVariationsParam() {
   if (param == 4) {
     return BWGPromoConsentVariations::kForceFRE;
   }
+  if (param == 5) {
+    return BWGPromoConsentVariations::kSkipNewUserDelay;
+  }
   return BWGPromoConsentVariations::kDisabled;
 }
 
 bool ShouldForceBWGPromo() {
   return BWGPromoConsentVariationsParam() ==
          BWGPromoConsentVariations::kForceFRE;
+}
+
+bool ShouldSkipBWGPromoNewUserDelay() {
+  return BWGPromoConsentVariationsParam() ==
+         BWGPromoConsentVariations::kSkipNewUserDelay;
 }
 
 BASE_FEATURE(BWGPromoConsent, base::FEATURE_DISABLED_BY_DEFAULT);
