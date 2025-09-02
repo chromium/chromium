@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 
 namespace persistent_cache {
@@ -22,7 +23,8 @@ namespace persistent_cache {
 class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
  public:
   SqliteVfsFileSet(std::unique_ptr<SandboxedFile> db_file,
-                   std::unique_ptr<SandboxedFile> journal_file);
+                   std::unique_ptr<SandboxedFile> journal_file,
+                   base::UnsafeSharedMemoryRegion shared_lock);
   SqliteVfsFileSet(SqliteVfsFileSet& other) = delete;
   SqliteVfsFileSet& operator=(const SqliteVfsFileSet& other) = delete;
   SqliteVfsFileSet(SqliteVfsFileSet&& other);
@@ -44,6 +46,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
 
   std::unique_ptr<SandboxedFile> db_file_;
   std::unique_ptr<SandboxedFile> journal_file_;
+  base::UnsafeSharedMemoryRegion shared_lock_;
 
   // SQLite databases use standard naming for their files. Since the vfs might
   // register files for many databases at once it needs some way to

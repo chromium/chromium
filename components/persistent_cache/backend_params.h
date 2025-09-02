@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 
 namespace persistent_cache {
 
@@ -38,6 +39,7 @@ struct COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParams {
   bool db_file_is_writable = false;
   base::File journal_file;
   bool journal_file_is_writable = false;
+  base::UnsafeSharedMemoryRegion shared_lock;
 };
 
 }  // namespace persistent_cache

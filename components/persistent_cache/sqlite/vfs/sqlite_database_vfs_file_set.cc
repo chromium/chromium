@@ -22,11 +22,13 @@ constexpr const char kPathSeperator[] = "_";
 namespace persistent_cache {
 
 SqliteVfsFileSet::SqliteVfsFileSet(std::unique_ptr<SandboxedFile> db_file,
-                                   std::unique_ptr<SandboxedFile> journal_file)
+                                   std::unique_ptr<SandboxedFile> journal_file,
+                                   base::UnsafeSharedMemoryRegion shared_lock)
     : db_file_(std::move(db_file)),
       journal_file_(std::move(journal_file)),
-      virtual_fs_path_(base::NumberToString(
-          g_file_set_id_generator.fetch_add(1, std::memory_order_relaxed))),
+      shared_lock_(std::move(shared_lock)),
+      virtual_fs_path_(
+          base::NumberToString(g_file_set_id_generator.fetch_add(1))),
       read_only_(db_file_->access_rights() ==
                  SandboxedFile::AccessRights::kReadOnly) {
   // It makes no sense to have a file writeable and not the other.
