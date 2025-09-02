@@ -581,7 +581,8 @@ void AttributionSrcLoader::RegisterFromContextMenuNavigation(
   }
 
   DataHostSharedRemote data_host = std::move(entry->second);
-  DCHECK(data_host.is_bound());
+  // This is required for `DoRegistration()` to work properly.
+  CHECK(data_host.is_bound());
   context_menu_data_hosts_.erase(entry);
 
   const AtomicString& attribution_src =
