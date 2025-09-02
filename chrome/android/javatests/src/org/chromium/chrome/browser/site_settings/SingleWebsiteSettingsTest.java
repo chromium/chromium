@@ -8,13 +8,17 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -235,16 +239,30 @@ public class SingleWebsiteSettingsTest {
         assertEquals(allowSetting, getGeolocationSetting(website));
 
         // Change to block.
-        onView(withText(containsString("Location"))).perform(click());
+        toggleLocationPermission();
         assertEquals(blockedText, preference.getSummary());
         assertEquals(blockSetting, getGeolocationSetting(website));
 
         // Change back to allow.
-        onView(withText(containsString("Location"))).perform(click());
+        toggleLocationPermission();
         assertEquals(allowedText, preference.getSummary());
         assertEquals(allowSetting, getGeolocationSetting(website));
 
         settingsActivity.finish();
+    }
+
+    private static void toggleLocationPermission() {
+        onView(
+                        allOf(
+                                withId(R.id.switch_container),
+                                withParent(
+                                        withParent(
+                                                hasSibling(
+                                                        withChild(
+                                                                withText(
+                                                                        containsString(
+                                                                                "Location"))))))))
+                .perform(click());
     }
 
     private static GeolocationSetting getGeolocationSetting(Website website) {

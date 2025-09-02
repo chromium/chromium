@@ -597,13 +597,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         Preference permissionsHeaderPref = findPreference(PREF_PERMISSIONS_HEADER);
         mMaxPermissionOrder = permissionsHeaderPref.getOrder();
         for (@ContentSettingsType.EnumType int type : SiteSettingsUtil.SETTINGS_ORDER) {
-            Preference preference =
-                    (isOneTime(type)
-                                    && PermissionsAndroidFeatureMap.isEnabled(
-                                            PermissionsAndroidFeatureList
-                                                    .APPROXIMATE_GEOLOCATION_PERMISSION))
-                            ? new ChromeImageViewPreference(getStyledContext())
-                            : new ChromeSwitchPreference(getStyledContext());
+            Preference preference = getPermissionPreference(type);
             preference.setKey(getPreferenceKey(type));
 
             if (type == ContentSettingsType.ADS) {
@@ -631,6 +625,19 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                         isOneTime(type));
             }
         }
+    }
+
+    private Preference getPermissionPreference(@ContentSettingsType.EnumType int type) {
+        boolean isOneTime = isOneTime(type);
+        if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS && !isOneTime) {
+            return new TwoActionSwitchPreference(getStyledContext());
+        }
+
+        return (isOneTime
+                        && PermissionsAndroidFeatureMap.isEnabled(
+                                PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION))
+                ? new ChromeImageViewPreference(getStyledContext())
+                : new ChromeSwitchPreference(getStyledContext());
     }
 
     @RequiresNonNull({"mSite"})
