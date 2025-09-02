@@ -12,7 +12,8 @@
 #include "ui/gfx/win/window_impl.h"
 
 namespace base {
-template<typename T> struct DefaultSingletonTraits;
+template <typename T>
+class NoDestructor;
 }
 
 namespace gfx {
@@ -38,7 +39,7 @@ class COMPONENT_EXPORT(GFX) SingletonHwnd : public WindowImpl {
 
  private:
   friend class SingletonHwndObserver;
-  friend struct base::DefaultSingletonTraits<SingletonHwnd>;
+  friend class base::NoDestructor<SingletonHwnd>;
 
   SingletonHwnd();
   ~SingletonHwnd() override;

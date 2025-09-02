@@ -10,19 +10,12 @@ namespace gfx {
 
 SingletonHwndObserver::SingletonHwndObserver(const WndProc& wnd_proc)
     : wnd_proc_(wnd_proc) {
-  DCHECK(!wnd_proc.is_null());
+  CHECK(!wnd_proc.is_null());
   SingletonHwnd::GetInstance()->AddObserver(this);
 }
 
 SingletonHwndObserver::~SingletonHwndObserver() {
-  ClearWndProc();
-}
-
-void SingletonHwndObserver::ClearWndProc() {
-  if (!wnd_proc_.is_null()) {
-    SingletonHwnd::GetInstance()->RemoveObserver(this);
-    wnd_proc_.Reset();
-  }
+  SingletonHwnd::GetInstance()->RemoveObserver(this);
 }
 
 void SingletonHwndObserver::OnWndProc(HWND hwnd,
