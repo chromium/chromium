@@ -412,11 +412,9 @@ void GWSPageLoadMetricsObserver::OnParseStart(
   if (page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerParseStartSearch,
                         timing.parse_timing->parse_start.value());
-    is_header_from_synthetic_response_ =
-        (GetDelegate().GetMainFrameMetadata().behavior_flags &
-         blink::LoadingBehaviorFlag::
-             kLoadingBehaviorServiceWorkerSyntheticResponse) != 0;
   }
+  is_header_from_synthetic_response_ =
+      page_load_metrics::IsServiceWorkerSyntheticResponseEnabled(GetDelegate());
 }
 
 void GWSPageLoadMetricsObserver::OnConnectStart(

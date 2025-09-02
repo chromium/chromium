@@ -121,28 +121,6 @@ enum class ServiceWorkerResourceLoadStatus {
   kMainResourceNotFallbackAndNoSubResource = 7,
 };
 
-bool IsServiceWorkerSyntheticResponseEnabled(
-    const page_load_metrics::PageLoadMetricsObserverDelegate& delegate) {
-  if ((delegate.GetMainFrameMetadata().behavior_flags &
-       blink::LoadingBehaviorFlag::
-           kLoadingBehaviorServiceWorkerSyntheticResponse) != 0) {
-    // TODO(crbug.com/40240298): This is added to ensure the tests correctly set
-    // expected loading behaviors. Remove this CHECK once
-    // `ControllerServiceWorkerMode` is updated.
-    CHECK(!page_load_metrics::IsServiceWorkerControlled(delegate));
-    return true;
-  }
-  return false;
-}
-
-// TODO(crbug.com/40240298): Remove this once `ControllerServiceWorkerMode` is
-// updated.
-bool IsServiceWorkerControlledOrSyntheticResponseEnabled(
-    const page_load_metrics::PageLoadMetricsObserverDelegate& delegate) {
-  return page_load_metrics::IsServiceWorkerControlled(delegate) ||
-         IsServiceWorkerSyntheticResponseEnabled(delegate);
-}
-
 }  // namespace
 
 ServiceWorkerPageLoadMetricsObserver::ServiceWorkerPageLoadMetricsObserver() =
