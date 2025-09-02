@@ -10,31 +10,6 @@
 
 namespace blink {
 
-TEST(WebThemeEngineTest, NativeSystemThemeColor) {
-  std::vector<blink::WebThemeEngine::SystemThemeColor> blink_inputs = {
-      blink::WebThemeEngine::SystemThemeColor::kButtonFace,
-      blink::WebThemeEngine::SystemThemeColor::kButtonText,
-      blink::WebThemeEngine::SystemThemeColor::kGrayText,
-      blink::WebThemeEngine::SystemThemeColor::kHighlight,
-      blink::WebThemeEngine::SystemThemeColor::kHighlightText,
-      blink::WebThemeEngine::SystemThemeColor::kHotlight,
-      blink::WebThemeEngine::SystemThemeColor::kWindow,
-      blink::WebThemeEngine::SystemThemeColor::kWindowText};
-
-  std::vector<ui::NativeTheme::SystemThemeColor> native_theme_outputs = {
-      ui::NativeTheme::SystemThemeColor::kButtonFace,
-      ui::NativeTheme::SystemThemeColor::kButtonText,
-      ui::NativeTheme::SystemThemeColor::kGrayText,
-      ui::NativeTheme::SystemThemeColor::kHighlight,
-      ui::NativeTheme::SystemThemeColor::kHighlightText,
-      ui::NativeTheme::SystemThemeColor::kHotlight,
-      ui::NativeTheme::SystemThemeColor::kWindow,
-      ui::NativeTheme::SystemThemeColor::kWindowText};
-
-  for (size_t i = 0; i < blink_inputs.size(); ++i)
-    EXPECT_EQ(NativeSystemThemeColor(blink_inputs[i]), native_theme_outputs[i]);
-}
-
 TEST(WebThemeEngineTest, NativeSystemThemePart) {
   std::vector<blink::WebThemeEngine::Part> blink_inputs = {
       blink::WebThemeEngine::kPartScrollbarDownArrow,

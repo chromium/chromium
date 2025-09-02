@@ -20,11 +20,6 @@ PLATFORM_EXPORT ui::NativeTheme::State NativeThemeState(
 PLATFORM_EXPORT ui::NativeTheme::ColorScheme NativeColorScheme(
     mojom::ColorScheme color_scheme);
 
-PLATFORM_EXPORT ui::NativeTheme::SystemThemeColor NativeSystemThemeColor(
-    WebThemeEngine::SystemThemeColor theme_color);
-
-PLATFORM_EXPORT WebThemeEngine::SystemThemeColor WebThemeSystemThemeColor(
-    ui::NativeTheme::SystemThemeColor theme_color);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_THEME_WEB_THEME_ENGINE_CONVERSIONS_H_

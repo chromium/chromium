@@ -113,7 +113,6 @@ _NATIVE_ALLOWLIST = {
     'content.mojom.PageTransition',
     'content.mojom.ScrollbarButtonsPlacement',
     'content.mojom.ScrollerStyle',
-    'content.mojom.SystemThemeColor',
     'content.mojom.WebPluginInfo',
     'gpu.mojom.Capabilities',
     'gpu.mojom.ContextLostReason',

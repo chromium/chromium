@@ -89,21 +89,6 @@ class WebThemeEngine {
     kPartProgressBar
   };
 
-  enum class SystemThemeColor {
-    kNotSupported,
-    kButtonFace,
-    kButtonText,
-    kGrayText,
-    kHighlight,
-    kHighlightText,
-    kHotlight,
-    kMenuHighlight,
-    kScrollbar,
-    kWindow,
-    kWindowText,
-    kMaxValue = kWindowText,
-  };
-
   // Extra parameters for drawing the PartScrollbarHorizontalTrack and
   // PartScrollbarVerticalTrack.
   struct ScrollbarTrackExtraParams {

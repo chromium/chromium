@@ -514,10 +514,6 @@ mojom("mojo_bindings") {
           mojom = "content.mojom.SyntheticTap"
           cpp = "::content::SyntheticTapGestureParams"
         },
-        {
-          mojom = "content.mojom.SystemThemeColor"
-          cpp = "::ui::NativeTheme::SystemThemeColor"
-        },
       ]
 
       traits_headers = [
