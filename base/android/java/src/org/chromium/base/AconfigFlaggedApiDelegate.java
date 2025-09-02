@@ -50,16 +50,6 @@ public interface AconfigFlaggedApiDelegate {
     }
 
     /**
-     * Checks if the display topology is available, based on the API level and Aconfig flags.
-     *
-     * @deprecated Use {@link #isDisplayTopologyAvailable(DisplayManager)} instead.
-     */
-    @Deprecated
-    default boolean isDisplayTopologyAvailable() {
-        return false;
-    }
-
-    /**
      * Checks if the display topology is available, based on the API level, Aconfig flags and
      * Display Topology state.
      *
