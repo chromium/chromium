@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/permissions/prediction_service/language_detection_observer.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
@@ -78,6 +79,10 @@ class PredictionBasedPermissionUiSelector
   using ModelExecutionCallback =
       base::OnceCallback<void(ModelExecutionData model_data)>;
 
+  // The timeout to ensure that deciding which UI to chose for a permission
+  // request is not taking longer than n seconds..
+  static const int kPermissionRequestUiDecisionTimeout = 3;
+
   // Constructs an instance in the context of the given |profile|.
   explicit PredictionBasedPermissionUiSelector(Profile* profile);
   ~PredictionBasedPermissionUiSelector() override;
@@ -144,6 +149,10 @@ class PredictionBasedPermissionUiSelector
   // passage embedder delegate, which cancels all async operations managed by
   // them.
   void Cleanup();
+
+  // Called when the global timeout for the entire UI selection process is
+  // reached.
+  void OnTimeout();
 
   // Callback for the Aiv1ModelHandler, with the first to parameters being
   // curryed to be used for the server side model call.
@@ -279,6 +288,8 @@ class PredictionBasedPermissionUiSelector
   std::optional<PredictionGrantLikelihood> likelihood_override_for_testing_;
 
   DecisionMadeCallback callback_;
+
+  base::OneShotTimer timeout_timer_;
 
   std::optional<content_extraction::InnerTextResult> inner_text_for_testing_;
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)

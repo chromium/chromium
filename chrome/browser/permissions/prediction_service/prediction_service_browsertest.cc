@@ -609,6 +609,28 @@ IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
                            GetParam().prediction_service_likelihood);
 }
 
+IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
+                       TestOverallTimeout) {
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+
+  EXPECT_CALL(prediction_service(), StartLookup(_, _, _))
+      .WillOnce(WithArg<2>(
+          [&](PredictionService::LookupResponseCallback response_callback) {
+            task_runner->FastForwardBy(
+                base::Seconds(PredictionBasedPermissionUiSelector::
+                                  kPermissionRequestUiDecisionTimeout));
+          }));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  TriggerPromptAndVerifyUi(
+      /*test_url=*/"test.a", PermissionAction::DISMISSED,
+      /*should_expect_quiet_ui=*/false,
+      /*expected_relevance=*/std::nullopt,
+      /*expected_prediction_likelihood=*/std::nullopt);
+}
+
 // -----------------------------------------------------------------------------
 // --------------------- Prediction Service On Device CPSSv1 -------------------
 // -----------------------------------------------------------------------------
