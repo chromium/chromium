@@ -593,9 +593,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // pressed states.
   virtual SkColor GetSystemButtonPressedColor(SkColor base_color) const;
 
-  // Assign the focus-ring-appropriate alpha value to the provided base_color.
-  virtual SkColor4f FocusRingColorForBaseColor(SkColor4f base_color) const;
-
   float AdjustBorderWidthByZoom(float border_width, float zoom_level) const;
 
   float AdjustBorderRadiusByZoom(Part part,

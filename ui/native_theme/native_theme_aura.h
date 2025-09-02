@@ -31,7 +31,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
   static NativeThemeAura* web_instance();
 
   // Overridden from NativeTheme:
-  SkColor4f FocusRingColorForBaseColor(SkColor4f base_color) const override;
   void ConfigureWebInstance() override;
 
   // NativeThemeBase:

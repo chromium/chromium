@@ -123,17 +123,6 @@ NativeThemeAura* NativeThemeAura::web_instance() {
   return s_native_theme_for_web.get();
 }
 
-SkColor4f NativeThemeAura::FocusRingColorForBaseColor(
-    SkColor4f base_color) const {
-#if BUILDFLAG(IS_APPLE)
-  // On Mac OSX, the system Accent Color setting is darkened a bit
-  // for better contrast.
-  return SkColor4f(base_color.fR, base_color.fG, base_color.fB, 166 / 255.0f);
-#else
-  return base_color;
-#endif  // BUILDFLAG(IS_APPLE)
-}
-
 void NativeThemeAura::ConfigureWebInstance() {
   // Add the web native theme as an observer to stay in sync with color scheme
   // changes.

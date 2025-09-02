@@ -35,12 +35,6 @@
 namespace blink {
 
 namespace {
-// For light mode the focus ring base color is #0067f47f and dark mode
-// #1aa9ff7f. These can be obtained through
-// `GetSystemColor(MacSystemColorID::kKeyboardFocusIndicator, color_scheme)`,
-// which gets it from NSColor::keyboardFocusIndicatorColor.
-constexpr SkColor4f kFocusRingBaseColorLight = {0, 0.403922, 0.956863, 1};
-constexpr SkColor4f kFocusRingBaseColorDark = {0.101961, 0.662745, 1, 1};
 
 // The focus ring colors used in web tests for light and dark mode.
 constexpr Color kDefaultFocusRingColorForTestsLight =
@@ -151,36 +145,23 @@ Color LayoutThemeMac::FocusRingColor(
     return Color::FromRGBA(0x10, 0x10, 0x10, 0xFF);
   }
 
-  if (RuntimeEnabledFeatures::SystemDefaultAccentColorsEnabled()) {
-    // If a custom focus ring color has been set, use that one.
-    if (HasCustomFocusRingColor()) {
-      return GetCustomFocusRingColor(color_scheme);
-    }
-    // Otherwise, use the system-default color based on the color scheme.
-    auto focus_ring_base_color =
-        color_scheme == mojom::blink::ColorScheme::kDark
-            ? kFocusRingBaseColorDark
-            : kFocusRingBaseColorLight;
-    return Color::FromSkColor4f(
-        ui::NativeTheme::GetInstanceForWeb()->FocusRingColorForBaseColor(
-            focus_ring_base_color));
-  }
-
-  SkColor4f keyboard_focus_indicator =
-      GetSystemColor(MacSystemColorID::kKeyboardFocusIndicator, color_scheme)
-          .toSkColor4f();
-  Color focus_ring = Color::FromSkColor4f(
-      ui::NativeTheme::GetInstanceForWeb()->FocusRingColorForBaseColor(
-          keyboard_focus_indicator));
-
-  if (!HasCustomFocusRingColor()) {
-    return focus_ring;
-  }
-  // Use the custom focus ring color when the system accent color wasn't
-  // changed.
-  if (!IsAccentColorCustomized(color_scheme)) {
+  if (HasCustomFocusRingColor() &&
+      (RuntimeEnabledFeatures::SystemDefaultAccentColorsEnabled() ||
+       !IsAccentColorCustomized(color_scheme))) {
     return GetCustomFocusRingColor(color_scheme);
   }
+
+  Color focus_ring;
+  if (RuntimeEnabledFeatures::SystemDefaultAccentColorsEnabled()) {
+    focus_ring =
+        Color::FromSkColor(color_scheme == mojom::blink::ColorScheme::kDark
+                               ? SkColorSetRGB(0x1A, 0xA9, 0xFF)
+                               : SkColorSetRGB(0x00, 0x67, 0xF4));
+  } else {
+    focus_ring =
+        GetSystemColor(MacSystemColorID::kKeyboardFocusIndicator, color_scheme);
+  }
+  focus_ring.SetAlpha(166 / 255.0f);
   return focus_ring;
 }
 

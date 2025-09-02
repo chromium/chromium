@@ -106,10 +106,6 @@ SkColor NativeTheme::GetSystemButtonPressedColor(SkColor base_color) const {
   return base_color;
 }
 
-SkColor4f NativeTheme::FocusRingColorForBaseColor(SkColor4f base_color) const {
-  return base_color;
-}
-
 float NativeTheme::GetBorderRadiusForPart(Part part,
                                           float width,
                                           float height) const {
