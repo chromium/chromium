@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/suggestions/autofill_ai/autofill_ai_suggestion_generator.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -102,7 +104,8 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr));
     autofill_client_.SetUpPrefsAndIdentityForAutofillAi();
-    generator_ = std::make_unique<AutofillAiSuggestionGenerator>();
+    generator_ =
+        std::make_unique<AutofillAiSuggestionGenerator>(autofill_client_);
   }
 
   // Sets the form to one whose `i`th field has type `field_types[i]`.

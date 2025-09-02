@@ -60,9 +60,6 @@ namespace {
 //                  {field, AttributeType(kDriversLicenseName));
 class AttributeTypeAssignment {
  public:
-  // Creates a type assignment that matches the legacy behavior where `*_TAG`
-  // types still exist. In that case, every AutofillField is assigned at most
-  // one AttributeType.
   AttributeTypeAssignment(
       base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
       const Section& trigger_section)
@@ -421,14 +418,14 @@ std::vector<const EntityInstance*> OrderedEntitiesForSuggestion(
 
 std::vector<const EntityInstance*> GetEntitiesForSuggestion(
     base::span<const EntityInstance> entities,
-    const AttributeTypeAssignment& attribute_type_assignment,
+    const AttributeTypeAssignment& assignment,
     const FieldGlobalId& trigger_field_id,
     const std::string& app_locale) {
   std::vector<const EntityInstance*> relevant_entities;
   for (const EntityInstance& entity : entities) {
     base::optional_ref<const AutofillFieldWithAttributeType>
-        trigger_field_with_type = FindField(
-            attribute_type_assignment.Find(entity.type()), trigger_field_id);
+        trigger_field_with_type =
+            FindField(assignment.Find(entity.type()), trigger_field_id);
     if (trigger_field_with_type &&
         EntityShouldProduceSuggestion(entity, *trigger_field_with_type,
                                       app_locale)) {
@@ -441,36 +438,27 @@ std::vector<const EntityInstance*> GetEntitiesForSuggestion(
 std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     const FormStructure& form,
     const FormFieldData& trigger_field_data,
-    base::span<const EntityInstance> entities,
+    base::span<const EntityInstance> entities_to_suggest,
+    base::span<const EntityInstance> all_entities,
+    const AttributeTypeAssignment& assignment,
     const std::string& app_locale) {
+  CHECK(!entities_to_suggest.empty());
   const AutofillField& trigger_field =
       CHECK_DEREF(form.GetFieldById(trigger_field_data.global_id()));
 
-  AttributeTypeAssignment assignment =
-      AttributeTypeAssignment(form.fields(), trigger_field.section());
-
   std::vector<SuggestionWithMetadata> suggestions_with_metadata;
-  for (const EntityInstance* entity : GetEntitiesForSuggestion(
-           entities, assignment, trigger_field_data.global_id(), app_locale)) {
+  for (const EntityInstance& entity : entities_to_suggest) {
     base::span<const AutofillFieldWithAttributeType> fields_with_types =
-        assignment.Find(entity->type());
+        assignment.Find(entity.type());
     base::optional_ref<const AutofillFieldWithAttributeType>
         trigger_field_with_type =
             FindField(fields_with_types, trigger_field.global_id());
     suggestions_with_metadata.push_back(GetSuggestionForEntity(
-        *entity, fields_with_types, *trigger_field_with_type, app_locale));
+        entity, fields_with_types, *trigger_field_with_type, app_locale));
   }
 
-  if (suggestions_with_metadata.empty()) {
-    return {};
-  }
-
-  auto entities_used_to_build_suggestions =
-      base::MakeFlatSet<EntityInstance::EntityId>(
-          suggestions_with_metadata, {}, [](const SuggestionWithMetadata& s) {
-            return s.suggestion.GetPayload<Suggestion::AutofillAiPayload>()
-                .guid;
-          });
+  auto entities_to_suggest_ids = base::MakeFlatSet<EntityInstance::EntityId>(
+      entities_to_suggest, {}, &EntityInstance::guid);
 
   // Labels need to be consistent across the whole fill group. That is, as the
   // user clicks around fields they need to see the same set of attributes as a
@@ -478,8 +466,8 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
   // generate suggestions on a certain triggering field still affect label
   // generation and should be taken into account.
   std::vector<const EntityInstance*> other_entities_that_can_fill_section;
-  for (const EntityInstance& entity : entities) {
-    if (!entities_used_to_build_suggestions.contains(entity.guid()) &&
+  for (const EntityInstance& entity : all_entities) {
+    if (!entities_to_suggest_ids.contains(entity.guid()) &&
         CanFillSomeField(entity, assignment.Find(entity.type()), app_locale)) {
       other_entities_that_can_fill_section.push_back(&entity);
     }
@@ -495,21 +483,23 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
 
 }  // namespace
 
-AutofillAiSuggestionGenerator::AutofillAiSuggestionGenerator() = default;
+AutofillAiSuggestionGenerator::AutofillAiSuggestionGenerator(
+    const AutofillClient& client)
+    : client_(client) {}
 AutofillAiSuggestionGenerator::~AutofillAiSuggestionGenerator() = default;
 
 void AutofillAiSuggestionGenerator::FetchSuggestionData(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::OnceCallback<
         void(std::pair<FillingProduct,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   FetchSuggestionData(
-      form_data, field_data, form, field, client,
+      form, trigger_field, form_structure, trigger_autofill_field, client,
       [&callback](std::pair<FillingProduct,
                             std::vector<SuggestionGenerator::SuggestionData>>
                       suggestion_data) {
@@ -518,25 +508,26 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
 }
 
 void AutofillAiSuggestionGenerator::GenerateSuggestions(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
-      form_data, field_data, form, field, all_suggestion_data,
+      form, trigger_field, form_structure, trigger_autofill_field,
+      all_suggestion_data,
       [&callback](ReturnedSuggestions returned_suggestions) {
         std::move(callback).Run(std::move(returned_suggestions));
       });
 }
 
 void AutofillAiSuggestionGenerator::FetchSuggestionData(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::FunctionRef<
         void(std::pair<FillingProduct,
@@ -548,49 +539,34 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
   }
 
   const EntityDataManager* entity_manager = client.GetEntityDataManager();
-  if (!entity_manager) {
-    callback({FillingProduct::kAutofillAi, {}});
-    return;
-  }
-  if (!field) {
+  if (!entity_manager || !form_structure || !trigger_autofill_field) {
     callback({FillingProduct::kAutofillAi, {}});
     return;
   }
 
-  base::span<const EntityInstance> entities =
-      entity_manager->GetEntityInstances();
-  if (entities.empty()) {
-    callback({FillingProduct::kAutofillAi, {}});
-    return;
-  }
-  app_locale_ = client.GetAppLocale();
-
-  // Sort entities based on their frecency.
-  std::vector<const EntityInstance*> sorted_entities = base::ToVector(
-      entities, [](const EntityInstance& entity) { return &entity; });
-  std::ranges::sort(sorted_entities,
-                    [comp = EntityInstance::FrecencyOrder(base::Time::Now())](
-                        const EntityInstance* lhs, const EntityInstance* rhs) {
-                      return comp(*lhs, *rhs);
-                    });
+  std::vector<const EntityInstance*> entities = GetEntitiesForSuggestion(
+      entity_manager->GetEntityInstances(),
+      AttributeTypeAssignment(form_structure->fields(),
+                              trigger_autofill_field->section()),
+      trigger_field.global_id(), client.GetAppLocale());
 
   std::vector<SuggestionData> suggestion_data = base::ToVector(
-      std::move(sorted_entities), [](const EntityInstance* entity) {
-        return SuggestionData(std::move(*entity));
-      });
+      std::move(entities),
+      [](const EntityInstance* entity) { return SuggestionData(*entity); });
 
   callback({FillingProduct::kAutofillAi, std::move(suggestion_data)});
 }
 
 void AutofillAiSuggestionGenerator::GenerateSuggestions(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
-  if (!form || !field) {
+  const EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  if (!entity_manager || !form_structure || !trigger_autofill_field) {
     callback({FillingProduct::kAutofillAi, {}});
     return;
   }
@@ -598,14 +574,22 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
   std::vector<SuggestionData> autofill_ai_suggestion_data =
       ExtractSuggestionDataForFillingProduct(all_suggestion_data,
                                              FillingProduct::kAutofillAi);
+  if (autofill_ai_suggestion_data.empty()) {
+    callback({FillingProduct::kAutofillAi, {}});
+    return;
+  }
 
-  std::vector<EntityInstance> entities = base::ToVector(
+  std::vector<EntityInstance> entities_to_suggest = base::ToVector(
       std::move(autofill_ai_suggestion_data),
       [](SuggestionData& suggestion_data) {
         return std::get<autofill::EntityInstance>(std::move(suggestion_data));
       });
-  std::vector<Suggestion> suggestions =
-      CreateAutofillAiFillingSuggestions(*form, *field, entities, app_locale_);
+  std::vector<Suggestion> suggestions = CreateAutofillAiFillingSuggestions(
+      *form_structure, *trigger_autofill_field, entities_to_suggest,
+      entity_manager->GetEntityInstances(),
+      AttributeTypeAssignment(form_structure->fields(),
+                              trigger_autofill_field->section()),
+      client_->GetAppLocale());
   callback({FillingProduct::kAutofillAi, std::move(suggestions)});
 }
 

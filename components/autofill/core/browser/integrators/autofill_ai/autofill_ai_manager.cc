@@ -307,7 +307,7 @@ void AutofillAiManager::HandleUpdatePromptResult(
 std::vector<Suggestion> AutofillAiManager::GetSuggestions(
     const FormStructure& form,
     const FormFieldData& trigger_field) {
-  AutofillAiSuggestionGenerator suggestion_generator;
+  AutofillAiSuggestionGenerator suggestion_generator(*client_);
   std::vector<Suggestion> suggestions;
   const AutofillField* autofill_field =
       form.GetFieldById(trigger_field.global_id());
