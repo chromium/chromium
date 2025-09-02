@@ -78,7 +78,7 @@ suite('Highlighter', () => {
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
-    assertTrue(highlighter.hasCurrentHighlights());
+    assertTrue(highlighter.hasCurrentGranularity());
     assertHtml(
         '<span class="previous-read-highlight">' + text1 + '</span>' +
             '<span class="current-read-highlight">' + text2 + '</span>',
@@ -109,7 +109,7 @@ suite('Highlighter', () => {
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
-    assertTrue(highlighter.hasCurrentHighlights());
+    assertTrue(highlighter.hasCurrentGranularity());
     assertFullNodeIsHighlighted(id1, text1);
     assertFullNodeIsHighlighted(id2, text2);
   });
@@ -133,7 +133,7 @@ suite('Highlighter', () => {
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
-    assertTrue(highlighter.hasCurrentHighlights());
+    assertTrue(highlighter.hasCurrentGranularity());
     assertFullNodeIsHighlighted(id, text);
   });
 
@@ -154,7 +154,7 @@ suite('Highlighter', () => {
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
-    assertTrue(highlighter.hasCurrentHighlights());
+    assertTrue(highlighter.hasCurrentGranularity());
     assertHtml(
         '<span class="previous-read-highlight">Will </span>' +
             '<span class="current-read-highlight">your </span>' +
@@ -163,7 +163,8 @@ suite('Highlighter', () => {
   });
 
   test(
-      'onWillMoveToNextGranularity with word highlighting highlights the rest of the sentence',
+      'onWillMoveToNextGranularity with word highlighting highlights the rest' +
+          ' of the sentence',
       () => {
         chrome.readingMode.onHighlightGranularityChanged(
             chrome.readingMode.wordHighlighting);
@@ -186,7 +187,7 @@ suite('Highlighter', () => {
             /*shouldUpdateSentenceHighlight=*/ true);
         highlighter.onWillMoveToNextGranularity(segments);
 
-        assertFalse(highlighter.hasCurrentHighlights());
+        assertFalse(highlighter.hasCurrentGranularity());
         assertHtml(
             '<span class="previous-read-highlight">Do you believe in life ' +
                 'after love?</span>',
@@ -221,7 +222,7 @@ suite('Highlighter', () => {
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
-    assertTrue(highlighter.hasCurrentHighlights());
+    assertTrue(highlighter.hasCurrentGranularity());
 
     // Only "I'm" is highlighted. The rest of the sentence, including the space
     // after "I'm" remains unhighlighted.
@@ -254,8 +255,9 @@ suite('Highlighter', () => {
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
-    // There should be no "current" highlight on the page.
-    assertFalse(highlighter.hasCurrentHighlights());
+    // There should be no "current" highlight on the page, but there is a
+    // current granularity in terms of movement.
+    assertTrue(highlighter.hasCurrentGranularity());
     assertHtml(
         '<span class="previous-read-highlight">' + sentenceText +
             '</span><span class="previous-read-highlight">' + punctuation +
@@ -280,7 +282,7 @@ suite('Highlighter', () => {
         /*scrollIntoView=*/ false,
         /*shouldUpdateSentenceHighlight=*/ true);
 
-    assertTrue(highlighter.hasCurrentHighlights());
+    assertTrue(highlighter.hasCurrentGranularity());
     assertHtml(
         '<span class="previous-read-highlight">But darling </span>' +
             '<span class="current-read-highlight">I will be loving you' +
@@ -289,7 +291,8 @@ suite('Highlighter', () => {
   });
 
   test(
-      'onWillMoveToNextGranularity with phrase highlighting highlights the rest of the sentence',
+      'onWillMoveToNextGranularity with phrase highlighting highlights the ' +
+          'rest of the sentence',
       () => {
         chrome.readingMode.onHighlightGranularityChanged(
             chrome.readingMode.autoHighlighting);
@@ -312,7 +315,7 @@ suite('Highlighter', () => {
             /*shouldUpdateSentenceHighlight=*/ true);
         highlighter.onWillMoveToNextGranularity(segments);
 
-        assertFalse(highlighter.hasCurrentHighlights());
+        assertFalse(highlighter.hasCurrentGranularity());
         assertHtml(
             '<span class="previous-read-highlight">I can feel something ' +
                 'inside me say</span>',
@@ -346,7 +349,7 @@ suite('Highlighter', () => {
         /*shouldUpdateSentenceHighlight=*/ true);
 
 
-    assertTrue(highlighter.hasCurrentHighlights());
+    assertTrue(highlighter.hasCurrentGranularity());
     assertHtml(
         '<span class="previous-read-highlight">And honey </span>' +
             '<span class="current-read-highlight">your soul</span>',
@@ -378,66 +381,12 @@ suite('Highlighter', () => {
             /*scrollIntoView=*/ false,
             /*shouldUpdateSentenceHighlight=*/ true);
 
-        assertTrue(highlighter.hasCurrentHighlights());
+        assertTrue(highlighter.hasCurrentGranularity());
         assertHtml(
             '<span class="current-read-highlight">Hungry for something</span>' +
                 ' that I can\'t eat. ',
             id);
       });
-
-  test('remove current highlight', () => {
-    chrome.readingMode.onHighlightGranularityChanged(
-        chrome.readingMode.sentenceHighlighting);
-    const id = 10;
-    const sentence = document.createElement('p');
-    const text1 =
-        'I\'m thinkin bout how people fall in love in mysterious ways.';
-    const text2 = ' Maybe just a touch of the hand';
-    sentence.appendChild(document.createTextNode(text1 + text2));
-    nodeStore.setDomNode(sentence, id);
-    const segments = [{
-      node: new AxReadAloudNode(id),
-      start: text1.length,
-      length: text1.length + text2.length,
-    }];
-    readAloudModel.setCurrentTextSegments(segments);
-
-    highlighter.highlightCurrentGranularity(
-        segments,
-        /*scrollIntoView=*/ false,
-        /*shouldUpdateSentenceHighlight=*/ true);
-    highlighter.removeCurrentHighlight(segments);
-
-    assertFalse(highlighter.hasCurrentHighlights());
-    assertHtmlContains(previousReadHighlightClass, id);
-  });
-
-  test('reset previous highlight', () => {
-    chrome.readingMode.onHighlightGranularityChanged(
-        chrome.readingMode.sentenceHighlighting);
-    const id = 10;
-    const sentence = document.createElement('p');
-    const text1 =
-        'I\'m thinkin bout how people fall in love in mysterious ways.';
-    const text2 = ' Maybe just a touch of the hand';
-    sentence.appendChild(document.createTextNode(text1 + text2));
-    nodeStore.setDomNode(sentence, id);
-    const segments = [{
-      node: new AxReadAloudNode(id),
-      start: text1.length,
-      length: text1.length + text2.length,
-    }];
-    readAloudModel.setCurrentTextSegments(segments);
-
-    highlighter.highlightCurrentGranularity(
-        segments,
-        /*scrollIntoView=*/ false,
-        /*shouldUpdateSentenceHighlight=*/ true);
-    highlighter.resetPreviousHighlight();
-
-    assertFalse(highlighter.hasCurrentHighlights());
-    assertHtmlContains(previousReadHighlightClass, id);
-  });
 
   test('clear highlights', () => {
     chrome.readingMode.onHighlightGranularityChanged(
@@ -462,7 +411,110 @@ suite('Highlighter', () => {
         /*shouldUpdateSentenceHighlight=*/ true);
     highlighter.clearHighlightFormatting();
 
-    assertFalse(highlighter.hasCurrentHighlights());
+    assertFalse(highlighter.hasCurrentGranularity());
     assertHtmlExcludes(previousReadHighlightClass, id);
   });
+
+  test('reset clears all highlights and state', () => {
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.sentenceHighlighting);
+    const id = 10;
+    const sentence = document.createElement('p');
+    const text = 'This is a sentence.';
+    sentence.appendChild(document.createTextNode(text));
+    nodeStore.setDomNode(sentence, id);
+    const segments =
+        [{node: new AxReadAloudNode(id), start: 0, length: text.length}];
+    readAloudModel.setCurrentTextSegments(segments);
+    highlighter.highlightCurrentGranularity(
+        segments, /*scrollIntoView=*/ false,
+        /*shouldUpdateSentenceHighlight=*/ true);
+    assertTrue(highlighter.hasCurrentGranularity());
+
+    highlighter.reset();
+
+    assertFalse(highlighter.hasCurrentGranularity());
+    assertHtmlExcludes(previousReadHighlightClass, id);
+  });
+
+  test('restorePreviousHighlighting reapplies formatting after clear', () => {
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.sentenceHighlighting);
+    const id = 10;
+    const sentence = document.createElement('p');
+    const text = 'This is a sentence.';
+    sentence.appendChild(document.createTextNode(text));
+    nodeStore.setDomNode(sentence, id);
+    const segments =
+        [{node: new AxReadAloudNode(id), start: 0, length: text.length}];
+    readAloudModel.setCurrentTextSegments(segments);
+    highlighter.highlightCurrentGranularity(segments, false, true);
+    highlighter.onWillMoveToNextGranularity(segments);
+
+    // This should clear formatting but keep the granularity in the queue.
+    highlighter.clearHighlightFormatting();
+    highlighter.restorePreviousHighlighting();
+
+    assertHtmlContains(previousReadHighlightClass, id);
+  });
+
+  test(
+      'restorePreviousHighlighting does not reapply formatting after reset',
+      () => {
+        chrome.readingMode.onHighlightGranularityChanged(
+            chrome.readingMode.sentenceHighlighting);
+        const id = 10;
+        const sentence = document.createElement('p');
+        const text = 'This is a sentence.';
+        sentence.appendChild(document.createTextNode(text));
+        nodeStore.setDomNode(sentence, id);
+        const segments =
+            [{node: new AxReadAloudNode(id), start: 0, length: text.length}];
+        readAloudModel.setCurrentTextSegments(segments);
+        highlighter.highlightCurrentGranularity(segments, false, true);
+        highlighter.onWillMoveToNextGranularity(segments);
+
+        highlighter.reset();
+        highlighter.restorePreviousHighlighting();
+
+        assertHtmlExcludes(previousReadHighlightClass, id);
+      });
+
+  test(
+      'onWillMoveToPreviousGranularity clears current and previous highlight',
+      () => {
+        chrome.readingMode.onHighlightGranularityChanged(
+            chrome.readingMode.sentenceHighlighting);
+        const id = 10;
+        const sentence = document.createElement('p');
+        const text1 = 'Me I fall in love with you every single day.';
+        const text2 = ' And I just wanna tell you I am';
+        sentence.appendChild(document.createTextNode(text1 + text2));
+        nodeStore.setDomNode(sentence, id);
+        const sentence1 = [{
+          node: new AxReadAloudNode(id),
+          start: 0,
+          length: text1.length,
+        }];
+        const sentence2 = [{
+          node: new AxReadAloudNode(id),
+          start: text1.length + 1,
+          length: text2.length,
+        }];
+        readAloudModel.setCurrentTextSegments(sentence1);
+
+        highlighter.highlightCurrentGranularity(
+            sentence1,
+            /*scrollIntoView=*/ false,
+            /*shouldUpdateSentenceHighlight=*/ true);
+        highlighter.onWillMoveToNextGranularity(sentence1);
+        highlighter.highlightCurrentGranularity(
+            sentence2,
+            /*scrollIntoView=*/ false,
+            /*shouldUpdateSentenceHighlight=*/ true);
+        highlighter.onWillMoveToPreviousGranularity();
+
+        assertFalse(highlighter.hasCurrentGranularity());
+        assertHtmlExcludes(previousReadHighlightClass, id);
+      });
 });

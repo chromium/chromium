@@ -189,9 +189,6 @@ export class SpeechController {
   }
 
   onSelectionChange() {
-    // If speech is resumed, this won't be restored.
-    // TODO: crbug.com/40927698 - Restore the previous highlight after
-    // speech is resumed after a selection.
     this.highlighter_.clearHighlightFormatting();
   }
 
@@ -264,14 +261,16 @@ export class SpeechController {
   }
 
   onNextGranularityClick() {
+    this.model_.setIsSpeechBeingRepositioned(true);
     this.moveToNextGranularity_();
-    this.onMovingGranularity_();
+    // Reset the word boundary index whenever we move the granularity position.
+    this.wordBoundaries_.resetToDefaultState();
     if (!this.highlightAndPlayMessage_()) {
       this.onSpeechFinished_();
     }
   }
 
-  // Prefer calling this rather than movePositionToNextGranularity directly so
+  // Prefer calling this rather than moveSpeechForward directly so
   // that the highlighter is always informed of the change.
   private moveToNextGranularity_() {
     this.highlighter_.onWillMoveToNextGranularity(
@@ -280,14 +279,9 @@ export class SpeechController {
   }
 
   onPreviousGranularityClick() {
-    // This must be called BEFORE calling
-    // moveSpeechBackwards so we can accurately
-    // determine what's currently being highlighted.
-    this.highlighter_.removeCurrentHighlight(
-        this.readAloudModel_.getCurrentTextSegments());
-    this.onMovingGranularity_();
-    this.readAloudModel_.moveSpeechBackwards();
-
+    this.model_.setIsSpeechBeingRepositioned(true);
+    this.moveToPreviousGranularity_();
+    this.wordBoundaries_.resetToDefaultState();
     if (!this.highlightAndPlayMessage_(
             /*isInterrupted=*/ false,
             /*isMovingBackward=*/ true)) {
@@ -295,12 +289,14 @@ export class SpeechController {
     }
   }
 
-  private onMovingGranularity_() {
-    this.model_.setIsSpeechBeingRepositioned(true);
-    this.highlighter_.resetPreviousHighlight();
-
-    // Reset the word boundary index whenever we move the granularity position.
-    this.wordBoundaries_.resetToDefaultState();
+  // Prefer calling this rather than moveSpeechBackward directly so
+  // that the highlighter is always informed of the change.
+  private moveToPreviousGranularity_() {
+    // This must be called BEFORE calling
+    // moveSpeechBackwards so we can accurately
+    // determine what's currently being highlighted.
+    this.highlighter_.onWillMoveToPreviousGranularity();
+    this.readAloudModel_.moveSpeechBackwards();
   }
 
   private resumeSpeech_(selection: Selection|null) {
@@ -317,6 +313,7 @@ export class SpeechController {
         // restarting the current message.
         this.speech_.resume();
       } else {
+        this.highlighter_.restorePreviousHighlighting();
         if (!this.highlightAndPlayInterruptedMessage_()) {
           // Ensure we're updating Read Aloud state if there's no text to
           // speak.
@@ -409,6 +406,7 @@ export class SpeechController {
     // selection. This is so clicking previous works before the selection and
     // so the previous highlights are properly set.
     this.readAloudModel_.resetSpeechToBeginning();
+    this.highlighter_.reset();
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
     setTimeout(() => {
@@ -421,9 +419,7 @@ export class SpeechController {
         return;
       }
       this.movePlaybackToNode_(readAloudNode, startingOffset);
-      // Set everything to previous and then play the next granularity, which
-      // includes the selection.
-      this.highlighter_.resetPreviousHighlight();
+      // Play the next granularity, which includes the selection.
       if (!this.highlightAndPlayMessage_()) {
         this.onSpeechFinished_();
       }
@@ -494,7 +490,7 @@ export class SpeechController {
   private skipCurrentPosition_(
       isInterrupted: boolean, isMovingBackward: boolean): boolean {
     if (isMovingBackward) {
-      this.readAloudModel_.moveSpeechBackwards();
+      this.moveToPreviousGranularity_();
     } else {
       this.moveToNextGranularity_();
     }
@@ -811,7 +807,7 @@ export class SpeechController {
 
   clearReadAloudState() {
     this.speech_.cancel();
-    this.highlighter_.clearHighlightFormatting();
+    this.highlighter_.reset();
     this.wordBoundaries_.resetToDefaultState();
 
     const speechPlayingState = {

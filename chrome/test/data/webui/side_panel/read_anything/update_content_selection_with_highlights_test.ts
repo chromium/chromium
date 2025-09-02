@@ -74,15 +74,17 @@ suite('UpdateContentSelectionWithHighlights', () => {
     let i = 0;
     while (textNodeIds[i]! !== id) {
       fakeTree.highlightNode(textNodeIds[i]!);
-      highlighter.highlightCurrentGranularity(
-          getReadAloudModel().getCurrentTextSegments(), false, true);
+      const segments = getReadAloudModel().getCurrentTextSegments();
+      highlighter.onWillMoveToNextGranularity(segments);
+      highlighter.highlightCurrentGranularity(segments, false, true);
       i++;
     }
 
     // highlight given node
     fakeTree.highlightNode(id);
-    highlighter.highlightCurrentGranularity(
-        getReadAloudModel().getCurrentTextSegments(), false, true);
+    const segments = getReadAloudModel().getCurrentTextSegments();
+    highlighter.onWillMoveToNextGranularity(segments);
+    highlighter.highlightCurrentGranularity(segments, false, true);
     return microtasksFinished();
   }
 
@@ -92,15 +94,17 @@ suite('UpdateContentSelectionWithHighlights', () => {
     let i = 0;
     while (fromId !== textNodeIds[i]!) {
       fakeTree.highlightNode(textNodeIds[i]!);
-      highlighter.highlightCurrentGranularity(
-          getReadAloudModel().getCurrentTextSegments(), false, true);
+      const segments = getReadAloudModel().getCurrentTextSegments();
+      highlighter.onWillMoveToNextGranularity(segments);
+      highlighter.highlightCurrentGranularity(segments, false, true);
       i++;
     }
 
     // highlight given nodes
     fakeTree.setReadingHighlight(fromId, fromOffset, toId, toOffset);
-    highlighter.highlightCurrentGranularity(
-        getReadAloudModel().getCurrentTextSegments(), false, true);
+    const segments = getReadAloudModel().getCurrentTextSegments();
+    highlighter.onWillMoveToNextGranularity(segments);
+    highlighter.highlightCurrentGranularity(segments, false, true);
     return microtasksFinished();
   }
 

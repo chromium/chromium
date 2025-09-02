@@ -5,7 +5,7 @@
 import {assert} from '//resources/js/assert.js';
 
 import {NodeStore} from './node_store.js';
-import {previousReadHighlightClass} from './read_aloud/highlighter.js';
+import {previousReadHighlightClass} from './read_aloud/movement.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 
 const DATA_PREFIX = 'data-';

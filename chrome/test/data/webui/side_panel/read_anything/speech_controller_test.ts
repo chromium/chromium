@@ -86,7 +86,7 @@ suite('SpeechController', () => {
     speechController.onPlayPauseToggle(null, text);
     assertTrue(speechController.isSpeechActive());
     assertTrue(wordBoundaries.hasBoundaries());
-    assertTrue(highlighter.hasCurrentHighlights());
+    assertTrue(highlighter.hasCurrentGranularity());
 
     speech.reset();
     isSpeechActiveChanged = false;
@@ -100,7 +100,7 @@ suite('SpeechController', () => {
     assertFalse(speechController.isPausedFromButton());
     assertFalse(speechController.isTemporaryPause());
     assertFalse(wordBoundaries.hasBoundaries());
-    assertFalse(highlighter.hasCurrentHighlights());
+    assertFalse(highlighter.hasCurrentGranularity());
   });
 
   test('isPausedFromButton', () => {
@@ -805,14 +805,14 @@ suite('SpeechController', () => {
     speechController.onPlayPauseToggle(null, text);
     assertTrue(speechController.hasSpeechBeenTriggered());
     assertTrue(wordBoundaries.hasBoundaries());
-    assertTrue(highlighter.hasCurrentHighlights());
+    assertTrue(highlighter.hasCurrentGranularity());
 
     speechController.clearReadAloudState();
     speechController.setPreviousReadingPositionIfExists();
 
     assertFalse(speechController.hasSpeechBeenTriggered());
     assertFalse(wordBoundaries.hasBoundaries());
-    assertFalse(highlighter.hasCurrentHighlights());
+    assertFalse(highlighter.hasCurrentGranularity());
   });
 
   test('set previous reading position restores saved state', () => {
@@ -825,7 +825,7 @@ suite('SpeechController', () => {
     speechController.onPlayPauseToggle(null, text);
     assertTrue(speechController.hasSpeechBeenTriggered());
     assertTrue(wordBoundaries.hasBoundaries());
-    assertTrue(highlighter.hasCurrentHighlights());
+    assertTrue(highlighter.hasCurrentGranularity());
 
     speechController.saveReadAloudState();
     speechController.clearReadAloudState();
@@ -833,7 +833,7 @@ suite('SpeechController', () => {
 
     assertTrue(speechController.hasSpeechBeenTriggered());
     assertTrue(wordBoundaries.hasBoundaries());
-    assertTrue(highlighter.hasCurrentHighlights());
+    assertTrue(highlighter.hasCurrentGranularity());
   });
 
   test('onTabMuteStateChange updates speech volume', async () => {
