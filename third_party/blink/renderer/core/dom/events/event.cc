@@ -285,13 +285,18 @@ void Event::SetRelatedTargetIfExists(EventTarget* related_target) {
 
 void Event::ReceivedTarget() {}
 
-Element* Event::Retarget(const Element* element) const {
+Element* Event::Retarget(Element* element) const {
   CHECK(RuntimeEnabledFeatures::ImprovedSourceRetargetingEnabled());
-  EventTarget* retarget_against = currentTarget() ? currentTarget() : target();
-  if (element && retarget_against && retarget_against->ToNode()) {
-    return &retarget_against->ToNode()->GetTreeScope().Retarget(*element);
+  if (!element) {
+    return nullptr;
   }
-  return nullptr;
+  if (EventTarget* current_target = currentTarget()) {
+    if (auto* current_target_node = current_target->ToNode()) {
+      return &current_target_node->GetTreeScope().Retarget(*element);
+    }
+  }
+  // retarget against the topmost TreeScope if there isn't a current target.
+  return &element->GetDocument().Retarget(*element);
 }
 
 void Event::SetUnderlyingEvent(const Event* ue) {

@@ -344,7 +344,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
   // retargeted against currentTarget(). Otherwise, it is retargeted against
   // target().  target() may be null after event dispatch to prevent leaking,
   // and in that case, this method will return null as well.
-  Element* Retarget(const Element* element) const;
+  Element* Retarget(Element* element) const;
 
  private:
   AtomicString type_;
