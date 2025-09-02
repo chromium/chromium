@@ -1351,6 +1351,10 @@ if (is_chromeos && is_chromeos_device) {
       "//chrome/test/base/chromeos/crosier/helper",
       "//chrome/test/base/chromeos/crosier/helper/fake_chrome",
     ]
+
+    if (build_mojo_proxy) {
+      data_deps += [ "//mojo/proxy:mojo_proxy" ]
+    }
   }
 }
 
