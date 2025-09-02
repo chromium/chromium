@@ -232,6 +232,7 @@ source_set("browser_tests") {
     "actor_overlay_browsertest.cc",
     "actor_ui_tab_controller_browsertest.cc",
     "dom_node_geometry_browsertest.cc",
+    "handoff_button_controller_pixel_test.cc",
   ]
 
   deps = [
@@ -247,6 +248,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/alert:tab_alert",
     "//chrome/common",
+    "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
     "//testing/gmock",
