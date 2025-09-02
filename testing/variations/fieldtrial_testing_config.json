@@ -11599,6 +11599,22 @@
             ]
         }
     ],
+    "GlicWarming": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicWarming"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicZeroStateSuggestionsDogfood": [
         {
             "platforms": [
