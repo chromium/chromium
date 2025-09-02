@@ -418,7 +418,7 @@ ProfileSignoutRequest::~ProfileSignoutRequest() {
 }
 
 ProfileSignoutRequest&& ProfileSignoutRequest::SetSnackbarMessage(
-    MDCSnackbarMessage* snackbar_message,
+    SnackbarMessage* snackbar_message,
     bool force_snackbar_over_toolbar) && {
   CHECK(!run_has_been_called_);
   snackbar_message_ = snackbar_message;

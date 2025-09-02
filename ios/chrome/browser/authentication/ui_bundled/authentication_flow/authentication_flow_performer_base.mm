@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_base.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import <memory>
 #import <optional>
 
@@ -65,6 +63,8 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -74,8 +74,6 @@
 
 namespace {
 const int64_t kAuthenticationFlowTimeoutSeconds = 10;
-NSString* const kAuthenticationSnackbarCategory =
-    @"AuthenticationSnackbarCategory";
 
 // The change profile continuation for the authentication flow.
 void AuthenticationFlowContinuationImpl(
@@ -228,7 +226,7 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
     return;
   }
 
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.handler = base::CallbackToBlock(base::BindOnce(
       &HandleSignoutForSnackbar, browser->AsWeakPtr(), clear_selectable_type));
 
@@ -236,15 +234,14 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
   NSString* messageText =
       l10n_util::GetNSStringF(IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
                               base::SysNSStringToUTF16(identity.userEmail));
-  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
+  SnackbarMessage* message = CreateCustomSnackbarMessage(messageText);
   message.action = action;
-  message.category = kAuthenticationSnackbarCategory;
 
   id<SnackbarCommands> handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
   CHECK(handler);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  [handler showSnackbarMessage:message];
+  [handler showCustomSnackbarMessage:message];
 }
 
 @implementation AuthenticationFlowPerformerBase {

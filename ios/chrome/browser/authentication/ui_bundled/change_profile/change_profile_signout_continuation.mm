@@ -29,7 +29,7 @@ namespace {
 // the closure.
 void ChangeProfileSignoutCompletion(
     base::WeakPtr<Browser> weak_browser,
-    MDCSnackbarMessage* snackbar_message,
+    SnackbarMessage* snackbar_message,
     bool force_snackbar_over_toolbar,
     SignoutCompletionCallback signout_completion,
     base::OnceClosure closure) {
@@ -44,10 +44,10 @@ void ChangeProfileSignoutCompletion(
 
     if (force_snackbar_over_toolbar) {
       [snackbar_commands_handler
-          showSnackbarMessageOverBrowserToolbar:snackbar_message];
+          showCustomSnackbarMessageOverBrowserToolbar:snackbar_message];
     } else {
-      [snackbar_commands_handler showSnackbarMessage:snackbar_message
-                                        bottomOffset:0];
+      [snackbar_commands_handler showCustomSnackbarMessage:snackbar_message
+                                              bottomOffset:0];
     }
   }
 
@@ -60,7 +60,7 @@ void ChangeProfileSignoutContinuation(
     signin_metrics::ProfileSignout signout_source_metric,
     BOOL force_snackbar_over_toolbar,
     BOOL should_record_metrics,
-    MDCSnackbarMessage* snackbar_message,
+    SnackbarMessage* snackbar_message,
     SignoutCompletionCallback signout_completion,
     SceneState* scene_state,
     base::OnceClosure closure) {
@@ -121,7 +121,7 @@ ChangeProfileContinuation CreateChangeProfileSignoutContinuation(
     signin_metrics::ProfileSignout signout_source_metric,
     BOOL force_snackbar_over_toolbar,
     BOOL should_record_metrics,
-    MDCSnackbarMessage* snackbar_message,
+    SnackbarMessage* snackbar_message,
     SignoutCompletionCallback signout_completion) {
   CHECK(!signout_completion.is_null());
   return base::BindOnce(&ChangeProfileSignoutContinuation,

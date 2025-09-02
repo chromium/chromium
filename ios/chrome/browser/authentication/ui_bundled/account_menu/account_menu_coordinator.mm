@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/feature_list.h"

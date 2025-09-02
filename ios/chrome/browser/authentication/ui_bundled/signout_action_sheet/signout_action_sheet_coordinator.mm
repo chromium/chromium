@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/check.h"
 #import "base/format_macros.h"
 #import "base/metrics/histogram_functions.h"
@@ -319,7 +317,7 @@ using signin_metrics::SignoutDataLossAlertReason;
   [self preventUserInteraction];
   // Prepare the signout snackbar before account switching.
   // The snackbar message might be nil if the snackbar is not needed.
-  MDCSnackbarMessage* snackbarMessage = [self signoutSnackbarMessage];
+  SnackbarMessage* snackbarMessage = [self signoutSnackbarMessage];
 
   // Strongly retain completionWrapper in the blocks to ensure that the
   // completion callback will be invoked even if the UI is destroyed
@@ -340,7 +338,7 @@ using signin_metrics::SignoutDataLossAlertReason;
 }
 
 // Returns snackbar if needed.
-- (MDCSnackbarMessage*)signoutSnackbarMessage {
+- (SnackbarMessage*)signoutSnackbarMessage {
   if (self.isForceSigninEnabled) {
     // Snackbar should be skipped since force sign-in dialog will be shown right
     // after.
@@ -354,8 +352,8 @@ using signin_metrics::SignoutDataLossAlertReason;
               HasManagedSyncDataType(syncService)
           ? IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE_ENTERPRISE
           : IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE;
-  MDCSnackbarMessage* message =
-      CreateSnackbarMessage(l10n_util::GetNSString(message_id));
+  SnackbarMessage* message =
+      CreateCustomSnackbarMessage(l10n_util::GetNSString(message_id));
   return message;
 }
 

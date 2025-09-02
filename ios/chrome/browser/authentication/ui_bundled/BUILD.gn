@@ -79,7 +79,6 @@ source_set("ui_bundled") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
-    "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//services/network/public/cpp",
     "//ui/base",

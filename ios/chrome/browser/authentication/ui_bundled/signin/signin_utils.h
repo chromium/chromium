@@ -19,9 +19,9 @@
 class Browser;
 enum class ChangeProfileReason;
 class ChromeAccountManagerService;
-@class MDCSnackbarMessage;
 class ProfileIOS;
 @class SceneState;
+@class SnackbarMessage;
 
 namespace signin_metrics {
 enum class ProfileSignout;
@@ -65,7 +65,7 @@ class ProfileSignoutRequest {
   // Configures the snackbar message to display and whether it should be
   // forced over the toolbar or not.
   ProfileSignoutRequest&& SetSnackbarMessage(
-      MDCSnackbarMessage* snackbar_message,
+      SnackbarMessage* snackbar_message,
       bool force_snackbar_over_toolbar) &&;
 
   // Configures the callback invoked before starting the request.
@@ -88,7 +88,7 @@ class ProfileSignoutRequest {
   const signin_metrics::ProfileSignout source_;
   PrepareCallback prepare_callback_;
   CompletionCallback completion_callback_;
-  MDCSnackbarMessage* snackbar_message_;
+  SnackbarMessage* snackbar_message_;
   bool force_snackbar_over_toolbar_ = false;
   bool should_record_metrics_ = true;
   bool run_has_been_called_ = false;

@@ -10,7 +10,7 @@
 #import "base/functional/callback_forward.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 
-@class MDCSnackbarMessage;
+@class SnackbarMessage;
 
 namespace signin_metrics {
 enum class ProfileSignout;
@@ -25,7 +25,7 @@ ChangeProfileContinuation CreateChangeProfileSignoutContinuation(
     signin_metrics::ProfileSignout signout_source_metric,
     BOOL force_snackbar_over_toolbar,
     BOOL should_record_metrics,
-    MDCSnackbarMessage* snackbar_message,
+    SnackbarMessage* snackbar_message,
     SignoutCompletionCallback signout_completion);
 
 // Returns a ChangeProfileContinuation that shows a force sign out prompt.
