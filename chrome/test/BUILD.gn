@@ -1720,11 +1720,11 @@ source_set("platform_browser_tests") {
       "../browser/devtools/protocol/devtools_protocol_browsertest.cc",
     ]
     deps += [
-      ":sync_integration_test_support",
       "//chrome/browser/data_saver",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/preloading:prefs",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui/autofill",
       "//components/infobars/content",
       "//components/javascript_dialogs",
@@ -1832,7 +1832,6 @@ if (is_android) {
       ":chrome_test_launcher",
       ":persisted_tab_data_test_proto",
       ":platform_browser_tests",
-      ":sync_integration_test_support",
       ":sync_integration_test_support_java",
       ":test_support",
       ":test_support_java",
@@ -1868,6 +1867,7 @@ if (is_android) {
       "//chrome/browser/segmentation_platform:test_utils",
       "//chrome/browser/supervised_user:android_browser_tests",
       "//chrome/browser/sync",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/android/hats:browser_tests",
@@ -2286,7 +2286,6 @@ if (!is_android) {
     deps = [
       ":browser_tests_runner",
       ":platform_browser_tests",
-      ":sync_integration_test_support",
       ":test_support",
       ":test_support_ui",
       ":webrtc_browser_tests_base",
@@ -2417,6 +2416,7 @@ if (!is_android) {
       "//chrome/browser/supervised_user:test_support",
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/sync",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/task_manager/common",
       "//chrome/browser/themes",
@@ -11268,7 +11268,6 @@ if (!is_android && !is_chromeos_device) {
 
     deps = [
       ":chrome_test_launcher",
-      ":sync_integration_test_support",
       ":test_support",
       ":test_support_ui",
       ":webrtc_browser_tests_base",
@@ -11318,6 +11317,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/signin/e2e_tests:test_support",
       "//chrome/browser/status_icons",
       "//chrome/browser/sync",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/themes",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
@@ -12230,247 +12230,6 @@ if (is_android) {
   }
 }
 
-# For Android, this target has to be built along with the
-# sync_integration_test_support_java target from the test target dependencies.
-source_set("sync_integration_test_support") {
-  testonly = true
-  sources = [
-    "../browser/sync/test/integration/autofill_helper.cc",
-    "../browser/sync/test/integration/autofill_helper.h",
-    "../browser/sync/test/integration/await_match_status_change_checker.cc",
-    "../browser/sync/test/integration/await_match_status_change_checker.h",
-    "../browser/sync/test/integration/bookmarks_helper.cc",
-    "../browser/sync/test/integration/bookmarks_helper.h",
-    "../browser/sync/test/integration/committed_all_nudged_changes_checker.cc",
-    "../browser/sync/test/integration/committed_all_nudged_changes_checker.h",
-    "../browser/sync/test/integration/contact_info_helper.cc",
-    "../browser/sync/test/integration/contact_info_helper.h",
-    "../browser/sync/test/integration/device_info_helper.cc",
-    "../browser/sync/test/integration/device_info_helper.h",
-    "../browser/sync/test/integration/encryption_helper.cc",
-    "../browser/sync/test/integration/encryption_helper.h",
-    "../browser/sync/test/integration/exponential_backoff_helper.cc",
-    "../browser/sync/test/integration/exponential_backoff_helper.h",
-    "../browser/sync/test/integration/fake_server_match_status_checker.cc",
-    "../browser/sync/test/integration/fake_server_match_status_checker.h",
-    "../browser/sync/test/integration/fake_sync_gcm_driver_for_instance_id.cc",
-    "../browser/sync/test/integration/fake_sync_gcm_driver_for_instance_id.h",
-    "../browser/sync/test/integration/history_helper.cc",
-    "../browser/sync/test/integration/history_helper.h",
-    "../browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.cc",
-    "../browser/sync/test/integration/invalidations/fake_server_sync_invalidation_sender.h",
-    "../browser/sync/test/integration/invalidations/invalidations_status_checker.cc",
-    "../browser/sync/test/integration/invalidations/invalidations_status_checker.h",
-    "../browser/sync/test/integration/multi_client_status_change_checker.cc",
-    "../browser/sync/test/integration/multi_client_status_change_checker.h",
-    "../browser/sync/test/integration/offer_helper.cc",
-    "../browser/sync/test/integration/offer_helper.h",
-    "../browser/sync/test/integration/password_sharing_invitation_helper.cc",
-    "../browser/sync/test/integration/password_sharing_invitation_helper.h",
-    "../browser/sync/test/integration/passwords_helper.cc",
-    "../browser/sync/test/integration/passwords_helper.h",
-    "../browser/sync/test/integration/preferences_helper.cc",
-    "../browser/sync/test/integration/preferences_helper.h",
-    "../browser/sync/test/integration/quiesce_status_change_checker.cc",
-    "../browser/sync/test/integration/quiesce_status_change_checker.h",
-    "../browser/sync/test/integration/saved_tab_groups_helper.cc",
-    "../browser/sync/test/integration/saved_tab_groups_helper.h",
-    "../browser/sync/test/integration/secondary_account_helper.cc",
-    "../browser/sync/test/integration/secondary_account_helper.h",
-    "../browser/sync/test/integration/send_tab_to_self_helper.cc",
-    "../browser/sync/test/integration/send_tab_to_self_helper.h",
-    "../browser/sync/test/integration/session_hierarchy_match_checker.cc",
-    "../browser/sync/test/integration/session_hierarchy_match_checker.h",
-    "../browser/sync/test/integration/shared_tab_group_data_helper.cc",
-    "../browser/sync/test/integration/shared_tab_group_data_helper.h",
-    "../browser/sync/test/integration/single_client_status_change_checker.cc",
-    "../browser/sync/test/integration/single_client_status_change_checker.h",
-    "../browser/sync/test/integration/status_change_checker.cc",
-    "../browser/sync/test/integration/status_change_checker.h",
-    "../browser/sync/test/integration/sync_datatype_helper.cc",
-    "../browser/sync/test/integration/sync_datatype_helper.h",
-    "../browser/sync/test/integration/sync_disabled_checker.cc",
-    "../browser/sync/test/integration/sync_disabled_checker.h",
-    "../browser/sync/test/integration/sync_engine_stopped_checker.cc",
-    "../browser/sync/test/integration/sync_engine_stopped_checker.h",
-    "../browser/sync/test/integration/sync_service_impl_harness.cc",
-    "../browser/sync/test/integration/sync_service_impl_harness.h",
-    "../browser/sync/test/integration/sync_signin_delegate.cc",
-    "../browser/sync/test/integration/sync_signin_delegate.h",
-    "../browser/sync/test/integration/sync_test.cc",
-    "../browser/sync/test/integration/sync_test.h",
-    "../browser/sync/test/integration/sync_test_account.h",
-    "../browser/sync/test/integration/sync_test_tab_utils.cc",
-    "../browser/sync/test/integration/sync_test_tab_utils.h",
-    "../browser/sync/test/integration/updated_progress_marker_checker.cc",
-    "../browser/sync/test/integration/updated_progress_marker_checker.h",
-    "../browser/sync/test/integration/wallet_helper.cc",
-    "../browser/sync/test/integration/wallet_helper.h",
-  ]
-  if (!is_android) {
-    sources += [
-      "../browser/sync/test/integration/apps_helper.cc",
-      "../browser/sync/test/integration/apps_helper.h",
-      "../browser/sync/test/integration/cookie_helper.cc",
-      "../browser/sync/test/integration/cookie_helper.h",
-      "../browser/sync/test/integration/dictionary_helper.cc",
-      "../browser/sync/test/integration/dictionary_helper.h",
-      "../browser/sync/test/integration/dictionary_load_observer.cc",
-      "../browser/sync/test/integration/dictionary_load_observer.h",
-      "../browser/sync/test/integration/extension_settings_helper.cc",
-      "../browser/sync/test/integration/extension_settings_helper.h",
-      "../browser/sync/test/integration/fake_sync_signin_delegate_desktop.cc",
-      "../browser/sync/test/integration/fake_sync_signin_delegate_desktop.h",
-      "../browser/sync/test/integration/live_sync_signin_delegate_desktop.cc",
-      "../browser/sync/test/integration/live_sync_signin_delegate_desktop.h",
-      "../browser/sync/test/integration/migration_waiter.cc",
-      "../browser/sync/test/integration/migration_waiter.h",
-      "../browser/sync/test/integration/migration_watcher.cc",
-      "../browser/sync/test/integration/migration_watcher.h",
-      "../browser/sync/test/integration/search_engines_helper.cc",
-      "../browser/sync/test/integration/search_engines_helper.h",
-      "../browser/sync/test/integration/sessions_helper.cc",
-      "../browser/sync/test/integration/sessions_helper.h",
-      "../browser/sync/test/integration/sync_app_helper.cc",
-      "../browser/sync/test/integration/sync_app_helper.h",
-      "../browser/sync/test/integration/sync_integration_test_util.cc",
-      "../browser/sync/test/integration/sync_integration_test_util.h",
-      "../browser/sync/test/integration/themes_helper.cc",
-      "../browser/sync/test/integration/themes_helper.h",
-      "../browser/sync/test/integration/user_events_helper.cc",
-      "../browser/sync/test/integration/user_events_helper.h",
-      "../browser/sync/test/integration/webauthn_credentials_helper.cc",
-      "../browser/sync/test/integration/webauthn_credentials_helper.h",
-    ]
-  } else {
-    sources += [
-      "../browser/sync/test/integration/fake_sync_signin_delegate_android.cc",
-      "../browser/sync/test/integration/fake_sync_signin_delegate_android.h",
-      "../browser/sync/test/integration/live_sync_signin_delegate_android.cc",
-      "../browser/sync/test/integration/live_sync_signin_delegate_android.h",
-      "../browser/sync/test/integration/sync_test_utils_android.cc",
-      "../browser/sync/test/integration/sync_test_utils_android.h",
-      "../browser/sync/test/integration/webapks_helper.cc",
-      "../browser/sync/test/integration/webapks_helper.h",
-    ]
-  }
-  if (enable_extensions_core) {
-    sources += [
-      "../browser/sync/test/integration/extensions_helper.cc",
-      "../browser/sync/test/integration/extensions_helper.h",
-      "../browser/sync/test/integration/sync_extension_helper.cc",
-      "../browser/sync/test/integration/sync_extension_helper.h",
-    ]
-  }
-  public_deps = [
-    ":test_support",
-    "//chrome/browser",
-    "//chrome/browser/favicon",
-    "//components/autofill/content/browser",
-    "//components/power_bookmarks/core:features",
-  ]
-  deps = [
-    "//base",
-    "//chrome/browser:main_extra_parts",
-    "//chrome/browser/autofill",
-    "//chrome/browser/password_manager/factories",
-    "//chrome/browser/profiles",
-    "//chrome/browser/search_engines",
-    "//chrome/browser/sync",
-    "//components/autofill/core/common:credit_card_number_validation",
-    "//components/bookmarks/browser",
-    "//components/bookmarks/browser:test_support",
-    "//components/bookmarks/managed",
-    "//components/browser_sync",
-    "//components/commerce/core:feature_list",
-    "//components/favicon/core",
-    "//components/os_crypt/sync:test_support",
-    "//components/password_manager/core/browser:password_manager_buildflags",
-    "//components/plus_addresses/core/common:features",
-    "//components/saved_tab_groups/public",
-    "//components/send_tab_to_self",
-    "//components/signin/public/identity_manager:test_support",
-    "//components/sync",
-    "//components/sync:test_support",
-    "//components/sync_bookmarks",
-    "//components/tab_groups",
-    "//components/tabs:public",
-    "//components/webapps/common",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//net",
-    "//services/network/public/mojom",
-    "//skia",
-  ]
-
-  if (is_mac) {
-    sources -= [
-      "../browser/sync/test/integration/dictionary_helper.cc",
-      "../browser/sync/test/integration/dictionary_helper.h",
-      "../browser/sync/test/integration/dictionary_load_observer.cc",
-      "../browser/sync/test/integration/dictionary_load_observer.h",
-    ]
-  }
-  if (is_chromeos) {
-    sources += [
-      "../browser/sync/test/integration/printers_helper.cc",
-      "../browser/sync/test/integration/printers_helper.h",
-      "../browser/sync/test/integration/sync_app_list_helper.cc",
-      "../browser/sync/test/integration/sync_app_list_helper.h",
-      "../browser/sync/test/integration/sync_arc_package_helper.cc",
-      "../browser/sync/test/integration/sync_arc_package_helper.h",
-      "../browser/sync/test/integration/workspace_desk_helper.cc",
-      "../browser/sync/test/integration/workspace_desk_helper.h",
-    ]
-    public_deps += [ "//chrome/browser/ash/app_list" ]
-    deps += [
-      "//ash/app_list:test_support",
-      "//chrome/browser/ash/app_list/arc",
-      "//chrome/browser/ash/app_list/test:test_support",
-      "//chrome/browser/ash/arc",
-      "//chrome/browser/ash/arc:arc_util",
-      "//chrome/browser/ash/arc/session",
-      "//chrome/browser/ash/net",
-      "//chrome/browser/ash/printing",
-      "//chrome/browser/ash/system_web_apps/test_support",
-      "//chromeos/ash/components/browser_context_helper",
-      "//chromeos/ash/components/network/portal_detector",
-      "//chromeos/ash/experiences/arc:arc_test_support",
-      "//chromeos/ash/experiences/arc/mojom",
-      "//chromeos/printing",
-      "//components/desks_storage",
-      "//components/user_manager:test_support",
-    ]
-  }
-  if (is_android) {
-    deps += [
-      ":sync_integration_test_support_jni_headers",
-      ":test_support_jni_headers",
-      "//chrome/browser/android/webapk:webapk_sources",
-      "//chrome/browser/password_manager/android:utils",
-      "//chrome/browser/ui/android/tab_model",
-      "//components/saved_tab_groups/public:conversion_utils",
-    ]
-    if (enable_extensions_core) {
-      deps += [ "//chrome/browser/extensions" ]
-    }
-  } else {
-    deps += [
-      "//chrome/browser/apps/app_service",
-      "//chrome/browser/themes",
-      "//chrome/browser/ui/webui/signin:login",
-      "//chrome/browser/ui/webui/signin:test_support_ui",
-      "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/browser/webauthn",
-      "//components/send_tab_to_self",
-      "//components/trusted_vault",
-      "//components/webapps/browser",
-      "//components/webauthn/core/browser",
-      "//components/webauthn/core/browser:passkey_model",
-    ]
-  }
-}
-
 if (!is_android) {
   test("sync_integration_tests") {
     use_xvfb = use_xvfb_in_this_config
@@ -12498,11 +12257,11 @@ if (!is_android) {
 
     deps = [
       ":chrome_test_launcher",
-      ":sync_integration_test_support",
       ":test_support",
       ":test_support_ui",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui",
       "//components/bookmarks/browser",
       "//components/password_manager/core/browser",
