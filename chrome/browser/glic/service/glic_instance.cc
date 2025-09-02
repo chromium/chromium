@@ -49,6 +49,7 @@ void GlicInstance::Show() {
   if (!embedder_) {
     switch (embedder_type_) {
       case EmbedderType::kSidePanel:
+        CHECK(associated_bwi_);
         embedder_ = std::make_unique<GlicSidePanelUi>(associated_bwi_);
         break;
       case EmbedderType::kFloating:
@@ -74,6 +75,10 @@ void GlicInstance::Toggle() {
   } else {
     Show();
   }
+}
+
+void GlicInstance::DisassociateWindow() {
+  associated_bwi_ = nullptr;
 }
 
 void GlicInstance::ClosePanelAndShutdown() {

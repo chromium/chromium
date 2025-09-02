@@ -32,6 +32,7 @@
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
@@ -59,10 +60,26 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     signin::IdentityManager* identity_manager,
     GlicKeyedService* service,
     GlicEnabling* enabling)
-    : profile_(profile),
-      host_manager_(std::make_unique<HostManager>(profile)) {}
+    : profile_(profile), host_manager_(std::make_unique<HostManager>(profile)) {
+  browser_list_observation_.Observe(BrowserList::GetInstance());
+}
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
+
+void GlicInstanceCoordinatorImpl::OnBrowserRemoved(Browser* browser) {
+  // If the removed browser has an attached Glic instance, the instance must be
+  // destroyed as it cannot exist without its browser window.
+  if (auto* instance = GetAttachedInstanceForBrowser(browser)) {
+    RemoveInstance(instance);
+  }
+
+  // If the floating instance was associated with the removed browser, we must
+  // disassociate it to prevent holding a dangling pointer. The floating
+  // instance itself is not destroyed.
+  if (floating_instance_ && floating_instance_->associated_bwi() == browser) {
+    floating_instance_->DisassociateWindow();
+  }
+}
 
 void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
                                          bool prevent_close,

@@ -46,6 +46,7 @@ class GlicInstance : public PanelDelegate {
   GlicInstance(const GlicInstance&) = delete;
   GlicInstance& operator=(const GlicInstance&) = delete;
 
+  void DisassociateWindow();
   void AttachPanel() override;
   void DetachPanel() override;
   bool IsShowing() const;

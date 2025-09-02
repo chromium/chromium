@@ -13,9 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
-#include "base/scoped_observation_traits.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
@@ -23,6 +21,8 @@
 #include "chrome/browser/glic/service/glic_instance.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
@@ -36,7 +36,8 @@ class Point;
 }  // namespace gfx
 namespace glic {
 class GlicInstanceCoordinatorImpl : public GlicWindowController,
-                                    public GlicInstance::AttachmentDelegate {
+                                    public GlicInstance::AttachmentDelegate,
+                                    public BrowserListObserver {
  public:
   GlicInstanceCoordinatorImpl(const GlicInstanceCoordinatorImpl&) = delete;
   GlicInstanceCoordinatorImpl& operator=(const GlicInstanceCoordinatorImpl&) =
@@ -47,6 +48,9 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
                               GlicKeyedService* service,
                               GlicEnabling* enabling);
   ~GlicInstanceCoordinatorImpl() override;
+
+  // BrowserListObserver implementation
+  void OnBrowserRemoved(Browser* browser) override;
 
   // GlicInstance::AttachmentDelegate implementation
   void AttachInstance(GlicInstance* instance) override;
@@ -140,6 +144,9 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
   std::unique_ptr<GlicInstance> floating_instance_;
 
   std::unique_ptr<HostManager> host_manager_;
+
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observation_{this};
 
   base::WeakPtrFactory<GlicInstanceCoordinatorImpl> weak_ptr_factory_{this};
 };
