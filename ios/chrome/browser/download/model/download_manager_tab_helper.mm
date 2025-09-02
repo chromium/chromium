@@ -7,16 +7,14 @@
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/callback_helpers.h"
-#import "base/memory/ptr_util.h"
-#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/thread_pool.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
+#import "ios/chrome/browser/download/model/download_file_service.h"
+#import "ios/chrome/browser/download/model/download_file_service_factory.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper_delegate.h"
 #import "ios/chrome/browser/drive/model/drive_availability.h"
 #import "ios/chrome/browser/drive/model/drive_policy.h"
@@ -39,29 +37,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-
-// Returns the file path where the downloaded file should be moved. If the file
-// already exists, a new file name will be generated. This should be called on a
-// background thread.
-base::FilePath FindAvailableDownloadFilePath(base::FilePath download_dir,
-                                             base::FilePath file_name) {
-  // If the suggested `file_name` is empty or '.' or '..' then it is replaced
-  // with a randomly generated UUID.
-  if (file_name.empty() ||
-      file_name.value() == base::FilePath::kCurrentDirectory ||
-      file_name.value() == base::FilePath::kParentDirectory) {
-    file_name =
-        base::FilePath(base::SysNSStringToUTF8([NSUUID UUID].UUIDString));
-  }
-  base::FilePath candidate_file_name = file_name;
-  int number_of_attempts = 0;
-  while (base::PathExists(download_dir.Append(candidate_file_name))) {
-    number_of_attempts++;
-    candidate_file_name = file_name.InsertBeforeExtension(
-        " (" + base::NumberToString(number_of_attempts) + ")");
-  }
-  return download_dir.Append(candidate_file_name);
-}
 
 }  // namespace
 
@@ -258,11 +233,9 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
         base::FilePath user_download_path;
         GetDownloadsDirectory(&user_download_path);
         base::FilePath base_file_name = task_->GenerateFileName();
-        base::ThreadPool::PostTaskAndReplyWithResult(
-            FROM_HERE,
-            {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-            base::BindOnce(FindAvailableDownloadFilePath, user_download_path,
-                           base_file_name),
+
+        GetDownloadFileService()->ResolveAvailableFilePath(
+            user_download_path, base_file_name,
             base::BindOnce(
                 &DownloadManagerTabHelper::UseAvailableUserDocumentsPath,
                 weak_ptr_factory_.GetWeakPtr()));
@@ -327,10 +300,9 @@ void DownloadManagerTabHelper::UseAvailableUserDocumentsPath(
 
   task_final_file_path_ = std::move(user_documents_path);
   base::FilePath task_path = task_->GetResponsePath();
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(base::PathExists, task_path),
+
+  GetDownloadFileService()->CheckFileExists(
+      task_path,
       base::BindOnce(&DownloadManagerTabHelper::MoveToUserDocumentsIfFileExists,
                      weak_ptr_factory_.GetWeakPtr(), task_path));
 }
@@ -342,15 +314,18 @@ void DownloadManagerTabHelper::MoveToUserDocumentsIfFileExists(
     return;
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&base::Move, task_path, GetDownloadTaskFinalFilePath()),
+  std::string download_id = base::SysNSStringToUTF8(task_->GetIdentifier());
+
+  GetDownloadFileService()->MoveDownloadFile(
+      download_id, task_path, GetDownloadTaskFinalFilePath(),
       base::BindOnce(&DownloadManagerTabHelper::MoveComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DownloadManagerTabHelper::MoveComplete(bool move_completed) {
+void DownloadManagerTabHelper::MoveComplete(bool move_completed,
+                                            const std::string& download_id,
+                                            const base::FilePath& source_path,
+                                            const base::FilePath& final_path) {
   DCHECK(move_completed);
   MaybeScheduleFileForAutoDeletion();
 }
@@ -376,4 +351,16 @@ void DownloadManagerTabHelper::ScheduleTaskDestruction() {
 
 void DownloadManagerTabHelper::DestroyTask() {
   task_.reset();
+}
+
+DownloadFileService* DownloadManagerTabHelper::GetDownloadFileService() {
+  CHECK(web_state_);
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  DownloadFileService* download_file_service =
+      DownloadFileServiceFactory::GetForProfile(profile);
+
+  CHECK(download_file_service);
+  return download_file_service;
 }

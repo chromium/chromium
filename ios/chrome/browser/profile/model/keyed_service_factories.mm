@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/download/model/browser_download_service_factory.h"
+#import "ios/chrome/browser/download/model/download_file_service_factory.h"
 #import "ios/chrome/browser/download/model/download_record_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
@@ -286,6 +287,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   DiscoverFeedServiceFactory::GetInstance();
   DistillerServiceFactory::GetInstance();
   DomainDiversityReporterFactory::GetInstance();
+  DownloadFileServiceFactory::GetInstance();
   if (IsDownloadListEnabled()) {
     DownloadRecordServiceFactory::GetInstance();
   }

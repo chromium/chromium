@@ -17,6 +17,8 @@
 
 @protocol SnackbarCommands;
 
+class DownloadFileService;
+
 namespace web {
 class DownloadTask;
 class WebState;
@@ -105,8 +107,11 @@ class DownloadManagerTabHelper
   void MoveToUserDocumentsIfFileExists(base::FilePath task_path,
                                        bool file_exists);
 
-  // Checks if the move has been completed.
-  void MoveComplete(bool move_completed);
+  // Called when the file move operation completes.
+  void MoveComplete(bool move_completed,
+                    const std::string& download_id,
+                    const base::FilePath& source_path,
+                    const base::FilePath& final_path);
 
   // Schedules the downloaded file for Auto-deletion if enabled.
   void MaybeScheduleFileForAutoDeletion();
@@ -117,6 +122,9 @@ class DownloadManagerTabHelper
   // Destroys the task. Must not be called directly.
   // See ScheduleTaskDestruction().
   void DestroyTask();
+
+  // Returns the DownloadFileService instance.
+  DownloadFileService* GetDownloadFileService();
 
   raw_ptr<web::WebState> web_state_ = nullptr;
   __weak id<DownloadManagerTabHelperDelegate> delegate_ = nil;
