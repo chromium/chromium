@@ -253,6 +253,14 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Returns true if a seed file should be used.
   bool ShouldUseSeedFile() const;
 
+  // Returns true if the client should migrate to local state from the seed
+  // file.
+  bool ShouldMigrateToLocalState(version_info::Channel channel) const;
+
+  // Reads the seed data from the seed file and stores it in local state. Also
+  // removes the seed file.
+  void MigrateToLocalState();
+
   // Calls `done_callback` with the result of the load, the seed data, and
   // signature. The seed data and signature should only be used if the result is
   // `LoadSeedResult::kSuccess`.

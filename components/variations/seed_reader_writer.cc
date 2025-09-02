@@ -64,9 +64,7 @@ bool IsEligibleForSeedFileTrial(version_info::Channel channel,
     return false;
   }
   return channel == version_info::Channel::CANARY ||
-         channel == version_info::Channel::DEV ||
-         channel == version_info::Channel::BETA ||
-         channel == version_info::Channel::STABLE;
+         channel == version_info::Channel::DEV;
 }
 
 // Sets up the seed file experiment which only some clients are eligible for
@@ -277,6 +275,8 @@ SeedReaderWriter::SeedReaderWriter(
     if (ShouldUseSeedFile()) {
       ReadSeedFile();
     }
+  } else if (ShouldMigrateToLocalState(channel)) {
+    MigrateToLocalState();
   }
 }
 
@@ -706,10 +706,34 @@ StoreSeedResult SeedReaderWriter::ScheduleLocalStateWrite(
 }
 
 bool SeedReaderWriter::ShouldUseSeedFile() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Use the plain FieldTrialList API here because the trial is registered
   // client-side in VariationsSeedStore SetUpSeedFileTrial().
   return seed_writer_ &&
          base::FieldTrialList::FindFullName(kSeedFileTrial) == kSeedFilesGroup;
+}
+
+bool SeedReaderWriter::ShouldMigrateToLocalState(
+    version_info::Channel channel) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (channel == version_info::Channel::UNKNOWN ||
+      channel == version_info::Channel::CANARY ||
+      channel == version_info::Channel::DEV) {
+    return false;
+  }
+  return seed_writer_ && base::PathExists(seed_writer_->path());
+}
+
+void SeedReaderWriter::MigrateToLocalState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::string seed_file_data;
+  const bool success =
+      base::ReadFileToString(seed_writer_->path(), &seed_file_data);
+  if (success && !seed_file_data.empty()) {
+    std::string base64_seed_data = base::Base64Encode(seed_file_data);
+    local_state_->SetString(fields_prefs_->seed, base64_seed_data);
+  }
+  DeleteSeedFile();
 }
 
 void SeedReaderWriter::ProcessStoredSeedDataAndRunCallback(

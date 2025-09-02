@@ -124,14 +124,12 @@ class ExpectedFieldTrialGroupChannelsTest
 
 class ExpectedFieldTrialGroupAllChannelsTest
     : public ExpectedFieldTrialGroupChannelsTest {};
-class ExpectedFieldTrialGroupPreStableTest
+class ExpectedFieldTrialGroupCanaryDevTest
     : public ExpectedFieldTrialGroupChannelsTest {};
-class ExpectedFieldTrialGroupStableTest
-    : public SeedReaderWriterTestBase,
-      public TestWithParam<SeedFieldsPrefs> {};
-class ExpectedFieldTrialGroupUnknownTest
-    : public SeedReaderWriterTestBase,
-      public TestWithParam<SeedFieldsPrefs> {};
+class ExpectedFieldTrialGroupBetaStableUnknownTest
+    : public ExpectedFieldTrialGroupChannelsTest {};
+class ExpectedFieldTrialGroupBetaStableTest
+    : public ExpectedFieldTrialGroupChannelsTest {};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -165,16 +163,15 @@ TEST_P(ExpectedFieldTrialGroupAllChannelsTest, NoEntropyProvider) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ExpectedFieldTrialGroupPreStableTest,
+    ExpectedFieldTrialGroupCanaryDevTest,
     ::testing::ConvertGenerator<ExpectedFieldTrialGroupTestParams::TupleT>(
         ::testing::Combine(::testing::Values(kRegularSeedFieldsPrefs,
                                              kSafeSeedFieldsPrefs),
                            ::testing::Values(version_info::Channel::CANARY,
-                                             version_info::Channel::DEV,
-                                             version_info::Channel::BETA))));
+                                             version_info::Channel::DEV))));
 
-// If channel is pre-stable, client is assigned a group.
-TEST_P(ExpectedFieldTrialGroupPreStableTest, PreStable) {
+// If channel is canary or dev, client is assigned a group.
+TEST_P(ExpectedFieldTrialGroupCanaryDevTest, AssignedGroup) {
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
       GetParam().seed_fields_prefs, GetParam().channel,
@@ -183,32 +180,82 @@ TEST_P(ExpectedFieldTrialGroupPreStableTest, PreStable) {
               ::testing::AnyOf(kControlGroup, kSeedFilesGroup));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExpectedFieldTrialGroupStableTest,
-                         ::testing::Values(kRegularSeedFieldsPrefs,
-                                           kSafeSeedFieldsPrefs));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExpectedFieldTrialGroupBetaStableUnknownTest,
+    ::testing::ConvertGenerator<ExpectedFieldTrialGroupTestParams::TupleT>(
+        ::testing::Combine(::testing::Values(kRegularSeedFieldsPrefs,
+                                             kSafeSeedFieldsPrefs),
+                           ::testing::Values(version_info::Channel::BETA,
+                                             version_info::Channel::STABLE,
+                                             version_info::Channel::UNKNOWN))));
 
-// If channel is stable, trial has been registered.
-TEST_P(ExpectedFieldTrialGroupStableTest, Stable) {
+// If channel is beta, stable, or unknown, client is not assigned a group.
+TEST_P(ExpectedFieldTrialGroupBetaStableUnknownTest, NotAssignedGroup) {
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
-      GetParam(), version_info::Channel::STABLE, entropy_providers_.get(),
-      file_writer_thread_.task_runner());
-  EXPECT_TRUE(base::FieldTrialList::TrialExists(kSeedFileTrial));
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+  EXPECT_THAT(base::FieldTrialList::FindFullName(kSeedFileTrial), IsEmpty());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExpectedFieldTrialGroupUnknownTest,
-                         ::testing::Values(kRegularSeedFieldsPrefs,
-                                           kSafeSeedFieldsPrefs));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExpectedFieldTrialGroupBetaStableTest,
+    ::testing::ConvertGenerator<ExpectedFieldTrialGroupTestParams::TupleT>(
+        ::testing::Combine(::testing::Values(kRegularSeedFieldsPrefs,
+                                             kSafeSeedFieldsPrefs),
+                           ::testing::Values(version_info::Channel::BETA,
+                                             version_info::Channel::STABLE))));
 
-// If channel is unknown, client is not assigned a group.
-TEST_P(ExpectedFieldTrialGroupUnknownTest, Unknown) {
+TEST_P(ExpectedFieldTrialGroupBetaStableTest, MigrateFromSeedFileToLocalState) {
+  // Assign client to SeedFiles group.
+  SetUpSeedFileTrial(std::string(kSeedFilesGroup));
+  // Write seed to seed file.
+  const std::string compressed_seed = CreateCompressedVariationsSeed();
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed));
+
+  // Initialize seed_reader_writer with test thread and timer.
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
-      GetParam(), version_info::Channel::UNKNOWN, entropy_providers_.get(),
-      file_writer_thread_.task_runner());
-  EXPECT_THAT(base::FieldTrialList::FindFullName(kSeedFileTrial), IsEmpty());
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+  file_writer_thread_.FlushForTesting();
+
+  // Verify that the seed was written into local state.
+  std::string encoded_seed = base::Base64Encode(compressed_seed);
+  EXPECT_EQ(local_state_.GetString(GetParam().seed_fields_prefs.seed),
+            encoded_seed);
+
+  // Verify that the seed file was deleted.
+  EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
+}
+
+// If no seed file exists, the seed in local state should not be overwritten.
+TEST_P(ExpectedFieldTrialGroupBetaStableTest, NoSeedFile) {
+  // Assign client to SeedFiles group.
+  SetUpSeedFileTrial(std::string(kSeedFilesGroup));
+  // No seed file.
+  ASSERT_FALSE(base::PathExists(temp_seed_file_path_));
+  // Seed in local state that shouldn't be overwritten.
+  const std::string encoded_seed =
+      base::Base64Encode(CreateCompressedVariationsSeed());
+  local_state_.SetString(GetParam().seed_fields_prefs.seed, encoded_seed);
+  ASSERT_EQ(local_state_.GetString(GetParam().seed_fields_prefs.seed),
+            encoded_seed);
+
+  // Initialize seed_reader_writer with test thread and timer.
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), file_writer_thread_.task_runner());
+  file_writer_thread_.FlushForTesting();
+
+  // Verify that the seed was not overwritten.
+  EXPECT_EQ(local_state_.GetString(GetParam().seed_fields_prefs.seed),
+            encoded_seed);
+  // Verify that the seed file was not created.
+  EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
 }
 
 class SeedReaderWriterGroupTest
@@ -708,8 +755,7 @@ INSTANTIATE_TEST_SUITE_P(
                                              kSafeSeedFieldsPrefs),
                            ::testing::Values(kSeedFilesGroup),
                            ::testing::Values(version_info::Channel::CANARY,
-                                             version_info::Channel::DEV,
-                                             version_info::Channel::BETA))));
+                                             version_info::Channel::DEV))));
 
 // Verifies clients using local state to store seeds write seeds to Local State.
 TEST_P(SeedReaderWriterLocalStateGroupsTest, WriteSeed) {
@@ -1126,7 +1172,9 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Combine(::testing::Values(kRegularSeedFieldsPrefs,
                                              kSafeSeedFieldsPrefs),
                            ::testing::Values(kNoGroup),
-                           ::testing::Values(version_info::Channel::UNKNOWN))));
+                           ::testing::Values(version_info::Channel::UNKNOWN,
+                                             version_info::Channel::STABLE,
+                                             version_info::Channel::BETA))));
 
 INSTANTIATE_TEST_SUITE_P(
     ControlAndDefaultGroup,

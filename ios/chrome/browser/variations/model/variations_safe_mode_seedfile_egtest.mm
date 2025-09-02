@@ -44,7 +44,7 @@
   config.additional_args = {"--disable-field-trial-config",
                             "--disable-variations-seed-fetch",
                             "--force-fieldtrials=SeedFileTrial/SeedFiles_V7",
-                            "--fake-variations-channel=stable"};
+                            "--fake-variations-channel=dev"};
   return config;
 }
 
@@ -62,7 +62,7 @@
   config.additional_args = {"--disable-field-trial-config",
                             "--disable-variations-seed-fetch",
                             "--force-fieldtrials=SeedFileTrial/SeedFiles_V7",
-                            "--fake-variations-channel=stable"};
+                            "--fake-variations-channel=dev"};
   return config;
 }
 
