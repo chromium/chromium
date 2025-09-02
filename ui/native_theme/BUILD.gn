@@ -23,6 +23,28 @@ component("native_theme") {
     "overlay_scrollbar_constants.h",
   ]
 
+  defines = [ "IS_NATIVE_THEME_IMPL" ]
+
+  public_deps = [
+    "features",
+    "//skia",
+  ]
+
+  deps = [
+    "//base",
+    "//cc/paint",
+    "//ui/base",
+    "//ui/color",
+
+    # http://crbug.com/730719 - No !is_android to work around gn --check.
+    "//ui/color:mixers",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/gfx/animation/keyframe",
+    "//ui/gfx/geometry",
+    "//ui/resources",
+  ]
+
   if (is_android || is_ios) {
     sources += [
       "native_theme_mobile.cc",
@@ -56,47 +78,27 @@ component("native_theme") {
     libs = [ "uxtheme.lib" ]
   }
 
-  if (use_aura || toolkit_views) {
+  # Mac uses `NativeThemeAura` for the web instance. That class does not depend
+  # on any other Aura-specific code.
+  if (use_aura || is_mac) {
     sources += [
       "native_theme_aura.cc",
       "native_theme_aura.h",
     ]
   }
-
-  defines = [ "IS_NATIVE_THEME_IMPL" ]
-
-  public_deps = [
-    "features",
-    "//skia",
-  ]
-
-  deps = [
-    "//base",
-    "//cc/paint",
-    "//ui/base",
-    "//ui/color",
-
-    # http://crbug.com/730719 - No !is_android to work around gn --check.
-    "//ui/color:mixers",
-    "//ui/display",
-    "//ui/gfx",
-    "//ui/gfx/animation/keyframe",
-    "//ui/gfx/geometry",
-    "//ui/resources",
-  ]
 }
 
 source_set("test_support") {
   testonly = true
 
-  deps = [
-    ":native_theme",
-    "//base",
-  ]
-
   sources = [
     "test_native_theme.cc",
     "test_native_theme.h",
+  ]
+
+  deps = [
+    ":native_theme",
+    "//base",
   ]
 }
 
@@ -108,17 +110,6 @@ test("native_theme_unittests") {
     "native_theme_fluent_unittest.cc",
     "native_theme_unittest.cc",
   ]
-
-  if (use_aura) {
-    sources += [ "native_theme_aura_unittest.cc" ]
-  }
-
-  if (is_win) {
-    sources += [
-      "caption_style_win_unittest.cc",
-      "native_theme_win_unittest.cc",
-    ]
-  }
 
   deps = [
     ":native_theme",
@@ -139,5 +130,16 @@ test("native_theme_unittests") {
       "scrollbar_animator_mac_unittest.cc",
     ]
     deps += [ "//ui/gfx:test_support" ]
+  }
+
+  if (is_win) {
+    sources += [
+      "caption_style_win_unittest.cc",
+      "native_theme_win_unittest.cc",
+    ]
+  }
+
+  if (use_aura) {
+    sources += [ "native_theme_aura_unittest.cc" ]
   }
 }
