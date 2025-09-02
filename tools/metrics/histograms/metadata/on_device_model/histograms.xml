@@ -57,7 +57,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkDuration" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -68,7 +68,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkEstimatedTokensPerSecond.{Stage}"
-    units="tk/s" expires_after="2025-12-28">
+    units="tk/s" expires_after="2026-03-01">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -94,7 +94,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkVeryLowReason"
-    enum="VeryLowPerformanceReason" expires_after="2025-12-28">
+    enum="VeryLowPerformanceReason" expires_after="2026-03-01">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -104,7 +104,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.DeviceHeapSize.{GpuType}" units="MB"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -164,7 +164,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.GpuBlockedReason" enum="GpuBlockedReason"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -184,7 +184,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.LoadModelDuration" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -194,7 +194,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.LoadPlatformModelStatus"
-    enum="LoadPlatformModelStatus" expires_after="2025-12-28">
+    enum="LoadPlatformModelStatus" expires_after="2026-03-01">
   <owner>jmpollock@chromium.org</owner>
   <owner>yich@google.com</owner>
   <summary>
@@ -233,7 +233,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.SystemRAM.{GpuType}" units="MB"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -265,7 +265,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.TokenCount.{Stage}" units="tokens"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -298,7 +298,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.TokensPerSecond.{Stage}" units="tk/s"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

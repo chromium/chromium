@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Latency" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.NotifyResult" enum="NotifyResult"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Chrome.SystemNetworkContextManager.NetworkSandboxEarlyLaunchCrashed"
-    enum="Boolean" expires_after="2025-12-31">
+    enum="Boolean" expires_after="2026-03-01">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -247,7 +247,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed.ErrorCode"
-    enum="LaunchErrorCodes" expires_after="2025-12-31">
+    enum="LaunchErrorCodes" expires_after="2026-03-01">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -272,7 +272,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.SystemNetworkContextManager.NetworkSandboxState"
-    enum="NetworkSandboxState" expires_after="2025-12-31">
+    enum="NetworkSandboxState" expires_after="2026-03-01">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>

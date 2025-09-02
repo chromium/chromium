@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ExperimentDisabledAtLaunch"
-    enum="DevtoolsExperiments" expires_after="2025-12-28">
+    enum="DevtoolsExperiments" expires_after="2026-03-01">
   <owner>yangguo@google.com</owner>
   <owner>changhaohan@google.com</owner>
   <summary>
@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Launch{DevToolsLaunchPanels}" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>yangguo@google.com</owner>
   <owner>bmeurer@google.com</owner>
   <summary>
@@ -519,7 +519,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.TraceLoad" units="ms" expires_after="2025-12-28">
+<histogram name="DevTools.TraceLoad" units="ms" expires_after="2026-03-01">
   <owner>paulirish@google.com</owner>
   <owner>jacktfranklin@google.com</owner>
   <owner>victorporof@google.com</owner>
@@ -541,7 +541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.VisualLogging.ProcessingTime" units="ms"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>danilsomsikov@google.com</owner>
   <owner>hablich@google.com</owner>
   <summary>

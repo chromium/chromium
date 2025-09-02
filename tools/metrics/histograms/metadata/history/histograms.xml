@@ -1392,7 +1392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseSqliteError" enum="SqliteLoggedResultCode"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>sophiechang@chromium.org</owner>
   <owner>asully@chromium.org</owner>
   <component>1456716</component>
@@ -1403,7 +1403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount1Day_V2" units="domains"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1445,7 +1445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount1Day_V3" units="domains"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1481,7 +1481,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount28Day_V2" units="domains"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1559,7 +1559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount7Day_V2" units="domains"
-    expires_after="2025-10-26">
+    expires_after="2026-03-01">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2825,7 +2825,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.URLTableCount" units="URLs" expires_after="2025-12-28">
+<histogram name="History.URLTableCount" units="URLs" expires_after="2026-03-01">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
@@ -2868,7 +2868,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.NumSaltsForNavigationsDuringBuild"
-    units="salts" expires_after="2025-12-28">
+    units="salts" expires_after="2026-03-01">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>

@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfully"
-    units="ms" expires_after="2025-12-28">
+    units="ms" expires_after="2026-03-01">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -604,7 +604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ExtraReportDelay2" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>apaseltiner@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -864,7 +864,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.NavigationUnexpectedRegistration"
     enum="ConversionNavigationUnexpectedRegistration"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1215,7 +1215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.SourceRegistrationError13"
-    enum="ConversionSourceRegistrationError" expires_after="2025-12-28">
+    enum="ConversionSourceRegistrationError" expires_after="2026-03-01">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1376,7 +1376,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.TimeFromLastNavigationToDelivery_Failed.{ReportType}"
-    units="ms" expires_after="2025-12-28">
+    units="ms" expires_after="2026-03-01">
   <owner>tquintanilla@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1392,7 +1392,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.TimeFromLastNavigationToDelivery_Succeeded.{ReportType}"
-    units="ms" expires_after="2025-12-28">
+    units="ms" expires_after="2026-03-01">
   <owner>tquintanilla@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1478,7 +1478,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.UniqueReportingOriginsPerDestAndReportingSiteForSource"
-    units="reporting origins" expires_after="2025-12-28">
+    units="reporting origins" expires_after="2026-03-01">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1489,7 +1489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.UniqueReportingOriginsPerReportingSiteForSource"
-    units="reporting origins" expires_after="2025-12-28">
+    units="reporting origins" expires_after="2026-03-01">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1535,7 +1535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.VerboseDebugReport.HttpResponseOrNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-12-28">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-01">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1547,7 +1547,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.{ContextType}HttpResponseOrNetErrorCodeAggregatable2"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-12-28">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-01">
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

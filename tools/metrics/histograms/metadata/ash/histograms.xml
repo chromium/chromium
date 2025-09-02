@@ -1050,7 +1050,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Birch.Chip.Activate" enum="BirchItemType"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -1091,7 +1091,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Birch.Chip.Impression" enum="BirchItemType"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>Recorded when the user is shown a chip of a given type.</summary>
@@ -1230,7 +1230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Birch.ResultsReturned{Type}" units="count"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -1721,7 +1721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Calendar.{CalendarChildView}.Activated"
-    enum="CalendarEventSource" expires_after="2025-11-02">
+    enum="CalendarEventSource" expires_after="2026-03-01">
   <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>Recorded when the {CalendarChildView} is activated.</summary>
@@ -3394,7 +3394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Display.InternalDisplay.ActiveEffectiveResolution"
-    enum="EffectiveResolution" expires_after="2025-12-28">
+    enum="EffectiveResolution" expires_after="2026-03-01">
   <owner>malaykeshav@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
   <summary>
@@ -4314,7 +4314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Glanceables.Api.{Method}.Latency" units="ms"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>amitrokhin@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -4334,7 +4334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Glanceables.Api.{Method}.PagesCount" units="pages"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>amitrokhin@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -4351,7 +4351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Glanceables.Api.{Method}.Status" enum="ApiErrorCode"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>amitrokhin@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -4416,7 +4416,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Glanceables.TimeManagement.Classroom.UserAction"
-    enum="ClassroomUserAction" expires_after="2025-12-31">
+    enum="ClassroomUserAction" expires_after="2026-03-01">
   <owner>tbarzic@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -4533,7 +4533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Glanceables.TimeManagement.Tasks.UserAction"
-    enum="TasksUserAction" expires_after="2025-12-31">
+    enum="TasksUserAction" expires_after="2026-03-01">
   <owner>tbarzic@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -4543,7 +4543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Glanceables.TimeManagement.TasksCountInDefaultTaskList"
-    units="tasks" expires_after="2025-12-31">
+    units="tasks" expires_after="2026-03-01">
   <owner>amitrokhin@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -4614,7 +4614,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.Glanceables.TimeManagement{GlanceableBubble}.TotalShowTime"
-    units="ms" expires_after="2025-12-31">
+    units="ms" expires_after="2026-03-01">
   <owner>anasalazar@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -4741,7 +4741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.KcerPkcs12Migration.Events"
-    enum="KcerPkcs12MigrationEvent" expires_after="2025-12-28">
+    enum="KcerPkcs12MigrationEvent" expires_after="2026-03-01">
   <owner>miersh@google.com</owner>
   <owner>olsa@google.com</owner>
   <summary>
@@ -4816,7 +4816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Lock.SessionStateChange" enum="SessionLockEvent"
-    expires_after="2025-10-29">
+    expires_after="2026-03-01">
   <owner>mslus@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>Records all session lock and unlock events.</summary>
@@ -6748,7 +6748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Picker.Search.{Provider}Provider.QueryTime" units="ms"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>shend@chromium.org</owner>
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -6774,7 +6774,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Picker.Session.InputReadyLatency" units="ms"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>shend@chromium.org</owner>
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -6788,7 +6788,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Picker.Session.Outcome" enum="PickerSessionOutcome"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -6798,7 +6798,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Picker.Session.PresentationLatency.SearchField" units="ms"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>shend@chromium.org</owner>
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -6812,7 +6812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Picker.Session.PresentationLatency.SearchResults"
-    units="ms" expires_after="2025-12-31">
+    units="ms" expires_after="2026-03-01">
   <owner>shend@chromium.org</owner>
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -6826,7 +6826,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Picker.Session.SearchLatency" units="ms"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>shend@chromium.org</owner>
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -7289,7 +7289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.QuickSettings.FeaturePod.{FeaturePodBehavior}"
-    enum="QsFeatureCatalogName" expires_after="2025-12-28">
+    enum="QsFeatureCatalogName" expires_after="2026-03-01">
   <owner>jiamingc@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -8996,7 +8996,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.VideoConferenceTray.BackgroundBlur.Click"
-    enum="BackgroundBlurState" expires_after="2025-12-14">
+    enum="BackgroundBlurState" expires_after="2026-03-01">
   <owner>leandre@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -9007,7 +9007,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.VideoConferenceTray.BackgroundBlur.InitialState"
-    enum="BackgroundBlurState" expires_after="2025-12-28">
+    enum="BackgroundBlurState" expires_after="2026-03-01">
   <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -9057,7 +9057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.VideoConferenceTray.{Device}MuteButton.Click"
-    enum="BooleanMuted" expires_after="2025-12-14">
+    enum="BooleanMuted" expires_after="2026-03-01">
   <owner>leandre@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -9072,7 +9072,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.VideoConferenceTray.{EffectName}.Click"
-    enum="BooleanEnabled" expires_after="2025-12-14">
+    enum="BooleanEnabled" expires_after="2026-03-01">
   <owner>leandre@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -9093,7 +9093,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.VideoConferenceTray.{EffectName}.InitialState"
-    enum="BooleanEnabled" expires_after="2025-12-28">
+    enum="BooleanEnabled" expires_after="2026-03-01">
   <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -9300,7 +9300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wallpaper.SeaPen.Template.Settled" enum="SeaPenTemplateId"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>thuongphan@chromium.org</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>

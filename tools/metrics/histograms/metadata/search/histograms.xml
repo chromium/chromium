@@ -1182,7 +1182,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.OsDefaultsChoice.LaunchChoiceScreenTapHandlingStatus"
-    enum="LaunchOsChoiceScreenTapHandlingStatus" expires_after="2025-12-28">
+    enum="LaunchOsChoiceScreenTapHandlingStatus" expires_after="2026-03-01">
   <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -1670,7 +1670,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.SearchProviderOverrideStatus"
-    enum="SearchProviderOverrideStatus" expires_after="2025-12-28">
+    enum="SearchProviderOverrideStatus" expires_after="2026-03-01">
   <owner>dgn@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>

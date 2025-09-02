@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.{PrefetchDataPipeTeeStateLoadingOrSizeExceeded}"
-    units="count" expires_after="2025-12-28">
+    units="count" expires_after="2026-03-01">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -226,7 +226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Prefetch.PrefetchDataPipeTeeDtorState"
-    enum="PrefetchDataPipeTeeState" expires_after="2025-12-28">
+    enum="PrefetchDataPipeTeeState" expires_after="2026-03-01">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

@@ -1330,7 +1330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.IdleManager.ScreenOffTime" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>raging@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
@@ -2503,7 +2503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.Duration" units="seconds"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2514,7 +2514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.EndStatus"
-    enum="CrOSFileSystemMigrationEndStatus" expires_after="2025-12-31">
+    enum="CrOSFileSystemMigrationEndStatus" expires_after="2026-03-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2525,7 +2525,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.FailedErrorCode" enum="PlatformFileError"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2539,7 +2539,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.FailedOperationType"
     enum="CrOSFileSystemMigrationFailedOperationType"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2552,7 +2552,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.FailedPathType"
-    enum="ArcVmDataMigrationFailedPathType" expires_after="2025-12-31">
+    enum="ArcVmDataMigrationFailedPathType" expires_after="2026-03-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2600,7 +2600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.MigrationFinishReason{ArcUserTypes}"
-    enum="ArcVmDataMigrationFinishReason" expires_after="2025-12-31">
+    enum="ArcVmDataMigrationFinishReason" expires_after="2026-03-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2611,7 +2611,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.MigrationStatusOnArcStarted{ArcUserTypes}"
-    enum="ArcVmDataMigrationStatus" expires_after="2025-12-31">
+    enum="ArcVmDataMigrationStatus" expires_after="2026-03-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2757,7 +2757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.SetupResult"
-    enum="ArcVmDataMigrationSetupResult" expires_after="2025-12-31">
+    enum="ArcVmDataMigrationSetupResult" expires_after="2026-03-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2768,7 +2768,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.StartStatus"
-    enum="CrOSFileSystemMigrationStartStatus" expires_after="2025-12-31">
+    enum="CrOSFileSystemMigrationStartStatus" expires_after="2026-03-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2779,7 +2779,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.TotalFiles" units="files"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2790,7 +2790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.TotalSizeMB" units="MB"
-    expires_after="2025-12-31">
+    expires_after="2026-03-01">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>

@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.AddedPerProfileType" enum="BrowserProfileType"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -245,7 +245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarksExistInStorageType.{SubtreeSelection}"
-    enum="BookmarksExistInStorageType" expires_after="2025-12-28">
+    enum="BookmarksExistInStorageType" expires_after="2026-03-01">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -274,7 +274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Count.OnProfileLoad3" units="bookmarks"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>mamir@chromium.org</owner>
   <summary>
     The total number of bookmarks a user has saved, excluding folders. Recorded
@@ -330,7 +330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>ianwen@chromium.org</owner>
   <summary>Logs a UI location from which a bookmark is launched.</summary>
 </histogram>
@@ -721,7 +721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.UsageCountPerProfileType" enum="BrowserProfileType"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>

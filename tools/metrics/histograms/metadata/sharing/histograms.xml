@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendMessageUsingSync" enum="Boolean"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>rushans@google.com</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
-    enum="SendTabToSelfNotificationStatus" expires_after="2025-12-28">
+    enum="SendTabToSelfNotificationStatus" expires_after="2026-03-01">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -480,7 +480,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.{ShareSurface}.ShareContentType"
-    enum="SharingContentTypeAndroid" expires_after="2025-12-28">
+    enum="SharingContentTypeAndroid" expires_after="2026-03-01">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>

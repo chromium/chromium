@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManConditionalRequest"
-    enum="CredManGetRequestEnum" expires_after="2025-12-28">
+    enum="CredManGetRequestEnum" expires_after="2026-03-01">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManCreateRequest"
-    enum="CredManCreateRequestEnum" expires_after="2025-12-28">
+    enum="CredManCreateRequestEnum" expires_after="2026-03-01">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.TunnelEvent"
-    enum="WebAuthenticationCableV2TunnelEvent" expires_after="2025-12-31">
+    enum="WebAuthenticationCableV2TunnelEvent" expires_after="2026-03-01">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -309,14 +309,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertion.Result"
-    enum="WebAuthenticationCredentialRequestResult" expires_after="2025-12-28">
+    enum="WebAuthenticationCredentialRequestResult" expires_after="2026-03-01">
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>Records the result of a get assertion request.</summary>
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertionRequestTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2025-12-28">
+    enum="WebAuthenticationFidoTransport" expires_after="2026-03-01">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -327,7 +327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertionResponseTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2025-12-28">
+    enum="WebAuthenticationFidoTransport" expires_after="2026-03-01">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -401,7 +401,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAuthentication.MacOS.GetAssertion.LargeBlobSucceeded.{Operation}"
-    enum="Boolean" expires_after="2025-12-31">
+    enum="Boolean" expires_after="2026-03-01">
   <owner>kenrb@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <summary>
