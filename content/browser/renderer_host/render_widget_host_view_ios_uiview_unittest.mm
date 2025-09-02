@@ -68,10 +68,13 @@ TEST_F(RenderWidgetHostViewIOSUIViewTest, ShouldInsertMultiCharacterInput) {
   blink::WebKeyboardEvent emoji_event;
 
   // Set up a multi-character emoji sequence
-  const char16_t emoji[] = {0xD83D, 0xDE00, 0};  // 😀 (surrogate pair)
-  for (int i = 0;
-       emoji[i] != 0 && i < blink::WebKeyboardEvent::kTextLengthCap - 1; i++) {
-    emoji_event.text[i] = emoji[i];
+  const std::vector<char16_t> emoji = {0xD83D, 0xDE00,
+                                       0};  // 😀 (surrogate pair)
+  int i = 0;
+  for (char16_t e : emoji) {
+    if (e != 0) {
+      emoji_event.text[i++] = e;
+    }
   }
 
   EXPECT_TRUE([uiview_ shouldInsertCharacter:emoji_event]);
