@@ -21,7 +21,7 @@ import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
 
 
-_DEX_XMX = '2G'  # Increase this when __final_dex OOMs.
+_DEX_XMX = '3G'  # Increase this when __final_dex OOMs.
 
 DEFAULT_IGNORE_WARNINGS = (
     # Warning: Running R8 version main (build engineering), which cannot be
