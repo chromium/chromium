@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.MediumTest;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,6 +72,7 @@ public class PerformancePTTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION})
+    @DisabledTest(message = "https://crbug.com/442654122")
     public void zeroCompositorFramesWhileScrollingBrowserControls() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
