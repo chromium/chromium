@@ -1348,7 +1348,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   _searchText = searchText;
   searchBar.searchTextField.accessibilityIdentifier =
       [kTabGridSearchTextFieldIdentifierPrefix
-          stringByAppendingString:searchText];
+          stringByAppendingString:searchText ?: @""];
   [self updateScrimVisibilityForText:searchText];
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
