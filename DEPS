@@ -1256,7 +1256,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_linux64',
-          'version': 'version:2@141.0.7340.0',
+          'version': 'version:2@141.0.7376.0',
         },
       ],
   },
