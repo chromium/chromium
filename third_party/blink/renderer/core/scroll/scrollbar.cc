@@ -33,6 +33,8 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -149,6 +151,27 @@ int Scrollbar::Maximum() const {
   gfx::Vector2d max_offset = scrollable_area_->MaximumScrollOffsetInt() -
                              scrollable_area_->MinimumScrollOffsetInt();
   return orientation_ == kHorizontalScrollbar ? max_offset.x() : max_offset.y();
+}
+
+WebThemeEngine::State Scrollbar::GetStateForPart(ScrollbarPart part) const {
+  if (!enabled_) {
+    return WebThemeEngine::kStateDisabled;
+  }
+  if (part == pressed_part_) {
+    return WebThemeEngine::kStatePressed;
+  }
+  if (part == hovered_part_) {
+    // Don't draw a hovered state when the device does not have hover available.
+    if (const Settings* const settings =
+            style_source_ ? style_source_->GetDocument().GetSettings()
+                          : nullptr;
+        !settings ||
+        (settings->GetAvailableHoverTypes() &
+         static_cast<int>(mojom::blink::HoverType::kHoverHoverType))) {
+      return WebThemeEngine::kStateHover;
+    }
+  }
+  return WebThemeEngine::kStateNormal;
 }
 
 void Scrollbar::OffsetDidChange(mojom::blink::ScrollType scroll_type) {

@@ -281,30 +281,27 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
       State state,
       Part part) const;
 
-  virtual SkColor ControlsAccentColorForState(
+  SkColor ControlsAccentColorForState(
       State state,
       ColorScheme color_scheme,
       const ColorProvider* color_provider) const;
-  virtual SkColor ControlsSliderColorForState(
+  SkColor ControlsSliderColorForState(
       State state,
       ColorScheme color_scheme,
       const ColorProvider* color_provider) const;
-  virtual SkColor ButtonBorderColorForState(
+  SkColor ButtonBorderColorForState(State state,
+                                    ColorScheme color_scheme,
+                                    const ColorProvider* color_provider) const;
+  SkColor ButtonFillColorForState(State state,
+                                  ColorScheme color_scheme,
+                                  const ColorProvider* color_provider) const;
+  SkColor ControlsBorderColorForState(
       State state,
       ColorScheme color_scheme,
       const ColorProvider* color_provider) const;
-  virtual SkColor ButtonFillColorForState(
-      State state,
-      ColorScheme color_scheme,
-      const ColorProvider* color_provider) const;
-  virtual SkColor ControlsBorderColorForState(
-      State state,
-      ColorScheme color_scheme,
-      const ColorProvider* color_provider) const;
-  virtual SkColor ControlsFillColorForState(
-      State state,
-      ColorScheme color_scheme,
-      const ColorProvider* color_provider) const;
+  SkColor ControlsFillColorForState(State state,
+                                    ColorScheme color_scheme,
+                                    const ColorProvider* color_provider) const;
   virtual float GetContrastRatioForState(State state, Part part) const;
   // Only scrollbar parts that change colors when hovered are supported.
   bool SupportedPartsForContrastingColor(Part part) const;

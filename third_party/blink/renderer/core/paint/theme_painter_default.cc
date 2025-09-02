@@ -26,10 +26,12 @@
 
 #include <variant>
 
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/slider_thumb_element.h"
 #include "third_party/blink/renderer/core/html/forms/spin_button_element.h"
@@ -69,12 +71,21 @@ bool IsChecked(const Element& element) {
 }
 
 WebThemeEngine::State GetWebThemeState(const Element& element) {
-  if (element.IsDisabledFormControl())
+  if (element.IsDisabledFormControl()) {
     return WebThemeEngine::kStateDisabled;
-  if (element.IsActive())
+  }
+  if (element.IsActive()) {
     return WebThemeEngine::kStatePressed;
-  if (element.IsHovered())
-    return WebThemeEngine::kStateHover;
+  }
+  if (element.IsHovered()) {
+    // Don't draw a hovered state when the device does not have hover available.
+    if (const Settings* const settings = element.GetDocument().GetSettings();
+        !settings ||
+        (settings->GetAvailableHoverTypes() &
+         static_cast<int>(mojom::blink::HoverType::kHoverHoverType))) {
+      return WebThemeEngine::kStateHover;
+    }
+  }
 
   return WebThemeEngine::kStateNormal;
 }

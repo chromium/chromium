@@ -28,32 +28,6 @@ class NativeThemeIOS : public NativeThemeBase {
 
   // NativeThemeBase:
   void AdjustCheckboxRadioRectForPadding(SkRect* rect) const override;
-  // TODO(crbug.com/40741411): Refine hover state behavior on available pointing
-  // devices.
-  SkColor ControlsAccentColorForState(
-      State state,
-      ColorScheme color_scheme,
-      const ColorProvider* color_provider) const override;
-  SkColor ControlsSliderColorForState(
-      State state,
-      ColorScheme color_scheme,
-      const ColorProvider* color_provider) const override;
-  SkColor ButtonBorderColorForState(
-      State state,
-      ColorScheme color_scheme,
-      const ColorProvider* color_provider) const override;
-  SkColor ButtonFillColorForState(
-      State state,
-      ColorScheme color_scheme,
-      const ColorProvider* color_provider) const override;
-  SkColor ControlsBorderColorForState(
-      State state,
-      ColorScheme color_scheme,
-      const ColorProvider* color_provider) const override;
-  SkColor ControlsFillColorForState(
-      State state,
-      ColorScheme color_scheme,
-      const ColorProvider* color_provider) const override;
 
  private:
   NativeThemeIOS();

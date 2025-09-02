@@ -28,6 +28,7 @@
 
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -99,6 +100,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   ScrollbarPart PressedPart() const { return pressed_part_; }
   ScrollbarPart HoveredPart() const { return hovered_part_; }
+  WebThemeEngine::State GetStateForPart(ScrollbarPart) const;
 
   virtual void StyleChanged() {}
   void SetScrollbarsHiddenFromExternalAnimator(bool);

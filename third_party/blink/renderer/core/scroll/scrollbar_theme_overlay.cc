@@ -174,34 +174,15 @@ gfx::Rect ScrollbarThemeOverlay::ThumbRect(const Scrollbar& scrollbar) const {
 void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
                                        const Scrollbar& scrollbar,
                                        const gfx::Rect& rect) {
-  if (DrawingRecorder::UseCachedDrawingIfPossible(context, scrollbar,
-                                                  DisplayItem::kScrollbarThumb))
+  if (DrawingRecorder::UseCachedDrawingIfPossible(
+          context, scrollbar, DisplayItem::kScrollbarThumb)) {
     return;
+  }
 
   DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarThumb,
                            rect);
 
-  WebThemeEngine::State state = WebThemeEngine::kStateNormal;
-
-  if (!scrollbar.Enabled())
-    state = WebThemeEngine::kStateDisabled;
-  else if (scrollbar.PressedPart() == kThumbPart)
-    state = WebThemeEngine::kStatePressed;
-  else if (scrollbar.HoveredPart() == kThumbPart)
-    state = WebThemeEngine::kStateHover;
-
   cc::PaintCanvas* canvas = context.Canvas();
-
-  WebThemeEngine::Part part = WebThemeEngine::kPartScrollbarHorizontalThumb;
-  if (scrollbar.Orientation() == kVerticalScrollbar)
-    part = WebThemeEngine::kPartScrollbarVerticalThumb;
-
-  blink::WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
-  if (scrollbar.ScrollbarThumbColor().has_value()) {
-    scrollbar_thumb.thumb_color =
-        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
-  }
-
   // Horizontally flip the canvas if it is left vertical scrollbar.
   if (scrollbar.IsLeftSideVerticalScrollbar()) {
     canvas->save();
@@ -209,15 +190,27 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
     canvas->scale(-1, 1);
   }
 
+  const WebThemeEngine::Part part =
+      (scrollbar.Orientation() == kVerticalScrollbar)
+          ? WebThemeEngine::kPartScrollbarVerticalThumb
+          : WebThemeEngine::kPartScrollbarHorizontalThumb;
+
+  blink::WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
+  if (scrollbar.ScrollbarThumbColor().has_value()) {
+    scrollbar_thumb.thumb_color =
+        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
+  }
   blink::WebThemeEngine::ExtraParams params(scrollbar_thumb);
 
-  mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
+  const mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
-      canvas, part, state, rect, &params, color_scheme,
-      scrollbar.InForcedColorsMode(), scrollbar.GetColorProvider(color_scheme));
+      canvas, part, scrollbar.GetStateForPart(kThumbPart), rect, &params,
+      color_scheme, scrollbar.InForcedColorsMode(),
+      scrollbar.GetColorProvider(color_scheme));
 
-  if (scrollbar.IsLeftSideVerticalScrollbar())
+  if (scrollbar.IsLeftSideVerticalScrollbar()) {
     canvas->restore();
+  }
 }
 
 ScrollbarPart ScrollbarThemeOverlay::HitTest(const Scrollbar& scrollbar,
