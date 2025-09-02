@@ -82,26 +82,38 @@ def GetStampVersion():
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Update Rust package')
+    parser = argparse.ArgumentParser(
+        description='Update Rust package',
+        formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument(
-        '--print-rust-revision',
-        action='store_true',
-        help='Print Rust revision (without Clang revision) and '
-        'quit. Can be run outside of a Chromium checkout.')
+        '--print-revision',
+        choices=['rust', 'installed', 'validate'],
+        help='Print the rust revision then quit. Possible formats:\n'
+        '- rust: print only the expected rust revision (without clang).\n'
+        '  Can be run outside of a Chromium checkout.\n'
+        '- installed: print the installed package version (including both\n'
+        '  rust and clang revisions), without checking that it matches the\n'
+        '  expected version in this file.\n'
+        '- validate: print the expected package version, and ensure it\n'
+        '  matches the installed package.')
+    parser.add_argument('--output-dir', help='Where to extract the package.')
+    # TODO(crbug.com/407563488): Remove this argument once all uses are removed
     parser.add_argument('--print-package-version',
                         action='store_true',
-                        help='Print Rust package version (including both the '
-                        'Rust and Clang revisions) and quit.')
-    parser.add_argument('--output-dir', help='Where to extract the package.')
+                        help='Deprecated and will be removed in the future.\n'
+                        'Use `--print-revision validate` instead.')
     args = parser.parse_args()
 
-    if args.print_rust_revision:
+    if args.print_package_version:
+        args.print_revision = 'validate'
+
+    if args.print_revision == 'rust':
         print(f'{RUST_REVISION}-{RUST_SUB_REVISION}')
         return 0
-
-    if args.print_package_version:
+    elif args.print_revision:
         stamp_version = GetStampVersion()
-        if stamp_version != GetRustClangRevision():
+        if (args.print_revision == 'validate'
+                and stamp_version != GetRustClangRevision()):
             print(f'The expected Rust version is {GetRustClangRevision()} '
                   f'but the actual version is {stamp_version}')
             print('Did you run "gclient sync"?')
