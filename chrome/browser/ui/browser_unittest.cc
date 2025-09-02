@@ -420,27 +420,3 @@ TEST_F(BrowserBookmarkBarTest, StateOnActiveTabChanged) {
             BookmarkBarController::From(browser())->bookmark_bar_state());
   EXPECT_EQ(BookmarkBar::SHOW, window_bookmark_bar_state());
 }
-
-// Tests that Browser::Create creates a guest session browser.
-TEST_F(BrowserUnitTest, CreateGuestSessionBrowser) {
-  TestingProfile* test_profile = profile_manager()->CreateGuestProfile();
-  TestingProfile::Builder otr_profile_builder;
-  otr_profile_builder.SetGuestSession();
-  Profile* guest_profile = nullptr;
-
-  // Try creating a browser in original guest profile - it should fail.
-  EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
-            Browser::GetCreationStatusForProfile(test_profile));
-
-  // Create OTR profile for the Guest profile.
-  EXPECT_TRUE(otr_profile_builder.BuildIncognito(test_profile));
-  guest_profile = test_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-
-  // Creating a browser should succeed.
-  Browser::CreateParams create_params =
-      Browser::CreateParams(guest_profile, false);
-  std::unique_ptr<BrowserWindow> test_window = CreateBrowserWindow();
-  create_params.window = test_window.release();
-  auto browser = Browser::DeprecatedCreateOwnedForTesting(create_params);
-  EXPECT_TRUE(browser);
-}

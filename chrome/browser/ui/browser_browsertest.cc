@@ -175,6 +175,13 @@
 #include "base/test/file_path_reparse_point_win.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/user_manager/user_names.h"
+
+#endif
+
 using base::ASCIIToUTF16;
 using content::HostZoomMap;
 using content::NavigationController;
@@ -3252,4 +3259,51 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BrowserCloseEmitsClosedNotificationsOnce) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+}
+
+class GuestSessionBrowserTest : public BrowserTest {
+ public:
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                    user_manager::kGuestUserName);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+                                    TestingProfile::kTestUserProfileDir);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  void SetUpOnMainThread() override {
+    BrowserTest::SetUpOnMainThread();
+#if BUILDFLAG(IS_CHROMEOS)
+    guest_browser_ = browser();
+#else
+    guest_browser_ = CreateGuestBrowser();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  void TearDownOnMainThread() override {
+    guest_browser_ = nullptr;
+    BrowserTest::TearDownOnMainThread();
+  }
+
+  Browser* guest_browser() { return guest_browser_; }
+
+ private:
+  raw_ptr<Browser> guest_browser_ = nullptr;
+};
+
+// Tests that Browser::Create creates a guest session browser.
+IN_PROC_BROWSER_TEST_F(GuestSessionBrowserTest, CreateGuestSessionBrowser) {
+  // Creating a guest session browser should succeed and the instantiated
+  // browser should be using an OTR profile.
+  Profile* guest_profile = guest_browser()->profile();
+  EXPECT_TRUE(guest_browser());
+  EXPECT_TRUE(guest_profile->IsGuestSession());
+  EXPECT_TRUE(guest_profile->IsOffTheRecord());
+
+  // Try creating a browser in original non-OTR guest profile - it should fail.
+  EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
+            Browser::GetCreationStatusForProfile(
+                guest_profile->GetOriginalProfile()));
 }
