@@ -376,6 +376,8 @@ LoadStoredEntries(std::vector<proto::SharedTabGroupData> stored_entries,
     if (proto.local_group_data().has_is_group_hidden()) {
       group.SetIsHidden(proto.local_group_data().is_group_hidden());
     }
+    stats::RecordSharedTabGroupDataLoadFromDiskResult(
+        stats::SharedTabGroupDataLoadFromDiskResult::kSuccess);
     groups.emplace_back(std::move(group));
 
     // There should not be duplicate group GUIDs because they are used as
@@ -407,6 +409,8 @@ LoadStoredEntries(std::vector<proto::SharedTabGroupData> stored_entries,
           stats::SharedTabGroupDataLoadFromDiskResult::kMissingCollaborationId);
       continue;
     }
+    stats::RecordSharedTabGroupDataLoadFromDiskResult(
+        stats::SharedTabGroupDataLoadFromDiskResult::kSuccess);
 
     base::Time creation_time =
         ExtractCreationTimeFromMetadata(sync_metadata, storage_key);
