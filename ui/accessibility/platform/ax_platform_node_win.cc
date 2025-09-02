@@ -28,7 +28,6 @@
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -703,8 +702,7 @@ gfx::NativeViewAccessible AXPlatformNodeWin::GetNativeViewAccessible() {
 
 void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   TRACE_EVENT("accessibility", "NotifyAccessibilityEvent",
-              perfetto::Flow::FromPointer(this), "event_type",
-              base::NumberToString(static_cast<int32_t>(event_type)));
+              perfetto::Flow::FromPointer(this));
   AXPlatformNodeBase::NotifyAccessibilityEvent(event_type);
   // Menu items fire selection events but Windows screen readers work reliably
   // with focus events. Remap here.
@@ -753,8 +751,7 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   if (std::optional<DWORD> native_event = MojoEventToMSAAEvent(event_type)) {
     HWND hwnd = GetDelegate()->GetTargetForNativeAccessibilityEvent();
     if (hwnd) {
-      TRACE_EVENT("accessibility", "NotifyWinEvent", "native_event",
-                  base::StringPrintf("0x%04lX", native_event.value()));
+      TRACE_EVENT("accessibility", "NotifyWinEvent");
       ::NotifyWinEvent(*native_event, hwnd, OBJID_CLIENT, -GetUniqueId());
     }
   }
@@ -5909,9 +5906,7 @@ IFACEMETHODIMP AXPlatformNodeWin::QueryService(REFGUID guidService,
                                                REFIID riid,
                                                void** object) {
   TRACE_EVENT("accessibility", "QueryService",
-              perfetto::Flow::FromPointer(this), "guidService",
-              base::WideToASCII(base::win::WStringFromGUID(guidService)),
-              "riid", base::WideToASCII(base::win::WStringFromGUID(riid)));
+              perfetto::Flow::FromPointer(this));
   COM_OBJECT_VALIDATE_1_ARG(object);
 
   if (riid == IID_IAccessible2) {
@@ -7798,8 +7793,7 @@ ULONG AXPlatformNodeWin::InternalRelease() {
 
 void AXPlatformNodeWin::OnReferenced() {
   TRACE_EVENT_INSTANT("accessibility", "OnReferenced",
-                      perfetto::Flow::FromPointer(this), "UniqueId",
-                      base::NumberToString(GetUniqueId()));
+                      perfetto::Flow::FromPointer(this));
 }
 
 void AXPlatformNodeWin::OnDereferenced() {
