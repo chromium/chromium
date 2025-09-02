@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_HTTP_AUTH_CACHE_COPIER_H_
-#define SERVICES_NETWORK_HTTP_AUTH_CACHE_COPIER_H_
+#ifndef SERVICES_NETWORK_HTTP_AUTH_CACHE_PROXY_COPIER_H_
+#define SERVICES_NETWORK_HTTP_AUTH_CACHE_PROXY_COPIER_H_
 
 #include <map>
 #include <memory>
@@ -20,14 +20,14 @@ namespace network {
 // an intermediate cache. This allows copying between two HttpAuthCache
 // instances that cannot both be accessed at the same time, such as the
 // HttpAuthCaches in two NetworkContexts.
-class HttpAuthCacheCopier {
+class HttpAuthCacheProxyCopier {
  public:
-  HttpAuthCacheCopier();
+  HttpAuthCacheProxyCopier();
 
-  HttpAuthCacheCopier(const HttpAuthCacheCopier&) = delete;
-  HttpAuthCacheCopier& operator=(const HttpAuthCacheCopier&) = delete;
+  HttpAuthCacheProxyCopier(const HttpAuthCacheProxyCopier&) = delete;
+  HttpAuthCacheProxyCopier& operator=(const HttpAuthCacheProxyCopier&) = delete;
 
-  ~HttpAuthCacheCopier();
+  ~HttpAuthCacheProxyCopier();
 
   // Saves the proxy entries of the given HttpAuthCache in an intermediate
   // HttpAuthCache and returns a key that can be used to load the saved contents
@@ -46,4 +46,4 @@ class HttpAuthCacheCopier {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_HTTP_AUTH_CACHE_COPIER_H_
+#endif  // SERVICES_NETWORK_HTTP_AUTH_CACHE_PROXY_COPIER_H_

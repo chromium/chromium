@@ -84,7 +84,7 @@
 #include "net/url_request/url_request_context.h"
 #include "services/network/dns_config_change_manager.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
-#include "services/network/http_auth_cache_copier.h"
+#include "services/network/http_auth_cache_proxy_copier.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/net_log_proxy_sink.h"
 #include "services/network/network_context.h"
@@ -484,7 +484,7 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
       net::NetworkChangeNotifier::GetSystemDnsConfigNotifier(), net_log_);
   host_resolver_factory_ = std::make_unique<net::HostResolver::Factory>();
 
-  http_auth_cache_copier_ = std::make_unique<HttpAuthCacheCopier>();
+  http_auth_cache_proxy_copier_ = std::make_unique<HttpAuthCacheProxyCopier>();
 
   doh_probe_activator_ = std::make_unique<DelayedDohProbeActivator>(this);
 
