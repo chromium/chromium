@@ -85,8 +85,10 @@
 }
 
 - (void)cancelThemeSelection {
-  self.themeHasChanged = NO;
-  _homeBackgroundCustomizationService->RestoreCurrentTheme();
+  if (self.themeHasChanged) {
+    _homeBackgroundCustomizationService->RestoreCurrentTheme();
+    self.themeHasChanged = NO;
+  }
 }
 
 #pragma mark - HomeBackgroundCustomizationServiceObserving

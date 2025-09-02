@@ -337,27 +337,7 @@ void HomeBackgroundCustomizationService::RestoreCurrentTheme() {
   }
   LoadCurrentTheme();
 
-  std::optional<sync_pb::UserColorTheme> colorTheme = GetCurrentColorTheme();
-  std::optional<sync_pb::NtpCustomBackground> presetImage =
-      GetCurrentNtpCustomBackground();
-  std::optional<HomeUserUploadedBackground> uploadedImage =
-      GetCurrentUserUploadedBackground();
-
-  if (colorTheme) {
-    SetBackgroundColor(colorTheme->color(),
-                       colorTheme->browser_color_variant());
-  } else if (presetImage) {
-    SetCurrentBackground(GURL(presetImage->url()), GURL(presetImage->url()),
-                         presetImage->attribution_line_1(),
-                         presetImage->attribution_line_2(),
-                         GURL(presetImage->attribution_action_url()),
-                         presetImage->collection_id());
-  } else if (uploadedImage) {
-    SetCurrentUserUploadedBackground(uploadedImage->image_path,
-                                     uploadedImage->framing_coordinates);
-  } else {
-    ClearCurrentBackground();
-  }
+  NotifyObserversOfBackgroundChange();
 }
 
 void HomeBackgroundCustomizationService::LoadCurrentTheme() {
