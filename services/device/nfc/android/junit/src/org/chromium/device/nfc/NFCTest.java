@@ -43,9 +43,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
-import org.chromium.base.task.test.ShadowPostTask.TestImpl;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.device.mojom.NdefError;
@@ -70,9 +68,7 @@ import java.util.List;
 
 /** Unit tests for NfcImpl and NdefMessageUtils classes. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowPostTask.class})
+@Config(manifest = Config.NONE)
 public class NFCTest {
     private TestNfcDelegate mDelegate;
     private int mNextWatchId;
@@ -132,14 +128,6 @@ public class NFCTest {
 
     @Before
     public void setUp() {
-        ShadowPostTask.setTestImpl(
-                new TestImpl() {
-                    @Override
-                    public void postDelayedTask(
-                            @TaskTraits int taskTraits, Runnable task, long delay) {
-                        task.run();
-                    }
-                });
         MockitoAnnotations.initMocks(this);
         mDelegate = new TestNfcDelegate(mActivity);
         doReturn(mNfcManager).when(mContext).getSystemService(Context.NFC_SERVICE);
@@ -1663,6 +1651,7 @@ public class NFCTest {
                         (Bundle) isNull());
 
         nfc.cancelPush();
+        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1694,6 +1683,7 @@ public class NFCTest {
                         (Bundle) isNull());
 
         nfc.cancelMakeReadOnly();
+        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1733,6 +1723,7 @@ public class NFCTest {
 
         // Cancel the second push.
         nfc.cancelPush();
+        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled after cancelPush is invoked.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1772,6 +1763,7 @@ public class NFCTest {
 
         // Cancel the second makeReadOnly.
         nfc.cancelMakeReadOnly();
+        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled after cancelMakeReadOnly is invoked.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1814,6 +1806,7 @@ public class NFCTest {
         verify(mNfcAdapter, times(0)).disableReaderMode(mActivity);
 
         nfc.cancelWatch(mNextWatchId);
+        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled when there are no pending push / watch operations.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1851,6 +1844,7 @@ public class NFCTest {
         verify(mNfcAdapter, times(0)).disableReaderMode(mActivity);
 
         nfc.cancelWatch(mNextWatchId);
+        BaseRobolectricTestRule.runAllBackgroundAndUiIncludingDelayed();
 
         // Reader mode is disabled when there are no pending makeReadOnly / watch operations.
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);

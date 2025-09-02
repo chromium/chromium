@@ -220,9 +220,17 @@ public class TaskRunnerImpl implements TaskRunner {
      * Overridden in subclasses that support Delayed tasks pre-native.
      *
      * @return true if the task has been scheduled and does not need to be forwarded to the native
-     *         task runner.
+     *     task runner.
      */
     protected boolean schedulePreNativeDelayedTask(Runnable task, long delay) {
+        // In Robolectric tests, execute delayed tasks immediately.
+        PostTask.DelayedExecutorForTesting delayedExecutor =
+                PostTask.getPrenativeThreadPoolDelayedExecutor();
+        if (delayedExecutor != null) {
+            delayedExecutor.scheduleDelayedTask(task, delay);
+            return true;
+        }
+
         return false;
     }
 

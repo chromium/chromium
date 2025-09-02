@@ -4,6 +4,7 @@
 
 package org.chromium.base.test;
 
+import android.os.Handler;
 import android.os.Looper;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -19,6 +20,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
+import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
@@ -33,6 +35,7 @@ import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 public class BaseRobolectricTestRule implements TestRule {
     private static final Locale ORIG_LOCALE = Locale.getDefault();
     private static final TimeZone ORIG_TIMEZONE = TimeZone.getDefault();
+    private static final String TAG = "BaseRobolectric";
     private static @Nullable PausedExecutorService sPausedExecutor;
 
     // Removes the API Level suffix. E.g. "testSomething[28]" -> "testSomething".
@@ -108,10 +112,17 @@ public class BaseRobolectricTestRule implements TestRule {
 
         sPausedExecutor = new PausedExecutorService();
         PostTask.setPrenativeThreadPoolExecutorForTesting(sPausedExecutor);
+        Handler mainLooperHandler = new Handler(Looper.getMainLooper());
+        PostTask.setPrenativeThreadPoolDelayedExecutorForTesting(
+                (task, delay) ->
+                        mainLooperHandler.postDelayed(() -> sPausedExecutor.execute(task), delay));
     }
 
     static void tearDown(boolean testFailed) {
-        sPausedExecutor.shutdownNow();
+        List<Runnable> pendingBackgroundTasks = sPausedExecutor.shutdownNow();
+        if (!pendingBackgroundTasks.isEmpty()) {
+            Log.w(TAG, "Dropping %d pending background tasks", pendingBackgroundTasks.size());
+        }
 
         try {
             sPausedExecutor.awaitTermination(1, TimeUnit.SECONDS);
@@ -141,8 +152,9 @@ public class BaseRobolectricTestRule implements TestRule {
     }
 
     /**
-     * Runs all currently background tasks and waits for them to finish. Warning: This will deadlock
-     * if a background tasks blocks on the UI thread.
+     * Runs all queued background and UI non-delayed tasks and waits for them to finish.
+     *
+     * <p>Warning: This will deadlock if a background tasks blocks on the UI thread.
      *
      * @return How many background tasks were run.
      */
@@ -160,6 +172,28 @@ public class BaseRobolectricTestRule implements TestRule {
         throw new AssertionError("Infinite loop of background->foreground->background jobs");
     }
 
+    /**
+     * Runs all queued background and UI tasks, delayed and non-delayed, and waits for them to
+     * finish.
+     *
+     * <p>Warning: This will deadlock if a background or a delayed task blocks on the UI thread.
+     *
+     * @return How many background or delayed tasks were run.
+     */
+    public static int runAllBackgroundAndUiIncludingDelayed() {
+        assert sPausedExecutor != null;
+
+        int taskCount = 0;
+        for (int i = 0; i < 100; ++i) {
+            Shadows.shadowOf(Looper.getMainLooper()).runToEndOfTasks();
+            if (!sPausedExecutor.hasQueuedTasks()) {
+                return taskCount;
+            }
+            taskCount += sPausedExecutor.runAll();
+        }
+        throw new AssertionError("Infinite loop of background/foreground/delayed jobs");
+    }
+
     public static void uninstallPausedExecutorService() {
         assert sPausedExecutor != null;
 
@@ -167,5 +201,6 @@ public class BaseRobolectricTestRule implements TestRule {
         assert !sPausedExecutor.hasQueuedTasks();
 
         PostTask.setPrenativeThreadPoolExecutorForTesting(null);
+        PostTask.setPrenativeThreadPoolDelayedExecutorForTesting(null);
     }
 }

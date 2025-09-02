@@ -50,6 +50,8 @@ public class PostTask {
     private static ChromeThreadPoolExecutor sPrenativeThreadPoolExecutor =
             new ChromeThreadPoolExecutor();
     private static volatile @Nullable Executor sPrenativeThreadPoolExecutorForTesting;
+    private static volatile @Nullable DelayedExecutorForTesting
+            sPrenativeThreadPoolDelayedExecutorForTesting;
     private static final @Nullable ThreadLocal<TaskOriginException> sTaskOrigin =
             ENABLE_TASK_ORIGINS ? new ThreadLocal<>() : null;
     private static final TaskRunner[] sTraitsToRunnerMap =
@@ -83,6 +85,11 @@ public class PostTask {
                 taskOrigin.remove();
             }
         }
+    }
+
+    /** Schedules delayed tasks to run on an Executor after a delay. */
+    public interface DelayedExecutorForTesting {
+        void scheduleDelayedTask(Runnable task, long delay);
     }
 
     private static boolean isUiTaskTraits(@TaskTraits int taskTraits) {
@@ -214,6 +221,30 @@ public class PostTask {
         return sPrenativeThreadPoolExecutor;
     }
 
+    /**
+     * Lets a test override _delayed_ task execution with a thread pool executor.
+     *
+     * <p>Outside of tests, non-UI delayed tasks always wait for native Post Task to execute them.
+     *
+     * @param executor The DelayedExecutorForTesting to post pre-native delayed thread pool tasks.
+     */
+    public static void setPrenativeThreadPoolDelayedExecutorForTesting(
+            DelayedExecutorForTesting executor) {
+        sPrenativeThreadPoolDelayedExecutorForTesting = executor;
+        ResettersForTesting.register(() -> sPrenativeThreadPoolDelayedExecutorForTesting = null);
+    }
+
+    /**
+     * @return The DelayedExecutorForTesting that PrenativeThreadPool delayed tasks should run on.
+     *     Returns null in production, as delayed tasks are only run on native PostTask.
+     */
+    static @Nullable DelayedExecutorForTesting getPrenativeThreadPoolDelayedExecutor() {
+        if (sPrenativeThreadPoolDelayedExecutorForTesting != null) {
+            return sPrenativeThreadPoolDelayedExecutorForTesting;
+        }
+        return null;
+    }
+
     public static @Nullable Exception getTaskOrigin() {
         if (ENABLE_TASK_ORIGINS) {
             assumeNonNull(sTaskOrigin);
@@ -314,6 +345,7 @@ public class PostTask {
             sTestIterationForTesting++;
         }
         sPrenativeThreadPoolExecutorForTesting = null;
+        sPrenativeThreadPoolDelayedExecutorForTesting = null;
         if (taskCount > 0) {
             Log.w(TAG, "%d background task(s) existed after test finished.", taskCount);
         }
