@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("direct_sockets") {
   sources = [
+    "multicast_controller.cc",
+    "multicast_controller.h",
     "socket.cc",
     "socket.h",
     "stream_wrapper.cc",

@@ -1,0 +1,16 @@
+[
+    RuntimeEnabled=MulticastInDirectSockets,
+    Exposed=(Window, DedicatedWorker),
+    SecureContext,
+    IsolatedContext
+]
+interface MulticastController {
+  // TODO(crbug.com/398934282): add measure annotations to all methods.
+
+  [CallWith=ScriptState, RaisesException]
+  Promise<undefined> joinGroup(DOMString ipAddress);
+  [CallWith=ScriptState, RaisesException]
+  Promise<undefined> leaveGroup(DOMString ipAddress);
+
+  readonly attribute FrozenArray<DOMString> joinedGroups;
+};
