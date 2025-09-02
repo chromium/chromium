@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/ios/ios_util.h"

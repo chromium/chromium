@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
@@ -1116,10 +1117,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   TriggerHapticFeedbackForNotification(success
                                            ? UINotificationFeedbackTypeSuccess
                                            : UINotificationFeedbackTypeError);
-  [self.snackbarHandler showSnackbarWithMessage:message
-                                     buttonText:nil
-                                  messageAction:nil
-                               completionAction:nil];
+  SnackbarMessage* snackbarMessage =
+      [[SnackbarMessage alloc] initWithTitle:message];
+  [self.snackbarHandler showCustomSnackbarMessage:snackbarMessage];
 
   if ([self.tableView indexPathForSelectedRow]) {
     [self.tableView

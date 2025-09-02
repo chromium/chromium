@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/about_chrome_table_view_controller.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/user_metrics.h"
@@ -25,9 +23,9 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -165,9 +163,9 @@ const CGFloat kDefaultHeight = 70;
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   NSString* messageText = l10n_util::GetNSString(IDS_IOS_VERSION_COPIED);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
-  message.category = @"version copied";
-  [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:messageText];
+  [self.snackbarHandler showCustomSnackbarMessage:message bottomOffset:0];
 }
 
 #pragma mark - Private methods
