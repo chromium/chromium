@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/sessions/model/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"
@@ -206,6 +207,16 @@ void LegacySessionRestorationService::Disconnect(Browser* browser) {
   // Destroy the SessionRestorationBrowserAgent for browser.
   SessionRestorationBrowserAgent::RemoveFromBrowser(browser);
 
+  // Stop observing the WebStates for realization is needed.
+  if (CreateTabHelperOnlyForRealizedWebStates()) {
+    WebStateList* list = browser->GetWebStateList();
+    const int list_count = list->count();
+    for (int index = 0; index < list_count; ++index) {
+      web::WebState* web_state = list->GetWebStateAt(index);
+      WebStateDetached(web_state);
+    }
+  }
+
   browser->GetWebStateList()->RemoveObserver(this);
 }
 
@@ -310,19 +321,65 @@ void LegacySessionRestorationService::WebStateListDidChange(
   switch (change.type()) {
     case WebStateListChange::Type::kInsert: {
       const auto& typed_change = change.As<WebStateListChangeInsert>();
-      WebSessionStateTabHelper::CreateForWebState(
-          typed_change.inserted_web_state());
+      WebStateInserted(typed_change.inserted_web_state());
       break;
     }
 
     case WebStateListChange::Type::kReplace: {
       const auto& typed_change = change.As<WebStateListChangeReplace>();
-      WebSessionStateTabHelper::CreateForWebState(
-          typed_change.inserted_web_state());
+      WebStateInserted(typed_change.inserted_web_state());
+      WebStateDetached(typed_change.replaced_web_state());
+      break;
+    }
+
+    case WebStateListChange::Type::kDetach: {
+      const auto& typed_change = change.As<WebStateListChangeDetach>();
+      WebStateDetached(typed_change.detached_web_state());
       break;
     }
 
     default:
       break;
   }
+}
+
+void LegacySessionRestorationService::WebStateRealized(
+    web::WebState* web_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  web_state_observations_.RemoveObservation(web_state);
+  WebStateInserted(web_state);
+}
+
+void LegacySessionRestorationService::WebStateDestroyed(
+    web::WebState* web_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(CreateTabHelperOnlyForRealizedWebStates());
+  web_state_observations_.RemoveObservation(web_state);
+}
+
+void LegacySessionRestorationService::WebStateInserted(
+    web::WebState* web_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      web_state_observations_.AddObservation(web_state);
+      return;
+    }
+  }
+
+  WebSessionStateTabHelper::CreateForWebState(web_state);
+}
+
+void LegacySessionRestorationService::WebStateDetached(
+    web::WebState* web_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      web_state_observations_.RemoveObservation(web_state);
+      return;
+    }
+  }
+
+  // Nothing to do.
 }

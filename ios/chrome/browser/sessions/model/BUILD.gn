@@ -243,6 +243,7 @@ source_set("legacy_session_restoration_service") {
     "//base",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/tabs/model:features",
     "//ios/web/public",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",

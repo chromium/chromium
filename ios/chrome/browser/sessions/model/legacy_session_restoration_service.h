@@ -12,10 +12,12 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/sequence_checker.h"
 #include "ios/chrome/browser/sessions/model/session_restoration_observer.h"
 #include "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#include "ios/web/public/web_state_observer.h"
 
 @class SessionServiceIOS;
 @class WebSessionStateCache;
@@ -27,7 +29,8 @@
 // TODO(crbug.com/40245950): Remove when the feature is fully launched.
 class LegacySessionRestorationService final : public SessionRestorationService,
                                               public SessionRestorationObserver,
-                                              public WebStateListObserver {
+                                              public WebStateListObserver,
+                                              public web::WebStateObserver {
  public:
   LegacySessionRestorationService(
       bool enable_pinned_tabs,
@@ -76,8 +79,16 @@ class LegacySessionRestorationService final : public SessionRestorationService,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) final;
 
+  // web::WebStateObserver implementation.
+  void WebStateRealized(web::WebState* web_state) final;
+  void WebStateDestroyed(web::WebState* web_state) final;
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Invoked when a WebState is inserted/removed from a WebStateList.
+  void WebStateInserted(web::WebState* web_state);
+  void WebStateDetached(web::WebState* web_state);
 
   // Observer list.
   base::ObserverList<SessionRestorationObserver, true> observers_;
@@ -102,6 +113,10 @@ class LegacySessionRestorationService final : public SessionRestorationService,
   // Bi-directional mapping of observed Browser and their backup.
   std::map<Browser*, Browser*> browsers_to_backup_;
   std::map<Browser*, Browser*> backups_to_browser_;
+
+  // Used to observe unrealized WebStates.
+  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
+      web_state_observations_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_LEGACY_SESSION_RESTORATION_SERVICE_H_
