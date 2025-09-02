@@ -87,28 +87,6 @@ TEST(NativeThemeWinTest, CalculatePreferredContrast) {
   EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kNoPreference);
 }
 
-TEST(NativeThemeWinTest, GetPlatformHighContrastColorScheme) {
-  using HCColorScheme = NativeTheme::PlatformHighContrastColorScheme;
-
-  TestNativeThemeWin theme;
-  theme.set_forced_colors(false);
-  theme.set_preferred_color_scheme(PrefScheme::kDark);
-  EXPECT_EQ(theme.GetPlatformHighContrastColorScheme(), HCColorScheme::kNone);
-
-  theme.set_preferred_color_scheme(PrefScheme::kLight);
-  EXPECT_EQ(theme.GetPlatformHighContrastColorScheme(), HCColorScheme::kNone);
-
-  theme.set_forced_colors(true);
-  theme.set_preferred_color_scheme(PrefScheme::kDark);
-  EXPECT_EQ(theme.GetPlatformHighContrastColorScheme(), HCColorScheme::kDark);
-
-  theme.set_preferred_color_scheme(PrefScheme::kLight);
-  EXPECT_EQ(theme.GetPlatformHighContrastColorScheme(), HCColorScheme::kLight);
-
-  theme.set_forced_colors(false);
-  EXPECT_EQ(theme.GetPlatformHighContrastColorScheme(), HCColorScheme::kNone);
-}
-
 TEST(NativeThemeWinTest, TestColorProviderKeyColorMode) {
   TestNativeThemeWin theme;
 

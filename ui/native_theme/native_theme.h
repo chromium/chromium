@@ -147,19 +147,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     kMaxValue = kCustom,
   };
 
-  // IMPORTANT!
-  // This enum is reported in metrics. Do not reorder; add additional values at
-  // the end.
-  //
-  // This represents the OS-level high contrast theme. kNone unless the default
-  // system color scheme is kPlatformHighContrast.
-  enum class PlatformHighContrastColorScheme {
-    kNone = 0,
-    kDark = 1,
-    kLight = 2,
-    kMaxValue = kLight,
-  };
-
   // The color scheme used for painting the native controls.
   enum class ColorScheme {
     kDefault,
@@ -494,11 +481,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // accessibility settings. Currently, Windows high contrast is the only system
   // setting that triggers forced colors mode.
   bool InForcedColorsMode() const;
-
-  // Returns the PlatformHighContrastColorScheme used by the OS. Returns a value
-  // other than kNone only if the default system color scheme is
-  // kPlatformHighContrast.
-  PlatformHighContrastColorScheme GetPlatformHighContrastColorScheme() const;
 
   // Returns true when the NativeTheme uses a light-on-dark color scheme. If
   // you're considering using this function to choose between two hard-coded

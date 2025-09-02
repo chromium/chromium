@@ -316,11 +316,24 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
     ConfigureWebInstance();
   }
 
-#if BUILDFLAG(IS_WIN)
+  // Histogram high contrast state.
+  // NOTE: Reported in metrics; do not reorder, add additional values at end.
+  enum class HighContrastColorScheme {
+    kNone = 0,
+    kDark = 1,
+    kLight = 2,
+    kMaxValue = kLight,
+  };
+  auto color_scheme = HighContrastColorScheme::kNone;
+  if (InForcedColorsMode()) {
+    color_scheme =
+        (GetPreferredColorScheme() == NativeTheme::PreferredColorScheme::kDark)
+            ? HighContrastColorScheme::kDark
+            : HighContrastColorScheme::kLight;
+  }
   base::UmaHistogramEnumeration("Accessibility.WinHighContrastTheme",
-                                GetPlatformHighContrastColorScheme(),
-                                PlatformHighContrastColorScheme::kMaxValue);
-#endif
+                                color_scheme,
+                                HighContrastColorScheme::kMaxValue);
 }
 
 void NativeThemeWin::ConfigureWebInstance() {

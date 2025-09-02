@@ -248,16 +248,6 @@ bool NativeTheme::InForcedColorsMode() const {
   return forced_colors_;
 }
 
-NativeTheme::PlatformHighContrastColorScheme
-NativeTheme::GetPlatformHighContrastColorScheme() const {
-  if (!InForcedColorsMode()) {
-    return PlatformHighContrastColorScheme::kNone;
-  }
-  return (GetPreferredColorScheme() == PreferredColorScheme::kDark)
-             ? PlatformHighContrastColorScheme::kDark
-             : PlatformHighContrastColorScheme::kLight;
-}
-
 NativeTheme::PageColors NativeTheme::GetPageColors() const {
   return page_colors_;
 }

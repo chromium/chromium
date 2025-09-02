@@ -97,7 +97,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="0" label="None"/>
   <int value="1" label="Dark"/>
   <int value="2" label="Light"/>
-  <int value="3" label="Custom"/>
 </enum>
 
 <enum name="AccessibilityModeFlagEnum">

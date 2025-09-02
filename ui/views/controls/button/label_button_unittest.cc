@@ -726,8 +726,6 @@ TEST_F(LabelButtonTest, HighlightedButtonStyle) {
 // Ensure the label resets the enabled color after LabelButton::OnThemeChanged()
 // is invoked.
 TEST_F(LabelButtonTest, OnThemeChanged) {
-  ASSERT_NE(button()->GetNativeTheme()->GetPlatformHighContrastColorScheme(),
-            ui::NativeTheme::PlatformHighContrastColorScheme::kDark);
   ASSERT_NE(button()->label()->GetBackgroundColor(), SK_ColorBLACK);
   EXPECT_EQ(themed_normal_text_color_, button()->label()->GetEnabledColor());
 

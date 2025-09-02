@@ -18,31 +18,6 @@ class TestNativeThemeMac : public NativeThemeMac {
   ~TestNativeThemeMac() override = default;
 };
 
-TEST(NativeThemeMacTest, GetPlatformHighContrastColorScheme) {
-  using PrefScheme = NativeTheme::PreferredColorScheme;
-  using PrefContrast = NativeTheme::PreferredContrast;
-
-  constexpr NativeTheme::PlatformHighContrastColorScheme kNone =
-      NativeTheme::PlatformHighContrastColorScheme::kNone;
-
-  NativeTheme* native_theme = NativeTheme::GetInstanceForNativeUi();
-  ASSERT_TRUE(native_theme);
-
-  native_theme->SetPreferredContrast(PrefContrast::kNoPreference);
-  native_theme->set_preferred_color_scheme(PrefScheme::kDark);
-  EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
-
-  native_theme->set_preferred_color_scheme(PrefScheme::kLight);
-  EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
-
-  native_theme->SetPreferredContrast(PrefContrast::kMore);
-  native_theme->set_preferred_color_scheme(PrefScheme::kDark);
-  EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
-
-  native_theme->set_preferred_color_scheme(PrefScheme::kLight);
-  EXPECT_EQ(native_theme->GetPlatformHighContrastColorScheme(), kNone);
-}
-
 TEST(NativeThemeMacTest, ThumbSize) {
   EXPECT_EQ(gfx::Size(6.0, 18.0), NativeThemeMac::GetThumbMinSize(true, 1.0));
   EXPECT_EQ(gfx::Size(18.0, 6.0), NativeThemeMac::GetThumbMinSize(false, 1.0));

@@ -94,8 +94,10 @@ SkColor GetThemeColor(const ui::NativeTheme* native_theme,
   SkColor color = cp.GetColor(id);
   // If web contents are being inverted because the system is in high-contrast
   // mode, any system theme colors we use must be inverted too to cancel out.
-  return native_theme->GetPlatformHighContrastColorScheme() ==
-                 ui::NativeTheme::PlatformHighContrastColorScheme::kDark
+  // TODO(pkasting): I'm not sure this conditional is correct anymore.
+  return (native_theme->InForcedColorsMode() &&
+          native_theme->GetPreferredColorScheme() ==
+              ui::NativeTheme::PreferredColorScheme::kDark)
              ? color_utils::InvertColor(color)
              : color;
 }
