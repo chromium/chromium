@@ -24,6 +24,13 @@ suite('SpeechController', () => {
   let voiceLanguageController: VoiceLanguageController;
   let readingMode: FakeReadingMode;
 
+  function setDomNodes(axNodeIds: number[]) {
+    axNodeIds.forEach(id => {
+      const element = document.createElement('p');
+      nodeStore.setDomNode(element, id);
+    });
+  }
+
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -179,9 +186,18 @@ suite('SpeechController', () => {
       assertFalse(speechController.isSpeechTreeInitialized());
     });
 
+    test('with no dom node does nothing', () => {
+      const id1 = 10;
+      speechController.initializeSpeechTree(id1);
+
+      assertFalse(!!initAxPositionWithNode);
+      assertFalse(speechController.isSpeechTreeInitialized());
+    });
+
     test('when already initialized does nothing', () => {
       const id1 = 10;
       const id2 = 12;
+      setDomNodes([10, 12]);
       speechController.initializeSpeechTree(id1);
       speechController.initializeSpeechTree(id2);
       assertEquals(id1, initAxPositionWithNode);
@@ -189,6 +205,7 @@ suite('SpeechController', () => {
 
     test('initializes speech tree after content is set', () => {
       const id = 14;
+      setDomNodes([14]);
       speechController.initializeSpeechTree(id);
       assertEquals(id, initAxPositionWithNode);
 

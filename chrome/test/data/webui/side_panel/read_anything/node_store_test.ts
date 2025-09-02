@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {AxReadAloudNode, BrowserProxy, ESTIMATED_WORDS_PER_MS, getWordCount, MIN_MS_TO_READ, NodeStore} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ESTIMATED_WORDS_PER_MS, getWordCount, MIN_MS_TO_READ, NodeStore, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
@@ -18,7 +18,19 @@ suite('NodeStore', () => {
 
   function areNodesAllHidden(axNodeIds: number[]): boolean {
     return nodeStore.areNodesAllHidden(
-        axNodeIds.map(id => new AxReadAloudNode(id)));
+        axNodeIds.map(id => getReadAloudNode(id)));
+  }
+
+  function getReadAloudNode(axNodeId: number): ReadAloudNode {
+    const domNode = nodeStore.getDomNode(axNodeId);
+    return ReadAloudNode.create(domNode!, nodeStore)!;
+  }
+
+  function setDomNodes(axNodeIds: number[]) {
+    axNodeIds.forEach(id => {
+      const element = document.createElement('p');
+      nodeStore.setDomNode(element, id);
+    });
   }
 
   setup(() => {
@@ -38,6 +50,19 @@ suite('NodeStore', () => {
 
     nodeStore.setDomNode(node, id);
 
+    assertEquals(id, nodeStore.getAxId(node));
+    assertEquals(node, nodeStore.getDomNode(id));
+  });
+
+  test('getDomNode', () => {
+    const node = document.createElement('p');
+    const id = 308;
+
+    // Before the node has been set, getDomNode returns undefined.
+    nodeStore.getDomNode(id);
+    assertEquals(undefined, nodeStore.getDomNode(id));
+
+    nodeStore.setDomNode(node, id);
     assertEquals(id, nodeStore.getAxId(node));
     assertEquals(node, nodeStore.getDomNode(id));
   });
@@ -101,6 +126,10 @@ suite('NodeStore', () => {
   test('hideImageNode', () => {
     const id = 216;
     nodeStore.hideImageNode(id);
+    assertFalse(areNodesAllHidden([id]));
+
+    setDomNodes([id]);
+    nodeStore.hideImageNode(id);
     assertTrue(areNodesAllHidden([id]));
   });
 
@@ -108,6 +137,7 @@ suite('NodeStore', () => {
     const id1 = 216;
     const id2 = 218;
     const id3 = 219;
+    setDomNodes([id1, id2, id3]);
     nodeStore.hideImageNode(id1);
     nodeStore.hideImageNode(id2);
 
@@ -120,19 +150,27 @@ suite('NodeStore', () => {
     const id1 = 216;
     const id2 = 218;
     const id3 = 219;
-    nodeStore.setDomNode(document.createElement('p'), id1);
-    nodeStore.setDomNode(document.createElement('p'), id2);
+
+    // hasAnyNode returns false before there are associated DOM nodes.
+    assertFalse(nodeStore.hasAnyNode([
+      getReadAloudNode(id1),
+      getReadAloudNode(id2),
+      getReadAloudNode(id3),
+    ]));
+
+    setDomNodes([id1, id2]);
 
     assertTrue(nodeStore.hasAnyNode([
-      new AxReadAloudNode(id1),
-      new AxReadAloudNode(id2),
-      new AxReadAloudNode(id3),
+      getReadAloudNode(id1),
+      getReadAloudNode(id2),
+      getReadAloudNode(id3),
     ]));
-    assertTrue(nodeStore.hasAnyNode(
-        [new AxReadAloudNode(id1), new AxReadAloudNode(id2)]));
-    assertTrue(nodeStore.hasAnyNode(
-        [new AxReadAloudNode(id1), new AxReadAloudNode(id3)]));
-    assertFalse(nodeStore.hasAnyNode([new AxReadAloudNode(id3)]));
+
+    assertTrue(
+        nodeStore.hasAnyNode([getReadAloudNode(id1), getReadAloudNode(id2)]));
+    assertTrue(
+        nodeStore.hasAnyNode([getReadAloudNode(id1), getReadAloudNode(id3)]));
+    assertFalse(nodeStore.hasAnyNode([getReadAloudNode(id3)]));
   });
 
   test('addImageToFetch', () => {

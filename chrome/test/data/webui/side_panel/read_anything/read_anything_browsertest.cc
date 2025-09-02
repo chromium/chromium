@@ -340,3 +340,25 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudPhraseHighlightingMochaTest,
   RunSidePanelTest("side_panel/read_anything/phrase_highlighting_test.js",
                    "mocha.run()");
 }
+
+class ReadAnythingReadAloudTsSegmentationMochaTest
+    : public ReadAnythingMochaBrowserTest {
+ protected:
+  ReadAnythingReadAloudTsSegmentationMochaTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud,
+         features::kReadAnythingReadAloudTSTextSegmentation},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// NodeStore tests should pass regardless of whether or not the TsSegmentation
+// flag is enabled without any special handling.
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
+                       NodeStore) {
+  RunSidePanelTest("side_panel/read_anything/node_store_test.js",
+                   "mocha.run()");
+}

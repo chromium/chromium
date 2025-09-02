@@ -34,7 +34,7 @@ export interface ReadAloudModelBrowserProxy {
 
   // Handle initialization.
   isInitialized(): boolean;
-  init(context: ReadAloudNode|string): void;
+  init(context: ReadAloudNode): void;
 }
 
 export function getReadAloudModel(): ReadAloudModelBrowserProxy {

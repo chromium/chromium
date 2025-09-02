@@ -117,19 +117,21 @@ export class ContentController {
   }
 
   private createTextNode_(nodeId: number): Node {
-    // When creating text nodes, save the first text node id. We need this
-    // node id to call InitAXPosition in playSpeech. If it's not saved here,
-    // we have to retrieve it through a DOM search such as createTreeWalker,
-    // which can be computationally expensive.
-    if (chrome.readingMode.isReadAloudEnabled) {
-      this.speechController_.initializeSpeechTree(nodeId);
-    }
-
     const textContent = chrome.readingMode.getTextContent(nodeId);
     const textNode = document.createTextNode(textContent);
     this.nodeStore_.setDomNode(textNode, nodeId);
     const isOverline = chrome.readingMode.isOverline(nodeId);
     const shouldBold = chrome.readingMode.shouldBold(nodeId);
+
+    // When creating text nodes, save the first text node id. We need this
+    // node id to call InitAXPosition in playSpeech. If it's not saved here,
+    // we have to retrieve it through a DOM search such as createTreeWalker,
+    // which can be computationally expensive.
+    // This needs to be done after the text node is created and added to the
+    // node store.
+    if (chrome.readingMode.isReadAloudEnabled) {
+      this.speechController_.initializeSpeechTree(nodeId);
+    }
 
     if (!shouldBold && !isOverline) {
       return textNode;

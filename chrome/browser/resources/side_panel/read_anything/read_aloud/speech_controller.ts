@@ -13,8 +13,8 @@ import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
 import {ReadAloudHighlighter} from './highlighter.js';
 import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
 import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
-import {AxReadAloudNode} from './read_aloud_types.js';
-import type {ReadAloudNode, Segment} from './read_aloud_types.js';
+import {ReadAloudNode} from './read_aloud_types.js';
+import type {Segment} from './read_aloud_types.js';
 import {PauseActionSource, SpeechEngineState, SpeechModel} from './speech_model.js';
 import type {SpeechPlayingState} from './speech_model.js';
 import {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting} from './speech_presentation_rules.js';
@@ -177,7 +177,15 @@ export class SpeechController {
 
     // TODO: crbug.com/40927698 - This step should be skipped on migrating to
     // a non-AXPosition-based text segmentation strategy.
-    this.readAloudModel_.init(new AxReadAloudNode(firstTextNode));
+    const domNode = this.nodeStore_.getDomNode(firstTextNode);
+    if (!domNode) {
+      return;
+    }
+    const readAloudNode = ReadAloudNode.create(domNode);
+    if (!readAloudNode) {
+      return;
+    }
+    this.readAloudModel_.init(readAloudNode);
   }
 
   onSelectionChange() {
@@ -404,8 +412,15 @@ export class SpeechController {
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
     setTimeout(() => {
-      this.movePlaybackToNode_(
-          new AxReadAloudNode(startingNodeId), startingOffset);
+      const domNode = this.nodeStore_.getDomNode(startingNodeId);
+      if (!domNode) {
+        return;
+      }
+      const readAloudNode = ReadAloudNode.create(domNode);
+      if (!readAloudNode) {
+        return;
+      }
+      this.movePlaybackToNode_(readAloudNode, startingOffset);
       // Set everything to previous and then play the next granularity, which
       // includes the selection.
       this.highlighter_.resetPreviousHighlight();
@@ -830,8 +845,7 @@ export class SpeechController {
     }
 
     const lastNode = lastPosition.node;
-    if (lastNode instanceof AxReadAloudNode &&
-        this.nodeStore_.getDomNode(lastNode.axNodeId)) {
+    if (lastNode.domNode()) {
       this.movePlaybackToNode_(lastNode, lastPosition.offset);
       this.setState_(savedSpeechPlayingState);
       this.wordBoundaries_.state = savedWordBoundaryState;

@@ -9,7 +9,6 @@ import {NodeStore} from '../node_store.js';
 
 import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
 import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
-import {AxReadAloudNode} from './read_aloud_types.js';
 import type {Segment} from './read_aloud_types.js';
 import {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting} from './speech_presentation_rules.js';
 import {VoiceLanguageController} from './voice_language_controller.js';
@@ -242,12 +241,7 @@ export class ReadAloudHighlighter {
     let didApplyHighlight = false;
     for (const segment of highlightSegments) {
       const {node, start, length: segmentLength} = segment;
-      if (!(node instanceof AxReadAloudNode)) {
-        continue;
-      }
-      const nodeId = node.axNodeId;
-
-      const domNode = this.nodeStore_.getDomNode(nodeId);
+      const domNode = node.domNode();
       if (!domNode) {
         continue;
       }
@@ -298,10 +292,7 @@ export class ReadAloudHighlighter {
 
     this.resetPreviousHighlight();
     for (const {node, start, length} of segments) {
-      if (!(node instanceof AxReadAloudNode)) {
-        continue;
-      }
-      const element = this.nodeStore_.getDomNode(node.axNodeId) as HTMLElement;
+      const element = node.domNode() as HTMLElement;
       if (!element) {
         continue;
       }
