@@ -3166,6 +3166,12 @@ static constexpr char kTestQuicHints[] =
     "www.example.net,443,www.example.net,"
     "www.broken-example.test,443,443";
 
+static constexpr char kTestWildcardQuicHints[] =
+    ".example1.test,443,443,"
+    ".example2.test,443,8443,"
+    "www.example3.test,443,443,"
+    ".broken-example1.test,443,443";
+
 class HttpServerPropertiesQuicHintsTest
     : public HttpServerPropertiesTest,
       public testing::WithParamInterface<bool> {
@@ -3186,7 +3192,9 @@ class HttpServerPropertiesQuicHintsTest
         std::make_unique<base::test::ScopedFeatureList>();
     if (GetParam()) {
       feature_list->InitAndEnableFeatureWithParameters(
-          features::kConfigureQuicHints, {{"quic_hints", kTestQuicHints}});
+          features::kConfigureQuicHints,
+          {{"quic_hints", kTestQuicHints},
+           {"wildcard_quic_hints", kTestWildcardQuicHints}});
     } else {
       feature_list->InitAndDisableFeature(features::kConfigureQuicHints);
     }
@@ -3290,6 +3298,99 @@ TEST_P(HttpServerPropertiesQuicHintsTest, BrokenAlternativeService) {
       test_server, net::NetworkAnonymizationKey());
 
   ASSERT_TRUE(alternative_services.empty());
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, WildcardSamePort) {
+  const url::SchemeHostPort test_server("https", "www.example1.test", 443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+  if (Enabled()) {
+    ASSERT_EQ(1u, alternative_services.size());
+
+    // Validate that the alternative service matches the corresponding hint.
+    AlternativeServiceInfo first_hint = alternative_services[0];
+    ASSERT_EQ(first_hint.alternative_service().host, "www.example1.test");
+    ASSERT_EQ(first_hint.alternative_service().port, 443);
+    ASSERT_EQ(first_hint.expiration(), base::Time::Max());
+    ASSERT_EQ(first_hint.advertised_versions(), DefaultSupportedQuicVersions());
+  } else {
+    ASSERT_TRUE(alternative_services.empty());
+  }
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, WildcardDifferentPort) {
+  const url::SchemeHostPort test_server("https", "www.example2.test", 443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+  if (Enabled()) {
+    ASSERT_EQ(1u, alternative_services.size());
+
+    // Validate that the alternative service matches the corresponding hint.
+    AlternativeServiceInfo first_hint = alternative_services[0];
+    ASSERT_EQ(first_hint.alternative_service().host, "www.example2.test");
+    ASSERT_EQ(first_hint.alternative_service().port, 8443);
+    ASSERT_EQ(first_hint.expiration(), base::Time::Max());
+    ASSERT_EQ(first_hint.advertised_versions(), DefaultSupportedQuicVersions());
+  } else {
+    ASSERT_TRUE(alternative_services.empty());
+  }
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, WildcardMissingDotPrefix) {
+  const url::SchemeHostPort test_server("https", "www.example3.test", 443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+
+  // Wildcard QUIC hints need to start with "." to be considered valid.
+  ASSERT_TRUE(alternative_services.empty());
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, WildcardBrokenAlternativeService) {
+  const url::SchemeHostPort test_server("https", "www.broken-example1.test",
+                                        443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+
+  if (Enabled()) {
+    ASSERT_EQ(1u, alternative_services.size());
+  } else {
+    ASSERT_TRUE(alternative_services.empty());
+  }
+
+  // Mark the alternative service broken and validate that it is no longer
+  // found.
+  net::AlternativeService alternative_service(
+      net::NextProto::kProtoQUIC, test_server.host(), test_server.port());
+  properties_.MarkAlternativeServiceBroken(alternative_service,
+                                           net::NetworkAnonymizationKey());
+
+  alternative_services = properties_.GetAlternativeServiceInfos(
+      test_server, net::NetworkAnonymizationKey());
+
+  ASSERT_TRUE(alternative_services.empty());
+
+  // Other wildcard matches should be unaffected by the broken service.
+  const url::SchemeHostPort test_server2("https", "test.broken-example1.test",
+                                         443);
+  alternative_services = properties_.GetAlternativeServiceInfos(
+      test_server2, net::NetworkAnonymizationKey());
+  if (Enabled()) {
+    ASSERT_EQ(1u, alternative_services.size());
+
+    // Validate that the alternative service matches the corresponding hint.
+    AlternativeServiceInfo first_hint = alternative_services[0];
+    ASSERT_EQ(first_hint.alternative_service().host,
+              "test.broken-example1.test");
+    ASSERT_EQ(first_hint.alternative_service().port, 443);
+    ASSERT_EQ(first_hint.expiration(), base::Time::Max());
+    ASSERT_EQ(first_hint.advertised_versions(), DefaultSupportedQuicVersions());
+  } else {
+    ASSERT_TRUE(alternative_services.empty());
+  }
 }
 
 }  // namespace

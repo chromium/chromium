@@ -787,5 +787,10 @@ BASE_FEATURE_PARAM(std::string,
                    &kConfigureQuicHints,
                    /*name=*/"quic_hints",
                    /*default_value=*/"");
+BASE_FEATURE_PARAM(std::string,
+                   kWildcardQuicHintHostPortPairs,
+                   &kConfigureQuicHints,
+                   /*name=*/"wildcard_quic_hints",
+                   /*default_value=*/"");
 
 }  // namespace net::features

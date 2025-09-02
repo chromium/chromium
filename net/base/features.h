@@ -902,6 +902,8 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kQuicMaxPacketSize);
 // even when there is no available ALPN information.
 NET_EXPORT BASE_DECLARE_FEATURE(kConfigureQuicHints);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kQuicHintHostPortPairs);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
+                                      kWildcardQuicHintHostPortPairs);
 
 }  // namespace net::features
 

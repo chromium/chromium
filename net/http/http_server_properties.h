@@ -328,11 +328,20 @@ class NET_EXPORT HttpServerProperties
   // if the kConfigureQuicHints feature is enabled.
   void MaybeProcessQuicHints();
 
-  // Set a single known QUIC alternative service for `canon_host` and `port`,
+  // Validates that the QUIC hint is well-formed and adds it as a known
+  // alternative service, if so.
+  // If `is_suffix` is true, `host` is matched as a wildcard suffix.
+  void ValidateAndMaybeAddQuicHint(std::string_view host,
+                                   std::string_view port_string,
+                                   std::string_view alternate_port_string,
+                                   bool is_suffix = false);
+
+  // Sets a single known QUIC alternative service for `canon_host` and `port`,
   // located at `canon_host` and `alternate_port`.
   void SetKnownQuicAlternativeService(std::string_view canon_host,
                                       int port,
-                                      int alternate_port);
+                                      int alternate_port,
+                                      bool is_suffix = false);
 
   // Marks |alternative_service| as broken in the context of
   // |network_anonymization_key|. |alternative_service.host| must not be empty.
@@ -506,12 +515,14 @@ class NET_EXPORT HttpServerProperties
   // friendness is no longer required.
   friend class HttpServerPropertiesPeer;
 
-  typedef base::flat_map<ServerInfoMapKey, AlternativeService>
-      KnownAlternativeServiceMap;
-  typedef base::flat_map<ServerInfoMapKey, url::SchemeHostPort> CanonicalMap;
-  typedef base::flat_map<QuicServerInfoMapKey, quic::QuicServerId>
-      QuicCanonicalMap;
-  typedef std::vector<std::string> CanonicalSuffixList;
+  using KnownAlternativeServiceMap =
+      base::flat_map<url::SchemeHostPort, AlternativeService>;
+  using KnownAlternativeServiceSuffixSet = base::flat_set<std::string>;
+
+  using CanonicalMap = base::flat_map<ServerInfoMapKey, url::SchemeHostPort>;
+  using QuicCanonicalMap =
+      base::flat_map<QuicServerInfoMapKey, quic::QuicServerId>;
+  using CanonicalSuffixList = std::vector<std::string>;
 
   // Internal implementations of public methods. SchemeHostPort argument must be
   // normalized before calling (ws/wss replaced with http/https). Use wrapped
@@ -564,6 +575,11 @@ class NET_EXPORT HttpServerProperties
   ServerInfoMap::const_iterator GetIteratorWithAlternativeServiceInfo(
       const url::SchemeHostPort& server,
       const NetworkAnonymizationKey& network_anonymization_key);
+
+  // Return the known alternative service host for |server|, or std::nullopt if
+  // none exists.
+  std::optional<AlternativeService> GetKnownAltSvcHost(
+      const url::SchemeHostPort& server) const;
 
   // Return the canonical host for |server|  in the context of
   // |network_anonymization_key|, or end if none exists.
@@ -653,6 +669,17 @@ class NET_EXPORT HttpServerProperties
   // Map from a scheme/host/port to the AlternativeService
   // with the known alternative service info.
   KnownAlternativeServiceMap known_alternative_service_map_;
+
+  // Contains a map of suffixes for servers which use a known alternative
+  // service. Map from a scheme/host/port to the AlternativeService
+  // with the known alternative service info. Hosts are reversed to allow for
+  // efficient comparison.
+  KnownAlternativeServiceMap wildcard_known_alternative_service_map_;
+
+  // Contains list of suffixes of hostnames with known alternative
+  // services. Suffixes are reversed to allow for efficient comparison.
+  KnownAlternativeServiceSuffixSet
+      reversed_known_alternative_service_suffixes_set_;
 
   // Contains a map of servers which could share the same alternate protocol.
   // Map from a Canonical scheme/host/port/NAK (host is some postfix of host
