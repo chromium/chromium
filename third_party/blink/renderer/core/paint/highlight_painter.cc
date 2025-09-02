@@ -730,7 +730,7 @@ void HighlightPainter::PaintOneSpellingGrammarDecoration(
     return;
   }
 
-  if (!text_painter_.GetSvgState()) {
+  if (!fragment_item_.IsSvgText()) {
     if (const auto* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
             originating_style_, PseudoFor(type))) {
       const TextPaintStyle text_style =
@@ -936,9 +936,9 @@ void HighlightPainter::PaintHighlightOverlays(
       // double painting of ligatures for SVG so as to correctly handle
       // transformed text (include text paths). This might be fixable by
       // transforming the ink overflow before using it to expamd the clip.
-      TextPainter::SvgTextPaintState* svg_state = text_painter_.GetSvgState();
-      if (svg_state && part.type == HighlightLayerType::kSelection)
-          [[unlikely]] {
+      if (fragment_item_.IsSvgText() &&
+          part.type == HighlightLayerType::kSelection) [[unlikely]] {
+        TextPainter::SvgTextPaintState* svg_state = text_painter_.GetSvgState();
         // SVG text painting needs to know it is painting selection.
         is_painting_selection_reset.emplace(&svg_state->is_painting_selection_,
                                             true);
@@ -1125,7 +1125,7 @@ void HighlightPainter::PaintDecorationsExceptLineThrough(
     // or crash if asked to paint decorations introduced by highlight pseudos.
     // TODO(crbug.com/1147859) is SVG spec ready for highlight decorations?
     // TODO(crbug.com/1147859) https://github.com/w3c/svgwg/issues/894
-    if (text_painter_.GetSvgState() &&
+    if (fragment_item_.IsSvgText() &&
         decoration.type != HighlightLayerType::kOriginating) {
       continue;
     }
@@ -1181,7 +1181,7 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
     // or crash if asked to paint decorations introduced by highlight pseudos.
     // TODO(crbug.com/1147859) is SVG spec ready for highlight decorations?
     // TODO(crbug.com/1147859) https://github.com/w3c/svgwg/issues/894
-    if (text_painter_.GetSvgState() &&
+    if (fragment_item_.IsSvgText() &&
         decoration.type != HighlightLayerType::kOriginating) {
       continue;
     }
