@@ -241,6 +241,13 @@ void BrowserControllerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void BrowserControllerImpl::OnBrowserAdded(Browser* browser) {
+  ash::BrowserDelegate* browser_delegate = GetDelegate(browser);
+  for (auto& observer : observers_) {
+    observer.OnBrowserCreated(browser_delegate);
+  }
+}
+
 void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {
   if (BrowserList::GetInstance()->empty()) {
     for (auto& observer : observers_) {

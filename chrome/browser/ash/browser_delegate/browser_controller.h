@@ -41,6 +41,13 @@ class BrowserController {
     // of the browser (the instance still exists but we shouldn't allow
     // arbitrary operations).
     virtual void OnLastBrowserClosed() {}
+
+    // Called when a browser is created.
+    // Note: When invoking BrowserController::ForEachBrowser in
+    // OnBrowserCreated, the new browser will show up for
+    // kAscendingCreationTime but not yet for kAscendingActivationTime.
+    // TODO(crbug.com/369688254): Revisit this behavior.
+    virtual void OnBrowserCreated(BrowserDelegate* browser) {}
   };
 
   // See CreateWebApp below.
