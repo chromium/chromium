@@ -333,9 +333,6 @@ def _RunLint(custom_lint_jar_path,
         # If all the warnings are filtered, we should not fail on the final
         # summary line.
         r'\d+ errors?, \d+ warnings?',
-        # Not sure why, these were new starting 32.0.0-alpha01. Remove when
-        # https://crbug.com/439854682 is fixed.
-        'WARNING: skipping method null',
     ]
     return build_utils.FilterLines(output, '|'.join(filter_patterns))
 
