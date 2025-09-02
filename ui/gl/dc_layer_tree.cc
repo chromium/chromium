@@ -17,7 +17,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "third_party/microsoft_dxheaders/src/include/composition/dcomp-preview.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -385,7 +384,7 @@ void DCLayerTree::Initialize(
 
   hdr_metadata_helper_ = std::make_unique<HDRMetadataHelperWin>(d3d11_device_);
 
-  if (Microsoft::WRL::ComPtr<PREVIEW_IDCompositionDevice5> dcomp_device5;
+  if (Microsoft::WRL::ComPtr<IDCompositionDevice5> dcomp_device5;
       SUCCEEDED(dcomp_device_.As(&dcomp_device5))) {
     hr = dcomp_device5->CreateDynamicTexture(&primary_plane_surface_);
     if (FAILED(hr)) {

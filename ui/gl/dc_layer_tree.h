@@ -18,7 +18,6 @@
 #include "base/moving_window.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/microsoft_dxheaders/src/include/composition/dcomp-preview.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/overlay_layer_id.h"
 #include "ui/gl/dc_layer_overlay_params.h"
@@ -556,8 +555,7 @@ class GL_EXPORT DCLayerTree {
 
   // If supported, a surface that is updated with the contents of the primary
   // plane. If not supported, null.
-  Microsoft::WRL::ComPtr<PREVIEW_IDCompositionDynamicTexture>
-      primary_plane_surface_;
+  Microsoft::WRL::ComPtr<IDCompositionDynamicTexture> primary_plane_surface_;
 
   // This is a number that increments once every time `primary_plane_surface_`
   // is updated, and is used to determine when the contents have changed so
