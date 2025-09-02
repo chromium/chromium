@@ -47,7 +47,13 @@ void GlitchHelper::OnFramesReceived(const AudioTimeStamp& timestamp,
     return;
   }
 
-  if (last_sample_time_) {
+  // mSampleTime can get reset, e.g. if the sample rate is changed on the
+  // speaker in the macOS settings, while capturing loopback. If the current
+  // mSampleTime is lower than the last sample time, we know it was reset
+  // and skip the glitch calculation. The current mSampleTime will still be
+  // saved, so we can restart the glitch calculations on the next call to
+  // `OnFramesReceived()`.
+  if (last_sample_time_ && timestamp.mSampleTime > last_sample_time_) {
     DCHECK_NE(0U, last_number_of_frames_);
     UInt32 sample_time_diff =
         static_cast<UInt32>(timestamp.mSampleTime - last_sample_time_);
