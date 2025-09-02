@@ -15,6 +15,9 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './context_menu_entrypoint.css.js';
 import {getHtml} from './context_menu_entrypoint.html.js';
 
+/** The width of the dropdown menu in pixels. */
+const MENU_WIDTH_PX = 190;
+
 export interface ContextMenuEntrypointElement {
   $: {
     entrypoint: HTMLElement,
@@ -38,10 +41,12 @@ export class ContextMenuEntrypointElement extends CrLitElement {
 
   static override get properties() {
     return {
+      inputsDisabled: {type: Boolean},
       hasTabSuggestions_: {type: Boolean},
     };
   }
 
+  accessor inputsDisabled: boolean = false;
   // TODO(crbug.com/442575942): Set `hasTabSuggestions_` to false by default,
   // and add actual logic for setting it true.
   protected accessor hasTabSuggestions_: boolean = true;
@@ -49,20 +54,18 @@ export class ContextMenuEntrypointElement extends CrLitElement {
   protected onEntrypointClick_() {
     this.$.menu.showAt(this.$.entrypointIcon, {
       top: this.$.entrypointIcon.getBoundingClientRect().bottom,
-      width: 190,
+      width: MENU_WIDTH_PX,
       anchorAlignmentX: AnchorAlignment['AFTER_START'],
     });
   }
 
-  protected openImageUpload_() {
-    // TODO(crbug.com/439618274):  Integrate existing file and photo context
-    // behavior into new context menu.
+  protected openImageUpload() {
+    this.fire('open-image-upload');
     this.$.menu.close();
   }
 
-  protected openFileUpload_() {
-    // TODO(crbug.com/439618274):  Integrate existing file and photo context
-    // behavior into new context menu.
+  protected openFileUpload() {
+    this.fire('open-file-upload');
     this.$.menu.close();
   }
 }
