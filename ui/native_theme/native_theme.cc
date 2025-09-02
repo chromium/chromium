@@ -159,20 +159,19 @@ void NativeTheme::NotifyOnPreferredContrastUpdated() {
       &NativeThemeObserver::OnPreferredContrastChanged);
 }
 
+// static
 float NativeTheme::AdjustBorderWidthByZoom(float border_width,
-                                           float zoom_level) const {
-  float zoomed = floorf(border_width * zoom_level);
-  return std::max(1.0f, zoomed);
+                                           float zoom_level) {
+  return std::max(std::floor(border_width * zoom_level), 1.0f);
 }
 
+// static
 float NativeTheme::AdjustBorderRadiusByZoom(Part part,
                                             float border_radius,
-                                            float zoom) const {
-  if (part == kCheckbox || part == kTextField || part == kPushButton) {
-    float zoomed = floorf(border_radius * zoom);
-    return std::max(1.0f, zoomed);
-  }
-  return border_radius;
+                                            float zoom) {
+  return (part == kCheckbox || part == kTextField || part == kPushButton)
+             ? AdjustBorderWidthByZoom(border_radius, zoom)
+             : border_radius;
 }
 
 base::TimeDelta NativeTheme::GetCaretBlinkInterval() const {

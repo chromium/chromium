@@ -571,11 +571,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // pressed states.
   virtual SkColor GetSystemButtonPressedColor(SkColor base_color) const;
 
-  float AdjustBorderWidthByZoom(float border_width, float zoom_level) const;
+  static float AdjustBorderWidthByZoom(float border_width, float zoom_level);
 
-  float AdjustBorderRadiusByZoom(Part part,
-                                 float border_width,
-                                 float zoom_level) const;
+  static float AdjustBorderRadiusByZoom(Part part,
+                                        float border_width,
+                                        float zoom_level);
 
   // Returns the rate at which the text caret should blink. If 0, the caret
   // will not blink.

@@ -36,13 +36,11 @@ float FocusRingStrokeWidth(const ComputedStyle& style) {
   DCHECK(style.OutlineStyleIsAuto());
   // Draw focus ring with thickness in proportion to the zoom level, but never
   // so narrow that it becomes invisible.
-  float width = 3.f;
-  if (style.EffectiveZoom() >= 1.0f) {
-    width = ui::NativeTheme::GetInstanceForWeb()->AdjustBorderWidthByZoom(
-        width, style.EffectiveZoom());
-    DCHECK_GE(width, 3.f);
-  }
-  return std::max(style.EffectiveZoom(), width);
+  static constexpr float kWidth = 3.0f;
+  return (style.EffectiveZoom() >= 1.0f)
+             ? ui::NativeTheme::AdjustBorderWidthByZoom(kWidth,
+                                                        style.EffectiveZoom())
+             : kWidth;
 }
 
 float FocusRingOuterStrokeWidth(const ComputedStyle& style) {
@@ -59,8 +57,7 @@ int FocusRingOffset(const ComputedStyle& style,
   DCHECK(style.OutlineStyleIsAuto());
   // How much space the focus ring would like to take from the actual border.
   const float max_inside_border_width =
-      ui::NativeTheme::GetInstanceForWeb()->AdjustBorderWidthByZoom(
-          1.0f, style.EffectiveZoom());
+      ui::NativeTheme::AdjustBorderWidthByZoom(1.0f, style.EffectiveZoom());
   int offset = info.offset;
   // Focus ring is dependent on whether the border is large enough to have an
   // inset outline. Use the smallest border edge for that test.
@@ -785,14 +782,12 @@ FloatRoundedRect::Radii GetFocusRingCornerRadii(
         break;
     }
     if (part) {
-      float corner_radius =
+      const float corner_radius =
           ui::NativeTheme::GetInstanceForWeb()->GetBorderRadiusForPart(
               part.value(), reference_border_rect.size.width,
               reference_border_rect.size.height);
-      corner_radius =
-          ui::NativeTheme::GetInstanceForWeb()->AdjustBorderRadiusByZoom(
-              part.value(), corner_radius, style.EffectiveZoom());
-      return FloatRoundedRect::Radii(corner_radius);
+      return FloatRoundedRect::Radii(ui::NativeTheme::AdjustBorderRadiusByZoom(
+          part.value(), corner_radius, style.EffectiveZoom()));
     }
   }
 
