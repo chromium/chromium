@@ -31,21 +31,18 @@ class MockGlicWindowController
               (Browser*, bool, mojom::InvocationSource),
               (override));
   MOCK_METHOD(void, FocusIfOpen, (), (override));
-  MOCK_METHOD(void, Attach, (), (override));
-  MOCK_METHOD(void, Detach, (), (override));
+  MOCK_METHOD(void, Attach, (), ());
+  MOCK_METHOD(void, Detach, (), ());
   MOCK_METHOD(void, Shutdown, (), (override));
   MOCK_METHOD(void,
               Resize,
               (const gfx::Size&, base::TimeDelta, base::OnceClosure),
-              (override));
-  MOCK_METHOD(void, EnableDragResize, (bool), (override));
+              ());
+  MOCK_METHOD(void, EnableDragResize, (bool), ());
   MOCK_METHOD(void, MaybeSetWidgetCanResize, (), (override));
   MOCK_METHOD(gfx::Size, GetSize, (), (override));
-  MOCK_METHOD(void,
-              SetDraggableAreas,
-              (const std::vector<gfx::Rect>&),
-              (override));
-  MOCK_METHOD(void, SetMinimumWidgetSize, (const gfx::Size&), (override));
+  MOCK_METHOD(void, SetDraggableAreas, (const std::vector<gfx::Rect>&), ());
+  MOCK_METHOD(void, SetMinimumWidgetSize, (const gfx::Size&), ());
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void, CloseWithReason, (views::Widget::ClosedReason), (override));
   MOCK_METHOD(bool, ActivateBrowser, (), (override));
@@ -58,7 +55,7 @@ class MockGlicWindowController
   MOCK_METHOD(void, AddStateObserver, (StateObserver*), (override));
   MOCK_METHOD(void, RemoveStateObserver, (StateObserver*), (override));
   MOCK_METHOD(bool, IsActive, (), (override));
-  MOCK_METHOD(bool, IsShowing, (), (const, override));
+  MOCK_METHOD(bool, IsShowing, (), (const));
   MOCK_METHOD(bool, IsAttached, (), (const, override));
   MOCK_METHOD(bool, IsDetached, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,

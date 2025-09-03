@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -939,7 +940,9 @@ class GlicWindowControllerMultipleDisplaysUiTest
   }
 
   auto DetachGlicWindow() {
-    return Do([this]() { window_controller().Detach(); });
+    return Do([this]() {
+      static_cast<GlicWindowControllerImpl&>(window_controller()).Detach();
+    });
   }
 
   void TearDownOnMainThread() override {

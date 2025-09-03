@@ -69,30 +69,22 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
                                    bool prevent_close,
                                    mojom::InvocationSource source) override;
   void FocusIfOpen() override;
-  void Attach() override;
-  void Detach() override;
   void Shutdown() override;
-  void Resize(const gfx::Size& size,
-              base::TimeDelta duration,
-              base::OnceClosure callback) override;
-  void EnableDragResize(bool enabled) override;
   void MaybeSetWidgetCanResize() override;
   gfx::Size GetSize() override;
-  void SetDraggableAreas(
-      const std::vector<gfx::Rect>& draggable_areas) override;
-  void SetMinimumWidgetSize(const gfx::Size& size) override;
   void Close() override;
   void CloseWithReason(views::Widget::ClosedReason reason) override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
   bool ShouldStartDrag(const gfx::Point& initial_press_loc,
                        const gfx::Point& mouse_location) override;
-  const mojom::PanelState& GetPanelState() const override;
 
   void AddStateObserver(StateObserver* observer) override;
   void RemoveStateObserver(StateObserver* observer) override;
 
-  bool IsActive() override;
+  const mojom::PanelState& GetPanelState() const override;
   bool IsShowing() const override;
+
+  bool IsActive() override;
   bool IsAttached() const override;
   bool IsDetached() const override;
   base::CallbackListSubscription AddWindowActivationChangedCallback(

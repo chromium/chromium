@@ -121,27 +121,7 @@ void GlicInstanceCoordinatorImpl::FocusIfOpen() {
   NOTIMPLEMENTED();
 }
 
-void GlicInstanceCoordinatorImpl::Attach() {
-  NOTIMPLEMENTED();
-}
-
-void GlicInstanceCoordinatorImpl::Detach() {
-  NOTIMPLEMENTED();
-}
-
 void GlicInstanceCoordinatorImpl::Shutdown() {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-}
-
-void GlicInstanceCoordinatorImpl::Resize(const gfx::Size& size,
-                                         base::TimeDelta duration,
-                                         base::OnceClosure callback) {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-}
-
-void GlicInstanceCoordinatorImpl::EnableDragResize(bool enabled) {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
@@ -155,17 +135,6 @@ gfx::Size GlicInstanceCoordinatorImpl::GetSize() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return gfx::Size();
-}
-
-void GlicInstanceCoordinatorImpl::SetDraggableAreas(
-    const std::vector<gfx::Rect>& draggable_areas) {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
-}
-
-void GlicInstanceCoordinatorImpl::SetMinimumWidgetSize(const gfx::Size& size) {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
 }
 
 void GlicInstanceCoordinatorImpl::Close() {

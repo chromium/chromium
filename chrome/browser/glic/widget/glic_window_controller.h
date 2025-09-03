@@ -54,7 +54,7 @@ enum class AttachChangeReason;
 // See the |State| enum below for the lifecycle of the window. When the glic
 // window is open |attached_browser_| indicates if the window is attached or
 // standalone. See |IsAttached|
-class GlicWindowController : public Host::Delegate {
+class GlicWindowController {
  public:
   struct PanelStateContext {
     raw_ptr<Browser> attached_browser = nullptr;
@@ -71,7 +71,7 @@ class GlicWindowController : public Host::Delegate {
   GlicWindowController(const GlicWindowController&) = delete;
   GlicWindowController& operator=(const GlicWindowController&) = delete;
   GlicWindowController() = default;
-  ~GlicWindowController() override = default;
+  virtual ~GlicWindowController() = default;
 
   // TODO(refactor): Add multi-instance Host getters
   virtual Host& host() const = 0;
@@ -128,25 +128,8 @@ class GlicWindowController : public Host::Delegate {
   virtual bool ShouldStartDrag(const gfx::Point& initial_press_loc,
                                const gfx::Point& mouse_location) = 0;
 
-  // Host::Delegate implementation.
-  const mojom::PanelState& GetPanelState() const override = 0;
-  void Resize(const gfx::Size& size,
-              base::TimeDelta duration,
-              base::OnceClosure callback) override = 0;
-  void EnableDragResize(bool enabled) override = 0;
-  // Attaches glic to the last focused Chrome window.
-  void Attach() override = 0;
-  // Detaches glic if attached and moves it to the top right of the current
-  // display.
-  void Detach() override = 0;
-  // Sets the areas of the view from which it should be draggable.
-  void SetDraggableAreas(
-      const std::vector<gfx::Rect>& draggable_areas) override = 0;
-  // Sets the minimum widget size that the widget will allow the user to resize
-  // to.
-  void SetMinimumWidgetSize(const gfx::Size& size) override = 0;
-  // Returns true if the state is anything other than kClosed.
-  bool IsShowing() const override = 0;
+  virtual const mojom::PanelState& GetPanelState() const = 0;
+  virtual bool IsShowing() const = 0;
 
   virtual void AddStateObserver(StateObserver* observer) = 0;
   virtual void RemoveStateObserver(StateObserver* observer) = 0;
