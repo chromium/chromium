@@ -9,4 +9,7 @@ namespace session::features {
 BASE_FEATURE(SessionRestorationSessionIDCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(SessionRestorationFullConversion,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace session::features

@@ -6,14 +6,17 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/containers/span.h"
+#import "base/feature_list.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/memory/raw_ptr_exclusion.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
+#import "ios/chrome/browser/sessions/model/features.h"
 #import "ios/chrome/browser/sessions/model/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/sessions/model/session_internal_util.h"
@@ -32,7 +35,38 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
-using SessionMigrationTest = PlatformTest;
+namespace {
+
+// Enum used to represent whether kSessionRestorationFullConversion
+// is enabled or disabled for the test.
+enum class SessionRestorationFullConversionStatus {
+  kEnabled,
+  kDisabled,
+};
+
+}  // namespace
+
+class SessionMigrationTest : public PlatformTest,
+                             public testing::WithParamInterface<
+                                 SessionRestorationFullConversionStatus> {
+ public:
+  SessionMigrationTest() {
+    switch (GetParam()) {
+      case SessionRestorationFullConversionStatus::kEnabled:
+        feature_list_.InitAndEnableFeature(
+            session::features::kSessionRestorationFullConversion);
+        break;
+
+      case SessionRestorationFullConversionStatus::kDisabled:
+        feature_list_.InitAndDisableFeature(
+            session::features::kSessionRestorationFullConversion);
+        break;
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 using tab_groups::TabGroupId;
 
@@ -417,6 +451,11 @@ void CheckOptimizedSession(const base::FilePath& root,
   EXPECT_EQ(storage.active_index(), session_info.active_index);
   EXPECT_EQ(storage.pinned_item_count(), session_info.pinned_tab_count);
 
+  // Whether session::features::kSessionRestorationFullConversion is
+  // enabled or disabled.
+  const bool partial_conversion = !base::FeatureList::IsEnabled(
+      session::features::kSessionRestorationFullConversion);
+
   // Check that each tab metadata and data are correct.
   ASSERT_EQ(storage.items_size(), static_cast<int>(session_info.tabs.size()));
   for (size_t index = 0; index < session_info.tabs.size(); ++index) {
@@ -448,6 +487,15 @@ void CheckOptimizedSession(const base::FilePath& root,
     const base::FilePath item_dir = GetOptimizedWebStateDir(
         session_dir,
         web::WebStateID::FromSerializedValue(item_info.identifier()));
+
+    // If session::features::kSessionRestorationFullConversion is disabled,
+    // only the pinned and active tabs will have their full session converted.
+    if (partial_conversion) {
+      if (static_cast<int>(index) != session_info.active_index &&
+          static_cast<int>(index) >= session_info.pinned_tab_count) {
+        continue;
+      }
+    }
 
     // Check the tab data for correctness.
     web::proto::WebStateStorage item_storage;
@@ -565,8 +613,14 @@ void CheckLegacySession(const base::FilePath& root,
 
 }  // namespace
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SessionMigrationTest,
+    testing::Values(SessionRestorationFullConversionStatus::kEnabled,
+                    SessionRestorationFullConversionStatus::kDisabled));
+
 // Tests batch migrating sessions from legacy to optimized works correctly.
-TEST_F(SessionMigrationTest, BatchToOptimized) {
+TEST_P(SessionMigrationTest, BatchToOptimized) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -602,7 +656,7 @@ TEST_F(SessionMigrationTest, BatchToOptimized) {
 
 // Tests batch migrating sessions from legacy to optimized works correctly
 // when there are no sessions.
-TEST_F(SessionMigrationTest, BatchToOptimized_NoSession) {
+TEST_P(SessionMigrationTest, BatchToOptimized_NoSession) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -625,7 +679,7 @@ TEST_F(SessionMigrationTest, BatchToOptimized_NoSession) {
 
 // Tests batch migrating sessions from legacy to optimized works correctly
 // when there are no sessions but empty directory laying around.
-TEST_F(SessionMigrationTest, BatchToOptimized_NoSessionEmptyDirs) {
+TEST_P(SessionMigrationTest, BatchToOptimized_NoSessionEmptyDirs) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -666,7 +720,7 @@ TEST_F(SessionMigrationTest, BatchToOptimized_NoSessionEmptyDirs) {
 
 // Tests batch migrating sessions from legacy to optimized works correctly
 // and does nothing if the sessions are already in the optimized format.
-TEST_F(SessionMigrationTest, BatchToOptimized_SessionAreOptimized) {
+TEST_P(SessionMigrationTest, BatchToOptimized_SessionAreOptimized) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -692,7 +746,7 @@ TEST_F(SessionMigrationTest, BatchToOptimized_SessionAreOptimized) {
 
 // Tests batch migrating sessions from legacy to optimized works correctly
 // and leave unrelated files in the legacy session directories untouched.
-TEST_F(SessionMigrationTest, BatchToOptimized_UnrelatedFilesUnaffected) {
+TEST_P(SessionMigrationTest, BatchToOptimized_UnrelatedFilesUnaffected) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -739,7 +793,7 @@ TEST_F(SessionMigrationTest, BatchToOptimized_UnrelatedFilesUnaffected) {
 
 // Tests batch migrating sessions from legacy to optimized works correctly
 // when unique identifiers are invalid and assign new unique identifier.
-TEST_F(SessionMigrationTest, BatchToOptimized_InvalidUniqueIdentifiers) {
+TEST_P(SessionMigrationTest, BatchToOptimized_InvalidUniqueIdentifiers) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -784,7 +838,7 @@ TEST_F(SessionMigrationTest, BatchToOptimized_InvalidUniqueIdentifiers) {
 
 // Tests batch migrating sessions from legacy to optimized when one session
 // is invalid and cannot be loaded.
-TEST_F(SessionMigrationTest, BatchToOptimized_FailureInvalidSessions) {
+TEST_P(SessionMigrationTest, BatchToOptimized_FailureInvalidSessions) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -823,7 +877,7 @@ TEST_F(SessionMigrationTest, BatchToOptimized_FailureInvalidSessions) {
 
 // Tests batch migrating sessions from legacy to optimized when one session
 // cannot be migrated.
-TEST_F(SessionMigrationTest, BatchToOptimized_FailureMigration) {
+TEST_P(SessionMigrationTest, BatchToOptimized_FailureMigration) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -862,7 +916,7 @@ TEST_F(SessionMigrationTest, BatchToOptimized_FailureMigration) {
 }
 
 // Tests batch migrating sessions from optimized to legacy works correctly.
-TEST_F(SessionMigrationTest, BatchToLegacy) {
+TEST_P(SessionMigrationTest, BatchToLegacy) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -895,7 +949,7 @@ TEST_F(SessionMigrationTest, BatchToLegacy) {
 
 // Tests batch migrating sessions from optimized to legacy works correctly
 // when there are no sessions.
-TEST_F(SessionMigrationTest, BatchToLegacy_NoSession) {
+TEST_P(SessionMigrationTest, BatchToLegacy_NoSession) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -920,7 +974,7 @@ TEST_F(SessionMigrationTest, BatchToLegacy_NoSession) {
 
 // Tests batch migrating sessions from optimized to legacy works correctly
 // when there are no sessions but empty directory laying around.
-TEST_F(SessionMigrationTest, BatchToLegacy_NoSessionEmptyDirs) {
+TEST_P(SessionMigrationTest, BatchToLegacy_NoSessionEmptyDirs) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -960,7 +1014,7 @@ TEST_F(SessionMigrationTest, BatchToLegacy_NoSessionEmptyDirs) {
 
 // Tests batch migrating sessions from optimized to legacy works correctly
 // and does nothing if the sessions are already in the legacy format.
-TEST_F(SessionMigrationTest, BatchToLegacy_SessionAreLegacy) {
+TEST_P(SessionMigrationTest, BatchToLegacy_SessionAreLegacy) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -985,7 +1039,7 @@ TEST_F(SessionMigrationTest, BatchToLegacy_SessionAreLegacy) {
 
 // Tests batch migrating sessions from optimized to legacy when one session
 // is invalid and cannot be loaded.
-TEST_F(SessionMigrationTest, BatchToLegacy_FailureInvalidSessions) {
+TEST_P(SessionMigrationTest, BatchToLegacy_FailureInvalidSessions) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -1027,7 +1081,7 @@ TEST_F(SessionMigrationTest, BatchToLegacy_FailureInvalidSessions) {
 
 // Tests batch migrating sessions from optimized to legacy when one session
 // cannot be migrated.
-TEST_F(SessionMigrationTest, BatchToLegacy_FailureMigration) {
+TEST_P(SessionMigrationTest, BatchToLegacy_FailureMigration) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -1075,7 +1129,7 @@ TEST_F(SessionMigrationTest, BatchToLegacy_FailureMigration) {
 // Tests batch migrating sessions from optimized to legacy when one session
 // cannot be migrated, with unrelated files in the legacy session directory
 // which should be unaffected.
-TEST_F(SessionMigrationTest, BatchToLegacy_FailureUnrelatedFilesUnaffected) {
+TEST_P(SessionMigrationTest, BatchToLegacy_FailureUnrelatedFilesUnaffected) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -1129,7 +1183,7 @@ TEST_F(SessionMigrationTest, BatchToLegacy_FailureUnrelatedFilesUnaffected) {
 
 // Tests batch migrating sessions with tab groups from legacy to optimized works
 // correctly.
-TEST_F(SessionMigrationTest, BatchToOptimizedWithGroups) {
+TEST_P(SessionMigrationTest, BatchToOptimizedWithGroups) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();
@@ -1165,7 +1219,7 @@ TEST_F(SessionMigrationTest, BatchToOptimizedWithGroups) {
 }
 
 // Tests batch migrating sessions from optimized to legacy works correctly.
-TEST_F(SessionMigrationTest, BatchToLegacyWithGroups) {
+TEST_P(SessionMigrationTest, BatchToLegacyWithGroups) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_dir.GetPath();

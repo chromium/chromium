@@ -289,6 +289,7 @@ source_set("session_migration") {
     "session_migration.mm",
   ]
   deps = [
+    ":features",
     ":serialisation",
     ":session_constants",
     ":session_internal_util",

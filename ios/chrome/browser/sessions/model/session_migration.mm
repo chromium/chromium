@@ -9,6 +9,7 @@
 #import <optional>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/files/file.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_util.h"
@@ -16,6 +17,7 @@
 #import "base/notreached.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/sessions/model/features.h"
 #import "ios/chrome/browser/sessions/model/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/sessions/model/session_internal_util.h"
@@ -214,9 +216,25 @@ bool OptimizedSession::SaveTo(const base::FilePath& session_dir,
                               const base::FilePath& web_sessions) const {
   DCHECK_EQ(metadata_storage_.items_size(), static_cast<int>(storage_.size()));
   const int count = metadata_storage_.items_size();
+  const int active_index = metadata_storage_.active_index();
+  const int pinned_count = metadata_storage_.pinned_item_count();
+
+  // Whether session::features::kSessionRestorationFullConversion is
+  // enabled or not.
+  const bool partial_conversion = !base::FeatureList::IsEnabled(
+      session::features::kSessionRestorationFullConversion);
 
   // First write the individual WebState's data.
   for (int index = 0; index < count; ++index) {
+    // If session::features::kSessionRestorationFullConversion is
+    // disabled only pinned and active tabs have their full navigation
+    // history converted.
+    if (partial_conversion) {
+      if (index != active_index && index >= pinned_count) {
+        continue;
+      }
+    }
+
     const ios::proto::WebStateListItemStorage& item_storage =
         metadata_storage_.items(index);
 
