@@ -586,3 +586,8 @@ void ImmersiveModeOverlayWidgetObserver::OnWidgetBoundsChanged(
   // the browse view layout.
   controller_->browser_view()->InvalidateLayout();
 }
+
+void ImmersiveModeOverlayWidgetObserver::OnWidgetDestroying(
+    views::Widget* widget) {
+  controller_->SetEnabled(false);
+}
