@@ -123,10 +123,18 @@ void EiKeymap::OnKeymapLoaded(base::OnceClosure callback,
   xkb_keymap_key_for_each(keymap_.get(), &EiKeymap::ProcessKey, this);
 }
 
+bool EiKeymap::CanAutoRepeatUsbCode(uint32_t usb_code) const {
+  return idempotent_usb_codes_.contains(usb_code);
+}
+
 void EiKeymap::ProcessKey(xkb_keymap* keymap,
                           xkb_keycode_t keycode,
                           void* data) {
   auto* self = static_cast<EiKeymap*>(data);
+  auto usb_keycode = ui::KeycodeConverter::NativeKeycodeToUsbKeycode(keycode);
+  auto& actions =
+      *(*self->layout_proto_.mutable_keys())[usb_keycode].mutable_actions();
+  bool is_idempotent = false;
   for (auto [level, mask] : self->shift_level_to_mask_) {
     xkb_state_update_mask(self->xkb_state_.get(), mask, 0, 0, 0, 0, 0);
     auto keysym = xkb_state_key_get_one_sym(self->xkb_state_.get(), keycode);
@@ -143,9 +151,6 @@ void EiKeymap::ProcessKey(xkb_keymap* keymap,
       // doesn't support them.
       continue;
     }
-    auto usb_keycode = ui::KeycodeConverter::NativeKeycodeToUsbKeycode(keycode);
-    auto& actions =
-        *(*self->layout_proto_.mutable_keys())[usb_keycode].mutable_actions();
     // Convert the key to a function and a codepoint. Keys may have either,
     // both, or neither of these.
     auto function = KeyvalToFunction(keysym);
@@ -179,6 +184,38 @@ void EiKeymap::ProcessKey(xkb_keymap* keymap,
         existing.shift_level = level;
       }
     }
+    // Decide whether or not the key is idempotent, based on its function and
+    // whether or not it has a printable codepoint at shift level 0. Note that
+    // this doesn't handle complex scenarios where a key is idempotent at one
+    // shift level but not another, but the code that suppresses auto-repeat
+    // doesn't handle that case either.
+    if (level == 0) {
+      switch (function) {
+        // Keys with codepoints that are nevertheless idempotent.
+        case protocol::LayoutKeyFunction::ESCAPE:
+          is_idempotent = true;
+          break;
+
+        // Keys without codepoints that are nevertheless not idempotent.
+        case protocol::LayoutKeyFunction::ARROW_DOWN:
+        case protocol::LayoutKeyFunction::ARROW_LEFT:
+        case protocol::LayoutKeyFunction::ARROW_RIGHT:
+        case protocol::LayoutKeyFunction::ARROW_UP:
+        case protocol::LayoutKeyFunction::SCROLL_LOCK:
+        case protocol::LayoutKeyFunction::PRINT_SCREEN:
+        case protocol::LayoutKeyFunction::PAGE_UP:
+        case protocol::LayoutKeyFunction::PAGE_DOWN:
+        case protocol::LayoutKeyFunction::INSERT:
+          is_idempotent = false;
+          break;
+
+        // For all other keys, idempotent-ness is equated with having a
+        // codepoint.
+        default:
+          is_idempotent = (codepoint == 0);
+          break;
+      }
+    }
     // The function takes precedence over the character so that the correct
     // symbol is displayed by the client for things like the Enter key.
     if (function != protocol::LayoutKeyFunction::UNKNOWN) {
@@ -198,11 +235,15 @@ void EiKeymap::ProcessKey(xkb_keymap* keymap,
       actions[level].set_character(dead_key_utf8);
       continue;
     }
-    // Delete the entry that was implicitly added by the []-operator if
-    // there are no actions.
-    if (actions.empty()) {
-      self->layout_proto_.mutable_keys()->erase(usb_keycode);
-    }
+  }
+  // Delete the entry that was implicitly added by the []-operator if
+  // there are no actions.
+  if (actions.empty()) {
+    self->layout_proto_.mutable_keys()->erase(usb_keycode);
+  }
+  // Update the set of idempotent keys.
+  if (usb_keycode && is_idempotent) {
+    self->idempotent_usb_codes_.insert(usb_keycode);
   }
 }
 

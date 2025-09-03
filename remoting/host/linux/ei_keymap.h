@@ -57,6 +57,13 @@ class EiKeymap {
   // the codepoint is not supported, sets usb_code to 0.
   Recipe GetRecipeForCodepoint(uint32_t codepoint) const;
 
+  // Returns true if the specified USB keycode can safely be auto-repeated. This
+  // is a heuristic, as in principle an app could handle single vs. repeated
+  // keypresses any way it likes for any key, but it's a simple abstraction that
+  // allows us to suppress client-side auto-repeat for keys for which it is most
+  // likely to be unwanted without breaking the functionality of modifier keys.
+  bool CanAutoRepeatUsbCode(uint32_t usb_code) const;
+
  private:
   struct UsbCodeAndShiftLevel { uint32_t usb_code; int shift_level; };
 
@@ -75,6 +82,7 @@ class EiKeymap {
   uint32_t shift_key_usb_code_;
   uint32_t altgr_key_usb_code_;
   std::map<uint32_t, UsbCodeAndShiftLevel> codepoint_to_usb_code_and_shift_level_;
+  std::set<uint32_t> idempotent_usb_codes_;
 
   base::WeakPtrFactory<EiKeymap> weak_factory_{this};
 };
