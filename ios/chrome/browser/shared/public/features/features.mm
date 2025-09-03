@@ -1143,9 +1143,11 @@ BASE_FEATURE(IOSUseDefaultAppsDestinationForPromos,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDefaultAppsDestinationAvailable() {
+#if defined(__IPHONE_18_3) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_3
   if (@available(iOS 18.3, *)) {
     return true;
   }
+#endif
   return false;
 }
 
