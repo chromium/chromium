@@ -122,7 +122,8 @@ enum class CrostiniResult {
   UNINSTALL_BAGUETTE_FAILED = 86,
   INSTALL_BAGUETTE_CANCELLED = 87,
   DOWNLOAD_BAGUETTE_FAILED = 88,
-  kMaxValue = DOWNLOAD_BAGUETTE_FAILED,
+  DISK_IMAGE_BAD_IMAGE = 89,
+  kMaxValue = DISK_IMAGE_BAD_IMAGE,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };

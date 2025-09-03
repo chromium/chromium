@@ -72,6 +72,15 @@ void CrostiniExportImportStatusTracker::SetStatusFailed() {
               : IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED));
 }
 
+void CrostiniExportImportStatusTracker::SetStatusFailedBadImage() {
+  DCHECK(type() == ExportImportType::IMPORT ||
+         type() == ExportImportType::IMPORT_DISK_IMAGE);
+  SetStatusFailedWithMessage(
+      Status::FAILED_BAD_IMAGE,
+      l10n_util::GetStringUTF16(
+          IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_BAD_IMAGE));
+}
+
 void CrostiniExportImportStatusTracker::SetStatusFailedArchitectureMismatch(
     const std::string& architecture_container,
     const std::string& architecture_device) {

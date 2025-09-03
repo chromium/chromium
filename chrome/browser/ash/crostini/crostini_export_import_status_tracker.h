@@ -30,6 +30,7 @@ class CrostiniExportImportStatusTracker {
     FAILED_ARCHITECTURE_MISMATCH,
     FAILED_INSUFFICIENT_SPACE,
     FAILED_CONCURRENT_OPERATION,
+    FAILED_BAD_IMAGE,
   };
 
   CrostiniExportImportStatusTracker(ExportImportType type, base::FilePath path);
@@ -62,6 +63,7 @@ class CrostiniExportImportStatusTracker {
   void SetStatusFailedInsufficientSpaceUnknownAmount();
   void SetStatusFailedConcurrentOperation(
       ExportImportType in_progress_operation_type);
+  void SetStatusFailedBadImage();
 
  private:
   void SetStatusFailedWithMessage(Status status, const std::u16string& message);

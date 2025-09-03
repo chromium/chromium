@@ -465,8 +465,17 @@ void CrostiniExportImport::AfterDiskImageOperation(
       default:
         NOTREACHED();
     }
+  } else if (result == CrostiniResult::DISK_IMAGE_BAD_IMAGE) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::GetDeleteFileCallback(it->second->path()));
+    DCHECK(it->second->status() ==
+               CrostiniExportImportStatusTracker::Status::RUNNING ||
+           it->second->status() ==
+               CrostiniExportImportStatusTracker::Status::CANCELLING);
+    RemoveTracker(it)->SetStatusFailedBadImage();
   } else {
-    LOG(ERROR) << "Error exporting " << int(result);
+    LOG(ERROR) << "Error exporting " << static_cast<int>(result);
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::GetDeleteFileCallback(it->second->path()));
