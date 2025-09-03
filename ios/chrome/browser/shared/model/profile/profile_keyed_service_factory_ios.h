@@ -72,6 +72,12 @@ class ProfileKeyedServiceFactoryIOS : public BrowserStateKeyedServiceFactory {
   web::BrowserState* GetBrowserStateToUse(web::BrowserState* ctx) const final;
   bool ServiceIsCreatedWithBrowserState() const final;
   bool ServiceIsNULLWhileTesting() const final;
+  void RegisterBrowserStatePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
+
+  // Registers any user preferences on this service. This should be overridden
+  // by any service that wants to register profile-specific preferences.
+  virtual void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Helper that casts the value returned by GetKeyedServiceForProfile() to the
   // sub-class T of KeyedService.

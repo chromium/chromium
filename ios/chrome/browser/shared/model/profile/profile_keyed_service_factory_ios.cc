@@ -22,6 +22,16 @@ bool ProfileKeyedServiceFactoryIOS::ServiceIsNULLWhileTesting() const {
   return testing_creation_ == TestingCreation::kNoServiceForTests;
 }
 
+void ProfileKeyedServiceFactoryIOS::RegisterBrowserStatePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  RegisterProfilePrefs(registry);
+}
+
+void ProfileKeyedServiceFactoryIOS::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  // Nothing to do.
+}
+
 KeyedService* ProfileKeyedServiceFactoryIOS::GetServiceForProfile(
     ProfileIOS* profile,
     bool create) {

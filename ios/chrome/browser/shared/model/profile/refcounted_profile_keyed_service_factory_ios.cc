@@ -25,6 +25,16 @@ bool RefcountedProfileKeyedServiceFactoryIOS::ServiceIsNULLWhileTesting()
   return testing_creation_ == TestingCreation::kNoServiceForTests;
 }
 
+void RefcountedProfileKeyedServiceFactoryIOS::RegisterBrowserStatePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  RegisterProfilePrefs(registry);
+}
+
+void RefcountedProfileKeyedServiceFactoryIOS::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  // Nothing to do.
+}
+
 scoped_refptr<RefcountedKeyedService>
 RefcountedProfileKeyedServiceFactoryIOS::GetServiceForProfile(
     ProfileIOS* profile,
