@@ -129,7 +129,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
 
     @Override
     public void updateStateOnUiThread(
-            String text,
+            CharSequence text,
             final int selectionStart,
             final int selectionEnd,
             final int compositionStart,

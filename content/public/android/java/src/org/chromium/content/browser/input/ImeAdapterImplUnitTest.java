@@ -115,7 +115,8 @@ public class ImeAdapterImplUnitTest {
                 /* compositionEnd= */ 0,
                 /* replyToRequest= */ false,
                 /* lastVkVisibilityRequest= */ 0,
-                /* vkPolicy= */ 0);
+                /* vkPolicy= */ 0,
+                /* imeTextSpans= */ null);
     }
 
     @Test

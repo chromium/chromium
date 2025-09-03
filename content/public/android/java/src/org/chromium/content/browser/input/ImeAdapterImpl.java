@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
@@ -610,6 +611,7 @@ public class ImeAdapterImpl
      * @param lastVkVisibilityRequest VK visibility request type if show/hide APIs are called from
      *     JS.
      * @param vkPolicy VK policy type whether it is manual or automatic.
+     * @param imeTextSpans an array of span information (such as spelling and grammar markers).
      */
     @VisibleForTesting
     @CalledByNative
@@ -627,7 +629,8 @@ public class ImeAdapterImpl
             int compositionEnd,
             boolean replyToRequest,
             int lastVkVisibilityRequest,
-            int vkPolicy) {
+            int vkPolicy,
+            ImeTextSpan[] imeTextSpans) {
         TraceEvent.begin("ImeAdapter.updateState");
         try {
             if (DEBUG_LOGS) {
@@ -714,8 +717,30 @@ public class ImeAdapterImpl
                 boolean singleLine =
                         mTextInputType != TextInputType.TEXT_AREA
                                 && mTextInputType != TextInputType.CONTENT_EDITABLE;
+
+                CharSequence textParam;
+                if (imeTextSpans == null || imeTextSpans.length == 0) {
+                    textParam = text;
+                } else {
+                    SpannableStringBuilder spannable = new SpannableStringBuilder(text);
+                    for (ImeTextSpan info : imeTextSpans) {
+                        SuggestionSpan suggestionSpan =
+                                new SuggestionSpan(
+                                        ContextUtils.getApplicationContext(),
+                                        info.getSuggestions(),
+                                        SuggestionSpan.FLAG_MISSPELLED);
+
+                        spannable.setSpan(
+                                suggestionSpan,
+                                info.getStartOffset(),
+                                info.getEndOffset(),
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                    textParam = spannable;
+                }
+
                 mInputConnection.updateStateOnUiThread(
-                        text,
+                        textParam,
                         selectionStart,
                         selectionEnd,
                         compositionStart,

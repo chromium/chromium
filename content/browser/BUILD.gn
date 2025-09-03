@@ -3264,6 +3264,8 @@ source_set("browser") {
       "android/gpu_process_callback.cc",
       "android/ime_adapter_android.cc",
       "android/ime_adapter_android.h",
+      "android/ime_text_span.cc",
+      "android/ime_text_span.h",
       "android/input_token_forwarder_manager.cc",
       "android/input_token_forwarder_manager.h",
       "android/java/gin_java_bound_object.cc",
