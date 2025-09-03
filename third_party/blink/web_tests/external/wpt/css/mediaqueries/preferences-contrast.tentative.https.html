@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <title>WebPreferences Test: contrast attribute tests</title>
-    <link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev" />
-    <link rel="help" href="https://wicg.github.io/web-preferences-api/" />
+    <link rel="author" title="Luke Warlow" href="mailto:lwarlow@igalia.com" />
+    <link rel="help" href="https://drafts.csswg.org/mediaqueries-5/#auto-pref%E2%91%A0" />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src=./resources/preferences-helper.js></script>
@@ -112,7 +112,7 @@
           navigator.preferences.contrast.onchange = null;
         });
         await navigator.preferences.contrast.requestOverride('less');
-        const eventPromise = changeEventPromise("contrast");
+        const eventPromise = changeEventPromise("contrast", t);
         await navigator.preferences.contrast.clearOverride();
         await eventPromise;
       }, "navigator.preferences.contrast fires change event when clearing override");
@@ -122,7 +122,7 @@
           navigator.preferences.contrast.onchange = null;
         });
         await navigator.preferences.contrast.requestOverride('no-preference');
-        const eventPromise = changeEventPromise("contrast");
+        const eventPromise = changeEventPromise("contrast", t);
         await navigator.preferences.contrast.clearOverride();
         await eventPromise;
       }, "navigator.preferences.contrast fires change event when clearing override (without value change)");

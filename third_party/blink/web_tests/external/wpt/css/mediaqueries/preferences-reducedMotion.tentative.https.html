@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <title>WebPreferences Test: reducedMotion attribute tests</title>
-    <link rel="author" title="Luke Warlow" href="mailto:luke@warlow.dev" />
-    <link rel="help" href="https://wicg.github.io/web-preferences-api/" />
+    <link rel="author" title="Luke Warlow" href="mailto:lwarlow@igalia.com" />
+    <link rel="help" href="https://drafts.csswg.org/mediaqueries-5/#auto-pref%E2%91%A0" />
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src=./resources/preferences-helper.js></script>
@@ -96,7 +96,7 @@
           navigator.preferences.reducedMotion.onchange = null;
         });
         await navigator.preferences.reducedMotion.requestOverride('reduce');
-        const eventPromise = changeEventPromise("reducedMotion");
+        const eventPromise = changeEventPromise("reducedMotion", t);
         await navigator.preferences.reducedMotion.clearOverride();
         await eventPromise;
       }, "navigator.preferences.reducedMotion fires change event when clearing override");
@@ -106,7 +106,7 @@
           navigator.preferences.reducedMotion.onchange = null;
         });
         await navigator.preferences.reducedMotion.requestOverride('no-preference');
-        const eventPromise = changeEventPromise("reducedMotion");
+        const eventPromise = changeEventPromise("reducedMotion", t);
         await navigator.preferences.reducedMotion.clearOverride();
         await eventPromise;
       }, "navigator.preferences.reducedMotion fires change event when clearing override (without value change)");
