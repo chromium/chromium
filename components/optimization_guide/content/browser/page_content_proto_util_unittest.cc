@@ -85,19 +85,21 @@ content::GlobalRenderFrameHostToken CreateFrameToken() {
 
 base::expected<void, std::string> ConvertAIPageContentToProto(
     blink::mojom::AIPageContentPtr& root_content,
-    AIPageContentResult& page_content) {
+    AIPageContentResult& page_content,
+    const std::optional<GURL>& main_frame_url = {}) {
   auto main_frame_token = CreateFrameToken();
   AIPageContentMap page_content_map;
   page_content_map[main_frame_token] = std::move(root_content);
+
+  const GURL main_url = main_frame_url.value_or(GURL("https://example.com"));
 
   auto get_render_frame_info = base::BindLambdaForTesting(
       [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
         if (token == main_frame_token.frame_token) {
           RenderFrameInfo render_frame_info;
           render_frame_info.global_frame_token = main_frame_token;
-          render_frame_info.source_origin =
-              url::Origin::Create(GURL("https://example.com"));
-          render_frame_info.url = GURL("https://example.com");
+          render_frame_info.source_origin = url::Origin::Create(main_url);
+          render_frame_info.url = main_url;
           render_frame_info.serialized_server_token =
               main_frame_token.frame_token.ToString();
           render_frame_info.media_data = CreateMediaData();
@@ -459,6 +461,35 @@ TEST(PageContentProtoUtilTest, TitleSet) {
   EXPECT_TRUE(
       ConvertAIPageContentToProto(root_content, page_content).has_value());
   EXPECT_EQ("Page Title", page_content.proto.main_frame_data().title());
+}
+
+TEST(PageContentProtoUtilTest, MainFrameUrlSet) {
+  constexpr std::string_view kCases[] = {"https://example.com",
+                                         "http://example.com", "about:blank"};
+  for (const auto url : kCases) {
+    SCOPED_TRACE(url);
+    const GURL gurl(url);
+
+    auto root_content = CreatePageContent();
+
+    AIPageContentResult page_content;
+    EXPECT_TRUE(ConvertAIPageContentToProto(root_content, page_content, gurl)
+                    .has_value());
+    EXPECT_TRUE(page_content.proto.main_frame_data().has_url());
+    EXPECT_EQ(gurl, page_content.proto.main_frame_data().url());
+  }
+}
+
+TEST(PageContentProtoUtilTest, MainFrameDataUrlSet) {
+  const GURL data_url("data:text/plain,Hello");
+
+  auto root_content = CreatePageContent();
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, page_content, data_url)
+                  .has_value());
+  EXPECT_TRUE(page_content.proto.main_frame_data().has_url());
+  EXPECT_EQ("data:", page_content.proto.main_frame_data().url());
 }
 
 TEST(PageContentProtoUtilTest, MediaDataSet) {

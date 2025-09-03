@@ -660,7 +660,10 @@ void ConvertFrameData(
   ConvertFrameInteractionInfo(
       *mojom_frame_data.frame_interaction_info,
       proto_frame_data->mutable_frame_interaction_info());
-  if (render_frame_info.url.SchemeIsHTTPOrHTTPS()) {
+  if (render_frame_info.url.SchemeIs(url::kDataScheme)) {
+    // For data URLs the information is already in the content.
+    proto_frame_data->set_url("data:");
+  } else {
     proto_frame_data->set_url(render_frame_info.url.spec());
   }
   if (mojom_frame_data.title) {
