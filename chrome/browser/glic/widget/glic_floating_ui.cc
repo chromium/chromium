@@ -48,4 +48,13 @@ bool GlicFloatingUi::IsShowing() const {
   return false;
 }
 
+void GlicFloatingUi::Show() {
+  NOTIMPLEMENTED();
+}
+
+std::unique_ptr<GlicView> GlicFloatingUi::CreateGlicView() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 }  // namespace glic

@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/service/panel_delegate.h"
 
 class BrowserWindowInterface;
+class Profile;
 
 namespace glic {
 
@@ -39,14 +40,21 @@ class GlicInstance : public PanelDelegate {
     virtual void DetachInstance(GlicInstance* instance) = 0;
   };
 
-  explicit GlicInstance(BrowserWindowInterface* bwi,
-                        base::WeakPtr<AttachmentDelegate> attachment_delegate);
+  GlicInstance(Profile* profile,
+               BrowserWindowInterface* bwi,
+               Host& host,
+               base::WeakPtr<AttachmentDelegate> attachment_delegate);
   ~GlicInstance() override;
 
   GlicInstance(const GlicInstance&) = delete;
   GlicInstance& operator=(const GlicInstance&) = delete;
 
+  Profile* profile() { return profile_; }
+  Host& host() { return *host_; }
+  GlicUiEmbedder& embedder();
+
   void DisassociateWindow();
+
   void AttachPanel() override;
   void DetachPanel() override;
   bool IsShowing() const;
@@ -71,12 +79,7 @@ class GlicInstance : public PanelDelegate {
   void GetZeroStateSuggestionsForFocusedTab() override;
 
  private:
-  // Objects that currently live in GlicService moved to here.
-  std::unique_ptr<glic::Host> host_;
-  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
-  std::unique_ptr<GlicSharingManagerImpl> sharing_manager_;
-  std::unique_ptr<GlicZeroStateSuggestionsManager>
-      zero_state_suggestions_manager_;
+  raw_ptr<Profile> profile_;
 
   // Replaces GlicWindowController on existing GlicKeyedService.
   std::unique_ptr<GlicUiEmbedder> embedder_;
@@ -86,6 +89,7 @@ class GlicInstance : public PanelDelegate {
   // when detached.
   raw_ptr<BrowserWindowInterface> associated_bwi_ = nullptr;
   base::WeakPtr<AttachmentDelegate> attachment_delegate_;
+  raw_ref<Host> host_;
 };
 
 }  // namespace glic

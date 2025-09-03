@@ -44,7 +44,8 @@ std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateGlicWebView(
   if (!glic_service_) {
     return nullptr;
   }
-  return glic_service_->window_controller().CreateGlicViewForSidePanel();
+  return glic_service_->window_controller().CreateGlicViewForSidePanel(
+      scope.GetBrowserWindowInterface());
 }
 
 }  // namespace glic

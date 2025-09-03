@@ -202,7 +202,8 @@ class GlicWindowController {
 
   virtual void ShowDetachedForTesting() = 0;
   virtual void SetPreviousPositionForTesting(gfx::Point position) = 0;
-  virtual std::unique_ptr<GlicView> CreateGlicViewForSidePanel() = 0;
+  virtual std::unique_ptr<GlicView> CreateGlicViewForSidePanel(
+      BrowserWindowInterface& bwi) = 0;
 
   // Helper function to get the always detached flag.
   static bool AlwaysDetached() {

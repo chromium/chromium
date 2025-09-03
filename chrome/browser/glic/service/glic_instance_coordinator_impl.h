@@ -106,7 +106,8 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
   gfx::Rect GetInitialBounds(Browser* browser) override;
   void ShowDetachedForTesting() override;
   void SetPreviousPositionForTesting(gfx::Point position) override;
-  std::unique_ptr<GlicView> CreateGlicViewForSidePanel() override;
+  std::unique_ptr<GlicView> CreateGlicViewForSidePanel(
+      BrowserWindowInterface& bwi) override;
 
   base::CallbackListSubscription RegisterFloatyStateChange(
       FloatyStateChangeCallback callback) override;
@@ -141,6 +142,7 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
 
   base::WeakPtrFactory<GlicInstanceCoordinatorImpl> weak_ptr_factory_{this};
 };
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_COORDINATOR_IMPL_H_

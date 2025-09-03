@@ -5,11 +5,22 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GLIC_UI_EMBEDDER_H_
 #define CHROME_BROWSER_GLIC_HOST_GLIC_UI_EMBEDDER_H_
 
+#include <memory>
+
 #include "chrome/browser/glic/host/host.h"
 
 namespace glic {
 
-using GlicUiEmbedder = Host::Delegate;
+class GlicView;
+
+class GlicUiEmbedder : public Host::Delegate {
+ public:
+  // Show the glic UI.
+  virtual void Show() = 0;
+
+  // Create the WebView in which to show glic.
+  virtual std::unique_ptr<GlicView> CreateGlicView() = 0;
+};
 
 }  // namespace glic
 

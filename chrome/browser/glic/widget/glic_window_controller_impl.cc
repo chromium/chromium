@@ -682,8 +682,8 @@ void GlicWindowControllerImpl::Show(Browser* browser,
   }
 }
 
-std::unique_ptr<GlicView>
-GlicWindowControllerImpl::CreateGlicViewForSidePanel() {
+std::unique_ptr<GlicView> GlicWindowControllerImpl::CreateGlicViewForSidePanel(
+    BrowserWindowInterface& bwi) {
   auto glic_view =
       std::make_unique<GlicView>(profile_, GlicWidget::GetInitialSize(),
                                  glic_panel_hotkey_manager_->GetWeakPtr());

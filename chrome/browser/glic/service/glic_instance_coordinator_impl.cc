@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
+#include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_animator.h"
@@ -35,6 +36,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -284,9 +287,11 @@ void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
 }
 
 std::unique_ptr<GlicView>
-GlicInstanceCoordinatorImpl::CreateGlicViewForSidePanel() {
-  // Method should only be called on individual panels not the coordinator.
-  NOTREACHED();
+GlicInstanceCoordinatorImpl::CreateGlicViewForSidePanel(
+    BrowserWindowInterface& bwi) {
+  GlicInstance* instance = GetAttachedInstanceForBrowser(&bwi);
+  CHECK(instance);
+  return instance->embedder().CreateGlicView();
 }
 
 base::CallbackListSubscription
@@ -354,7 +359,7 @@ void GlicInstanceCoordinatorImpl::ToggleFloaty() {
 
   // Create a new floating instance since there are no instances to detach.
   floating_instance_ = std::make_unique<GlicInstance>(
-      /*bwi=*/nullptr, weak_ptr_factory_.GetWeakPtr());
+      profile_, /*bwi=*/nullptr, host(), weak_ptr_factory_.GetWeakPtr());
   floating_instance_->SetEmbedderType(GlicInstance::EmbedderType::kFloating);
   floating_instance_->Show();
 }
@@ -366,7 +371,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     return;
   }
   auto new_instance =
-      std::make_unique<GlicInstance>(browser, weak_ptr_factory_.GetWeakPtr());
+      std::make_unique<GlicInstance>(profile_, browser, host(), weak_ptr_factory_.GetWeakPtr());
   new_instance->SetEmbedderType(GlicInstance::EmbedderType::kSidePanel);
   new_instance->Show();
   attached_instances_.push_back(std::move(new_instance));

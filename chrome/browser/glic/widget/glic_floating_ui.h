@@ -31,6 +31,8 @@ class GlicFloatingUi : public GlicUiEmbedder {
   void Detach() override;
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   bool IsShowing() const override;
+  void Show() override;
+  std::unique_ptr<GlicView> CreateGlicView() override;
 
  private:
   mojom::PanelState panel_state_;

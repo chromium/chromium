@@ -13,10 +13,14 @@
 
 namespace glic {
 
+class GlicInstance;
+class GlicView;
+
 // A stub implementation of GlicUiEmbedder for side panel UIs.
 class GlicSidePanelUi : public GlicUiEmbedder {
  public:
-  GlicSidePanelUi(BrowserWindowInterface* associated_bwi);
+  GlicSidePanelUi(BrowserWindowInterface* associated_bwi,
+                  GlicInstance& instance);
   ~GlicSidePanelUi() override;
 
   // GlicUiEmbedder:
@@ -32,10 +36,15 @@ class GlicSidePanelUi : public GlicUiEmbedder {
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   bool IsShowing() const override;
 
+  void Show() override;
+  std::unique_ptr<GlicView> CreateGlicView() override;
+
  private:
   mojom::PanelState panel_state_;
 
   raw_ptr<BrowserWindowInterface> associated_bwi_;
+  // Owns this.
+  raw_ref<GlicInstance> instance_;
 };
 
 }  // namespace glic
