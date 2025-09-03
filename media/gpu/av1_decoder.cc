@@ -201,8 +201,8 @@ void AV1Decoder::SetStream(int32_t id,
   ClearCurrentFrame();
 
   parser_ = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
-      decoder_buffer_->data(), decoder_buffer_->size(), kDefaultOperatingPoint,
-      buffer_pool_.get(), state_.get()));
+      base::span(*decoder_buffer_).data(), decoder_buffer_->size(),
+      kDefaultOperatingPoint, buffer_pool_.get(), state_.get()));
   if (!parser_) {
     on_error_ = true;
     return;
