@@ -44,7 +44,6 @@ class IOSChromeVariationsServiceClient
   bool IsEnterprise() override;
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) override;
-  bool IsStickyActivationEnabled() override;
   version_info::Channel GetChannel() override;
 };
 

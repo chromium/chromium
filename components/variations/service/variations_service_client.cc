@@ -109,7 +109,7 @@ void VariationsServiceClient::ExitWithMessage(const std::string& message) {
 }
 
 bool VariationsServiceClient::IsStickyActivationEnabled() {
-  return false;
+  return true;
 }
 
 }  // namespace variations
