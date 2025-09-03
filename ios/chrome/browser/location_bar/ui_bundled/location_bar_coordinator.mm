@@ -131,6 +131,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   // Service for local and profile preferences.
   raw_ptr<PrefService> _prefService;
+  // Tracker for feature events.
+  raw_ptr<feature_engagement::Tracker> _tracker;
 }
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -219,8 +221,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       self.browser->GetCommandDispatcher(), PageActionMenuCommands);
   self.viewController.BWGHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
-  self.viewController.tracker =
-      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  self.viewController.tracker = _tracker;
   self.viewController.voiceSearchEnabled =
       ios::provider::IsVoiceSearchEnabled();
   self.viewController.layoutGuideCenter =
@@ -359,8 +361,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       OverlayPresenter::FromBrowser(self.browser,
                                     OverlayModality::kWebContentArea);
   self.steadyViewMediator.consumer = self;
-  self.steadyViewMediator.tracker =
-      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  self.steadyViewMediator.tracker = _tracker;
 
   _omniboxFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       fullscreenController, self.viewController);
@@ -666,6 +667,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       displayEntrypointView:display];
 }
 
+- (void)locationBarDidTapAIHubNewBadge {
+  _tracker->NotifyUsedEvent(feature_engagement::kIPHiOSAIHubNewBadge);
+}
 #pragma mark - ContextualPanelEntrypointCoordinatorDelegate
 
 - (BOOL)canShowLargeContextualPanelEntrypoint:
@@ -811,22 +815,14 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self cancelOmniboxEdit];
 }
 
-// Decides if AI Hub new badge should show. Start time is only non-null if
-// the time pref was recorded as a result of the FRE Promo showing.
+// Decides if AI Hub new badge should show.
 - (BOOL)isAIHubNewBadgeVisible {
   if (!base::FeatureList::IsEnabled(kAIHubNewBadge)) {
     return NO;
   }
 
-  base::Time expirationTime =
-      _prefService->GetTime(prefs::kAIHubNewBadgeExpirationTime);
-  base::Time now = base::Time::Now();
-
-  if (expirationTime.is_null() || now > expirationTime) {
-    return NO;
-  }
-
-  return YES;
+  return _tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSAIHubNewBadge);
 }
 
 @end

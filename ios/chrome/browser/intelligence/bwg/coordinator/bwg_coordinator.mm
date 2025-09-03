@@ -119,10 +119,16 @@ const CGFloat kPromoMaxImpressionCount = 3;
   BOOL showPromo = [self shouldShowBWGPromo];
 
   if (showPromo) {
-    _prefService->SetInteger(
-        prefs::kIOSBWGPromoImpressionCount,
-        _prefService->GetInteger(prefs::kIOSBWGPromoImpressionCount) + 1);
-    [_mediator logAIHubNewBadgeExpirationTime];
+    int impressionCount =
+        _prefService->GetInteger(prefs::kIOSBWGPromoImpressionCount) + 1;
+    _prefService->SetInteger(prefs::kIOSBWGPromoImpressionCount,
+                             impressionCount);
+
+    if (impressionCount == 1) {
+      feature_engagement::TrackerFactory::GetForProfile(self.profile)
+          ->NotifyEvent(
+              feature_engagement::events::kIOSGeminiPromoFirstCompletion);
+    }
   }
 
   _FREWrapperViewController = [[BWGFREWrapperViewController alloc]
