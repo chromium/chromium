@@ -546,24 +546,17 @@ std::optional<SkColor> AppBrowserController::GetThemeColor() const {
         ui::NativeTheme::SystemThemeColor::kWindow);
   }
 
-  std::optional<SkColor> result;
-  // HTML meta theme-color tag overrides manifest theme_color, see spec:
-  // https://www.w3.org/TR/appmanifest/#theme_color-member
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  if (web_contents) {
-    std::optional<SkColor> color = web_contents->GetThemeColor();
-    if (color) {
-      result = color;
+  if (content::WebContents* const web_contents =
+          browser()->tab_strip_model()->GetActiveWebContents()) {
+    // HTML meta theme-color tag overrides manifest theme_color, see spec:
+    // https://www.w3.org/TR/appmanifest/#theme_color-member
+    if (const std::optional<SkColor> color = web_contents->GetThemeColor()) {
+      // The frame/tabstrip code expects an opaque color.
+      return SkColorSetA(*color, SK_AlphaOPAQUE);
     }
   }
 
-  if (!result) {
-    return std::nullopt;
-  }
-
-  // The frame/tabstrip code expects an opaque color.
-  return SkColorSetA(*result, SK_AlphaOPAQUE);
+  return std::nullopt;
 }
 
 std::optional<SkColor> AppBrowserController::GetBackgroundColor() const {
