@@ -51,10 +51,6 @@ tools/cygprofile/check_orderfile.py --target-arch=arm64 \
 Alternatively, you can use the `--verify` flag with `generate_orderfile_full.py`
 to build and verify in one step.
 
-```
-
-
-
 ## Orderfile Performance Testing
 
 Orderfiles can be tested using
