@@ -14,7 +14,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -492,11 +491,13 @@ int DispatchCall(int argc, wchar_t **argv) {
     else if (EVERY_STATE == state)
       command(argc - 4, argv + 4);
 
-#if defined(ADDRESS_SANITIZER)
-    // Bind and leak dbghelp.dll before the token is lowered, otherwise
-    // AddressSanitizer will crash when trying to symbolize a report.
-    if (!LoadLibraryA("dbghelp.dll"))
+#if defined(ADDRESS_SANITIZER) || CHECK_WILL_STREAM()
+    // Bind and leak dbghelp.dll before the token is lowered, otherwise some
+    // child process will fail with the wrong error code when they fail to
+    // symbolize a stack while crashing.
+    if (!LoadLibraryA("dbghelp.dll")) {
       return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
+    }
 #endif
 
     target->LowerToken();
