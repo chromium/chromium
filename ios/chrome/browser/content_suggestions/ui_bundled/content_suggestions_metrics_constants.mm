@@ -66,6 +66,8 @@ const char kMagicStackModuleEngagementTipsIndexHistogram[] =
     "IOS.MagicStack.Module.Click.Tips";
 const char kMagicStackModuleEngagementAppBundlePromoIndexHistogram[] =
     "IOS.MagicStack.Module.Click.AppBundlePromo";
+const char kMagicStackModuleEngagementDefaultBrowserIndexHistogram[] =
+    "IOS.MagicStack.Module.Click.DefaultBrowser";
 const char kMagicStackModuleDisabledHistogram[] =
     "IOS.MagicStack.Module.Disabled";
 const char kContentNotificationSnackbarEventHistogram[] =

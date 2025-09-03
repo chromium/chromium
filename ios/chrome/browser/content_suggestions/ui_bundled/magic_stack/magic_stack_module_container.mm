@@ -436,6 +436,7 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
     case ContentSuggestionsModuleType::kAppBundlePromo:
+    case ContentSuggestionsModuleType::kDefaultBrowser:
       return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
     default:
       NOTREACHED();
@@ -601,6 +602,7 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kSafetyCheck:
     case ContentSuggestionsModuleType::kTips:
     case ContentSuggestionsModuleType::kAppBundlePromo:
+    case ContentSuggestionsModuleType::kDefaultBrowser:
       return YES;
     case ContentSuggestionsModuleType::kTabResumption:
     case ContentSuggestionsModuleType::kTipsWithProductImage:

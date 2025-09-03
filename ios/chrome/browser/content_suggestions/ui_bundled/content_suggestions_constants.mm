@@ -66,6 +66,7 @@ bool IsSetUpListModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kTips:
     case ContentSuggestionsModuleType::kShopCard:
     case ContentSuggestionsModuleType::kAppBundlePromo:
+    case ContentSuggestionsModuleType::kDefaultBrowser:
       return false;
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
@@ -96,6 +97,7 @@ bool IsTipsModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kShopCard:
     case ContentSuggestionsModuleType::kAppBundlePromo:
+    case ContentSuggestionsModuleType::kDefaultBrowser:
       return false;
   }
 }

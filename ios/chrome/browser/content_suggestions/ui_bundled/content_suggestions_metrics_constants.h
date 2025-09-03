@@ -56,6 +56,7 @@ extern const char kMagicStackModuleEngagementShopCardIndexHistogram[];
 extern const char kMagicStackModuleEngagementSendTabPromoIndexHistogram[];
 extern const char kMagicStackModuleEngagementTipsIndexHistogram[];
 extern const char kMagicStackModuleEngagementAppBundlePromoIndexHistogram[];
+extern const char kMagicStackModuleEngagementDefaultBrowserIndexHistogram[];
 extern const char kMagicStackModuleDisabledHistogram[];
 extern const char kContentNotificationSnackbarEventHistogram[];
 extern const char kIOSSafetyCheckMagicStackHiddenReason[];

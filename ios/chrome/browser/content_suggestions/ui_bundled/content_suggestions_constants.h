@@ -44,7 +44,8 @@ enum class ContentSuggestionsModuleType {
   // Removed: kSetUpListAddressBar = 20,
   kShopCard = 21,
   kAppBundlePromo = 22,
-  kMaxValue = kAppBundlePromo,
+  kDefaultBrowser = 23,
+  kMaxValue = kDefaultBrowser,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

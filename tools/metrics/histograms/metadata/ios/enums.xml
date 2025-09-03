@@ -732,6 +732,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Obsolete - Set Up List Address Bar"/>
   <int value="21" label="ShopCard"/>
   <int value="22" label="App Bundle Promo"/>
+  <int value="23" label="Default Browser"/>
 </enum>
 
 <enum name="IOSMiniMapConsentOutcome">

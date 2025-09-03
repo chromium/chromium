@@ -109,6 +109,11 @@ const float kMaxModuleEngagementIndex = 50;
           kMagicStackModuleEngagementAppBundlePromoIndexHistogram, index,
           kMaxModuleEngagementIndex);
       break;
+    case ContentSuggestionsModuleType::kDefaultBrowser:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementDefaultBrowserIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kInvalid:
       break;
