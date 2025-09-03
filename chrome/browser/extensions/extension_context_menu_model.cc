@@ -221,11 +221,11 @@ void LogToggleVisibility(bool visible) {
   }
 }
 
-void OpenUrl(Browser& browser, const GURL& url) {
+void OpenUrl(content::WebContents* web_contents, const GURL& url) {
   content::OpenURLParams params(
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
-  browser.OpenURL(params, /*navigation_handle_callback=*/{});
+  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 // A stub for the uninstall dialog.
@@ -429,7 +429,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
 
   switch (command_id) {
     case HOME_PAGE: {
-      OpenUrl(*browser_, ManifestURL::GetHomepageURL(extension));
+      OpenUrl(GetActiveWebContents(), ManifestURL::GetHomepageURL(extension));
       break;
     }
     case OPTIONS:
@@ -513,13 +513,13 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
     case PAGE_ACCESS_PERMISSIONS_PAGE:
       LogPageAccessAction(command_id);
       OpenUrl(
-          *browser_,
+          GetActiveWebContents(),
           GURL(extension_permissions_constants::kExtensionsSitePermissionsURL));
       break;
     case PAGE_ACCESS_LEARN_MORE:
       LogPageAccessAction(command_id);
       OpenUrl(
-          *browser_,
+          GetActiveWebContents(),
           GURL(
               extension_permissions_constants::kRuntimeHostPermissionsHelpURL));
 
