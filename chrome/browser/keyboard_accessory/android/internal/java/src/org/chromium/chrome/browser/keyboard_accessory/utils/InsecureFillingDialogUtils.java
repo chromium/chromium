@@ -13,13 +13,14 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.ActivityUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
 /**
  * Provides a method to display a warning dialog when filling a password is requested in a
  * non-secure text field.
  */
+@NullMarked
 public class InsecureFillingDialogUtils {
     /**
      * Displays an alert dialog to warn user that the filling is insecure. May not be displayed if
@@ -29,7 +30,7 @@ public class InsecureFillingDialogUtils {
      */
     public static void showWarningDialog(Context context) {
         Activity activity = ContextUtils.activityFromContext(context);
-        if (ActivityUtils.isActivityFinishingOrDestroyed(activity)) return;
+        if (activity == null || activity.isDestroyed() || activity.isFinishing()) return;
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog);
         LayoutInflater inflater = LayoutInflater.from(builder.getContext());
