@@ -20,6 +20,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/pickle.h"
 #include "net/base/pickle_base_types.h"
 #include "net/http/http_cache.h"
@@ -359,6 +360,8 @@ std::optional<NoVarySearchCache::LookupResult> NoVarySearchCache::Lookup(
   if (!URLIsAcceptable(url)) {
     return std::nullopt;
   }
+
+  TRACE_EVENT("net", "NoVarySearchCache::Lookup");
   // TODO(https://crbug.com/388956603): Try to avoid allocating memory for the
   // base url.
   const GURL base_url = ExtractBaseURL(url);

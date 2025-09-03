@@ -35,6 +35,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "http_request_info.h"
 #include "net/base/cache_type.h"
@@ -548,6 +549,8 @@ void HttpCache::OnExternalCacheHit(
   if (!disk_cache_.get() || mode_ == DISABLE) {
     return;
   }
+
+  TRACE_EVENT("net", "HttpCache::OnExternalCacheHit");
 
   HttpRequestInfo request_info;
   request_info.url = url;
