@@ -17,7 +17,6 @@
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::Invoke;
 
 class AnnotatedPageContentCapturerTest
     : public ChromeRenderViewHostTestHarness {
@@ -57,14 +56,12 @@ TEST_F(AnnotatedPageContentCapturerTest, NewLoadInvalidatesPreviousRequest) {
   optimization_guide::OnAIPageContentDone second_request_callback;
 
   EXPECT_CALL(mock_get_page_content_, Run)
-      .WillOnce(
-          Invoke([&](auto, optimization_guide::OnAIPageContentDone callback) {
-            first_request_callback = std::move(callback);
-          }))
-      .WillOnce(
-          Invoke([&](auto, optimization_guide::OnAIPageContentDone callback) {
-            second_request_callback = std::move(callback);
-          }));
+      .WillOnce([&](auto, optimization_guide::OnAIPageContentDone callback) {
+        first_request_callback = std::move(callback);
+      })
+      .WillOnce([&](auto, optimization_guide::OnAIPageContentDone callback) {
+        second_request_callback = std::move(callback);
+      });
 
   capturer->DidStopLoading();
   ASSERT_TRUE(first_request_callback);

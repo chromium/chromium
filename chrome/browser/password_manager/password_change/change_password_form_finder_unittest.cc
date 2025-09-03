@@ -43,7 +43,6 @@
 namespace {
 
 using autofill::test::CreateTestFormField;
-using testing::Invoke;
 using testing::Return;
 using testing::WithArg;
 
@@ -254,7 +253,7 @@ TEST_F(ChangePasswordFormFinderTest, ExecuteModelModelFailedWhenFormNotFound) {
 
   // Simulate ExecuteModel responds with failure.
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(WithArg<3>(Invoke(&PostResponse<false>)));
+      .WillOnce(WithArg<3>(&PostResponse<false>));
 
   EXPECT_CALL(capture_annotated_page_content, Run)
       .WillOnce(base::test::RunOnceCallback<0>(
@@ -339,7 +338,7 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedButFailed) {
   ASSERT_FALSE(form_finder->click_helper());
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+      .WillOnce(WithArg<3>(&PostResponse<true>));
   EXPECT_CALL(capture_annotated_page_content, Run)
       .WillOnce(base::test::RunOnceCallback<0>(
           optimization_guide::AIPageContentResult()));
@@ -403,7 +402,7 @@ TEST_F(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
   ASSERT_FALSE(form_finder->click_helper());
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+      .WillOnce(WithArg<3>(&PostResponse<true>));
   EXPECT_CALL(capture_annotated_page_content, Run)
       .WillOnce(base::test::RunOnceCallback<0>(
           optimization_guide::AIPageContentResult()));
@@ -452,7 +451,7 @@ TEST_F(ChangePasswordFormFinderTest,
   ASSERT_FALSE(form_finder->click_helper());
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+      .WillOnce(WithArg<3>(&PostResponse<true>));
   EXPECT_CALL(capture_annotated_page_content, Run)
       .WillOnce(base::test::RunOnceCallback<0>(
           optimization_guide::AIPageContentResult()));
@@ -503,7 +502,7 @@ TEST_F(ChangePasswordFormFinderTest,
   ASSERT_FALSE(form_finder->click_helper());
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+      .WillOnce(WithArg<3>(&PostResponse<true>));
   EXPECT_CALL(capture_annotated_page_content, Run)
       .WillOnce(base::test::RunOnceCallback<0>(
           optimization_guide::AIPageContentResult()));

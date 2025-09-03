@@ -84,7 +84,6 @@ using ::optimization_guide::TestModelQualityLogsUploaderService;
 using ::testing::_;
 using ::testing::An;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SizeIs;
@@ -292,8 +291,7 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
               ASSERT_TRUE(password_change_request.page_context()
                               .has_annotated_page_content());
             }),
-            WithArg<3>(Invoke([response,
-                               logs_uploader_weak_ptr](auto callback) {
+            WithArg<3>([response, logs_uploader_weak_ptr](auto callback) {
               base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,
                   base::BindOnce(
@@ -304,7 +302,7 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
                       std::make_unique<
                           optimization_guide::ModelQualityLogEntry>(
                           logs_uploader_weak_ptr)));
-            }))));
+            })));
   }
 
   autofill::FormData CreateSimpleOtp() {

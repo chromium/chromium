@@ -23,7 +23,6 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using testing::InSequence;
-using testing::Invoke;
 using testing::WithArg;
 
 std::unique_ptr<KeyedService> CreateOptimizationService(
@@ -99,7 +98,7 @@ class LoginStateCheckerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(LoginStateCheckerTest, UserIsLoggedInOnFirstAttempt) {
   base::test::TestFuture<bool> future;
   EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+      .WillOnce(WithArg<3>(&PostResponse<true>));
 
   auto checker = CreateChecker(future.GetRepeatingCallback());
   ASSERT_TRUE(checker->capturer());
@@ -114,9 +113,9 @@ TEST_F(LoginStateCheckerTest, UserIsLoggedInOnSecondAttempt) {
   {
     InSequence s;
     EXPECT_CALL(*optimization_service(), ExecuteModel)
-        .WillOnce(WithArg<3>(Invoke(&PostResponse<false>)));
+        .WillOnce(WithArg<3>(&PostResponse<false>));
     EXPECT_CALL(*optimization_service(), ExecuteModel)
-        .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
+        .WillOnce(WithArg<3>(&PostResponse<true>));
   }
 
   auto checker = CreateChecker(future.GetRepeatingCallback());
@@ -148,7 +147,7 @@ TEST_F(LoginStateCheckerTest, ExceedsMaxLoginChecksAndFails) {
   base::test::TestFuture<bool> future;
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .Times(LoginStateChecker::kMaxLoginChecks)
-      .WillRepeatedly(WithArg<3>(Invoke(&PostResponse<false>)));
+      .WillRepeatedly(WithArg<3>(&PostResponse<false>));
 
   auto checker = CreateChecker(future.GetRepeatingCallback());
   for (int i = 0; i < LoginStateChecker::kMaxLoginChecks; ++i) {

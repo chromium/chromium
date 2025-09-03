@@ -150,7 +150,6 @@ using sessions::GetPasswordStateFromNavigation;
 using sessions::SerializedNavigationEntry;
 using testing::_;
 using testing::Eq;
-using testing::Invoke;
 using testing::Key;
 using testing::NiceMock;
 using testing::Return;
@@ -2333,11 +2332,11 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   std::vector<password_manager::PasskeyCredential> credentials{};
   EXPECT_CALL(*ttf_controller, InitData(_, Eq(credentials), _));
   EXPECT_CALL(*ttf_controller, Show)
-      .WillOnce(Invoke([&waiter](std::unique_ptr<TouchToFillControllerDelegate>,
-                                 webauthn::WebAuthnCredManDelegate*) {
+      .WillOnce([&waiter](std::unique_ptr<TouchToFillControllerDelegate>,
+                          webauthn::WebAuthnCredManDelegate*) {
         waiter.Quit();
         return true;
-      }));
+      });
 
   // Simulate a timeout.
   AdvanceClock(base::Seconds(5));
