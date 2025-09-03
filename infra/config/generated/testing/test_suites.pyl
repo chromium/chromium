@@ -2477,6 +2477,30 @@
       },
     },
 
+    'chromeos_ctp_preuprev_tests_no_arc': {
+      'chromeos_chrome_all_tast_tests_tfc': {
+        'mixins': [
+          'skylab-40-tests-per-shard',
+        ],
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_device_only_gtests': {
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+      'chromeos_integration_tests_suite': {
+        'mixins': [
+          'crosier-no-arc',
+        ],
+        'variants': [
+          'CROS_RELEASE_LKGM',
+        ],
+      },
+    },
+
     'chromeos_ctp_preuprev_tests_slow_boards': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [

@@ -385,6 +385,36 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    # Tests scheduled via CTP for preuprev on ARC-less boards.
+    name = "chromeos_ctp_preuprev_tests_no_arc",
+    basic_suites = {
+        "chromeos_chrome_all_tast_tests_tfc": targets.legacy_matrix_config(
+            mixins = [
+                # Most boards run 40 tests per shard to finish within 1h.
+                "skylab-40-tests-per-shard",
+            ],
+            variants = [
+                "CROS_RELEASE_LKGM",
+            ],
+        ),
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
+            # TODO(b/353643755): Remove once ARC tests not compiled in.
+            mixins = [
+                "crosier-no-arc",
+            ],
+            variants = [
+                "CROS_RELEASE_LKGM",
+            ],
+        ),
+        "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_RELEASE_LKGM",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "gpu_fyi_chromeos_brya_telemetry_tests",
     basic_suites = {
         "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
