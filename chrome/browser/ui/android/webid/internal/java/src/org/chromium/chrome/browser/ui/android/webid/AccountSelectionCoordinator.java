@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerItemDecoration;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
@@ -193,42 +194,42 @@ public class AccountSelectionCoordinator
 
     @Override
     public boolean showAccounts(
-            String rpEtldPlusOne,
+            RelyingPartyData rpData,
             List<Account> accounts,
             List<IdentityProviderData> idpDataList,
             List<Account> newAccounts) {
-        return mMediator.showAccounts(rpEtldPlusOne, accounts, idpDataList, newAccounts);
+        return mMediator.showAccounts(rpData, accounts, idpDataList, newAccounts);
     }
 
     @Override
     public boolean showFailureDialog(
-            String rpForDisplay,
+            RelyingPartyData rpData,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext) {
-        return mMediator.showFailureDialog(rpForDisplay, idpForDisplay, idpMetadata, rpContext);
+        return mMediator.showFailureDialog(rpData, idpForDisplay, idpMetadata, rpContext);
     }
 
     @Override
     public boolean showErrorDialog(
-            String rpForDisplay,
+            RelyingPartyData rpData,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error) {
-        return mMediator.showErrorDialog(
-                rpForDisplay, idpForDisplay, idpMetadata, rpContext, error);
+        return mMediator.showErrorDialog(rpData, idpForDisplay, idpMetadata, rpContext, error);
     }
 
     @Override
     public boolean showLoadingDialog(
-            String rpForDisplay, String idpForDisplay, @RpContext.EnumType int rpContext) {
-        return mMediator.showLoadingDialog(rpForDisplay, idpForDisplay, rpContext);
+            RelyingPartyData rpData, String idpForDisplay, @RpContext.EnumType int rpContext) {
+        return mMediator.showLoadingDialog(rpData, idpForDisplay, rpContext);
     }
 
     @Override
-    public boolean showVerifyingDialog(Account account, boolean isAutoReauthn) {
-        return mMediator.showVerifyingDialog(account, isAutoReauthn);
+    public boolean showVerifyingDialog(
+            RelyingPartyData rpData, Account account, boolean isAutoReauthn) {
+        return mMediator.showVerifyingDialog(rpData, account, isAutoReauthn);
     }
 
     @Override

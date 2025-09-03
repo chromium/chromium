@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/android/webid/jni_headers/IdentityCredentialTokenError_jni.h"
 #include "chrome/browser/ui/android/webid/jni_headers/IdentityProviderData_jni.h"
 #include "chrome/browser/ui/android/webid/jni_headers/IdentityProviderMetadata_jni.h"
+#include "chrome/browser/ui/android/webid/jni_headers/RelyingPartyData_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
@@ -132,6 +133,17 @@ ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
   return Java_ClientIdMetadata_Constructor(env, metadata.terms_of_service_url,
                                            metadata.privacy_policy_url,
                                            brand_icon_bitmap);
+}
+
+ScopedJavaLocalRef<jobject> ConvertToJavaRelyingPartyData(
+    JNIEnv* env,
+    const content::RelyingPartyData& rp_data) {
+  ScopedJavaLocalRef<jobject> rp_icon_bitmap = nullptr;
+  if (!rp_data.rp_icon.IsEmpty()) {
+    rp_icon_bitmap = gfx::ConvertToJavaBitmap(*rp_data.rp_icon.ToSkBitmap());
+  }
+  return Java_RelyingPartyData_Constructor(
+      env, rp_data.rp_for_display, rp_data.iframe_for_display, rp_icon_bitmap);
 }
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
@@ -287,8 +299,8 @@ bool AccountSelectionViewAndroid::Show(
       ConvertToJavaIdentityProvidersList(env, identity_providers_map);
 
   return Java_AccountSelectionBridge_showAccounts(
-      env, java_object_internal_, rp_data.rp_for_display, accounts_obj,
-      identity_providers_list, new_accounts_obj);
+      env, java_object_internal_, ConvertToJavaRelyingPartyData(env, rp_data),
+      accounts_obj, identity_providers_list, new_accounts_obj);
 }
 
 bool AccountSelectionViewAndroid::ShowFailureDialog(
@@ -311,10 +323,9 @@ bool AccountSelectionViewAndroid::ShowFailureDialog(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> idp_metadata_obj =
       ConvertToJavaIdentityProviderMetadata(env, idp_metadata, rp_mode);
-  // TODO(crbug.com/382086282): Pass RelyingPartyData to Java.
   return Java_AccountSelectionBridge_showFailureDialog(
-      env, java_object_internal_, rp_data.rp_for_display, idp_for_display,
-      idp_metadata_obj, static_cast<jint>(rp_context));
+      env, java_object_internal_, ConvertToJavaRelyingPartyData(env, rp_data),
+      idp_for_display, idp_metadata_obj, static_cast<jint>(rp_context));
 }
 
 bool AccountSelectionViewAndroid::ShowErrorDialog(
@@ -334,10 +345,9 @@ bool AccountSelectionViewAndroid::ShowErrorDialog(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> idp_metadata_obj =
       ConvertToJavaIdentityProviderMetadata(env, idp_metadata, rp_mode);
-  // TODO(crbug.com/382086282): Pass RelyingPartyData to Java.
   return Java_AccountSelectionBridge_showErrorDialog(
-      env, java_object_internal_, rp_data.rp_for_display, idp_for_display,
-      idp_metadata_obj, static_cast<jint>(rp_context),
+      env, java_object_internal_, ConvertToJavaRelyingPartyData(env, rp_data),
+      idp_for_display, idp_metadata_obj, static_cast<jint>(rp_context),
       ConvertToJavaIdentityCredentialTokenError(env, error));
 }
 
@@ -354,10 +364,9 @@ bool AccountSelectionViewAndroid::ShowLoadingDialog(
     return false;
   }
   JNIEnv* env = AttachCurrentThread();
-  // TODO(crbug.com/382086282): Pass RelyingPartyData to Java.
   return Java_AccountSelectionBridge_showLoadingDialog(
-      env, java_object_internal_, rp_data.rp_for_display, idp_for_display,
-      static_cast<jint>(rp_context));
+      env, java_object_internal_, ConvertToJavaRelyingPartyData(env, rp_data),
+      idp_for_display, static_cast<jint>(rp_context));
 }
 
 bool AccountSelectionViewAndroid::ShowVerifyingDialog(
@@ -385,8 +394,8 @@ bool AccountSelectionViewAndroid::ShowVerifyingDialog(
       /*is_multi_idp=*/false, idp_obj, device_scale_factor);
 
   return Java_AccountSelectionBridge_showVerifyingDialog(
-      env, java_object_internal_, account_obj,
-      sign_in_mode == Account::SignInMode::kAuto);
+      env, java_object_internal_, ConvertToJavaRelyingPartyData(env, rp_data),
+      account_obj, sign_in_mode == Account::SignInMode::kAuto);
 }
 
 std::string AccountSelectionViewAndroid::GetTitle() const {

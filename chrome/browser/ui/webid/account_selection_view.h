@@ -116,7 +116,7 @@ class AccountSelectionView {
   // browser in the auto re-authentication flow. Returns true if it was possible
   // to show UI.
   virtual bool ShowVerifyingDialog(const content::RelyingPartyData& rp_data,
-                                   const IdentityProviderDataPtr& idp_list,
+                                   const IdentityProviderDataPtr& idp_data,
                                    const IdentityRequestAccountPtr& account,
                                    Account::SignInMode sign_in_mode,
                                    blink::mojom::RpMode rp_mode) = 0;

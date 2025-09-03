@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
@@ -110,13 +111,13 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private boolean showAccounts(
-            @JniType("std::u16string") String rpForDisplay,
+            RelyingPartyData rpData,
             Account[] accounts,
             IdentityProviderData[] idpDataList,
             Account[] newAccounts) {
         assert accounts != null && accounts.length > 0;
         return mAccountSelectionComponent.showAccounts(
-                rpForDisplay,
+                rpData,
                 Arrays.asList(accounts),
                 Arrays.asList(idpDataList),
                 Arrays.asList(newAccounts));
@@ -136,12 +137,12 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private boolean showFailureDialog(
-            @JniType("std::u16string") String rpForDisplay,
+            RelyingPartyData rpData,
             @JniType("std::string") String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext) {
         return mAccountSelectionComponent.showFailureDialog(
-                rpForDisplay, idpForDisplay, idpMetadata, rpContext);
+                rpData, idpForDisplay, idpMetadata, rpContext);
     }
 
     /**
@@ -159,13 +160,13 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private boolean showErrorDialog(
-            @JniType("std::u16string") String rpForDisplay,
+            RelyingPartyData rpData,
             @JniType("std::string") String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error) {
         return mAccountSelectionComponent.showErrorDialog(
-                rpForDisplay, idpForDisplay, idpMetadata, rpContext, error);
+                rpData, idpForDisplay, idpMetadata, rpContext, error);
     }
 
     /**
@@ -181,21 +182,23 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private boolean showLoadingDialog(
-            @JniType("std::u16string") String rpForDisplay,
+            RelyingPartyData rpData,
             @JniType("std::string") String idpForDisplay,
             @RpContext.EnumType int rpContext) {
-        return mAccountSelectionComponent.showLoadingDialog(rpForDisplay, idpForDisplay, rpContext);
+        return mAccountSelectionComponent.showLoadingDialog(rpData, idpForDisplay, rpContext);
     }
 
     /**
      * Shows a verifying dialog with the selected account.
      *
+     * @param rpData is the data for the relying party.
      * @param account is the selected account to be shown.
      * @param isAutoReauthn represents whether this is an auto re-authn flow.
      */
     @CalledByNative
-    private boolean showVerifyingDialog(Account account, boolean isAutoReauthn) {
-        return mAccountSelectionComponent.showVerifyingDialog(account, isAutoReauthn);
+    private boolean showVerifyingDialog(
+            RelyingPartyData rpData, Account account, boolean isAutoReauthn) {
+        return mAccountSelectionComponent.showVerifyingDialog(rpData, account, isAutoReauthn);
     }
 
     @CalledByNative
