@@ -67,6 +67,25 @@ AutocompleteMatch CreateContextualSearchMatch(std::u16string contents) {
   return match;
 }
 
+AutocompleteMatch CreateZeroSuggestContextualSearchMatch(
+    std::u16string contents) {
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::Type::SEARCH_SUGGEST;
+  match.contents = contents;
+  match.relevance = 195;
+  match.contents_class = {{0, 1}};
+  match.keyword = u"contextual";
+  match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH;
+  match.subtypes.insert(omnibox::SUBTYPE_CONTEXTUAL_SEARCH);
+  match.subtypes.insert(omnibox::SUBTYPE_ZERO_PREFIX);
+  match.search_terms_args =
+      std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
+  match.search_terms_args->searchbox_stats.set_client_name("chrome");
+  match.destination_url =
+      GURL{"https://google.com/" + base::UTF16ToUTF8(contents)};
+  return match;
+}
+
 AutocompleteMatch CreateLensActionMatch(std::u16string contents) {
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::Type::PEDAL;

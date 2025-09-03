@@ -26,11 +26,20 @@ class ContextualSearchFulfillmentAction : public OmniboxAction {
   const gfx::VectorIcon& GetVectorIcon() const override;
 #endif
 
+  static ContextualSearchFulfillmentAction* FromAction(OmniboxAction* action);
+
+  void set_fulfillment_url(GURL url) { fulfillment_url_ = std::move(url); }
+
+  const GURL get_fulfillment_url_for_testing() { return fulfillment_url_; }
+
  protected:
   ~ContextualSearchFulfillmentAction() override;
 
   AutocompleteMatchType::Type match_type_;
   bool is_zero_prefix_suggestion_;
+  // This URL includes all of the search_terms_args that its match had
+  // associated with it.
+  GURL fulfillment_url_;
 };
 
 // An action that invokes the Lens overlay UI for the current page.
