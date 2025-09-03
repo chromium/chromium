@@ -93,6 +93,8 @@ struct InstallableData {
   // i.e. a valid, installable web app manifest. The result might be different
   // depending on the task's |params|. If |installable_check_passed| was true
   // and the site isn't installable, the reason will be in |errors|.
+  // If the criteria was webapps::InstallableCriteria::kDoNotCheck, then this is
+  // always `true`.
   const bool installable_check_passed = false;
 };
 

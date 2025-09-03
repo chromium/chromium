@@ -56,7 +56,7 @@ class InstallableEvaluator {
 
   // Check if the web site has provided all information required for install,
   // returns nullopt if the check was not run.
-  std::optional<std::vector<InstallableStatusCode>> CheckInstallability() const;
+  std::vector<InstallableStatusCode> CheckInstallability() const;
 
  private:
   friend class InstallableEvaluatorUnitTest;

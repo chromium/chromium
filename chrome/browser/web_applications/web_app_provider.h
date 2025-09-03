@@ -17,6 +17,10 @@
 
 class Profile;
 
+namespace base {
+class Clock;
+}  // namespace base
+
 namespace content {
 class WebContents;
 }
@@ -216,6 +220,12 @@ class WebAppProvider : public KeyedService {
 
   NavigationCapturingLog& navigation_capturing_log();
 
+  base::Clock& clock();
+
+  // TODO(https://crbug.com/440635434): Move this to the FakeWebAppProvider when
+  // it can be used in browsertests.
+  void SetClockForTesting(base::Clock* clock);
+
   // KeyedService:
   void Shutdown() override;
 
@@ -292,6 +302,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<VisitedManifestManager> visited_manifest_manager_;
   std::unique_ptr<NavigationCapturingLog> navigation_capturing_log_;
   std::unique_ptr<WebAppProfileDeletionManager> profile_deletion_manager_;
+  raw_ptr<base::Clock> clock_;
 
   base::OneShotEvent on_registry_ready_;
   base::OneShotEvent on_external_managers_synchronized_;

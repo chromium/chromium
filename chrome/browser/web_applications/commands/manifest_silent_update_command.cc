@@ -6,10 +6,10 @@
 
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/clock.h"
 #include "chrome/browser/web_applications/icons/trusted_icon_filter.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
@@ -24,6 +24,8 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/image_visual_diff.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -181,8 +183,6 @@ std::ostream& operator<<(std::ostream& os,
     case ManifestSilentUpdateCommandStage::
         kWritingPendingUpdateIconBitmapsToDisk:
       return os << "kWritingPendingUpdateIconBitmapsToDisk";
-    case ManifestSilentUpdateCommandStage::kCompleteCommand:
-      return os << "kCompleteCommand";
   }
 }
 
@@ -213,6 +213,8 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kInvalidManifest";
     case ManifestSilentUpdateCheckResult::kInvalidPendingUpdateInfo:
       return os << "kInvalidPendingUpdateInfo";
+    case ManifestSilentUpdateCheckResult::kUserNavigated:
+      return os << "kUserNavigated";
   }
 }
 
@@ -236,30 +238,53 @@ ManifestSilentUpdateCommand::ManifestSilentUpdateCommand(
       web_contents_(web_contents),
       data_retriever_(std::move(data_retriever)),
       icon_downloader_(std::move(icon_downloader)) {
+  Observe(web_contents_.get());
   GetMutableDebugValue().Set("url", url_.spec());
   GetMutableDebugValue().Set("stage", base::ToString(stage_));
 }
 
 ManifestSilentUpdateCommand::~ManifestSilentUpdateCommand() = default;
 
+void ManifestSilentUpdateCommand::PrimaryPageChanged(content::Page& page) {
+  auto error = ManifestSilentUpdateCheckResult::kUserNavigated;
+  GetMutableDebugValue().Set(
+      "primary_page_changed",
+      page.GetMainDocument().GetLastCommittedURL().possibly_invalid_spec());
+  if (IsStarted()) {
+    CompleteCommandAndSelfDestruct(error);
+    return;
+  }
+  GetMutableDebugValue().Set("failed_before_start", true);
+  failed_before_start_ = error;
+}
+
 void ManifestSilentUpdateCommand::StartWithLock(
     std::unique_ptr<NoopLock> lock) {
   lock_ = std::move(lock);
+  if (failed_before_start_.has_value()) {
+    CompleteCommandAndSelfDestruct(*failed_before_start_);
+    return;
+  }
 
   if (IsWebContentsDestroyed()) {
     AbortCommandOnWebContentsDestruction();
     return;
   }
-  Observe(web_contents_.get());
 
   // ManifestSilentUpdateCommandStage::kAcquiringAppLock:
-  stage_ = ManifestSilentUpdateCommandStage::kAcquiringAppLock;
+  SetStage(ManifestSilentUpdateCommandStage::kAcquiringAppLock);
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       web_contents_.get(),
       base::BindOnce(
           &ManifestSilentUpdateCommand::OnManifestFetchedAcquireAppLock,
           GetWeakPtr()),
       webapps::InstallableParams());
+}
+
+void ManifestSilentUpdateCommand::SetStage(
+    ManifestSilentUpdateCommandStage stage) {
+  stage_ = stage;
+  GetMutableDebugValue().Set("stage", base::ToString(stage));
 }
 
 void ManifestSilentUpdateCommand::OnManifestFetchedAcquireAppLock(
@@ -298,7 +323,7 @@ void ManifestSilentUpdateCommand::OnManifestFetchedAcquireAppLock(
   app_id_ = GenerateAppIdFromManifestId(opt_manifest->id);
 
   // ManifestSilentUpdateCommandStage::kFetchingNewManifestData
-  stage_ = ManifestSilentUpdateCommandStage::kFetchingNewManifestData;
+  SetStage(ManifestSilentUpdateCommandStage::kFetchingNewManifestData);
   app_lock_ = std::make_unique<AppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
       std::move(lock_), *app_lock_, {app_id_},
@@ -393,7 +418,7 @@ void ManifestSilentUpdateCommand::
       std::make_optional(std::move(validated_scope_extensions));
 
   // ManifestSilentUpdateCommandStage::kLoadingExistingManifestData
-  stage_ = ManifestSilentUpdateCommandStage::kLoadingExistingManifestData;
+  SetStage(ManifestSilentUpdateCommandStage::kLoadingExistingManifestData);
   app_lock_->icon_manager().ReadAllIcons(
       app_id_,
       base::BindOnce(&ManifestSilentUpdateCommand::StashExistingAppIcons,
@@ -432,7 +457,7 @@ void ManifestSilentUpdateCommand::
 
   // ManifestSilentUpdateCommandStage::
   // kComparingManifestData
-  stage_ = ManifestSilentUpdateCommandStage::kComparingManifestData;
+  SetStage(ManifestSilentUpdateCommandStage::kComparingManifestData);
 
   const WebApp* web_app = app_lock_->registrar().GetAppById(app_id_);
   CHECK(new_install_info_);
@@ -588,7 +613,7 @@ void ManifestSilentUpdateCommand::UpdateFinalizedWritePendingInfoIfNeeded(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   CHECK_EQ(stage_, ManifestSilentUpdateCommandStage::kComparingManifestData);
-  stage_ = ManifestSilentUpdateCommandStage::kFinalizingSilentManifestChanges;
+  SetStage(ManifestSilentUpdateCommandStage::kFinalizingSilentManifestChanges);
   if (!IsSuccess(code)) {
     GetMutableDebugValue().Set("installation_code", base::ToString(code));
     CompleteCommandAndSelfDestruct(
@@ -663,31 +688,41 @@ void ManifestSilentUpdateCommand::VerifyPendingUpdateIconBitmapsWrittenToDisk(
 // ManifestSilentUpdateCommandStage::kCompleteCommand
 void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
     ManifestSilentUpdateCheckResult check_result) {
-  stage_ = ManifestSilentUpdateCommandStage::kCompleteCommand;
   GetMutableDebugValue().Set("result", base::ToString(check_result));
-
-  CommandResult command_result = [&] {
-    switch (check_result) {
-      case ManifestSilentUpdateCheckResult::kAppSilentlyUpdated:
-      case ManifestSilentUpdateCheckResult::kAppUpToDate:
-      case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
-      case ManifestSilentUpdateCheckResult::
-          kAppHasNonSecurityAndSecurityChanges:
-      case ManifestSilentUpdateCheckResult::kAppNotInstalled:
-      case ManifestSilentUpdateCheckResult::kWebContentsDestroyed:
-      case ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed:
-      case ManifestSilentUpdateCheckResult::kPendingIconWriteToDiskFailed:
-      case ManifestSilentUpdateCheckResult::kInvalidManifest:
-        return CommandResult::kSuccess;
-      case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:
-      case ManifestSilentUpdateCheckResult::kInvalidPendingUpdateInfo:
-        return CommandResult::kFailure;
-      case ManifestSilentUpdateCheckResult::kSystemShutdown:
-        NOTREACHED() << "This should be handled by OnShutdown()";
-    }
-  }();
-
   Observe(nullptr);
+
+  bool record_update;
+  CommandResult command_result;
+  switch (check_result) {
+    case ManifestSilentUpdateCheckResult::kAppSilentlyUpdated:
+    case ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges:
+      record_update = true;
+      command_result = CommandResult::kSuccess;
+      break;
+    case ManifestSilentUpdateCheckResult::kAppUpToDate:
+    case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
+    case ManifestSilentUpdateCheckResult::kAppNotInstalled:
+    case ManifestSilentUpdateCheckResult::kWebContentsDestroyed:
+    case ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed:
+    case ManifestSilentUpdateCheckResult::kPendingIconWriteToDiskFailed:
+    case ManifestSilentUpdateCheckResult::kInvalidManifest:
+    case ManifestSilentUpdateCheckResult::kUserNavigated:
+      record_update = false;
+      command_result = CommandResult::kSuccess;
+      break;
+    case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:
+    case ManifestSilentUpdateCheckResult::kInvalidPendingUpdateInfo:
+      record_update = false;
+      command_result = CommandResult::kFailure;
+      break;
+    case ManifestSilentUpdateCheckResult::kSystemShutdown:
+      NOTREACHED() << "The value should only be specified in the constructor "
+                      "and never given to this method.";
+  }
+  if (record_update && app_lock_) {
+    app_lock_->sync_bridge().SetAppManifestUpdateTime(app_id_,
+                                                      app_lock_->clock().Now());
+  }
   CompleteAndSelfDestruct(command_result, check_result);
 }
 

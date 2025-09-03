@@ -37,6 +37,7 @@ class WebContents;
 
 namespace web_app {
 
+enum class ManifestSilentUpdateCheckResult;
 class WebAppProvider;
 
 // Documentation: docs/webapps/manifest_update_process.md
@@ -52,6 +53,8 @@ class WebAppProvider;
 //
 // TODO(crbug.com/40611449): Replace MaybeUpdate() with a background check
 // instead of being triggered by page loads.
+// TODO(crbug.com/442643377): Delete this after we can simply use a per-page
+// class that notifies when a valid manifest is attached to a page.
 class ManifestUpdateManager final : public WebAppInstallManagerObserver {
  public:
   class ScopedBypassWindowCloseWaitingForTesting {
@@ -149,6 +152,12 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       const webapps::AppId& app_id,
       base::Time check_time,
       base::WeakPtr<content::WebContents> web_contents);
+
+  void OnManifestSilentUpdateComplete(
+      base::WeakPtr<content::WebContents> contents,
+      const GURL& url,
+      const webapps::AppId& app_id,
+      ManifestSilentUpdateCheckResult result);
 
   void OnManifestCheckAwaitAppWindowClose(
       base::WeakPtr<content::WebContents> contents,

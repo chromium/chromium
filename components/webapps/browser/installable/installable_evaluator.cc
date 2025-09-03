@@ -265,18 +265,17 @@ int InstallableEvaluator::GetMinimumIconSizeInPx() {
   return kMinimumPrimaryIconSizeInPx;
 }
 
-std::optional<std::vector<InstallableStatusCode>>
-InstallableEvaluator::CheckInstallability() const {
+std::vector<InstallableStatusCode> InstallableEvaluator::CheckInstallability()
+    const {
   CHECK(blink::IsEmptyManifest(page_data_->GetManifest()) ||
         (page_data_->GetManifest().start_url.is_valid() &&
          page_data_->GetManifest().scope.is_valid() &&
          page_data_->GetManifest().id.is_valid()));
 
-  if (criteria_ == InstallableCriteria::kDoNotCheck) {
-    return std::nullopt;
-  }
-
   std::vector<InstallableStatusCode> errors;
+  if (criteria_ == InstallableCriteria::kDoNotCheck) {
+    return errors;
+  }
 
   InstallableStatusCode error = HasManifestOrAtRootScope(
       criteria_, page_data_->GetManifest(), page_data_->manifest_url(),

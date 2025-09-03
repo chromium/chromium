@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "content/public/browser/web_contents_observer.h"
 
 class GURL;
 
@@ -31,7 +32,6 @@ enum class ManifestSilentUpdateCommandStage {
   kComparingManifestData,
   kFinalizingSilentManifestChanges,
   kWritingPendingUpdateIconBitmapsToDisk,
-  kCompleteCommand,
 };
 
 // This enum is recorded by UMA, the numeric values must not change.
@@ -48,15 +48,19 @@ enum class ManifestSilentUpdateCheckResult {
   kPendingIconWriteToDiskFailed = 9,
   kInvalidManifest = 10,
   kInvalidPendingUpdateInfo = 11,
-  kMaxValue = kInvalidPendingUpdateInfo,
+  kUserNavigated = 12,
+  kMaxValue = kUserNavigated,
 };
 
 struct WebAppInstallInfo;
 
-// Documentation: docs/webapps/manifest_update_process.md
+// Downloads a currently linked manifest in the given web contents. Non-security
+// -sensitive manifest members are updated immediately. Security sensitive
+// changes are saved in the WebApp's PendingUpdateInfo.
 //
-// Checks whether the installed web app associated with a given WebContents has
-// out of date manifest data and what to update it to.
+// Invariants:
+// - This command assumes that the load for the given web contents has been
+//  completed, and the manifest is already linked.
 //
 // High level procedure for this command:
 // - Download new manifest data from site.
@@ -84,11 +88,16 @@ class ManifestSilentUpdateCommand
 
   ~ManifestSilentUpdateCommand() override;
 
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+
  protected:
   // WebAppCommand:
   void StartWithLock(std::unique_ptr<NoopLock> lock) override;
 
  private:
+  void SetStage(ManifestSilentUpdateCommandStage stage);
+
   // Stage: Upgrade NoopLock to AppLock
   // (ManifestSilentUpdateCommandStage::kAcquiringAppLock).
   void OnManifestFetchedAcquireAppLock(
@@ -143,6 +152,10 @@ class ManifestSilentUpdateCommand
   const GURL url_;
   webapps::AppId app_id_;
 
+  // Populated when the command should fail, but the command hasn't started yet.
+  // Used for when the attached page is navigated or changed, so the manifest
+  // cannot be loaded from here.
+  std::optional<ManifestSilentUpdateCheckResult> failed_before_start_;
   // Resources and helpers used to fetch manifest data.
   std::unique_ptr<NoopLock> lock_;
   std::unique_ptr<AppLock> app_lock_;

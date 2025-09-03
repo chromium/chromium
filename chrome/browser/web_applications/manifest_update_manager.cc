@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -259,7 +260,8 @@ void ManifestUpdateManager::MaybeUpdate(
   base::Time check_time =
       time_override_for_testing_.value_or(base::Time::Now());
 
-  if (!MaybeConsumeUpdateCheck(url.DeprecatedGetOriginAsURL(), *app_id,
+  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating) &&
+      !MaybeConsumeUpdateCheck(url.DeprecatedGetOriginAsURL(), *app_id,
                                check_time)) {
     NotifyResult(url, *app_id, ManifestUpdateResult::kThrottled);
     return;
@@ -310,8 +312,19 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
   update_stage.observer.reset();
   update_stage.stage = UpdateStage::Stage::kCheckingManifestDiff;
 
-  if (load_finished_callback_)
+  if (load_finished_callback_) {
     std::move(load_finished_callback_).Run();
+  }
+
+  // TODO(crbug.com/442643377): Don't do this here, and instead use a per-page
+  // class to be notified when a valid manifest is attached to a page.
+  if (base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
+    provider_->scheduler().ScheduleManifestSilentUpdate(
+        url, web_contents->GetWeakPtr(),
+        base::BindOnce(&ManifestUpdateManager::OnManifestSilentUpdateComplete,
+                       weak_factory_.GetWeakPtr(), web_contents, url, app_id));
+    return;
+  }
 
   auto app_window_close_await_callback =
       base::BindOnce(&ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose,
@@ -319,6 +332,48 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
   provider_->scheduler().ScheduleManifestUpdateCheck(
       url, app_id, check_time, web_contents,
       std::move(app_window_close_await_callback));
+}
+
+void ManifestUpdateManager::OnManifestSilentUpdateComplete(
+    base::WeakPtr<content::WebContents> contents,
+    const GURL& url,
+    const webapps::AppId& app_id,
+    ManifestSilentUpdateCheckResult result) {
+  auto update_stage_it = update_stages_.find(app_id);
+  if (update_stage_it == update_stages_.end()) {
+    // If the web_app has already been uninstalled after the manifest update
+    // data fetch has happened, then we can early exit.
+    return;
+  }
+  update_stages_.erase(update_stage_it);
+  bool update_silent_or_pending;
+  switch (result) {
+    case ManifestSilentUpdateCheckResult::kAppNotInstalled:
+    case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:
+    case ManifestSilentUpdateCheckResult::kSystemShutdown:
+    case ManifestSilentUpdateCheckResult::kAppUpToDate:
+    case ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed:
+    case ManifestSilentUpdateCheckResult::kWebContentsDestroyed:
+    case ManifestSilentUpdateCheckResult::kPendingIconWriteToDiskFailed:
+    case ManifestSilentUpdateCheckResult::kInvalidManifest:
+    case ManifestSilentUpdateCheckResult::kInvalidPendingUpdateInfo:
+    case ManifestSilentUpdateCheckResult::kUserNavigated:
+      update_silent_or_pending = false;
+      break;
+    case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
+    case ManifestSilentUpdateCheckResult::kAppSilentlyUpdated:
+    case ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges:
+      update_silent_or_pending = true;
+      break;
+  }
+
+  // If a manifest update happened successfully, record feature usage of
+  // applying a manifest.
+  if (update_silent_or_pending && contents) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        contents->GetPrimaryMainFrame(),
+        blink::mojom::WebFeature::kWebAppManifestUpdate);
+  }
 }
 
 void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(

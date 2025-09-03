@@ -14,6 +14,10 @@
 #include "base/values.h"
 #include "components/webapps/common/web_app_id.h"
 
+namespace base {
+class Clock;
+}
+
 namespace web_app {
 
 class VisitedManifestManager;
@@ -93,6 +97,9 @@ class Lock {
   PartitionedLockHolder& GetLockHolder(base::PassKey<WebAppLockManager>) {
     return *holder_;
   }
+
+  // Convenience method for accessing the clock on the WebAppProvider.
+  base::Clock& clock();
 
  protected:
   Lock();

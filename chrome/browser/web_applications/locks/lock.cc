@@ -7,6 +7,7 @@
 #include <memory>
 #include <ostream>
 
+#include "base/time/clock.h"
 #include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/visited_manifest_manager.h"
@@ -83,6 +84,11 @@ VisitedManifestManager& Lock::visited_manifest_manager() {
 WebAppOriginAssociationManager& Lock::origin_association_manager() {
   CHECK(lock_manager_);
   return lock_manager_->provider().origin_association_manager();
+}
+
+base::Clock& Lock::clock() {
+  CHECK(lock_manager_);
+  return lock_manager_->provider().clock();
 }
 
 Lock::Lock() : holder_(std::make_unique<PartitionedLockHolder>()) {}

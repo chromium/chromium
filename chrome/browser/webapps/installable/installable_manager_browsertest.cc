@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, MAYBE_CheckNoManifest) {
   EXPECT_TRUE(tester->primary_icon_url().is_empty());
   EXPECT_EQ(nullptr, tester->primary_icon());
   EXPECT_FALSE(tester->has_maskable_primary_icon());
-  EXPECT_FALSE(tester->installable_check_passed());
+  EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_THAT(tester->errors(), testing::IsEmpty());
 }
 
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifestOnly) {
   EXPECT_TRUE(tester->primary_icon_url().is_empty());
   EXPECT_EQ(nullptr, tester->primary_icon());
   EXPECT_FALSE(tester->has_maskable_primary_icon());
-  EXPECT_FALSE(tester->installable_check_passed());
+  EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }
 
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_TRUE(tester->primary_icon_url().is_empty());
   EXPECT_EQ(nullptr, tester->primary_icon());
   EXPECT_FALSE(tester->has_maskable_primary_icon());
-  EXPECT_FALSE(tester->installable_check_passed());
+  EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }
 
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
     EXPECT_TRUE(tester->primary_icon_url().is_empty());
     EXPECT_EQ(nullptr, tester->primary_icon());
-    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_TRUE(tester->installable_check_passed());
     EXPECT_EQ(
         std::vector<InstallableStatusCode>{
             InstallableStatusCode::NO_ACCEPTABLE_ICON},
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
     EXPECT_TRUE(tester->primary_icon_url().is_empty());
     EXPECT_EQ(nullptr, tester->primary_icon());
-    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_TRUE(tester->installable_check_passed());
     EXPECT_EQ(
         std::vector<InstallableStatusCode>{
             InstallableStatusCode::NO_ACCEPTABLE_ICON},
@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
     EXPECT_TRUE(tester->primary_icon_url().is_empty());
     EXPECT_EQ(nullptr, tester->primary_icon());
-    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_TRUE(tester->installable_check_passed());
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
   }
 
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
     EXPECT_TRUE(tester->primary_icon_url().is_empty());
     EXPECT_EQ(nullptr, tester->primary_icon());
-    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_TRUE(tester->installable_check_passed());
     EXPECT_EQ(
         std::vector<InstallableStatusCode>{
             InstallableStatusCode::NO_ACCEPTABLE_ICON},
@@ -701,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
     EXPECT_TRUE(tester->primary_icon_url().is_empty());
     EXPECT_EQ(nullptr, tester->primary_icon());
-    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_TRUE(tester->installable_check_passed());
     EXPECT_EQ(
         std::vector<InstallableStatusCode>{
             InstallableStatusCode::NO_ACCEPTABLE_ICON},
@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifestAndIcon) {
 
     EXPECT_FALSE(tester->primary_icon_url().is_empty());
     EXPECT_NE(nullptr, tester->primary_icon());
-    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_TRUE(tester->installable_check_passed());
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
   }
 
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifestAndIcon) {
     EXPECT_NE(nullptr, tester->primary_icon());
     EXPECT_TRUE(tester->has_maskable_primary_icon());
 
-    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_TRUE(tester->installable_check_passed());
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
   }
 }
@@ -883,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckMaskableIcon) {
     EXPECT_NE(nullptr, tester->primary_icon());
     EXPECT_TRUE(tester->has_maskable_primary_icon());
 
-    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_TRUE(tester->installable_check_passed());
 
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
   }
@@ -907,7 +907,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckMaskableIcon) {
     EXPECT_NE(nullptr, tester->primary_icon());
     EXPECT_FALSE(tester->has_maskable_primary_icon());
 
-    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_TRUE(tester->installable_check_passed());
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
   }
 
@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckMaskableIcon) {
     EXPECT_NE(nullptr, tester->primary_icon());
     EXPECT_FALSE(tester->has_maskable_primary_icon());
 
-    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_TRUE(tester->installable_check_passed());
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
   }
 
@@ -955,7 +955,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckMaskableIcon) {
     EXPECT_NE(nullptr, tester->primary_icon());
     EXPECT_FALSE(tester->has_maskable_primary_icon());
 
-    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_TRUE(tester->installable_check_passed());
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
   }
 }
@@ -1158,7 +1158,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_FALSE(tester->manifest_url().is_empty());
   EXPECT_TRUE(tester->primary_icon_url().is_empty());
   EXPECT_EQ(nullptr, tester->primary_icon());
-  EXPECT_FALSE(tester->installable_check_passed());
+  EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_EQ(
       std::vector<InstallableStatusCode>{
           InstallableStatusCode::NO_ACCEPTABLE_ICON},
@@ -1389,7 +1389,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_EQ(nullptr, tester->primary_icon());
   EXPECT_FALSE(tester->has_maskable_primary_icon());
 
-  EXPECT_FALSE(tester->installable_check_passed());
+  EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_EQ(
       std::vector<InstallableStatusCode>{
           InstallableStatusCode::NO_ACCEPTABLE_ICON},
@@ -1480,7 +1480,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckScreenshots) {
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
   EXPECT_FALSE(tester->manifest_url().is_empty());
 
-  EXPECT_FALSE(tester->installable_check_passed());
+  EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_EQ(1u, tester->screenshots().size());
   // Corresponding form_factor should filter out the screenshot with mismatched
   // form_factor.
@@ -1524,7 +1524,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
   EXPECT_FALSE(tester->manifest_url().is_empty());
 
-  EXPECT_FALSE(tester->installable_check_passed());
+  EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_EQ(num_of_screenshots, tester->screenshots().size());
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }
@@ -1547,7 +1547,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckScreenshotsNumber) {
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
   EXPECT_FALSE(tester->manifest_url().is_empty());
 
-  EXPECT_FALSE(tester->installable_check_passed());
+  EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_EQ(8u, tester->screenshots().size());
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }
@@ -1570,7 +1570,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
   EXPECT_FALSE(tester->manifest_url().is_empty());
 
-  EXPECT_FALSE(tester->installable_check_passed());
+  EXPECT_TRUE(tester->installable_check_passed());
   for (const auto& screenshot : tester->screenshots()) {
     EXPECT_LE(screenshot.image.width(), 3840);
     EXPECT_LE(screenshot.image.height(), 3840);
@@ -1629,7 +1629,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_TRUE(tester->primary_icon_url().is_empty());
   EXPECT_EQ(nullptr, tester->primary_icon());
   EXPECT_FALSE(tester->has_maskable_primary_icon());
-  EXPECT_FALSE(tester->installable_check_passed());
+  EXPECT_TRUE(tester->installable_check_passed());
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }
 

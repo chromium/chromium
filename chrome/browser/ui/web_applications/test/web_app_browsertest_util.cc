@@ -137,21 +137,21 @@ webapps::AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
   auto* provider = WebAppProvider::GetForTest(browser->profile());
   DCHECK(provider);
   test::WaitUntilReady(provider);
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
   provider->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      base::BindOnce(&AutoAcceptDialogCallback),
-      base::BindLambdaForTesting(
-          [&run_loop, &app_id](const webapps::AppId& installed_app_id,
-                               webapps::InstallResultCode code) {
-            DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            app_id = installed_app_id;
-            run_loop.Quit();
-          }),
+      base::BindOnce(&AutoAcceptDialogCallback), install_future.GetCallback(),
       FallbackBehavior::kAllowFallbackDataAlways);
+  if (!install_future.Wait()) {
+    return webapps::AppId();
+  }
 
-  run_loop.Run();
-  return app_id;
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+
+  return install_future.Get<webapps::AppId>();
 }
 
 webapps::AppId InstallWebAppFromPageAndCloseAppBrowser(Browser* browser,

@@ -123,15 +123,12 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
     return page_data_->web_page_metadata_->metadata.get();
   }
 
-  std::optional<InstallableStatusCode> GetCheckInstallabilityErrorCode(
+  InstallableStatusCode GetCheckInstallabilityErrorCode(
       InstallableCriteria criteria) {
     InstallableEvaluator evaluator(web_contents(), *page_data_, criteria);
     auto errors = evaluator.CheckInstallability();
-    if (!errors.has_value()) {
-      return std::nullopt;
-    }
-    return errors->empty() ? InstallableStatusCode::NO_ERROR_DETECTED
-                           : errors.value()[0];
+    return errors.empty() ? InstallableStatusCode::NO_ERROR_DETECTED
+                          : errors[0];
   }
 
  private:
@@ -139,7 +136,7 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
 };
 
 TEST_F(InstallableEvaluatorUnitTest, DoNotCheck) {
-  EXPECT_EQ(std::nullopt,
+  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
             GetCheckInstallabilityErrorCode(InstallableCriteria::kDoNotCheck));
 }
 

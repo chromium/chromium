@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -19,6 +18,8 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -109,8 +110,6 @@ WebAppProvider* WebAppProvider::GetForTest(Profile* profile) {
   // Running a nested base::RunLoop outside of tests causes a deadlock. Crash
   // immediately instead of deadlocking for easier debugging (especially for
   // TAST tests which use prod binaries).
-  CHECK_IS_TEST();
-
   WebAppProvider* provider = GetForLocalAppsUnchecked(profile);
   if (!provider) {
     return nullptr;
@@ -135,7 +134,8 @@ WebAppProvider* WebAppProvider::GetForWebContents(
   return WebAppProvider::GetForLocalAppsUnchecked(profile);
 }
 
-WebAppProvider::WebAppProvider(Profile* profile) : profile_(profile) {
+WebAppProvider::WebAppProvider(Profile* profile)
+    : clock_(base::DefaultClock::GetInstance()), profile_(profile) {
   DCHECK(AreWebAppsEnabled(profile_));
 
   // WebApp System must have only one instance in original profile.
@@ -313,6 +313,14 @@ VisitedManifestManager& WebAppProvider::visited_manifest_manager() {
 NavigationCapturingLog& WebAppProvider::navigation_capturing_log() {
   CheckIsConnected();
   return *navigation_capturing_log_;
+}
+
+base::Clock& WebAppProvider::clock() {
+  return *clock_;
+}
+
+void WebAppProvider::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
 }
 
 void WebAppProvider::Shutdown() {
