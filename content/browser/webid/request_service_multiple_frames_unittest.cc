@@ -132,10 +132,10 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       ContinueOnCallback continue_on,
       RecordErrorMetricsCallback record_error_metrics_callback) override {
     TokenResult result;
-    result.token = kToken;
+    result.token = base::Value(kToken);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), kFetchStatusSuccess, result));
+        FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,
+                                  std::move(result)));
   }
 
   void FetchClientMetadata(const GURL& endpoint,

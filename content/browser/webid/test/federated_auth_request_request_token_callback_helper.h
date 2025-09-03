@@ -35,7 +35,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   std::optional<GURL> selected_idp_config_url() const {
     return selected_idp_config_url_;
   }
-  std::optional<std::string> token() const { return token_; }
+  const std::optional<base::Value>& token() const { return token_; }
   bool is_auto_selected() const { return is_auto_selected_; }
 
   // Returns base::OnceClosure which quits base::RunLoop started by
@@ -61,7 +61,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
  private:
   void ReceiverMethod(blink::mojom::RequestTokenStatus status,
                       const std::optional<GURL>& selected_idp_config_url,
-                      const std::optional<std::string>& token,
+                      std::optional<base::Value> token,
                       blink::mojom::TokenErrorPtr error,
                       bool is_auto_selected);
 
@@ -71,7 +71,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   base::RunLoop wait_for_callback_loop_;
   std::optional<blink::mojom::RequestTokenStatus> status_;
   std::optional<GURL> selected_idp_config_url_;
-  std::optional<std::string> token_;
+  std::optional<base::Value> token_;
   blink::mojom::TokenErrorPtr error_;
   bool is_auto_selected_{false};
 };

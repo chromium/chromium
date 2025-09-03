@@ -210,6 +210,11 @@ BASE_FEATURE(kFedCmSameSiteLax,
              "FedCmSameSiteLax",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables NonString Tokens
+BASE_FEATURE(kFedCmNonStringToken,
+             "FedCmNonStringToken",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables installed web app matching for getInstalledRelatedApps API.
 BASE_FEATURE(kFilterInstalledAppsWebAppMatching,
              "FilterInstalledAppsWebAppMatching",

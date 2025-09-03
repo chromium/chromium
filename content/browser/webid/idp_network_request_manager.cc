@@ -838,7 +838,7 @@ ErrorDialogType GetErrorDialogType(const std::string& code, const GURL& url) {
                  : ErrorDialogType::kGenericNonEmptyWithoutUrl;
 }
 
-TokenResponseType GetTokenResponseType(const std::string* token,
+TokenResponseType GetTokenResponseType(const base::Value* token,
                                        const std::string* continue_on,
                                        const base::Value::Dict* error) {
   if (token && error && !continue_on) {
@@ -913,16 +913,23 @@ void OnTokenRequestParsed(
       parse_succeeded ? &result->GetDict() : nullptr;
   bool can_use_response =
       response && IsOkResponseCode(fetch_status.response_code);
-  const std::string* token =
-      can_use_response ? response->FindString(kTokenKey) : nullptr;
+
+  const base::Value* token_value =
+      can_use_response ? response->Find(kTokenKey) : nullptr;
+  if (!webid::IsNonStringTokenEnabled() && token_value &&
+      !token_value->is_string()) {
+    token_value = nullptr;
+  }
+
   // continue_on_callback is only set if authz is enabled.
   const std::string* continue_on = can_use_response && continue_on_callback
                                        ? response->FindString(kContinueOnKey)
                                        : nullptr;
   const base::Value::Dict* response_error =
       response ? response->FindDict(kErrorKey) : nullptr;
+
   TokenResponseType token_response_type =
-      GetTokenResponseType(token, continue_on, response_error);
+      GetTokenResponseType(token_value, continue_on, response_error);
 
   if (response_error) {
     std::string error_code = ExtractString(*response_error, kErrorCodeKey);
@@ -935,7 +942,7 @@ void OnTokenRequestParsed(
         .Run(token_response_type, GetErrorDialogType(error_code, error_url),
              error_url_type);
     std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
-                            token_result);
+                            std::move(token_result));
     return;
   }
 
@@ -947,18 +954,19 @@ void OnTokenRequestParsed(
     if (parse_succeeded) {
       fetch_status.parse_status = ParseStatus::kInvalidResponseError;
     }
-    std::move(callback).Run(fetch_status, token_result);
+    std::move(callback).Run(fetch_status, std::move(token_result));
     return;
   }
   DCHECK(response);
 
-  if (token) {
-    token_result.token = *token;
+  if (token_value) {
+    token_result.token = token_value->Clone();
+
     std::move(record_error_metrics_callback)
         .Run(token_response_type, /*error_dialog_type=*/std::nullopt,
              /*error_url_type=*/std::nullopt);
     std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
-                            token_result);
+                            std::move(token_result));
     return;
   }
 
@@ -981,7 +989,7 @@ void OnTokenRequestParsed(
       .Run(token_response_type, type, /*error_url_type=*/std::nullopt);
   std::move(callback).Run(
       {ParseStatus::kInvalidResponseError, fetch_status.response_code},
-      token_result);
+      std::move(token_result));
 }
 
 void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
@@ -1032,7 +1040,7 @@ IdpNetworkRequestManager::ClientMetadata::ClientMetadata(
 
 IdpNetworkRequestManager::TokenResult::TokenResult() = default;
 IdpNetworkRequestManager::TokenResult::~TokenResult() = default;
-IdpNetworkRequestManager::TokenResult::TokenResult(const TokenResult& other) =
+IdpNetworkRequestManager::TokenResult::TokenResult(TokenResult&& other) =
     default;
 
 // static

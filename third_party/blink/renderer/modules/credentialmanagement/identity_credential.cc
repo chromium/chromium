@@ -47,7 +47,7 @@ void OnDisconnect(ScriptPromiseResolver<IDLUndefined>* resolver,
 
 }  // namespace
 
-IdentityCredential* IdentityCredential::Create(const String& token,
+IdentityCredential* IdentityCredential::Create(const ScriptValue& token,
                                                bool is_auto_selected,
                                                const String& config_url) {
   return MakeGarbageCollected<IdentityCredential>(token, is_auto_selected,
@@ -87,16 +87,20 @@ bool IdentityCredential::IsRejectingPromiseDueToCSP(
   return true;
 }
 
-IdentityCredential::IdentityCredential(const String& token,
+IdentityCredential::IdentityCredential(const ScriptValue& token,
                                        bool is_auto_selected,
                                        const String& config_url)
     : Credential(/* id = */ "", kIdentityCredentialType),
-      token_(token),
+      token_value_(token),
       is_auto_selected_(is_auto_selected),
       config_url_(config_url) {}
 
 bool IdentityCredential::IsIdentityCredential() const {
   return true;
+}
+
+ScriptValue IdentityCredential::token(ScriptState* script_state) const {
+  return token_value_;
 }
 
 // static
@@ -147,6 +151,11 @@ ScriptPromise<IDLUndefined> IdentityCredential::disconnect(
   auth_request->Disconnect(std::move(disconnect_options),
                            BindOnce(&OnDisconnect, WrapPersistent(resolver)));
   return promise;
+}
+
+void IdentityCredential::Trace(Visitor* visitor) const {
+  visitor->Trace(token_value_);
+  Credential::Trace(visitor);
 }
 
 }  // namespace blink

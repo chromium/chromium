@@ -172,7 +172,7 @@ void FederatedSdJwtHandler::OnSdJwtParsed(const sdjwt::Jwt& jwt) {
   federated_auth_request_impl_->CompleteRequest(
       FederatedAuthRequestResult::kSuccess,
       webid::RequestIdTokenStatus::kSuccessUsingTokenInHttpResponse,
-      /*token_error=*/std::nullopt, config_url_, token,
+      /*token_error=*/std::nullopt, config_url_, base::Value(token),
       /*should_delay_callback=*/false);
 }
 

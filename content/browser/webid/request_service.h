@@ -283,7 +283,7 @@ class CONTENT_EXPORT RequestService
                        std::optional<RequestIdTokenStatus> token_status,
                        std::optional<TokenError> token_error,
                        const std::optional<GURL>& selected_idp_config_url,
-                       const std::string& token,
+                       std::optional<base::Value> token_data,
                        bool should_delay_callback);
 
  private:
@@ -350,13 +350,13 @@ class CONTENT_EXPORT RequestService
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void CompleteTokenRequest(const GURL& idp_config_url,
                             IdpNetworkRequestManager::FetchStatus status,
-                            std::optional<std::string> token,
+                            std::optional<base::Value> token,
                             std::optional<TokenError> token_error,
                             bool should_delay_callback);
   void OnTokenResponseReceived(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
       IdpNetworkRequestManager::FetchStatus status,
-      IdpNetworkRequestManager::TokenResult result);
+      IdpNetworkRequestManager::TokenResult&& result);
   void OnContinueOnResponseReceived(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
       IdpNetworkRequestManager::FetchStatus status,

@@ -204,7 +204,8 @@ class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest {
 
     std::move(request_token_callback_)
         .Run(mojom::RequestTokenStatus::kSuccess, KURL("https://idp.example"),
-             "token", /*error=*/nullptr, /*is_auto_selected=*/false);
+             base::Value("token"), /*error=*/nullptr,
+             /*is_auto_selected=*/false);
   }
 
  protected:

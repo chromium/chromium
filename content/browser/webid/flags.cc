@@ -72,4 +72,9 @@ bool IsIframeOriginEnabled() {
 bool IsNonceInParamsEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmNonceInParams);
 }
+
+bool IsNonStringTokenEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmNonStringToken);
+}
+
 }  // namespace content::webid

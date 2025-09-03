@@ -553,6 +553,59 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
   ASSERT_TRUE(console_observer.Wait());
 }
 
+// Verify that passing a non-string token in the ID assertion response results
+// in an error when the flexible token formats feature is disabled.
+IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, NonStringTokenRejected) {
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+
+  config_details.id_assertion_endpoint_url = "/non_string_token_endpoint.php";
+
+  // Add a servlet to serve a response with a non-string token.
+  config_details.servlets["/non_string_token_endpoint.php"] =
+      base::BindRepeating(
+          [](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+            auto response = std::make_unique<BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type(kTestContentType);
+            response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+            response->AddCustomHeader("Access-Control-Allow-Credentials",
+                                      "true");
+
+            // Return a JSON response with a non-string token (object instead of
+            // string)
+            response->set_content(R"({
+                "token": {
+                  "type": "jwt",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                }
+              })");
+            return std::move(response);
+          });
+
+  idp_server()->SetConfigResponseDetails(config_details);
+
+  std::string script = R"(
+        (async () => {
+          var x = (await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+              }]
+            }
+          }));
+          return x.token;
+        }) ()
+    )";
+
+  // Expect an error when non-string token is returned without flexible formats
+  // enabled
+  std::string expected_error =
+      "IdentityCredentialError: Error retrieving a token.";
+  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
+}
+
 // Verify that an IdP can register itself.
 IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegisterIdP) {
   GURL configURL = GURL(BaseIdpUrl());

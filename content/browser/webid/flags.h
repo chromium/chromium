@@ -51,6 +51,9 @@ bool IsIframeOriginEnabled();
 // Whether nonce usage in params is enabled.
 bool IsNonceInParamsEnabled();
 
+// Whether showing the non-string token is enabled.
+bool IsNonStringTokenEnabled();
+
 }  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

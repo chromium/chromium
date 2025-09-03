@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/web_contents.h"
@@ -156,9 +157,12 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   struct CONTENT_EXPORT TokenResult {
     TokenResult();
     ~TokenResult();
-    TokenResult(const TokenResult&);
+    TokenResult(const TokenResult&) = delete;
+    TokenResult& operator=(const TokenResult&) = delete;
+    TokenResult(TokenResult&&);
+    TokenResult& operator=(TokenResult&&) = default;
 
-    std::string token;
+    std::optional<base::Value> token;
     std::optional<IdentityCredentialTokenError> error;
   };
 
@@ -252,7 +256,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using DisconnectCallback =
       base::OnceCallback<void(FetchStatus, const std::string&)>;
   using TokenRequestCallback =
-      base::OnceCallback<void(FetchStatus, TokenResult)>;
+      base::OnceCallback<void(FetchStatus, TokenResult&&)>;
   using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
   using RecordErrorMetricsCallback =
       base::OnceCallback<void(FedCmTokenResponseType,

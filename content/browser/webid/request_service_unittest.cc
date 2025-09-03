@@ -456,8 +456,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       TokenResult result;
       result.error = config_.token_error;
 
-      base::OnceCallback bound_callback =
-          base::BindOnce(std::move(callback), config_.token_response, result);
+      base::OnceCallback bound_callback = base::BindOnce(
+          std::move(callback), config_.token_response, std::move(result));
       if (config_.delay_token_response) {
         delayed_callbacks_.push_back(std::move(bound_callback));
       } else {
@@ -481,9 +481,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
             ? config_.token
             : std::string();
     TokenResult result;
-    result.token = delivered_token;
-    base::OnceCallback bound_callback =
-        base::BindOnce(std::move(callback), config_.token_response, result);
+    result.token = base::Value(delivered_token);
+    base::OnceCallback bound_callback = base::BindOnce(
+        std::move(callback), config_.token_response, std::move(result));
     if (config_.delay_token_response) {
       delayed_callbacks_.push_back(std::move(bound_callback));
     } else {

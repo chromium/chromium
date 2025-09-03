@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "mojo/public/mojom/base/values.mojom-blink.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/sms/webotp_constants.h"
@@ -18,6 +19,8 @@
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom-blink.h"
 #include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
@@ -470,7 +473,7 @@ void OnRequestToken(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
                     const CredentialRequestOptions* options,
                     RequestTokenStatus status,
                     const std::optional<KURL>& selected_idp_config_url,
-                    const String& token,
+                    std::optional<base::Value> token_value,
                     mojom::blink::TokenErrorPtr error,
                     bool is_auto_selected) {
   auto* resolver =
@@ -508,8 +511,22 @@ void OnRequestToken(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     }
     case RequestTokenStatus::kSuccess: {
       CHECK(selected_idp_config_url);
+      CHECK(token_value);
+
+      auto* script_state = resolver->GetScriptState();
+      ScriptState::Scope script_state_scope(script_state);
+
+      ScriptValue token_script_value;
+
+      // Create WebV8ValueConverter and convert base::Value to v8::Value
+      auto converter = Platform::Current()->CreateWebV8ValueConverter();
+      v8::Local<v8::Value> v8_value =
+          converter->ToV8Value(*token_value, script_state->GetContext());
+      token_script_value = ScriptValue(script_state->GetIsolate(), v8_value);
+
       IdentityCredential* credential = IdentityCredential::Create(
-          token, is_auto_selected, *selected_idp_config_url);
+          token_script_value, is_auto_selected, *selected_idp_config_url);
+
       resolver->Resolve(credential);
       return;
     }
@@ -2313,9 +2330,9 @@ void AuthenticationCredentialsContainer::GetForIdentity(
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   auth_request->RequestToken(
       std::move(idp_get_params), mediation_requirement,
-      BindOnce(&OnRequestToken,
-               std::make_unique<ScopedPromiseResolver>(resolver),
-               std::move(scoped_abort_state), WrapPersistent(&options)));
+      blink::BindOnce(&OnRequestToken,
+                      std::make_unique<ScopedPromiseResolver>(resolver),
+                      std::move(scoped_abort_state), WrapPersistent(&options)));
 }
 
 }  // namespace blink
