@@ -16,8 +16,10 @@
   const navigated = dp.Page.onceFrameNavigated();
   const reloadPromise = dp.Page.reload();
 
+  // Note that we won't actually wait for the resume, since it might not
+  // actually resume anything if the reload finished before the resume
+  // message is received.
   dp.Debugger.resume({terminateOnresume: false});
-  await dp.Debugger.onceResumed();
   testRunner.log(`resumed`);
 
   await reloadPromise;
