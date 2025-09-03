@@ -6,6 +6,7 @@ Shipped: yes
 License: BSD-2-Clause
 License File: LICENSE
 Date: 2024-02-26
+Update Mechanism: Static
 
 Description:
 This directory contains the files that complement the Fuchsia SDK
