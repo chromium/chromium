@@ -766,9 +766,6 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
 
 IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
                        UpdateTrustAnchorIDs) {
-  // TODO(crbug.com/440207613): This test has temporary debug logging to try to
-  // narrow down a flaky test timeout. Remove debug logging when done.
-  LOG(ERROR) << "UpdateTrustAnchorIDs start";
   content::StoragePartition* partition =
       chrome_test_utils::GetActiveWebContents(this)
           ->GetBrowserContext()
@@ -783,24 +780,17 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
   scoped_refptr<net::X509Certificate> intermediate2 = net::ImportCertFromFile(
       net::GetTestCertsDirectory(), "verisign_intermediate_ca_2016.pem");
   ASSERT_TRUE(intermediate2);
-  LOG(ERROR) << "UpdateTrustAnchorIDs after loading test certs";
 
   // Test that the initial set of Trust Anchor IDs comes from the compiled-in
   // root store.
   {
     std::vector<std::vector<uint8_t>> expected_trust_anchor_ids =
         net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
-    LOG(ERROR)
-        << "UpdateTrustAnchorIDs before 1st GetTrustAnchorIDsForTesting call";
     base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
     partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
         future.GetCallback());
-    LOG(ERROR)
-        << "UpdateTrustAnchorIDs during 1st GetTrustAnchorIDsForTesting call";
     EXPECT_THAT(future.Get(),
                 testing::UnorderedElementsAreArray(expected_trust_anchor_ids));
-    LOG(ERROR)
-        << "UpdateTrustAnchorIDs after 1st GetTrustAnchorIDsForTesting call";
   }
 
   // Install CRS update that contains no trusted Trust Anchor IDs.
@@ -811,23 +801,15 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
         root_store_proto.add_trust_anchors();
     anchor->set_der(std::string(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
-    LOG(ERROR) << "UpdateTrustAnchorIDs before 1st InstallCRSUpdate call";
     InstallCRSUpdate(std::move(root_store_proto));
-    LOG(ERROR) << "UpdateTrustAnchorIDs after 1st InstallCRSUpdate call";
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
-    LOG(ERROR)
-        << "UpdateTrustAnchorIDs before 2nd GetTrustAnchorIDsForTesting call";
     base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
     partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
         future.GetCallback());
-    LOG(ERROR)
-        << "UpdateTrustAnchorIDs during 2nd GetTrustAnchorIDsForTesting call";
     EXPECT_TRUE(future.Get().empty());
-    LOG(ERROR)
-        << "UpdateTrustAnchorIDs after 2nd GetTrustAnchorIDsForTesting call";
   }
 
   // Install CRS update that contains two trusted Trust Anchor IDs.
@@ -858,29 +840,20 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
     additional_cert2->set_trust_anchor_id({0x02, 0x03});
     additional_cert2->set_tls_trust_anchor(true);
 
-    LOG(ERROR) << "UpdateTrustAnchorIDs before 2nd InstallCRSUpdate call";
     InstallCRSUpdate(std::move(root_store_proto));
-    LOG(ERROR) << "UpdateTrustAnchorIDs after 2nd InstallCRSUpdate call";
 
     // Ensure that SSLConfigClients have been notified of the new trust anchor
     // IDs.
     SystemNetworkContextManager::GetInstance()
         ->FlushSSLConfigManagerForTesting();
 
-    LOG(ERROR)
-        << "UpdateTrustAnchorIDs before 3rd GetTrustAnchorIDsForTesting call";
     base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
     partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
         future.GetCallback());
-    LOG(ERROR)
-        << "UpdateTrustAnchorIDs during 3rd GetTrustAnchorIDsForTesting call";
     EXPECT_THAT(future.Get(), testing::UnorderedElementsAre(
                                   std::vector<uint8_t>({0x01, 0x02, 0x3}),
                                   std::vector<uint8_t>({0x02, 0x03})));
-    LOG(ERROR)
-        << "UpdateTrustAnchorIDs after 3rd GetTrustAnchorIDsForTesting call";
   }
-  LOG(ERROR) << "UpdateTrustAnchorIDs end";
 }
 
 // Tests that when new network contexts are created after a Trust Anchor IDs
