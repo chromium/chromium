@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_expected_support.h"
@@ -20,6 +21,7 @@
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/sha2.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -253,5 +255,34 @@ INSTANTIATE_TEST_SUITE_P(
             "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"
             "?foo=bar#baz",
             kValidIsolatedWebAppUrl)));
+
+class IsolatedWebAppStoragePartitionTest : public ::testing::Test {};
+
+// This test makes sure that the old way of generating storage partition configs
+// based on app_id() is equal to the new way (hashing the origin twice in
+// IwaOrigin).
+TEST_F(IsolatedWebAppStoragePartitionTest, BackwardsCompatible) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile testing_profile;
+
+  std::string partition_domain =
+      "i" + base::Base64Encode(crypto::SHA256HashString(
+                IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+                    test::GetDefaultEd25519WebBundleId())
+                    .app_id()));
+
+  // Mimic the old way of creating configs.
+  content::StoragePartitionConfig old_config =
+      content::StoragePartitionConfig::Create(
+          &testing_profile, partition_domain, /*partition_name=*/"",
+          /*in_memory=*/false);
+
+  // Invoke the new impl from the components/ layer.
+  content::StoragePartitionConfig new_config =
+      IwaOrigin(test::GetDefaultEd25519WebBundleId())
+          .storage_partition_config(&testing_profile);
+
+  ASSERT_EQ(old_config, new_config);
+}
 
 }  // namespace web_app

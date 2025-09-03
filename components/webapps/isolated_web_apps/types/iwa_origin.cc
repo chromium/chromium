@@ -6,12 +6,28 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
+#include "components/crx_file/id_util.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
+#include "crypto/hash.h"
 
 namespace web_app {
+
+namespace {
+
+std::string GetPartitionDomain(const url::Origin& origin) {
+  // Triple hashing is so cool! Next migration must introduce yet another step.
+  // We add a prefix to `partition_domain` to distinguish from other users of
+  // storage partitions.
+  return "i" + base::Base64Encode(crypto::hash::Sha256(
+                   (crx_file::id_util::GenerateId(base::as_string_view(
+                       crypto::hash::Sha256(origin.GetURL().spec()))))));
+}
+
+}  // namespace
 
 IwaOrigin::IwaOrigin(const web_package::SignedWebBundleId& web_bundle_id)
     : origin_(
@@ -48,6 +64,23 @@ base::expected<IwaOrigin, std::string> IwaOrigin::Create(const GURL& url) {
              "Web Bundle ID (got ",
              url.host(), "): ", error});
       });
+}
+
+content::StoragePartitionConfig IwaOrigin::storage_partition_config(
+    content::BrowserContext* browser_context,
+    std::optional<StoragePartitionConfigOptions> options) const {
+  std::string partition_domain = GetPartitionDomain(origin());
+  if (options) {
+    CHECK(!options->partition_name.empty() || options->in_memory);
+    return content::StoragePartitionConfig::Create(
+        browser_context, partition_domain, options->partition_name,
+        options->in_memory);
+  }
+
+  return content::StoragePartitionConfig::Create(browser_context,
+                                                 partition_domain,
+                                                 /*partition_name=*/"",
+                                                 /*in_memory=*/false);
 }
 
 }  // namespace web_app

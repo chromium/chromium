@@ -17,11 +17,16 @@ source_set("types") {
     "url_loading_types.h",
   ]
 
-  deps = [ "//components/webapps/isolated_web_apps:scheme" ]
+  deps = [
+    "//components/crx_file",
+    "//components/webapps/isolated_web_apps:scheme",
+    "//crypto",
+  ]
 
   public_deps = [
     "//base",
     "//components/web_package",
+    "//content/public/browser",
     "//url",
   ]
 }

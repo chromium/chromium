@@ -124,11 +124,7 @@ const web_package::SignedWebBundleId& IsolatedWebAppUrlInfo::web_bundle_id()
 
 content::StoragePartitionConfig IsolatedWebAppUrlInfo::storage_partition_config(
     content::BrowserContext* browser_context) const {
-  DCHECK(browser_context != nullptr);
-  return content::StoragePartitionConfig::Create(browser_context,
-                                                 partition_domain(),
-                                                 /*partition_name=*/"",
-                                                 /*in_memory=*/false);
+  return iwa_origin_.storage_partition_config(browser_context);
 }
 
 content::StoragePartitionConfig
@@ -136,16 +132,12 @@ IsolatedWebAppUrlInfo::GetStoragePartitionConfigForControlledFrame(
     content::BrowserContext* browser_context,
     const std::string& partition_name,
     bool in_memory) const {
-  DCHECK(browser_context);
-  DCHECK(!partition_name.empty() || in_memory);
-  return content::StoragePartitionConfig::Create(
-      browser_context, partition_domain(), partition_name, in_memory);
-}
-
-std::string IsolatedWebAppUrlInfo::partition_domain() const {
-  // We add a prefix to `partition_domain` to distinguish from other users of
-  // storage partitions.
-  return "i" + base::Base64Encode(crypto::SHA256HashString(app_id_));
+  CHECK(!partition_name.empty() || in_memory);
+  return iwa_origin_.storage_partition_config(
+      browser_context, IwaOrigin::StoragePartitionConfigOptions{
+                           .partition_name = partition_name,
+                           .in_memory = in_memory,
+                       });
 }
 
 }  // namespace web_app

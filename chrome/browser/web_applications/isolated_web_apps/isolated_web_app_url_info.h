@@ -77,10 +77,6 @@ class IsolatedWebAppUrlInfo {
  private:
   explicit IsolatedWebAppUrlInfo(const IwaOrigin& iwa_origin);
 
-  // Returns the storage partition domain, which is the SHA256 hash of the App
-  // ID in base64 encoding.
-  std::string partition_domain() const;
-
   IwaOrigin iwa_origin_;
   webapps::AppId app_id_;
 };

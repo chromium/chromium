@@ -19,7 +19,6 @@
 
 namespace content {
 class BrowserContext;
-class StoragePartition;
 }  // namespace content
 
 namespace web_app {
@@ -62,12 +61,6 @@ class IwaClient {
       base::OnceCallback<void(
           base::expected<IwaSourceWithModeOrGeneratedResponse, std::string>)>
           callback) = 0;
-
-  // Returns the correct storage partition for the network service; each
-  // Isolated Web App is supposed to have its own unique partition.
-  virtual content::StoragePartition* GetStoragePartition(
-      content::BrowserContext* browser_context,
-      const web_package::SignedWebBundleId& web_bundle_id) = 0;
 
  protected:
   IwaClient();

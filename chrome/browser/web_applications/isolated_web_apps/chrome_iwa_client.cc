@@ -22,7 +22,6 @@
 #include "components/webapps/isolated_web_apps/types/url_loading_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
-#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -165,15 +164,6 @@ void ChromeIwaClient::GetIwaSourceForRequest(
       FROM_HERE, base::BindOnce(&GetIwaSourceForRequestImpl,
                                 profile->GetWeakPtr(), web_bundle_id, request,
                                 frame_tree_node, std::move(callback)));
-}
-
-content::StoragePartition* ChromeIwaClient::GetStoragePartition(
-    content::BrowserContext* browser_context,
-    const web_package::SignedWebBundleId& web_bundle_id) {
-  return browser_context->GetStoragePartition(
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id)
-          .storage_partition_config(browser_context),
-      /*can_create=*/false);
 }
 
 }  // namespace web_app

@@ -26,12 +26,6 @@ void TestIwaClient::GetIwaSourceForRequest(
   NOTREACHED();
 }
 
-content::StoragePartition* TestIwaClient::GetStoragePartition(
-    content::BrowserContext* browser_context,
-    const web_package::SignedWebBundleId& web_bundle_id) {
-  NOTREACHED();
-}
-
 MockIwaClient::MockIwaClient() = default;
 MockIwaClient::~MockIwaClient() = default;
 

@@ -26,9 +26,6 @@ class TestIwaClient : public IwaClient {
       base::OnceCallback<void(
           base::expected<IwaSourceWithModeOrGeneratedResponse, std::string>)>
           callback) override;
-  content::StoragePartition* GetStoragePartition(
-      content::BrowserContext* browser_context,
-      const web_package::SignedWebBundleId& web_bundle_id) override;
 };
 
 class MockIwaClient : public TestIwaClient {

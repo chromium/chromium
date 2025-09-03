@@ -9,6 +9,7 @@
 
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -19,6 +20,11 @@ namespace web_app {
 // IWA's identity.
 class IwaOrigin {
  public:
+  struct StoragePartitionConfigOptions {
+    std::string partition_name;
+    bool in_memory;
+  };
+
   explicit IwaOrigin(const web_package::SignedWebBundleId& web_bundle_id);
 
   // Creates an `IwaOrigin` instance from the given URL, or an error
@@ -30,6 +36,10 @@ class IwaOrigin {
   const web_package::SignedWebBundleId& web_bundle_id() const {
     return web_bundle_id_;
   }
+
+  content::StoragePartitionConfig storage_partition_config(
+      content::BrowserContext* browser_context,
+      std::optional<StoragePartitionConfigOptions> = std::nullopt) const;
 
   bool operator<=>(const IwaOrigin&) const = default;
 

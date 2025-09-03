@@ -14,8 +14,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/isolated_web_apps/client.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -184,8 +186,9 @@ void HandleProxy(
     const std::optional<content::FrameTreeNodeId>& frame_tree_node_id) {
   DCHECK(!proxy.proxy_url().opaque());
   content::StoragePartition* storage_partition =
-      IwaClient::GetInstance()->GetStoragePartition(browser_context,
-                                                    web_bundle_id);
+      browser_context->GetStoragePartition(
+          IwaOrigin(web_bundle_id).storage_partition_config(browser_context),
+          /*can_create=*/false);
   if (!storage_partition) {
     LogErrorAndFail("Storage not found for Isolated Web App: " +
                         resource_request.url.spec(),
