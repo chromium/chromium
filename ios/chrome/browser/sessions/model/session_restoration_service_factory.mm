@@ -384,7 +384,7 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
       kSaveDelay, IsPinnedTabsEnabled(), storage_path, task_runner);
 }
 
-void SessionRestorationServiceFactory::RegisterBrowserStatePrefs(
+void SessionRestorationServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       kSessionStorageFormatPref,

@@ -46,8 +46,7 @@ class SessionRestorationServiceFactory final
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const final;
-  void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry) final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_SESSION_RESTORATION_SERVICE_FACTORY_H_
