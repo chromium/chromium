@@ -261,48 +261,33 @@ bool IsLegalUtf8(const base::span<const uint8_t> source) {
   return true;
 }
 
-// Magic values subtracted from a buffer value during UTF8 conversion.
-// This table contains as many values as there might be trailing bytes
-// in a UTF-8 sequence.
-static constexpr std::array<UChar32, 6> kOffsetsFromUtf8 = {
-    0x00000000UL,
-    0x00003080UL,
-    0x000E2080UL,
-    0x03C82080UL,
-    static_cast<UChar32>(0xFA082080UL),
-    static_cast<UChar32>(0x82082080UL)};
-
 inline UChar32 ReadUtf8Sequence(base::span<const uint8_t> source,
                                 size_t length) {
-  UChar32 character = 0;
-  size_t sequence_cursor = 0;
+  DCHECK_LT(0u, length);
+  DCHECK_GT(5u, length);
 
-  switch (length) {
-    case 6:
-      character += source[sequence_cursor++];
-      character <<= 6;
-      [[fallthrough]];
-    case 5:
-      character += source[sequence_cursor++];
-      character <<= 6;
-      [[fallthrough]];
-    case 4:
-      character += source[sequence_cursor++];
-      character <<= 6;
-      [[fallthrough]];
-    case 3:
-      character += source[sequence_cursor++];
-      character <<= 6;
-      [[fallthrough]];
-    case 2:
-      character += source[sequence_cursor++];
-      character <<= 6;
-      [[fallthrough]];
-    case 1:
-      character += source[sequence_cursor++];
+  if (length == 1) {
+    return source[0];
   }
 
-  return character - kOffsetsFromUtf8[length - 1];
+  const uint8_t b0 = source[0];
+  const uint8_t b1 = source[1];
+
+  if (length == 2) {
+    // 2-byte sequence: 110xxxxx 10xxxxxx
+    return ((b0 & 0x1F) << 6) | (b1 & 0x3F);
+  }
+
+  const uint8_t b2 = source[2];
+  if (length == 3) {
+    // 3-byte sequence: 1110xxxx 10xxxxxx 10xxxxxx
+    return ((b0 & 0x0F) << 12) | ((b1 & 0x3F) << 6) | (b2 & 0x3F);
+  }
+
+  // 4-byte sequence: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+  const uint8_t b3 = source[3];
+  return ((b0 & 0x07) << 18) | ((b1 & 0x3F) << 12) | ((b2 & 0x3F) << 6) |
+         (b3 & 0x3F);
 }
 
 ConversionStatus ConvertUtf8ToUtf16Internal(base::span<const uint8_t>& source,
