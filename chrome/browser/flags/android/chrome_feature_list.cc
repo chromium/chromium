@@ -403,6 +403,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSearchInCCTIfEnabledByEmbedder,
     &kSearchInCCTAlternateTapHandlingIfEnabledByEmbedder,
     &kSearchResumptionModuleAndroid,
+    &kSettingsMultiColumn,
     &kSettingsSingleActivity,
     &kShareCustomActionsInCCT,
     &kShowCloseAllIncognitoTabsButton,
@@ -1341,6 +1342,10 @@ BASE_FEATURE(kRobustWindowManagement,
 
 BASE_FEATURE(kRobustWindowManagementExperimental,
              "RobustWindowManagementExperimental",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSettingsMultiColumn,
+             "SettingsMultiColumn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSettingsSingleActivity,

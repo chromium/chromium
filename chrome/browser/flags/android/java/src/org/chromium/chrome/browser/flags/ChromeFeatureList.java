@@ -611,6 +611,7 @@ public abstract class ChromeFeatureList {
     public static final String SENSITIVE_CONTENT = "SensitiveContent";
     public static final String SENSITIVE_CONTENT_WHILE_SWITCHING_TABS =
             "SensitiveContentWhileSwitchingTabs";
+    public static final String SETTINGS_MULTI_COLUMN = "SettingsMultiColumn";
     public static final String SETTINGS_SINGLE_ACTIVITY = "SettingsSingleActivity";
     public static final String SHARED_DATA_TYPES_KILL_SWITCH = "SharedDataTypesKillSwitch";
     public static final String SHARE_CUSTOM_ACTIONS_IN_CCT = "ShareCustomActionsInCCT";
@@ -1040,6 +1041,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING_IF_ENABLED_BY_EMBEDDER, true);
     public static final CachedFlag sSearchInCCTIfEnabledByEmbedder =
             newCachedFlag(SEARCH_IN_CCT_IF_ENABLED_BY_EMBEDDER, true);
+    public static final CachedFlag sSettingsMultiColumn =
+            newCachedFlag(
+                    SETTINGS_MULTI_COLUMN,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sSettingsSingleActivity =
             newCachedFlag(
                     SETTINGS_SINGLE_ACTIVITY,
@@ -1249,6 +1255,7 @@ public abstract class ChromeFeatureList {
                     sSearchInCCTAlternateTapHandling,
                     sSearchInCCTAlternateTapHandlingIfEnabledByEmbedder,
                     sSearchInCCTIfEnabledByEmbedder,
+                    sSettingsMultiColumn,
                     sSettingsSingleActivity,
                     sShowHomeButtonPolicyAndroid,
                     sSmallerTabStripTitleLimit,
