@@ -109,15 +109,14 @@ enum FeatureState {
 // instead of
 //    BASE_FEATURE(MyFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 // to solve the code search issue.
-#define BASE_FEATURE_2(feature, default_state)                              \
-  constinit const base::Feature feature(                                    \
-      ([] {                                                                 \
-        constexpr std::string_view feature_sv = #feature;                   \
-        static_assert(base::internal::IsValidFeatureIdentifier(feature_sv), \
-                      "Feature identifier must start with 'k'.");           \
-        return base::internal::GetFeatureNameFromIdentifier(feature_sv);    \
-      }()),                                                                 \
-      default_state, base::internal::FeatureMacroHandshake::kSecret)
+#define BASE_FEATURE_2(feature, default_state)                            \
+  namespace base_feature_internal {                                       \
+  static_assert(#feature[0] == 'k');                                      \
+  static constexpr base::internal::StringStorage feature##Name(#feature); \
+  }                                                                       \
+  constinit const base::Feature feature(                                  \
+      base_feature_internal::feature##Name.storage.data(), default_state, \
+      base::internal::FeatureMacroHandshake::kSecret)
 
 #define GET_BASE_FEATURE_MACRO(_1, _2, _3, NAME, ...) NAME
 #define BASE_FEATURE(...)                                            \
@@ -199,18 +198,25 @@ namespace internal {
 // go through the helper `BASE_FEATURE()` macro above.
 enum class FeatureMacroHandshake { kSecret };
 
-// Returns whether `feature` is a valid feature identifier, e.g. must
-// start with 'k' and cannot be too short. This is important for
-// deriving feature name string from the identifier.
-constexpr bool IsValidFeatureIdentifier(std::string_view feature) {
-  return feature.length() > 2 && feature[0] == 'k';
-}
+// Storage class for feature name. This is needed so we store the feature name
+// "MyFeature" instead of the feature identifier name "kMyFeature" in .rodata.
+template <size_t N>
+struct StringStorage {
+  explicit constexpr StringStorage(base::span<const char, N + 1> feature) {
+    static_assert(N > 2, "Feature name cannot be too short.");
+    for (size_t i = 0; i < N; ++i) {
+      storage[i] = feature[i + 1];
+    }
+  }
 
-// Returns the feature name from the given C++ identifier, e.g.
-//   "kMyFeature" -> "MyFeature".
-constexpr const char* GetFeatureNameFromIdentifier(std::string_view feature) {
-  return feature.substr(1).data();
-}
+  std::array<char, N> storage;
+};
+
+// Deduce how much storage is needed for a given string literal. `feature`
+// includes space for a NUL terminator; `StringStorage` also needs storage
+// for the NUL terminator but drops the first character.
+template <size_t N>
+StringStorage(const char (&feature)[N]) -> StringStorage<N - 1>;
 
 }  // namespace internal
 
