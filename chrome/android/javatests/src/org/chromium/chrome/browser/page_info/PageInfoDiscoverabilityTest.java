@@ -299,6 +299,7 @@ public class PageInfoDiscoverabilityTest {
     }
 
     /** Tests omnibox permission when permission is blocked by the user. */
+    // Disabled on android.emulator_12l_landscape - crbug.com/442769979.
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})

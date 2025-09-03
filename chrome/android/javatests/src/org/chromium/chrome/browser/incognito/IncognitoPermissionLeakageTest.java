@@ -172,6 +172,7 @@ public class IncognitoPermissionLeakageTest {
         assertDialogIsShown();
     }
 
+    // Disabled on android.emulator_12l_landscape - crbug.com/442769979.
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.IncognitoToIncognito.class)

@@ -169,6 +169,7 @@ public class PartnerBookmarkTest {
         assertEquals(View.GONE, more2.getVisibility());
     }
 
+    // Disabled on android.emulator_12l_landscape - crbug.com/442769979.
     @Test
     @MediumTest
     public void testCannotSelectPartner() throws Exception {

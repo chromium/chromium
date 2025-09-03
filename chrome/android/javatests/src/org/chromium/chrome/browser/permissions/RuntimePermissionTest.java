@@ -223,6 +223,7 @@ public class RuntimePermissionTest {
                 R.string.infobar_missing_microphone_permission_text);
     }
 
+    // Disabled on android.emulator_12l_landscape - crbug.com/442769979.
     @Test
     @MediumTest
     @Feature({"RuntimePermissions", "Location"})
