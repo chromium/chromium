@@ -1161,15 +1161,25 @@ void HistoryService::SetImportedFavicons(
 
 base::CancelableTaskTracker::TaskId HistoryService::QueryURL(
     const GURL& url,
-    bool want_visits,
     QueryURLCallback callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::QueryURL, history_backend_, url,
-                     want_visits),
+      base::BindOnce(&HistoryBackend::QueryURL, history_backend_, url),
+      std::move(callback));
+}
+
+base::CancelableTaskTracker::TaskId HistoryService::QueryURLAndVisits(
+    const GURL& url,
+    QueryURLAndVisitsCallback callback,
+    base::CancelableTaskTracker* tracker) {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::QueryURLAndVisits, history_backend_, url),
       std::move(callback));
 }
 
@@ -1299,7 +1309,7 @@ base::CancelableTaskTracker::TaskId HistoryService::GetDailyVisitsToOrigin(
 base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentVisitsForGurl(
     GURL url,
     int max_visits,
-    QueryURLCallback callback,
+    QueryURLAndVisitsCallback callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

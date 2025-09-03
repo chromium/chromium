@@ -208,26 +208,28 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     LoadAndWaitForURL(GetTestFileURL(filename));
   }
 
-  bool HistoryContainsURL(const GURL& url) { return QueryURL(url).success; }
-
-  history::URLRow LookUpURLInHistory(const GURL& url) {
-    return QueryURL(url).row;
+  bool HistoryContainsURL(const GURL& url) {
+    return QueryURLAndVisits(url).success;
   }
 
-  history::QueryURLResult QueryURL(const GURL& url) {
-    history::QueryURLResult query_url_result;
+  history::URLRow LookUpURLInHistory(const GURL& url) {
+    return QueryURLAndVisits(url).row;
+  }
+
+  history::QueryURLAndVisitsResult QueryURLAndVisits(const GURL& url) {
+    history::QueryURLAndVisitsResult query_url_result;
 
     base::RunLoop run_loop;
     base::CancelableTaskTracker tracker;
     HistoryServiceFactory::GetForProfile(browser()->profile(),
                                          ServiceAccessType::EXPLICIT_ACCESS)
-        ->QueryURL(
-            url, true,
-            base::BindLambdaForTesting([&](history::QueryURLResult result) {
-              query_url_result = std::move(result);
-              run_loop.Quit();
-            }),
-            &tracker);
+        ->QueryURLAndVisits(url,
+                            base::BindLambdaForTesting(
+                                [&](history::QueryURLAndVisitsResult result) {
+                                  query_url_result = std::move(result);
+                                  run_loop.Quit();
+                                }),
+                            &tracker);
     run_loop.Run();
 
     return query_url_result;
@@ -949,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReplaceStateSamePageIsNotRecorded) {
   std::vector<GURL> urls(GetHistoryContents());
   ASSERT_EQ(1u, urls.size());
   EXPECT_EQ(url, urls[0]);
-  history::QueryURLResult url_result = QueryURL(url);
+  history::QueryURLAndVisitsResult url_result = QueryURLAndVisits(url);
   EXPECT_EQ(1u, url_result.visits.size());
 }
 
@@ -974,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReplaceStateSamePageVisitsRecorded) {
   std::vector<GURL> urls(GetHistoryContents());
   ASSERT_EQ(1u, urls.size());
   EXPECT_EQ(url, urls[0]);
-  history::QueryURLResult url_result = QueryURL(url);
+  history::QueryURLAndVisitsResult url_result = QueryURLAndVisits(url);
   EXPECT_EQ(2u, url_result.visits.size());
 }
 

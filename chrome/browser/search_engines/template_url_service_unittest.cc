@@ -1620,10 +1620,10 @@ TEST_F(TemplateURLServiceTest, GenerateVisitOnKeyword) {
 
   // Query history for the generated url.
   base::CancelableTaskTracker tracker;
-  history::QueryURLResult query_url_result;
-  history->QueryURL(
-      GURL("http://keyword"), true,
-      base::BindLambdaForTesting([&](history::QueryURLResult result) {
+  history::QueryURLAndVisitsResult query_url_result;
+  history->QueryURLAndVisits(
+      GURL("http://keyword"),
+      base::BindLambdaForTesting([&](history::QueryURLAndVisitsResult result) {
         query_url_result = std::move(result);
       }),
       &tracker);

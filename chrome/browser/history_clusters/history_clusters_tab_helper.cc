@@ -155,7 +155,7 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
                int64_t navigation_id, base::Time timestamp,
                history_clusters::IncompleteVisitContextAnnotations&
                    incomplete_visit_context_annotations,
-               history::QueryURLResult result) {
+               history::QueryURLAndVisitsResult result) {
               DCHECK(history_clusters_tab_helper);
               DCHECK(history_clusters_service);
               // visit being added to the DB, e.g. navigations to

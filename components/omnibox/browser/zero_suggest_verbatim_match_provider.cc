@@ -89,7 +89,7 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
   // Attempt to retrieve `title` from historical records.
   done_ = false;
   history_service->QueryURL(
-      input.current_url(), false,
+      input.current_url(),
       base::BindOnce(&ZeroSuggestVerbatimMatchProvider::OnPageTitleRetrieved,
                      request_weak_ptr_factory_.GetWeakPtr(), input),
       &task_tracker_);

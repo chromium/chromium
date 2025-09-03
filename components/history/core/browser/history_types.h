@@ -434,8 +434,7 @@ struct QueryOptions {
 // QueryURLResult -------------------------------------------------------------
 
 // QueryURLResult encapsulates the result of a call to
-// `HistoryBackend::QueryURL()` or
-// `HistoryBackend::GetMostRecentVisitsForGurl()`.
+// `HistoryBackend::QueryURL()`.
 struct QueryURLResult {
   QueryURLResult();
   QueryURLResult(const QueryURLResult&);
@@ -444,8 +443,27 @@ struct QueryURLResult {
   QueryURLResult& operator=(QueryURLResult&&) noexcept;
   ~QueryURLResult();
 
+  // Indicates whether the call was successful. If false, then `row` is
+  // undefined.
+  bool success = false;
+  URLRow row;
+};
+
+// QueryURLAndVisitsResult ----------------------------------------------------
+
+// QueryURLAndVisitsResult encapsulates the result of a call to
+// `HistoryBackend::QueryURLAndVisits()` or
+// `HistoryBackend::GetMostRecentVisitsForGurl()`.
+struct QueryURLAndVisitsResult {
+  QueryURLAndVisitsResult();
+  QueryURLAndVisitsResult(const QueryURLAndVisitsResult&);
+  QueryURLAndVisitsResult(QueryURLAndVisitsResult&&) noexcept;
+  QueryURLAndVisitsResult& operator=(const QueryURLAndVisitsResult&);
+  QueryURLAndVisitsResult& operator=(QueryURLAndVisitsResult&&) noexcept;
+  ~QueryURLAndVisitsResult();
+
   // Indicates whether the call was successful. If false, then both `row` and
-  // `visits` fields are undefined.
+  // `visits` are undefined.
   bool success = false;
   URLRow row;
   VisitVector visits;

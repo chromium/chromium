@@ -286,23 +286,36 @@ class HistoryService : public KeyedService,
   // Querying ------------------------------------------------------------------
 
   // Returns the information about the requested URL. If the URL is found,
-  // success will be true and the information will be in the URLRow parameter.
-  // On success, the visits, if requested, will be sorted by date. If they have
-  // not been requested, the pointer will be valid, but the vector will be
-  // empty.
+  // `success` will be true and the information will be in the URLRow parameter.
   //
-  // If success is false, neither the row nor the vector will be valid.
+  // If success is false, `row` will not be valid.
   using QueryURLCallback = base::OnceCallback<void(QueryURLResult)>;
+
+  // Returns the information about the requested URL. If the URL is found,
+  // `success` will be true and the information will be in the URLRow parameter.
+  // On success, `visits` will be sorted by date.
+  //
+  // If `success` is false, neither `row` nor the `visits` vector will be valid.
+  using QueryURLAndVisitsCallback =
+      base::OnceCallback<void(QueryURLAndVisitsResult)>;
 
   // Queries the basic information about the URL in the history database. If
   // the caller is interested in the visits (each time the URL is visited),
-  // set `want_visits` to true. If these are not needed, the function will be
-  // faster by setting this to false.
+  // use `QueryURLAndVisits()`. If visits are not needed, use this function, as
+  // it's faster.
   // Note: Virtual needed for mocking.
   virtual base::CancelableTaskTracker::TaskId QueryURL(
       const GURL& url,
-      bool want_visits,
       QueryURLCallback callback,
+      base::CancelableTaskTracker* tracker);
+
+  // Queries the basic information about the URL in the history database, and
+  // includes the visits (each time the URL is visited). If visits are not
+  // needed, use `QueryURL()` instead, as it's faster.
+  // Note: Virtual needed for mocking.
+  virtual base::CancelableTaskTracker::TaskId QueryURLAndVisits(
+      const GURL& url,
+      QueryURLAndVisitsCallback callback,
       base::CancelableTaskTracker* tracker);
 
   // Provides the result of a query. See QueryResults in history_types.h.
@@ -469,7 +482,7 @@ class HistoryService : public KeyedService,
   base::CancelableTaskTracker::TaskId GetMostRecentVisitsForGurl(
       GURL url,
       int max_visits,
-      QueryURLCallback callback,
+      QueryURLAndVisitsCallback callback,
       base::CancelableTaskTracker* tracker);
 
   // Database management operations --------------------------------------------

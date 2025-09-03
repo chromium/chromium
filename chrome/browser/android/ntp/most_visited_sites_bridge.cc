@@ -97,7 +97,6 @@ void JavaHomepageClient::QueryHomepageTitle(TitleCallback title_callback) {
   // and the callback will not be called. Therefore, base::Unretained works.
   history_service->QueryURL(
       url,
-      /*want_visits=*/false,
       base::BindOnce(&JavaHomepageClient::OnTitleEntryFound,
                      base::Unretained(this), std::move(title_callback)),
       &task_tracker_);

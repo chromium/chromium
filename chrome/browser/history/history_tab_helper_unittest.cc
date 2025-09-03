@@ -138,8 +138,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
     std::string title;
     base::RunLoop loop;
     history_service_->QueryURL(
-        url, /*want_visits=*/false,
-        base::BindLambdaForTesting([&](history::QueryURLResult result) {
+        url, base::BindLambdaForTesting([&](history::QueryURLResult result) {
           EXPECT_TRUE(result.success);
           title = base::UTF16ToUTF8(result.row.title());
           loop.Quit();
@@ -152,15 +151,16 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
   base::TimeDelta QueryLastVisitDurationFromHistory(const GURL& url) {
     base::TimeDelta visit_duration;
     base::RunLoop loop;
-    history_service_->QueryURL(
-        url, /*want_visits=*/true,
-        base::BindLambdaForTesting([&](history::QueryURLResult result) {
-          EXPECT_TRUE(result.success);
-          if (!result.visits.empty()) {
-            visit_duration = result.visits.back().visit_duration;
-          }
-          loop.Quit();
-        }),
+    history_service_->QueryURLAndVisits(
+        url,
+        base::BindLambdaForTesting(
+            [&](history::QueryURLAndVisitsResult result) {
+              EXPECT_TRUE(result.success);
+              if (!result.visits.empty()) {
+                visit_duration = result.visits.back().visit_duration;
+              }
+              loop.Quit();
+            }),
         &tracker_);
     loop.Run();
     return visit_duration;

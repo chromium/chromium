@@ -46,7 +46,6 @@ class MockHistoryService : public history::HistoryService {
   MOCK_METHOD(base::CancelableTaskTracker::TaskId,
               QueryURL,
               (const GURL& url,
-               bool want_visits,
                history::HistoryService::QueryURLCallback callback,
                base::CancelableTaskTracker* tracker),
               (override));
@@ -388,13 +387,11 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
 
   history::HistoryService::QueryURLCallback callback;
   {
-    EXPECT_CALL(mock_service, QueryURL(_, _, _, _))
-        .WillOnce([&](GURL url, bool want_visits,
-                      history::HistoryService::QueryURLCallback cb,
+    EXPECT_CALL(mock_service, QueryURL(_, _, _))
+        .WillOnce([&](GURL url, history::HistoryService::QueryURLCallback cb,
                       base::CancelableTaskTracker* tracker)
                       -> base::CancelableTaskTracker::TaskId {
           EXPECT_EQ("https://www.wired.com/", url.spec());
-          EXPECT_FALSE(want_visits);
           callback = std::move(cb);
           return {};
         });
@@ -439,7 +436,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   }
 
   {
-    EXPECT_CALL(mock_service, QueryURL(_, _, _, _)).Times(0);
+    EXPECT_CALL(mock_service, QueryURL(_, _, _)).Times(0);
     provider_->Start(input, false);
 
     ASSERT_FALSE(provider_->matches().empty());
@@ -469,13 +466,11 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
 
   history::HistoryService::QueryURLCallback callback;
   {
-    EXPECT_CALL(mock_service, QueryURL(_, _, _, _))
-        .WillOnce([&](GURL url, bool want_visits,
-                      history::HistoryService::QueryURLCallback cb,
+    EXPECT_CALL(mock_service, QueryURL(_, _, _))
+        .WillOnce([&](GURL url, history::HistoryService::QueryURLCallback cb,
                       base::CancelableTaskTracker* tracker)
                       -> base::CancelableTaskTracker::TaskId {
           EXPECT_EQ("https://www.wired.com/", url.spec());
-          EXPECT_FALSE(want_visits);
           callback = std::move(cb);
           return {};
         });

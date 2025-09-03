@@ -211,6 +211,24 @@ QueryURLResult& QueryURLResult::operator=(const QueryURLResult&) = default;
 
 QueryURLResult& QueryURLResult::operator=(QueryURLResult&&) noexcept = default;
 
+// QueryURLAndVisitsResult ----------------------------------------------------
+
+QueryURLAndVisitsResult::QueryURLAndVisitsResult() = default;
+
+QueryURLAndVisitsResult::~QueryURLAndVisitsResult() = default;
+
+QueryURLAndVisitsResult::QueryURLAndVisitsResult(
+    const QueryURLAndVisitsResult&) = default;
+
+QueryURLAndVisitsResult::QueryURLAndVisitsResult(
+    QueryURLAndVisitsResult&&) noexcept = default;
+
+QueryURLAndVisitsResult& QueryURLAndVisitsResult::operator=(
+    const QueryURLAndVisitsResult&) = default;
+
+QueryURLAndVisitsResult& QueryURLAndVisitsResult::operator=(
+    QueryURLAndVisitsResult&&) noexcept = default;
+
 // MostVisitedURL --------------------------------------------------------------
 
 MostVisitedURL::MostVisitedURL() = default;

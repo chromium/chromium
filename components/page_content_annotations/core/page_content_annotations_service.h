@@ -327,7 +327,7 @@ class PageContentAnnotationsService
   void OnURLQueried(const HistoryVisit& visit,
                     PersistAnnotationsCallback callback,
                     PageContentAnnotationsType annotation_type,
-                    history::QueryURLResult url_result);
+                    history::QueryURLAndVisitsResult url_result);
 
   // Notifies the PageContentAnnotationsResult to the observers for
   // |annotation_type|.

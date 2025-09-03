@@ -45,19 +45,20 @@ class HistoryTabHelperTest : public PlatformTest {
 
   // Queries the history service for information about the given `url` and
   // returns the response.  Spins the runloop until a response is received.
-  void QueryURL(const GURL& url) {
+  void QueryURLAndVisits(const GURL& url) {
     history::HistoryService* service =
         ios::HistoryServiceFactory::GetForProfile(
             profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
 
     base::RunLoop loop;
-    service->QueryURL(
-        url, /*want_visits=*/true,
-        base::BindLambdaForTesting([&](history::QueryURLResult result) {
-          latest_row_result_ = std::move(result.row);
-          latest_visits_result_ = std::move(result.visits);
-          loop.Quit();
-        }),
+    service->QueryURLAndVisits(
+        url,
+        base::BindLambdaForTesting(
+            [&](history::QueryURLAndVisitsResult result) {
+              latest_row_result_ = std::move(result.row);
+              latest_visits_result_ = std::move(result.visits);
+              loop.Quit();
+            }),
         &tracker_);
     loop.Run();
   }
@@ -80,7 +81,7 @@ class HistoryTabHelperTest : public PlatformTest {
   raw_ptr<web::FakeNavigationManager> navigation_manager_;
   base::CancelableTaskTracker tracker_;
 
-  // Cached data from the last call to `QueryURL()`.
+  // Cached data from the last call to `QueryURLAndVisits()`.
   history::URLRow latest_row_result_;
   history::VisitVector latest_visits_result_;
 };
@@ -112,12 +113,12 @@ TEST_F(HistoryTabHelperTest, MultipleURLsWithTitles) {
   helper->UpdateHistoryPageTitle(*second_item);
 
   // Verify that the first title was set properly.
-  QueryURL(first_url);
+  QueryURLAndVisits(first_url);
   EXPECT_EQ(first_url, latest_row_result_.url());
   EXPECT_EQ(base::UTF8ToUTF16(first_title), latest_row_result_.title());
 
   // Verify that the first title was set properly.
-  QueryURL(second_url);
+  QueryURLAndVisits(second_url);
   EXPECT_EQ(second_url, latest_row_result_.url());
   EXPECT_EQ(base::UTF8ToUTF16(second_title), latest_row_result_.title());
 }
@@ -136,7 +137,7 @@ TEST_F(HistoryTabHelperTest, TitleUpdateForOneURL) {
   item->SetVirtualURL(test_url);
   item->SetTitle(base::UTF8ToUTF16(first_title));
   helper->UpdateHistoryPageTitle(*item);
-  QueryURL(test_url);
+  QueryURLAndVisits(test_url);
   EXPECT_EQ(test_url, latest_row_result_.url());
   EXPECT_EQ(base::UTF8ToUTF16(first_title), latest_row_result_.title());
 
@@ -145,7 +146,7 @@ TEST_F(HistoryTabHelperTest, TitleUpdateForOneURL) {
   update->SetVirtualURL(test_url);
   update->SetTitle(base::UTF8ToUTF16(second_title));
   helper->UpdateHistoryPageTitle(*update);
-  QueryURL(test_url);
+  QueryURLAndVisits(test_url);
   EXPECT_EQ(base::UTF8ToUTF16(second_title), latest_row_result_.title());
 }
 
@@ -163,7 +164,7 @@ TEST_F(HistoryTabHelperTest, EmptyTitleIsNotWrittenToHistory) {
 
   AddVisitForURL(test_url);
   helper->UpdateHistoryPageTitle(*item);
-  QueryURL(test_url);
+  QueryURLAndVisits(test_url);
 
   EXPECT_EQ(test_url, latest_row_result_.url());
   EXPECT_FALSE(latest_row_result_.title().empty());
@@ -182,14 +183,14 @@ TEST_F(HistoryTabHelperTest, EmptyTitleOverwritesPreviousTitle) {
 
   AddVisitForURL(test_url);
   helper->UpdateHistoryPageTitle(*item);
-  QueryURL(test_url);
+  QueryURLAndVisits(test_url);
   EXPECT_EQ(test_url, latest_row_result_.url());
   EXPECT_EQ(base::UTF8ToUTF16(test_title), latest_row_result_.title());
 
   // Set the empty title and make sure the title is updated.
   item->SetTitle(std::u16string());
   helper->UpdateHistoryPageTitle(*item);
-  QueryURL(test_url);
+  QueryURLAndVisits(test_url);
   EXPECT_NE(base::UTF8ToUTF16(test_title), latest_row_result_.title());
 }
 
@@ -202,14 +203,14 @@ TEST_F(HistoryTabHelperTest, TestNTPNotAdded) {
   GURL test_url("https://www.google.com/");
   item->SetVirtualURL(test_url);
   AddVisitForURL(test_url);
-  QueryURL(test_url);
+  QueryURLAndVisits(test_url);
   EXPECT_EQ(test_url, latest_row_result_.url());
 
   item = web::NavigationItem::Create();
   GURL ntp_url(kChromeUIAboutNewTabURL);
   item->SetVirtualURL(ntp_url);
   AddVisitForURL(ntp_url);
-  QueryURL(ntp_url);
+  QueryURLAndVisits(ntp_url);
   EXPECT_NE(ntp_url, latest_row_result_.url());
 }
 
@@ -222,14 +223,14 @@ TEST_F(HistoryTabHelperTest, TestFileNotAdded) {
   GURL test_url("https://www.google.com/");
   item->SetVirtualURL(test_url);
   AddVisitForURL(test_url);
-  QueryURL(test_url);
+  QueryURLAndVisits(test_url);
   EXPECT_EQ(test_url, latest_row_result_.url());
 
   item = web::NavigationItem::Create();
   GURL file_url("file://path/to/file");
   item->SetVirtualURL(file_url);
   AddVisitForURL(file_url);
-  QueryURL(file_url);
+  QueryURLAndVisits(file_url);
   EXPECT_NE(file_url, latest_row_result_.url());
 }
 
@@ -256,7 +257,7 @@ TEST_F(HistoryTabHelperTest, ShouldUpdateVisitDurationInHistory) {
       &web_state_, &navigation_context);
 
   // Make sure the visit showed up.
-  QueryURL(url1);
+  QueryURLAndVisits(url1);
   ASSERT_EQ(latest_row_result_.url(), url1);
   ASSERT_FALSE(latest_visits_result_.empty());
   // The duration shouldn't be set yet, since the visit is still open.
@@ -271,19 +272,19 @@ TEST_F(HistoryTabHelperTest, ShouldUpdateVisitDurationInHistory) {
       &web_state_, &navigation_context);
 
   // The duration of the first visit should be populated now.
-  QueryURL(url1);
+  QueryURLAndVisits(url1);
   ASSERT_EQ(latest_row_result_.url(), url1);
   ASSERT_FALSE(latest_visits_result_.empty());
   EXPECT_FALSE(latest_visits_result_.back().visit_duration.is_zero());
   // ...but not the duration of the second visit yet.
-  QueryURL(url2);
+  QueryURLAndVisits(url2);
   ASSERT_EQ(latest_row_result_.url(), url2);
   ASSERT_FALSE(latest_visits_result_.empty());
   EXPECT_TRUE(latest_visits_result_.back().visit_duration.is_zero());
 
   // Closing the tab should finish the second visit and populate its duration.
   static_cast<web::WebStateObserver*>(helper)->WebStateDestroyed(&web_state_);
-  QueryURL(url2);
+  QueryURLAndVisits(url2);
   ASSERT_EQ(latest_row_result_.url(), url2);
   ASSERT_FALSE(latest_visits_result_.empty());
   EXPECT_FALSE(latest_visits_result_.back().visit_duration.is_zero());

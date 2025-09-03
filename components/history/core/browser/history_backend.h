@@ -302,7 +302,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Querying ------------------------------------------------------------------
 
-  QueryURLResult QueryURL(const GURL& url, bool want_visits);
+  QueryURLResult QueryURL(const GURL& url);
+  QueryURLAndVisitsResult QueryURLAndVisits(const GURL& url);
   QueryResults QueryHistory(const std::u16string& text_query,
                             const QueryOptions& options);
 
@@ -661,7 +662,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // TODO(manukh): Rename to `GetMostRecentVisitsForUrlId`.
   bool GetMostRecentVisitsForURL(URLID id, int max_visits, VisitVector* visits);
 
-  QueryURLResult GetMostRecentVisitsForGurl(GURL url, int max_visits);
+  QueryURLAndVisitsResult GetMostRecentVisitsForGurl(GURL url, int max_visits);
 
   // Gets whether the URL is known to sync.
   bool GetIsUrlKnownToSync(URLID id, bool* is_known_to_sync);

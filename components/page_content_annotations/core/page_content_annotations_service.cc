@@ -650,8 +650,8 @@ void PageContentAnnotationsService::QueryURL(
     const HistoryVisit& visit,
     PersistAnnotationsCallback callback,
     PageContentAnnotationsType annotation_type) {
-  history_service_->QueryURL(
-      visit.url, /*want_visits=*/true,
+  history_service_->QueryURLAndVisits(
+      visit.url,
       base::BindOnce(&PageContentAnnotationsService::OnURLQueried,
                      weak_ptr_factory_.GetWeakPtr(), visit, std::move(callback),
                      annotation_type),
@@ -662,7 +662,7 @@ void PageContentAnnotationsService::OnURLQueried(
     const HistoryVisit& visit,
     PersistAnnotationsCallback callback,
     PageContentAnnotationsType annotation_type,
-    history::QueryURLResult url_result) {
+    history::QueryURLAndVisitsResult url_result) {
   if (!url_result.success || url_result.visits.empty()) {
     LogPageContentAnnotationsStorageStatus(
         PageContentAnnotationsStorageStatus::kNoVisitsForUrl, annotation_type);

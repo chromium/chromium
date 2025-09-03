@@ -176,7 +176,7 @@ void CustomHomePagesTableModel::LoadTitle(Entry* entry) {
                                            ServiceAccessType::EXPLICIT_ACCESS);
   if (history_service) {
     entry->task_id = history_service->QueryURL(
-        entry->url, false,
+        entry->url,
         base::BindOnce(&CustomHomePagesTableModel::OnGotTitle,
                        base::Unretained(this), entry->url, false),
         &task_tracker_);
@@ -194,7 +194,7 @@ void CustomHomePagesTableModel::LoadAllTitles() {
   for (Entry& entry : entries_) {
     if (history_service) {
       entry.task_id = history_service->QueryURL(
-          entry.url, false,
+          entry.url,
           base::BindOnce(&CustomHomePagesTableModel::OnGotOneOfManyTitles,
                          base::Unretained(this), entry.url),
           &task_tracker_);

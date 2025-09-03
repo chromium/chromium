@@ -252,16 +252,17 @@ ExtensionFunction::ResponseAction HistoryGetVisitsFunction::Run() {
 
   history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
       GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
-  hs->QueryURL(url,
-               true,  // Retrieve full history of a URL.
-               base::BindOnce(&HistoryGetVisitsFunction::QueryComplete,
-                              base::Unretained(this)),
-               &task_tracker_);
+  // Retrieve full history of a URL.
+  hs->QueryURLAndVisits(url,
+                        base::BindOnce(&HistoryGetVisitsFunction::QueryComplete,
+                                       base::Unretained(this)),
+                        &task_tracker_);
   AddRef();               // Balanced in QueryComplete().
   return RespondLater();  // QueryComplete() will be called asynchronously.
 }
 
-void HistoryGetVisitsFunction::QueryComplete(history::QueryURLResult result) {
+void HistoryGetVisitsFunction::QueryComplete(
+    history::QueryURLAndVisitsResult result) {
   VisitItemList visit_item_vec;
   if (result.success && !result.visits.empty()) {
     for (const history::VisitRow& visit : result.visits)

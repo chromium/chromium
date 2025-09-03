@@ -48,7 +48,7 @@ void ProductSpecificationsHandler::GetPageTitleFromHistory(
   }
 
   history_service_->QueryURL(
-      url, false,
+      url,
       base::BindOnce(
           [](GetPageTitleFromHistoryCallback callback,
              history::QueryURLResult result) {

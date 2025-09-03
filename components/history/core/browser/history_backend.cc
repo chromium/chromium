@@ -1690,9 +1690,10 @@ bool HistoryBackend::GetMostRecentVisitsForURL(URLID id,
   return false;
 }
 
-QueryURLResult HistoryBackend::GetMostRecentVisitsForGurl(GURL url,
-                                                          int max_visits) {
-  QueryURLResult result;
+QueryURLAndVisitsResult HistoryBackend::GetMostRecentVisitsForGurl(
+    GURL url,
+    int max_visits) {
+  QueryURLAndVisitsResult result;
   if (db_ && GetURL(url, &result.row) &&
       db_->GetMostRecentVisitsForURL(result.row.id(), max_visits,
                                      &result.visits)) {
@@ -2010,12 +2011,18 @@ bool HistoryBackend::GetLastVisitByTime(base::Time visit_time,
   return false;
 }
 
-QueryURLResult HistoryBackend::QueryURL(const GURL& url, bool want_visits) {
+QueryURLResult HistoryBackend::QueryURL(const GURL& url) {
   QueryURLResult result;
   result.success = db_ && db_->GetRowForURL(url, &result.row);
-  // Optionally query the visits.
-  if (result.success && want_visits)
+  return result;
+}
+
+QueryURLAndVisitsResult HistoryBackend::QueryURLAndVisits(const GURL& url) {
+  QueryURLAndVisitsResult result;
+  result.success = db_ && db_->GetRowForURL(url, &result.row);
+  if (result.success) {
     db_->GetVisitsForURL(result.row.id(), &result.visits);
+  }
   return result;
 }
 

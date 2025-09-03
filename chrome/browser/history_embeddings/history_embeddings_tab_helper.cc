@@ -241,7 +241,7 @@ void HistoryEmbeddingsTabHelper::ExtractPassages(
 
 void HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData(
     content::WeakDocumentPtr weak_render_frame_host,
-    history::QueryURLResult result) {
+    history::QueryURLAndVisitsResult result) {
   // `visits` can be empty for navigations that don't result in a
   // visit being added to the DB, e.g. navigations to
   // "chrome://" URLs.
