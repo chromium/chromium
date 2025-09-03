@@ -77,6 +77,10 @@ class LoginStateChecker : public content::WebContentsObserver {
 
   std::unique_ptr<AnnotatedPageContentCapturer> capturer_;
 
+  // Whether a server request is ongoing.
+  bool is_request_in_flight_ = false;
+  std::optional<optimization_guide::AIPageContentResult> cached_page_content_;
+
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
   LoginStateResultCallback result_check_callback_;
