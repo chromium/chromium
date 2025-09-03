@@ -189,7 +189,7 @@ bool LegacyRenderWidgetHostHWND::InitOrDeleteSelf(HWND parent) {
   // Need to use weak_ptr to guard against `this` from being deleted by
   // Base::Create(), which used to be called in the constructor and caused
   // heap-use-after-free crash (https://crbug.com/1194694).
-  auto weak_ptr = weak_factory_.GetWeakPtr();
+  auto weak_ptr = msg_handler_weak_factory_.GetWeakPtr();
   RECT rect = {0};
   Base::Create(parent, rect, L"Chrome Legacy Window",
                WS_CHILDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
@@ -357,8 +357,7 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
 // with capture changes.
 LRESULT LegacyRenderWidgetHostHWND::OnKeyboardRange(UINT message,
                                                     WPARAM w_param,
-                                                    LPARAM l_param,
-                                                    BOOL& handled) {
+                                                    LPARAM l_param) {
   auto* event_target = GetWindowEventTarget(GetParent());
   if (!event_target) {
     return 0;
@@ -367,14 +366,13 @@ LRESULT LegacyRenderWidgetHostHWND::OnKeyboardRange(UINT message,
   bool msg_handled = false;
   LRESULT ret = event_target->HandleKeyboardMessage(message, w_param, l_param,
                                                     &msg_handled);
-  handled = msg_handled;
+  SetMsgHandled(msg_handled);
   return ret;
 }
 
 LRESULT LegacyRenderWidgetHostHWND::OnMouseRange(UINT message,
                                                  WPARAM w_param,
-                                                 LPARAM l_param,
-                                                 BOOL& handled) {
+                                                 LPARAM l_param) {
   if (message == WM_MOUSEMOVE) {
     if (!mouse_tracking_enabled_) {
       mouse_tracking_enabled_ = true;
@@ -406,15 +404,15 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseRange(UINT message,
   bool msg_handled = false;
   LRESULT ret =
       event_target->HandleMouseMessage(message, w_param, l_param, &msg_handled);
-  handled = msg_handled;
+  SetMsgHandled(msg_handled);
   // If the parent did not handle non-client mouse messages, call
   // DefWindowProc() on the message with the parent window handle. This ensures
   // that WM_SYSCOMMAND is generated for the parent and this class is out of
   // the picture.
-  if (!handled &&
+  if (!msg_handled &&
       (message >= WM_NCMOUSEMOVE && message <= WM_NCXBUTTONDBLCLK)) {
     ret = ::DefWindowProc(GetParent(), message, w_param, l_param);
-    handled = TRUE;
+    SetMsgHandled(TRUE);
   }
   return ret;
 }
