@@ -357,14 +357,14 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePageSyncControls) {
   RunTest("settings/people_page_sync_controls_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/442545295): Flaky on at least Linux dbg.
-#if !defined(NDEBUG)
-#define MAYBE_PrivacyPageIndex DISABLED_PrivacyPageIndex
-#else
-#define MAYBE_PrivacyPageIndex PrivacyPageIndex
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsTest, MAYBE_PrivacyPageIndex) {
-  RunTest("settings/privacy_page_index_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyPageIndex) {
+  RunTest("settings/privacy_page_index_test.js",
+          "runMochaSuite('PrivacyPageIndex Main')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyPageIndexSiteSettings) {
+  RunTest("settings/privacy_page_index_test.js",
+          "runMochaSuite('PrivacyPageIndex SiteSettings')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, Prefs) {

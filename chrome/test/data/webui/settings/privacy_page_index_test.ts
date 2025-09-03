@@ -10,6 +10,12 @@ import {CrSettingsPrefs, loadTimeData, resetPageVisibilityForTesting, resetRoute
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
+interface RouteInfo {
+  route: Route;
+  viewId: string;
+  parentViewId?: string;
+}
+
 suite('PrivacyPageIndex', function() {
   let index: SettingsPrivacyPageIndexElement;
 
@@ -46,7 +52,8 @@ suite('PrivacyPageIndex', function() {
     return flushTasks();
   }
 
-  async function testActiveViewsForRoute(route: Route, viewIds: string[]) {
+  async function testViewsForRoute(
+      route: Route, viewIds: string[], parentViewId: string|null = null) {
     Router.getInstance().navigateTo(route);
     await flushTasks();
     await waitBeforeNextRender(index);
@@ -55,6 +62,14 @@ suite('PrivacyPageIndex', function() {
       assertTrue(
           !!index.$.viewManager.querySelector(`#${id}.active[slot=view]`),
           `Failed for route '${route.path}'`);
+
+      if (parentViewId) {
+        assertTrue(!!index.$.viewManager.querySelector(
+            `#${id}[slot=view][data-parent-view-id=${parentViewId}]`));
+      } else {
+        assertTrue(!!index.$.viewManager.querySelector(
+            `#${id}[slot=view]:not([data-parent-view-id])`));
+      }
     }
   }
 
@@ -62,318 +77,308 @@ suite('PrivacyPageIndex', function() {
     return createPrivacyPageIndex();
   });
 
-  test('Routing', async function() {
-    const defaultViews = ['old', 'privacyGuidePromo', 'safetyHubEntryPoint'];
+  suite('Main', function() {
+    test('Routing', async function() {
+      const defaultViews = ['old', 'privacyGuidePromo', 'safetyHubEntryPoint'];
 
-    await testActiveViewsForRoute(routes.PRIVACY, defaultViews);
-    await testActiveViewsForRoute(routes.BASIC, defaultViews);
+      await testViewsForRoute(routes.PRIVACY, defaultViews);
+      await testViewsForRoute(routes.BASIC, defaultViews);
 
-    // Non-exhaustive list of PRIVACY child routes to check.
-    // Some of these routs have not been migrated to the new architecture
-    // (crbug.com/424223101), therefore the contents still reside in the 'old'
-    // <settings-basic-page> view.
-    interface RouteInfo {
-      route: Route;
-      viewId: string;
-      parentViewId?: string;
-    }
+      // Non-exhaustive list of PRIVACY child routes to check.
+      // Some of these routs have not been migrated to the new architecture
+      // (crbug.com/424223101), therefore the contents still reside in the 'old'
+      // <settings-basic-page> view.
+      const routesToVisit: RouteInfo[] = [
+        {route: routes.CLEAR_BROWSER_DATA, viewId: 'old'},
+        {route: routes.COOKIES, viewId: 'cookies', parentViewId: 'old'},
+        {
+          route: routes.SAFETY_HUB,
+          viewId: 'safetyHub',
+          parentViewId: 'safetyHubEntryPoint',
+        },
+        {route: routes.SECURITY, viewId: 'old'},
+      ];
 
-    const routesToVisit: RouteInfo[] = [
-      {route: routes.CLEAR_BROWSER_DATA, viewId: 'old'},
-      {route: routes.COOKIES, viewId: 'cookies', parentViewId: 'old'},
-      {
-        route: routes.SAFETY_HUB,
-        viewId: 'safetyHub',
-        parentViewId: 'safetyHubEntryPoint',
-      },
-      {route: routes.SECURITY, viewId: 'old'},
-      {
-        route: routes.SITE_SETTINGS,
-        viewId: 'siteSettings',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_AR,
-        viewId: 'siteSettingsAr',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN,
-        viewId: 'siteSettingsAutomaticFullscreen',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_IDLE_DETECTION,
-        viewId: 'siteSettingsIdleDetection',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_HANDLERS,
-        viewId: 'siteSettingsHandlers',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_LOCAL_FONTS,
-        viewId: 'siteSettingsLocalFonts',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_LOCATION,
-        viewId: 'siteSettingsLocation',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_NOTIFICATIONS,
-        viewId: 'siteSettingsNotifications',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_PDF_DOCUMENTS,
-        viewId: 'siteSettingsPdfDocuments',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_SITE_DATA,
-        viewId: 'siteSettingsSiteData',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_STORAGE_ACCESS,
-        viewId: 'siteSettingsStorageAccess',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_VR,
-        viewId: 'siteSettingsVr',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
-        viewId: 'siteSettingsWindowManagement',
-        parentViewId: 'old',
-      },
-      {
-        route: routes.SITE_SETTINGS_ZOOM_LEVELS,
-        viewId: 'siteSettingsZoomLevels',
-        parentViewId: 'old',
-      },
-    ];
-
-    for (const routeInfo of routesToVisit) {
-      await testActiveViewsForRoute(routeInfo.route, [routeInfo.viewId]);
-      if (routeInfo.parentViewId) {
-        assertTrue(!!index.$.viewManager.querySelector(
-            `#${routeInfo.viewId}[slot=view][data-parent-view-id=${
-                routeInfo.parentViewId}]`));
-      } else {
-        assertTrue(!!index.$.viewManager.querySelector(
-            `#${routeInfo.viewId}[slot=view]:not([data-parent-view-id])`));
+      for (const routeInfo of routesToVisit) {
+        await testViewsForRoute(
+            routeInfo.route, [routeInfo.viewId], routeInfo.parentViewId);
       }
-    }
-  });
-
-  // TODO(crbug.com/424223101): Remove this test once <settings-basic-page> is
-  // removed.
-  test('RoutingLazyRender', async function() {
-    assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
-    await flushTasks();
-    await waitBeforeNextRender(index);
-    assertFalse(!!index.$.viewManager.querySelector('#old'));
-    await testActiveViewsForRoute(routes.PRIVACY, ['old']);
-  });
-
-  test('RoutingPrivacySandboxRestrictedFalse', async function() {
-    await createPrivacyPageIndex({
-      isPrivacySandboxRestricted: false,
-      isPrivacySandboxRestrictedNoticeEnabled: false,
     });
 
-    // Necessary for the PRIVACY_SANDBOX_MANAGE_TOPICS route to not
-    // automatically redirect to its parent.
-    index.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
-
-    const routesToVisit: Array<{route: Route, viewId: string}> = [
-      {route: routes.PRIVACY_SANDBOX, viewId: 'privacySandbox'},
-      {route: routes.PRIVACY_SANDBOX_TOPICS, viewId: 'privacySandboxTopics'},
-      {
-        route: routes.PRIVACY_SANDBOX_MANAGE_TOPICS,
-        viewId: 'privacySandboxManageTopics',
-      },
-      {route: routes.PRIVACY_SANDBOX_FLEDGE, viewId: 'privacySandboxFledge'},
-      {
-        route: routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
-        viewId: 'privacySandboxAdMeasurement',
-      },
-    ];
-
-    for (const {route, viewId} of routesToVisit) {
-      await testActiveViewsForRoute(route, [viewId]);
-    }
-  });
-
-  test('RoutingPrivacySandboxRestrictedNoticeEnableTrue', async function() {
-    await createPrivacyPageIndex({
-      isPrivacySandboxRestricted: true,
-      isPrivacySandboxRestrictedNoticeEnabled: true,
+    // TODO(crbug.com/424223101): Remove this test once <settings-basic-page> is
+    // removed.
+    test('RoutingLazyRender', async function() {
+      assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
+      await flushTasks();
+      await waitBeforeNextRender(index);
+      assertFalse(!!index.$.viewManager.querySelector('#old'));
+      await testViewsForRoute(routes.PRIVACY, ['old']);
     });
 
-    // Necessary for the PRIVACY_SANDBOX_MANAGE_TOPICS route to not
-    // automatically redirect to its parent.
-    index.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    test('RoutingPrivacySandboxRestrictedFalse', async function() {
+      await createPrivacyPageIndex({
+        isPrivacySandboxRestricted: false,
+        isPrivacySandboxRestrictedNoticeEnabled: false,
+      });
 
-    const routesToVisit: Array<{route: Route, viewId: string}> = [
-      {route: routes.PRIVACY_SANDBOX, viewId: 'privacySandbox'},
-      {
-        route: routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
-        viewId: 'privacySandboxAdMeasurement',
-      },
-    ];
+      // Necessary for the PRIVACY_SANDBOX_MANAGE_TOPICS route to not
+      // automatically redirect to its parent.
+      index.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
 
-    for (const {route, viewId} of routesToVisit) {
-      await testActiveViewsForRoute(route, [viewId]);
-    }
+      const routesToVisit: RouteInfo[] = [
+        {
+          route: routes.PRIVACY_SANDBOX,
+          viewId: 'privacySandbox',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.PRIVACY_SANDBOX_TOPICS,
+          viewId: 'privacySandboxTopics',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.PRIVACY_SANDBOX_MANAGE_TOPICS,
+          viewId: 'privacySandboxManageTopics',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.PRIVACY_SANDBOX_FLEDGE,
+          viewId: 'privacySandboxFledge',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
+          viewId: 'privacySandboxAdMeasurement',
+          parentViewId: 'old',
+        },
+      ];
+
+      for (const routeInfo of routesToVisit) {
+        await testViewsForRoute(
+            routeInfo.route, [routeInfo.viewId], routeInfo.parentViewId);
+      }
+    });
+
+    test('RoutingPrivacySandboxRestrictedNoticeEnableTrue', async function() {
+      await createPrivacyPageIndex({
+        isPrivacySandboxRestricted: true,
+        isPrivacySandboxRestrictedNoticeEnabled: true,
+      });
+
+      // Necessary for the PRIVACY_SANDBOX_MANAGE_TOPICS route to not
+      // automatically redirect to its parent.
+      index.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+
+      const routesToVisit: RouteInfo[] = [
+        {
+          route: routes.PRIVACY_SANDBOX,
+          viewId: 'privacySandbox',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
+          viewId: 'privacySandboxAdMeasurement',
+          parentViewId: 'old',
+        },
+      ];
+
+      for (const routeInfo of routesToVisit) {
+        await testViewsForRoute(
+            routeInfo.route, [routeInfo.viewId], routeInfo.parentViewId);
+      }
+    });
+
+    test('RoutingSecurityKeys', async function() {
+      assertFalse(loadTimeData.getBoolean('enableSecurityKeysSubpage'));
+      await createPrivacyPageIndex({enableSecurityKeysSubpage: true});
+      return testViewsForRoute(routes.SECURITY_KEYS, ['securityKeys'], 'old');
+    });
+
+    test('RoutingIncognitoTrackingProtections', async function() {
+      assertFalse(
+          loadTimeData.getBoolean('enableIncognitoTrackingProtections'));
+      await createPrivacyPageIndex({enableIncognitoTrackingProtections: true});
+      return testViewsForRoute(
+          routes.INCOGNITO_TRACKING_PROTECTIONS,
+          ['incognitoTrackingProtections'], 'old');
+    });
+
+    // <if expr="is_chromeos">
+    test('RoutingGuestMode', async function() {
+      assertFalse(loadTimeData.getBoolean('isGuest'));
+      assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
+      await createPrivacyPageIndex({isGuest: true});
+      assertTrue(!!index.$.viewManager.querySelector('#old.active[slot=view]'));
+    });
+    // </if>
+
+    // Minimal (non-exhaustive) tests to ensure SearchableViewContainerMixin is
+    // inherited correctly.
+    test('Search', async function() {
+      index.inSearchMode = true;
+      await flushTasks();
+
+      // Case1: Results within the "Privacy and security" card.
+      let result = await index.searchContents('Privacy and security');
+      assertFalse(result.canceled);
+      assertTrue(result.matchCount > 0);
+      assertFalse(result.wasClearSearch);
+
+      // Case2: Results within the "Safety check" card.
+      result = await index.searchContents('Safety check');
+      assertFalse(result.canceled);
+      assertTrue(result.matchCount > 0);
+      assertFalse(result.wasClearSearch);
+    });
   });
 
-  test('RoutingAutoPictureInPicture', async function() {
-    assertFalse(loadTimeData.getBoolean('autoPictureInPictureEnabled'));
-    await createPrivacyPageIndex({autoPictureInPictureEnabled: true});
+  // Site settings tests are placed on a dedicated suite() to reduce the chances
+  // of timeouts on dbg bots.
+  suite('SiteSettings', function() {
+    test('Routing', async function() {
+      // SITE_SETTINGS and child routes to check.
+      const routesToVisit: RouteInfo[] = [
+        {
+          route: routes.SITE_SETTINGS,
+          viewId: 'siteSettings',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_AR,
+          viewId: 'siteSettingsAr',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN,
+          viewId: 'siteSettingsAutomaticFullscreen',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_IDLE_DETECTION,
+          viewId: 'siteSettingsIdleDetection',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_HANDLERS,
+          viewId: 'siteSettingsHandlers',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_LOCAL_FONTS,
+          viewId: 'siteSettingsLocalFonts',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_LOCATION,
+          viewId: 'siteSettingsLocation',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_NOTIFICATIONS,
+          viewId: 'siteSettingsNotifications',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_PDF_DOCUMENTS,
+          viewId: 'siteSettingsPdfDocuments',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_SITE_DATA,
+          viewId: 'siteSettingsSiteData',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_STORAGE_ACCESS,
+          viewId: 'siteSettingsStorageAccess',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_VR,
+          viewId: 'siteSettingsVr',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
+          viewId: 'siteSettingsWindowManagement',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_ZOOM_LEVELS,
+          viewId: 'siteSettingsZoomLevels',
+          parentViewId: 'old',
+        },
+      ];
 
-    const viewId = 'siteSettingsAutoPictureInPicture';
-    await testActiveViewsForRoute(
-        routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE, [viewId]);
+      for (const routeInfo of routesToVisit) {
+        await testViewsForRoute(
+            routeInfo.route, [routeInfo.viewId], routeInfo.parentViewId);
+      }
+    });
 
-    // Test that data-parent-view is correctly populated.
-    assertTrue(!!index.$.viewManager.querySelector(
-        `#${viewId}[slot=view][data-parent-view-id=old]`));
-  });
+    test('RoutingAutoPictureInPicture', async function() {
+      assertFalse(loadTimeData.getBoolean('autoPictureInPictureEnabled'));
+      await createPrivacyPageIndex({autoPictureInPictureEnabled: true});
 
-  test('RoutingBluetoothScanning', async function() {
-    assertFalse(
-        loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures'));
-    await createPrivacyPageIndex({enableExperimentalWebPlatformFeatures: true});
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE,
+          ['siteSettingsAutoPictureInPicture'], 'old');
+    });
 
-    const viewId = 'siteSettingsBluetoothScanning';
-    await testActiveViewsForRoute(
-        routes.SITE_SETTINGS_BLUETOOTH_SCANNING, [viewId]);
+    test('RoutingBluetoothScanning', async function() {
+      assertFalse(
+          loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures'));
+      await createPrivacyPageIndex(
+          {enableExperimentalWebPlatformFeatures: true});
 
-    // Test that data-parent-view is correctly populated.
-    assertTrue(!!index.$.viewManager.querySelector(
-        `#${viewId}[slot=view][data-parent-view-id=old]`));
-  });
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_BLUETOOTH_SCANNING,
+          ['siteSettingsBluetoothScanning'], 'old');
+    });
 
-  test('RoutingCapturedSurfaceControl', async function() {
-    assertFalse(loadTimeData.getBoolean('capturedSurfaceControlEnabled'));
-    await createPrivacyPageIndex({capturedSurfaceControlEnabled: true});
+    test('RoutingCapturedSurfaceControl', async function() {
+      assertFalse(loadTimeData.getBoolean('capturedSurfaceControlEnabled'));
+      await createPrivacyPageIndex({capturedSurfaceControlEnabled: true});
 
-    const viewId = 'siteSettingsCapturedSurfaceControl';
-    await testActiveViewsForRoute(
-        routes.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL, [viewId]);
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL,
+          ['siteSettingsCapturedSurfaceControl'], 'old');
+    });
 
-    // Test that data-parent-view is correctly populated.
-    assertTrue(!!index.$.viewManager.querySelector(
-        `#${viewId}[slot=view][data-parent-view-id=old]`));
-  });
+    test('RoutingHandTracking', async function() {
+      assertFalse(loadTimeData.getBoolean('enableHandTrackingContentSetting'));
+      await createPrivacyPageIndex({enableHandTrackingContentSetting: true});
 
-  test('RoutingHandTracking', async function() {
-    assertFalse(loadTimeData.getBoolean('enableHandTrackingContentSetting'));
-    await createPrivacyPageIndex({enableHandTrackingContentSetting: true});
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_HAND_TRACKING, ['siteSettingsHandTracking'],
+          'old');
+    });
 
-    const viewId = 'siteSettingsHandTracking';
-    await testActiveViewsForRoute(routes.SITE_SETTINGS_HAND_TRACKING, [viewId]);
+    test('RoutingKeyboardLock', async function() {
+      assertFalse(loadTimeData.getBoolean('enableKeyboardLockPrompt'));
+      await createPrivacyPageIndex({enableKeyboardLockPrompt: true});
 
-    // Test that data-parent-view is correctly populated.
-    assertTrue(!!index.$.viewManager.querySelector(
-        `#${viewId}[slot=view][data-parent-view-id=old]`));
-  });
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_KEYBOARD_LOCK, ['siteSettingsKeyboardLock'],
+          'old');
+    });
 
-  test('RoutingKeyboardLock', async function() {
-    assertFalse(loadTimeData.getBoolean('enableKeyboardLockPrompt'));
-    await createPrivacyPageIndex({enableKeyboardLockPrompt: true});
+    test('RoutingLocalNetworkAccess', async function() {
+      assertFalse(loadTimeData.getBoolean('enableLocalNetworkAccessSetting'));
+      await createPrivacyPageIndex({enableLocalNetworkAccessSetting: true});
 
-    const viewId = 'siteSettingsKeyboardLock';
-    await testActiveViewsForRoute(routes.SITE_SETTINGS_KEYBOARD_LOCK, [viewId]);
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS,
+          ['siteSettingsLocalNetworkAccess'], 'old');
+    });
 
-    // Test that data-parent-view is correctly populated.
-    assertTrue(!!index.$.viewManager.querySelector(
-        `#${viewId}[slot=view][data-parent-view-id=old]`));
-  });
+    test('RoutingWebAppInstallation', async function() {
+      assertFalse(loadTimeData.getBoolean('enableWebAppInstallation'));
+      await createPrivacyPageIndex({enableWebAppInstallation: true});
 
-  test('RoutingLocalNetworkAccess', async function() {
-    assertFalse(loadTimeData.getBoolean('enableLocalNetworkAccessSetting'));
-    await createPrivacyPageIndex({enableLocalNetworkAccessSetting: true});
-
-    const viewId = 'siteSettingsLocalNetworkAccess';
-    await testActiveViewsForRoute(
-        routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS, [viewId]);
-
-    // Test that data-parent-view is correctly populated.
-    assertTrue(!!index.$.viewManager.querySelector(
-        `#${viewId}[slot=view][data-parent-view-id=old]`));
-  });
-
-  test('RoutingSecurityKeys', async function() {
-    assertFalse(loadTimeData.getBoolean('enableSecurityKeysSubpage'));
-    await createPrivacyPageIndex({enableSecurityKeysSubpage: true});
-
-    const viewId = 'securityKeys';
-    await testActiveViewsForRoute(routes.SECURITY_KEYS, [viewId]);
-
-    // Test that data-parent-view is correctly populated.
-    assertTrue(!!index.$.viewManager.querySelector(
-        `#${viewId}[slot=view][data-parent-view-id=old]`));
-  });
-
-  test('RoutingWebAppInstallation', async function() {
-    assertFalse(loadTimeData.getBoolean('enableWebAppInstallation'));
-    await createPrivacyPageIndex({enableWebAppInstallation: true});
-
-    const viewId = 'siteSettingsWebAppInstallation';
-    await testActiveViewsForRoute(
-        routes.SITE_SETTINGS_WEB_APP_INSTALLATION, [viewId]);
-
-    // Test that data-parent-view is correctly populated.
-    assertTrue(!!index.$.viewManager.querySelector(
-        `#${viewId}[slot=view][data-parent-view-id=old]`));
-  });
-
-  test('RoutingIncognitoTrackingProtections', async function() {
-    assertFalse(loadTimeData.getBoolean('enableIncognitoTrackingProtections'));
-    await createPrivacyPageIndex({enableIncognitoTrackingProtections: true});
-
-    const viewId = 'incognitoTrackingProtections';
-    await testActiveViewsForRoute(
-        routes.INCOGNITO_TRACKING_PROTECTIONS, [viewId]);
-
-    // Test that data-parent-view is correctly populated.
-    assertTrue(!!index.$.viewManager.querySelector(
-        `#${viewId}[slot=view][data-parent-view-id=old]`));
-  });
-
-  // <if expr="is_chromeos">
-  test('RoutingGuestMode', async function() {
-    assertFalse(loadTimeData.getBoolean('isGuest'));
-    assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
-    await createPrivacyPageIndex({isGuest: true});
-    assertTrue(!!index.$.viewManager.querySelector('#old.active[slot=view]'));
-  });
-  // </if>
-
-  // Minimal (non-exhaustive) tests to ensure SearchableViewContainerMixin is
-  // inherited correctly.
-  test('Search', async function() {
-    index.inSearchMode = true;
-    await flushTasks();
-
-    // Case1: Results within the "Privacy and security" card.
-    let result = await index.searchContents('Privacy and security');
-    assertFalse(result.canceled);
-    assertTrue(result.matchCount > 0);
-    assertFalse(result.wasClearSearch);
-
-    // Case2: Results within the "Safety check" card.
-    result = await index.searchContents('Safety check');
-    assertFalse(result.canceled);
-    assertTrue(result.matchCount > 0);
-    assertFalse(result.wasClearSearch);
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_WEB_APP_INSTALLATION,
+          ['siteSettingsWebAppInstallation'], 'old');
+    });
   });
 });
