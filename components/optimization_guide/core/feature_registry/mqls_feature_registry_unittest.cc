@@ -29,7 +29,7 @@ BASE_FEATURE(kLoggingEnabledFeature,
 
 // TODO(crbug.com/442828465): Re-enable this test.
 #if BUILDFLAG(IS_IOS)
-#define MAYBE_RegisterFeature FLAKY_RegisterFeature
+#define MAYBE_RegisterFeature DISABLED_RegisterFeature
 #else
 #define MAYBE_RegisterFeature RegisterFeature
 #endif
