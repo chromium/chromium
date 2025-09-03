@@ -22,6 +22,22 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AccuracyHint">
+  <variant name="HighAccuracyHint"
+      summary="The high accuracy hint (enableHighAccuracy) was set to true."/>
+  <variant name="LowAccuracyHint"
+      summary="The high accuracy hint (enableHighAccuracy) was set to false
+               or was not provided."/>
+</variants>
+
+<variants name="ProviderKind">
+  <variant name="AndroidLocationProvider"
+      summary="The provider using the Android framework's LocationManager."/>
+  <variant name="GMSCoreLocationProvider"
+      summary="The provider using the Google Play Services Fused Location
+               API."/>
+</variants>
+
 <histogram name="Geolocation.Android.LocationPermissionState"
     enum="AndroidLocationPermissionState" expires_after="2026-02-22">
   <owner>mattreynolds@chromium.org</owner>
@@ -406,6 +422,20 @@ chromium-metrics-reviews@google.com.
     Records the HRESULT error code encountered while requesting location access,
     or S_OK if location access was requested without errors.
   </summary>
+</histogram>
+
+<histogram name="Geolocation.{ProviderKind}.{AccuracyHint}.Accuracy"
+    units="meters" expires_after="2026-04-28">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the location accuracy (in meters) received from a location provider
+    on Android. This is recorded for each new location update. It is broken down
+    by the &quot;Provider&quot; that supplied the location and by the
+    &quot;AccuracyHint&quot; that was requested.
+  </summary>
+  <token key="ProviderKind" variants="ProviderKind"/>
+  <token key="AccuracyHint" variants="AccuracyHint"/>
 </histogram>
 
 </histograms>

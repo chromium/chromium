@@ -19,6 +19,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -38,14 +39,16 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
 
     private @Nullable LocationManager mLocationManager;
     private boolean mIsRunning;
+    private boolean mEnableHighAccuracy;
 
     LocationProviderAndroid() {}
 
     @Override
     public void start(boolean enableHighAccuracy) {
         ThreadUtils.assertOnUiThread();
+        mEnableHighAccuracy = enableHighAccuracy;
         unregisterFromLocationUpdates();
-        registerForLocationUpdates(enableHighAccuracy);
+        registerForLocationUpdates();
     }
 
     @Override
@@ -66,6 +69,14 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
         // possible that we receive callbacks after unregistering. At this point, the
         // native object will no longer exist.
         if (mIsRunning) {
+            if (location.hasAccuracy()) {
+                final String histogramName =
+                        "Geolocation.AndroidLocationProvider"
+                                + (mEnableHighAccuracy ? ".HighAccuracyHint" : ".LowAccuracyHint")
+                                + ".Accuracy";
+                RecordHistogram.recordCount100000Histogram(
+                        histogramName, (int) location.getAccuracy());
+            }
             LocationProviderAdapter.onNewLocationAvailable(location);
         }
     }
@@ -94,7 +105,7 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
     }
 
     /** Registers this object with the location service. */
-    private void registerForLocationUpdates(boolean enableHighAccuracy) {
+    private void registerForLocationUpdates() {
         createLocationManagerIfNeeded();
         if (mLocationManager == null) {
             Log.e(TAG, "Could not get location manager.");
@@ -110,7 +121,7 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
         try {
             Criteria criteria = new Criteria();
             Context context = ContextUtils.getApplicationContext();
-            if (enableHighAccuracy
+            if (mEnableHighAccuracy
                     && context.checkCallingOrSelfPermission(
                                     Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED) {

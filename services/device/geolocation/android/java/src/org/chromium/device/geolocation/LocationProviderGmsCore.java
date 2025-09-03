@@ -17,6 +17,7 @@ import com.google.android.gms.location.LocationServices;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.device.DeviceFeatureList;
@@ -25,7 +26,7 @@ import org.chromium.gms.ChromiumPlayServicesAvailability;
 /**
  * This is a LocationProvider using Google Play Services.
  *
- * https://developers.google.com/android/reference/com/google/android/gms/location/package-summary
+ * <p>https://developers.google.com/android/reference/com/google/android/gms/location/package-summary
  */
 @NullMarked
 public class LocationProviderGmsCore implements LocationProvider {
@@ -37,6 +38,7 @@ public class LocationProviderGmsCore implements LocationProvider {
 
     private final Context mContext;
     private final FusedLocationProviderClient mClient;
+    private boolean mEnableHighAccuracy;
 
     private @Nullable LocationCallback mLocationCallback;
 
@@ -70,7 +72,9 @@ public class LocationProviderGmsCore implements LocationProvider {
             enableHighAccuracy = false;
         }
 
-        if (enableHighAccuracy) {
+        mEnableHighAccuracy = enableHighAccuracy;
+
+        if (mEnableHighAccuracy) {
             // With enableHighAccuracy, request a faster update interval and configure the provider
             // for high accuracy mode.
             locationRequest
@@ -108,6 +112,16 @@ public class LocationProviderGmsCore implements LocationProvider {
                         }
                         Location location = locationResult.getLastLocation();
                         if (location != null) {
+                            if (location.hasAccuracy()) {
+                                final String histogramName =
+                                        "Geolocation.GMSCoreLocationProvider"
+                                                + (mEnableHighAccuracy
+                                                        ? ".HighAccuracyHint"
+                                                        : ".LowAccuracyHint")
+                                                + ".Accuracy";
+                                RecordHistogram.recordCount100000Histogram(
+                                        histogramName, (int) location.getAccuracy());
+                            }
                             LocationProviderAdapter.onNewLocationAvailable(location);
                         }
                     }
