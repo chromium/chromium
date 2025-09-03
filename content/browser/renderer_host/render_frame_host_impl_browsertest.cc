@@ -6525,8 +6525,9 @@ class RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest
 };
 
 #if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/442684241): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest,
-                       ReuseEmptyAvailableRenderForMainFrame) {
+                       DISABLED_ReuseEmptyAvailableRenderForMainFrame) {
   // The test assumes that the main frame RFH will be reused when navigating.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
                                     BackForwardCache::TEST_REQUIRES_NO_CACHING);
