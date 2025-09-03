@@ -1580,7 +1580,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeAfterBRPQuarantine(
 
   // Iterating over the entire slot can be really expensive.
 #if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
-#if !PA_BUILDFLAG(IS_IOS)
   auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
   // If we have a hook the object segment is not necessarily filled
   // with |kQuarantinedByte|.
@@ -1591,7 +1590,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeAfterBRPQuarantine(
       PA_DCHECK(object[i] == internal::kQuarantinedByte);
     }
   }
-#endif  //  !PA_BUILDFLAG(IS_IOS)
   internal::DebugMemset(internal::SlotStartAddr2Ptr(slot_start),
                         internal::kFreedByte, slot_span->GetUtilizedSlotSize());
 #endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
