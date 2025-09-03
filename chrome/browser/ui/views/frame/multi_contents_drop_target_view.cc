@@ -59,8 +59,6 @@ MultiContentsDropTargetView::MultiContentsDropTargetView()
           views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded));
 
-  SetBackground(views::CreateSolidBackground(ui::kColorPrimaryBackground));
-
   auto inner_container = std::make_unique<views::View>();
 
   inner_container->SetBackground(views::CreateRoundedRectBackground(
