@@ -1,5 +1,15 @@
 This is a testharness.js-based test.
 [FAIL] Test that calling setAppBadge in a cross-origin iframe throws a SecurityError
-  assert_equals: setAppBadge should have rejected with an error expected "error" but got "success"
+  promise_test: Unhandled rejection with value: object "TypeError: iframe.postMessage is not a function"
+[FAIL] Test that calling clearAppBadge in a cross-origin iframe throws a SecurityError
+  promise_test: Unhandled rejection with value: object "TypeError: iframe.postMessage is not a function"
+[FAIL] Test that calling setAppBadge in a same-origin iframe succeeds
+  promise_test: Unhandled rejection with value: object "TypeError: iframe.postMessage is not a function"
+[FAIL] Test that calling clearAppBadge in a same-origin iframe succeeds
+  promise_test: Unhandled rejection with value: object "TypeError: iframe.postMessage is not a function"
+[FAIL] Test calling setAppBadge and clearAppBadge in a same-origin iframe after setting badge on the top level frame
+  promise_test: Unhandled rejection with value: object "TypeError: iframe.postMessage is not a function"
+[FAIL] Test badge behavior in multiple same-origin iframes
+  promise_test: Unhandled rejection with value: object "TypeError: iframe.postMessage is not a function"
 Harness: the test ran to completion.
 
