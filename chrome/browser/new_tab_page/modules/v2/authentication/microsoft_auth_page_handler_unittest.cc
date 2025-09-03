@@ -82,8 +82,7 @@ TEST_P(MicrosoftAuthPageHandlerShowModuleTest, ShouldShowModule_False) {
   bool show;
   EXPECT_CALL(should_show_module_callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&show](bool show_arg) { show = std::move(show_arg); }));
+      .WillOnce([&show](bool show_arg) { show = std::move(show_arg); });
 
   if (ShouldShow()) {
     task_environment().AdvanceClock(MicrosoftAuthPageHandler::kDismissDuration);

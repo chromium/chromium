@@ -252,16 +252,16 @@ TEST_F(GoogleCalendarPageHandlerTest, DismissModuleAffectsEvents) {
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback2;
   EXPECT_CALL(callback1, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
             response1 = std::move(events);
-          }));
+          });
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
             response2 = std::move(events);
-          }));
+          });
 
   handler->DismissModule();
 
@@ -292,10 +292,10 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
             response = std::move(events);
-          }));
+          });
 
   handler->GetEvents(callback.Get());
   EXPECT_EQ(response.size(), 5u);
@@ -327,10 +327,10 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
             response = std::move(events);
-          }));
+          });
 
   std::string json;
   bool data_success = CreateEventsJson(&json);
@@ -399,10 +399,10 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
             response = std::move(events);
-          }));
+          });
 
   // Setting the request url here tests that the feature params are working
   // properly. If they are not, the url loader won't intercept the call.

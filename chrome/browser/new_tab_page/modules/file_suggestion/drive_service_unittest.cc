@@ -79,11 +79,10 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            actual_documents = std::move(documents);
-            quit_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        actual_documents = std::move(documents);
+        quit_closure.Run();
+      });
 
   // Make sure we are not in the dismissed time window.
   prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
@@ -193,32 +192,28 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
   base::MockCallback<DriveService::GetFilesCallback> callback4;
   EXPECT_CALL(callback1, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            response1 = std::move(documents);
-            barrier_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        response1 = std::move(documents);
+        barrier_closure.Run();
+      });
   EXPECT_CALL(callback2, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            response2 = std::move(documents);
-            barrier_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        response2 = std::move(documents);
+        barrier_closure.Run();
+      });
   EXPECT_CALL(callback3, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            response3 = std::move(documents);
-            barrier_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        response3 = std::move(documents);
+        barrier_closure.Run();
+      });
   EXPECT_CALL(callback4, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            response4 = std::move(documents);
-            barrier_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        response4 = std::move(documents);
+        barrier_closure.Run();
+      });
   service_->GetDriveFiles(callback1.Get());
   service_->GetDriveFiles(callback2.Get());
   service_->GetDriveFiles(callback3.Get());
@@ -316,10 +311,10 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
   auto quit_closure = task_environment_.QuitClosure();
   EXPECT_CALL(callback, Run(testing::_))
       .WillRepeatedly(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+          [&](std::vector<file_suggestion::mojom::FilePtr> documents) {
             response = std::move(documents);
             quit_closure.Run();
-          }));
+          });
 
   // Enable caching.
   base::test::ScopedFeatureList features;
@@ -419,11 +414,10 @@ TEST_F(DriveServiceTest, PassesDataIfSegmentationIsEnabled) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            actual_documents = std::move(documents);
-            quit_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        actual_documents = std::move(documents);
+        quit_closure.Run();
+      });
 
   // Make sure we are not in the dismissed time window.
   prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
@@ -506,10 +500,10 @@ TEST_F(DriveServiceTest, PassesNoDataIfDismissed) {
   base::MockCallback<DriveService::GetFilesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&passed_no_data](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
-            passed_no_data = suggestions.empty();
-          }));
+      .WillOnce([&passed_no_data](
+                    std::vector<file_suggestion::mojom::FilePtr> suggestions) {
+        passed_no_data = suggestions.empty();
+      });
 
   prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
   service_->GetDriveFiles(callback.Get());
@@ -524,10 +518,10 @@ TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&token_is_valid](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
-            token_is_valid = !suggestions.empty();
-          }));
+      .WillOnce([&token_is_valid](
+                    std::vector<file_suggestion::mojom::FilePtr> suggestions) {
+        token_is_valid = !suggestions.empty();
+      });
 
   service_->GetDriveFiles(callback.Get());
 
@@ -547,11 +541,10 @@ TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
-            empty_response = suggestions.empty();
-            quit_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
+        empty_response = suggestions.empty();
+        quit_closure.Run();
+      });
 
   service_->GetDriveFiles(callback.Get());
 
@@ -588,11 +581,10 @@ TEST_F(DriveServiceTest, PassesNoDataOnEmptyResponse) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
-            empty_response = suggestions.empty();
-            quit_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> suggestions) {
+        empty_response = suggestions.empty();
+        quit_closure.Run();
+      });
 
   service_->GetDriveFiles(callback.Get());
 
@@ -620,11 +612,10 @@ TEST_F(DriveServiceTest, PassesNoDataOnMissingItemKey) {
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            actual_documents = std::move(documents);
-            quit_closure.Run();
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        actual_documents = std::move(documents);
+        quit_closure.Run();
+      });
 
   service_->GetDriveFiles(callback.Get());
 
@@ -677,10 +668,9 @@ TEST_F(DriveServiceFakeDataTest, ReturnsFakeData) {
   base::MockCallback<DriveService::GetFilesCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(
-          testing::Invoke([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
-            fake_documents = std::move(documents);
-          }));
+      .WillOnce([&](std::vector<file_suggestion::mojom::FilePtr> documents) {
+        fake_documents = std::move(documents);
+      });
 
   prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
   task_environment_.AdvanceClock(DriveService::kDismissDuration);
