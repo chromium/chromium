@@ -4925,6 +4925,10 @@
       status: "experimental",
     },
     {
+      name: "TextEmphasisPunctuationExceptions",
+      status: "stable"
+    },
+    {
       name: "TextFragmentAPI",
       status: "experimental",
     },

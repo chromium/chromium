@@ -38,6 +38,7 @@
 #include <algorithm>
 
 #include "base/synchronization/lock.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -260,6 +261,41 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
     return false;
   }
 
+  if (RuntimeEnabledFeatures::TextEmphasisPunctuationExceptionsEnabled()) {
+    // A set of exceptions for punctuation.
+    switch (c) {
+      // List from
+      // https://drafts.csswg.org/css-text-decor/#text-emphasis-style-property
+      case uchar::kNumberSign:
+      case uchar::kPercentSign:
+      case uchar::kAmpersand:
+      case uchar::kCommercialAt:
+      case uchar::kSectionSign:
+      case uchar::kPilcrowSign:
+      case uchar::kArabicIndicPerMilleSign:
+      case uchar::kArabicIndicPerTenThousandSign:
+      case uchar::kArabicPercentSign:
+      case uchar::kPerMilleSign:
+      case uchar::kPerTenThousandSign:
+      case uchar::kTironianSignEt:
+      case uchar::kReversedPilcrowSign:
+      case uchar::kSwungDash:
+      case uchar::kPartAlternationMark:
+      // Characters with NFKD equivalence to the above.
+      case uchar::kSmallNumberSign:
+      case uchar::kSmallAmpersand:
+      case uchar::kSmallPercentSign:
+      case uchar::kSmallCommercialAt:
+      case uchar::kFullwidthNumberSign:
+      case uchar::kFullwidthPercentSign:
+      case uchar::kFullwidthAmpersand:
+      case uchar::kFullwidthCommercialAt:
+        return true;
+      default:
+        break;
+    }
+  }
+
   // Punctuation
   if (category &
       (unicode::kPunctuation_Dash | unicode::kPunctuation_Open |
@@ -268,9 +304,6 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
        unicode::kPunctuation_FinalQuote)) {
     return false;
   }
-  // TODO(layout-dev): css/css-text-decor/text-emphasis-punctuation-3.html
-  // requires implementation for the following rule in the specification:
-  // > do not NFKD normalize to any of the following symbols:
 
   return true;
 }

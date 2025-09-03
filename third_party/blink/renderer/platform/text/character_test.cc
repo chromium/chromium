@@ -738,4 +738,66 @@ TEST(CharacterTest, TestEastAsianSpacingPropertyRule) {
   }
 }
 
+static struct CanReceiveTextEmphasisTestData {
+  const UChar32 character;
+  bool expected;
+} can_receive_text_emphasis_test_data[] = {
+    {u'0', true},
+    {u'a', true},
+    {u'人', true},
+    {u'한', true},
+    // Additional word-separator characters.
+    {uchar::kEthiopicWordspace, false},
+    {uchar::kAegeanWordSeparatorLine, false},
+    {uchar::kAegeanWordSeparatorDot, false},
+    {uchar::kUgariticWordDivider, false},
+    {uchar::kTibetanMarkIntersyllabicTsheg, false},
+    {uchar::kTibetanMarkDelimiterTshegBstar, false},
+    // Punctuation.
+    {u'(', false},
+    {u']', false},
+    {u'!', false},
+    {u' ', false},
+    {u'，', false},
+    // A set of exceptions for punctuation.
+    {uchar::kNumberSign, true},
+    {uchar::kPercentSign, true},
+    {uchar::kAmpersand, true},
+    {uchar::kCommercialAt, true},
+    {uchar::kSectionSign, true},
+    {uchar::kPilcrowSign, true},
+    {uchar::kArabicIndicPerMilleSign, true},
+    {uchar::kArabicIndicPerTenThousandSign, true},
+    {uchar::kArabicPercentSign, true},
+    {uchar::kPerMilleSign, true},
+    {uchar::kPerTenThousandSign, true},
+    {uchar::kTironianSignEt, true},
+    {uchar::kReversedPilcrowSign, true},
+    {uchar::kSwungDash, true},
+    {uchar::kPartAlternationMark, true},
+    // Characters with NFKD equivalence to the above.
+    {uchar::kSmallNumberSign, true},
+    {uchar::kSmallAmpersand, true},
+    {uchar::kSmallPercentSign, true},
+    {uchar::kSmallCommercialAt, true},
+    {uchar::kFullwidthNumberSign, true},
+    {uchar::kFullwidthPercentSign, true},
+    {uchar::kFullwidthAmpersand, true},
+    {uchar::kFullwidthCommercialAt, true},
+};
+
+class CanReceiveTextEmphasisTest
+    : public testing::Test,
+      public testing::WithParamInterface<CanReceiveTextEmphasisTestData> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    CanReceiveTextEmphasisTest,
+    CanReceiveTextEmphasisTest,
+    testing::ValuesIn(can_receive_text_emphasis_test_data));
+
+TEST_P(CanReceiveTextEmphasisTest, ToLowerWithoutOffset) {
+  const auto data = GetParam();
+  EXPECT_EQ(Character::CanReceiveTextEmphasis(data.character), data.expected);
+}
+
 }  // namespace blink
