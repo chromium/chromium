@@ -960,10 +960,15 @@ bool ContentAnalysisDelegate::text_request_required() const {
 }
 
 bool ContentAnalysisDelegate::image_request_required() const {
-  return !data_.image.empty() &&
-         data_.image.size() <=
-             data_.settings.cloud_or_local_settings.max_file_size() &&
-         data_.settings.cloud_or_local_settings.is_local_analysis();
+  if (data_.settings.cloud_or_local_settings.is_local_analysis() ||
+      base::FeatureList::IsEnabled(
+          enterprise_connectors::kDlpScanPastedImages)) {
+    return !data_.image.empty() &&
+           data_.image.size() <=
+               data_.settings.cloud_or_local_settings.max_file_size();
+  }
+
+  return false;
 }
 
 const AnalysisSettings& ContentAnalysisDelegate::settings() const {

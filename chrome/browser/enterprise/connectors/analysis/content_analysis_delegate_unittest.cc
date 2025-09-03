@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 
 #include <algorithm>
@@ -27,6 +26,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -165,8 +165,12 @@ class BaseTest : public testing::Test {
     profile_ = profile_manager_.CreateTestingProfile("test-user");
     ContentAnalysisDelegate::DisableUIForTesting();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{safe_browsing::kEnhancedFieldsForSecOps,
-                              kEnterpriseIframeDlpRulesSupport},
+        /*enabled_features=*/
+        {
+            safe_browsing::kEnhancedFieldsForSecOps,
+            kEnterpriseIframeDlpRulesSupport,
+            kDlpScanPastedImages,
+        },
         /*disabled_features=*/{});
   }
 
@@ -1230,9 +1234,9 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, ImageDataCloudScan) {
                  &called));
   RunUntilDone();
 
-  // There shouldn't be any image request made when the policy is set to do
+  // There should be an image request made when the policy is set to do
   // cloud scanning.
-  EXPECT_EQ(0,
+  EXPECT_EQ(1,
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
@@ -1292,8 +1296,9 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, TextAndImageDataCloudScan) {
                  &called));
   RunUntilDone();
 
-  // Only the text data is scanned for cloud scans.
-  EXPECT_EQ(1,
+  // Both text and image data are scanned for cloud scans.
+
+  EXPECT_EQ(2,
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }

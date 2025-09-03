@@ -414,10 +414,11 @@ class ContentAnalysisDelegateBrowserTest
     use_proto_format()
         ? scoped_feature_list_.InitWithFeatures(
               /*enabled_features=*/
-              {policy::kUploadRealtimeReportingEventsUsingProto},
+              {policy::kUploadRealtimeReportingEventsUsingProto,
+               kDlpScanPastedImages},
               /*disabled_features=*/{})
         : scoped_feature_list_.InitWithFeatures(
-              /*enabled_features=*/{},
+              /*enabled_features=*/{kDlpScanPastedImages},
               /*disabled_features=*/{
                   policy::kUploadRealtimeReportingEventsUsingProto});
   }
@@ -1167,10 +1168,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, AllowTextAndImage) {
   run_loop.Run();
   EXPECT_TRUE(called);
 
-  // There should have been 1 request for text, 1 for authentication of the
-  // scanning request.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 1);
+  // There should have been 1 request for authentication, 1 for the text, and 1
+  // for the image.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
 
   // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
   content_analysis_run_loop.Run();
@@ -1306,10 +1307,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   run_loop.Run();
   EXPECT_TRUE(called);
 
-  // There should have been 1 request for text, 1 for authentication of the
-  // scanning request.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 1);
+  // There should have been 1 request for authentication, 1 for the text, and 1
+  // for the image.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
 
   // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
   content_analysis_run_loop.Run();
@@ -1446,10 +1447,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   run_loop.Run();
   EXPECT_TRUE(called);
 
-  // There should have been 1 request for text, 1 for authentication of the
-  // scanning request.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 1);
+  // There should have been 1 request for authentication, 1 for the text, and 1
+  // for the image.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 3);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 2);
 
   // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
   content_analysis_run_loop.Run();
@@ -1609,10 +1610,11 @@ class ContentAnalysisDelegateBlockingSettingBrowserTest
     use_proto_format()
         ? scoped_feature_list_.InitWithFeatures(
               /*enabled_features=*/
-              {policy::kUploadRealtimeReportingEventsUsingProto},
+              {policy::kUploadRealtimeReportingEventsUsingProto,
+               kDlpScanPastedImages},
               /*disabled_features=*/{})
         : scoped_feature_list_.InitWithFeatures(
-              /*enabled_features=*/{},
+              /*enabled_features=*/{kDlpScanPastedImages},
               /*disabled_features=*/{
                   policy::kUploadRealtimeReportingEventsUsingProto});
   }
