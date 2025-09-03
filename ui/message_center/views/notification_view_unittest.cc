@@ -96,11 +96,6 @@ class NotificationViewTest : public views::ViewObserver,
                              public message_center::MessageCenterObserver,
                              public views::InkDropObserver {
  public:
-  NotificationViewTest() = default;
-  NotificationViewTest(const NotificationViewTest&) = delete;
-  NotificationViewTest& operator=(const NotificationViewTest&) = delete;
-  ~NotificationViewTest() override = default;
-
   // views::ViewsTestBase:
   void SetUp() override {
     views::ViewsTestBase::SetUp();
@@ -123,6 +118,32 @@ class NotificationViewTest : public views::ViewObserver,
     views::ViewsTestBase::TearDown();
   }
 
+  // views::ViewObserver:
+  void OnViewPreferredSizeChanged(views::View* observed_view) override {
+    EXPECT_EQ(observed_view, notification_view());
+    notification_view_->GetWidget()->SetSize(
+        notification_view()->GetPreferredSize({}));
+  }
+
+  void OnNotificationRemoved(const std::string& notification_id,
+                             bool by_user) override {
+    if (delete_on_notification_removed_) {
+      views::InkDrop::Get(notification_view_)
+          ->SetMode(views::InkDropHost::InkDropMode::OFF);
+      notification_view_.ExtractAsDangling()->GetWidget()->CloseNow();
+      return;
+    }
+  }
+
+  // views::InkDropObserver:
+  void InkDropAnimationStarted() override {}
+
+  void InkDropRippleAnimationEnded(
+      views::InkDropState ink_drop_state) override {
+    ink_drop_stopped_ = true;
+  }
+
+ protected:
   std::unique_ptr<Notification> CreateSimpleNotification() const {
     RichNotificationData data;
     data.settings_button_handler = SettingsButtonHandler::INLINE;
@@ -220,7 +241,6 @@ class NotificationViewTest : public views::ViewObserver,
     notification_view_->ToggleInlineSettings(ui::test::TestEvent());
   }
 
- protected:
   NotificationView* notification_view() { return notification_view_; }
   NotificationHeaderView* header_row() {
     return notification_view_->header_row();
@@ -251,31 +271,6 @@ class NotificationViewTest : public views::ViewObserver,
   scoped_refptr<NotificationTestDelegate> delegate_;
 
  private:
-  // views::ViewObserver:
-  void OnViewPreferredSizeChanged(views::View* observed_view) override {
-    EXPECT_EQ(observed_view, notification_view());
-    notification_view_->GetWidget()->SetSize(
-        notification_view()->GetPreferredSize({}));
-  }
-
-  void OnNotificationRemoved(const std::string& notification_id,
-                             bool by_user) override {
-    if (delete_on_notification_removed_) {
-      views::InkDrop::Get(notification_view_)
-          ->SetMode(views::InkDropHost::InkDropMode::OFF);
-      notification_view_.ExtractAsDangling()->GetWidget()->CloseNow();
-      return;
-    }
-  }
-
-  // views::InkDropObserver:
-  void InkDropAnimationStarted() override {}
-
-  void InkDropRippleAnimationEnded(
-      views::InkDropState ink_drop_state) override {
-    ink_drop_stopped_ = true;
-  }
-
   raw_ptr<NotificationView> notification_view_ = nullptr;
   bool delete_on_notification_removed_ = false;
   bool ink_drop_stopped_ = false;

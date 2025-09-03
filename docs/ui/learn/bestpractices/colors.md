@@ -426,7 +426,7 @@ both light and dark mode, and custom themes as well.
 
 **Avoid**
 
-Old code in `common_theme.cc` defines a disabled button color absolutely:
+Old code defines a disabled button color absolutely:
 
 #####
 
