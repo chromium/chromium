@@ -422,6 +422,28 @@ TEST_F(FrameMetadataObserverRegistryTest, MetaTagsUnaffectedByOtherElements) {
   EXPECT_FALSE(observer.future().IsReady());
 }
 
+TEST_F(FrameMetadataObserverRegistryTest, MetaTagsWithNamelessTag) {
+  LoadHTML(R"HTML(
+    <head>
+      <meta charset="UTF-8">
+      <meta name="author" content="Gary">
+    </head>
+    <body></body>
+  )HTML");
+  BindRegistry();
+
+  MockMetaTagsObserver observer;
+  Vector<String> names_to_observe;
+  names_to_observe.push_back("author");
+
+  registry_->AddMetaTagsObserver(names_to_observe,
+                                 observer.BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  ASSERT_TRUE(observer.future().IsReady());
+  VerifyAuthorMetaTag(observer.future().Take());
+}
+
 // Re-enable this test once we support observing head elements that are added
 // dynamically.
 TEST_F(FrameMetadataObserverRegistryTest, DISABLED_MetaTagsAddedWithHead) {

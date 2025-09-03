@@ -355,7 +355,7 @@ void FrameMetadataObserverRegistry::OnMetaTagsChanged() {
     for (HTMLMetaElement& meta :
          Traversal<HTMLMetaElement>::ChildrenOf(*head)) {
       const String& name = meta.GetName();
-      if (all_metatag_name_counts_.Contains(name)) {
+      if (!name.IsNull() && all_metatag_name_counts_.Contains(name)) {
         name_to_content_map.Set(name, meta.Content());
       }
     }
