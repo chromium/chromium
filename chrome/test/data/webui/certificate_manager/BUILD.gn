@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("../build_webui_tests.gni")
 
-assert(!is_android && !is_ios)
+assert(!is_ios)
 assert(chrome_root_store_cert_management_ui)
 
 build_webui_tests("build") {
