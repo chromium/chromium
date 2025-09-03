@@ -750,16 +750,6 @@
       'cros_test_max_in_shard': 50
     },
   },
-  'skylab-shards-30': {
-    'skylab': {
-      'shards': 30,
-    },
-  },
-  'skylab-shards-45': {
-    'skylab': {
-      'shards': 45,
-    },
-  },
   'swarming_containment_auto': {
     'fail_if_unused': False,
     'swarming': {

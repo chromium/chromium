@@ -337,10 +337,10 @@ targets.legacy_matrix_compound_suite(
     # Tests scheduled via CTP for preuprev.
     name = "chromeos_ctp_preuprev_tests",
     basic_suites = {
-        "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
+        "chromeos_chrome_all_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
-                # Board with more capacity will run full tast test with many shards.
-                "skylab-shards-30",
+                # Most boards run 40 tests per shard to finish within 1h.
+                "skylab-40-tests-per-shard",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
@@ -362,10 +362,10 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "chromeos_ctp_preuprev_tests_slow_boards",
     basic_suites = {
-        "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
+        "chromeos_chrome_all_tast_tests_tfc": targets.legacy_matrix_config(
             mixins = [
-                # jacuzzi is slow. So that we use more number of shards.
-                "skylab-shards-45",
+                # Slower boards runs fewer tests per shard.
+                "skylab-20-tests-per-shard",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",

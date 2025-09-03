@@ -156,17 +156,6 @@
       },
     },
 
-    'chromeos_chrome_all_tast_tests': {
-      'chrome_all_tast_tests': {
-        'skylab': {
-          'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
-          'test_level_retries': 2,
-          'timeout_sec': 14400,
-          'shards': 15,
-        },
-      },
-    },
-
     'chromeos_chrome_all_tast_tests_tfc': {
       'chrome_all_tast_tests': {
         'skylab': {
@@ -2457,9 +2446,9 @@
     },
 
     'chromeos_ctp_preuprev_tests': {
-      'chromeos_chrome_all_tast_tests': {
+      'chromeos_chrome_all_tast_tests_tfc': {
         'mixins': [
-          'skylab-shards-30',
+          'skylab-40-tests-per-shard',
         ],
         'variants': [
           'CROS_RELEASE_LKGM',
@@ -2502,9 +2491,9 @@
     },
 
     'chromeos_ctp_preuprev_tests_slow_boards': {
-      'chromeos_chrome_all_tast_tests': {
+      'chromeos_chrome_all_tast_tests_tfc': {
         'mixins': [
-          'skylab-shards-45',
+          'skylab-20-tests-per-shard',
         ],
         'variants': [
           'CROS_RELEASE_LKGM',
