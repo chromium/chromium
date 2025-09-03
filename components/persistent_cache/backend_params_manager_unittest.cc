@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 #include "components/persistent_cache/backend_params_manager.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <string_view>
 
 #include "base/files/file.h"
@@ -20,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +53,7 @@ class BackendParamsManagerTest : public testing::Test {
         [&modification_times](const base::FilePath& file_path) {
           base::File::Info info;
           base::GetFileInfo(file_path, &info);
-          modification_times.push_back(info.last_accessed);
+          modification_times.push_back(info.last_modified);
         });
 
     // Sort so that oldest entries are first.
@@ -68,7 +71,7 @@ class BackendParamsManagerTest : public testing::Test {
       // Actual sleep is necessary to get timestamp variety since
       // BackendParamsManager relies on OS file timestamps which are not
       // affected by mock time.
-      base::PlatformThread::Sleep(base::Milliseconds(5));
+      base::PlatformThread::Sleep(base::Milliseconds(25));
 
       BackendParams params = params_manager.GetOrCreateParamsSync(
           BackendType::kSqlite, key,
@@ -254,8 +257,14 @@ TEST_F(BackendParamsManagerTest, OldestEntriesAreRemovedFirst) {
   // This test is tolerant of timestamps all being equal for whatever reason.
   while (timestamps_after_reduction_it !=
          modification_times_after_reduction.rend()) {
+#if BUILDFLAG(IS_FUCHSIA)
+    // On Fuchsia the last modification timestamps are not stable across the
+    // call to BringDownTotalFootprintOfFiles() so direct equality tests fail.
+    auto delta = *original_timestamps_it - *timestamps_after_reduction_it;
+    EXPECT_LE(delta.magnitude(), base::Milliseconds(100));
+#else
     EXPECT_EQ(*original_timestamps_it, *timestamps_after_reduction_it);
-
+#endif
     ++original_timestamps_it;
     ++timestamps_after_reduction_it;
   }
