@@ -706,6 +706,7 @@ LensOverlayQueryController::CreateEndpointFetcher(
       /*identity_manager=*/nullptr,
       EndpointFetcher::RequestParams::Builder(http_method,
                                               kTrafficAnnotationTag)
+          .SetAuthType(endpoint_fetcher::CHROME_API_KEY)
           .SetChannel(chrome::GetChannel())
           .SetContentType(kContentType)
           .SetCorsExemptHeaders(cors_exempt_headers)
