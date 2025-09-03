@@ -27,7 +27,13 @@ BASE_FEATURE(kLoggingEnabledFeature,
              "LoggingEnabledFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-TEST_F(MqlsFeatureRegistryTest, RegisterFeature) {
+// TODO(crbug.com/442828465): Re-enable this test.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_RegisterFeature FLAKY_RegisterFeature
+#else
+#define MAYBE_RegisterFeature RegisterFeature
+#endif
+TEST_F(MqlsFeatureRegistryTest, MAYBE_RegisterFeature) {
   EnterprisePolicyPref enterprise_policy("policy_name");
   UserFeedbackCallback logging_callback =
       base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
