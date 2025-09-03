@@ -46,7 +46,7 @@ HomeBackgroundCustomizationServiceFactory::BuildServiceInstanceFor(
       HomeBackgroundImageServiceFactory::GetForProfile(profile));
 }
 
-void HomeBackgroundCustomizationServiceFactory::RegisterBrowserStatePrefs(
+void HomeBackgroundCustomizationServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   HomeBackgroundCustomizationService::RegisterProfilePrefs(registry);
 }
