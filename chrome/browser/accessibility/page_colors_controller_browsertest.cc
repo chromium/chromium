@@ -23,15 +23,6 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest, PageColorsPrefChange) {
 
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kPageColors, ui::NativeTheme::PageColors::kDusk);
-
-#if BUILDFLAG(IS_WIN)
-  // On Windows, `kApplyPageColorsOnlyOnIncreasedContrast` is initially true, so
-  // we enable forced colors and increased contrast to test this feature. If we
-  // did this on other OSes, we would lose test coverage because page colors are
-  // applied even when forced colors is off, which we want to verify.
-  native_theme->set_forced_colors(true);
-  native_theme->SetPreferredContrast(ui::NativeTheme::PreferredContrast::kMore);
-#endif
   EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kDusk);
 }
 
@@ -161,22 +152,11 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
 
   // Setting Page colors to 'kHighContrast' while forced colors is false should
   // not affect any state.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kApplyPageColorsOnlyOnIncreasedContrast, false);
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kPageColors, ui::NativeTheme::PageColors::kHighContrast);
   EXPECT_FALSE(native_theme_web->InForcedColorsMode());
   EXPECT_EQ(native_theme_web->GetPreferredContrast(),
             ui::NativeTheme::PreferredContrast::kNoPreference);
-
-#if BUILDFLAG(IS_WIN)
-  // On Windows, `kApplyPageColorsOnlyOnIncreasedContrast` is initially true, so
-  // we enable forced colors and increased contrast to test this feature. If we
-  // did this on other OSes, we would lose test coverage because page colors are
-  // applied even when forced colors is off, which we want to verify.
-  native_theme->set_forced_colors(true);
-  native_theme->SetPreferredContrast(ui::NativeTheme::PreferredContrast::kMore);
-#endif
 
   // Changing Page colors to a dark theme (e.g. 'Dusk') should make forced
   // colors to be true, uses dark colors to be true, contrast preference to be

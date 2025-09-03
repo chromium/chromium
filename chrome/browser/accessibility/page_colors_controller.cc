@@ -41,14 +41,11 @@ void PageColorsController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       /*default_value=*/ui::NativeTheme::PageColors::kOff);
   registry->RegisterListPref(prefs::kPageColorsBlockList);
 #if BUILDFLAG(IS_WIN)
-  registry->RegisterBooleanPref(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
-                                /*default_value=*/true);
   registry->RegisterBooleanPref(prefs::kIsDefaultPageColorsOnHighContrast,
                                 /*default_value=*/true);
-#else
+#endif
   registry->RegisterBooleanPref(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
                                 /*default_value=*/false);
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 void PageColorsController::OnNativeThemeUpdated(

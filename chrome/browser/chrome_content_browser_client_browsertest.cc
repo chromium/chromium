@@ -424,8 +424,6 @@ using PageColorsBrowserClientTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
                        PageColorsAffectsWebContents) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kApplyPageColorsOnlyOnIncreasedContrast, false);
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kPageColors, ui::NativeTheme::PageColors::kDusk);
 
@@ -448,8 +446,6 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
 
 IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
                        PageColorsAffectsCssPseudoElements) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kApplyPageColorsOnlyOnIncreasedContrast, false);
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kPageColors, ui::NativeTheme::PageColors::kDesert);
 
