@@ -1286,8 +1286,8 @@ TEST_F(LockStateControllerInformedRestoreTest, ShutdownWithAlwaysOnTopWindow) {
   base::HistogramTester histogram_tester;
   aura::Window* top_container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_AlwaysOnTopContainer);
-  std::unique_ptr<aura::Window> window_always_on_top(
-      aura::test::CreateTestWindowWithId(1, top_container));
+  std::unique_ptr<aura::Window> window_always_on_top =
+      aura::test::CreateTestWindow({.window_id = 1}, top_container);
 
   RequestShutdownWithoutFailTimer();
   EXPECT_THAT(histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),

@@ -3125,8 +3125,8 @@ TEST_P(AppListPresenterTest, RemainVisibleWhenFocusingToApplistContainer) {
 
   aura::Window* applist_container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_AppListContainer);
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(0, applist_container));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.window_id = 0}, applist_container);
   wm::ActivateWindow(window.get());
   GetAppListTestHelper()->WaitUntilIdle();
 

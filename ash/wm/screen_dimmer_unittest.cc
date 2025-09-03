@@ -92,7 +92,7 @@ TEST_F(ScreenDimmerTest, ResizeLayer) {
 TEST_F(ScreenDimmerTest, DimAtBottom) {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(1, root_window));
+      aura::test::CreateTestWindow({.window_id = 1}, root_window));
   dimmer_->SetDimming(true);
   std::vector<raw_ptr<aura::Window, VectorExperimental>>::const_iterator
       dim_iter = std::ranges::find(root_window->children(), GetDimWindow());
