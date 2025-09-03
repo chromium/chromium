@@ -2412,6 +2412,10 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "FontFallbackForTabSize",
+      status: "stable",
+    },
+    {
       name: "FontFamilyPostscriptMatchingCTMigration",
     },
     {

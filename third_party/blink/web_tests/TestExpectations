@@ -4303,7 +4303,6 @@ crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibil
 crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-006.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mathml/presentation-markup/operators/non-spacing-accent-1.xhtml [ Failure ]
 crbug.com/626703 [ Mac13 Release ] external/wpt/IndexedDB/reading-autoincrement-indexes.any.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-text/tab-size/tab-size-integer-005.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-005.html [ Failure ]

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
@@ -52,6 +53,7 @@ void FontFallbackList::Trace(Visitor* visitor) const {
   visitor->Trace(cached_primary_simple_font_data_with_space_);
   visitor->Trace(cached_primary_simple_font_data_with_digit_zero_);
   visitor->Trace(cached_primary_simple_font_data_with_cjk_water_);
+  visitor->Trace(cached_primary_simple_font_data_for_tab_size_);
   visitor->Trace(font_selector_);
   visitor->Trace(shape_cache_);
 }
@@ -74,17 +76,19 @@ bool FontFallbackList::ShouldSkipDrawing() const {
 
 const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontData(
     const FontDescription& font_description,
-    UChar32 lookup_character) {
+    UChar32 lookup_character,
+    bool should_contain_glyph) {
   base::ElapsedTimer timer;
-  const SimpleFontData* result =
-      DeterminePrimarySimpleFontDataCore(font_description, lookup_character);
+  const SimpleFontData* result = DeterminePrimarySimpleFontDataCore(
+      font_description, lookup_character, should_contain_glyph);
   FontPerformance::AddPrimaryFontTime(timer.Elapsed());
   return result;
 }
 
 const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
     const FontDescription& font_description,
-    UChar32 lookup_character) {
+    UChar32 lookup_character,
+    bool should_contain_glyph) {
   bool should_load_custom_font = true;
 
   for (unsigned font_index = 0;; ++font_index) {
@@ -110,6 +114,12 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
     const SimpleFontData* font_data_for_space =
         font_data->FontDataForCharacter(lookup_character);
     DCHECK(font_data_for_space);
+
+    if (RuntimeEnabledFeatures::FontFallbackForTabSizeEnabled() &&
+        should_contain_glyph &&
+        !font_data_for_space->GlyphForCharacter(lookup_character)) {
+      continue;
+    }
 
     // When a custom font is loading, we should use the correct fallback font to
     // layout the text.  Here skip the temporary font for the loading custom

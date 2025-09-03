@@ -1994,7 +1994,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       const Font* font = RuntimeEnabledFeatures::TabSizeAncestorEnabled()
                              ? &node.FontForTab()
                              : style.GetFont();
-      const SimpleFontData* font_data = font->PrimaryFont();
+      const SimpleFontData* font_data = font->PrimaryFontForTabSize();
       // Sync with `ShapeResult::CreateForTabulationCharacters()`.
       TextRunLayoutUnit glyph_advance = TextRunLayoutUnit::FromFloatRound(
           font->TabWidth(font_data, tab_size, position));
