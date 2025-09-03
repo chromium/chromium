@@ -14097,9 +14097,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "NoPurge",
+                    "disable_features": [
+                        "InfiniteTabsFreezingOnMemoryPressure",
+                        "MemoryPurgeOnFreeze"
+                    ]
+                },
+                {
+                    "name": "NoPurgeAndFreeze",
                     "enable_features": [
                         "InfiniteTabsFreezingOnMemoryPressure"
+                    ],
+                    "disable_features": [
+                        "MemoryPurgeOnFreeze"
                     ]
                 }
             ]
@@ -15523,8 +15533,7 @@
             "platforms": [
                 "chromeos",
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
