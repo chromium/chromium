@@ -107,6 +107,9 @@ class InstallerDownloaderController final
       BrowserWindowInterface*,
       std::unique_ptr<InstallerDownloaderInfobarWindowActiveTabTracker>>;
 
+  // Returns the active web contents from the the active windows.
+  content::WebContents* GetActiveWebContents();
+
   void OnEligibilityReady(std::optional<base::FilePath> destination);
   void OnDownloadCompleted(std::unique_ptr<ScopedProfileKeepAlive> keep_alive,
                            bool success);
