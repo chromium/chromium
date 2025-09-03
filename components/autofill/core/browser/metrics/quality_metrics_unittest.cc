@@ -10,7 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
-#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
@@ -841,10 +841,10 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(form);
   FormStructure* form_structure_ptr = form_structure.get();
-  const HeuristicPredictions heuristic_predictions =
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              form_structure->ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form_structure->fields());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
   ASSERT_TRUE(

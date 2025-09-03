@@ -21,7 +21,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
@@ -1988,10 +1988,10 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // Form structure containing the state on submit.
   FormStructure form_structure(form);
 
-  const HeuristicPredictions heuristic_predictions =
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              cached_form_structure.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(cached_form_structure.fields());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          cached_form_structure.ToFormData(), nullptr);
+  regex_predictions.ApplyTo(cached_form_structure.fields());
   cached_form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                      LanguageCode(""), nullptr);
 
@@ -2448,9 +2448,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Parse the response and update the field type predictions.
   FormStructure form(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form.fields());
+  regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
@@ -2502,9 +2502,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
        .url = "http://foo.com"});
 
   FormStructure form(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form.fields());
+  regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);
 
@@ -2553,9 +2553,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
        .url = "http://foo.com"});
 
   FormStructure form(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form.fields());
+  regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);
 
@@ -2606,9 +2606,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_JoinedTypes) {
              .form_control_type = FormControlType::kInputPassword}},
        .url = "http://foo.com"});
   FormStructure form(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form.fields());
+  regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);
 
@@ -2653,9 +2653,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_NoJoinedTypes) {
              .form_control_type = FormControlType::kInputPassword}},
        .url = "http://foo.com"});
   FormStructure form(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form.fields());
+  regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);
 
@@ -2697,9 +2697,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
        CreateTestFormField("email", "email", "", FormControlType::kInputText,
                            "address-level2")});
   FormStructure form(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form.fields());
+  regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);
 
@@ -2764,9 +2764,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UnknownType) {
        CreateTestFormField("email", "email", "", FormControlType::kInputText,
                            "address-level2")});
   FormStructure form(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form.fields());
+  regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);
 
@@ -2944,9 +2944,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
            {.host_form_signature = FormSignature(12345), .name = u"name"}}});
 
   FormStructure form(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form.fields());
+  regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);
 
@@ -3671,10 +3671,10 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_AuthorDefinedTypes) {
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
-  const HeuristicPredictions heuristic_predictions =
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              forms.front()->ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(forms.front()->fields());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          forms.front()->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(forms.front()->fields());
   forms.front()->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                               LanguageCode(""), nullptr);
 
@@ -3728,10 +3728,10 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   FormStructure form_structure(form);
   // Will identify the sections based on the heuristics types.
-  const HeuristicPredictions heuristic_predictions =
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              form_structure.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form_structure.fields());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure.ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                               LanguageCode(""), nullptr);
 
@@ -3784,10 +3784,10 @@ TEST_F(AutofillCrowdsourcingEncoding, NoServerDataCCFields_CVC_NoOverwrite) {
   FormStructure form_structure(form);
 
   // Will identify the sections based on the heuristics types.
-  const HeuristicPredictions heuristic_predictions =
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              form_structure.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form_structure.fields());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure.ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                               LanguageCode(""), nullptr);
 
@@ -3844,10 +3844,10 @@ TEST_F(AutofillCrowdsourcingEncoding, WithServerDataCCFields_CVC_NoOverwrite) {
   FormStructure form_structure(form);
 
   // Will identify the sections based on the heuristics types.
-  const HeuristicPredictions heuristic_predictions =
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              form_structure.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form_structure.fields());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure.ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                               LanguageCode(""), nullptr);
 
@@ -3892,9 +3892,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_RankEqualSignatures) {
             CalculateFieldSignatureForField(form_data.fields()[1]));
 
   FormStructure form(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form.fields());
+  regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);
 
@@ -3937,9 +3937,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
             CalculateFieldSignatureForField(form_data.fields()[1]));
 
   FormStructure form(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form.fields());
+  regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);
 
@@ -3982,9 +3982,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   }
 
   FormStructure form(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(form.fields());
+  regex_predictions.ApplyTo(form.fields());
   form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                     nullptr);
 

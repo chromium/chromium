@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -110,10 +110,10 @@ std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
     const FormData& form) {
   auto cached_form_structure =
       std::make_unique<FormStructure>(test::WithoutValues(form));
-  const HeuristicPredictions heuristic_predictions =
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              cached_form_structure->ToFormData(), nullptr);
-  heuristic_predictions.ApplyTo(cached_form_structure->fields());
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          cached_form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(cached_form_structure->fields());
   cached_form_structure->RationalizeAndAssignSections(
       GeoIpCountryCode(""), LanguageCode(""), nullptr);
 

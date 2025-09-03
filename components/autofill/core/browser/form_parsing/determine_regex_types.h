@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_DETERMINE_HEURISTIC_TYPES_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_DETERMINE_HEURISTIC_TYPES_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_DETERMINE_REGEX_TYPES_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_DETERMINE_REGEX_TYPES_H_
 
 #include <memory>
 
@@ -21,17 +21,17 @@ namespace autofill {
 class AutofillField;
 class LogManager;
 
-// Holds the predictions returned by DetermineHeuristicTypes().
-class HeuristicPredictions {
+// Holds the predictions returned by DetermineRegexTypes().
+class RegexPredictions {
  public:
-  HeuristicPredictions(HeuristicSource source,
-                       const FieldCandidatesMap& field_type_map,
-                       base::span<const FormFieldData> fields);
-  HeuristicPredictions(const HeuristicPredictions&);
-  HeuristicPredictions(HeuristicPredictions&&);
-  HeuristicPredictions& operator=(const HeuristicPredictions&);
-  HeuristicPredictions& operator=(HeuristicPredictions&&);
-  ~HeuristicPredictions();
+  RegexPredictions(HeuristicSource source,
+                   const FieldCandidatesMap& field_type_map,
+                   base::span<const FormFieldData> fields);
+  RegexPredictions(const RegexPredictions&);
+  RegexPredictions(RegexPredictions&&);
+  RegexPredictions& operator=(const RegexPredictions&);
+  RegexPredictions& operator=(RegexPredictions&&);
+  ~RegexPredictions();
 
   // Sets the heuristic types of `fields` according to `this`.
   void ApplyTo(base::span<const std::unique_ptr<AutofillField>> fields) const;
@@ -41,9 +41,10 @@ class HeuristicPredictions {
   base::flat_map<FieldGlobalId, FieldType> predictions_;
 };
 
-// Runs several heuristics against the form fields to determine their possible
-// types.
-[[nodiscard]] HeuristicPredictions DetermineHeuristicTypes(
+// Evaluates regular expressions against the form fields to determine their
+// possible types.
+// HeuristicSource::kRegexes refers this function.
+[[nodiscard]] RegexPredictions DetermineRegexTypes(
     const GeoIpCountryCode& client_country,
     const LanguageCode& current_page_language,
     const FormData& form,
@@ -51,4 +52,4 @@ class HeuristicPredictions {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_DETERMINE_HEURISTIC_TYPES_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_DETERMINE_REGEX_TYPES_H_

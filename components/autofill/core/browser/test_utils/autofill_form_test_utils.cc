@@ -6,7 +6,7 @@
 
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -225,10 +225,10 @@ void FormStructureTest::CheckFormStructureTestData(
     auto form_structure = std::make_unique<FormStructure>(form);
 
     if (test_case.form_flags.determine_heuristic_type) {
-      const HeuristicPredictions heuristic_predictions =
-          DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                                  form_structure->ToFormData(), nullptr);
-      heuristic_predictions.ApplyTo(form_structure->fields());
+      const RegexPredictions regex_predictions =
+          DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
+      regex_predictions.ApplyTo(form_structure->fields());
       form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                    LanguageCode(""), nullptr);
     }

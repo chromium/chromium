@@ -17,7 +17,7 @@
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_fuzzed_producer.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -71,10 +71,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FormData form_data = GenerateFormData(data_provider);
 
   FormStructure form_structure(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
       GenerateGeoIpCountryCode(data_provider), LanguageCode(""), form_data,
       /*log_manager=*/nullptr);
-  heuristic_predictions.ApplyTo(form_structure.fields());
+  regex_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GenerateGeoIpCountryCode(data_provider), LanguageCode(""),
       /*log_manager=*/nullptr);

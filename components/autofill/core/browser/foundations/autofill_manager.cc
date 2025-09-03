@@ -21,7 +21,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
-#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -144,7 +144,7 @@ struct AutofillManager::AsyncContext {
                         : nullptr) {}
 
   std::vector<std::unique_ptr<FormStructure>> form_structures;
-  std::vector<HeuristicPredictions> heuristic_predictions;
+  std::vector<RegexPredictions> regex_predictions;
   std::vector<ModelPredictions> autofill_predictions;
   std::vector<ModelPredictions> password_manager_predictions;
   GeoIpCountryCode country_code;
@@ -704,9 +704,9 @@ void AutofillManager::ParseFormsAsyncCommon(
   // variables).
   auto run_heuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
-    context.heuristic_predictions.reserve(context.form_structures.size());
+    context.regex_predictions.reserve(context.form_structures.size());
     for (auto& form_structure : context.form_structures) {
-      context.heuristic_predictions.push_back(DetermineHeuristicTypes(
+      context.regex_predictions.push_back(DetermineRegexTypes(
           context.country_code, context.current_page_language,
           form_structure->ToFormData(), context.log_manager.get()));
     }
@@ -726,7 +726,7 @@ void AutofillManager::ParseFormsAsyncCommon(
         if (context.log_manager && self->log_manager()) {
           context.log_manager->Flush(*self->log_manager());
         }
-        CHECK_EQ(context.heuristic_predictions.size(),
+        CHECK_EQ(context.regex_predictions.size(),
                  context.form_structures.size());
         for (size_t i = 0; i < context.form_structures.size(); ++i) {
           FormStructure& f = *context.form_structures[i];
@@ -739,8 +739,8 @@ void AutofillManager::ParseFormsAsyncCommon(
           if (!context.password_manager_predictions.empty()) {
             context.password_manager_predictions[i].ApplyTo(f.fields());
           }
-          if (!context.heuristic_predictions.empty()) {
-            context.heuristic_predictions[i].ApplyTo(f.fields());
+          if (!context.regex_predictions.empty()) {
+            context.regex_predictions[i].ApplyTo(f.fields());
           }
           f.RationalizeAndAssignSections(context.country_code,
                                          context.current_page_language,

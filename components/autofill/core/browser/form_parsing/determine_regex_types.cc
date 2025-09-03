@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 
 #include <memory>
 
@@ -62,10 +62,9 @@ FieldCandidatesMap ParseFieldTypesWithPatterns(const FormData& form,
 
 }  // namespace
 
-HeuristicPredictions::HeuristicPredictions(
-    HeuristicSource source,
-    const FieldCandidatesMap& field_type_map,
-    base::span<const FormFieldData> fields)
+RegexPredictions::RegexPredictions(HeuristicSource source,
+                                   const FieldCandidatesMap& field_type_map,
+                                   base::span<const FormFieldData> fields)
     : source_(source) {
   const HeuristicSource active_source = GetActiveHeuristicSource();
   std::vector<std::pair<FieldGlobalId, FieldType>> field_predictions;
@@ -87,20 +86,18 @@ HeuristicPredictions::HeuristicPredictions(
   predictions_ = base::flat_map(std::move(field_predictions));
 }
 
-HeuristicPredictions::HeuristicPredictions(const HeuristicPredictions&) =
+RegexPredictions::RegexPredictions(const RegexPredictions&) = default;
+
+RegexPredictions::RegexPredictions(RegexPredictions&&) = default;
+
+RegexPredictions& RegexPredictions::operator=(const RegexPredictions&) =
     default;
 
-HeuristicPredictions::HeuristicPredictions(HeuristicPredictions&&) = default;
+RegexPredictions& RegexPredictions::operator=(RegexPredictions&&) = default;
 
-HeuristicPredictions& HeuristicPredictions::operator=(
-    const HeuristicPredictions&) = default;
+RegexPredictions::~RegexPredictions() = default;
 
-HeuristicPredictions& HeuristicPredictions::operator=(HeuristicPredictions&&) =
-    default;
-
-HeuristicPredictions::~HeuristicPredictions() = default;
-
-void HeuristicPredictions::ApplyTo(
+void RegexPredictions::ApplyTo(
     base::span<const std::unique_ptr<AutofillField>> fields) const {
   // Fields can share the same field signature. This map records for each
   // signature how many fields with the same signature have been observed.
@@ -127,11 +124,10 @@ void HeuristicPredictions::ApplyTo(
   }
 }
 
-HeuristicPredictions DetermineHeuristicTypes(
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& current_page_language,
-    const FormData& form,
-    LogManager* log_manager) {
+RegexPredictions DetermineRegexTypes(const GeoIpCountryCode& client_country,
+                                     const LanguageCode& current_page_language,
+                                     const FormData& form,
+                                     LogManager* log_manager) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
   const LanguageCode& page_language =
@@ -146,9 +142,9 @@ HeuristicPredictions DetermineHeuristicTypes(
                          PatternFile::kLegacy,
 #endif
                          GetActiveRegexFeatures(), log_manager);
-  return HeuristicPredictions(HeuristicSource::kRegexes,
-                              ParseFieldTypesWithPatterns(form, context),
-                              form.fields());
+  return RegexPredictions(HeuristicSource::kRegexes,
+                          ParseFieldTypesWithPatterns(form, context),
+                          form.fields());
 }
 
 }  // namespace autofill
