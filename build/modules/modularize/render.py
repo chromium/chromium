@@ -28,8 +28,9 @@ _RULE_MAP = {
     IncludeDir.SysrootModule: 'apple_sysroot_module',
 }
 
-_SYSROOT_MODULEMAP = """modulemap_config("sysroot_modulemap") {
-  source = "module.modulemap"
+_SYSROOT_MODULEMAP = """sysroot_modulemap("sysroot_modulemap") {
+  source = "module.modulemap.in"
+  out = "${target_gen_dir}/module.modulemap"
 }
 
 """
@@ -71,7 +72,8 @@ def _update_content(path: pathlib.Path, content: str):
   path.write_text(content)
 
 
-def render_modulemap(out_dir: pathlib.Path, sysroot: pathlib.Path,
+def render_modulemap(out_dir: pathlib.Path, replacements: dict[pathlib.Path,
+                                                               str],
                      targets: list[Target]):
   """Writes a modulemap to {out_dir}"""
   f = io.StringIO()
@@ -85,8 +87,12 @@ def render_modulemap(out_dir: pathlib.Path, sysroot: pathlib.Path,
       f.write(f'  module {header.submodule_name} {{\n')
       for single in sorted(header.group):
         assert single.abs is not None
-        f.write(
-            f'    header "{single.abs.relative_to(out_dir, walk_up=True)}"\n')
+        path = str(single.abs)
+        for frm, to in replacements.items():
+          path = path.replace(str(frm), to)
+        # After replacements, all paths should be absolute.
+        assert not path.startswith('/'), path
+        f.write(f'    header "{path}"\n')
       if not header.exports and header.exports is not None:
         f.write('    export *\n')
       for export in header.exports or []:
@@ -95,7 +101,7 @@ def render_modulemap(out_dir: pathlib.Path, sysroot: pathlib.Path,
       f.write('  }\n')
 
     f.write('}\n')
-  _update_content(out_dir / 'module.modulemap', f.getvalue())
+  _update_content(out_dir / 'module.modulemap.in', f.getvalue())
 
 
 def _render_string_list(f, indent: int, key: str, values: list[str]):
@@ -148,7 +154,8 @@ def render_build_gn(out_dir: pathlib.Path, targets: list[Target],
         all_modulemap_configs.add(modulemap_target)
 
     f.write(f'{rule}("{target.name}") {{\n')
-    if target.include_dir in [IncludeDir.SysrootModule, IncludeDir.Framework] and modulemap_target is not None:
+    if target.include_dir in [IncludeDir.SysrootModule, IncludeDir.Framework
+                              ] and modulemap_target is not None:
       f.write(f'  modulemap = ":{modulemap_target}"\n')
       if kind == IncludeDir.SysrootModule:
         f.write(f'  modulemap_path = "{rel}"\n')

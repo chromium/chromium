@@ -5,6 +5,10 @@
 import("//build/config/apple/apple_sdk.gni")
 import("//build/config/c++/modules.gni")
 import("//build/config/clang/clang.gni")
+import("//build/config/sysroot.gni")
+if (is_win) {
+  import("//build/toolchain/win/win_toolchain_data.gni")
+}
 
 configs_to_add = [
   "//buildtools/third_party/libc++:config",
@@ -112,7 +116,7 @@ if (use_clang_modules) {
     template("sysroot_module") {
       clang_module(target_name) {
         forward_variables_from(invoker, "*")
-        modulemap = "module.modulemap"
+        modulemap = "${target_gen_dir}/module.modulemap"
         public_configs = [ ":sysroot_modulemap" ]
       }
     }
@@ -175,6 +179,49 @@ template("modulemap_config") {
   config(target_name) {
     path = rebase_path(invoker.source, root_build_dir)
     cflags_cc = [ "-fmodule-map-file=${path}" ]
+  }
+}
+
+template("sysroot_modulemap") {
+  content = read_file(invoker.source, "string")
+  if (is_win) {
+    if (current_cpu == "x64") {
+      win_toolchain_data = win_toolchain_data_x64
+    } else if (current_cpu == "x86") {
+      win_toolchain_data = win_toolchain_data_x86
+    } else if (current_cpu == "arm64") {
+      win_toolchain_data = win_toolchain_data_arm64
+    } else {
+      error("Unsuppported windows CPU, add it to win_toolchain_data.gni")
+    }
+
+    # This must be relative to the directory the modulemap is contained within.
+    content = string_replace(content,
+                             "\$msvc",
+                             rebase_path(win_toolchain_data.msvc_dir,
+                                         target_gen_dir,
+                                         root_build_dir))
+    content = string_replace(content,
+                             "\$windows_kits",
+                             rebase_path(win_toolchain_data.windows_kits_dir,
+                                         target_gen_dir,
+                                         root_build_dir))
+  } else {
+    include_dir = "${sysroot}/usr/include"
+    if (is_fuchsia) {
+      include_dir = "${sysroot}/include"
+    }
+
+    # This must be relative to the directory the modulemap is contained within.
+    content =
+        string_replace(content,
+                       "\$sysroot",
+                       rebase_path(include_dir, target_gen_dir, root_build_dir))
+  }
+  write_file(invoker.out, content)
+
+  modulemap_config(target_name) {
+    source = invoker.out
   }
 }
 

@@ -48,7 +48,8 @@ SYSROOT_PRECOMPILED_HEADERS = [
 ]
 
 
-def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
+def fix_graph(graph: dict[str, Header],
+              compiler: 'Compiler') -> dict[pathlib.Path, str]:
   """Applies manual augmentation of the header graph."""
 
   def add_dep(frm, to, check=True):
@@ -129,6 +130,15 @@ def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
     # Thus, limits.h exports an undef.
     # if it's textual, limits.h undefs something it defined itself.
     graph['linux/limits.h'].textual = True
+
+  # Windows has multiple include directories contained with the sysroot.
+  if compiler.os == Os.Win:
+    return {
+        graph['corecrt.h'].abs.parent.parent: '$windows_kits',
+        graph['eh.h'].abs.parent: '$msvc',
+    }
+  else:
+    return {sysroot: '$sysroot'}
 
 
 def should_compile(target: Target) -> bool:

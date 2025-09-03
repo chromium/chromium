@@ -129,12 +129,12 @@ def _modularize(out_dir: pathlib.Path, error_log: pathlib.Path | None,
     return
 
   graph = compiler.compile_all()
-  fix_graph(graph, compiler)
+  replacements = fix_graph(graph, compiler)
   targets = run_build(graph)
   out_dir.mkdir(exist_ok=True, parents=False)
   if compiler.sysroot_dir == IncludeDir.Sysroot:
     render.render_modulemap(out_dir=out_dir,
-                            sysroot=compiler.sysroot,
+                            replacements=replacements,
                             targets=targets)
   render.render_build_gn(
       out_dir=out_dir,

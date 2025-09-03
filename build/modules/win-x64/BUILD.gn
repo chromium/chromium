@@ -7,8 +7,9 @@
 
 import("//buildtools/third_party/libc++/modules.gni")
 
-modulemap_config("sysroot_modulemap") {
-  source = "module.modulemap"
+sysroot_modulemap("sysroot_modulemap") {
+  source = "module.modulemap.in"
+  out = "${target_gen_dir}/module.modulemap"
 }
 
 builtin_module("_Builtin_float") {
