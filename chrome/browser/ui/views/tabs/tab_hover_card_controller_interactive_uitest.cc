@@ -791,17 +791,19 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 
   // Clear alert state. Alerts take precedence over all other footers.
   tab_renderer_data.alert_state = {};
-  tab_groups::CollaborationMessagingTabData data(browser()->profile());
-  tab_renderer_data.collaboration_messaging = data.GetWeakPtr();
+  tab_groups::CollaborationMessagingTabData* const data =
+      tab_groups::CollaborationMessagingTabData::From(
+          browser()->GetActiveTabInterface());
+  tab_renderer_data.collaboration_messaging = data->GetWeakPtr();
 
   // Do not make a network request for the user's avatar.
-  data.set_mocked_avatar_for_testing(gfx::Image());
+  data->set_mocked_avatar_for_testing(gfx::Image());
 
   // Create a mock PersistentMessage
   // Show collaboration messaging status with TAB_ADDED event.
   std::string given_name = "User";
   std::string avatar_url = "https://google.com/chrome/1";
-  data.SetMessage(
+  data->SetMessage(
       CreateMessage(given_name, avatar_url,
                     collaboration::messaging::CollaborationEvent::TAB_ADDED));
 
@@ -827,7 +829,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   // event.
   std::string given_name2 = "Another User";
   std::string avatar_url2 = "https://google.com/chrome/2";
-  data.SetMessage(
+  data->SetMessage(
       CreateMessage(given_name2, avatar_url2,
                     collaboration::messaging::CollaborationEvent::TAB_UPDATED));
 

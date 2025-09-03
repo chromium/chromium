@@ -7,14 +7,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace tab_groups {
 
@@ -67,7 +70,20 @@ class CollaborationMessagingTabDataTest : public testing::Test {
             std::move(sharing_service)));
 
     testing_profile_ = builder.Build();
-    tab_data_ = std::make_unique<CollaborationMessagingTabData>(profile());
+
+    EXPECT_CALL(mock_tab_interface_, GetUnownedUserDataHost())
+        .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
+
+    EXPECT_CALL(mock_tab_interface_, GetBrowserWindowInterface())
+        .Times(1)
+        .WillRepeatedly(testing::Return(&mock_browser_window_interface_));
+
+    EXPECT_CALL(mock_browser_window_interface_, GetProfile())
+        .Times(1)
+        .WillRepeatedly(testing::Return(profile()));
+
+    tab_data_ =
+        std::make_unique<CollaborationMessagingTabData>(&mock_tab_interface_);
   }
 
   TestingProfile* profile() { return testing_profile_.get(); }
@@ -78,6 +94,9 @@ class CollaborationMessagingTabDataTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
+  tabs::MockTabInterface mock_tab_interface_;
+  MockBrowserWindowInterface mock_browser_window_interface_;
 
  private:
   std::unique_ptr<TestingProfile> testing_profile_;
@@ -251,4 +270,11 @@ TEST_F(CollaborationMessagingTabDataTest, IgnoresMessageWithoutUser) {
   EXPECT_FALSE(tab_data().HasMessage());
 }
 
+// Verifies that From() function returns proper result
+TEST_F(CollaborationMessagingTabDataTest, VerifyGetUnownedUserDataHost) {
+  CollaborationMessagingTabData* const tab_data =
+      CollaborationMessagingTabData::From(&mock_tab_interface_);
+
+  EXPECT_FALSE(tab_data->HasMessage());
+}
 }  // namespace tab_groups
