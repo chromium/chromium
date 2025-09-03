@@ -190,8 +190,8 @@ void TsHolder::Reset(mojom::TextSafetyModelParamsPtr params,
   model_.Clear();
 
 #if !BUILDFLAG(IS_FUCHSIA)
-  if (params->safety_assets->which() ==
-      mojom::SafetyModelAssets::Tag::kTsAssets) {
+  if (!params->safety_assets || params->safety_assets->which() ==
+                                    mojom::SafetyModelAssets::Tag::kTsAssets) {
     auto impl = TsModel::Create(*chrome_ml_, std::move(params));
     if (impl) {
       model_.Add(std::move(impl), std::move(model));
@@ -203,8 +203,8 @@ void TsHolder::Reset(mojom::TextSafetyModelParamsPtr params,
     }
   }
 #else
-  CHECK(params->safety_assets->which() ==
-        mojom::SafetyModelAssets::Tag::kTsAssets);
+  CHECK(!params->safety_assets || params->safety_assets->which() ==
+                                      mojom::SafetyModelAssets::Tag::kTsAssets);
   auto impl = TsModel::Create(*chrome_ml_, std::move(params));
   if (impl) {
     model_.Add(std::move(impl), std::move(model));
