@@ -3876,6 +3876,8 @@ static_library("browser") {
       "enterprise/signals/context_info_fetcher.h",
       "enterprise/signals/device_info_fetcher.cc",
       "enterprise/signals/device_info_fetcher.h",
+      "first_run/bookmark_importer.cc",
+      "first_run/bookmark_importer.h",
       "first_run/first_run.cc",
       "first_run/first_run.h",
       "first_run/first_run_dialog.h",

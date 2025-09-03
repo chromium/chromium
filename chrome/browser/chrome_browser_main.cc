@@ -36,6 +36,7 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/component_updater/registration.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/first_run/bookmark_importer.h"
 #include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -1588,7 +1589,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
       if (base::FeatureList::IsEnabled(features::kBookmarksImportOnFirstRun) &&
           !master_prefs_->import_bookmarks_dict.empty()) {
-        first_run::StartBookmarksImportFromDict(
+        first_run::StartBookmarkImportFromDict(
             profile, std::move(master_prefs_->import_bookmarks_dict));
       }
 
