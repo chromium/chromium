@@ -602,12 +602,28 @@ void HTMLTextAreaElement::setDefaultValue(const String& default_value) {
 }
 
 void HTMLTextAreaElement::SetSuggestedValue(const String& value) {
-  SetAutofillState(!value.empty() ? WebAutofillState::kPreviewed
-                                  : WebAutofillState::kNotFilled);
-  TextControlElement::SetSuggestedValue(value);
+  String sanitized_value = value;
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      IsInCanvasSubtree()) {
+    // Hide suggested values when under canvas, to prevent leaking this
+    // information to javascript.
+    sanitized_value = String();
+  }
+  SetAutofillState(!sanitized_value.empty() ? WebAutofillState::kPreviewed
+                                            : WebAutofillState::kNotFilled);
+  TextControlElement::SetSuggestedValue(sanitized_value);
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
       StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
+}
+
+void HTMLTextAreaElement::DidChangeIsCanvasOrInCanvasSubtree() {
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      IsInCanvasSubtree()) {
+    // Hide suggested values when under canvas, to prevent leaking this
+    // information to javascript.
+    SetSuggestedValue(String());
+  }
 }
 
 String HTMLTextAreaElement::validationMessage() const {

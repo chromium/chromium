@@ -484,6 +484,8 @@ class CORE_EXPORT HTMLInputElement
 
   void MaybeReportPiiMetrics();
 
+  void DidChangeIsCanvasOrInCanvasSubtree() final;
+
   AtomicString name_;
   // The value string in |value| value mode.
   String non_attribute_value_;
