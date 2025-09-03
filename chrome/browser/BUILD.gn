@@ -5250,6 +5250,8 @@ static_library("browser") {
       "//ash/constants",
       "//ash/webui/annotator",
       "//ash/webui/annotator/mojom:annotator_mojo_bindings",
+      "//ash/webui/boca_receiver_app_ui",
+      "//ash/webui/boca_receiver_app_ui/mojom",
       "//ash/webui/boca_ui",
       "//ash/webui/boca_ui/mojom",
       "//ash/webui/camera_app_ui",

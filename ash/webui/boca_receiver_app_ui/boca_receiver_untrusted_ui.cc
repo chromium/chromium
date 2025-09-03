@@ -5,9 +5,11 @@
 #include "ash/webui/boca_receiver_app_ui/boca_receiver_untrusted_ui.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/boca_receiver_app_ui/boca_receiver_untrusted_page_handler.h"
 #include "ash/webui/boca_receiver_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_boca_receiver_app_bundle_resources_map.h"
 #include "ash/webui/grit/ash_boca_receiver_untrusted_ui_resources.h"
+#include "ash/webui/grit/ash_boca_receiver_untrusted_ui_resources_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -39,6 +41,7 @@ BocaReceiverUntrustedUI::BocaReceiverUntrustedUI(content::WebUI* web_ui)
       kChromeUntrustedBocaReceiverURL);
   source->AddResourcePath("", IDR_ASH_BOCA_RECEIVER_UNTRUSTED_UI_INDEX_HTML);
   source->AddResourcePaths(kAshBocaReceiverAppBundleResources);
+  source->AddResourcePaths(kAshBocaReceiverUntrustedUiResources);
   source->AddFrameAncestor(GURL(kChromeBocaReceiverURL));
 
   source->OverrideContentSecurityPolicy(
@@ -48,9 +51,28 @@ BocaReceiverUntrustedUI::BocaReceiverUntrustedUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types polymer_resin lit-html goog#html polymer-html-literal "
       "polymer-template-event-attribute-policy;");
+  // For testing
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome-untrusted://resources chrome-untrusted://webui-test "
+      "'self';");
 }
 
 BocaReceiverUntrustedUI::~BocaReceiverUntrustedUI() = default;
+
+void BocaReceiverUntrustedUI::BindInterface(
+    mojo::PendingReceiver<boca_receiver::mojom::UntrustedPageHandlerFactory>
+        receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void BocaReceiverUntrustedUI::CreateUntrustedPageHandler(
+    mojo::PendingRemote<boca_receiver::mojom::UntrustedPage> page) {
+  page_handler_ =
+      std::make_unique<boca_receiver::BocaReceiverUntrustedPageHandler>(
+          std::move(page));
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaReceiverUntrustedUI)
 
