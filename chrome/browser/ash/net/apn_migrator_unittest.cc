@@ -51,7 +51,6 @@ using ::chromeos::network_config::mojom::ApnType;
 using network_config::OverrideInProcessInstanceForTesting;
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::Truly;
 using ::testing::WithArg;
@@ -259,13 +258,13 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
           }),
           _, _))
       .Times(2)
-      .WillRepeatedly(WithArgs<2, 3>(
-          Invoke([&success_cb, &failure_cb](
-                     base::OnceClosure callback,
-                     network_handler::ErrorCallback error_callback) {
+      .WillRepeatedly(
+          WithArgs<2, 3>([&success_cb, &failure_cb](
+                             base::OnceClosure callback,
+                             network_handler::ErrorCallback error_callback) {
             success_cb = std::move(callback);
             failure_cb = std::move(error_callback);
-          })));
+          }));
 
   // Ensure that the function does not modify the non-migrated network.
   EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid2))
@@ -365,10 +364,10 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
                     }),
                     _, _))
       .Times(1)
-      .WillOnce(WithArg<2>(
-          Invoke([&onc_success_callback_1](base::OnceClosure callback) {
+      .WillOnce(
+          WithArg<2>([&onc_success_callback_1](base::OnceClosure callback) {
             onc_success_callback_1 = std::move(callback);
-          })));
+          }));
 
   base::Value::Dict expected_onc_2 =
       chromeos::network_config::CustomApnListToOnc(kTestCellularGuid2,
@@ -382,10 +381,10 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
                     }),
                     _, _))
       .Times(1)
-      .WillOnce(WithArg<2>(
-          Invoke([&onc_success_callback_2](base::OnceClosure callback) {
+      .WillOnce(
+          WithArg<2>([&onc_success_callback_2](base::OnceClosure callback) {
             onc_success_callback_2 = std::move(callback);
-          })));
+          }));
 
   // Verify that Shill receives the custom APNs for the third list.
   base::Value::Dict expected_onc_3 =
@@ -400,10 +399,10 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
                     }),
                     _, _))
       .Times(1)
-      .WillOnce(WithArg<2>(
-          Invoke([&onc_success_callback_3](base::OnceClosure callback) {
+      .WillOnce(
+          WithArg<2>([&onc_success_callback_3](base::OnceClosure callback) {
             onc_success_callback_3 = std::move(callback);
-          })));
+          }));
 
   // Function under test.
   TriggerNetworkListChanged();
@@ -530,8 +529,8 @@ TEST_F(ApnMigratorTest, MigrateNetworksWithoutCustomApns) {
                     }),
                     _, _))
       .Times(1)
-      .WillOnce(WithArg<2>(Invoke(
-          [&](base::OnceClosure callback) { std::move(callback).Run(); })));
+      .WillOnce(WithArg<2>(
+          [&](base::OnceClosure callback) { std::move(callback).Run(); }));
 
   base::Value::Dict expected_onc_2 =
       chromeos::network_config::CustomApnListToOnc(kTestCellularGuid2,
@@ -544,8 +543,8 @@ TEST_F(ApnMigratorTest, MigrateNetworksWithoutCustomApns) {
                     }),
                     _, _))
       .Times(1)
-      .WillOnce(WithArg<2>(Invoke(
-          [&](base::OnceClosure callback) { std::move(callback).Run(); })));
+      .WillOnce(WithArg<2>(
+          [&](base::OnceClosure callback) { std::move(callback).Run(); }));
 
   // All network should be marked as migrated
   EXPECT_CALL(*managed_cellular_pref_handler(),
@@ -611,12 +610,11 @@ TEST_F(ApnMigratorTest, SkipMigratingWhenNoChangeInIccids) {
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -696,13 +694,12 @@ TEST_F(ApnMigratorTest, MigrateNetworkAlreadyMigrating) {
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&get_managed_properties_callback](
-                                network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&get_managed_properties_callback](
+                               network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -750,13 +747,12 @@ TEST_F(ApnMigratorTest, MigrateNetworkAlreadyMigrating) {
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&get_managed_properties_callback](
-                                network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&get_managed_properties_callback](
+                               network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 }
@@ -786,13 +782,12 @@ TEST_F(ApnMigratorTest, MigrateNetworkNoPropertiesOrNotFound) {
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&get_managed_properties_callback](
-                                network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&get_managed_properties_callback](
+                               network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -818,12 +813,11 @@ TEST_F(ApnMigratorTest, MigrateNetworkNoPropertiesOrNotFound) {
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -866,13 +860,12 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&get_managed_properties_callback](
-                                network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&get_managed_properties_callback](
+                               network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test with failure to send APN list to shill.
   TriggerNetworkListChanged();
 
@@ -897,9 +890,9 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
                     }),
                     _, _))
       .Times(1)
-      .WillOnce(WithArg<3>(Invoke([&](network_handler::ErrorCallback callback) {
+      .WillOnce(WithArg<3>([&](network_handler::ErrorCallback callback) {
         std::move(callback).Run("error");
-      })));
+      }));
 
   // ICCID should not have been migrated.
   EXPECT_CALL(*managed_cellular_pref_handler(),
@@ -918,13 +911,12 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&get_managed_properties_callback](
-                                network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&get_managed_properties_callback](
+                               network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
 
   // Function under test with successful APN list to shill.
   TriggerNetworkListChanged();
@@ -945,8 +937,8 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
                     }),
                     _, _))
       .Times(1)
-      .WillOnce(WithArg<2>(Invoke(
-          [&](base::OnceClosure callback) { std::move(callback).Run(); })));
+      .WillOnce(WithArg<2>(
+          [&](base::OnceClosure callback) { std::move(callback).Run(); }));
   EXPECT_CALL(*managed_cellular_pref_handler(),
               AddApnMigratedIccid(Eq(kTestCellularIccid1)))
       .Times(1);
@@ -985,12 +977,11 @@ TEST_F(ApnMigratorTest,
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
 
   // Function under test.
   TriggerNetworkListChanged();
@@ -1010,13 +1001,13 @@ TEST_F(ApnMigratorTest,
                     }),
                     _, _))
       .Times(1)
-      .WillRepeatedly(WithArgs<2, 3>(
-          Invoke([&onc_success_callback, &onc_failure_callback](
-                     base::OnceClosure callback,
-                     network_handler::ErrorCallback error_callback) {
+      .WillRepeatedly(
+          WithArgs<2, 3>([&onc_success_callback, &onc_failure_callback](
+                             base::OnceClosure callback,
+                             network_handler::ErrorCallback error_callback) {
             onc_success_callback = std::move(callback);
             onc_failure_callback = std::move(error_callback);
-          })));
+          }));
 
   EXPECT_CALL(*managed_cellular_pref_handler(),
               AddApnMigratedIccid(Eq(kTestCellularIccid1)))
@@ -1056,13 +1047,12 @@ TEST_F(ApnMigratorTest,
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&get_managed_properties_callback](
-                                network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&get_managed_properties_callback](
+                               network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -1077,13 +1067,13 @@ TEST_F(ApnMigratorTest,
                     }),
                     _, _))
       .Times(1)
-      .WillRepeatedly(WithArgs<2, 3>(
-          Invoke([&onc_success_callback, &onc_failure_callback](
-                     base::OnceClosure callback,
-                     network_handler::ErrorCallback error_callback) {
+      .WillRepeatedly(
+          WithArgs<2, 3>([&onc_success_callback, &onc_failure_callback](
+                             base::OnceClosure callback,
+                             network_handler::ErrorCallback error_callback) {
             onc_success_callback = std::move(callback);
             onc_failure_callback = std::move(error_callback);
-          })));
+          }));
 
   properties = base::Value::Dict().Set(
       ::onc::network_config::kCellular,
@@ -1143,12 +1133,11 @@ TEST_F(ApnMigratorTest,
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -1222,12 +1211,11 @@ TEST_F(ApnMigratorTest,
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -1316,12 +1304,11 @@ TEST_F(
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -1397,12 +1384,11 @@ TEST_F(
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -1477,12 +1463,11 @@ TEST_F(ApnMigratorTest,
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -1562,12 +1547,11 @@ TEST_F(
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -1644,12 +1628,11 @@ TEST_F(
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -1728,12 +1711,11 @@ TEST_F(
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -1831,12 +1813,11 @@ TEST_F(
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -1935,12 +1916,11 @@ TEST_F(
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
@@ -2017,12 +1997,11 @@ TEST_F(ApnMigratorTest, MigrateNonManagedNetwork_Default) {
               GetManagedProperties(LoginState::Get()->primary_user_hash(),
                                    cellular_service_path_1, _))
       .Times(1)
-      .WillOnce(
-          WithArg<2>(Invoke([&](network_handler::PropertiesCallback callback) {
-            ASSERT_TRUE(get_managed_properties_callback.is_null());
-            get_managed_properties_callback = std::move(callback);
-            ASSERT_FALSE(get_managed_properties_callback.is_null());
-          })));
+      .WillOnce(WithArg<2>([&](network_handler::PropertiesCallback callback) {
+        ASSERT_TRUE(get_managed_properties_callback.is_null());
+        get_managed_properties_callback = std::move(callback);
+        ASSERT_FALSE(get_managed_properties_callback.is_null());
+      }));
   // Function under test.
   TriggerNetworkListChanged();
 
