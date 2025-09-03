@@ -1,0 +1,11 @@
+Name: skrifa
+URL: https://crates.io/crates/skrifa
+Version: 0.36.0
+Revision: b54bc0fa82f76196ba9c0bdfdd9215b02bcce3e1
+Update Mechanism: Manual
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/skrifa-v0_36/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Metadata reader and glyph scaler for OpenType fonts.
