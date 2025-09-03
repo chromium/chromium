@@ -10,8 +10,6 @@ namespace blink {
 // Reasons for requesting that recorded PaintOps be flushed. Used in code
 // loosely related to 2d canvas rendering contexts.
 enum class FlushReason {
-  // This enum is used by a histogram. Do not change item values.
-
   // Use at call sites that never require flushing recorded paint ops
   // For example when requesting WebGL or WebGPU snapshots. Does not
   // impede vector printing.
