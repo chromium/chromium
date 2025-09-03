@@ -136,7 +136,7 @@ bool ParseChildPermissions(const std::string& base_name,
 void APIPermissionSet::insert(APIPermissionID id) {
   const APIPermissionInfo* permission_info =
       PermissionsInfo::GetInstance()->GetByID(id);
-  DCHECK(permission_info);
+  DCHECK(permission_info) << id;
   insert(permission_info->CreateAPIPermission());
 }
 
