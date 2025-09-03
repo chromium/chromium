@@ -43,7 +43,8 @@ class MultiSourceMemoryPressureMonitor
   void MaybeStartPlatformVoter();
 
   // MemoryPressureMonitor implementation.
-  MemoryPressureLevel GetCurrentPressureLevel() const override;
+  MemoryPressureLevel GetCurrentPressureLevel(
+      base::MemoryPressureMonitorTag tag) const override;
 
   // Creates a MemoryPressureVoter to be owned/used by a source that wishes to
   // have input on the overall memory pressure level.

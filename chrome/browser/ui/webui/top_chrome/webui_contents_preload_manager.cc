@@ -547,9 +547,11 @@ bool WebUIContentsPreloadManager::ShouldPreloadForBrowserContext(
 
   // Don't preload if under heavy memory pressure.
   const auto* memory_monitor = base::MemoryPressureMonitor::Get();
-  if (memory_monitor && memory_monitor->GetCurrentPressureLevel() >=
-                            base::MemoryPressureMonitor::MemoryPressureLevel::
-                                MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (memory_monitor &&
+      memory_monitor->GetCurrentPressureLevel(
+          base::MemoryPressureMonitorTag::kWebUIContentsPreloadManager) >=
+          base::MemoryPressureMonitor::MemoryPressureLevel::
+              MEMORY_PRESSURE_LEVEL_MODERATE) {
     return false;
   }
 

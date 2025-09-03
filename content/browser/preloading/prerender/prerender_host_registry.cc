@@ -120,7 +120,8 @@ GetCurrentMemoryPressureLevel() {
   if (!monitor) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
   }
-  return monitor->GetCurrentPressureLevel();
+  return monitor->GetCurrentPressureLevel(
+      base::MemoryPressureMonitorTag::kPrerenderHostRegistry);
 }
 
 // Create a resource request for `back_url` that only checks whether the

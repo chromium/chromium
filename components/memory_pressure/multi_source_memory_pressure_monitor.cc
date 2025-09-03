@@ -5,7 +5,10 @@
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_monitor.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -15,6 +18,19 @@
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
 namespace memory_pressure {
+namespace {
+BASE_FEATURE(kSuppressMemoryMonitor,
+             "SuppressMemoryMonitor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kSuppressMemoryMonitorStart{
+    &kSuppressMemoryMonitor, "suppress_memory_monitor_start",
+    static_cast<int>(base::MemoryPressureMonitorTag::kMax)};
+
+const base::FeatureParam<int> kSuppressMemoryMonitorEnd{
+    &kSuppressMemoryMonitor, "suppress_memory_monitor_end",
+    static_cast<int>(base::MemoryPressureMonitorTag::kMax)};
+}  // namespace
 
 MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
     : current_pressure_level_(
@@ -39,8 +55,16 @@ void MultiSourceMemoryPressureMonitor::MaybeStartPlatformVoter() {
 }
 
 base::MemoryPressureListener::MemoryPressureLevel
-MultiSourceMemoryPressureMonitor::GetCurrentPressureLevel() const {
+MultiSourceMemoryPressureMonitor::GetCurrentPressureLevel(
+    base::MemoryPressureMonitorTag tag) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  int start = kSuppressMemoryMonitorStart.Get();
+  int end = kSuppressMemoryMonitorEnd.Get();
+  if (static_cast<int>(tag) >= start && static_cast<int>(tag) < end &&
+      current_pressure_level_ ==
+          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  }
   return current_pressure_level_;
 }
 
