@@ -314,6 +314,7 @@ scoped_refptr<VideoFrame> InternalRefCountedPool::MaybeCreateVideoFrame(
       frame_resources = nullptr;
       continue;
     }
+    break;
   }
   if (!frame_resources) {
     frame_resources = std::make_unique<FrameResources>(this, visible_size);
