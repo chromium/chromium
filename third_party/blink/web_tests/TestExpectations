@@ -2973,6 +2973,7 @@ crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-005.html [ Fail
 crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-006.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win11-arm64 ] external/wpt/accelerometer/GravitySensor.https.html [ Pass Timeout ]
 crbug.com/442769076 external/wpt/css/css-pseudo/before-as-flex-container.html [ Failure ]
 crbug.com/441356800 external/wpt/html/semantics/embedded-content/the-video-element/video_timeupdate_on_seek.html [ Timeout ]
 crbug.com/441360066 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/fragment_navigated/fragment_navigated.py [ Timeout ]
@@ -3059,6 +3060,7 @@ crbug.com/438793859 [ Win11-arm64 ] external/wpt/storage-access-api/storageAcces
 crbug.com/438771340 [ Mac12 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-try-switch-from-fixed-anchor.html [ Failure ]
 crbug.com/438771340 [ Mac13 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-try-switch-from-fixed-anchor.html [ Failure ]
 crbug.com/438771340 [ Mac14 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-try-switch-from-fixed-anchor.html [ Failure ]
+crbug.com/438771340 [ Mac15 ] virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-try-switch-from-fixed-anchor.html [ Failure ]
 crbug.com/438793860 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/not-secure-connection.html [ Timeout ]
 crbug.com/438793860 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/session-cookie-has-no-attributes.https.html [ Crash ]
 crbug.com/438873383 [ Win11-arm64 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/no-vary-search.https.html?30-last [ Crash ]
