@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snackbar/public/snackbar_constants.h"
-#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
-#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

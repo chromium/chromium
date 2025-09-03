@@ -86,7 +86,7 @@ source_set("snackbar_util") {
   deps = [
     "//base",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/snackbar/public",
+    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/third_party/material_components_ios",
   ]
   frameworks = [ "UIKit.framework" ]

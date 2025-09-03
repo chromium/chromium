@@ -19,6 +19,7 @@ source_set("utils") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
@@ -26,7 +27,6 @@ source_set("utils") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:system_identity",
-    "//ios/chrome/browser/snackbar/public",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]

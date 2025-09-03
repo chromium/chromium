@@ -14,11 +14,11 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
     "//ios/chrome/browser/shared/ui/chrome_overlay_window",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
-    "//ios/chrome/browser/snackbar/public",
-    "//ios/chrome/browser/snackbar/public:constants",
     "//ios/chrome/browser/snackbar/ui_bundled/ui",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
@@ -38,7 +38,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/snackbar/public",
+    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/test/app:test_support",
   ]
 }
@@ -60,7 +60,7 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     "//base/test:test_support",
-    "//ios/chrome/browser/snackbar/public:constants",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

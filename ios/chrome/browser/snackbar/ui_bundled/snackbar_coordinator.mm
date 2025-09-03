@@ -10,11 +10,11 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
-#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view.h"
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view_delegate.h"
 

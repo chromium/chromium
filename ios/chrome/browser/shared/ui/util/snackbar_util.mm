@@ -8,7 +8,7 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 
 MDCSnackbarMessage* CreateSnackbarMessage(NSString* text) {
   MDCSnackbarMessage* snackbar_message =

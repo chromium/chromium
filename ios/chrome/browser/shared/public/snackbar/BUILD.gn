@@ -2,14 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("constants") {
-  sources = [
-    "snackbar_constants.h",
-    "snackbar_constants.mm",
-  ]
-}
-
-source_set("public") {
+source_set("snackbar") {
   sources = [
     "snackbar_message.h",
     "snackbar_message.mm",
@@ -21,4 +14,11 @@ source_set("public") {
     "//ios/third_party/material_components_ios",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "snackbar_constants.h",
+    "snackbar_constants.mm",
+  ]
 }

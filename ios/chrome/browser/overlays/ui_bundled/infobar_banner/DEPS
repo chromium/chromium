@@ -2,5 +2,4 @@ include_rules = [
   "+ios/chrome/browser/authentication/ui_bundled/signin_promo",
   "+ios/chrome/browser/infobars/ui_bundled/banners",
   "+ios/chrome/browser/infobars/ui_bundled/presentation",
-  "+ios/chrome/browser/snackbar/public",
 ]

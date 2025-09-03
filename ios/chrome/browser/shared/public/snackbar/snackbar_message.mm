@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
-#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 
 namespace {
 

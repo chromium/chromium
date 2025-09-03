@@ -11,9 +11,9 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/snackbar/public",
-    "//ios/chrome/browser/snackbar/public:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",

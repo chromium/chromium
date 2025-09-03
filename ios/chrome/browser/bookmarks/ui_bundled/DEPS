@@ -9,7 +9,6 @@ include_rules = [
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/ntp/shared/metrics/home_metrics.h",
   "+ios/chrome/browser/settings/ui_bundled",
-  "+ios/chrome/browser/snackbar/public",
 ]
 
 specific_include_rules = {
