@@ -309,7 +309,7 @@ void PageHandler::OnReceivedPerformanceInfoForPageData(
     auto info = mojom::BaseModelInfo::New();
     info->file_path = debug_state.state_->GetInstallDirectory().AsUTF8Unsafe();
     std::optional<int64_t> file_size =
-        base::GetFileSize(debug_state.state_->GetInstallDirectory());
+        base::ComputeDirectorySize(debug_state.state_->GetInstallDirectory());
     info->file_size = file_size ? static_cast<uint64_t>(*file_size) : 0u;
     info->component_version =
         debug_state.state_->GetComponentVersion().GetString();
