@@ -38,6 +38,7 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -1024,6 +1025,7 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/442662771")
     public void testOpenWindowFromSvgUserGesture() throws Exception {
         mTabbedActivityTestRule.startOnBlankPage();
         TestParams params =
