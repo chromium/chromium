@@ -73,6 +73,24 @@ TEST_F(SdJwtTest, JWkSerializing) {
   EXPECT_STREQ(jwk.Serialize()->c_str(), json.c_str());
 }
 
+TEST_F(SdJwtTest, JwkParsingAndSerializingRs256) {
+  Jwk jwk;
+  jwk.kty = "RSA";
+  jwk.alg = "RS256";
+  jwk.n = "n-value";
+  jwk.e = "e-value";
+
+  auto serialized = jwk.Serialize();
+  ASSERT_TRUE(serialized);
+
+  auto parsed = Jwk::From(*base::JSONReader::ReadDict(*serialized));
+  ASSERT_TRUE(parsed);
+  EXPECT_EQ(parsed->kty, "RSA");
+  EXPECT_EQ(parsed->alg, "RS256");
+  EXPECT_EQ(parsed->n, "n-value");
+  EXPECT_EQ(parsed->e, "e-value");
+}
+
 TEST_F(SdJwtTest, DisclosureParsing) {
   // Example from
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#section-4.2.1

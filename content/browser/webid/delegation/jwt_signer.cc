@@ -28,6 +28,7 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
+#include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -49,17 +50,6 @@ int GetGroupDegreeInBytes(EC_KEY* ec) {
   return NumBitsToBytes(EC_GROUP_get_degree(group));
 }
 
-bool IsEcdsaP256(EVP_PKEY* evp_key) {
-  if (EVP_PKEY_base_id(evp_key) != EVP_PKEY_EC) {
-    return false;
-  }
-
-  EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(evp_key);
-  CHECK(ec_key);
-
-  return EC_KEY_get0_group(ec_key) == EC_group_p256();
-}
-
 std::optional<std::string> BIGNUMToPadded(const BIGNUM* value,
                                           size_t padded_length) {
   std::vector<uint8_t> padded_bytes(padded_length);
@@ -72,6 +62,10 @@ std::optional<std::string> BIGNUMToPadded(const BIGNUM* value,
                         base::Base64UrlEncodePolicy::OMIT_PADDING, &base64);
 
   return base64;
+}
+
+std::optional<std::string> BIGNUMToBase64(const BIGNUM* value) {
+  return BIGNUMToPadded(value, BN_num_bytes(value));
 }
 
 // Given a DER-encoded ECDSA-Sig-Value, unpack it into a raw ECDSA signature:
@@ -96,12 +90,12 @@ std::vector<uint8_t> UnpackDERSignature(base::span<const uint8_t> der_sig) {
   return result;
 }
 
-std::optional<std::vector<uint8_t>> SignJwt(
+std::optional<std::vector<uint8_t>> SignJwtEs256(
     crypto::keypair::PrivateKey private_key,
     const std::string_view& message) {
   // The signature unpacking step won't work if the key uses a curve other than
   // P-256.
-  if (!IsEcdsaP256(private_key.key())) {
+  if (!private_key.IsEcP256()) {
     return std::nullopt;
   }
 
@@ -110,22 +104,30 @@ std::optional<std::vector<uint8_t>> SignJwt(
   return UnpackDERSignature(sig);
 }
 
-}  // namespace
-
-std::optional<Jwk> ExportPublicKey(
-    const crypto::keypair::PrivateKey& private_pkey) {
-  EC_KEY* ec = EVP_PKEY_get0_EC_KEY(private_pkey.key());
-  if (!ec) {
+std::optional<std::vector<uint8_t>> SignJwtRs256(
+    crypto::keypair::PrivateKey private_key,
+    const std::string_view& message) {
+  if (!private_key.IsRsa()) {
     return std::nullopt;
   }
 
+  return crypto::sign::Sign(crypto::sign::SignatureKind::RSA_PKCS1_SHA256,
+                            private_key, base::as_byte_span(message));
+}
+
+std::optional<Jwk> ExportPublicKeyEs256(
+    const crypto::keypair::PrivateKey& private_key) {
   Jwk jwk;
+
   jwk.kty = "EC";
   jwk.crv = "P-256";
+  jwk.alg = "ES256";
 
   // Get public key
   bssl::UniquePtr<BIGNUM> x(BN_new());
   bssl::UniquePtr<BIGNUM> y(BN_new());
+
+  EC_KEY* ec = EVP_PKEY_get0_EC_KEY(private_key.key());
 
   const EC_GROUP* group = EC_KEY_get0_group(ec);
   const EC_POINT* point = EC_KEY_get0_public_key(ec);
@@ -154,8 +156,61 @@ std::optional<Jwk> ExportPublicKey(
   return jwk;
 }
 
+std::optional<Jwk> ExportPublicKeyRsa256(
+    const crypto::keypair::PrivateKey& private_key) {
+  Jwk jwk;
+
+  RSA* rsa = EVP_PKEY_get0_RSA(private_key.key());
+
+  jwk.kty = "RSA";
+  jwk.alg = "RS256";
+
+  const BIGNUM* n;
+  const BIGNUM* e;
+  RSA_get0_key(rsa, &n, &e, nullptr);
+
+  auto n_base64 = BIGNUMToBase64(n);
+  if (!n_base64) {
+    return std::nullopt;
+  }
+  jwk.n = *n_base64;
+
+  auto e_base64 = BIGNUMToBase64(e);
+  if (!e_base64) {
+    return std::nullopt;
+  }
+  jwk.e = *e_base64;
+
+  return jwk;
+}
+
+}  // namespace
+
+std::optional<Jwk> ExportPublicKey(
+    const crypto::keypair::PrivateKey& private_key) {
+  if (private_key.IsEcP256()) {
+    return ExportPublicKeyEs256(private_key);
+  }
+
+  if (private_key.IsRsa()) {
+    return ExportPublicKeyRsa256(private_key);
+  }
+
+  return std::nullopt;
+}
+
 Signer CreateJwtSigner(crypto::keypair::PrivateKey private_key) {
-  return base::BindOnce(SignJwt, std::move(private_key));
+  switch (EVP_PKEY_base_id(private_key.key())) {
+    case EVP_PKEY_EC:
+      return base::BindOnce(&SignJwtEs256, std::move(private_key));
+    case EVP_PKEY_RSA:
+      return base::BindOnce(&SignJwtRs256, std::move(private_key));
+    default:
+      return base::BindOnce(
+          [](const std::string_view&) -> std::optional<std::vector<uint8_t>> {
+            return std::nullopt;
+          });
+  }
 }
 
 }  // namespace content::sdjwt

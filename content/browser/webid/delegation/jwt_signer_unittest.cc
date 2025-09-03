@@ -50,9 +50,9 @@ class JwtSignerTest : public testing::Test {
   void TearDown() override {}
 };
 
-void Verify(const std::vector<uint8_t>& public_key,
-            const base::span<const uint8_t>& signature,
-            const std::string& message) {
+void VerifyEs256(const std::vector<uint8_t>& public_key,
+                 const base::span<const uint8_t>& signature,
+                 const std::string& message) {
   const size_t kMaxBytesPerBN = 32;
   EXPECT_EQ(signature.size(), 2 * kMaxBytesPerBN);
   base::span<const uint8_t> r_bytes = signature.first(kMaxBytesPerBN);
@@ -83,6 +83,17 @@ void Verify(const std::vector<uint8_t>& public_key,
   EXPECT_TRUE(verifier.VerifyFinal());
 }
 
+void VerifyRs256(const std::vector<uint8_t>& public_key,
+                 base::span<const uint8_t> signature,
+                 const std::string& message) {
+  crypto::SignatureVerifier verifier;
+  EXPECT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA256,
+                                  signature, public_key));
+
+  verifier.VerifyUpdate(base::as_byte_span(message));
+  EXPECT_TRUE(verifier.VerifyFinal());
+}
+
 TEST_F(JwtSignerTest, JwtSigner) {
   auto private_key = crypto::keypair::PrivateKey::GenerateEcP256();
   std::vector<uint8_t> public_key = private_key.ToSubjectPublicKeyInfo();
@@ -91,7 +102,28 @@ TEST_F(JwtSignerTest, JwtSigner) {
   auto signer = CreateJwtSigner(std::move(private_key));
   auto signature = std::move(signer).Run(message);
 
-  Verify(public_key, base::as_byte_span(*signature), message);
+  VerifyEs256(public_key, base::as_byte_span(*signature), message);
+}
+
+TEST_F(JwtSignerTest, JwtSignerRs256) {
+  auto private_key = crypto::keypair::PrivateKey::GenerateRsa2048();
+  std::vector<uint8_t> public_key = private_key.ToSubjectPublicKeyInfo();
+
+  const std::string message = "hello wold";
+  auto signer = CreateJwtSigner(std::move(private_key));
+  auto signature = std::move(signer).Run(message);
+
+  VerifyRs256(public_key, base::as_byte_span(*signature), message);
+}
+
+TEST_F(JwtSignerTest, ExportPublicKeyRs256) {
+  auto private_key = crypto::keypair::PrivateKey::GenerateRsa2048();
+  auto jwk = ExportPublicKey(private_key);
+  ASSERT_TRUE(jwk);
+  EXPECT_EQ(jwk->kty, "RSA");
+  EXPECT_EQ(jwk->alg, "RS256");
+  EXPECT_FALSE(jwk->n.empty());
+  EXPECT_FALSE(jwk->e.empty());
 }
 
 TEST_F(JwtSignerTest, CreateJwt) {
@@ -130,7 +162,7 @@ TEST_F(JwtSignerTest, CreateJwt) {
                         &payload_base64);
 
   std::string message = header_base64 + "." + payload_base64;
-  Verify(public_key, base::as_byte_span(*signature), message);
+  VerifyEs256(public_key, base::as_byte_span(*signature), message);
 }
 
 TEST_F(JwtSignerTest, CreateSdJwtKb) {
@@ -184,6 +216,34 @@ TEST_F(JwtSignerTest, CreateSdJwtKb) {
       CreateJwtSigner(std::move(holder_private_key)));
 
   EXPECT_TRUE(sd_jwt_kb);
+}
+
+TEST_F(JwtSignerTest, InvalidKeyType) {
+  // Create a key that is not EC or RSA.
+  auto private_key = crypto::keypair::PrivateKey::GenerateEd25519();
+
+  // Test CreateJwtSigner with an invalid key type.
+  auto signer = CreateJwtSigner(private_key);
+  auto signature = std::move(signer).Run("message");
+  EXPECT_FALSE(signature);
+
+  // Test ExportPublicKey with an invalid key type.
+  auto jwk = ExportPublicKey(private_key);
+  EXPECT_FALSE(jwk);
+}
+
+TEST_F(JwtSignerTest, MismatchedKeyTypes) {
+  // Test SignJwtRs256 with an EC key.
+  auto ec_private_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  auto rs256_signer = CreateJwtSigner(std::move(ec_private_key));
+  auto rs256_signature = std::move(rs256_signer).Run("message");
+  EXPECT_TRUE(rs256_signature);
+
+  // Test SignJwtEs256 with an RSA key.
+  auto rsa_private_key = crypto::keypair::PrivateKey::GenerateRsa2048();
+  auto es256_signer = CreateJwtSigner(std::move(rsa_private_key));
+  auto es256_signature = std::move(es256_signer).Run("message");
+  EXPECT_TRUE(es256_signature);
 }
 
 }  // namespace content::sdjwt

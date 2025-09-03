@@ -93,15 +93,19 @@
 */
 namespace content::sdjwt {
 
-// An Elliptic Curve Jwk representation.
+// An public key representation.
 // https://datatracker.ietf.org/doc/html/rfc7517#section-3
-// Could be extended in the future to cover other Jwk key types.
+// Could be extended in the future to cover other Jwk key types:
+// currently supports EC and RSA keys.
 struct CONTENT_EXPORT Jwk {
   std::string kty;
   std::string crv;
   std::string x;
   std::string y;
   std::string d;
+  std::string alg;
+  std::string n;
+  std::string e;
 
   Jwk();
   ~Jwk();
@@ -109,6 +113,7 @@ struct CONTENT_EXPORT Jwk {
 
   static std::optional<Jwk> From(const base::Value::Dict& json);
 
+  base::Value::Dict ToDict() const;
   std::optional<std::string> Serialize() const;
 };
 
