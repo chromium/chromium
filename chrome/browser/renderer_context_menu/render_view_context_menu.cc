@@ -1025,10 +1025,14 @@ void RenderViewContextMenu::IssuePreconnectionToUrl(
 ui::IsNewFeatureAtValue RenderViewContextMenu::GetIsNewFeatureAtValue(
     const std::string& feature_name) const {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
+  UserEducationService* user_education_service =
+      UserEducationServiceFactory::GetForBrowserContext(profile);
+  if (!user_education_service ||
+      !user_education_service->new_badge_registry()) {
+    return ui::IsNewFeatureAtValue();
+  }
   auto& feature_data =
-      UserEducationServiceFactory::GetForBrowserContext(profile)
-          ->new_badge_registry()
-          ->feature_data();
+      user_education_service->new_badge_registry()->feature_data();
   for (const auto& [feature, spec] : feature_data) {
     if (feature_name == feature->name) {
       return UserEducationService::MaybeShowNewBadge(browser_context_,
