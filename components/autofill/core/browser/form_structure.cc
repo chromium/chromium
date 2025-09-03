@@ -669,18 +669,6 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
   may_run_autofill_ai_model_ = cached_form.may_run_autofill_ai_model_;
 }
 
-void FormStructure::LogDeveloperEngagementMetric() {
-  developer_engagement_metrics_ = 0;
-  if (IsAutofillable()) {
-    AutofillMetrics::DeveloperEngagementMetric metric =
-        std::ranges::any_of(fields_, has_autocomplete)
-            ? AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS
-            : AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS;
-    developer_engagement_metrics_ |= 1 << metric;
-    AutofillMetrics::LogDeveloperEngagementMetric(metric);
-  }
-}
-
 void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
   std::map<FieldSignature, size_t> field_rank_map;
   for (const std::unique_ptr<AutofillField>& field : fields_) {

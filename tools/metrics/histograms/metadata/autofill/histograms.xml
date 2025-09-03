@@ -2830,17 +2830,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.DeveloperEngagement"
-    enum="AutofillDeveloperEngagement" expires_after="2026-03-01">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Measures the adoption of the HTML autocomplete type hint specification (see
-    http://is.gd/whatwg_autocomplete for more details). For each fillable form
-    detected, logs whether that form includes author-specified type hints.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.DOMContentLoadedInOutermostMainFrame" enum="Boolean"
     expires_after="2026-02-22">
   <owner>schwering@google.com</owner>

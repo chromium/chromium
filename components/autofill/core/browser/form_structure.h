@@ -327,14 +327,6 @@ class FormStructure {
     submission_source_ = submission_source;
   }
 
-  // Logs the DeveloperEngagementMetric UKM metric and updates
-  // `developer_engagement_metrics_`.
-  void LogDeveloperEngagementMetric();
-
-  int developer_engagement_metrics() const {
-    return developer_engagement_metrics_;
-  }
-
   FormGlobalId global_id() const { return {host_frame_, renderer_id_}; }
 
   FormVersion version() const { return version_; }
@@ -450,11 +442,6 @@ class FormStructure {
 
   // The timestamp when this form or one of its fields was last filled.
   std::optional<base::TimeTicks> last_filling_timestamp_;
-
-  // Used to record whether developer has used autocomplete markup or
-  // UPI-VPA hints, This is a bitmask of DeveloperEngagementMetric and set in
-  // DetermineHeuristicTypes().
-  int developer_engagement_metrics_ = 0;
 
   mojom::SubmissionSource submission_source_ = mojom::SubmissionSource::NONE;
 

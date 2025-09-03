@@ -2529,36 +2529,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Autofill.DeveloperEngagement">
-  <owner>osaul@google.com</owner>
-  <summary>
-    Recorded when we parse a form to log whether developer has used autocomplete
-    markup or UPI-VPA hints. The value is a bitmask of
-    |DeveloperEngagementMetric|.
-  </summary>
-  <metric name="DeveloperEngagement"/>
-  <metric name="FormSignature">
-    <summary>
-      The signature of the form (mod 1021). This is the hash identifier used to
-      denote this form for query and voting purposes. See
-      components/autofill/core/common/signatures.cc for more details.
-    </summary>
-  </metric>
-  <metric name="FormTypes">
-    <summary>
-      Type of form. Stored as bitvector. A set ith bit implies enum
-      FormTypeNameForLogging's ith type was detected. Multiple types are
-      possible.
-    </summary>
-  </metric>
-  <metric name="IsForCreditCard">
-    <summary>
-      True for credit card forms, false for address/profile forms. See
-      |FormStructure::IsCompleteCreditCardForm()|.
-    </summary>
-  </metric>
-</event>
-
 <event name="Autofill.EditedAutofilledFieldAtSubmission">
   <owner>koerber@google.com</owner>
   <owner>battre@google.com</owner>

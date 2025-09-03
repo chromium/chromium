@@ -39,8 +39,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-class GURL;
-
 namespace autofill {
 
 class AutofillField;
@@ -55,20 +53,6 @@ extern const int kMaxBucketsCount;
 
 class AutofillMetrics {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum DeveloperEngagementMetric {
-    // Parsed a form that is potentially autofillable and does not contain any
-    // web developer-specified field type hint.
-    FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS = 0,
-    // Parsed a form that is potentially autofillable and contains at least one
-    // web developer-specified field type hint, a la
-    // http://is.gd/whatwg_autocomplete
-    FILLABLE_FORM_PARSED_WITH_TYPE_HINTS = 1,
-    FORM_CONTAINS_UPI_VPA_HINT_DEPRECATED = 2,
-    NUM_DEVELOPER_ENGAGEMENT_METRICS,
-  };
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum InfoBarMetric {
@@ -631,8 +615,6 @@ class AutofillMetrics {
   static void LogScanCreditCardCompleted(base::TimeDelta duration,
                                          bool completed);
 
-  static void LogDeveloperEngagementMetric(DeveloperEngagementMetric metric);
-
   static void LogServerQueryMetric(ServerQueryMetric metric);
 
   // Logs |event| to the unmask prompt events histogram.
@@ -833,21 +815,6 @@ class AutofillMetrics {
   // |submission_source| event.
   static void LogUploadEvent(mojom::SubmissionSource submission_source,
                              bool was_sent);
-
-  // Logs the developer engagement ukm for the specified |url| and autofill
-  // fields in the form structure. |developer_engagement_metrics| is a bitmask
-  // of |AutofillMetrics::DeveloperEngagementMetric|. |is_for_credit_card| is
-  // true if the form is a credit card form. |form_types| is set of
-  // FormType recorded for the page. This will be stored as a bit vector
-  // in UKM.
-  static void LogDeveloperEngagementUkm(
-      ukm::UkmRecorder* ukm_recorder,
-      ukm::SourceId source_id,
-      const GURL& url,
-      bool is_for_credit_card,
-      DenseSet<FormTypeNameForLogging> form_types,
-      int developer_engagement_metrics,
-      FormSignature form_signature);
 
   // Converts form type to bit vector to store in UKM.
   static int64_t FormTypesToBitVector(

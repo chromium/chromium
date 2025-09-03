@@ -121,7 +121,6 @@ using PaymentsSigninState = AutofillMetrics::PaymentsSigninState;
 using AutofillStatus = FormInteractionsUkmLogger::AutofillStatus;
 
 using UkmCardUploadDecisionType = ukm::builders::Autofill_CardUploadDecision;
-using UkmDeveloperEngagementType = ukm::builders::Autofill_DeveloperEngagement;
 using UkmSuggestionsShownType = ukm::builders::Autofill_SuggestionsShown;
 using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
 using UkmTextFieldValueChangedType = ukm::builders::Autofill_TextFieldDidChange;
@@ -350,131 +349,6 @@ TEST_F(AutofillMetricsTest, EditedAutofilledFieldAtSubmission) {
   histogram_tester.ExpectTotalCount(
       "Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission2.Address",
       0);
-}
-
-// Verify that we correctly log metrics regarding developer engagement.
-TEST_F(AutofillMetricsTest, DeveloperEngagement) {
-  FormData form = CreateForm(
-      {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Last Name", "last-name", "",
-                           FormControlType::kInputText)});
-
-  // Ensure no metrics are logged when small form support is disabled (min
-  // number of fields enforced).
-  {
-    base::HistogramTester histogram_tester;
-    SeeForm(form);
-    test_api(autofill_client().GetAutofillDriverFactory())
-        .Reset(autofill_driver());
-    histogram_tester.ExpectTotalCount("Autofill.DeveloperEngagement", 0);
-  }
-
-  // Add another field to the form, so that it becomes fillable.
-  test_api(form).Append(
-      CreateTestFormField("Phone", "phone", "", FormControlType::kInputText));
-
-  // Expect the "form parsed without hints" metric to be logged.
-  {
-    base::HistogramTester histogram_tester;
-    SeeForm(form);
-    test_api(autofill_client().GetAutofillDriverFactory())
-        .Reset(autofill_driver());
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.DeveloperEngagement",
-        AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS, 1);
-  }
-
-  // Add some fields with an author-specified field type to the form.
-  // We need to add at least three fields, because a form must have at least
-  // three fillable fields to be considered to be autofillable; and if at least
-  // one field specifies an explicit type hint, we don't apply any of our usual
-  // local heuristics to detect field types in the rest of the form.
-  test_api(form).Append(CreateTestFormField(
-      "", "", "", FormControlType::kInputText, "given-name"));
-  test_api(form).Append(
-      CreateTestFormField("", "", "", FormControlType::kInputText, "email"));
-  test_api(form).Append(CreateTestFormField(
-      "", "", "", FormControlType::kInputText, "address-line1"));
-
-  // Expect the "form parsed with field type hints" metric to be logged.
-  {
-    base::HistogramTester histogram_tester;
-    SeeForm(form);
-    test_api(autofill_client().GetAutofillDriverFactory())
-        .Reset(autofill_driver());
-    histogram_tester.ExpectBucketCount(
-        "Autofill.DeveloperEngagement",
-        AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS, 1);
-  }
-}
-
-// Verify that we correctly log UKM for form parsed without type hints regarding
-// developer engagement.
-TEST_F(AutofillMetricsTest,
-       UkmDeveloperEngagement_LogFillableFormParsedWithoutTypeHints) {
-  FormData form = CreateForm(
-      {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Last Name", "last-name", "",
-                           FormControlType::kInputText)});
-
-  // Ensure no entries are logged when loading a non-fillable form.
-  {
-    SeeForm(form);
-    test_api(autofill_client().GetAutofillDriverFactory())
-        .Reset(autofill_driver());
-
-    EXPECT_EQ(0ul, test_ukm_recorder().entries_count());
-  }
-
-  // Add another field to the form, so that it becomes fillable.
-  test_api(form).Append(
-      CreateTestFormField("Phone", "phone", "", FormControlType::kInputText));
-
-  // Expect the "form parsed without field type hints" metric and the
-  // "form loaded" form interaction event to be logged.
-  {
-    SeeForm(form);
-    test_api(autofill_client().GetAutofillDriverFactory())
-        .Reset(autofill_driver());
-
-    VerifyDeveloperEngagementUkm(
-        &test_ukm_recorder(), form, /*is_for_credit_card=*/false,
-        {FormTypeNameForLogging::kAddressForm},
-        {AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS});
-  }
-}
-
-// Verify that we correctly log UKM for form parsed with type hints regarding
-// developer engagement.
-TEST_F(AutofillMetricsTest,
-       UkmDeveloperEngagement_LogFillableFormParsedWithTypeHints) {
-  // The latter three fields have an author-specified field type to the form.
-  // We need to add at least three fields, because a form must have at least
-  // three fillable fields to be considered to be autofillable; and if at least
-  // one field specifies an explicit type hint, we don't apply any of our usual
-  // local heuristics to detect field types in the rest of the form.
-  FormData form = CreateForm(
-      {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputText),
-       CreateTestFormField("Phone", "phone", "", FormControlType::kInputText),
-       CreateTestFormField("", "", "", FormControlType::kInputText,
-                           "given-name"),
-       CreateTestFormField("", "", "", FormControlType::kInputText, "email"),
-       CreateTestFormField("", "", "", FormControlType::kInputText,
-                           "address-line1")});
-
-  // Expect the "form parsed without field type hints" metric and the
-  // "form loaded" form interaction event to be logged.
-  {
-    SeeForm(form);
-    test_api(autofill_client().GetAutofillDriverFactory())
-        .Reset(autofill_driver());
-
-    VerifyDeveloperEngagementUkm(
-        &test_ukm_recorder(), form, /*is_for_credit_card=*/false,
-        {FormTypeNameForLogging::kAddressForm},
-        {AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS});
-  }
 }
 
 TEST_F(AutofillMetricsTest, LogStoredCreditCardMetrics) {
@@ -2580,37 +2454,6 @@ TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric) {
     EXPECT_EQ(1u, entry->metrics.size());
     test_ukm_recorder().ExpectEntryMetric(
         entry, UkmCardUploadDecisionType::kUploadDecisionName, upload_decision);
-  }
-}
-
-// Tests that logging DeveloperEngagement UKM works as expected.
-TEST_F(AutofillMetricsTest, RecordDeveloperEngagementMetric) {
-  int form_structure_metric = 1;
-  FormSignature form_signature(100);
-  autofill_driver_->set_url(GURL("https://www.google.com"));
-
-  AutofillMetrics::LogDeveloperEngagementUkm(
-      &test_ukm_recorder(), autofill_driver_->GetPageUkmSourceId(),
-      autofill_driver_->url(), true, {FormTypeNameForLogging::kCreditCardForm},
-      form_structure_metric, form_signature);
-  auto entries = test_ukm_recorder().GetEntriesByName(
-      UkmDeveloperEngagementType::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const ukm::mojom::UkmEntry* const entry : entries) {
-    test_ukm_recorder().ExpectEntrySourceHasUrl(entry, autofill_driver_->url());
-    EXPECT_EQ(4u, entry->metrics.size());
-    test_ukm_recorder().ExpectEntryMetric(
-        entry, UkmDeveloperEngagementType::kDeveloperEngagementName,
-        form_structure_metric);
-    test_ukm_recorder().ExpectEntryMetric(
-        entry, UkmDeveloperEngagementType::kIsForCreditCardName, true);
-    test_ukm_recorder().ExpectEntryMetric(
-        entry, UkmDeveloperEngagementType::kFormTypesName,
-        AutofillMetrics::FormTypesToBitVector(
-            {FormTypeNameForLogging::kCreditCardForm}));
-    test_ukm_recorder().ExpectEntryMetric(
-        entry, UkmDeveloperEngagementType::kFormSignatureName,
-        form_signature.value());
   }
 }
 

@@ -192,20 +192,6 @@ using payments::AmountExtractionManager;
 
 namespace {
 
-void LogDeveloperEngagementUkm(ukm::UkmRecorder* ukm_recorder,
-                               ukm::SourceId source_id,
-                               const FormStructure& form_structure) {
-  if (form_structure.developer_engagement_metrics()) {
-    AutofillMetrics::LogDeveloperEngagementUkm(
-        ukm_recorder, source_id, form_structure.main_frame_origin().GetURL(),
-        form_structure.IsCompleteCreditCardForm(
-            FormStructure::CreditCardFormCompleteness::kCompleteCreditCardForm),
-        autofill_metrics::GetFormTypesForLogging(form_structure),
-        form_structure.developer_engagement_metrics(),
-        form_structure.form_signature());
-  }
-}
-
 ValuePatternsMetric GetValuePattern(const std::u16string& value) {
   if (IsUPIVirtualPaymentAddress(value)) {
     return ValuePatternsMetric::kUpiVpa;
@@ -3133,10 +3119,6 @@ void BrowserAutofillManager::OnFormProcessed(
   if (data_util::ContainsPhone(data_util::DetermineGroups(form_structure))) {
     metrics_->has_observed_phone_number_field = true;
   }
-  // TODO(crbug.com/41405154): avoid logging developer engagement multiple
-  // times for a given form if it or other forms on the page are dynamic.
-  LogDeveloperEngagementUkm(client().GetUkmRecorder(),
-                            driver().GetPageUkmSourceId(), form_structure);
 
   for (const auto& field : form_structure) {
     if (field->html_type() == HtmlFieldType::kOneTimeCode) {

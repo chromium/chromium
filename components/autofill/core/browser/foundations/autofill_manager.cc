@@ -746,7 +746,6 @@ void AutofillManager::ParseFormsAsyncCommon(
                                          context.current_page_language,
                                          context.log_manager.get());
 
-          f.LogDeveloperEngagementMetric();
           self->LogCurrentFieldTypes(f);
           self->NotifyObservers(
               &Observer::OnFieldTypesDetermined, f.global_id(),

@@ -99,7 +99,6 @@ using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
 
 using UkmCardUploadDecisionType = ukm::builders::Autofill_CardUploadDecision;
-using UkmDeveloperEngagementType = ukm::builders::Autofill_DeveloperEngagement;
 using SaveCardPromptResult = autofill_metrics::SaveCardPromptResult;
 using SaveCreditCardOptions =
     payments::PaymentsAutofillClient::SaveCreditCardOptions;
@@ -482,18 +481,6 @@ class CreditCardSaveManagerTest : public testing::Test {
     FormSubmitted(form);
   }
 
-  void ExpectUniqueFillableFormParsedUkm() {
-    ukm::TestUkmRecorder* test_ukm_recorder = autofill_client_.GetUkmRecorder();
-    auto entries = test_ukm_recorder->GetEntriesByName(
-        UkmDeveloperEngagementType::kEntryName);
-    EXPECT_EQ(1u, entries.size());
-    for (const ukm::mojom::UkmEntry* const entry : entries) {
-      test_ukm_recorder->ExpectEntryMetric(
-          entry, UkmDeveloperEngagementType::kDeveloperEngagementName,
-          1 << AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS);
-    }
-  }
-
   void ExpectUniqueCardUploadDecision(
       const base::HistogramTester& histogram_tester,
       autofill_metrics::CardUploadDecision metric) {
@@ -517,13 +504,6 @@ class CreditCardSaveManagerTest : public testing::Test {
     ExpectMetric(UkmCardUploadDecisionType::kUploadDecisionName,
                  UkmCardUploadDecisionType::kEntryName, expected_metric_value,
                  1 /* expected_num_matching_entries */);
-  }
-
-  void ExpectFillableFormParsedUkm(int num_fillable_forms_parsed) {
-    ExpectMetric(UkmDeveloperEngagementType::kDeveloperEngagementName,
-                 UkmDeveloperEngagementType::kEntryName,
-                 1 << AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS,
-                 num_fillable_forms_parsed);
   }
 
   void ExpectMetric(const char* metric_name,
@@ -700,7 +680,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -708,7 +687,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -804,7 +782,6 @@ TEST_F(CreditCardSaveManagerTest, LocalCreditCard_WithNonFocusableField) {
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -1426,7 +1403,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcUnavailable) {
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -1434,7 +1410,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcUnavailable) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -2232,7 +2207,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ZipCodesConflict) {
   address_forms.push_back(address_form1);
   address_forms.push_back(address_form2);
   FormsSeen(address_forms);
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   ManuallyFillAddressForm("Jane", "Doe", "77401-8294", "US", &address_form1);
   FormSubmitted(address_form1);
@@ -2243,7 +2217,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ZipCodesConflict) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(3 /* num_fillable_forms_parsed */);
 
   // Edit the data and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5141,7 +5114,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadOfLocalCard) {
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -5149,7 +5121,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadOfLocalCard) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5183,7 +5154,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadOfNewCard) {
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -5191,7 +5161,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadOfNewCard) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5241,7 +5210,6 @@ TEST_F(CreditCardSaveManagerTest,
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -5249,7 +5217,6 @@ TEST_F(CreditCardSaveManagerTest,
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5421,7 +5388,6 @@ TEST_F(CreditCardSaveManagerTest,
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(1 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5465,7 +5431,6 @@ TEST_F(CreditCardSaveManagerTest,
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -5473,7 +5438,6 @@ TEST_F(CreditCardSaveManagerTest,
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5523,7 +5487,6 @@ TEST_F(CreditCardSaveManagerTest,
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(1 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5577,7 +5540,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesDisallowsSave) {
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -5585,7 +5547,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesDisallowsSave) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5639,7 +5600,6 @@ TEST_F(CreditCardSaveManagerTest,
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -5647,7 +5607,6 @@ TEST_F(CreditCardSaveManagerTest,
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   // Edit the credit card data without expiration month, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5701,7 +5660,6 @@ TEST_F(CreditCardSaveManagerTest,
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(1 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5745,7 +5703,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesStillAllowsSave) {
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -5753,7 +5710,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesStillAllowsSave) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5800,7 +5756,6 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_ClearStrikesOnAdd) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(1 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5833,7 +5788,6 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_WithCvc_PrefOn) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(1 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5868,7 +5822,6 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_WithCvc_PrefOff) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(1 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5906,7 +5859,6 @@ TEST_F(CreditCardSaveManagerTest,
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(1 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5945,7 +5897,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ClearStrikesOnAdd) {
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -5953,7 +5904,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ClearStrikesOnAdd) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -5989,7 +5939,6 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_NumStrikesLoggedOnAdd) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(1 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
@@ -6028,7 +5977,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NumStrikesLoggedOnAdd) {
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen(std::vector<FormData>(1, address_form));
-  ExpectUniqueFillableFormParsedUkm();
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form);
   FormSubmitted(address_form);
@@ -6036,7 +5984,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NumStrikesLoggedOnAdd) {
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
   FormsSeen(std::vector<FormData>(1, credit_card_form));
-  ExpectFillableFormParsedUkm(2 /* num_fillable_forms_parsed */);
 
   // Edit the data, and submit.
   test_api(credit_card_form).field(0).set_value(u"Jane Doe");
