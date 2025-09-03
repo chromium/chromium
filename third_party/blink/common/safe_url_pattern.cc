@@ -10,6 +10,14 @@ namespace blink {
 
 SafeUrlPattern::SafeUrlPattern() = default;
 
+SafeUrlPattern::SafeUrlPattern(const SafeUrlPattern&) = default;
+
+SafeUrlPattern& SafeUrlPattern::operator=(const SafeUrlPattern&) = default;
+
+SafeUrlPattern::SafeUrlPattern(SafeUrlPattern&&) = default;
+
+SafeUrlPattern& SafeUrlPattern::operator=(SafeUrlPattern&&) = default;
+
 SafeUrlPattern::~SafeUrlPattern() = default;
 
 bool operator==(const SafeUrlPattern& left, const SafeUrlPattern& right) {

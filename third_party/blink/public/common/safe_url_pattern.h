@@ -32,6 +32,10 @@ struct BLINK_COMMON_EXPORT SafeUrlPatternOptions {
 // purpose.
 struct BLINK_COMMON_EXPORT SafeUrlPattern {
   SafeUrlPattern();
+  SafeUrlPattern(const SafeUrlPattern&);
+  SafeUrlPattern& operator=(const SafeUrlPattern&);
+  SafeUrlPattern(SafeUrlPattern&&);
+  SafeUrlPattern& operator=(SafeUrlPattern&&);
   ~SafeUrlPattern();
 
   // The list of members has to stay in sync with the list in the equality
