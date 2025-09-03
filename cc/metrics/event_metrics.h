@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -361,6 +362,34 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
   bool did_scroll_ = false;
 };
 
+// Reason why Chrome's scroll jank v4 metric marked a scroll update as janky. A
+// single scroll update can be janky for more than one reason. See
+// https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
+// for more details.
+// LINT.IfChange(JankReason)
+enum class JankReason {
+  // Chrome's input→frame delivery slowed down to the point that it missed one
+  // or more VSyncs.
+  kMissedVsyncDueToDeceleratingInputFrameDelivery,
+  kMinValue = kMissedVsyncDueToDeceleratingInputFrameDelivery,
+
+  // Chrome missed one or more VSyncs in the middle of a fast regular scroll.
+  kMissedVsyncDuringFastScroll,
+
+  // Chrome missed one or more VSyncs during the transition from a fast regular
+  // scroll to a fling.
+  kMissedVsyncAtStartOfFling,
+
+  // Chrome missed one or more VSyncs in the middle of a fling.
+  kMissedVsyncDuringFling,
+  kMaxValue = kMissedVsyncDuringFling,
+};
+// LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:JankReason,//tools/metrics/histograms/metadata/event/histograms.xml:ScrollJankReasonV4)
+
+template <typename T>
+using JankReasonArray =
+    std::array<T, static_cast<size_t>(JankReason::kMaxValue) + 1>;
+
 class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
  public:
   // Determines whether a scroll-update event is the first one in a gesture
@@ -459,11 +488,59 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
     return is_janky_scrolled_frame_;
   }
 
-  void set_is_janky_scrolled_frame_v3(std::optional<bool> is_janky) {
-    is_janky_scrolled_frame_v3_ = is_janky;
+  // Result of the Scroll Jank V4 Metric for a scroll update. See
+  // https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
+  // and the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow histogram's
+  // documentation for more information.
+  struct ScrollJankV4Result {
+    // Number of VSyncs that that Chrome missed before presenting the scroll
+    // update for each reason. If at least one value is greater than zero, the
+    // frame was delayed and thus the scroll update is considered janky.
+    JankReasonArray<int> missed_vsyncs_per_reason;
+
+    // The absolute total raw (unpredicted) delta of all scroll updates
+    // included in the frame in which the scroll update was presented (in
+    // pixels).
+    float abs_total_raw_delta_pixels;
+
+    // The maximum absolute raw (unpredicted) delta out of all inertial (fling)
+    // scroll updates included in the frame in which the scroll update was
+    // presented (in pixels). Zero if there were no inertial scroll updates in
+    // the frame.
+    float max_abs_inertial_raw_delta_pixels;
+
+    // How many VSyncs were between (A) the frame in which the scroll update was
+    // presented and (B) the previous frame. If this value is greater than one,
+    // then Chrome potentially missed one or more VSyncs (i.e. might have been
+    // able to present this scroll update earlier). Empty if this scroll update
+    // was presented in the first scroll update of a scroll.
+    std::optional<int> vsyncs_since_previous_frame;
+
+    // The running delivery cut-off based on frames preceding the frame in which
+    // the scroll update was presented. See
+    // `ScrollJankDroppedFrameTracker::running_delivery_cutoff_` for more
+    // information. Empty if this scroll update was presented in the first
+    // scroll update of a scroll.
+    std::optional<base::TimeDelta> running_delivery_cutoff;
+
+    // The running delivery cut-off adjusted for the frame that the scroll
+    // update was presented in. See
+    // `ScrollJankDroppedFrameTracker::CalculateMissedVsyncsPerReasonV4()` for
+    // more information. Empty if this scroll update was presented in the first
+    // scroll update of a scroll or if `vsyncs_since_previous_frame` is one.
+    std::optional<base::TimeDelta> adjusted_delivery_cutoff;
+
+    // The delivery cut-off of the frame that the scroll update was presented
+    // in. See `ScrollJankDroppedFrameTracker::ReportLatestPresentationDataV4()`
+    // for more information.
+    base::TimeDelta current_delivery_cutoff;
+  };
+
+  void set_scroll_jank_v4(std::optional<ScrollJankV4Result> result) {
+    scroll_jank_v4_ = std::move(result);
   }
-  std::optional<bool> is_janky_scrolled_frame_v3() const {
-    return is_janky_scrolled_frame_v3_;
+  const std::optional<ScrollJankV4Result>& scroll_jank_v4() const {
+    return scroll_jank_v4_;
   }
 
  protected:
@@ -499,7 +576,7 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
   int32_t coalesced_event_count_ = 1;
 
   std::optional<bool> is_janky_scrolled_frame_ = std::nullopt;
-  std::optional<bool> is_janky_scrolled_frame_v3_ = std::nullopt;
+  std::optional<ScrollJankV4Result> scroll_jank_v4_ = std::nullopt;
 };
 
 class CC_EXPORT PinchEventMetrics : public EventMetrics {
