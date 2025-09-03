@@ -10,7 +10,11 @@
   dp.Runtime.evaluate({expression: `fetch('${url}').then(r => r.text())`});
 
   const requestWillBeSent = (await dp.Network.onceRequestWillBeSent()).params;
-  await dp.Network.onceLoadingFinished();
+  const requestFinishedLoading = (await dp.Network.onceLoadingFinished()).params;
+  if (requestWillBeSent.requestId !== requestFinishedLoading.requestId) {
+    testRunner.log('Request ID mismatch');
+  }
+  testRunner.log(requestFinishedLoading);
   const {result} = await dp.Network.getResponseBody({requestId: requestWillBeSent.requestId});
 
   testRunner.log(`Body is base64 encoded: ${result.base64Encoded}`);
