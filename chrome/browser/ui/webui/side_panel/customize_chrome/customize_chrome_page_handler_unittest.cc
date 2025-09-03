@@ -89,6 +89,7 @@ using testing::_;
 using testing::An;
 using testing::DoAll;
 using testing::Invoke;
+using testing::Mock;
 using testing::Return;
 using testing::ReturnRef;
 using testing::SaveArg;
@@ -498,7 +499,15 @@ class CustomizeChromePageHandlerSetThemeTest
     : public CustomizeChromePageHandlerTest,
       public ::testing::WithParamInterface<ThemeUpdateSource> {
  public:
-  void UpdateTheme() {
+  side_panel::mojom::ThemePtr UpdateTheme() {
+    // Flush any existing updates so the flush below only sees what results from
+    // the update below.
+    mock_page_.FlushForTesting();
+
+    side_panel::mojom::ThemePtr theme;
+    EXPECT_CALL(mock_page_, SetTheme).Times(1).WillOnce(MoveArg(&theme));
+
+    // Update.
     switch (GetParam()) {
       case ThemeUpdateSource::kMojo:
         handler().UpdateTheme();
@@ -514,12 +523,15 @@ class CustomizeChromePageHandlerSetThemeTest
             .OnCustomBackgroundImageUpdated();
         break;
     }
+    mock_page_.FlushForTesting();
+
+    // Should have seen exactly one attempt to set the theme.
+    Mock::VerifyAndClearExpectations(&mock_page_);
+    return theme;
   }
 };
 
 TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
-  side_panel::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_page_, SetTheme).Times(1).WillOnce(MoveArg<0>(&theme));
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.custom_background_attribution_line_1 = "foo line";
@@ -541,8 +553,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
       .WillByDefault(Return(true));
   ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
 
-  UpdateTheme();
-  mock_page_.FlushForTesting();
+  side_panel::mojom::ThemePtr theme = UpdateTheme();
 
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
@@ -561,8 +572,6 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
 }
 
 TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThemeWithDailyRefresh) {
-  side_panel::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_page_, SetTheme).Times(1).WillOnce(MoveArg(&theme));
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.daily_refresh_enabled = true;
@@ -570,8 +579,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThemeWithDailyRefresh) {
   ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
       .WillByDefault(Return(std::make_optional(custom_background)));
 
-  UpdateTheme();
-  mock_page_.FlushForTesting();
+  side_panel::mojom::ThemePtr theme = UpdateTheme();
 
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
@@ -580,8 +588,6 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThemeWithDailyRefresh) {
 }
 
 TEST_P(CustomizeChromePageHandlerSetThemeTest, SetUploadedImage) {
-  side_panel::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_page_, SetTheme).Times(1).WillOnce(MoveArg<0>(&theme));
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
   custom_background.is_uploaded_image = true;
@@ -592,8 +598,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetUploadedImage) {
   ON_CALL(mock_theme_service(), UsingSystemTheme())
       .WillByDefault(Return(false));
 
-  UpdateTheme();
-  mock_page_.FlushForTesting();
+  side_panel::mojom::ThemePtr theme = UpdateTheme();
 
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
@@ -602,8 +607,6 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetUploadedImage) {
 }
 
 TEST_P(CustomizeChromePageHandlerSetThemeTest, SetWallpaperSearchImage) {
-  side_panel::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_page_, SetTheme).Times(1).WillOnce(MoveArg<0>(&theme));
   CustomBackground custom_background;
   base::Token token = base::Token::CreateRandom();
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
@@ -616,8 +619,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetWallpaperSearchImage) {
   ON_CALL(mock_theme_service(), UsingSystemTheme())
       .WillByDefault(Return(false));
 
-  UpdateTheme();
-  mock_page_.FlushForTesting();
+  side_panel::mojom::ThemePtr theme = UpdateTheme();
 
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
@@ -627,8 +629,6 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetWallpaperSearchImage) {
 }
 
 TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThirdPartyTheme) {
-  side_panel::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_page_, SetTheme).Times(1).WillOnce(MoveArg<0>(&theme));
   CustomBackground custom_background;
   custom_background.custom_background_url = GURL("https://foo.com/img.png");
 
@@ -653,8 +653,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThirdPartyTheme) {
       .WillByDefault(Return(false));
   ON_CALL(mock_theme_service(), GetThemeID()).WillByDefault(Return("foo"));
 
-  UpdateTheme();
-  mock_page_.FlushForTesting();
+  side_panel::mojom::ThemePtr theme = UpdateTheme();
 
   ASSERT_TRUE(theme);
   ASSERT_TRUE(theme->background_image);
@@ -713,7 +712,7 @@ TEST_F(CustomizeChromePageHandlerTest, GetBackgroundImages) {
   std::vector<side_panel::mojom::CollectionImagePtr> images;
   base::MockCallback<CustomizeChromePageHandler::GetBackgroundImagesCallback>
       callback;
-  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(MoveArg<0>(&images));
+  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(MoveArg(&images));
   EXPECT_CALL(mock_ntp_background_service(), FetchCollectionImageInfo).Times(1);
   handler().GetBackgroundImages("test_id", callback.Get());
   ntp_background_service_observer().OnCollectionImagesAvailable();
