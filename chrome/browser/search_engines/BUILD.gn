@@ -19,10 +19,8 @@ source_set("search_engines") {
     "chrome_template_url_service_client.cc",
     "template_url_fetcher_factory.cc",
     "template_url_prepopulate_data_resolver_factory.cc",
+    "template_url_service_factory.cc",
     "ui_thread_search_terms_data.cc",
-
-    # TODO(crbug.com/343754417): Add 'template_url_service_factory.cc' to this
-    # module.
   ]
 
   public_deps = [
@@ -35,11 +33,14 @@ source_set("search_engines") {
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser/google",
+    "//chrome/browser/history",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/search_engine_choice",
+    "//chrome/browser/webdata_services",
     "//chrome/common:channel_info",
     "//chrome/common:non_code_constants",
     "//components/google/core/common",
+    "//components/pref_registry",
     "//components/regional_capabilities",
     "//components/version_info",
     "//content/public/browser",
@@ -47,6 +48,10 @@ source_set("search_engines") {
     "//ui/base",
     "//url",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/profiles" ]
+  }
 
   if (is_android) {
     public += [ "ui_thread_search_terms_data_android.h" ]

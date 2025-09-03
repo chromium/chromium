@@ -1355,7 +1355,6 @@ static_library("browser") {
     "resources_util.h",
     "safe_browsing/metrics/safe_browsing_metrics_provider.cc",
     "safe_browsing/metrics/safe_browsing_metrics_provider.h",
-    "search_engines/template_url_service_factory.cc",
     "search_provider_logos/logo_service_factory.cc",
     "search_provider_logos/logo_service_factory.h",
     "security_events/security_event_recorder.h",
@@ -1783,10 +1782,16 @@ static_library("browser") {
     # gets modularized.
     "//chrome/browser/ui/serial:impl",
 
-    # TODO(crbug.com/40110173): Eliminate usages of browser.h from Media Router.
+    # TODO(crbug.com/40110173): Remove this circular dependency whe the following headers get
+    # componentized:
+    # - c/b/profile_manager.h
+    # - c/b/media/cast_mirroring_service_host_factory.h
+    # - c/b/media/cast_mirroring_service_host.h
+    # - c/b/media/mirroring_service_host.h
     "//chrome/browser/media/router",
 
-    # TODO(crbug.com/419304389): Remove once c/b/profile get fully modularized.
+    # TODO(crbug.com/419304389): Remove once c/b/profile_manager.h and c/b/browser_features.h
+    # get fully modularized.
     "//chrome/browser/profiles/keep_alive:impl",
 
     # TODO(crbug.com/344921703): Remove circular dependencies.
