@@ -386,6 +386,10 @@ void OmniboxViewViews::InstallPlaceholderText() {
     // also true.
     SetPlaceholderText(
         l10n_util::GetStringUTF16(IDS_OMNIBOX_AIM_PLACEHOLDER_TEXT));
+    // Override the AIM accessibility placeholder text, so that the tab icon is
+    // not announced.
+    GetViewAccessibility().SetPlaceholder(
+        l10n_util::GetStringUTF8(IDS_ACC_AI_MODE_PLACEHOLDER_TEXT));
   } else if (const auto* default_provider = controller()
                                                 ->client()
                                                 ->GetTemplateURLService()
@@ -1028,7 +1032,11 @@ void OmniboxViewViews::ClearAccessibilityLabel() {
 void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
                                              const AutocompleteMatch& match,
                                              bool notify_text_changed) {
-  if (model()->GetPopupSelection().line == OmniboxPopupSelection::kNoMatch) {
+  if (model()->GetPopupSelection().state ==
+          OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM) {
+    friendly_suggestion_text_ =
+        model()->GetPopupAccessibilityLabelForAimButton();
+  } else if (model()->GetPopupSelection().line == OmniboxPopupSelection::kNoMatch) {
     // If nothing is selected in the popup, we are in the no-default-match edge
     // case, and |match| is a synthetically generated match. In that case,
     // bypass OmniboxPopupModel and get the label from our synthetic |match|.

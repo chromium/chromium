@@ -462,6 +462,13 @@
   <message name="IDS_ACC_REMOVE_SUGGESTION_BUTTON" desc="Announcement when remove suggestion button is focused.">
     Remove Suggestion button, press Enter to remove this suggestion
   </message>
+  <!-- Accessibility labels for the omnibox AI Mode button. -->
+  <message name="IDS_ACC_AI_MODE_PLACEHOLDER_TEXT" desc="Announcement when omnibox text field is empty and AI Mode is available.">
+    Press tab then enter to ask AI Mode
+  </message>
+  <message name="IDS_ACC_AI_MODE_BUTTON_FOCUSED" desc="Announcement when AI Mode button is focused.">
+    AI Mode button, press Enter to ask AI Mode
+  </message>
 
   <!-- Accessibility announcements made for the Chrome tip IPH suggestions sometimes shown at the bottom of the Omnibox -->
   <message name="IDS_ACC_CHROME_TIP" desc="Announcement that is read after the last suggestion when the IPH row is present in the Omnibox.">
