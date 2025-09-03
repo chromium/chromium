@@ -96,10 +96,10 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwBrowserContext_jni.h"
-#include "url/gurl.h"
 
 using base::FilePath;
 using content::BrowserThread;
@@ -749,12 +749,65 @@ std::vector<std::string> AwBrowserContext::SetOriginMatchedHeader(
   return {};
 }
 
+std::vector<std::string> AwBrowserContext::AddOriginMatchedHeader(
+    JNIEnv* env,
+    std::string& header_name,
+    std::string& header_value,
+    const std::vector<std::string>& rules) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  origin_matcher::OriginMatcher matcher;
+  std::vector<std::string> rejected;
+  for (const std::string& rule : rules) {
+    if (!matcher.AddRuleFromString(rule)) {
+      rejected.emplace_back(rule);
+    }
+  }
+
+  if (!rejected.empty()) {
+    return rejected;
+  }
+
+  auto it = std::ranges::find(origin_matched_headers_,
+                              std::tie(header_name, header_value),
+                              &AwOriginMatchedHeader::as_pair);
+  if (it == origin_matched_headers_.end()) {
+    origin_matched_headers_.emplace_back(
+        base::MakeRefCounted<AwOriginMatchedHeader>(std::move(header_name),
+                                                    std::move(header_value),
+                                                    std::move(matcher)));
+  } else {
+    *it = (*it)->MergedWithMatcher(std::move(matcher));
+  }
+  return {};
+}
+
 bool AwBrowserContext::HasOriginMatchedHeader(JNIEnv* env,
                                               const std::string& header_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return std::ranges::find(origin_matched_headers_, header_name,
                            &AwOriginMatchedHeader::name) !=
          origin_matched_headers_.end();
+}
+
+std::vector<scoped_refptr<AwOriginMatchedHeader>>
+AwBrowserContext::FindOriginMatchedHeaders(
+    JNIEnv* env,
+    std::optional<std::string> header_name,
+    std::optional<std::string> header_value) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!header_name) {
+    return origin_matched_headers_;
+  }
+  std::vector<scoped_refptr<AwOriginMatchedHeader>> matches;
+  std::ranges::copy_if(
+      origin_matched_headers_, std::back_inserter(matches),
+      [&header_name,
+       &header_value](const scoped_refptr<AwOriginMatchedHeader>& header) {
+        return header->name() == *header_name &&
+               (!header_value || header->value() == *header_value);
+      });
+  return matches;
 }
 
 void AwBrowserContext::ClearOriginMatchedHeader(

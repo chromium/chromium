@@ -193,7 +193,12 @@ class AwBrowserContext : public content::BrowserContext,
   void SetExtraHeadersForUrl(const GURL& url, const std::string& headers);
 
   // Set a static header name-value pair to be sent to origins that match the
-  // `origin_rules` patterns. The values of `header_name` and `header_value`
+  // `origin_rules` patterns.
+  //
+  // This method exist for legacy reasons, and will overwrite the first mapping
+  // of `header_name`. It should not be used alongside `AddOriginMatchedHeader`.
+  //
+  // The values of `header_name` and `header_value`
   // must pass `HttpUtil::IsValidHeaderName()` and
   // `HttpUtil::IsValidHeaderValue()` respectively. This check is being enforced
   // in Java by the WebView code.
@@ -203,7 +208,35 @@ class AwBrowserContext : public content::BrowserContext,
       std::string& header_value,
       const std::vector<std::string>& origin_rules);
 
+  // Set a static header name-value pair to be sent to origins that match the
+  // `origin_rules` patterns.
+  //
+  // If the (header_name, header_value) pair already exists, then the provided
+  // `origin_rules` will be merged with the existing origin rules.
+  //
+  // The values of `header_name` and `header_value`
+  // must pass `HttpUtil::IsValidHeaderName()` and
+  // `HttpUtil::IsValidHeaderValue()` respectively. This check is being enforced
+  // in Java by the WebView code.
+  std::vector<std::string> AddOriginMatchedHeader(
+      JNIEnv* env,
+      std::string& header_name,
+      std::string& header_value,
+      const std::vector<std::string>& origin_rules);
+
   bool HasOriginMatchedHeader(JNIEnv* env, const std::string& header_name);
+
+  // Finds all `AwOriginMatchedHeader`s that match the `header_name` and
+  // `header_value`.
+  //
+  // If `header_name` is std::nullopt, it will return all values.
+  // If `header_name` is provided and `header_value` is std::nullopt, it will
+  // return all values where `header_name` matches. If both values are provided,
+  // it will return values where both match.
+  std::vector<scoped_refptr<AwOriginMatchedHeader>> FindOriginMatchedHeaders(
+      JNIEnv* env,
+      std::optional<std::string> header_name,
+      std::optional<std::string> header_value);
 
   void ClearOriginMatchedHeader(JNIEnv* env, const std::string& header_name);
 

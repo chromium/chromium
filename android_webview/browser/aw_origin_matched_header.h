@@ -5,8 +5,13 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_ORIGIN_MATCHED_HEADER_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_ORIGIN_MATCHED_HEADER_H_
 
+#include "base/android/scoped_java_ref.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/origin_matcher/origin_matcher.h"
+#include "third_party/jni_zero/jni_zero.h"
+#include "url/origin.h"
 
 namespace android_webview {
 
@@ -28,7 +33,28 @@ class AwOriginMatchedHeader
 
   std::string_view name() const { return name_; }
   std::string_view value() const { return value_; }
+
+  std::tuple<const std::string&, const std::string&> as_pair() const {
+    return std::tie(name_, value_);
+  }
+
   bool MatchesOrigin(const url::Origin& origin) const;
+
+  // Returns a new AwOriginMatchedHeader which has the combined ruleset of
+  // `this` and the `other` OriginMatcher.
+  scoped_refptr<AwOriginMatchedHeader> MergedWithMatcher(
+      origin_matcher::OriginMatcher&& other) const;
+
+  jni_zero::ScopedJavaLocalRef<jobject> ToJavaObject(JNIEnv* env);
+
+  // Provide a map of header name-value pairs that match the given `origin`.
+  // This function returns the header values as std::string because it may
+  // combine multiple values into a single header.
+  // Header values will be separated with a comma character.
+  static base::flat_map<std::string_view, std::string>
+  GetCombinedMatchingHeaders(
+      base::span<scoped_refptr<AwOriginMatchedHeader>> headers,
+      const url::Origin& origin);
 
  private:
   friend class base::RefCountedThreadSafe<AwOriginMatchedHeader>;
@@ -41,5 +67,14 @@ class AwOriginMatchedHeader
 };
 
 }  // namespace android_webview
+
+namespace jni_zero {
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    const scoped_refptr<android_webview::AwOriginMatchedHeader>& header) {
+  return header->ToJavaObject(env);
+}
+}  // namespace jni_zero
 
 #endif  // ANDROID_WEBVIEW_BROWSER_AW_ORIGIN_MATCHED_HEADER_H_

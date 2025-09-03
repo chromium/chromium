@@ -364,7 +364,7 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     public void setOriginMatchedHeader(
-            @NonNull String headerName, String headerValue, @NonNull Set<String> rules) {
+            @NonNull String headerName, @NonNull String headerValue, @NonNull Set<String> rules) {
         ThreadUtils.assertOnUiThread();
         if (headerName.isBlank()) {
             throw new IllegalArgumentException("Blank HTTP header names are not allowed.");
@@ -385,6 +385,39 @@ public class AwBrowserContext implements BrowserContextHandle {
             throw new IllegalArgumentException(
                     "Invalid origin patterns: " + String.join("; ", rejected));
         }
+    }
+
+    public void addOriginMatchedHeader(
+            @NonNull String headerName, @NonNull String headerValue, @NonNull Set<String> rules) {
+        ThreadUtils.assertOnUiThread();
+        if (headerName.isBlank()) {
+            throw new IllegalArgumentException("Blank HTTP header names are not allowed.");
+        }
+        if (!AwBrowserContextJni.get().isValidHttpHeaderName(headerName)) {
+            throw new IllegalArgumentException("Invalid HTTP header name: " + headerName);
+        }
+        if (!AwBrowserContextJni.get().isValidHttpHeaderValue(headerValue)) {
+            throw new IllegalArgumentException("Invalid HTTP header value: " + headerValue);
+        }
+
+        List<String> rejected =
+                AwBrowserContextJni.get()
+                        .addOriginMatchedHeader(
+                                mNativeAwBrowserContext, headerName, headerValue, rules);
+
+        if (!rejected.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Invalid origin patterns: " + String.join("; ", rejected));
+        }
+    }
+
+    public List<AwOriginMatchedHeader> findOriginMatchedHeaders(
+            @Nullable String name, @Nullable String value) {
+        if (value != null && name == null) {
+            throw new IllegalArgumentException("Name must be provided if value is provided");
+        }
+        return AwBrowserContextJni.get()
+                .findOriginMatchedHeaders(mNativeAwBrowserContext, name, value);
     }
 
     public boolean hasOriginMatchedHeader(@NonNull String headerName) {
@@ -524,8 +557,21 @@ public class AwBrowserContext implements BrowserContextHandle {
                 @JniType("std::string") @NonNull String headerValue,
                 @JniType("std::vector<std::string>") @NonNull Set<String> rules);
 
+        @JniType("std::vector<std::string>")
+        List<String> addOriginMatchedHeader(
+                long nativeAwBrowserContext,
+                @JniType("std::string") @NonNull String headerName,
+                @JniType("std::string") @NonNull String headerValue,
+                @JniType("std::vector<std::string>") @NonNull Set<String> rules);
+
         boolean hasOriginMatchedHeader(
                 long nativeAwBrowserContext, @JniType("std::string") @NonNull String headerName);
+
+        @JniType("std::vector<scoped_refptr<android_webview::AwOriginMatchedHeader>>")
+        List<AwOriginMatchedHeader> findOriginMatchedHeaders(
+                long nativeAwBrowserContext,
+                @Nullable @JniType("std::optional<std::string>") String name,
+                @Nullable @JniType("std::optional<std::string>") String value);
 
         void clearOriginMatchedHeader(
                 long nativeAwBrowserContext, @JniType("std::string") String headerName);

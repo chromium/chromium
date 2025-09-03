@@ -589,23 +589,21 @@ void InterceptedRequest::ApplyOriginMatchedHeaders(
 
   attached_origin_matched_headers_.clear();
 
-  for (const auto& matched_header : origin_matched_headers_) {
-    if (matched_header->MatchesOrigin(request_origin)) {
-      // TODO(crbug.com/423581920): Follow up to determine what the best merging
-      // strategy is. The current strategy is to only attach if there is no
-      // collision, which is least likely to break existing web pages.
-      bool should_attach = !request_.headers.HasHeader(matched_header->name());
-      base::UmaHistogramBoolean(
-          "Android.WebView.AndroidX.Profile.ExtraHeaderAttached",
-          should_attach);
-      if (should_attach) {
-        request_.headers.SetHeader(matched_header->name(),
-                                   matched_header->value());
-        attached_origin_matched_headers_.emplace_back(matched_header->name());
-        if (redirect_headers_to_modify) {
-          redirect_headers_to_modify->SetHeader(matched_header->name(),
-                                                matched_header->value());
-        }
+  for (const auto& matched_header :
+       AwOriginMatchedHeader::GetCombinedMatchingHeaders(
+           origin_matched_headers_, request_origin)) {
+    // TODO(crbug.com/423581920): Follow up to determine what the best merging
+    // strategy is. The current strategy is to only attach if there is no
+    // collision, which is least likely to break existing web pages.
+    bool should_attach = !request_.headers.HasHeader(matched_header.first);
+    base::UmaHistogramBoolean(
+        "Android.WebView.AndroidX.Profile.ExtraHeaderAttached", should_attach);
+    if (should_attach) {
+      request_.headers.SetHeader(matched_header.first, matched_header.second);
+      attached_origin_matched_headers_.emplace_back(matched_header.first);
+      if (redirect_headers_to_modify) {
+        redirect_headers_to_modify->SetHeader(matched_header.first,
+                                              matched_header.second);
       }
     }
   }
