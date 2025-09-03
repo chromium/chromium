@@ -66,11 +66,10 @@ class IdHandlerInterface {
   IdHandlerInterface() = default;
   virtual ~IdHandlerInterface() = default;
 
-  // Makes some ids at or above id_offset.
-  // TODO(crbug.com/439823997): Remove `id_offset` it's not needed anymore.
-  virtual void MakeIds(
-      GLES2Implementation* gl_impl,
-      GLuint id_offset, GLsizei n, GLuint* ids) = 0;
+  // Generates some ids.
+  virtual void MakeIds(GLES2Implementation* gl_impl,
+                       GLsizei n,
+                       GLuint* ids) = 0;
 
   // Frees some ids.
   virtual bool FreeIds(

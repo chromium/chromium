@@ -40,7 +40,6 @@ class StrictIdHandler : public IdHandlerInterface {
 
   // Overridden from IdHandler.
   void MakeIds(GLES2Implementation* gl_impl,
-               GLuint /* id_offset */,
                GLsizei n,
                GLuint* ids) override {
     base::AutoLock auto_lock(lock_);
@@ -192,12 +191,11 @@ class NonReusedIdHandler : public IdHandlerInterface {
 
   // Overridden from IdHandlerInterface.
   void MakeIds(GLES2Implementation* /* gl_impl */,
-               GLuint id_offset,
                GLsizei n,
                GLuint* ids) override {
     base::AutoLock auto_lock(lock_);
     for (GLsizei ii = 0; ii < n; ++ii) {
-      ids[ii] = ++last_id_ + id_offset;
+      ids[ii] = ++last_id_;
     }
   }
 

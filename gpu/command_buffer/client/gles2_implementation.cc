@@ -6712,7 +6712,7 @@ GLuint GLES2Implementation::CreateAndTexStorage2DSharedImageCHROMIUM(
   DCHECK(mailbox.Verify()) << "CreateAndTexStorage2DSharedImageCHROMIUM was "
                               "passed an invalid mailbox.";
   GLuint client_id;
-  GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, 0, 1, &client_id);
+  GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, 1, &client_id);
   helper_->CreateAndTexStorage2DSharedImageINTERNALImmediate(client_id,
                                                              mailbox_data);
   CheckGLError();
