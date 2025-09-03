@@ -725,7 +725,15 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_GetManagedUiWebUIIconEnterprise) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUIIconSupervised) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetManagedUiWebUIIconSupervised \
+  DISABLED_GetManagedUiWebUIIconSupervised
+#else
+#define MAYBE_GetManagedUiWebUIIconSupervised GetManagedUiWebUIIconSupervised
+#endif
+IN_PROC_BROWSER_TEST_F(ManagedUiTest, MAYBE_GetManagedUiWebUIIconSupervised) {
   // Simulate a supervised profile.
   TestingProfile::Builder builder;
   builder.SetIsSupervisedProfile();
