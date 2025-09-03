@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -18,6 +19,8 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <linux/kdev_t.h>
+#include <linux/magic.h>
+#include <sys/vfs.h>
 #endif
 
 namespace base {
@@ -42,6 +45,25 @@ std::optional<DriveInfo> GetFileDriveInfo(const FilePath& file_path) {
   int error = File::Fstat(file.GetPlatformFile(), &path_stat);
   if (error < 0) {
     return std::nullopt;
+  }
+
+  struct statfs fs_stat;
+  error = fstatfs(file.GetPlatformFile(), &fs_stat);
+  if (error < 0) {
+    return std::nullopt;
+  }
+
+  // tmpfs needs a special case: it is not a block device so it won't appear in
+  // /sys/dev/block. Fortunately all tmpfs have the same behavior so fill
+  // hardcoded values here and bail out.
+  if (fs_stat.f_type == TMPFS_MAGIC) {
+    drive_info.has_seek_penalty = false;
+    // This doesn't have a precise definition but in general unmounting a tmpfs
+    // destroys its contents, so a specific filesystem shouldn't be considered
+    // removable and then re-mountable afterwards.
+    drive_info.is_removable = false;
+    drive_info.size_bytes = base::ClampMul(fs_stat.f_bsize, fs_stat.f_blocks);
+    return drive_info;
   }
 
   std::string rotational_path = StringPrintf(
