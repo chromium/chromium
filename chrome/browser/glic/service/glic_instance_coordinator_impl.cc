@@ -88,15 +88,7 @@ void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
     ToggleFloaty();
     return;
   }
-  if (auto* instance = GetAttachedInstanceForBrowser(browser)) {
-    instance->Toggle();
-    return;
-  }
-  auto new_instance =
-      std::make_unique<GlicInstance>(browser, weak_ptr_factory_.GetWeakPtr());
-  new_instance->SetEmbedderType(GlicInstance::EmbedderType::kSidePanel);
-  new_instance->Show();
-  attached_instances_.push_back(std::move(new_instance));
+  ToggleSidePanel(browser);
 }
 
 bool GlicInstanceCoordinatorImpl::ActivateBrowser() {
@@ -354,14 +346,30 @@ void GlicInstanceCoordinatorImpl::DetachInstance(GlicInstance* instance) {
   floating_instance_->Show();
 }
 
-void GlicInstanceCoordinatorImpl::ShowAttached(BrowserWindowInterface* bwi) {
-  NOTIMPLEMENTED();
-}
-void GlicInstanceCoordinatorImpl::ShowDetached() {
-  NOTIMPLEMENTED();
-}
 void GlicInstanceCoordinatorImpl::ToggleFloaty() {
-  NOTIMPLEMENTED();
+  if (floating_instance_) {
+    ReattachFloatingInstance();
+    return;
+  }
+
+  // Create a new floating instance since there are no instances to detach.
+  floating_instance_ = std::make_unique<GlicInstance>(
+      /*bwi=*/nullptr, weak_ptr_factory_.GetWeakPtr());
+  floating_instance_->SetEmbedderType(GlicInstance::EmbedderType::kFloating);
+  floating_instance_->Show();
+}
+
+void GlicInstanceCoordinatorImpl::ToggleSidePanel(
+    BrowserWindowInterface* browser) {
+  if (auto* instance = GetAttachedInstanceForBrowser(browser)) {
+    instance->Toggle();
+    return;
+  }
+  auto new_instance =
+      std::make_unique<GlicInstance>(browser, weak_ptr_factory_.GetWeakPtr());
+  new_instance->SetEmbedderType(GlicInstance::EmbedderType::kSidePanel);
+  new_instance->Show();
+  attached_instances_.push_back(std::move(new_instance));
 }
 
 GlicInstance* GlicInstanceCoordinatorImpl::GetAttachedInstanceForBrowser(

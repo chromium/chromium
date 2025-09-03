@@ -112,9 +112,8 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
       FloatyStateChangeCallback callback) override;
 
  private:
-  void ShowAttached(BrowserWindowInterface* bwi);
-  void ShowDetached();
   void ToggleFloaty();
+  void ToggleSidePanel(BrowserWindowInterface* browser);
 
   GlicInstance* GetAttachedInstanceForBrowser(BrowserWindowInterface* bwi);
   void RemoveInstance(GlicInstance* instance);
