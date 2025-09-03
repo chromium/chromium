@@ -145,7 +145,7 @@ class ProactiveNudgeTrackerTestBase : public testing::Test {
 
   void SetSegmentationResult(std::string label = "Show") {
     ON_CALL(segmentation_service(), GetClassificationResult(_, _, _, _))
-        .WillByDefault(testing::WithArg<3>(testing::Invoke(
+        .WillByDefault(testing::WithArg<3>(
             [label, this](
                 segmentation_platform::ClassificationResultCallback callback) {
               auto result = segmentation_platform::ClassificationResult(
@@ -154,7 +154,7 @@ class ProactiveNudgeTrackerTestBase : public testing::Test {
               result.ordered_labels = {label};
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE, base::BindOnce(std::move(callback), result));
-            })));
+            }));
   }
 
   // This helper function is a shortcut to adding a test future to listen for
@@ -163,10 +163,10 @@ class ProactiveNudgeTrackerTestBase : public testing::Test {
       base::test::TestFuture<
           segmentation_platform::ClassificationResultCallback>& future) {
     ON_CALL(segmentation_service(), GetClassificationResult(_, _, _, _))
-        .WillByDefault(testing::WithArg<3>(testing::Invoke(
+        .WillByDefault(testing::WithArg<3>(
             [&](segmentation_platform::ClassificationResultCallback cb) {
               future.SetValue(std::move(cb));
-            })));
+            }));
   }
 
  private:
@@ -603,12 +603,12 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContextNoModelParams) {
   auto field = CreateTestFormFieldData();
 
   ON_CALL(segmentation_service(), GetClassificationResult(_, _, _, _))
-      .WillByDefault(testing::Invoke(
+      .WillByDefault(
           [&](auto, auto, scoped_refptr<segmentation_platform::InputContext> ic,
               segmentation_platform::ClassificationResultCallback cb) {
             input_context = ic;
             future.SetValue(std::move(cb));
-          }));
+          });
   auto page_load_time = base::TimeTicks::Now();
   task_environment().FastForwardBy(base::Seconds(63));
   ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
@@ -674,12 +674,12 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContextWithModelParams) {
   delegate().SetComposeHintMetadata(metadata);
 
   ON_CALL(segmentation_service(), GetClassificationResult(_, _, _, _))
-      .WillByDefault(testing::Invoke(
+      .WillByDefault(
           [&](auto, auto, scoped_refptr<segmentation_platform::InputContext> ic,
               segmentation_platform::ClassificationResultCallback cb) {
             input_context = ic;
             future.SetValue(std::move(cb));
-          }));
+          });
   auto page_load_time = base::TimeTicks::Now();
   task_environment().FastForwardBy(base::Seconds(63));
   ASSERT_FALSE(nudge_tracker().ProactiveNudgeRequestedForFormField(
@@ -763,9 +763,9 @@ class ProactiveNudgeTrackerDerivedEngagementTest
                         OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION,
                     TrainingRequestId(request_number), _, _, _))
         .Times(1)
-        .WillOnce(testing::Invoke([&](auto, auto, auto, auto labels, auto) {
+        .WillOnce([&](auto, auto, auto, auto labels, auto) {
           training_labels.SetValue(labels);
-        }));
+        });
     return training_labels;
   }
 
