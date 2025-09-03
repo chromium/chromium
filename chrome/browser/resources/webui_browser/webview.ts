@@ -5,6 +5,7 @@
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {GuestHandlerRemote} from './browser.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './webview.css.js';
 
@@ -35,6 +36,7 @@ export class WebviewElement extends CrLitElement {
 
   accessor guestId: number = -1;
   private attached: boolean = false;
+  guestHandler?: GuestHandlerRemote;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -76,30 +78,40 @@ export class WebviewElement extends CrLitElement {
   }
 
   goBack() {
-    BrowserProxy.getPageHandler().goBack(this.guestId);
+    assert(this.guestHandler);
+    this.guestHandler.goBack();
   }
 
   goForward() {
-    BrowserProxy.getPageHandler().goForward(this.guestId);
+    assert(this.guestHandler);
+    this.guestHandler.goForward();
   }
 
   reload() {
-    BrowserProxy.getPageHandler().reload(this.guestId);
+    if (this.guestHandler) {
+      this.guestHandler.reload();
+    }
   }
 
   stopLoading() {
-    BrowserProxy.getPageHandler().stopLoading(this.guestId);
+    if (this.guestHandler) {
+      this.guestHandler.stopLoading();
+    }
   }
 
   async canGoBack(): Promise<boolean> {
-    const {canGoBack} =
-        await BrowserProxy.getPageHandler().canGoBack(this.guestId);
+    if (!this.guestHandler) {
+      return false;
+    }
+    const {canGoBack} = await this.guestHandler.canGoBack();
     return canGoBack;
   }
 
   async canGoForward(): Promise<boolean> {
-    const {canGoForward} =
-        await BrowserProxy.getPageHandler().canGoForward(this.guestId);
+    if (!this.guestHandler) {
+      return false;
+    }
+    const {canGoForward} = await this.guestHandler.canGoForward();
     return canGoForward;
   }
 }
@@ -127,10 +139,12 @@ export class TabWebviewElement extends WebviewElement {
   }
 
   private attachTabContents() {
+    const handler = new GuestHandlerRemote();
     BrowserProxy.getPageHandler()
-        .getGuestIdForTabId(this.tabId)
+        .getGuestIdForTabId(this.tabId, handler.$.bindNewPipeAndPassReceiver())
         .then(({guestId}) => {
           this.guestId = guestId;
+          this.guestHandler = handler;
           this.tryToAttach();
         });
   }

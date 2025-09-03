@@ -37,35 +37,16 @@ interface Page {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Get the guest id for a tab id.
-  GetGuestIdForTabId(tabs_api.mojom.NodeId tab_id) => (int32 guest_id);
+  // Get the guest id for a tab id and connect up the GuestHandler.
+  GetGuestIdForTabId(
+      tabs_api.mojom.NodeId tab_id,
+      pending_receiver<GuestHandler> handler) => (int32 guest_id);
 
   // Load TabSearch in a guest contents and returns the guest id.
   LoadTabSearch() => (int32 guest_id);
 
   // Shows the Tab Search bubble.
   ShowTabSearchBubble(string anchor_name);
-
-  // Navigates the GuestContents with `guest_id` to `src`.
-  Navigate(int32 guest_id, url.mojom.Url src);
-
-  // Checks if GuestContents with `guest_id` can go back in the nav stack.
-  CanGoBack(int32 guest_id) => (bool can_go_back);
-
-  // Navigates the GuestContents with `guest_id` to back in the nav stack.
-  GoBack(int32 guest_id);
-
-  // Checks if GuestContents with `guest_id` can go forward in the nav stack.
-  CanGoForward(int32 guest_id) => (bool can_go_forward);
-
-  // Navigates the GuestContents with `guest_id` to forward in the nav stack.
-  GoForward(int32 guest_id);
-
-  // Reload the GuestContents with `guest_id`.
-  Reload(int32 guest_id);
-
-  // Stop loading the GuestContents with `guest_id`.
-  StopLoading(int32 guest_id);
 
   // Opens the app menu.
   OpenAppMenu();
@@ -89,3 +70,26 @@ interface PageHandler {
   Close();
 };
 
+// Browser-side handler for requests from a GuestContents.
+interface GuestHandler {
+  // Navigates the GuestContents to `src`.
+  Navigate(url.mojom.Url src);
+
+  // Checks if GuestContents can go back in the nav stack.
+  CanGoBack() => (bool can_go_back);
+
+  // Navigates the GuestContents to back in the nav stack.
+  GoBack();
+
+  // Checks if GuestContents with can go forward in the nav stack.
+  CanGoForward() => (bool can_go_forward);
+
+  // Navigates the GuestContents to forward in the nav stack.
+  GoForward();
+
+  // Reload the GuestContents.
+  Reload();
+
+  // Stop loading the GuestContents.
+  StopLoading();
+};

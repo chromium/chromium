@@ -28,18 +28,59 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
-namespace {
+class WebUIBrowserGuestHandler
+    : public content::DocumentService<webui_browser::mojom::GuestHandler> {
+ public:
+  WebUIBrowserGuestHandler(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<webui_browser::mojom::GuestHandler> receiver,
+      content::WebContents* web_contents)
+      : content::DocumentService<webui_browser::mojom::GuestHandler>(
+            render_frame_host,
+            std::move(receiver)),
+        web_contents_(web_contents->GetWeakPtr()) {}
+  WebUIBrowserGuestHandler(const WebUIBrowserGuestHandler&) = delete;
+  WebUIBrowserGuestHandler& operator=(const WebUIBrowserGuestHandler&) = delete;
+  ~WebUIBrowserGuestHandler() override = default;
 
-content::NavigationController* GetGuestNavigationController(int guest_id) {
-  auto* guest_handle = guest_contents::GuestContentsHandle::FromID(guest_id);
-  if (!guest_handle) {
-    return nullptr;
+ private:
+  // webui_browser::mojom::GuestHandler
+  void Navigate(const GURL& src) override {
+    content::NavigationController::LoadURLParams load_url_params(src);
+    web_contents_->GetController().LoadURLWithParams(load_url_params);
   }
-  auto* web_contents = guest_handle->web_contents();
-  return web_contents ? &web_contents->GetController() : nullptr;
-}
 
-}  // namespace
+  void CanGoBack(CanGoBackCallback callback) override {
+    std::move(callback).Run(web_contents_->GetController().CanGoBack());
+  }
+
+  void GoBack() override {
+    if (web_contents_->GetController().CanGoBack()) {
+      web_contents_->GetController().GoBack();
+    }
+  }
+
+  void CanGoForward(CanGoForwardCallback callback) override {
+    std::move(callback).Run(web_contents_->GetController().CanGoForward());
+  }
+
+  void GoForward() override {
+    if (web_contents_->GetController().CanGoForward()) {
+      web_contents_->GetController().GoForward();
+    }
+  }
+
+  void Reload() override {
+    web_contents_->GetController().Reload(content::ReloadType::NORMAL, true);
+  }
+
+  void StopLoading() override { web_contents_->Stop(); }
+
+  // The WebContents is destroyed before document
+  // services, causing a raw_ptr of WebContents dangling here, so use a weak ptr
+  // instead.
+  base::WeakPtr<content::WebContents> web_contents_;
+};
 
 WebUIBrowserPageHandler::~WebUIBrowserPageHandler() = default;
 
@@ -55,6 +96,7 @@ void WebUIBrowserPageHandler::CreateForRenderFrameHost(
 
 void WebUIBrowserPageHandler::GetGuestIdForTabId(
     const tabs_api::NodeId& tab_id,
+    mojo::PendingReceiver<webui_browser::mojom::GuestHandler> receiver,
     GetGuestIdForTabIdCallback callback) {
   tabs::TabInterface* tab = nullptr;
   std::optional<tabs::TabHandle> maybe_tab_handle = tab_id.ToTabHandle();
@@ -71,6 +113,11 @@ void WebUIBrowserPageHandler::GetGuestIdForTabId(
     mojo::ReportBadMessage("Tab has no contents");
     return;
   }
+
+  // The RenderFrameHost takes ownership of this object via the DocumentService.
+  new WebUIBrowserGuestHandler(render_frame_host(), std::move(receiver),
+                               tab_contents);
+
   guest_contents::GuestContentsHandle::CreateForWebContents(tab_contents);
   auto* guest_handle =
       guest_contents::GuestContentsHandle::FromWebContents(tab_contents);
@@ -95,70 +142,6 @@ void WebUIBrowserPageHandler::ShowTabSearchBubble(
     const std::string& anchor_name) {
   // TODO(webium): Call TabSearchBubbleHost::ShowTabSearchBubble().
   NOTIMPLEMENTED();
-}
-
-void WebUIBrowserPageHandler::Navigate(int guest_id, const GURL& src) {
-  content::NavigationController::LoadURLParams load_url_params(src);
-  auto* navigation_controller = GetGuestNavigationController(guest_id);
-  if (navigation_controller) {
-    navigation_controller->LoadURLWithParams(load_url_params);
-  } else {
-    mojo::ReportBadMessage("Invalid guest id");
-  }
-}
-
-void WebUIBrowserPageHandler::CanGoBack(int guest_id,
-                                        CanGoBackCallback callback) {
-  auto* navigation_controller = GetGuestNavigationController(guest_id);
-  std::move(callback).Run(
-      navigation_controller ? navigation_controller->CanGoBack() : false);
-}
-
-void WebUIBrowserPageHandler::GoBack(int guest_id) {
-  auto* navigation_controller = GetGuestNavigationController(guest_id);
-  if (navigation_controller) {
-    if (navigation_controller->CanGoBack()) {
-      navigation_controller->GoBack();
-    }
-  } else {
-    mojo::ReportBadMessage("Invalid guest id");
-  }
-}
-
-void WebUIBrowserPageHandler::CanGoForward(int guest_id,
-                                           CanGoForwardCallback callback) {
-  auto* navigation_controller = GetGuestNavigationController(guest_id);
-  std::move(callback).Run(
-      navigation_controller ? navigation_controller->CanGoForward() : false);
-}
-
-void WebUIBrowserPageHandler::GoForward(int guest_id) {
-  auto* navigation_controller = GetGuestNavigationController(guest_id);
-  if (navigation_controller) {
-    if (navigation_controller->CanGoForward()) {
-      navigation_controller->GoForward();
-    }
-  } else {
-    mojo::ReportBadMessage("Invalid guest id");
-  }
-}
-
-void WebUIBrowserPageHandler::Reload(int guest_id) {
-  auto* navigation_controller = GetGuestNavigationController(guest_id);
-  if (navigation_controller) {
-    navigation_controller->Reload(content::ReloadType::NORMAL, true);
-  } else {
-    mojo::ReportBadMessage("Invalid guest id");
-  }
-}
-
-void WebUIBrowserPageHandler::StopLoading(int guest_id) {
-  auto* guest_handle = guest_contents::GuestContentsHandle::FromID(guest_id);
-  if (guest_handle) {
-    guest_handle->web_contents()->Stop();
-  } else {
-    mojo::ReportBadMessage("Invalid guest id");
-  }
 }
 
 void WebUIBrowserPageHandler::OpenAppMenu() {

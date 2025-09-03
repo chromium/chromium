@@ -37,17 +37,12 @@ class WebUIBrowserPageHandler
       WebUIBrowserUI* controller);
 
   // webui_browser::mojom::PageHandler
-  void GetGuestIdForTabId(const tabs_api::NodeId& tab_id,
-                          GetGuestIdForTabIdCallback callback) override;
+  void GetGuestIdForTabId(
+      const tabs_api::NodeId& tab_id,
+      mojo::PendingReceiver<webui_browser::mojom::GuestHandler> receiver,
+      GetGuestIdForTabIdCallback callback) override;
   void LoadTabSearch(LoadTabSearchCallback callback) override;
   void ShowTabSearchBubble(const std::string& anchor_name) override;
-  void Navigate(int guest_id, const GURL& src) override;
-  void CanGoBack(int guest_id, CanGoBackCallback callback) override;
-  void GoBack(int guest_id) override;
-  void CanGoForward(int guest_id, CanGoForwardCallback callback) override;
-  void GoForward(int guest_id) override;
-  void Reload(int guest_id) override;
-  void StopLoading(int guest_id) override;
   void OpenAppMenu() override;
   void OpenProfileMenu() override;
   void LaunchDevToolsForBrowser() override;
