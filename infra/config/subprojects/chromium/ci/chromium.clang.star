@@ -64,6 +64,7 @@ consoles.console_view(
             "ToT Mac",
             "ToT Windows",
             "ToT Code Coverage",
+            "Rust ToT",
         ],
         "ToT Linux": consoles.ordering(
             short_names = ["rel", "ofi", "dbg", "asn", "fuz", "msn", "tsn"],
@@ -94,22 +95,23 @@ consoles.console_view(
     ("clang-tot-device", "iOS|internal", "dev"),
 )]
 
-def clang_mac_builder(*, name, cores = 12, **kwargs):
+def tot_mac_builder(*, name, cores = 12, is_rust = False, **kwargs):
     if "gn_args" in kwargs:
         kwargs["gn_args"].configs.append("mac")
+    desc_tool = "Rust" if is_rust else "Clang"
     return ci.builder(
         name = name,
         cores = cores,
         os = os.MAC_DEFAULT,
         ssd = True,
         properties = {
-            # The Chromium build doesn't need system Xcode, but the ToT clang
+            # The Chromium build doesn't need system Xcode, but the ToT
             # bots also build clang and llvm and that build does need system
             # Xcode.
             "xcode_build_version": "14c18",
         },
         contact_team_email = "lexan@google.com",
-        description_html = "Builder that builds ToT Clang and uses it to build Chromium",
+        description_html = "Builder that builds ToT " + desc_tool + " and uses it to build Chromium",
         **kwargs
     )
 
@@ -1877,7 +1879,7 @@ ci.builder(
     xcode = xcode.xcode_default,
 )
 
-clang_mac_builder(
+tot_mac_builder(
     name = "ToTMac",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -1927,7 +1929,7 @@ clang_mac_builder(
     execution_timeout = 20 * time.hour,
 )
 
-clang_mac_builder(
+tot_mac_builder(
     name = "ToTMac (dbg)",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -1968,7 +1970,7 @@ clang_mac_builder(
     execution_timeout = 20 * time.hour,
 )
 
-clang_mac_builder(
+tot_mac_builder(
     name = "ToTMacASan",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -2018,7 +2020,7 @@ clang_mac_builder(
     execution_timeout = 20 * time.hour,
 )
 
-clang_mac_builder(
+tot_mac_builder(
     name = "ToTMacPGO",
     gn_args = gn_args.config(
         configs = [
@@ -2047,7 +2049,7 @@ clang_mac_builder(
     ),
 )
 
-clang_mac_builder(
+tot_mac_builder(
     name = "ToTMacArm64PGO",
     gn_args = gn_args.config(
         configs = [
@@ -2073,7 +2075,7 @@ clang_mac_builder(
     ),
 )
 
-clang_mac_builder(
+tot_mac_builder(
     name = "ToTMacArm64",
     gn_args = gn_args.config(
         configs = [
@@ -2098,7 +2100,7 @@ clang_mac_builder(
     ),
 )
 
-clang_mac_builder(
+tot_mac_builder(
     name = "ToTMacCoverage",
     executable = "recipe:chromium_clang_coverage_tot",
     gn_args = gn_args.config(
@@ -2161,8 +2163,100 @@ ci.builder(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "ToT Linux|rust",
-        short_name = "dbg",
+        category = "Rust ToT",
+        short_name = "lin",
     ),
     contact_team_email = "lexan@google.com",
+)
+
+ci.builder(
+    name = "ToTWinRust(dbg)",
+    description_html = "Builder that builds and tests chromium using ToT Rust," +
+                       "built against ToT LLVM, on windows in debug mode.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["rust_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_win_rust_tot",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "rust_tot",
+            "no_treat_warnings_as_errors",
+            "shared",
+            "debug",
+            "x86",
+            "win",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "clang_tot_gtests",
+            # Doesn't run win_specific_isolated_scripts because the mini
+            # installer isn't hooked up in 32-bit debug builds.
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "win10",
+        ],
+    ),
+    cores = "32",
+    os = os.WINDOWS_DEFAULT,
+    free_space = builders.free_space.high,
+    console_view_entry = consoles.console_view_entry(
+        category = "Rust ToT",
+        short_name = "win",
+    ),
+    contact_team_email = "lexan@google.com",
+)
+
+tot_mac_builder(
+    name = "ToTMacRust (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["rust_tot"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "rust_tot_mac",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "rust_tot",
+            "no_treat_warnings_as_errors",
+            "shared",
+            "debug",
+            "x64",
+        ],  # "mac" is added automatically since this is a `tot_mac_builder` call
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "mac_default_x64",
+        ],
+    ),
+    cores = None,
+    cpu = cpu.ARM64,
+    console_view_entry = consoles.console_view_entry(
+        category = "Rust ToT",
+        short_name = "mac",
+    ),
+    execution_timeout = 20 * time.hour,
+    is_rust = True,
 )
