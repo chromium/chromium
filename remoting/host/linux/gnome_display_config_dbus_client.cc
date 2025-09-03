@@ -33,10 +33,22 @@ std::string VariantToString(GVariant* variant) {
 
 }  // namespace
 
-GnomeDisplayConfigDBusClient::Subscription::Subscription(
-    std::unique_ptr<GDBusConnectionRef::SignalSubscription> signal_subscription)
-    : signal_subscription_(std::move(signal_subscription)) {}
+GnomeDisplayConfigDBusClient::Subscription::Subscription() = default;
 GnomeDisplayConfigDBusClient::Subscription::~Subscription() = default;
+
+GnomeDisplayConfigDBusClient::PendingSubscription::PendingSubscription(
+    base::RepeatingClosure callback,
+    base::WeakPtr<Subscription> subscription)
+    : callback(std::move(callback)), subscription(std::move(subscription)) {}
+GnomeDisplayConfigDBusClient::PendingSubscription::PendingSubscription() =
+    default;
+GnomeDisplayConfigDBusClient::PendingSubscription::PendingSubscription(
+    PendingSubscription&&) = default;
+GnomeDisplayConfigDBusClient::PendingSubscription&
+GnomeDisplayConfigDBusClient::PendingSubscription::operator=(
+    PendingSubscription&&) = default;
+GnomeDisplayConfigDBusClient::PendingSubscription::~PendingSubscription() =
+    default;
 
 GnomeDisplayConfigDBusClient::GnomeDisplayConfigDBusClient() {
   weak_ptr_ = weak_factory_.GetWeakPtr();
@@ -94,11 +106,23 @@ std::unique_ptr<GnomeDisplayConfigDBusClient::Subscription>
 GnomeDisplayConfigDBusClient::SubscribeMonitorsChanged(
     base::RepeatingClosure on_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::WrapUnique(new Subscription(
-      dbus_connection_
-          .SignalSubscribe<org_gnome_Mutter_DisplayConfig::MonitorsChanged>(
-              kDisplayConfigInterfaceName, kDisplayConfigObjectPath,
-              base::IgnoreArgs<GVariantRef<"r">>(on_changed))));
+  auto subscription = base::WrapUnique(new Subscription());
+  PendingSubscription pending_subscrition{
+      std::move(on_changed), subscription->weak_factory_.GetWeakPtr()};
+  if (!dbus_connection_.is_initialized()) {
+    // The DBus connection is not yet made. When the connection is made,
+    // OnDBusGet() will check if there is any pending subscription. If so, it
+    // will trigger a new call to SubscribeDBusMonitorsChanged().
+    pending_subscriptions_.push(std::move(pending_subscrition));
+    return subscription;
+  }
+
+  bool need_new_call = pending_subscriptions_.empty();
+  pending_subscriptions_.push(std::move(pending_subscrition));
+  if (need_new_call) {
+    SubscribeDBusMonitorsChanged();
+  }
+  return subscription;
 }
 
 void GnomeDisplayConfigDBusClient::FakeDisplayConfigForTest(
@@ -194,6 +218,27 @@ void GnomeDisplayConfigDBusClient::OnDBusGet(
 
   if (!pending_callbacks_.empty()) {
     CallDBusGetCurrentState();
+  }
+  if (!pending_subscriptions_.empty()) {
+    SubscribeDBusMonitorsChanged();
+  }
+}
+
+void GnomeDisplayConfigDBusClient::SubscribeDBusMonitorsChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(dbus_connection_.is_initialized());
+
+  while (!pending_subscriptions_.empty()) {
+    auto& pending_subscription = pending_subscriptions_.front();
+    if (pending_subscription.subscription) {
+      pending_subscription.subscription->signal_subscription_ =
+          dbus_connection_
+              .SignalSubscribe<org_gnome_Mutter_DisplayConfig::MonitorsChanged>(
+                  kDisplayConfigInterfaceName, kDisplayConfigObjectPath,
+                  base::IgnoreArgs<GVariantRef<"r">>(
+                      std::move(pending_subscription.callback)));
+    }
+    pending_subscriptions_.pop();
   }
 }
 

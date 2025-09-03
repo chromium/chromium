@@ -161,6 +161,8 @@ source_set("platform_impls") {
     "gnome_desktop_display_info_monitor.h",
     "gnome_desktop_resizer.cc",
     "gnome_desktop_resizer.h",
+    "gnome_display_config_monitor.cc",
+    "gnome_display_config_monitor.h",
     "gnome_input_injector.cc",
     "gnome_input_injector.h",
     "gnome_interaction_strategy.cc",

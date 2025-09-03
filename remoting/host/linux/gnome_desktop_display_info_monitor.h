@@ -9,14 +9,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/host/desktop_display_info_monitor.h"
-#include "remoting/host/linux/gnome_display_config_dbus_client.h"
+#include "remoting/host/linux/gnome_display_config_monitor.h"
 
 namespace remoting {
 
 class GnomeDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
  public:
   explicit GnomeDesktopDisplayInfoMonitor(
-      base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client);
+      base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor);
   ~GnomeDesktopDisplayInfoMonitor() override;
 
   GnomeDesktopDisplayInfoMonitor(const GnomeDesktopDisplayInfoMonitor&) =
@@ -30,14 +30,14 @@ class GnomeDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
   void AddCallback(Callback callback) override;
 
  private:
-  void OnGnomeDisplayConfigReceived(GnomeDisplayConfig config);
+  void OnGnomeDisplayConfigReceived(const GnomeDisplayConfig& config);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client_
+  base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<GnomeDisplayConfigDBusClient::Subscription>
+  std::unique_ptr<GnomeDisplayConfigMonitor::Subscription>
       monitors_changed_subscription_;
 
   // Callbacks which receive DesktopDisplayInfo updates.

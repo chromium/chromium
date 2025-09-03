@@ -20,6 +20,7 @@
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/linux/gnome_display_config.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
+#include "remoting/host/linux/gnome_display_config_monitor.h"
 #include "remoting/host/linux/pipewire_capture_stream_manager.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -31,7 +32,8 @@ class GnomeDesktopResizer : public DesktopResizer {
  public:
   GnomeDesktopResizer(
       base::WeakPtr<PipewireCaptureStreamManager> stream_manager,
-      base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client);
+      base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client,
+      base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor);
   GnomeDesktopResizer(const GnomeDesktopResizer&) = delete;
   GnomeDesktopResizer& operator=(const GnomeDesktopResizer&) = delete;
   ~GnomeDesktopResizer() override;
@@ -77,8 +79,7 @@ class GnomeDesktopResizer : public DesktopResizer {
   void OnAddStreamResult(const PreferredMonitorConfig& monitor_config,
                          PipewireCaptureStreamManager::AddStreamResult result);
 
-  void QueryDisplayInfo();
-  void OnGnomeDisplayConfigReceived(GnomeDisplayConfig config);
+  void OnGnomeDisplayConfigReceived(const GnomeDisplayConfig& config);
 
   // Schedules an ApplyMonitorsConfig call to apply `preferred_monitors_config_`
   // in the next event loop iteration of the current sequence, if it hasn't been
@@ -101,7 +102,7 @@ class GnomeDesktopResizer : public DesktopResizer {
   base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<GnomeDisplayConfigDBusClient::Subscription>
+  std::unique_ptr<GnomeDisplayConfigMonitor::Subscription>
       monitors_changed_subscription_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Represents the latest known display config state reported by Mutter. This

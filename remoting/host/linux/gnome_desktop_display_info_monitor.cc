@@ -12,31 +12,26 @@
 namespace remoting {
 
 GnomeDesktopDisplayInfoMonitor::GnomeDesktopDisplayInfoMonitor(
-    base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client)
-    : display_config_client_(display_config_client) {}
+    base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor)
+    : display_config_monitor_(display_config_monitor) {}
 
 GnomeDesktopDisplayInfoMonitor::~GnomeDesktopDisplayInfoMonitor() = default;
 
 void GnomeDesktopDisplayInfoMonitor::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (display_config_client_) {
-    monitors_changed_subscription_ =
-        display_config_client_->SubscribeMonitorsChanged(base::BindRepeating(
-            &GnomeDesktopDisplayInfoMonitor::QueryDisplayInfo,
-            base::Unretained(this)));
+  if (display_config_monitor_) {
+    monitors_changed_subscription_ = display_config_monitor_->AddCallback(
+        base::BindRepeating(
+            &GnomeDesktopDisplayInfoMonitor::OnGnomeDisplayConfigReceived,
+            base::Unretained(this)),
+        /*call_with_current_config=*/true);
   }
-  QueryDisplayInfo();
 }
 
 void GnomeDesktopDisplayInfoMonitor::QueryDisplayInfo() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (display_config_client_) {
-    display_config_client_->GetMonitorsConfig(base::BindOnce(
-        &GnomeDesktopDisplayInfoMonitor::OnGnomeDisplayConfigReceived,
-        base::Unretained(this)));
-  }
+  // This is a no-op, as the display info is pushed from
+  // GnomeDisplayConfigMonitor.
 }
 
 void GnomeDesktopDisplayInfoMonitor::AddCallback(Callback callback) {
@@ -46,13 +41,14 @@ void GnomeDesktopDisplayInfoMonitor::AddCallback(Callback callback) {
 }
 
 void GnomeDesktopDisplayInfoMonitor::OnGnomeDisplayConfigReceived(
-    GnomeDisplayConfig config) {
+    const GnomeDisplayConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This is the mode that the client uses for Linux hosts.
-  config.SwitchLayoutMode(GnomeDisplayConfig::LayoutMode::kPhysical);
+  GnomeDisplayConfig physical_config = config;
+  physical_config.SwitchLayoutMode(GnomeDisplayConfig::LayoutMode::kPhysical);
   DesktopDisplayInfo info;
-  for (const auto& [name, monitor] : config.monitors) {
+  for (const auto& [name, monitor] : physical_config.monitors) {
     const GnomeDisplayConfig::MonitorMode* current_mode =
         monitor.GetCurrentMode();
     if (!current_mode) {

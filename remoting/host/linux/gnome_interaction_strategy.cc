@@ -99,7 +99,8 @@ GnomeInteractionStrategy::CreateDesktopResizer() {
 
   return std::make_unique<GnomeDesktopResizer>(
       remote_desktop_session_->capture_stream_manager(),
-      remote_desktop_session_->display_config_client());
+      remote_desktop_session_->display_config_client(),
+      remote_desktop_session_->display_config_monitor());
 }
 
 std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(
@@ -151,7 +152,7 @@ GnomeInteractionStrategy::CreateDisplayInfoMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return std::make_unique<GnomeDesktopDisplayInfoMonitor>(
-      remote_desktop_session_->display_config_client());
+      remote_desktop_session_->display_config_monitor());
 }
 
 std::unique_ptr<LocalInputMonitor>
