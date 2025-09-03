@@ -150,6 +150,7 @@ class CORE_EXPORT ContentSecurityPolicyDelegate : public GarbageCollectedMixin {
       const String& directive_text) = 0;
   virtual void DidAddContentSecurityPolicies(
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>) = 0;
+  virtual bool ScriptSrcExtendedHashesEnabled() = 0;
 };
 
 class CORE_EXPORT ContentSecurityPolicy final

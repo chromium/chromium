@@ -342,10 +342,11 @@ void ContentSecurityPolicy::ReportUseCounters(
     // This use counter is for the 'unsafe-eval' keyword. We pass an empty array
     // of hashes so this is logged if and only if 'unsafe-eval' is set,
     // regardless of hashes.
-    if (CSPDirectiveListAllowEval(*policy, this,
-                                  ReportingDisposition::kSuppressReporting,
-                                  kWillNotThrowException, g_empty_string,
-                                  /*script_hash_values=*/{})) {
+    if (CSPDirectiveListAllowEval(
+            *policy, this, ReportingDisposition::kSuppressReporting,
+            kWillNotThrowException, g_empty_string,
+            /*script_hash_values=*/{},
+            delegate_ && delegate_->ScriptSrcExtendedHashesEnabled())) {
       Count(WebFeature::kCSPWithUnsafeEval);
     }
 
@@ -489,7 +490,9 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
     UpgradeInsecureRequests();
 
   String disable_eval_message;
-  if (CSPDirectiveListShouldDisableEval(csp, disable_eval_message) &&
+  if (CSPDirectiveListShouldDisableEval(
+          csp, disable_eval_message,
+          delegate_ && delegate_->ScriptSrcExtendedHashesEnabled()) &&
       disable_eval_error_message_.IsNull()) {
     disable_eval_error_message_ = disable_eval_message;
   }
@@ -685,7 +688,8 @@ bool ContentSecurityPolicy::AllowEval(
   for (const auto& policy : policies_) {
     is_allowed &= CSPDirectiveListAllowEval(
         *policy, this, reporting_disposition, exception_status, script_content,
-        csp_hash_values);
+        csp_hash_values,
+        delegate_ && delegate_->ScriptSrcExtendedHashesEnabled());
   }
   return is_allowed;
 }
@@ -744,8 +748,11 @@ void ContentSecurityPolicy::AddHashReportIfNeeded(
 String ContentSecurityPolicy::EvalDisabledErrorMessage() const {
   for (const auto& policy : policies_) {
     String message;
-    if (CSPDirectiveListShouldDisableEval(*policy, message))
+    if (CSPDirectiveListShouldDisableEval(
+            *policy, message,
+            delegate_ && delegate_->ScriptSrcExtendedHashesEnabled())) {
       return message;
+    }
   }
   return String();
 }
@@ -839,7 +846,8 @@ bool AllowResourceHintRequestForPolicy(
     ParserDisposition parser_disposition,
     const KURL& url_before_redirects,
     RedirectStatus redirect_status,
-    ReportingDisposition reporting_disposition) {
+    ReportingDisposition reporting_disposition,
+    bool script_src_extended_hashes_enabled) {
   // The loop ignores default-src directives, which is the directive to report
   // for resource hints. So we don't need to check report-only policies.
   if (csp.header->type == ContentSecurityPolicyType::kEnforce) {
@@ -861,8 +869,9 @@ bool AllowResourceHintRequestForPolicy(
          }) {
       if (CSPDirectiveListAllowFromSource(
               csp, policy, type, document_url, url, url_before_redirects,
-              redirect_status, ReportingDisposition::kSuppressReporting, nonce,
-              integrity_metadata, parser_disposition)) {
+              redirect_status, ReportingDisposition::kSuppressReporting,
+              script_src_extended_hashes_enabled, nonce, integrity_metadata,
+              parser_disposition)) {
         return true;
       }
     }
@@ -872,7 +881,8 @@ bool AllowResourceHintRequestForPolicy(
   return CSPDirectiveListAllowFromSource(
              csp, policy, CSPDirectiveName::DefaultSrc, document_url, url,
              url_before_redirects, redirect_status, reporting_disposition,
-             nonce, integrity_metadata, parser_disposition)
+             script_src_extended_hashes_enabled, nonce, integrity_metadata,
+             parser_disposition)
       .IsAllowed();
 }
 
@@ -902,7 +912,8 @@ bool ContentSecurityPolicy::AllowRequest(
              AllowResourceHintRequestForPolicy(
                  *policy, this, delegate_->Url(), url, nonce,
                  integrity_metadata, parser_disposition, url_before_redirects,
-                 redirect_status, reporting_disposition);
+                 redirect_status, reporting_disposition,
+                 delegate_ && delegate_->ScriptSrcExtendedHashesEnabled());
     });
   }
 
@@ -985,8 +996,9 @@ bool ContentSecurityPolicy::AllowFromSource(
     }
     result &= CSPDirectiveListAllowFromSource(
         *policy, this, type, delegate_->Url(), url, url_before_redirects,
-        redirect_status, reporting_disposition, nonce, integrity_metadata,
-        parser_disposition);
+        redirect_status, reporting_disposition,
+        delegate_ && delegate_->ScriptSrcExtendedHashesEnabled(), nonce,
+        integrity_metadata, parser_disposition);
   }
 
   if (result.WouldBlockIfWildcardDoesNotMatchWs()) {

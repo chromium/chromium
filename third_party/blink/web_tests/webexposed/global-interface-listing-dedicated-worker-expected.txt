@@ -1988,6 +1988,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter disposition
 [Worker]     getter documentURI
 [Worker]     getter effectiveDirective
+[Worker]     getter evalHash
 [Worker]     getter lineNumber
 [Worker]     getter originalPolicy
 [Worker]     getter referrer

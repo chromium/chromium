@@ -1,5 +1,6 @@
 CONSOLE MESSAGE: Testing main world. Eval should be blocked by main world CSP.
-CONSOLE MESSAGE: EvalError: Evaluating a string as JavaScript violates the following Content Security Policy directive because 'unsafe-eval' is not an allowed source of script: script-src 'self'".
+CONSOLE ERROR:  Hash of blocked script: "eval-sha256-J7rcmD3xeAtgwrP6nToZoA5GqseYRR8P69ylKSD6rd8=".
+CONSOLE MESSAGE: EvalError: Evaluating a string as JavaScript violates the following Content Security Policy directive because neither 'unsafe-eval' nor the string's hash are an allowed source of script: script-src 'self'".
 
 CONSOLE MESSAGE: PASS: eval blocked as expected.
 CONSOLE MESSAGE: Testing isolated world with no csp. Eval should be allowed.

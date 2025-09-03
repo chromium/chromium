@@ -47,6 +47,7 @@ class ExecutionContextCSPDelegate final
       const String& directive_text) override;
   void DidAddContentSecurityPolicies(
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>) override;
+  bool ScriptSrcExtendedHashesEnabled() override;
 
  private:
   SecurityContext& GetSecurityContext();
