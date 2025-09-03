@@ -29,6 +29,7 @@ class ProfileManager;
 
 namespace actor {
 struct ActionResultWithLatencyInfo;
+class ActorKeyedService;
 }  // namespace actor
 
 namespace contextual_cueing {
@@ -79,7 +80,8 @@ class GlicKeyedService : public KeyedService {
       signin::IdentityManager* identity_manager,
       ProfileManager* profile_manager,
       GlicProfileManager* glic_profile_manager,
-      contextual_cueing::ContextualCueingService* contextual_cueing_service);
+      contextual_cueing::ContextualCueingService* contextual_cueing_service,
+      actor::ActorKeyedService* actor_keyed_service);
   GlicKeyedService(const GlicKeyedService&) = delete;
   GlicKeyedService& operator=(const GlicKeyedService&) = delete;
   ~GlicKeyedService() override;
@@ -271,6 +273,7 @@ class GlicKeyedService : public KeyedService {
   // Unowned
   raw_ptr<contextual_cueing::ContextualCueingService>
       contextual_cueing_service_;
+  raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };

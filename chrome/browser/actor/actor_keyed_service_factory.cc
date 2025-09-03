@@ -13,7 +13,7 @@ ActorKeyedService* ActorKeyedServiceFactory::GetActorKeyedService(
     content::BrowserContext* browser_context) {
   return static_cast<ActorKeyedService*>(
       GetInstance()->GetServiceForBrowserContext(browser_context,
-                                                 /*create=*/false));
+                                                 /*create=*/true));
 }
 
 // static

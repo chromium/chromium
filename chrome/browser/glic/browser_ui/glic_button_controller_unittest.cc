@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
@@ -40,12 +41,14 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
       signin::IdentityManager* identity_manager,
       ProfileManager* profile_manager,
       GlicProfileManager* glic_profile_manager,
-      contextual_cueing::ContextualCueingService* contextual_cueing_service)
+      contextual_cueing::ContextualCueingService* contextual_cueing_service,
+      actor::ActorKeyedService* actor_keyed_service)
       : GlicKeyedService(Profile::FromBrowserContext(browser_context),
                          identity_manager,
                          profile_manager,
                          glic_profile_manager,
-                         contextual_cueing_service) {}
+                         contextual_cueing_service,
+                         actor_keyed_service) {}
   MOCK_METHOD(void, TryPreload, (), (override));
 };
 
@@ -80,10 +83,13 @@ class GlicButtonControllerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     profile_ = testing_profile_manager_->CreateTestingProfile("profile");
 
+    actor_keyed_service_ =
+        std::make_unique<actor::ActorKeyedServiceFake>(profile_);
+
     mock_glic_service_ = std::make_unique<MockGlicKeyedService>(
         profile_, identity_test_environment.identity_manager(),
         testing_profile_manager_->profile_manager(), &glic_profile_manager_,
-        /*contextual_cueing_service=*/nullptr);
+        /*contextual_cueing_service=*/nullptr, actor_keyed_service_.get());
 
     glic_button_controller_ = std::make_unique<GlicButtonController>(
         profile_, &mock_glic_controller_delegate_, mock_glic_service_.get());
@@ -113,6 +119,7 @@ class GlicButtonControllerTest : public testing::Test {
 
   GlicProfileManager glic_profile_manager_;
   MockGlicButtonControllerDelegate mock_glic_controller_delegate_;
+  std::unique_ptr<actor::ActorKeyedServiceFake> actor_keyed_service_;
   std::unique_ptr<MockGlicKeyedService> mock_glic_service_;
   std::unique_ptr<GlicButtonController> glic_button_controller_;
 };
