@@ -2966,8 +2966,6 @@ crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-003.html [ Fail
 crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-004.html [ Failure ]
 crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-005.html [ Failure ]
 crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-006.html [ Failure ]
-crbug.com/442617304 external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-default-object-height-constrained-by-max-width.html [ Failure ]
-crbug.com/442617304 external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-default-object-width-constrained-by-max-height.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/441356800 external/wpt/html/semantics/embedded-content/the-video-element/video_timeupdate_on_seek.html [ Timeout ]
