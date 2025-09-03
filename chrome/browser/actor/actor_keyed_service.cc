@@ -113,25 +113,6 @@ void ActorKeyedService::ResetForTesting() {
   inactive_tasks_.clear();
 }
 
-void ActorKeyedService::ExecuteAction(
-    TaskId task_id,
-    std::vector<std::unique_ptr<ToolRequest>>&& actions,
-    base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-        callback) {
-  auto* task = GetTask(task_id);
-  if (!task) {
-    VLOG(1) << "Execute Action failed: Task not found.";
-    optimization_guide::proto::BrowserActionResult result;
-    result.set_action_result(0);
-    RunLater(base::BindOnce(std::move(callback), std::move(result)));
-    return;
-  }
-  task->Act(std::move(actions),
-            base::BindOnce(&ActorKeyedService::OnActionFinished,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           task_id));
-}
-
 TaskId ActorKeyedService::CreateTask() {
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
   auto actor_task = std::make_unique<ActorTask>(
@@ -257,77 +238,6 @@ void ActorKeyedService::RequestTabObservation(
           },
           tab.GetWeakPtr(), std::move(callback), std::move(journal_entry),
           last_committed_url));
-}
-
-void ActorKeyedService::ConvertToBrowserActionResult(
-    base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-        callback,
-    TaskId task_id,
-    int32_t tab_id,
-    const GURL& url,
-    actor::mojom::ActionResultPtr action_result,
-    std::vector<ActionResultWithLatencyInfo> action_results,
-    base::expected<
-        std::unique_ptr<page_content_annotations::FetchPageContextResult>,
-        std::string> context_result) {
-  optimization_guide::proto::BrowserActionResult browser_action_result;
-  browser_action_result.set_task_id(task_id.value());
-  browser_action_result.set_tab_id(tab_id);
-
-  if (!context_result.has_value()) {
-    VLOG(1) << "Execute Action - Error fetching context: "
-            << context_result.error();
-    browser_action_result.set_action_result(0);
-    RunLater(
-        base::BindOnce(std::move(callback), std::move(browser_action_result)));
-    return;
-  }
-  auto& fetch_result = **context_result;
-
-  CHECK(fetch_result.annotated_page_content_result.has_value());
-  CHECK(fetch_result.screenshot_result.has_value());
-
-  CopyScriptToolResults(*fetch_result.annotated_page_content_result->proto
-                             .mutable_main_frame_data(),
-                        action_results);
-
-  browser_action_result.mutable_annotated_page_content()->Swap(
-      &fetch_result.annotated_page_content_result->proto);
-
-  // TODO(bokan): Can we avoid a copy here?
-  auto& data = fetch_result.screenshot_result->jpeg_data;
-  browser_action_result.set_screenshot(data.data(), data.size());
-  browser_action_result.set_screenshot_mime_type(kMimeTypeJpeg);
-
-  browser_action_result.set_action_result(actor::IsOk(*action_result) ? 1 : 0);
-  RunLater(
-      base::BindOnce(std::move(callback), std::move(browser_action_result)));
-}
-
-void ActorKeyedService::OnActionFinished(
-    base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
-        callback,
-    TaskId task_id,
-    actor::mojom::ActionResultPtr action_result,
-    std::optional<size_t> index_of_failed_action,
-    std::vector<ActionResultWithLatencyInfo> action_results) {
-  auto* task = GetTask(actor::TaskId(task_id));
-  CHECK(task);
-  tabs::TabInterface* tab = task->GetTabForObservation();
-  if (!tab) {
-    VLOG(1) << "Execute Action failed: Tab not found.";
-    optimization_guide::proto::BrowserActionResult result;
-    result.set_action_result(0);
-    RunLater(base::BindOnce(std::move(callback), std::move(result)));
-    return;
-  }
-  int32_t tab_id = tab->GetHandle().raw_value();
-  RequestTabObservation(
-      *tab, task_id,
-      base::BindOnce(&ActorKeyedService::ConvertToBrowserActionResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     task_id, tab_id, tab->GetContents()->GetLastCommittedURL(),
-                     std::move(action_result), std::move(action_results)));
 }
 
 void ActorKeyedService::PerformActions(

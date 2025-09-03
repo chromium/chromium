@@ -145,7 +145,7 @@ void ActorTask::OnFinishedAct(
     return;
   }
   SetState(State::kReflecting);
-  std::move(callback).Run(std::move(result), std::nullopt,
+  std::move(callback).Run(std::move(result), index_of_failed_action,
                           std::move(action_results));
 }
 
