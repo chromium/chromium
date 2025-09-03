@@ -8,10 +8,6 @@
 #import "base/feature_list.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 
-// Feature flag to enable automatic passkey upgrade for the credential
-// provider.
-BASE_DECLARE_FEATURE(kCredentialProviderAutomaticPasskeyUpgrade);
-
 // Feature flag to enable passkey PRF support in the credential provider.
 BASE_DECLARE_FEATURE(kCredentialProviderPasskeyPRF);
 

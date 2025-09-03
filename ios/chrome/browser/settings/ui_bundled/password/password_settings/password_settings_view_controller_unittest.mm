@@ -7,11 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_timeouts.h"
-#import "ios/chrome/browser/credential_provider/model/features.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_consumer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -99,10 +96,6 @@ class PasswordSettingsViewControllerTest : public PlatformTest {
 };
 
 TEST_F(PasswordSettingsViewControllerTest, OrdersSectionsCorrectly) {
-  // TODO(crbug.com/355666571): Clean up after launch.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kCredentialProviderAutomaticPasskeyUpgrade);
-
   // Ensure all sections are visible.
   [controller() setCanBulkMove:YES localPasswordsCount:2];
   [controller() setSavingPasswordsEnabled:YES managedByPolicy:NO];
@@ -252,13 +245,7 @@ TEST_F(PasswordSettingsViewControllerTest, TurnOnAutoFillButtonMetric) {
 }
 
 TEST_F(PasswordSettingsViewControllerTest,
-       DisplaysAutomaticPasskeyUpgradesSwitchWithFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kCredentialProviderAutomaticPasskeyUpgrade);
-
-  // Re-create the controller so that the enabled flag is picked up.
-  CreateController();
+       DisplaysAutomaticPasskeyUpgradesSwitch) {
   [controller() setSavingPasswordsEnabled:YES managedByPolicy:NO];
   [controller() setSavingPasskeysEnabled:YES];
 

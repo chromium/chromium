@@ -197,9 +197,6 @@ extern const char kContentPushNotificationsDescription[];
 extern const char kContextualPanelName[];
 extern const char kContextualPanelDescription[];
 
-extern const char kCredentialProviderAutomaticPasskeyUpgradeName[];
-extern const char kCredentialProviderAutomaticPasskeyUpgradeDescription[];
-
 extern const char kCredentialProviderPasskeyLargeBlobName[];
 extern const char kCredentialProviderPasskeyLargeBlobDescription[];
 

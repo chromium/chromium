@@ -11,7 +11,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
-#import "base/feature_list.h"
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -20,11 +19,8 @@
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/credential_provider/model/features.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
@@ -120,12 +116,6 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
     should_show_item = !passwords_in_other_apps_enabled;
   }
   return should_show_item;
-}
-
-// Whether automatic passkey upgrades feature is enabled.
-BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
-  return base::FeatureList::IsEnabled(
-      kCredentialProviderAutomaticPasskeyUpgrade);
 }
 
 }  // namespace
@@ -1247,8 +1237,7 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 // Automatic passkey upgrades switch should be displayed if the feature is
 // enabled and both saving passkeys and password setting is enabled.
 - (BOOL)shouldDisplayPasskeyUpgradesSwitch {
-  return AutomaticPasskeyUpgradeFeatureEnabled() && _savingPasswordsEnabled &&
-         _savingPasskeysEnabled;
+  return _savingPasswordsEnabled && _savingPasskeysEnabled;
 }
 
 - (void)updateDeleteAllCredentialsSection {

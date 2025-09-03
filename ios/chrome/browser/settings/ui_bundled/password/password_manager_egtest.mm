@@ -741,11 +741,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
     config.iph_feature_enabled = "IPH_iOSPromoPasswordManagerWidget";
   }
 
-  if ([self isRunningTest:@selector(testAutomaticPasskeyUpgradesPrefToggle)]) {
-    config.features_enabled.push_back(
-        kCredentialProviderAutomaticPasskeyUpgrade);
-  }
-
   if ([self isRunningTest:@selector(testTappingInfoButtonForHiddenPasskey)]) {
     config.features_enabled.push_back(kCredentialProviderSignalAPI);
   }
