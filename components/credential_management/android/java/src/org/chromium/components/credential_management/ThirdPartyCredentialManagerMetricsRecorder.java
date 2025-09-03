@@ -32,9 +32,9 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public final class ThirdPartyCredentialManagerMetricsRecorder {
     public static final String STORE_RESULT_HISTOGRAM_NAME =
-            "PasswordManager.CredentialRequest.ThirdParty.Store";
+            "PasswordManager.CredentialRequest.ThirdParty.Store2";
     public static final String GET_RESULT_HISTOGRAM_NAME =
-            "PasswordManager.CredentialRequest.ThirdParty.Get";
+            "PasswordManager.CredentialRequest.ThirdParty.Get2";
 
     private ThirdPartyCredentialManagerMetricsRecorder() {}
 
