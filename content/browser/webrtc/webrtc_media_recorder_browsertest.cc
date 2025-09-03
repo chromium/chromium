@@ -177,8 +177,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
   MakeTypicalCall("testTwoChannelAudio();", kMediaRecorderHtmlFile);
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/438812886
+#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/379271425): Re-enable once flakiness is addressed.
 #define MAYBE_RecordWithTransparency DISABLED_RecordWithTransparency
 #else
 #define MAYBE_RecordWithTransparency RecordWithTransparency
