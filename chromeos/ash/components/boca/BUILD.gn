@@ -12,6 +12,8 @@ static_library("boca") {
     "boca_metrics_manager.h",
     "boca_metrics_util.cc",
     "boca_metrics_util.h",
+    "boca_request.cc",
+    "boca_request.h",
     "boca_role_util.cc",
     "boca_role_util.h",
     "boca_session_manager.cc",
@@ -21,6 +23,8 @@ static_library("boca") {
     "boca_window_observer.h",
     "notifications/boca_notification_handler.cc",
     "notifications/boca_notification_handler.h",
+    "util.cc",
+    "util.h",
   ]
   deps = [
     # TODO(crbug.com/376673450):Clean up unused and unwanted dependencies.
@@ -43,8 +47,10 @@ static_library("boca") {
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//google_apis/common",
+    "//services/network/public/mojom",
     "//ui/base",
     "//ui/message_center",
+    "//url",
   ]
 }
 
@@ -139,6 +145,7 @@ source_set("unit_tests") {
 
   sources = [
     "boca_metrics_manager_unittest.cc",
+    "boca_request_unittest.cc",
     "boca_role_util_unittest.cc",
     "boca_session_manager_unittest.cc",
     "boca_session_util_unittest.cc",
