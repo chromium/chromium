@@ -364,3 +364,19 @@ passkeys won't satisfy ReAuth requirement (e.g. when uploading code, doing code
 reviews).
 
 You can still add and use other 2SV methods to sign into your Google account.
+
+**What should I expect to see when ReAuth is required?**
+
+ReAuth is required every 20 hours. When ReAuth is required you will see the
+following error when performing Gerrit remote operations like uploading CLs:
+
+```
+ReAuth is required
+
+If you are running this in a development environment, you can fix this by running:
+
+git credential-luci reauth
+```
+
+You will need to run `git credential-luci reauth` every 20 hours to avoid or
+resolve this issue. We recommend you ReAuth when you start your day.
