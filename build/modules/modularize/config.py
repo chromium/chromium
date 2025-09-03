@@ -29,6 +29,7 @@ SYSROOT_DIRS = {
     'android_toolchain',
     'debian_bullseye_amd64-sysroot',
     'debian_bullseye_arm64-sysroot',
+    'debian_bullseye_armhf-sysroot',
     'fuchsia-sdk',
     'MacOSX.platform',
     'win_toolchain',
