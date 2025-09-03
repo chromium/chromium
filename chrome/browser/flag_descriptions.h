@@ -668,6 +668,8 @@ extern const char kSearchInCCTName[];
 extern const char kSearchInCCTDescription[];
 extern const char kSearchInCCTAlternateTapHandlingName[];
 extern const char kSearchInCCTAlternateTapHandlingDescription[];
+extern const char kSettingsMultiColumnName[];
+extern const char kSettingsMultiColumnDescription[];
 extern const char kSettingsSingleActivityName[];
 extern const char kSettingsSingleActivityDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)

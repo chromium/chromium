@@ -17992,6 +17992,7 @@ from previous Chrome versions.
   <int value="1356161410" label="VizHitTestSurfaceLayer:enabled"/>
   <int value="1357749568" label="EnableLazyLoadImageForInvisiblePage:enabled"/>
   <int value="1357785514" label="AndroidNativePagesInNewTab:disabled"/>
+  <int value="1357967596" label="SettingsMultiColumn:disabled"/>
   <int value="1358271872"
       label="AutofillAndroidDesktopSuppressAccessoryOnEmpty:enabled"/>
   <int value="1359703966" label="Prerender2InNewTab:disabled"/>
@@ -19107,6 +19108,7 @@ from previous Chrome versions.
   <int value="1753732236" label="SignInProfileCreationEnterprise:enabled"/>
   <int value="1753735712"
       label="DropUnrecognizedTemplateUrlParameters:enabled"/>
+  <int value="1754345141" label="SettingsMultiColumn:enabled"/>
   <int value="1755024316" label="HostWindowsInAppShimProcess:disabled"/>
   <int value="1756736642" label="DynamicSearchUpdateAnimation:enabled"/>
   <int value="1756997013" label="TextSafetyClassifier:enabled"/>

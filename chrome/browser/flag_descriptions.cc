@@ -1118,6 +1118,14 @@ const char kSearchInCCTAlternateTapHandlingName[] =
 const char kSearchInCCTAlternateTapHandlingDescription[] =
     "Search in Chrome Custom Tabs Alternate Tap Handling";
 
+const char kSettingsMultiColumnName[] =
+    "Use MultiColumn mode in Chrome settings";
+const char kSettingsMultiColumnDescription[] =
+    "If the window of the clank is large enough, settings page will have two "
+    "column style, the main menu will be put at the left pane, and detailed "
+    "page will be shown at the right pane. This is expected to be used with "
+    "settings-single-activity mode.";
+
 const char kSettingsSingleActivityName[] =
     "Use SingleActivity mode in Chrome settings";
 const char kSettingsSingleActivityDescription[] =
