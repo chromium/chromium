@@ -7842,21 +7842,6 @@
             ]
         }
     ],
-    "CredentialProviderAutomaticPasskeyUpgrade": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CredentialProviderAutomaticPasskeyUpgrade"
-                    ]
-                }
-            ]
-        }
-    ],
     "CreditCardInfobarDisplayLength": [
         {
             "platforms": [
