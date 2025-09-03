@@ -64,7 +64,7 @@ UserPolicySigninServiceFactory::BuildServiceInstanceFor(
       browser_state->GetSharedURLLoaderFactory());
 }
 
-void UserPolicySigninServiceFactory::RegisterBrowserStatePrefs(
+void UserPolicySigninServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
   user_prefs->RegisterInt64Pref(policy_prefs::kLastPolicyCheckTime, 0);
   user_prefs->RegisterIntegerPref(
