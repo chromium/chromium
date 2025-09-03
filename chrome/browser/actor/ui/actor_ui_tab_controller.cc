@@ -41,11 +41,11 @@ ActorUiTabControllerFactory::CreateActorOverlayViewController(
 
 ActorUiTabController::ActorUiTabController(
     tabs::TabInterface& tab,
-    ActorKeyedService* actor_service,
+    ActorKeyedService* actor_keyed_service,
     std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory)
     : ActorUiTabControllerInterface(tab),
       tab_(tab),
-      actor_keyed_service_(actor_service),
+      actor_keyed_service_(actor_keyed_service),
       controller_factory_(std::move(controller_factory)),
       update_ui_debounce_timer_(
           FROM_HERE,

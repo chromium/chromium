@@ -108,6 +108,7 @@ class ActorKeyedService : public KeyedService {
   // Returns an acting task on provided `tab`. A null TaskId is returned if no
   // task is acting on `tab`.
   TaskId IsAnyTaskActingOnTab(const tabs::TabInterface& tab) const;
+
   Profile* GetProfile();
 
   using TabObservationResult = base::expected<

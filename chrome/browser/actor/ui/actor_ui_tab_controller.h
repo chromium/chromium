@@ -35,7 +35,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
  public:
   ActorUiTabController(
       tabs::TabInterface& tab,
-      ActorKeyedService* actor_service,
+      ActorKeyedService* actor_keyed_service,
       std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory);
   ~ActorUiTabController() override;
   DECLARE_USER_DATA(ActorUiTabController);
