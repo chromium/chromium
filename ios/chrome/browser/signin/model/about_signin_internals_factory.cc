@@ -50,7 +50,7 @@ AboutSigninInternalsFactory::BuildServiceInstanceFor(
   return service;
 }
 
-void AboutSigninInternalsFactory::RegisterBrowserStatePrefs(
+void AboutSigninInternalsFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
   AboutSigninInternals::RegisterPrefs(user_prefs);
 }

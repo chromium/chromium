@@ -46,7 +46,7 @@ AccountInvestigatorFactory::BuildServiceInstanceFor(
   return std::move(investigator);
 }
 
-void AccountInvestigatorFactory::RegisterBrowserStatePrefs(
+void AccountInvestigatorFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   AccountInvestigator::RegisterPrefs(registry);
 }

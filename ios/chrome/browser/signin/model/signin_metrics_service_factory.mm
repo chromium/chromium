@@ -45,7 +45,7 @@ SigninMetricsServiceFactory::BuildServiceInstanceFor(
       GetApplicationContext()->GetActivePrimaryAccountsMetricsRecorder());
 }
 
-void SigninMetricsServiceFactory::RegisterBrowserStatePrefs(
+void SigninMetricsServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   SigninMetricsService::RegisterProfilePrefs(registry);
 }

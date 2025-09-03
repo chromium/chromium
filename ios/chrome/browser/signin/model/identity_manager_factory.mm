@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/signin/model/device_accounts_provider_impl.h"
 #import "ios/chrome/browser/signin/model/signin_client_factory.h"
 
-void IdentityManagerFactory::RegisterBrowserStatePrefs(
+void IdentityManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   signin::IdentityManager::RegisterProfilePrefs(registry);
 }

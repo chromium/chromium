@@ -94,7 +94,7 @@ AuthenticationServiceFactory::BuildServiceInstanceFor(
       base::BindOnce(&BuildAuthenticationServiceDelegate), context);
 }
 
-void AuthenticationServiceFactory::RegisterBrowserStatePrefs(
+void AuthenticationServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   AuthenticationService::RegisterPrefs(registry);
 }
