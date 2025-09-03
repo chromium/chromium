@@ -46,7 +46,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/pdf_resources_map.h"
 #include "chrome/grit/print_preview_resources.h"
 #include "chrome/grit/print_preview_resources_map.h"
 #include "components/device_event_log/device_event_log.h"
@@ -369,7 +368,8 @@ void CreateAndAddPrintPreviewUISource(Profile* profile) {
       base::StrCat({webui::kDefaultTrustedTypesPolicies,
                     " print-preview-plugin-loader;"}));
   AddPrintPreviewStrings(source);
-  source->AddResourcePaths(kPdfResources);
+  source->AddResourcePaths(pdf_extension_util::GetResources(
+      pdf_extension_util::PdfViewerContext::kPrintPreview));
   SetupPrintPreviewPlugin(source);
   AddPrintPreviewFlags(source, profile);
 }

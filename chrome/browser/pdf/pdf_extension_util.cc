@@ -4,19 +4,25 @@
 
 #include "chrome/browser/pdf/pdf_extension_util.h"
 
+#include <array>
 #include <string>
+#include <vector>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/pdf/pdf_extension_util.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/pdf_resources_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/zoom/page_zoom_constants.h"
 #include "content/public/browser/browser_context.h"
@@ -307,6 +313,43 @@ void AddAdditionalData(content::BrowserContext* context,
   dict->Set("pdfSaveToDriveHelpCenterURL",
             chrome::kPdfViewerSaveToDriveHelpCenterURL);
 #endif
+}
+
+std::vector<webui::ResourcePath> GetResources(PdfViewerContext context) {
+  static constexpr auto kExcludeFromPdfViewer =
+      std::to_array<std::string_view>({
+          "pdf/index_print.html",
+          "pdf/main_print.js",
+          "pdf/pdf_print_wrapper.js",
+      });
+  static constexpr auto kExcludeFromPrintPreview =
+      std::to_array<std::string_view>({
+          "pdf/index.html",
+          "pdf/main.js",
+          "pdf/pdf_viewer_wrapper.js",
+      });
+  base::span<const std::string_view> exclusions;
+
+  switch (context) {
+    case PdfViewerContext::kPdfViewer:
+      exclusions = kExcludeFromPdfViewer;
+      break;
+    case PdfViewerContext::kPrintPreview:
+      exclusions = kExcludeFromPrintPreview;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  std::vector<webui::ResourcePath> resources;
+  resources.reserve(std::size(kPdfResources));
+  for (const webui::ResourcePath& resource : kPdfResources) {
+    if (base::Contains(exclusions, resource.path)) {
+      continue;
+    }
+    resources.push_back(resource);
+  }
+  return resources;
 }
 
 bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host) {

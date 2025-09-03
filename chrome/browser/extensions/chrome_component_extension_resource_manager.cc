@@ -38,8 +38,8 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include <utility>
+
 #include "chrome/browser/pdf/pdf_extension_util.h"
-#include "chrome/grit/pdf_resources_map.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
@@ -128,7 +128,8 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
-  AddComponentResourceEntries(kPdfResources);
+  AddComponentResourceEntries(pdf_extension_util::GetResources(
+      pdf_extension_util::PdfViewerContext::kPdfViewer));
 
   // ResourceBundle is not always initialized in unit tests.
   if (ui::ResourceBundle::HasSharedInstance()) {
