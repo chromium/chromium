@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
@@ -25,10 +26,9 @@ namespace {
 const CGFloat kButtonHeight = 50.0;
 const CGFloat kButtonCornerRadius = 8.0;
 const CGFloat kButtonSpacing = 12.0;
+const CGFloat kButtonMaxWidth = 500;
 const CGFloat kContentPadding = 16.0;
 const CGFloat kTopSpacingHeight = 5.0;
-const CGFloat kOmniboxHeight = 50.0;
-const CGFloat kOmniboxRadius = 22.5;
 const CGFloat kPinchIconSize = 18.0;
 const CGFloat kMaximumZoomScale = 5.0;
 const CGFloat kSectionSpacing = 24.0;
@@ -52,6 +52,8 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
   UIScrollView* _scrollView;
   // Stack view to hold the pinch instruction views (label and icon).
   UIStackView* _pinchInstructionsView;
+  // Constraint for the width of the fake omnibox.
+  NSLayoutConstraint* _omniboxWidthConstraint;
 }
 
 @end
@@ -86,6 +88,12 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
   [self setupGradientView];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  [self updateOmniboxWidth];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   [self updateMinimumZoomScale];
@@ -105,6 +113,7 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
                               context) {
                         [weakSelf updateMinimumZoomScale];
                         [weakSelf centerImageView];
+                        [weakSelf updateOmniboxWidth];
                       }];
 }
 
@@ -182,9 +191,14 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
       [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
   UIView* omniboxView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
   omniboxView.clipsToBounds = YES;
-  omniboxView.layer.cornerRadius = kOmniboxRadius;
   omniboxView.translatesAutoresizingMaskIntoConstraints = NO;
   [topSection addArrangedSubview:omniboxView];
+
+  CGFloat omniboxHeight = content_suggestions::FakeOmniboxHeight();
+  omniboxView.layer.cornerRadius = omniboxHeight / 2;
+
+  _omniboxWidthConstraint =
+      [omniboxView.widthAnchor constraintEqualToConstant:0],
 
   [NSLayoutConstraint activateConstraints:@[
     // Top section container.
@@ -198,8 +212,8 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
                                               constant:-kContentPadding],
 
     // Omnibox view.
-    [omniboxView.widthAnchor constraintEqualToAnchor:topSection.widthAnchor],
-    [omniboxView.heightAnchor constraintEqualToConstant:kOmniboxHeight]
+    _omniboxWidthConstraint,
+    [omniboxView.heightAnchor constraintEqualToConstant:omniboxHeight]
   ]];
 }
 
@@ -251,6 +265,16 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
          forControlEvents:UIControlEventTouchUpInside];
   [bottomStack addArrangedSubview:cancelButton];
 
+  // Use two non-required constraints to constrain the width normally, but also
+  // add a max width when the view gets too wide (e.g. landscape).
+  NSLayoutConstraint* buttonMaxWidthConstraint =
+      [_bottomSection.widthAnchor constraintEqualToConstant:kButtonMaxWidth];
+  NSLayoutConstraint* buttonWidthPaddingConstraint =
+      [_bottomSection.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
+                                                 constant:-2 * kContentPadding];
+  buttonMaxWidthConstraint.priority = UILayoutPriorityDefaultHigh;
+  buttonWidthPaddingConstraint.priority = UILayoutPriorityDefaultHigh;
+
   // Constraints for stack view and button heights.
   [NSLayoutConstraint activateConstraints:@[
     // Bottom section container.
@@ -258,12 +282,9 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
                        constant:-(kContentPadding + kBottomHSpacingHeight +
                                   kButtonSpacing)],
-    [_bottomSection.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor
-                       constant:kContentPadding],
-    [_bottomSection.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor
-                       constant:-kContentPadding],
+    buttonMaxWidthConstraint, buttonWidthPaddingConstraint,
+    [_bottomSection.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
 
     // Button heights.
     [saveButton.heightAnchor constraintEqualToConstant:kButtonHeight],
@@ -332,6 +353,19 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
       constraintEqualToAnchor:gradientView.topAnchor
                      constant:kGradientSpacingAboveInstructions]
       .active = YES;
+}
+
+// Updates the width of the fake omnibox based on the current view width.
+- (void)updateOmniboxWidth {
+  CGFloat contentWidth = std::max<CGFloat>(
+      0, self.view.bounds.size.width - self.view.safeAreaInsets.left -
+             self.view.safeAreaInsets.right);
+  if (contentWidth == 0) {
+    return;
+  }
+
+  _omniboxWidthConstraint.constant =
+      content_suggestions::SearchFieldWidth(contentWidth, self.traitCollection);
 }
 
 // Updates the minimum zoom scale to fill the screen.
