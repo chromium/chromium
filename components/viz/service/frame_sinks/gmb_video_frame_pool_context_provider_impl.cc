@@ -74,10 +74,10 @@ class GmbVideoFramePoolContext
   // MappableSI is created without clients providing a GMB handle, the shared
   // image created is truly mappable to the CPU memory. Whereas in other case,
   // when a MappableSI is created from an existing handle, it might end up not
-  // being CPU mappable, for eg, on Android. That is fine and is actually a
-  // requirement in many cases today where clients never Map() the underlying
-  // buffer to CPU memory and just uses the underlying external or internal GMB
-  // handle to refer to the GPU memory.
+  // being CPU mappable. That is fine and is actually a requirement in many
+  // cases today where clients never Map() the underlying buffer to CPU memory
+  // and just uses the underlying external or internal GMB handle to refer to
+  // the GPU memory.
   // In order to keep the same behavior as rest of the CreateSharedImage()
   // methods in this class, this method first creates a GMB handle and then
   // creates a shared image from it. Directly creating a MappableSI without
@@ -93,6 +93,12 @@ class GmbVideoFramePoolContext
       const gfx::ColorSpace& color_space,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
+#if BUILDFLAG(IS_ANDROID)
+    // Creation of native buffer handles is not supported on Android (the
+    // only way that a non-null GpuMemoryBufferHandle can be created on
+    // Android is by importing an external AHB).
+    return nullptr;
+#else
     // Create a native GMB handle first.
     gfx::GpuMemoryBufferHandle buffer_handle =
         gpu_memory_buffer_factory_->CreateNativeGmbHandle(size, format,
@@ -110,6 +116,7 @@ class GmbVideoFramePoolContext
     }
     sync_token = sii_in_process_->GenVerifiedSyncToken();
     return client_shared_image;
+#endif
   }
 
   // Destroy a SharedImage created by this interface.
