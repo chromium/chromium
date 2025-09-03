@@ -116,6 +116,54 @@ FontDescription ScaledFontDescription(const Font& font,
   return scaled_desc;
 }
 
+float ComputeAdditionalPaintTimeScale(const InlineItemsData& items_data,
+                                      LayoutUnit available_width,
+                                      LayoutUnit epsilon,
+                                      WritingMode writing_mode,
+                                      HarfBuzzShaper& shaper,
+                                      ShapeResultSpacing<String>& spacing,
+                                      const InlineCursor& line,
+                                      float scale,
+                                      std::optional<float> limit,
+                                      LayoutUnit static_total_size) {
+  LayoutUnit flexible_total_size;
+  for (InlineCursor descendants = line.CursorForDescendants(); descendants;
+       descendants.MoveToNextInlineLeaf()) {
+    const auto& current = descendants.Current();
+    if (!current.IsText()) {
+      continue;
+    }
+    const Font& font = *current.Style().GetFont();
+    bool restricted = false;
+    FontDescription scaled_desc =
+        ScaledFontDescription(font, scale, limit, restricted);
+    if (restricted) {
+      // We won't apply additional scale if font-size is restricted by `limit`.
+      return 1.0f;
+    }
+    Font* scaled_font =
+        MakeGarbageCollected<Font>(scaled_desc, font.GetFontSelector());
+    auto iter = std::ranges::find_if(
+        items_data.items, [&](const Member<InlineItem>& item) {
+          return item->StartOffset() <= current.TextStartOffset() &&
+                 current.TextEndOffset() <= item->EndOffset();
+        });
+    CHECK_NE(iter, items_data.items.end());
+    ShapeResult* shape_result =
+        ShapeForFit(**iter, current.TextStartOffset(), current.TextEndOffset(),
+                    shaper, *scaled_font, items_data.segments.get());
+    if (spacing.SetSpacing(scaled_desc)) {
+      shape_result->ApplySpacing(spacing);
+    }
+    flexible_total_size += shape_result->SnappedWidth().ClampNegativeToZero();
+  }
+  LayoutUnit remaining_space =
+      available_width - (flexible_total_size + static_total_size);
+  return remaining_space.Abs() >= epsilon
+             ? (flexible_total_size + remaining_space) / flexible_total_size
+             : 1.0f;
+}
+
 }  // namespace
 
 bool ShouldApplyFitText(const InlineNode node) {
@@ -202,6 +250,7 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
   if (fit_text.Target() != FitTextTarget::kConsistent) {
     return ParagraphScale();
   }
+  float additional_paint_time_scale = 1.0f;
   for (InlineCursor cursor(*box_fragment, *items); cursor;
        cursor.MoveToNextSkippingChildren()) {
     if (!cursor.Current().IsLineBox()) {
@@ -214,11 +263,13 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
       continue;
     }
     LayoutUnit flexible_total_size;
+    LayoutUnit flexible_total_size_including_letter_spacing;
     bool is_font_size_method = fit_text.Method() == FitTextMethod::kFontSize;
     const InlineItemsData& items_data =
         node.ItemsData(cursor.CurrentItem()->UsesFirstLineStyle());
     HarfBuzzShaper shaper(items_data.text_content);
     ShapeResultSpacing<String> spacing(items_data.text_content);
+    const auto limit = ComputeSizeLimit(fit_text, is_grow, node);
     for (InlineCursor descendants = cursor.CursorForDescendants(); descendants;
          descendants.MoveToNextInlineLeaf()) {
       const auto& current = descendants.Current();
@@ -244,18 +295,31 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
         flexible_total_size +=
             ToLogicalSize(current.Size(), writing_mode).inline_size;
       }
+      flexible_total_size_including_letter_spacing +=
+          ToLogicalSize(current.Size(), writing_mode).inline_size;
     }
     if (!flexible_total_size ||
         remaining_space + flexible_total_size <= LayoutUnit()) {
       continue;
     }
     float scale = (remaining_space + flexible_total_size) / flexible_total_size;
-    // TODO(crbug.com/417306102): Respect to fit_text.SizeLimit().
-    minimum_scale = std::min(minimum_scale, scale);
+    if (scale < minimum_scale) {
+      minimum_scale = scale;
+      if (fit_text.Method() == FitTextMethod::kFontSize) {
+        // This value should exclude letter-spacing because
+        // ComputeAdditionalPaintTimeScale() is for the paint-time scaling,
+        // which scales letter-spacing.
+        LayoutUnit static_total_size =
+            available_width - remaining_space -
+            flexible_total_size_including_letter_spacing;
+        additional_paint_time_scale = ComputeAdditionalPaintTimeScale(
+            items_data, available_width, epsilon, writing_mode, shaper, spacing,
+            cursor, scale, limit, static_total_size);
+      }
+    }
   }
-  // TODO(crbug.com/417306102): Compute additional_paint_time_scale for the
-  // font-size method.
-  return {std::isfinite(minimum_scale) ? minimum_scale : 1.0f, 1.0f};
+  return {std::isfinite(minimum_scale) ? minimum_scale : 1.0f,
+          additional_paint_time_scale};
 }
 
 LineFitter::LineFitter(const InlineNode node, LineInfo* line_info)
