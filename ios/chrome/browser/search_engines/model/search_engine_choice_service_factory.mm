@@ -57,7 +57,7 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
   return service;
 }
 
-void SearchEngineChoiceServiceFactory::RegisterBrowserStatePrefs(
+void SearchEngineChoiceServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   search_engines::SearchEngineChoiceService::RegisterProfilePrefs(registry);
 }

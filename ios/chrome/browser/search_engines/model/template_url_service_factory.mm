@@ -88,7 +88,7 @@ TemplateURLServiceFactory::TemplateURLServiceFactory()
 
 TemplateURLServiceFactory::~TemplateURLServiceFactory() {}
 
-void TemplateURLServiceFactory::RegisterBrowserStatePrefs(
+void TemplateURLServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   DefaultSearchManager::RegisterProfilePrefs(registry);
   TemplateURLService::RegisterProfilePrefs(registry);
