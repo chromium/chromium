@@ -123,6 +123,7 @@ void CheckGarbageCollectionLimitsInitialized(
   DCHECK_LE(0, limits.bytes_baseline);
   DCHECK_LE(0, limits.bytes_limit);
   DCHECK_LE(0, limits.bytes_current);
+  DCHECK_LE(0, limits.bytes_max);
 }
 
 // Returns true if |event| contains valid cpp histogram values.
@@ -181,9 +182,10 @@ void CheckUnifiedEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
   DCHECK_LE(0, event.main_thread_collection_weight_in_percent);
 }
 
-static constexpr size_t kMinSize = 1;
-static constexpr size_t kMaxSize = 4 * 1024 * 1024;
-static constexpr size_t kNumBuckets = 50;
+constexpr size_t kMinSize = 1;
+constexpr size_t kMaxSize = 4 * 1024 * 1024;
+constexpr size_t kMaxSizeLarge = 32 * 1024 * 1024;
+constexpr size_t kNumBuckets = 50;
 
 void ReportHistogramTimesAllGcPhases(
     std::string_view prefix,
@@ -224,12 +226,15 @@ void ReportHistogramCollectionSizes(
 void ReportHistogramCollectionLimits(
     std::string_view prefix,
     const v8::metrics::GarbageCollectionLimits& statistics) {
-  base::UmaHistogramCustomCounts(base::StrCat({prefix, ".Limit.Full"}),
+  base::UmaHistogramCustomCounts(base::StrCat({prefix, ".Limit2.Full"}),
                                  CappedSizeInKB(statistics.bytes_limit),
-                                 kMinSize, kMaxSize, kNumBuckets);
-  base::UmaHistogramCustomCounts(base::StrCat({prefix, ".Current.Full"}),
+                                 kMinSize, kMaxSizeLarge, kNumBuckets);
+  base::UmaHistogramCustomCounts(base::StrCat({prefix, ".Current2.Full"}),
                                  CappedSizeInKB(statistics.bytes_current),
-                                 kMinSize, kMaxSize, kNumBuckets);
+                                 kMinSize, kMaxSizeLarge, kNumBuckets);
+  base::UmaHistogramCustomCounts(base::StrCat({prefix, ".Max.Full"}),
+                                 CappedSizeInKB(statistics.bytes_max), kMinSize,
+                                 kMaxSizeLarge, kNumBuckets);
 }
 
 void ReportV8FullHistograms(
@@ -293,6 +298,10 @@ void ReportV8FullHistograms(
   ReportHistogramCollectionLimits(
       base::StrCat({"V8.GC.Cycle", priority, ".Consumed.Global"}),
       event.global_consumed);
+  base::UmaHistogramCustomCounts(
+      base::StrCat({"V8.GC.Cycle", priority, ".ExternalMemory.Full"}),
+      CappedSizeInKB(event.external_memory_bytes), kMinSize, kMaxSizeLarge,
+      kNumBuckets);
 
   /* Report efficacy metrics: */
   base::UmaHistogramCustomCounts(

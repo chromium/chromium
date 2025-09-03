@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle{Priority}.Consumed.{Scope}.Current.Full"
+<histogram name="V8.GC.Cycle{Priority}.Consumed.{Scope}.Current2.Full"
     units="KB" expires_after="2026-02-22">
   <owner>etiennep@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -571,7 +571,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle{Priority}.Consumed.{Scope}.Limit.Full" units="KB"
+<histogram name="V8.GC.Cycle{Priority}.Consumed.{Scope}.Limit2.Full" units="KB"
     expires_after="2026-02-22">
   <owner>etiennep@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -579,6 +579,27 @@ chromium-metrics-reviews@google.com.
     Allocation limit on {Scope} consumed memory used before a {Priority} full
     garbage collection of the unified heap. Reported at the end of the garbage
     collection cycle.
+  </summary>
+  <token key="Scope">
+    <variant name="Global" summary="global"/>
+    <variant name="OldGeneration" summary="old generation"/>
+  </token>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Consumed.{Scope}.Max.Full" units="KB"
+    expires_after="2026-02-22">
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Hard cap on allocation limit for {Scope} consumed memory used before a
+    {Priority} full garbage collection of the unified heap. Reported at the end
+    of the garbage collection cycle.
   </summary>
   <token key="Scope">
     <variant name="Global" summary="global"/>
@@ -659,6 +680,22 @@ chromium-metrics-reviews@google.com.
     The speed at which a {Priority} young generation garbage collection of the
     JavaScript heap reclaims unused memory. Reported at the end of the garbage
     collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.ExternalMemory.Full" units="KB"
+    expires_after="2026-02-22">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    The external memory size right before a {Priority} full garbage collection
+    of the unified heap. Reported at the end of the garbage collection cycle.
   </summary>
   <token key="Priority">
     <variant name="" summary="(aggregated across all priorities)"/>
