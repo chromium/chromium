@@ -38,6 +38,7 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
 
   result->is_active = states.is_active;
   result->is_selected = states.is_selected;
+  result->is_blocked = data.blocked;
 
   return result;
 }

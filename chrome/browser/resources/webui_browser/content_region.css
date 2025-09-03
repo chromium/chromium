@@ -16,6 +16,10 @@
   overflow: hidden;
 }
 
+:host(.modalScrim) {
+  filter: brightness(50%);
+}
+
 cr-tab-webview {
   display: none;
   flex-direction: column;

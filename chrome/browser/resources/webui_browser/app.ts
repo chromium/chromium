@@ -115,6 +115,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
       displayUrl = activeTabUrl;
     }
     this.$.address.setInputText(displayUrl);
+    this.$.contentRegion.classList.toggle('modalScrim', tabData.isBlocked);
   }
 
   protected onLaunchDevtoolsClick_(_: Event) {

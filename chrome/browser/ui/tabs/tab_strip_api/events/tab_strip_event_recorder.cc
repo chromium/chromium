@@ -86,6 +86,12 @@ void TabStripEventRecorder::TabChangedAt(content::WebContents* contents,
   Handle(ToEvent(tab_strip_model_adapter_, index, change_type));
 }
 
+void TabStripEventRecorder::TabBlockedStateChanged(
+    content::WebContents* contents,
+    int index) {
+  TabChangedAt(contents, index, TabChangeType::kAll);
+}
+
 void TabStripEventRecorder::OnTabGroupChanged(const TabGroupChange& change) {
   switch (change.type) {
     case TabGroupChange::Type::kCreated:
