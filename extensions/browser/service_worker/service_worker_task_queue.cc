@@ -565,7 +565,7 @@ void ServiceWorkerTaskQueue::DeleteAllPendingTasks(
 bool ServiceWorkerTaskQueue::HasPendingTasks(
     const SequencedContextId& context_id) {
   std::vector<PendingTask>* tasks = pending_tasks(context_id);
-  return tasks ? !tasks->empty() : false;
+  return tasks && !tasks->empty();
 }
 
 void ServiceWorkerTaskQueue::MaybeStartWorker(

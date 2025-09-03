@@ -38,7 +38,7 @@ bool GetCurrentDeveloperMode(int context_id) {
   base::AutoLock lock(GetDeveloperModeMapLock());
   CurrentDeveloperModeMap& map = GetDeveloperModeMap();
   auto iter = map.find(context_id);
-  return iter == map.end() ? false : iter->second;
+  return iter != map.end() && iter->second;
 }
 
 // static

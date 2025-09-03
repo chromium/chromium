@@ -674,12 +674,10 @@ DeclarativeNetRequestIsRegexSupportedFunction::Run() {
   auto params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
-  bool is_case_sensitive = params->regex_options.is_case_sensitive
-                               ? *params->regex_options.is_case_sensitive
-                               : true;
-  bool require_capturing = params->regex_options.require_capturing
-                               ? *params->regex_options.require_capturing
-                               : false;
+  bool is_case_sensitive =
+      params->regex_options.is_case_sensitive.value_or(true);
+  bool require_capturing =
+      params->regex_options.require_capturing.value_or(false);
   re2::RE2 regex(params->regex_options.regex,
                  declarative_net_request::CreateRE2Options(is_case_sensitive,
                                                            require_capturing));

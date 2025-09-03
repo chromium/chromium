@@ -28,7 +28,7 @@ OfflineEnabledInfo::~OfflineEnabledInfo() = default;
 bool OfflineEnabledInfo::IsOfflineEnabled(const Extension* extension) {
   OfflineEnabledInfo* info = static_cast<OfflineEnabledInfo*>(
       extension->GetManifestData(keys::kOfflineEnabled));
-  return info ? info->offline_enabled : false;
+  return info && info->offline_enabled;
 }
 
 OfflineEnabledHandler::OfflineEnabledHandler() = default;

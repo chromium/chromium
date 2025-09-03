@@ -78,13 +78,13 @@ KioskModeInfo* KioskModeInfo::Get(const Extension* extension) {
 // static
 bool KioskModeInfo::IsKioskEnabled(const Extension* extension) {
   KioskModeInfo* info = Get(extension);
-  return info ? info->kiosk_status != NONE : false;
+  return info && info->kiosk_status != NONE;
 }
 
 // static
 bool KioskModeInfo::IsKioskOnly(const Extension* extension) {
   KioskModeInfo* info = Get(extension);
-  return info ? info->kiosk_status == ONLY : false;
+  return info && info->kiosk_status == ONLY;
 }
 
 // static

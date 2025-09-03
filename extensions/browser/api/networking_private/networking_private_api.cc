@@ -355,9 +355,8 @@ ExtensionFunction::ResponseAction NetworkingPrivateGetNetworksFunction::Run() {
 
   std::string network_type = private_api::ToString(params->filter.network_type);
   const bool configured_only =
-      params->filter.configured ? *params->filter.configured : false;
-  const bool visible_only =
-      params->filter.visible ? *params->filter.visible : false;
+      params->filter.configured && *params->filter.configured;
+  const bool visible_only = params->filter.visible && *params->filter.visible;
   const int limit =
       params->filter.limit ? *params->filter.limit : kDefaultNetworkListLimit;
 
