@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -296,7 +297,7 @@ gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForWebAppFrameToolbar(
   const int available_width = caption_button_container_->x() - x;
   int painted_height = GetTopInset(false);
   if (browser_view()->GetTabStripVisible()) {
-    painted_height += browser_view()->tabstrip()->GetPreferredSize().height();
+    painted_height += browser_view()->GetTabStripHeight();
   }
   return gfx::Rect(x, 0, std::max(0, available_width), painted_height);
 }
@@ -436,7 +437,11 @@ int BrowserNonClientFrameViewChromeOS::NonClientHitTest(
     // should reside in the TabStrip class.
     gfx::Point client_point(point);
     View::ConvertPointToTarget(this, frame()->client_view(), &client_point);
-    gfx::Rect tabstrip_shadow_bounds(browser_view()->tabstrip()->bounds());
+    gfx::Rect tabstrip_shadow_bounds(
+        browser_view()
+            ->tab_strip_view()
+            ->GetViewByElementId(kTabStripElementId)
+            ->bounds());
     constexpr int kTabShadowHeight = 4;
     tabstrip_shadow_bounds.set_height(kTabShadowHeight);
     if (tabstrip_shadow_bounds.Contains(client_point)) {
@@ -509,7 +514,7 @@ void BrowserNonClientFrameViewChromeOS::Layout(PassKey) {
 
   int painted_height = GetTopInset(false);
   if (browser_view()->GetTabStripVisible()) {
-    painted_height += browser_view()->tabstrip()->GetPreferredSize().height();
+    painted_height += browser_view()->GetTabStripHeight();
   }
 
   if (frame_header_) {
