@@ -13,6 +13,9 @@ export function getHtml(this: ComposeboxMatchElement) {
   return html`<!--_html_template_start_-->
 <div class="container" aria-hidden="true">
   <div id="focusIndicator"></div>
+  <div id="iconContainer">
+    <div id="icon" style="-webkit-mask-image: url(${this.iconPath_()});"></div>
+  </div>
   <div id="textContainer">
     ${this.computeContents_()}
   </div>

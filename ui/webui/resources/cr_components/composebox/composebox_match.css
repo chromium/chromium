@@ -10,8 +10,14 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --input-inline-spacing: 24px;
+  --input-inline-spacing: 12px;
   outline: none;
+  height: 44px;
+  display: block;
+}
+
+:host(:not([is-last])) {
+  padding-bottom: 2px;
 }
 
 .container {
@@ -21,7 +27,7 @@
   cursor: default;
   display: flex;
   font-size: 16px;
-  height: 36px;
+  height: 44px;
   line-height: 24px;
   position: relative;
 }
@@ -33,19 +39,37 @@
 
 #focusIndicator {
   background-color: var(--color-searchbox-results-focus-indicator);
-  border-radius: 3px;
+  border-radius: 4px;
   display: none;
-  margin-inline-start: -3.5px;
+  margin-inline-start: -4px;
   height: 100%;
   position: absolute;
-  width: 7px;
+  width: 8px;
 }
 
 :host(:is(:focus-visible, [selected])) #focusIndicator {
   display: block;
 }
 
+#iconContainer {
+  align-items: center;
+  display: flex;
+  padding-inline-start: 16px;
+  justify-content: center;
+}
+
+#icon {
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: cover;
+  background-color: var(--color-new-tab-page-composebox-results-icon);
+  height: 24px;
+  width: 24px;
+}
+
 #textContainer {
   align-content: center;
+  color: var(--color-new-tab-page-composebox-font-light);
+  font-size: 16px;
   padding-inline-start: var(--input-inline-spacing);
 }

@@ -43,7 +43,6 @@ export class ComposeboxMatchElement extends CrLitElement {
   accessor match: AutocompleteMatch;
 
   accessor matchIndex: number;
-
   private searchboxHandler_: SearchboxPageHandlerRemote;
 
   constructor() {
@@ -62,6 +61,10 @@ export class ComposeboxMatchElement extends CrLitElement {
       return '';
     }
     return mojoString16ToString(this.match.contents);
+  }
+
+  protected iconPath_(): string {
+    return this.match.iconPath;
   }
 
   private onMatchFocusin_() {

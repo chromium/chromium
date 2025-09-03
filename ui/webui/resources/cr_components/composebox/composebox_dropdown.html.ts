@@ -12,13 +12,14 @@ export function getHtml(this: ComposeboxDropdownElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   <div>
-    ${this.result?.matches.map((item) => html`
+    ${this.result?.matches.map((item, index) => html`
       <ntp-composebox-match
           tabindex="0"
           role="option"
           .match="${item}"
           .matchIndex="${this.matchIndex_(item)}"
-          ?selected="${this.isSelected_(item)}">
+          ?selected="${this.isSelected_(item)}"
+          ?is-last="${this.isLastMatch_(index)}">
       </ntp-composebox-match>
     `)}
   </div>

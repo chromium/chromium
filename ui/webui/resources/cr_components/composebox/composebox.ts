@@ -119,6 +119,10 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      showDropdown_: {
+        reflect: true,
+        type: Boolean,
+      },
       showErrorScrim_: {
         reflect: true,
         type: Boolean,
@@ -134,7 +138,6 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      showDropdown_: {type: Boolean},
     };
   }
 
