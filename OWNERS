@@ -70,7 +70,6 @@ per-file ios/third_party/ochamcrest/src=*
 per-file ios/third_party/webkit/src=*
 per-file ios_internal=*
 per-file media/cdm/api=*
-per-file native_client=*
 per-file net/third_party/quiche/src=*
 per-file remoting/android/internal=*
 per-file remoting/host/installer/linux/internal=*

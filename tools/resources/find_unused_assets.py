@@ -51,7 +51,6 @@ IGNORED_PATHSPECS = [
     ':!**/vectorcanvastest/**',
     ':!**/*unittest/**',
     ':!docs/**',
-    ':!native_client_sdk/**',
     ':!testing/**',
     ':!third_party/**',
     ':!tools/perf/page_sets/**',

@@ -49,8 +49,6 @@ DIRECTORIES_TO_SEARCH = [
     'ipc',
     'media',
     'mojo',
-    'native_client',
-    'native_client_sdk',
     'net',
     'pdf',
     'ppapi',
