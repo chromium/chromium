@@ -307,11 +307,12 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
                          flow_start_time_ - leak_dialog_display_time_);
   LogPasswordSavedOnStart(originator_);
   UpdateState(State::kWaitingForChangePasswordForm);
-
+  logs_uploader_ =
+      std::make_unique<ModelQualityLogsUploader>(originator_.get());
   if (base::FeatureList::IsEnabled(
           password_manager::features::kCheckLoginStateBeforePasswordChange)) {
     login_state_checker_ = std::make_unique<LoginStateChecker>(
-        originator_.get(),
+        originator_.get(), logs_uploader_.get(),
         ChromePasswordManagerClient::FromWebContents(originator_),
         base::BindRepeating(
             &PasswordChangeDelegateImpl::OnLoginStateCheckResult,
@@ -358,7 +359,6 @@ void PasswordChangeDelegateImpl::ProceedToChangePassword() {
       base::BindOnce(
           &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
           weak_ptr_factory_.GetWeakPtr()));
-  logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(executor_.get());
   form_finder_ = std::make_unique<ChangePasswordFormFinder>(
       executor_.get(), client, logs_uploader_.get(),
       base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,

@@ -13,6 +13,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "content/public/test/web_contents_tester.h"
@@ -44,6 +45,15 @@ void PostResponse(
                                 /*log_entry=*/nullptr));
 }
 
+void VerifyRetryCount(const optimization_guide::proto::LogAiDataRequest& log,
+                      const int expected_retry_count) {
+  EXPECT_EQ(log.password_change_submission()
+                .quality()
+                .logged_in_check()
+                .retry_count(),
+            expected_retry_count);
+}
+
 }  // namespace
 
 class LoginStateCheckerTest : public ChromeRenderViewHostTestHarness {
@@ -58,18 +68,31 @@ class LoginStateCheckerTest : public ChromeRenderViewHostTestHarness {
     OptimizationGuideKeyedServiceFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&CreateOptimizationService));
+    logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(web_contents());
+  }
+
+  void TearDown() override {
+    logs_uploader_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   std::unique_ptr<LoginStateChecker> CreateChecker(
       LoginStateChecker::LoginStateResultCallback callback) {
-    return std::make_unique<LoginStateChecker>(web_contents(), nullptr,
-                                               std::move(callback));
+    return std::make_unique<LoginStateChecker>(
+        web_contents(), logs_uploader_.get(), nullptr, std::move(callback));
+  }
+
+  const std::unique_ptr<ModelQualityLogsUploader>& logs_uploader() {
+    return logs_uploader_;
   }
 
   MockOptimizationGuideKeyedService* optimization_service() {
     return static_cast<MockOptimizationGuideKeyedService*>(
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile()));
   }
+
+ private:
+  std::unique_ptr<ModelQualityLogsUploader> logs_uploader_;
 };
 
 TEST_F(LoginStateCheckerTest, UserIsLoggedInOnFirstAttempt) {
@@ -82,6 +105,7 @@ TEST_F(LoginStateCheckerTest, UserIsLoggedInOnFirstAttempt) {
   checker->capturer()->ReplyWithContent(
       optimization_guide::AIPageContentResult());
   EXPECT_TRUE(future.Take());
+  VerifyRetryCount(logs_uploader()->GetFinalLog(), 0);
 }
 
 TEST_F(LoginStateCheckerTest, UserIsLoggedInOnSecondAttempt) {
@@ -107,6 +131,7 @@ TEST_F(LoginStateCheckerTest, UserIsLoggedInOnSecondAttempt) {
   checker->capturer()->ReplyWithContent(
       optimization_guide::AIPageContentResult());
   EXPECT_TRUE(future.Take());
+  VerifyRetryCount(logs_uploader()->GetFinalLog(), 1);
 }
 
 TEST_F(LoginStateCheckerTest, FailsAfterPageContentCaptureFailure) {
@@ -115,6 +140,7 @@ TEST_F(LoginStateCheckerTest, FailsAfterPageContentCaptureFailure) {
   ASSERT_TRUE(checker->capturer());
   checker->capturer()->ReplyWithContent(std::nullopt);
   EXPECT_FALSE(future.Take());
+  VerifyRetryCount(logs_uploader()->GetFinalLog(), 0);
 }
 
 TEST_F(LoginStateCheckerTest, ExceedsMaxLoginChecksAndFails) {
@@ -141,6 +167,8 @@ TEST_F(LoginStateCheckerTest, ExceedsMaxLoginChecksAndFails) {
   static_cast<content::WebContentsObserver*>(checker.get())
       ->DidFinishNavigation(nullptr);
   EXPECT_FALSE(future.Take());
+  VerifyRetryCount(logs_uploader()->GetFinalLog(),
+                   LoginStateChecker::kMaxLoginChecks - 1);
 }
 
 TEST_F(LoginStateCheckerTest, CachesPageContentIfRequestInFlight) {

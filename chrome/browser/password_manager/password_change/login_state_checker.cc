@@ -4,9 +4,11 @@
 
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -50,9 +52,11 @@ void LogBoolean(password_manager::PasswordManagerClient* client,
 
 LoginStateChecker::LoginStateChecker(
     content::WebContents* web_contents,
+    ModelQualityLogsUploader* logs_uploader,
     password_manager::PasswordManagerClient* client,
     LoginStateResultCallback callback)
     : content::WebContentsObserver(web_contents),
+      logs_uploader_(CHECK_DEREF(logs_uploader)),
       client_(client),
       result_check_callback_(std::move(callback)) {
   CheckLoginState();
@@ -71,6 +75,7 @@ void LoginStateChecker::DidFinishNavigation(
 }
 
 void LoginStateChecker::TerminateLoginChecks() {
+  logs_uploader_->SetLoggedInCheckQuality(state_checks_count_);
   state_checks_count_ = kMaxLoginChecks;
   result_check_callback_.Run(false);
 }
@@ -163,6 +168,7 @@ void LoginStateChecker::OnExecutionResponseCallback(
   }
 
   bool is_logged_in = response->is_logged_in_data().is_logged_in();
+  logs_uploader_->SetLoggedInCheckQuality(state_checks_count_);
   LogBoolean(client_,
              SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESULT,
              is_logged_in);

@@ -38,6 +38,9 @@ class ModelQualityLogsUploader {
   // log entry to the model quality logging service.
   void UploadFinalLog();
 
+  // Sets quality data for Step=LOGGED_IN_CHECK.
+  void SetLoggedInCheckQuality(int retry_count);
+
   // Sets quality data for Step=OPEN_FORM_STEP.
   void SetOpenFormQuality(
       const std::optional<optimization_guide::proto::PasswordChangeResponse>&

@@ -201,6 +201,16 @@ void ModelQualityLogsUploader::SetCommonInformationQuality(
       ->set_language(GetPageLanguage(web_contents));
 }
 
+void ModelQualityLogsUploader::SetLoggedInCheckQuality(int state_checks_count) {
+  // If the initial login check wasn't performed because the page content failed
+  // to be requested, the state_checks_count can be 0.
+  const int retry_count = std::max(0, state_checks_count - 1);
+  final_log_data_.mutable_password_change_submission()
+      ->mutable_quality()
+      ->mutable_logged_in_check()
+      ->set_retry_count(retry_count);
+}
+
 void ModelQualityLogsUploader::SetOpenFormQuality(
     const std::optional<optimization_guide::proto::PasswordChangeResponse>&
         response,
