@@ -60,6 +60,8 @@ class GrContextForGLES2Interface;
 
 namespace viz {
 
+enum class WebGLContextType { kWebGL1, kWebGL2 };
+
 // Implementation of ContextProvider that provides a GL implementation
 // over command buffer to the GPU process.
 class ContextProviderCommandBuffer
@@ -77,6 +79,13 @@ class ContextProviderCommandBuffer
       const GURL& active_url,
       command_buffer_metrics::ContextType type,
       bool lose_context_when_out_of_memory = false);
+
+  static scoped_refptr<ContextProviderCommandBuffer> CreateForWebGL(
+      scoped_refptr<gpu::GpuChannelHost> channel,
+      const GURL& active_url,
+      WebGLContextType context_type,
+      bool prefer_low_power_gpu,
+      bool fail_if_major_performance_caveat);
 
   ContextProviderCommandBuffer(
       scoped_refptr<gpu::GpuChannelHost> channel,

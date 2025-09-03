@@ -102,6 +102,42 @@ ContextProviderCommandBuffer::CreateForGL(
       gpu::SharedMemoryLimits::ForMailboxContext(), attributes, type);
 }
 
+// static
+scoped_refptr<ContextProviderCommandBuffer>
+ContextProviderCommandBuffer::CreateForWebGL(
+    scoped_refptr<gpu::GpuChannelHost> channel,
+    const GURL& active_url,
+    WebGLContextType context_type,
+    bool prefer_low_power_gpu,
+    bool fail_if_major_performance_caveat) {
+  gpu::ContextCreationAttribs attributes;
+  attributes.enable_raster_interface = false;
+  attributes.enable_gpu_rasterization = false;
+  attributes.enable_gles2_interface = true;
+
+  attributes.gpu_preference = prefer_low_power_gpu
+                                  ? gl::GpuPreference::kLowPower
+                                  : gl::GpuPreference::kHighPerformance;
+
+  attributes.fail_if_major_perf_caveat = fail_if_major_performance_caveat;
+
+  switch (context_type) {
+    case WebGLContextType::kWebGL1:
+      attributes.context_type = gpu::CONTEXT_TYPE_WEBGL1;
+      break;
+    case WebGLContextType::kWebGL2:
+      attributes.context_type = gpu::CONTEXT_TYPE_WEBGL2;
+      break;
+  }
+
+  return base::MakeRefCounted<ContextProviderCommandBuffer>(
+      std::move(channel), /*stream_id=*/0, gpu::SchedulingPriority::kNormal,
+      active_url,
+      /*automatic_flushes=*/true, /*support_locking=*/false,
+      gpu::SharedMemoryLimits(), attributes,
+      command_buffer_metrics::ContextType::WEBGL);
+}
+
 ContextProviderCommandBuffer::~ContextProviderCommandBuffer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(context_sequence_checker_);
 

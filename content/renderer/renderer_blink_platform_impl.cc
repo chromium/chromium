@@ -164,12 +164,12 @@ media::AudioParameters GetAudioHardwareParams() {
       .output_params();
 }
 
-gpu::ContextType ToGpuContextType(blink::Platform::ContextType type) {
+viz::WebGLContextType ToGpuContextType(blink::Platform::ContextType type) {
   switch (type) {
     case blink::Platform::kWebGL1ContextType:
-      return gpu::CONTEXT_TYPE_WEBGL1;
+      return viz::WebGLContextType::kWebGL1;
     case blink::Platform::kWebGL2ContextType:
-      return gpu::CONTEXT_TYPE_WEBGL2;
+      return viz::WebGLContextType::kWebGL2;
   }
   NOTREACHED();
 }
@@ -735,28 +735,11 @@ RendererBlinkPlatformImpl::CreateWebGLGraphicsContextProvider(
   const auto& gpu_info = gpu_channel_host->gpu_info();
   Collect3DContextInformation(gl_info, gpu_info);
 
-  gpu::ContextCreationAttribs attributes;
-  attributes.enable_raster_interface = false;
-  attributes.enable_gpu_rasterization = false;
-  attributes.enable_gles2_interface = true;
-
-  attributes.gpu_preference = prefer_low_power_gpu
-                                  ? gl::GpuPreference::kLowPower
-                                  : gl::GpuPreference::kHighPerformance;
-
-  attributes.fail_if_major_perf_caveat = fail_if_major_performance_caveat;
-
-  attributes.context_type = ToGpuContextType(context_type);
-
-  constexpr bool automatic_flushes = true;
-  constexpr bool support_locking = false;
-
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
-      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          std::move(gpu_channel_host), kGpuStreamIdDefault,
-          kGpuStreamPriorityDefault, GURL(document_url), automatic_flushes,
-          support_locking, gpu::SharedMemoryLimits(), attributes,
-          viz::command_buffer_metrics::ContextType::WEBGL));
+      viz::ContextProviderCommandBuffer::CreateForWebGL(
+          std::move(gpu_channel_host), GURL(document_url),
+          ToGpuContextType(context_type), prefer_low_power_gpu,
+          fail_if_major_performance_caveat));
 }
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
