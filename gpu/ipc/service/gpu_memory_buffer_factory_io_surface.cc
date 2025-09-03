@@ -38,10 +38,4 @@ GpuMemoryBufferFactoryIOSurface::CreateNativeGmbHandle(
   return gfx::GpuMemoryBufferHandle(std::move(io_surface));
 }
 
-bool GpuMemoryBufferFactoryIOSurface::FillSharedMemoryRegionWithBufferContents(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion shared_memory) {
-  return false;
-}
-
 }  // namespace gpu

@@ -34,9 +34,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
       const gfx::Size& size,
       viz::SharedImageFormat format,
       gfx::BufferUsage usage) override;
-  bool FillSharedMemoryRegionWithBufferContents(
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion shared_memory) override;
 
  private:
   gfx::GpuMemoryBufferHandle CreateNativeGmbHandleFromNativePixmap(

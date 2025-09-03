@@ -50,13 +50,6 @@ GpuMemoryBufferFactoryNativePixmap::CreateNativeGmbHandle(
                                                std::move(pixmap));
 }
 
-bool GpuMemoryBufferFactoryNativePixmap::
-    FillSharedMemoryRegionWithBufferContents(
-        gfx::GpuMemoryBufferHandle buffer_handle,
-        base::UnsafeSharedMemoryRegion shared_memory) {
-  return false;
-}
-
 VulkanDeviceQueue* GpuMemoryBufferFactoryNativePixmap::GetVulkanDeviceQueue() {
 #if BUILDFLAG(ENABLE_VULKAN)
   if (vulkan_context_provider_)

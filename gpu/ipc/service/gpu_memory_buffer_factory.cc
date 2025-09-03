@@ -42,11 +42,6 @@ class GpuMemoryBufferFactoryStub : public GpuMemoryBufferFactory {
       gfx::BufferUsage usage) override {
     return gfx::GpuMemoryBufferHandle();
   }
-  bool FillSharedMemoryRegionWithBufferContents(
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion shared_memory) override {
-    return false;
-  }
 };
 
 }  // namespace
@@ -73,6 +68,12 @@ GpuMemoryBufferFactory::CreateNativeType(
 #else
   return nullptr;
 #endif
+}
+
+bool GpuMemoryBufferFactory::FillSharedMemoryRegionWithBufferContents(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion shared_memory) {
+  return false;
 }
 
 }  // namespace gpu

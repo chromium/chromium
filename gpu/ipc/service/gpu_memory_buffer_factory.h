@@ -42,10 +42,12 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
       viz::SharedImageFormat format,
       gfx::BufferUsage usage) = 0;
 
-  // Fills |shared_memory| with the contents of the provided |buffer_handle|
+  // Fills |shared_memory| with the contents of the provided |buffer_handle|.
+  // Returns whether the operation succeeded. Default implementation returns
+  // false.
   virtual bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion shared_memory) = 0;
+      base::UnsafeSharedMemoryRegion shared_memory);
 
  protected:
   GpuMemoryBufferFactory() = default;
