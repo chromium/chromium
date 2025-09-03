@@ -224,7 +224,12 @@ public class CronetLoggerImpl extends CronetLogger {
                     convertToProtoFailureReason(trafficInfo.getFailureReason()),
                     OptionalBoolean.fromBoolean(trafficInfo.getIsSocketReused()).getValue(),
                     trafficInfo.getCronetVersion(),
-                    convertToProtoCronetEngineBuilderInitializedSource(trafficInfo.getCronetSource()));
+                    convertToProtoCronetEngineBuilderInitializedSource(
+                            trafficInfo.getCronetSource()),
+                    trafficInfo.getTimeToEstablishDNSMillis(),
+                    trafficInfo.getTimeToEstablishSSLMillis(),
+                    trafficInfo.getTimeToConnectMillis(),
+                    trafficInfo.getTimeToSendFirstByteMillis());
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);

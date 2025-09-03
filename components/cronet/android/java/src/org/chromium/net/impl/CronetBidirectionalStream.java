@@ -1063,7 +1063,19 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 failureReason,
                 mMetrics.getSocketReused(),
                 ImplVersion.getCronetVersion(),
-                NativeCronetEngineBuilderImpl.getCronetSource());
+                NativeCronetEngineBuilderImpl.getCronetSource(),
+                CronetMetrics.getDateDeltaMillisOrDefault(
+                        mMetrics.getDnsStart(), mMetrics.getDnsEnd(), /* defaultValue= */ -1),
+                CronetMetrics.getDateDeltaMillisOrDefault(
+                        mMetrics.getSslStart(), mMetrics.getSslEnd(), /* defaultValue= */ -1),
+                CronetMetrics.getDateDeltaMillisOrDefault(
+                        mMetrics.getConnectStart(),
+                        mMetrics.getConnectEnd(),
+                        /* defaultValue= */ -1),
+                CronetMetrics.getDateDeltaMillisOrDefault(
+                        mMetrics.getRequestStart(),
+                        mMetrics.getSendingStart(),
+                        /* defaultValue= */ -1));
     }
 
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {

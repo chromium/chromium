@@ -48,6 +48,11 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
         return null;
     }
 
+    static long getDateDeltaMillisOrDefault(Date before, Date after, long defaultValue) {
+        if (before == null || after == null) return defaultValue;
+        return after.getTime() - before.getTime();
+    }
+
     private static boolean checkOrder(long start, long end) {
         // If end doesn't exist, start can be anything, including also not existing
         // If end exists, start must also exist and be before end
