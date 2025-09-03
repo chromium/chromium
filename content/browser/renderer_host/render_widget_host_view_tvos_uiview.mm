@@ -50,6 +50,27 @@ UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
   }
 }
 
+NavigationDirection navigationDirectionFromPressType(UIPressType type) {
+  NavigationDirection direction = kNone;
+  switch (type) {
+    case UIPressTypeUpArrow:
+      direction = kUp;
+      break;
+    case UIPressTypeDownArrow:
+      direction = kDown;
+      break;
+    case UIPressTypeLeftArrow:
+      direction = kLeft;
+      break;
+    case UIPressTypeRightArrow:
+      direction = kRight;
+      break;
+    default:
+      break;
+  }
+  return direction;
+}
+
 }  // namespace
 
 @implementation RenderWidgetUIView
@@ -221,7 +242,13 @@ UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
       direction = kDown;
       break;
   }
-  [self sendKeyEventWithDirection:direction];
+  // Because a swipe is a discrete gesture, the system sends the associated
+  // action message just once per gesture. So, kKeyDown and kKeyUp are sent to
+  // blink in this method.
+  [self sendKeyEventWithDirection:direction
+                        eventType:blink::WebInputEvent::Type::kKeyDown];
+  [self sendKeyEventWithDirection:direction
+                        eventType:blink::WebInputEvent::Type::kKeyUp];
 }
 
 - (void)handlePan:(UIPanGestureRecognizer*)gesture {
@@ -231,45 +258,53 @@ UIKeyboardType keyboardTypeForInputType(ui::TextInputType inputType) {
   if (gesture.state == UIGestureRecognizerStateEnded ||
       gesture.state == UIGestureRecognizerStateChanged) {
     // Use `kMinVelocity` to avoid excessive events.
+    NavigationDirection direction = kNone;
     if (velocity.x > kMinVelocity) {
-      [self sendKeyEventWithDirection:kRight];
+      direction = kRight;
     } else if (velocity.x < -kMinVelocity) {
-      [self sendKeyEventWithDirection:kLeft];
+      direction = kLeft;
     }
+    [self sendKeyEventWithDirection:direction
+                          eventType:blink::WebInputEvent::Type::kKeyDown];
+    [self sendKeyEventWithDirection:direction
+                          eventType:blink::WebInputEvent::Type::kKeyUp];
   }
 }
 
 // Generates four-directional events when buttons on the clickpad ring are
 // pressed.
+- (void)pressesBegan:(NSSet<UIPress*>*)presses
+           withEvent:(UIPressesEvent*)event {
+  for (UIPress* press in presses) {
+    NavigationDirection direction =
+        navigationDirectionFromPressType(press.type);
+    if (direction == kNone) {
+      [super pressesBegan:presses withEvent:event];
+      continue;
+    }
+    [self sendKeyEventWithDirection:direction
+                          eventType:blink::WebInputEvent::Type::kKeyDown];
+  }
+}
+
 - (void)pressesEnded:(NSSet<UIPress*>*)presses
            withEvent:(UIPressesEvent*)event {
   for (UIPress* press in presses) {
-    NavigationDirection direction = kNone;
-    switch (press.type) {
-      case UIPressTypeUpArrow:
-        direction = kUp;
-        break;
-      case UIPressTypeDownArrow:
-        direction = kDown;
-        break;
-      case UIPressTypeLeftArrow:
-        direction = kLeft;
-        break;
-      case UIPressTypeRightArrow:
-        direction = kRight;
-        break;
-      default:
-        [super pressesEnded:presses withEvent:event];
-        break;
+    NavigationDirection direction =
+        navigationDirectionFromPressType(press.type);
+    if (direction == kNone) {
+      [super pressesEnded:presses withEvent:event];
+      continue;
     }
-    [self sendKeyEventWithDirection:direction];
+    [self sendKeyEventWithDirection:direction
+                          eventType:blink::WebInputEvent::Type::kKeyUp];
   }
 }
 
 // Helper method to generate WebKeyboardEvent with `direction`.
-- (void)sendKeyEventWithDirection:(NavigationDirection)direction {
-  blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kKeyDown,
-                                blink::WebInputEvent::kNoModifiers,
+- (void)sendKeyEventWithDirection:(NavigationDirection)direction
+                        eventType:(blink::WebInputEvent::Type)type {
+  blink::WebKeyboardEvent event(type, blink::WebInputEvent::kNoModifiers,
                                 ui::EventTimeForNow());
 
   switch (direction) {
