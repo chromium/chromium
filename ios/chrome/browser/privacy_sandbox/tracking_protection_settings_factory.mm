@@ -28,7 +28,7 @@ TrackingProtectionSettingsFactory::GetForProfile(ProfileIOS* profile) {
       GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
-void TrackingProtectionSettingsFactory::RegisterBrowserStatePrefs(
+void TrackingProtectionSettingsFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kFingerprintingProtectionEnabled, true,
