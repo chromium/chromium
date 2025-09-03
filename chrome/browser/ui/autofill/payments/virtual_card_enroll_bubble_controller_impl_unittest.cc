@@ -245,10 +245,6 @@ TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
 // Tests virtual card enrollment flow with loading and confirmation.
 TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
        ShowBubbleInLoadingAndConfirmationState) {
-  if (GetParam()) {
-    GTEST_SKIP() << "TODO(crbug.com/432429605): Re-enable once the bubble "
-                    "manager is informed about the hidden controller";
-  }
   base::HistogramTester histogram_tester;
   ShowBubble();
   EXPECT_NE(GetBubbleViews(), nullptr);

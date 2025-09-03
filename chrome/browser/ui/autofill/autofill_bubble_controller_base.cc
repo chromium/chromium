@@ -33,7 +33,11 @@ void AutofillBubbleControllerBase::OnVisibilityChanged(
 }
 
 void AutofillBubbleControllerBase::WebContentsDestroyed() {
-  HideBubble();
+  if (IsShowingBubble()) {
+    bubble_view_->Hide();
+    bubble_view_ = nullptr;
+    // Bubble Manager might be already destroyed so no need to inform it.
+  }
 }
 
 void AutofillBubbleControllerBase::UpdatePageActionIcon() {
@@ -57,6 +61,12 @@ void AutofillBubbleControllerBase::HideBubble() {
   if (IsShowingBubble()) {
     bubble_view_->Hide();
     bubble_view_ = nullptr;
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillShowBubblesBasedOnPriorities)) {
+      if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
+        manager->OnBubbleHiddenByController(*this);
+      }
+    }
   }
 }
 
