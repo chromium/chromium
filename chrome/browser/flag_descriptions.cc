@@ -3417,11 +3417,6 @@ const char kPowerBookmarkBackendName[] = "Power bookmark backend";
 const char kPowerBookmarkBackendDescription[] =
     "Enables storing additional metadata to support power bookmark features.";
 
-const char kSpeculationRulesPrerenderingTargetHintName[] =
-    "Speculation Rules API target hint";
-const char kSpeculationRulesPrerenderingTargetHintDescription[] =
-    "Enable target_hint param on Speculation Rules API for prerendering.";
-
 const char kSubframeProcessReuseThresholds[] =
     "Subframe process reuse thresholds";
 const char kSubframeProcessReuseThresholdsDescription[] =

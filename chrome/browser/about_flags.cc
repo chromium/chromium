@@ -9259,11 +9259,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kIncognitoScreenshot)},
 #endif
 
-    {"enable-speculation-rules-prerendering-target-hint",
-     flag_descriptions::kSpeculationRulesPrerenderingTargetHintName,
-     flag_descriptions::kSpeculationRulesPrerenderingTargetHintDescription,
-     kOsAll, FEATURE_VALUE_TYPE(blink::features::kPrerender2InNewTab)},
-
     {"prerender-early-document-lifecycle-update",
      flag_descriptions::kPrerender2EarlyDocumentLifecycleUpdateName,
      flag_descriptions::kPrerender2EarlyDocumentLifecycleUpdateDescription,

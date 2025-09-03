@@ -1971,9 +1971,6 @@ extern const char kAnnotatedPageContentsForVirtualStructureDescription[];
 extern const char kPowerBookmarkBackendName[];
 extern const char kPowerBookmarkBackendDescription[];
 
-extern const char kSpeculationRulesPrerenderingTargetHintName[];
-extern const char kSpeculationRulesPrerenderingTargetHintDescription[];
-
 extern const char kSubframeProcessReuseThresholds[];
 extern const char kSubframeProcessReuseThresholdsDescription[];
 
