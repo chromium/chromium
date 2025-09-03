@@ -15,7 +15,7 @@ Are you a Google employee? See
 <!-- LINT.IfChange -->
 
 * A 64-bit Mac capable of running the required version of Xcode.
-* [Xcode](https://developer.apple.com/xcode) 16.0 or higher.
+* [Xcode](https://developer.apple.com/xcode) 26.0 or higher.
 
 <!-- LINT.ThenChange(//ios/build/chrome_build.gni) -->
 

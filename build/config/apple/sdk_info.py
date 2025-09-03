@@ -60,8 +60,10 @@ def FillXcodeVersion(settings, developer_dir):
 
   lines = subprocess.check_output(['xcodebuild',
                                    '-version']).decode('UTF-8').splitlines()
-  settings['xcode_version'] = FormatVersion(lines[0].split()[-1])
+  version_verbatim = lines[0].split()[-1]
+  settings['xcode_version'] = FormatVersion(version_verbatim)
   settings['xcode_version_int'] = int(settings['xcode_version'], 10)
+  settings['xcode_version_verbatim'] = version_verbatim
   settings['xcode_build'] = lines[-1].split()[-1]
 
 
