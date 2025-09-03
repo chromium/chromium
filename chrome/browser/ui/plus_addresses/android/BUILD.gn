@@ -39,7 +39,7 @@ android_library("java") {
     "//chrome/browser/ui/android/layouts:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
-    "//components/plus_addresses/resources/strings:strings_grd",
+    "//components/plus_addresses/core/browser/resources/strings:strings_grd",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",

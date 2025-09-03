@@ -120,7 +120,7 @@
     "chromecast/app/resources/chromecast_settings.grd": "Not UI strings; localized separately",
     "components/components_locale_settings.grd": "Not UI strings; localized separately",
     "components/metrics/server_urls.grd": "Not UI strings; URLs of metrics endpoints",
-    "components/plus_addresses/resources/strings/plus_addresses_strings.grd": "UX research ongoing - strings are not yet finalized",
+    "components/plus_addresses/core/browser/resources/strings/plus_addresses_strings.grd": "UX research ongoing - strings are not yet finalized",
     "components/policy/resources/policy_templates.build.grd": "Copy of policy_templates.grd used locally for build only",
     "tools/grit/grit/testdata/allowlist_resources.grd": "Test data",
     "tools/grit/grit/testdata/allowlist_strings.grd": "Test data",

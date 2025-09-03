@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace plus_addresses {

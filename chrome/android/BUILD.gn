@@ -258,7 +258,7 @@ if (_is_default_toolchain) {
       "//components/page_info/android:java_resources",
       "//components/payments/content/android:java_resources",
       "//components/permissions/android:java_resources",
-      "//components/plus_addresses/resources/strings:strings_grd",
+      "//components/plus_addresses/core/browser/resources/strings:strings_grd",
       "//components/policy:app_restrictions_resources",
       "//components/strings:components_locale_settings_grd",
       "//components/strings:components_strings_grd",

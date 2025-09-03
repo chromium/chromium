@@ -3,7 +3,7 @@ include_rules = [
   "+components/feature_engagement/public/feature_constants.h",
   "+components/grit/components_resources.h",
   "+components/plus_addresses/core/common/features.h",
-  "+components/plus_addresses/grit/plus_addresses_strings.h",
+  "+components/plus_addresses/core/browser/grit/plus_addresses_strings.h",
   "+components/ukm/ios",
   "+ios/web/common",
   "+ios/web/public",
