@@ -2404,6 +2404,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(@"About passkeys")]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Check that the help center article was opened.
   GREYAssertEqual(std::string("support.google.com"),
