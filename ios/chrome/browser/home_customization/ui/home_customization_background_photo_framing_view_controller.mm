@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
+#import "ios/chrome/browser/shared/ui/elements/passthrough_stack_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
@@ -151,7 +152,7 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
 // Creates the top section with logo and omnibox.
 - (void)setupTopSection {
   // Top section container.
-  UIStackView* topSection = [[UIStackView alloc] init];
+  PassthroughStackView* topSection = [[PassthroughStackView alloc] init];
   topSection.axis = UILayoutConstraintAxisVertical;
   topSection.alignment = UIStackViewAlignmentCenter;
   topSection.spacing = kSectionSpacing;
@@ -205,7 +206,7 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
 // Creates the bottom section with save and cancel buttons.
 - (void)setupBottomSection {
   // Bottom section container using stack view.
-  UIStackView* bottomStack = [[UIStackView alloc] init];
+  PassthroughStackView* bottomStack = [[PassthroughStackView alloc] init];
   _bottomSection = bottomStack;
   bottomStack.axis = UILayoutConstraintAxisVertical;
   bottomStack.alignment = UIStackViewAlignmentFill;
