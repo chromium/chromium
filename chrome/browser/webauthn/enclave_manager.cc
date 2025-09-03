@@ -488,6 +488,31 @@ bool IsAllOk(const cbor::Value& response, const size_t num_responses) {
   return true;
 }
 
+// Returns the request error, if present, for the |error_index|th response
+// returned by the enclave. Returns nullopt for debug errors.
+std::optional<device::enclave::RequestError> GetRequestError(
+    const cbor::Value& response,
+    const size_t error_index) {
+  if (!response.is_array()) {
+    return std::nullopt;
+  }
+  const cbor::Value::ArrayValue& responses = response.GetArray();
+  if (responses.size() <= error_index) {
+    return std::nullopt;
+  }
+  const cbor::Value& inner_response = responses.at(error_index);
+  if (!inner_response.is_map()) {
+    return std::nullopt;
+  }
+  const cbor::Value::MapValue& inner_response_map = inner_response.GetMap();
+  const auto error_it =
+      inner_response_map.find(cbor::Value(enclave::kResponseErrorKey));
+  if (error_it == inner_response_map.end() || !error_it->second.is_integer()) {
+    return std::nullopt;
+  }
+  return device::enclave::GetRequestError(error_it->second.GetInteger());
+}
+
 // Update `user` with the wrapped security domain member key in `response`.
 // This is used when registering with the enclave, which provides a wrapped
 // asymmetric key that becomes the security domain member key for this device.
@@ -630,6 +655,9 @@ cbor::Value BuildPINRenewalRequest(std::string cert_xml,
   request.emplace(enclave::kRecoveryKeyStoreSigXml, ToVector(sig_xml));
   request.emplace(enclave::kRequestWrappedSecretKey, wrapped_secret);
   request.emplace(enclave::kRequestWrappedPINDataKey, wrapped_pin);
+  if (base::FeatureList::IsEnabled(device::kWebAuthnNewRefreshFlow)) {
+    request.emplace(enclave::kRecoveryKeyStoreCreateNewVault, true);
+  }
 
   return cbor::Value(std::move(request));
 }
@@ -2518,6 +2546,30 @@ class EnclaveManager::StateMachine {
 
     cbor::Value response =
         std::move(std::get_if<EnclaveResponse>(&event)->value());
+    std::optional<device::enclave::RequestError> error =
+        GetRequestError(response, 0u);
+    if (error) {
+      switch (*error) {
+        case device::enclave::RequestError::kCohortNotYetDeprecated:
+          base::UmaHistogramEnumeration(
+              kPinRenewalFailureHistogram,
+              PinRenewalFailureCause::kCohortNotYetDeprecated);
+          FIDO_LOG(ERROR) << "Not renewing PIN because the enclave reports the "
+                             "cohort is not yet deprecated";
+          return;
+        case device::enclave::RequestError::kRecoveryKeyStoreDowngrade:
+          base::UmaHistogramEnumeration(
+              kPinRenewalFailureHistogram,
+              PinRenewalFailureCause::kRecoveryKeyStoreDowngrade);
+          FIDO_LOG(ERROR) << "Not renewing PIN because it would result in "
+                             "downgrading the recovery store";
+          return;
+        default:
+          // `IsAllOk` below catches other errors the enclave may return that
+          // the client does not know about.
+          break;
+      }
+    }
     if (!IsAllOk(response, 1)) {
       base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
                                     PinRenewalFailureCause::kEnclaveRequest2);

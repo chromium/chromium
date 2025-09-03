@@ -143,6 +143,12 @@ BASE_DECLARE_FEATURE(kWebAuthnWrapCohortData);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kAuthenticatorPasswordsOnlyImmediateRequests);
 
+// Controls setting the `create_new_vault` flag when refreshing a PIN. When
+// enabled, the enclave will produce new Vault parameters to create a new Vault
+// instead of replacing it.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnNewRefreshFlow);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

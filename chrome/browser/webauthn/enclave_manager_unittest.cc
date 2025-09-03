@@ -817,11 +817,12 @@ TEST_F(EnclaveManagerTest, SetupWithPIN) {
   const cbor::Value::MapValue& wrapped_pin_cbor = cbor->GetMap();
   int cert_xml_serial_number =
       wrapped_pin_cbor.find(cbor::Value(6))->second.GetInteger();
-  EXPECT_EQ(cert_xml_serial_number, FakeRecoveryKeyStore::kTestSerialNumber);
+  EXPECT_EQ(cert_xml_serial_number,
+            recovery_key_store_->recovery_key_store_serial_number());
   const std::vector<uint8_t> cohort_public_key =
       wrapped_pin_cbor.find(cbor::Value(7))->second.GetBytestring();
   EXPECT_EQ(cohort_public_key,
-            recovery_key_store_->endpoint_public_key_bytes());
+            recovery_key_store_->CurrentEndpointPublicKeyBytes());
 
   // Verify we can use the PIN to create a passkey and assert it.
   std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin =
@@ -941,11 +942,12 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
   const cbor::Value::MapValue& wrapped_pin_cbor = cbor->GetMap();
   int cert_xml_serial_number =
       wrapped_pin_cbor.find(cbor::Value(6))->second.GetInteger();
-  EXPECT_EQ(cert_xml_serial_number, FakeRecoveryKeyStore::kTestSerialNumber);
+  EXPECT_EQ(cert_xml_serial_number,
+            recovery_key_store_->recovery_key_store_serial_number());
   const std::vector<uint8_t> cohort_public_key =
       wrapped_pin_cbor.find(cbor::Value(7))->second.GetBytestring();
   EXPECT_EQ(cohort_public_key,
-            recovery_key_store_->endpoint_public_key_bytes());
+            recovery_key_store_->CurrentEndpointPublicKeyBytes());
 
   std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin =
       EnclaveManager::MakeClaimedPINSlowly(pin, manager_.GetWrappedPIN());
@@ -1231,7 +1233,25 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceAndPINToAccount) {
   EXPECT_FALSE(add_future.Get());
 }
 
-TEST_F(EnclaveManagerTest, RenewPIN) {
+enum class PINRefreshFlow { kNewFlow, kOldFlow };
+
+class EnclaveManagerRenewPINTest
+    : public testing::WithParamInterface<PINRefreshFlow>,
+      public EnclaveManagerTest {
+ public:
+  EnclaveManagerRenewPINTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        device::kWebAuthnNewRefreshFlow,
+        GetParam() == PINRefreshFlow::kNewFlow);
+  }
+
+  void SetUp() override { EnclaveManagerTest::SetUp(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(EnclaveManagerRenewPINTest, RenewPIN) {
   ASSERT_TRUE(Register());
 
   const std::string pin = "123456";
@@ -1242,21 +1262,34 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
   ASSERT_TRUE(manager_.is_ready());
   ASSERT_TRUE(manager_.has_wrapped_pin());
 
-  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
-  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+  ASSERT_EQ(security_domain_service_->num_physical_members(), 1u);
+  ASSERT_EQ(security_domain_service_->num_pin_members(), 1u);
+  ASSERT_EQ(recovery_key_store_->vaults().size(), 1u);
 
   const std::optional<base::Time> initial_time = LastPINRenewalTime();
   ASSERT_TRUE(initial_time.has_value());
 
+  recovery_key_store_->UpgradeCohort();
   BoolFuture renew_future;
   manager_.RenewPIN(renew_future.GetCallback());
   EXPECT_TRUE(renew_future.Wait());
   EXPECT_TRUE(renew_future.Get());
 
-  // The number of PIN members must not have increased because the upload should
-  // have reused the vault handle etc of the original.
+  // The number of PIN members must not have increased because the upload
+  // should have replaced the original.
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+
+  switch (GetParam()) {
+    case PINRefreshFlow::kNewFlow:
+      // We expect to create a new Vault.
+      EXPECT_EQ(recovery_key_store_->vaults().size(), 2u);
+      break;
+    case PINRefreshFlow::kOldFlow:
+      // We expect to replace the old Vault.
+      EXPECT_EQ(recovery_key_store_->vaults().size(), 1u);
+      break;
+  }
 
   const std::optional<std::vector<uint8_t>> security_domain_secret =
       FakeMagicArch::RecoverWithPIN(pin, *security_domain_service_,
@@ -1269,7 +1302,7 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
 // Tests that renewing a PIN that didn't have cohort details (because it was
 // wrapped on an older version of Chrome) results in the enclave re-wrapping it
 // with the details.
-TEST_F(EnclaveManagerTest, RenewPINAddsCohortDetails) {
+TEST_P(EnclaveManagerRenewPINTest, RenewPINAddsCohortDetails) {
   // Set up with a PIN.
   ASSERT_TRUE(Register());
   const std::string pin = "123456";
@@ -1305,6 +1338,7 @@ TEST_F(EnclaveManagerTest, RenewPINAddsCohortDetails) {
   }
 
   // Renew the PIN.
+  recovery_key_store_->UpgradeCohort();
   BoolFuture renew_future;
   manager_.RenewPIN(renew_future.GetCallback());
   EXPECT_TRUE(renew_future.Wait());
@@ -1326,7 +1360,8 @@ TEST_F(EnclaveManagerTest, RenewPINAddsCohortDetails) {
   ASSERT_NE(cert_xml_serial_number_it, wrapped_pin_cbor.end());
   ASSERT_TRUE(cert_xml_serial_number_it->second.is_integer());
   int cert_xml_serial_number = cert_xml_serial_number_it->second.GetInteger();
-  EXPECT_EQ(cert_xml_serial_number, FakeRecoveryKeyStore::kTestSerialNumber);
+  EXPECT_EQ(cert_xml_serial_number,
+            recovery_key_store_->recovery_key_store_serial_number());
 
   auto cohort_public_key_it = wrapped_pin_cbor.find(cbor::Value(7));
   ASSERT_NE(cohort_public_key_it, wrapped_pin_cbor.end());
@@ -1334,7 +1369,7 @@ TEST_F(EnclaveManagerTest, RenewPINAddsCohortDetails) {
   const std::vector<uint8_t> cohort_public_key =
       cohort_public_key_it->second.GetBytestring();
   EXPECT_EQ(cohort_public_key,
-            recovery_key_store_->endpoint_public_key_bytes());
+            recovery_key_store_->CurrentEndpointPublicKeyBytes());
 }
 
 // Regression test for crbug.com/403218779.
@@ -1343,7 +1378,7 @@ TEST_F(EnclaveManagerTest, RenewPINAddsCohortDetails) {
 // first manager. Then, the first manager will attempt renewing the PIN. This
 // used to be broken because the first manager would not download the updated
 // PIN data, causing a public key mismatch on the join security domain query.
-TEST_F(EnclaveManagerTest, RenewPINWithStaleDataFromAnotherClient) {
+TEST_P(EnclaveManagerRenewPINTest, RenewPINWithStaleDataFromAnotherClient) {
   const std::string kPin = "123456";
 
   // Set up the first manager with the PIN.
@@ -1380,6 +1415,7 @@ TEST_F(EnclaveManagerTest, RenewPINWithStaleDataFromAnotherClient) {
 
   // Renew the PIN with the second manager.
   {
+    recovery_key_store_->UpgradeCohort();
     BoolFuture renew_future;
     second_manager.RenewPIN(renew_future.GetCallback());
     ASSERT_TRUE(renew_future.Wait());
@@ -1391,6 +1427,7 @@ TEST_F(EnclaveManagerTest, RenewPINWithStaleDataFromAnotherClient) {
 
   // Attempt renewing the PIN with the first enclave.
   {
+    recovery_key_store_->UpgradeCohort();
     BoolFuture renew_future;
     manager_.RenewPIN(renew_future.GetCallback());
     ASSERT_TRUE(renew_future.Wait());
@@ -1404,7 +1441,7 @@ TEST_F(EnclaveManagerTest, RenewPINWithStaleDataFromAnotherClient) {
 // Regression test for crbug.com/402425846.
 // Attempts renewing a PIN from local data when the security domain indicates
 // that the current PIN changed, and is also not usable for recovery.
-TEST_F(EnclaveManagerTest, RenewUnusablePINFromLocalData) {
+TEST_P(EnclaveManagerRenewPINTest, RenewUnusablePINFromLocalData) {
   const std::string kPin = "123456";
 
   // Set up the manager with the PIN.
@@ -1425,6 +1462,7 @@ TEST_F(EnclaveManagerTest, RenewUnusablePINFromLocalData) {
   security_domain_service_->SetPinMemberPublicKey("Bad PK");
 
   // Renew the PIN.
+  recovery_key_store_->UpgradeCohort();
   BoolFuture renew_future;
   manager_.RenewPIN(renew_future.GetCallback());
   ASSERT_TRUE(renew_future.Wait());
@@ -1434,7 +1472,7 @@ TEST_F(EnclaveManagerTest, RenewUnusablePINFromLocalData) {
 
 // Regression test for crbug.com/407171373.
 // Attempts renewing a PIN after the security domain has been reset.
-TEST_F(EnclaveManagerTest, RenewPINAfterSecurityDomainReset) {
+TEST_P(EnclaveManagerRenewPINTest, RenewPINAfterSecurityDomainReset) {
   base::HistogramTester histogram_tester;
   const std::string kPin = "123456";
 
@@ -1455,6 +1493,7 @@ TEST_F(EnclaveManagerTest, RenewPINAfterSecurityDomainReset) {
   security_domain_service_->ResetSecurityDomain();
 
   // Attempt to renew the PIN. This should clear the registration data.
+  recovery_key_store_->UpgradeCohort();
   BoolFuture renew_future;
   manager_.RenewPIN(renew_future.GetCallback());
   ASSERT_TRUE(renew_future.Wait());
@@ -1469,7 +1508,7 @@ TEST_F(EnclaveManagerTest, RenewPINAfterSecurityDomainReset) {
 // Regression test for crbug.com/407171373.
 // Attempts renewing a PIN when the security domain reports that the user
 // doesn't have a GPM PIN at all.
-TEST_F(EnclaveManagerTest, RenewPINAfterSecurityDomainReportsNoPin) {
+TEST_P(EnclaveManagerRenewPINTest, RenewPINAfterSecurityDomainReportsNoPin) {
   base::HistogramTester histogram_tester;
   const std::string kPin = "123456";
 
@@ -1489,6 +1528,7 @@ TEST_F(EnclaveManagerTest, RenewPINAfterSecurityDomainReportsNoPin) {
   security_domain_service_->RemovePinMember();
 
   // Try to renew the PIN. This shouldn't do anything.
+  recovery_key_store_->UpgradeCohort();
   BoolFuture renew_future;
   manager_.RenewPIN(renew_future.GetCallback());
   ASSERT_TRUE(renew_future.Wait());
@@ -1498,6 +1538,132 @@ TEST_F(EnclaveManagerTest, RenewPINAfterSecurityDomainReportsNoPin) {
       "WebAuthentication.PinRenewalFailureCause",
       EnclaveManager::PinRenewalFailureCause::kSecurityDomainReportsNoPin, 1);
 }
+
+// Tests attempting to renew a PIN that's stored in a Vault cohort that hasn't
+// been deprecated yet.
+TEST_P(EnclaveManagerRenewPINTest, NotYetDeprecated) {
+  if (GetParam() != PINRefreshFlow::kNewFlow) {
+    GTEST_SKIP() << "Test is not applicable to old flow";
+  }
+  ASSERT_TRUE(Register());
+  base::HistogramTester histogram_tester;
+
+  const std::string pin = "123456";
+
+  // Set up a new PIN.
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(pin, setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+  const std::optional<base::Time> initial_time = LastPINRenewalTime();
+  ASSERT_TRUE(initial_time.has_value());
+
+  // Attempt to renew without first upgrading the recovery key store.
+  BoolFuture renew_future;
+  manager_.RenewPIN(renew_future.GetCallback());
+  EXPECT_TRUE(renew_future.Wait());
+  EXPECT_FALSE(renew_future.Get());
+  EXPECT_EQ(LastPINRenewalTime(), initial_time);
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.PinRenewalFailureCause",
+      EnclaveManager::PinRenewalFailureCause::kCohortNotYetDeprecated, 1);
+}
+
+// Tests attempting to renew a PIN with a cert.xml version that's older than the
+// last one used to wrap the PIN.
+TEST_P(EnclaveManagerRenewPINTest, NoKeyStoreDowngrade) {
+  if (GetParam() != PINRefreshFlow::kNewFlow) {
+    GTEST_SKIP() << "Test is not applicable to old flow";
+  }
+  ASSERT_TRUE(Register());
+  base::HistogramTester histogram_tester;
+
+  const std::string pin = "123456";
+
+  // Set up a new PIN.
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(pin, setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+  const std::optional<base::Time> initial_time = LastPINRenewalTime();
+  ASSERT_TRUE(initial_time.has_value());
+
+  // Downgrade the recovery key store.
+  recovery_key_store_->DowngradeCohort();
+
+  // Attempting to renew the PIN should result in an error.
+  BoolFuture renew_future;
+  manager_.RenewPIN(renew_future.GetCallback());
+  EXPECT_TRUE(renew_future.Wait());
+  EXPECT_FALSE(renew_future.Get());
+  EXPECT_EQ(LastPINRenewalTime(), initial_time);
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.PinRenewalFailureCause",
+      EnclaveManager::PinRenewalFailureCause::kRecoveryKeyStoreDowngrade, 1);
+}
+
+// Tests that a PIN is still usable for recovery if updating the security domain
+// service failed e.g. due to a network issue.
+// Regression test for crbug.com/399818721.
+TEST_P(EnclaveManagerRenewPINTest, RenewPINInterruptSecurityDomainUpdate) {
+  ASSERT_TRUE(Register());
+
+  const std::string pin = "123456";
+
+  // Set up a PIN.
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(pin, setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(manager_.is_ready());
+  ASSERT_TRUE(manager_.has_wrapped_pin());
+
+  // Fail all *join* requests (but not *all* requests: we need downloading the
+  // keys from the security domain service to succeed to get to the point we
+  // create a new Vault).
+  security_domain_service_->fail_join_requests_matching(base::BindRepeating(
+      [](const trusted_vault_pb::JoinSecurityDomainsRequest& request) {
+        return true;
+      }));
+
+  // Renewing should fail.
+  recovery_key_store_->UpgradeCohort();
+  BoolFuture renew_future;
+  manager_.RenewPIN(renew_future.GetCallback());
+  EXPECT_TRUE(renew_future.Wait());
+  EXPECT_FALSE(renew_future.Get());
+
+  // Attempt recovery.
+  const std::optional<std::vector<uint8_t>> security_domain_secret =
+      FakeMagicArch::RecoverWithPIN(pin, *security_domain_service_,
+                                    *recovery_key_store_);
+  switch (GetParam()) {
+    case PINRefreshFlow::kNewFlow:
+      // With the new flow, recovering should succeed.
+      ASSERT_TRUE(security_domain_secret.has_value());
+      EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
+      break;
+    case PINRefreshFlow::kOldFlow:
+      // Sanity test that the old flow does not support recovering from this
+      // state.
+      EXPECT_FALSE(security_domain_secret.has_value());
+      break;
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         EnclaveManagerRenewPINTest,
+                         testing::Values(PINRefreshFlow::kOldFlow,
+                                         PINRefreshFlow::kNewFlow));
 
 TEST_F(EnclaveManagerTest, EpochChanged) {
   ASSERT_TRUE(Register());

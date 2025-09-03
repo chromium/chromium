@@ -155,10 +155,12 @@ class EnclaveManager : public EnclaveManagerInterface {
     kJoiningToDomain = 8,
     kSecurityDomainReportsNoPin = 9,
     kSecurityDomainReset = 10,
+    kCohortNotYetDeprecated = 11,
+    kRecoveryKeyStoreDowngrade = 12,
 
-    kMaxValue = kSecurityDomainReset,
+    kMaxValue = kRecoveryKeyStoreDowngrade,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:PinRenewalFailureCauseEnum)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationPinRenewalFailureCause)
 
   class UvKeyCreationLock {
    public:

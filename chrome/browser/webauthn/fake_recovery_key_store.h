@@ -28,9 +28,6 @@ class Vault;
 // records uploaded vaults like the real service.
 class FakeRecoveryKeyStore {
  public:
-  // The cert.xml serial number.
-  static constexpr int kTestSerialNumber = 2;
-
   // If present, values of this type contain an HTTP status code (e.g. 200) and
   // the body of the response.
   using MaybeResponse =
@@ -57,11 +54,20 @@ class FakeRecoveryKeyStore {
   virtual void break_cert_xml_file() = 0;
   virtual void break_sig_xml_file() = 0;
 
-  // Returns the cohort private scalar as 32 bytes in big-endian order.
-  virtual std::array<uint8_t, 32> endpoint_private_key_bytes() const = 0;
+  // These methods update recovery key store serial number, then regenerate keys
+  // and the cert files.
+  virtual void DowngradeCohort() = 0;
+  virtual void UpgradeCohort() = 0;
+  virtual int recovery_key_store_serial_number() = 0;
 
-  // Returns the cohort public key bytes.
-  virtual std::vector<uint8_t> endpoint_public_key_bytes() const = 0;
+  // Returns the cohort private scalar as 32 bytes in big-endian order.
+  // `public_key_bytes` must correspond to an endpoint key that was current at
+  // some point during the lifetime of the fake recovery key store.
+  virtual std::array<uint8_t, 32> EndpointPrivateKeyFor(
+      base::span<const uint8_t> public_key_bytes) const = 0;
+
+  // Returns the current cohort public key bytes.
+  virtual std::vector<uint8_t> CurrentEndpointPublicKeyBytes() const = 0;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_FAKE_RECOVERY_KEY_STORE_H_

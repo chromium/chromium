@@ -197,4 +197,9 @@ BASE_FEATURE(kWebAuthnWrapCohortData,
 BASE_FEATURE(AuthenticatorPasswordsOnlyImmediateRequests,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnNewRefreshFlow,
+             "WebAuthenticationNewRefreshFlow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

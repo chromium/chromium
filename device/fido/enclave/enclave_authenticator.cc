@@ -42,19 +42,6 @@ constexpr std::string_view kLargeBlobKey = "largeBlob";
 constexpr std::string_view kLargeBlobWriteKey = "write";
 constexpr std::string_view kLargeBlobSizeKey = "largeBlobSize";
 
-// Error codes from the service on per-request failures. These can be returned
-// alongside success responses in some cases.
-// Needs to match `RequestError` in
-// //third_party/cloud_authenticator/processor/src/lib.rs.
-enum {
-  kNoSupportedAlgorithm = 1,
-  kDuplicate = 2,
-  kIncorrectPIN = 3,
-  kPINLocked = 4,
-  kPINOutdated = 5,
-  kRecoveryKeyStoreDowngrade = 6,
-};
-
 // This is used for metrics and must be kept in sync with the corresponding
 // entry in tools/metrics/histograms/metadata/webauthn/enums.xml.
 // Entries should not be renumbered or reused.
@@ -68,8 +55,9 @@ enum class EnclaveRequestResult {
   kRecoveryKeyStoreDowngrade = 6,
   kFailedTransaction = 7,
   kOtherError = 8,
+  kCohortNotYetDeprecated = 9,
 
-  kMaxValue = kOtherError,
+  kMaxValue = kCohortNotYetDeprecated,
 };
 
 void RecordRequestResult(std::string_view request_type,
@@ -103,55 +91,59 @@ std::array<uint8_t, 8> RandomId() {
 }
 
 EnclaveRequestResult EnclaveErrorToEnclaveRequestResult(int enclave_code) {
-  switch (enclave_code) {
-    case kNoSupportedAlgorithm:
+  switch (GetRequestError(enclave_code)) {
+    case RequestError::kNoSupportedAlgorithm:
       return EnclaveRequestResult::kNoSupportedAlgorithm;
-    case kIncorrectPIN:
+    case RequestError::kIncorrectPIN:
       return EnclaveRequestResult::kIncorrectPIN;
-    case kPINLocked:
+    case RequestError::kPINLocked:
       return EnclaveRequestResult::kPINLocked;
-    case kPINOutdated:
+    case RequestError::kPINOutdated:
       return EnclaveRequestResult::kPINOutdated;
-    case kDuplicate:
+    case RequestError::kDuplicate:
       return EnclaveRequestResult::kDuplicate;
-    case kRecoveryKeyStoreDowngrade:
+    case RequestError::kRecoveryKeyStoreDowngrade:
       return EnclaveRequestResult::kRecoveryKeyStoreDowngrade;
-    default:
+    case RequestError::kCohortNotYetDeprecated:
+      return EnclaveRequestResult::kCohortNotYetDeprecated;
+    case RequestError::kUnknown:
       return EnclaveRequestResult::kOtherError;
   }
 }
 
 GetAssertionStatus EnclaveErrorToGetAssertionStatus(int enclave_code) {
-  switch (enclave_code) {
-    case kIncorrectPIN:
-    case kPINLocked:
+  switch (GetRequestError(enclave_code)) {
+    case RequestError::kIncorrectPIN:
+    case RequestError::kPINLocked:
       return GetAssertionStatus::kUserConsentDenied;
-    case kNoSupportedAlgorithm:
+    case RequestError::kNoSupportedAlgorithm:
       // Not valid for GetAssertion.
-    case kPINOutdated:
+    case RequestError::kPINOutdated:
       // This is a temporary error. Allow the request to fail.
-    case kDuplicate:
-    case kRecoveryKeyStoreDowngrade:
+    case RequestError::kDuplicate:
+    case RequestError::kRecoveryKeyStoreDowngrade:
+    case RequestError::kCohortNotYetDeprecated:
       // These are not valid errors for a passkey request.
-    default:
+    case RequestError::kUnknown:
       return GetAssertionStatus::kEnclaveError;
   }
 }
 
 MakeCredentialStatus EnclaveErrorToMakeCredentialStatus(int enclave_code) {
-  switch (enclave_code) {
-    case kNoSupportedAlgorithm:
+  switch (GetRequestError(enclave_code)) {
+    case RequestError::kNoSupportedAlgorithm:
       return MakeCredentialStatus::kNoCommonAlgorithms;
-    case kIncorrectPIN:
-    case kPINLocked:
+    case RequestError::kIncorrectPIN:
+    case RequestError::kPINLocked:
       return MakeCredentialStatus::kUserConsentDenied;
-    case kPINOutdated:
+    case RequestError::kPINOutdated:
       // This is a temporary error. Allow the request to fail.
-    case kDuplicate:
-    case kRecoveryKeyStoreDowngrade:
+    case RequestError::kDuplicate:
+    case RequestError::kRecoveryKeyStoreDowngrade:
+    case RequestError::kCohortNotYetDeprecated:
       // These are not valid errors for a passkey request, deliberate
       // fallthrough.
-    default:
+    case RequestError::kUnknown:
       return MakeCredentialStatus::kEnclaveError;
   }
 }
@@ -641,10 +633,12 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
   CHECK(error.error_code.has_value());
   int code = *error.error_code;
   if (ui_request_->pin_result_callback &&
-      (code == kIncorrectPIN || code == kPINLocked)) {
+      (code == static_cast<int>(RequestError::kIncorrectPIN) ||
+       code == static_cast<int>(RequestError::kPINLocked))) {
     std::move(ui_request_->pin_result_callback)
-        .Run(code == kIncorrectPIN ? PINValidationResult::kIncorrect
-                                   : PINValidationResult::kLocked);
+        .Run(code == static_cast<int>(RequestError::kIncorrectPIN)
+                 ? PINValidationResult::kIncorrect
+                 : PINValidationResult::kLocked);
   }
   FIDO_LOG(DEBUG) << base::StrCat(
       {"Received an error response from the enclave: ",

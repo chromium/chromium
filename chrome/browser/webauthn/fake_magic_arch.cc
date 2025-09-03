@@ -111,7 +111,9 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
       recovery_key_store.vaults(), [&public_key](const auto& vault) -> bool {
         return GetKeyPairWithPublicKey(vault, public_key) != nullptr;
       });
-  CHECK(vault_it != recovery_key_store.vaults().end());
+  if (vault_it == recovery_key_store.vaults().end()) {
+    return std::nullopt;
+  }
 
   const std::array<uint8_t, SHA256_DIGEST_LENGTH> pin_hash =
       HashPIN(pin, *vault_it);
@@ -124,9 +126,11 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
   params += AsLEBytes(vault_it->vault_parameters().max_attempts());
   params += vault_it->vault_parameters().vault_handle();
 
+  base::span<const uint8_t> vault_public_key =
+      base::as_byte_span(vault_it->vault_parameters().backend_public_key());
   const auto vault_private_key =
       trusted_vault::SecureBoxPrivateKey::CreateByImport(
-          recovery_key_store.endpoint_private_key_bytes());
+          recovery_key_store.EndpointPrivateKeyFor(vault_public_key));
   const std::vector<uint8_t> encrypted_recovery_key =
       vault_private_key
           ->Decrypt(thm_kf_hash, base::as_byte_span(params),

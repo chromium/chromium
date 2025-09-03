@@ -77,6 +77,14 @@ ScopedEnclaveOverride::~ScopedEnclaveOverride() {
   g_enclave_override = prev_;
 }
 
+RequestError GetRequestError(int code) {
+  if (static_cast<int>(RequestError::kMinValue) <= code &&
+      code <= static_cast<int>(RequestError::kMaxValue)) {
+    return static_cast<RequestError>(code);
+  }
+  return RequestError::kUnknown;
+}
+
 const char kCommandEncodedRequestsKey[] = "encoded_requests";
 const char kCommandDeviceIdKey[] = "device_id";
 const char kCommandSigKey[] = "sig";
@@ -130,6 +138,7 @@ const char kKeyPurposeSecurityDomainSecret[] = "security domain secret";
 const char kRecoveryKeyStorePinHash[] = "pin_hash";
 const char kRecoveryKeyStoreCertXml[] = "cert_xml";
 const char kRecoveryKeyStoreSigXml[] = "sig_xml";
+const char kRecoveryKeyStoreCreateNewVault[] = "create_new_vault";
 
 const char kRecoveryKeyStoreURL[] =
     "https://cryptauthvault.googleapis.com/v1/vaults/0";
