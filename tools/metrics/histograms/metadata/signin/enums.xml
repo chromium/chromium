@@ -739,6 +739,8 @@ chromium-metrics-reviews@google.com.
   <int value="48" label="Edu Coexistence Login Handler"/>
   <int value="49" label="Edu Account Login Handler"/>
   <int value="50" label="Chromeos Family Link User Metrics provider"/>
+  <int value="51" label="Enterprise Identity Service"/>
+  <int value="52" label="Promotion Eligibility Checker"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

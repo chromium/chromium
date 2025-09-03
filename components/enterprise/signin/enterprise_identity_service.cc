@@ -16,8 +16,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/scope_set.h"
-#include "google_apis/gaia/gaia_constants.h"
+#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace enterprise {
@@ -281,8 +280,8 @@ void EnterpriseIdentityServiceImpl::OnManagedAccountsIdentified(
   for (const auto& account : managed_accounts) {
     token_fetchers_ptr->push_back(
         identity_manager_->CreateAccessTokenFetcherForAccount(
-            account.account_id, "cloud_policy",
-            signin::ScopeSet{GaiaConstants::kDeviceManagementServiceOAuth},
+            account.account_id,
+            signin::OAuthConsumerId::kEnterpriseIdentityService,
             base::BindOnce(HandleAccessTokenFetched, barrier_callback),
             signin::AccessTokenFetcher::Mode::kImmediate));
   }

@@ -63,7 +63,9 @@ enum class OAuthConsumerId {
   kEduCoexistenceLoginHandler = 48,
   kEduAccountLoginHandler = 49,
   kChromeosFamilyLinkUserMetricsProvider = 50,
-  kMaxValue = kChromeosFamilyLinkUserMetricsProvider,
+  kEnterpriseIdentityService = 51,
+  kPromotionEligibilityChecker = 52,
+  kMaxValue = kPromotionEligibilityChecker,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 
