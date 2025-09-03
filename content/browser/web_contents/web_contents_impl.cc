@@ -9111,6 +9111,14 @@ std::vector<WebContents*> WebContentsImpl::GetInnerWebContents() {
 }
 
 WebContentsImpl* WebContentsImpl::GetResponsibleWebContents() {
+  if (delegate_) {
+    WebContentsImpl* responsible_from_delegate = static_cast<WebContentsImpl*>(
+        delegate_->GetResponsibleWebContents(this));
+    if (responsible_from_delegate) {
+      return responsible_from_delegate;
+    }
+  }
+
   return FromRenderFrameHostImpl(
       GetPrimaryMainFrame()->GetOutermostMainFrameOrEmbedder());
 }

@@ -16,6 +16,7 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class NativeWidget;
@@ -24,6 +25,7 @@ class Widget;
 }  // namespace views
 
 class Browser;
+class WebUIBrowserModalDialogHost;
 class WebUIBrowserSidePanelUI;
 class WebUIBrowserUI;
 class WebUIBrowserWebContentsDelegate;
@@ -35,7 +37,8 @@ class WebUIBrowserWindow : public BrowserWindow,
                            public ExclusiveAccessContext,
                            public ui::ColorProviderSource,
                            public ui::AcceleratorProvider,
-                           public ui::AcceleratorTarget {
+                           public ui::AcceleratorTarget,
+                           public views::WidgetObserver {
  public:
   explicit WebUIBrowserWindow(std::unique_ptr<Browser> browser);
   ~WebUIBrowserWindow() override;
@@ -260,6 +263,10 @@ class WebUIBrowserWindow : public BrowserWindow,
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
 
+  // views::WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+
   void ShowSidePanel(SidePanelEntryKey side_panel_entry_key);
   void CloseSidePanel();
 
@@ -267,6 +274,8 @@ class WebUIBrowserWindow : public BrowserWindow,
 
   Browser* browser() { return browser_.get(); }
   views::Widget* widget() { return widget_.get(); }
+
+  gfx::Rect GetContentsBoundsInScreen() const;
 
  protected:
   void DestroyBrowser() override;
@@ -307,6 +316,8 @@ class WebUIBrowserWindow : public BrowserWindow,
   // //chrome/app/chrome_command_ids.h.
   std::map<ui::Accelerator, int> accelerator_table_;
   ui::AcceleratorManager accelerator_manager_;
+
+  std::unique_ptr<WebUIBrowserModalDialogHost> modal_dialog_host_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_WINDOW_H_

@@ -877,6 +877,10 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual std::vector<blink::mojom::RelatedApplicationPtr>
   GetSavedRelatedApplications(WebContents* web_contents);
 
+  // If this returns non-null, overrides the behavior of
+  // WebContents::GetResponsibleWebContents.
+  virtual WebContents* GetResponsibleWebContents(WebContents* web_contents);
+
  protected:
   virtual ~WebContentsDelegate();
 

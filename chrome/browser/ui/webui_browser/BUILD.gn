@@ -45,6 +45,8 @@ source_set("impl") {
     "webui_browser.cc",
     "webui_browser_client_view.cc",
     "webui_browser_client_view.h",
+    "webui_browser_modal_dialog_host.cc",
+    "webui_browser_modal_dialog_host.h",
     "webui_browser_page_handler.cc",
     "webui_browser_page_handler.h",
     "webui_browser_side_panel_ui.cc",

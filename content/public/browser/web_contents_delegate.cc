@@ -473,4 +473,9 @@ WebContentsDelegate::GetSavedRelatedApplications(WebContents* web_contents) {
   return {};
 }
 
+WebContents* WebContentsDelegate::GetResponsibleWebContents(
+    WebContents* web_contents) {
+  return nullptr;
+}
+
 }  // namespace content

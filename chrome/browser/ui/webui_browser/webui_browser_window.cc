@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_modal_dialog_host.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_web_contents_delegate.h"
@@ -27,13 +29,16 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/sharing_message/sharing_dialog_data.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -85,6 +90,7 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
   widget_delegate_ =
       std::make_unique<WidgetDelegate>(this, web_contents_delegate_.get());
   widget_ = std::make_unique<views::Widget>();
+  widget_->AddObserver(this);
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   params.name = "WebUIBrowserWindow";
@@ -104,6 +110,8 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
       WebShellWebContentsUserData::Key,
       std::make_unique<WebShellWebContentsUserData>(this));
 
+  modal_dialog_host_ = std::make_unique<WebUIBrowserModalDialogHost>(this);
+
   web_view->LoadInitialURL(GURL(chrome::kChromeUIWebuiBrowserURL));
   web_view_ = widget_->SetClientContentsView(std::move(web_view));
 
@@ -115,6 +123,7 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
 WebUIBrowserWindow::~WebUIBrowserWindow() {
   browser_->GetFeatures().TearDownPreBrowserWindowDestruction();
   web_view_ = nullptr;
+  widget_->RemoveObserver(this);
   widget_.reset();
 }
 
@@ -292,6 +301,22 @@ bool WebUIBrowserWindow::GetAcceleratorForCommandId(
     ui::Accelerator* accelerator) const {
   NOTIMPLEMENTED();
   return false;
+}
+
+void WebUIBrowserWindow::OnWidgetBoundsChanged(views::Widget* widget,
+                                               const gfx::Rect& new_bounds) {
+  DCHECK_EQ(widget, widget_.get());
+  if (modal_dialog_host_) {
+    modal_dialog_host_->NotifyPositionRequiresUpdate();
+  }
+}
+
+gfx::Rect WebUIBrowserWindow::GetContentsBoundsInScreen() const {
+  ui::TrackedElement* content_region =
+      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+          kContentsContainerViewElementId,
+          views::ElementTrackerViews::GetContextForWidget(widget_.get()));
+  return content_region->GetScreenBounds();
 }
 
 bool WebUIBrowserWindow::FindCommandIdForAccelerator(
@@ -799,15 +824,13 @@ std::unique_ptr<FindBar> WebUIBrowserWindow::CreateFindBar() {
 
 web_modal::WebContentsModalDialogHost*
 WebUIBrowserWindow::GetWebContentsModalDialogHost() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return modal_dialog_host_.get();
 }
 
 web_modal::WebContentsModalDialogHost*
 WebUIBrowserWindow::GetWebContentsModalDialogHostFor(
     content::WebContents* web_contents) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return modal_dialog_host_.get();
 }
 
 void WebUIBrowserWindow::ShowAvatarBubbleFromAvatarButton(
@@ -921,8 +944,7 @@ BrowserView* WebUIBrowserWindow::AsBrowserView() {
 }
 
 gfx::Rect WebUIBrowserWindow::GetBounds() const {
-  NOTIMPLEMENTED();
-  return gfx::Rect();
+  return widget_->GetWindowBoundsInScreen();
 }
 
 bool WebUIBrowserWindow::IsMaximized() const {

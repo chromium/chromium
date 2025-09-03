@@ -752,6 +752,8 @@ class Browser : public TabStripModelObserver,
       content::WebContents* contents) override;
   std::vector<blink::mojom::RelatedApplicationPtr> GetSavedRelatedApplications(
       content::WebContents* web_contents) override;
+  content::WebContents* GetResponsibleWebContents(
+      content::WebContents* web_contents) override;
 
   bool is_type_normal() const { return type_ == TYPE_NORMAL; }
   bool is_type_popup() const { return type_ == TYPE_POPUP; }

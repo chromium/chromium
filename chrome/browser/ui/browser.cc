@@ -2550,6 +2550,12 @@ Browser::GetSavedRelatedApplications(WebContents* web_contents) {
   return related_apps_ptr;
 }
 
+content::WebContents* Browser::GetResponsibleWebContents(
+    content::WebContents* web_contents) {
+  // Tabs are the proper choice for modal scope.
+  return web_contents;
+}
+
 void Browser::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,
