@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <meta charset="UTF-8">
 <title>drawHTMLElement with allowReadback does not draw GLIC markers</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
@@ -6,6 +7,7 @@
 <link rel="match" href="glic-markers-ignored-ref.html">
 <meta name="assert" value="When preserving privacy for readback, do not draw markers for GLIC.">
 <script src="/wpt_internal/css/support/markers.js"></script>
+<script src="/common/reftest-wait.js"></script>
 <style>
   #child {
     width: 100px;
@@ -29,8 +31,10 @@
       const range = createRangeForTextOnly(editable, 0, 18);
       internals.setMarker(document, range, "glic");
     }
-
-    canvas.getContext("2d").drawHTMLElement(child, 0, 0, { allowReadback: true });
+    setTimeout(() => {
+      canvas.getContext("2d").drawHTMLElement(child, 0, 0, { allowReadback: true });
+      takeScreenshot();
+    }, 500);
   }
 
   onload = () => runTest();

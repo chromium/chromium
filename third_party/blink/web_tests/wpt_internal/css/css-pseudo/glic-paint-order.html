@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8" />
+<title>CSS Pseudo-Elements Test: Paint order of Glic markers</title>
+<link rel="author" title="Stephen Chenney" href="mailto:schenney@chromium.org">
+<meta name="assert" content="Verify the painting order for Glic markers with respect to other marker types.">
+<link rel="match" href="glic-paint-order-ref.html">
+<script src="../support/markers.js"></script>
+<script src="/common/reftest-wait.js"></script>
+<style>
+  ::search-text {
+    background-color: blue;
+  }
+  ::selection {
+    background-color: red;
+  }
+  ::spelling-error {
+    background-color: green;
+    text-decoration: none;
+  }
+  ::grammar-error {
+    background-color: orange;
+    text-decoration: none;
+  }
+</style>
+<div id="target">Pos 0-7 Pos 8-16 Pos 17-26 Pos 27-36 Pos 37-46</div>
+<script>
+  setTimeout(() => {
+    addMarker(target, 0, 46, "glic");
+    addGrammarMarker(target, 8, 46);
+    addSpellingMarker(target, 17, 46);
+    addSearchTextMarker(target, 27, 46, false);
+    setSelection(target, 37, 46);
+    takeScreenshot();
+  }, 500);
+</script>
+</html>

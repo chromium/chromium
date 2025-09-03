@@ -1361,10 +1361,7 @@ void Internals::setMarker(Document* document,
     // see the marker appearance.
     document->Markers().AddGlicMarker(EphemeralRange(range));
     document->Markers().StartGlicMarkerAnimationIfNeeded();
-    base::TimeTicks ticks;
-    document->Markers().ContinueGlicMarkerAnimation(ticks);
-    ticks += base::TimeDelta::Max();
-    document->Markers().ContinueGlicMarkerAnimation(ticks);
+    document->Markers().ContinueGlicMarkerAnimation(base::TimeTicks());
   }
 }
 
