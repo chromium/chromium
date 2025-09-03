@@ -1,6 +1,6 @@
 {
-  "version": "64.4",
-  "log_list_timestamp": "2025-09-02T12:52:33Z",
+  "version": "65.2",
+  "log_list_timestamp": "2025-09-03T12:52:34Z",
   "operators": [
     {
       "name": "Google",
@@ -314,8 +314,12 @@
           "url": "https://mammoth2025h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2023-11-26T12:00:00Z"
+            "readonly": {
+              "timestamp": "2025-08-29T20:40:00Z",
+              "final_tree_head": {
+                "sha256_root_hash": "aLJ1GqZiobxICL7qQFPCZzdkjU/TKvnA/CIVqU+LDy4=",
+                "tree_size": 865235446
+              }
             }
           },
           "temporal_interval": {
@@ -701,22 +705,6 @@
             "start_inclusive": "2020-01-01T08:00:00Z",
             "end_exclusive": "2020-01-02T08:00:00Z"
           }
-        },
-        {
-          "description": "Bogus RFC6962 log to avoid breaking misbehaving CT libraries",
-          "log_id": "0vxlL6X5tzi4N1X6XrFfC0UlP06Po7m2T9TeVmLRhwg=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELzNWh+BsAk0HnEEE7Zk1bAhdH1SM5udo1+CTF6LGcL6AVVIXSuOF95/Wg0qLZV491QbrNRg06mM6KwEzDXXtqg==",
-          "url": "https://ct.example.com/bogus/ipng/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2025-06-21T07:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2020-01-01T08:00:00Z",
-            "end_exclusive": "2020-01-02T08:00:00Z"
-          }
         }
       ],
       "tiled_logs": [
@@ -728,8 +716,8 @@
           "monitoring_url": "https://tuscolo2025h2.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2025-06-13T02:40:00Z"
+            "usable": {
+              "timestamp": "2025-08-31T07:00:00Z"
             }
           },
           "temporal_interval": {
@@ -745,8 +733,8 @@
           "monitoring_url": "https://tuscolo2026h1.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2025-06-13T02:40:00Z"
+            "usable": {
+              "timestamp": "2025-08-31T07:00:00Z"
             }
           },
           "temporal_interval": {
@@ -762,8 +750,8 @@
           "monitoring_url": "https://tuscolo2026h2.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2025-06-13T02:40:00Z"
+            "usable": {
+              "timestamp": "2025-08-31T07:00:00Z"
             }
           },
           "temporal_interval": {
@@ -806,6 +794,31 @@
           }
         }
       ]
+    },
+    {
+      "name": "IPng Networks",
+      "email": [
+        "ct-ops@ipng.ch"
+      ],
+      "logs": [
+        {
+          "description": "Bogus RFC6962 log to avoid breaking misbehaving CT libraries",
+          "log_id": "0vxlL6X5tzi4N1X6XrFfC0UlP06Po7m2T9TeVmLRhwg=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELzNWh+BsAk0HnEEE7Zk1bAhdH1SM5udo1+CTF6LGcL6AVVIXSuOF95/Wg0qLZV491QbrNRg06mM6KwEzDXXtqg==",
+          "url": "https://ct.example.com/bogus/ipng/",
+          "mmd": 86400,
+          "state": {
+            "retired": {
+              "timestamp": "2025-06-21T07:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2020-01-01T08:00:00Z",
+            "end_exclusive": "2020-01-02T08:00:00Z"
+          }
+        }
+      ],
+      "tiled_logs": []
     }
   ]
 }
