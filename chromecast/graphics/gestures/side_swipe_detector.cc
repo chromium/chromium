@@ -114,9 +114,8 @@ ui::EventDispatchDetails SideSwipeDetector::RewriteEvent(
   // is what the rest of this class expects.
   gfx::Point touch_location = touch_event->root_location();
   root_window_->GetHost()->ConvertPixelsToDIP(&touch_location);
-  gfx::Rect screen_bounds = display::Screen::GetScreen()
-                                ->GetDisplayNearestPoint(touch_location)
-                                .bounds();
+  gfx::Rect screen_bounds =
+      display::Screen::Get()->GetDisplayNearestPoint(touch_location).bounds();
   CastSideSwipeOrigin side_swipe_origin =
       GetDragPosition(touch_location, screen_bounds);
 

@@ -447,7 +447,7 @@ void CastContentBrowserClient::AppendExtraCommandLineSwitches(
     };
     command_line->CopySwitchesFrom(*browser_command_line, kForwardSwitches);
 
-    auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+    auto display = display::Screen::Get()->GetPrimaryDisplay();
     gfx::Size res = display.GetSizeInPixel();
     if (display.rotation() == display::Display::ROTATE_90 ||
         display.rotation() == display::Display::ROTATE_270) {

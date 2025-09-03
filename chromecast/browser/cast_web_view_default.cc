@@ -107,8 +107,7 @@ CastWebViewDefault::CastWebViewDefault(
 #if defined(USE_AURA)
   web_contents_->GetNativeView()->SetName(params_->activity_id);
   if (params_->force_720p_resolution) {
-    const auto primary_display =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+    const auto primary_display = display::Screen::Get()->GetPrimaryDisplay();
 
     // Force scale factor to 1.0 and screen bounds to 720p.
     // When performed prior to the creation of the web view this causes blink to

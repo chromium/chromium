@@ -528,7 +528,7 @@ int CastBrowserMainParts::PreCreateThreads() {
 #if defined(USE_AURA)
   cast_screen_ = std::make_unique<CastScreen>();
   cast_browser_process_->SetCastScreen(cast_screen_.get());
-  DCHECK(!display::Screen::GetScreen());
+  DCHECK(!display::Screen::Get());
   display::Screen::SetScreenInstance(cast_screen_.get());
   cast_browser_process_->SetDisplayConfigurator(
       std::make_unique<CastDisplayConfigurator>(cast_screen_.get()));
