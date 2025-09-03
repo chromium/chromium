@@ -167,6 +167,14 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
   // bits-per-second.
   std::optional<types::DecimalInteger> GetBitRate() const { return bitrate_; }
 
+  // Using the cryptographic properties of this segment, convert the source data
+  // associated to plaintext. This operation might be a no-op, in the case where
+  // this segment is unencrypted. In the case where decryption must be done,
+  // `mem` is used as a backing store for `dest`, as this method owns no memory.
+  bool GetPlaintextStreamSource(base::span<const uint8_t> src,
+                                base::span<const uint8_t>* dest,
+                                std::vector<uint8_t>* mem) const;
+
  private:
   friend class base::RefCounted<MediaSegment>;
   ~MediaSegment();

@@ -9,10 +9,20 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "crypto/aes_cbc.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
 
 namespace media::hls {
+
+namespace {
+
+bool KeyIsValidSize(const std::vector<uint8_t>& key) {
+  // HLS allows 128- and 256-bit keys, but not 192-bit.
+  return key.size() == 16 || key.size() == 32;
+}
+
+}  // namespace
 
 MediaSegment::InitializationSegment::InitializationSegment(
     GURL uri,
@@ -89,5 +99,43 @@ MediaSegment::MediaSegment(
       has_new_encryption_data_(has_new_encryption_data) {}
 
 MediaSegment::~MediaSegment() = default;
+
+bool MediaSegment::GetPlaintextStreamSource(base::span<const uint8_t> src,
+                                            base::span<const uint8_t>* dest,
+                                            std::vector<uint8_t>* mem) const {
+  if (!encryption_data_) {
+    *dest = src;
+    return true;
+  }
+
+  switch (encryption_data_->GetMethod()) {
+    case hls::XKeyTagMethod::kNone: {
+      *dest = src;
+      return true;
+    }
+    case hls::XKeyTagMethod::kAES128:
+    case hls::XKeyTagMethod::kAES256: {
+      auto maybe_iv = encryption_data_->GetIVStr(media_sequence_number_);
+      std::array<uint8_t, crypto::aes_cbc::kBlockSize> iv;
+      if (!maybe_iv.has_value()) {
+        return false;
+      }
+      base::span(iv).copy_from(base::as_byte_span(*maybe_iv));
+      auto key = encryption_data_->GetKey();
+      if (!KeyIsValidSize(key)) {
+        return false;
+      }
+      auto maybe_plaintext = crypto::aes_cbc::Decrypt(key, iv, src);
+      if (!maybe_plaintext) {
+        return false;
+      }
+      *mem = std::move(maybe_plaintext).value();
+      *dest = *mem;
+      return true;
+    }
+    default:
+      return false;
+  }
+}
 
 }  // namespace media::hls

@@ -963,41 +963,13 @@ void HlsManifestDemuxerEngine::DetermineBitstreamContainer(
     return;
   }
 
-  if (auto enc_data = segment->GetEncryptionData()) {
-    switch (enc_data->GetMethod()) {
-      case hls::XKeyTagMethod::kNone: {
-        // Fall back to plaintext.
-        break;
-      }
-      case hls::XKeyTagMethod::kAES128:
-      case hls::XKeyTagMethod::kAES256: {
-        auto maybe_iv = enc_data->GetIVStr(segment->GetMediaSequenceNumber());
-        if (!maybe_iv.has_value() ||
-            maybe_iv->size() != crypto::aes_cbc::kBlockSize) {
-          std::move(cb).Run(
-              HlsDemuxerStatus::Codes::kInsufficientCryptoMetadata);
-          return;
-        }
-
-        auto iv =
-            base::as_byte_span(*maybe_iv).first<crypto::aes_cbc::kBlockSize>();
-        auto maybe_plaintext =
-            crypto::aes_cbc::Decrypt(enc_data->GetKey(), iv, stream->data());
-        if (!maybe_plaintext) {
-          std::move(cb).Run(HlsDemuxerStatus::Codes::kFailedToDecryptSegment);
-          return;
-        }
-        std::move(cb).Run(CheckBitstreamForContainerMagic(*maybe_plaintext));
-        return;
-      }
-      default: {
-        std::move(cb).Run(HlsDemuxerStatus::Codes::kUnsupportedCryptoMethod);
-        return;
-      }
-    }
+  std::vector<uint8_t> mem;
+  base::span<const uint8_t> plaintext;
+  if (!segment->GetPlaintextStreamSource(stream->data(), &plaintext, &mem)) {
+    std::move(cb).Run(HlsDemuxerStatus::Codes::kUnsupportedCryptoMethod);
+    return;
   }
-
-  std::move(cb).Run(CheckBitstreamForContainerMagic(stream->data()));
+  std::move(cb).Run(CheckBitstreamForContainerMagic(plaintext));
 }
 
 void HlsManifestDemuxerEngine::OnChunkDemuxerParseWarning(
