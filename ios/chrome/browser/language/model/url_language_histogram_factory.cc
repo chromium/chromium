@@ -34,7 +34,7 @@ UrlLanguageHistogramFactory::BuildServiceInstanceFor(
   return std::make_unique<language::UrlLanguageHistogram>(profile->GetPrefs());
 }
 
-void UrlLanguageHistogramFactory::RegisterBrowserStatePrefs(
+void UrlLanguageHistogramFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* const registry) {
   language::UrlLanguageHistogram::RegisterProfilePrefs(registry);
 }

@@ -32,7 +32,7 @@ class UrlLanguageHistogramFactory : public ProfileKeyedServiceFactoryIOS {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  void RegisterBrowserStatePrefs(
+  void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 
