@@ -262,6 +262,7 @@ source_set("login_impl") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin:signin_promo",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/profiles",
@@ -287,6 +288,7 @@ source_set("login_impl") {
       "//chrome/browser/password_manager/factories",
       "//chrome/browser/profiles",
       "//chrome/browser/themes",
+      "//chrome/browser/signin:signin_promo",
       "//components/password_manager/core/browser",
       "//components/signin/core/browser",
     ]
@@ -299,6 +301,7 @@ source_set("login_impl") {
       "//chrome/browser/prefs",
       "//chrome/browser/profiles",
       "//chrome/browser/resources/gaia_auth_host:resources",
+      "//chrome/browser/signin:signin_promo",
       "//ui/webui",
     ]
 
@@ -509,6 +512,7 @@ source_set("test_support_ui") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin:signin_promo",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/signin",

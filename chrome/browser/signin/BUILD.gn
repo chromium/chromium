@@ -86,3 +86,12 @@ source_set("impl") {
     ]
   }
 }
+
+source_set("signin_promo") {
+  sources = [ "signin_promo.h" ]
+  public_deps = [ "//components/signin/public/base" ]
+  deps = [
+    "//components/signin/public/base:signin_buildflags",
+    "//url",
+  ]
+}

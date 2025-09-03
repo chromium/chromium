@@ -32,6 +32,13 @@ source_set("browser_tests") {
     "usb_internals/usb_internals_browsertest.cc",
   ]
 
+  deps = [
+    "//chrome/browser/ui/tabs/tab_group_home:constants",
+    "//chrome/test:test_support",
+    "//components/commerce/core:commerce_constants",
+    "//components/webui/chrome_urls/",
+  ]
+
   if (!is_android) {
     sources += [
       "about_sys/about_sys_browsertest.cc",
@@ -81,6 +88,9 @@ source_set("browser_tests") {
       "tab_search/tab_search_browsertest.cc",
       "webview/webui_webview_browsertest.cc",
     ]
+
+    deps += [ "//chrome/browser/signin:signin_promo" ]
+
     if (is_chrome_branded) {
       sources += [ "media_router/cast_feedback_ui_browsertest.cc" ]
     }
@@ -175,13 +185,6 @@ source_set("browser_tests") {
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [ "discards/discards_browsertest.cc" ]
   }
-
-  deps = [
-    "//chrome/browser/ui/tabs/tab_group_home:constants",
-    "//chrome/test:test_support",
-    "//components/commerce/core:commerce_constants",
-    "//components/webui/chrome_urls/",
-  ]
 
   if (is_win || is_mac || is_linux) {
     sources += [

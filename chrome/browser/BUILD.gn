@@ -2021,6 +2021,7 @@ static_library("browser") {
     "//chrome/browser/signin",
     "//chrome/browser/signin:identity_manager_provider",
     "//chrome/browser/signin:impl",
+    "//chrome/browser/signin:signin_promo",
     "//chrome/browser/status_icons",
     "//chrome/browser/status_icons:impl",
     "//chrome/browser/storage_access_api",
@@ -4234,8 +4235,8 @@ static_library("browser") {
       "sharing_hub/sharing_hub_model.cc",
       "sharing_hub/sharing_hub_service.cc",
       "sharing_hub/sharing_hub_service_factory.cc",
-      "signin/signin_promo.cc",
-      "signin/signin_promo.h",
+      "signin/signin_promo.cc",  # signin_promo.h is included in
+                                 # //chrome/browser/signin:signin_promo
       "signin/signin_ui_delegate.cc",
       "signin/signin_ui_delegate.h",
       "signin/signin_ui_util.cc",

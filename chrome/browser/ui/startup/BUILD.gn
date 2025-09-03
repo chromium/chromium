@@ -279,7 +279,10 @@ source_set("impl") {
       "credential_provider_signin_dialog_win.cc",
       "credential_provider_signin_info_fetcher_win.cc",
     ]
-    deps += [ "//chrome/credential_provider/common:common_constants" ]
+    deps += [
+      "//chrome/browser/signin:signin_promo",
+      "//chrome/credential_provider/common:common_constants",
+    ]
   }
 }
 
@@ -393,6 +396,7 @@ if (!is_android) {
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/search",
       "//chrome/browser/sessions",
+      "//chrome/browser/signin:signin_promo",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:ui_features",

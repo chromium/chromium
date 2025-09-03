@@ -3972,6 +3972,7 @@ if (!is_android) {
       "//chrome/browser/notifications",
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/sessions",
+      "//chrome/browser/signin:signin_promo",
       "//chrome/browser/supervised_user",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/extensions",
@@ -4477,6 +4478,7 @@ if (!is_android) {
       }
       deps += [
         "//chrome/browser/profiles/batch_upload:browser_tests",
+        "//chrome/browser/signin:signin_promo",
 
         # TODO(crubug.com/430804948): This dependency is needed because
         # `signin_intercept_first_run_experience_dialog_browsertest.cc` includes `signin_intercept_first_run_experience_dialog.h`,
@@ -8317,6 +8319,7 @@ test("unit_tests") {
       "//chrome/browser/password_manager/password_change:unit_tests",
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/send_tab_to_self:unit_tests",
+      "//chrome/browser/signin:signin_promo",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/task_manager/common",
       "//chrome/browser/ui/bookmarks:unit_tests",
@@ -10877,6 +10880,7 @@ if (!is_android) {
       "//chrome/browser/search",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
+      "//chrome/browser/signin:signin_promo",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
@@ -11334,6 +11338,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/search_engines",
       "//chrome/browser/sessions",
       "//chrome/browser/signin",
+      "//chrome/browser/signin:signin_promo",
       "//chrome/browser/signin/e2e_tests:test_support",
       "//chrome/browser/status_icons",
       "//chrome/browser/sync",
