@@ -8228,7 +8228,6 @@ data/prerender/image_loading_lazy.html
 data/prerender/inline_script.html
 data/prerender/multiple_prerender_with_tags.html
 data/prerender/multiple_prerender_with_tags_and_different_eagerness.html
-data/prerender/origin_trial_initiator.html
 data/prerender/page-with-embedded-plugin.html
 data/prerender/page-with-object-plugin.html
 data/prerender/page_with_trigger_function.html
