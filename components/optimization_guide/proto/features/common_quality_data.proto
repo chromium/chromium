@@ -876,6 +876,10 @@ message FormData {
   // changes dynamically.
   // Only set during data collection, not in prediction requests.
   uint64 form_signature = 4 [features = { field_presence: EXPLICIT }];
+
+  // The action URL of the form, if present. This is the resolved value
+  // including the final origin.
+  string action_url = 5 [features = { field_presence: EXPLICIT }];
 }
 
 // Next ID: 14

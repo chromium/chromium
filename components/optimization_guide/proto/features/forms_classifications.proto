@@ -231,6 +231,10 @@ message AutofillAiKeyMetrics {
   // in forms that ask about multiple entity types (e.g. driver's license and
   // vehicle information).
   AutofillAiEntityType entity_type = 10 [features = { field_presence: IMPLICIT }];
+
+  // True for submitted and autofilled forms if the user didn't have to edit any
+  // field manually. Only recorded if an Autofill AI suggestion was filled.
+  bool perfect_filling = 11 [features = { field_presence: EXPLICIT }];
 }
 
 message AutofillAiUserPromptMetrics {
