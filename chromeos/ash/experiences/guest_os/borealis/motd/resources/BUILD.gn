@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 import("//ui/webui/resources/tools/build_webui.gni")
 
-build_webui("build") {
+assert(is_chromeos)
+
+build_webui("resources") {
   grd_prefix = "borealis_motd"
 
   static_files = [
@@ -12,4 +14,6 @@ build_webui("build") {
   ]
 
   ts_files = [ "index.ts" ]
+
+  grit_output_dir = "$root_gen_dir/chromeos/ash"
 }

@@ -244,10 +244,6 @@
     "META": {"sizes": {"includes": [20],}},
     "includes": [3100],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/borealis_motd/resources.grd": {
-    "META": {"sizes": {"includes": [3],}},
-    "includes": [3110],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/cloud_upload/resources.grd": {
     "META": {"sizes": {"includes": [50]}},
     "includes": [3120],
@@ -799,6 +795,10 @@
     "META": {"sizes": {"includes": [45],}},
     "includes" : [5740],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chromeos/ash/experiences/guest_os/borealis/motd/resources/resources.grd": {
+    "META": {"sizes": {"includes": [3],}},
+    "includes": [5750],
+   },
   "chromeos/ash/resources/ash_resources.grd": {
     "includes": [5780],
   },
