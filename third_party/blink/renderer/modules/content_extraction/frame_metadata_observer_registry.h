@@ -58,6 +58,7 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
  private:
   class DomContentLoadedListener;
   class MetaTagsMutationObserver;
+  class PaidContentMutationObserver;
   friend class DomContentLoadedListener;
 
   void Bind(mojo::PendingReceiver<mojom::blink::FrameMetadataObserverRegistry>
@@ -67,11 +68,15 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
   void OnPaidContentMetadataChanged();
   void OnMetaTagsChanged();
 
-  void UpdateMetaTagsObserver();
+  // Returns true if there are observers.
+  bool UpdateMetaTagsObserver();
+  // Returns true if there are observers.
+  bool UpdatePaidContentObserver();
 
   void ListenForDomContentLoaded();
 
-  void DisconnectHandler(mojo::RemoteSetElementId id);
+  void DisconnectHandler(mojo::RemoteSetElementId);
+  void PaidContentDisconnectHandler(mojo::RemoteSetElementId);
 
   HeapMojoReceiverSet<mojom::blink::FrameMetadataObserverRegistry,
                       FrameMetadataObserverRegistry>
@@ -99,6 +104,7 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
   Member<DomContentLoadedListener> dom_content_loaded_observer_;
 
   Member<MetaTagsMutationObserver> meta_tags_mutation_observer_;
+  Member<PaidContentMutationObserver> paid_content_mutation_observer_;
 };
 
 }  // namespace blink

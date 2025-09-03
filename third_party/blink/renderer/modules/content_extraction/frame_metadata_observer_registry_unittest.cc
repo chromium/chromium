@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -157,6 +158,39 @@ TEST_F(FrameMetadataObserverRegistryTest, LateObserver) {
   MockPaidContentMetadataObserver observer;
   registry_->AddPaidContentMetadataObserver(
       observer.BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  ASSERT_TRUE(observer.future().IsReady());
+  EXPECT_TRUE(observer.future().Get());
+}
+
+TEST_F(FrameMetadataObserverRegistryTest, PaidContentAddedDynamically) {
+  LoadHTML(R"HTML(
+    <head>
+    </head>
+    <body></body>
+  )HTML");
+  BindRegistry();
+
+  MockPaidContentMetadataObserver observer;
+  registry_->AddPaidContentMetadataObserver(
+      observer.BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  // No paid content initially.
+  EXPECT_FALSE(observer.future().IsReady());
+
+  // Dynamically add paid content.
+  auto* script = MakeGarbageCollected<HTMLScriptElement>(*GetDocument(),
+                                                         CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr,
+                       AtomicString("application/ld+json"));
+  script->setTextContent(R"JSON({
+    "@context": "http://schema.org",
+    "@type": "NewsArticle",
+    "isAccessibleForFree": false
+  })JSON");
+  GetDocument()->head()->AppendChild(script);
   test::RunPendingTasks();
 
   ASSERT_TRUE(observer.future().IsReady());

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/content_extraction/paid_content.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -29,18 +30,65 @@ namespace blink {
 
 namespace {}  // namespace
 
+class FrameMetadataObserverRegistry::PaidContentMutationObserver final
+    : public MutationObserver::Delegate {
+ public:
+  explicit PaidContentMutationObserver(FrameMetadataObserverRegistry* registry);
+
+  void ObserveHead(HTMLHeadElement* head);
+
+  void Disconnect() {
+    observer_->disconnect();
+    observing_ = nullptr;
+  }
+
+  ExecutionContext* GetExecutionContext() const override {
+    return registry_->GetSupplementable()->GetExecutionContext();
+  }
+
+  void Deliver(const HeapVector<Member<MutationRecord>>& records,
+               MutationObserver&) override {
+    // We are looking for changes to script tags which indicate paid content.
+    for (const auto& record : records) {
+      if (record->type() == "attributes") {
+        if (IsA<HTMLScriptElement>(record->target())) {
+          registry_->OnPaidContentMetadataChanged();
+          return;
+        }
+      } else {  // "childList"
+        for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
+          if (IsA<HTMLScriptElement>(record->addedNodes()->item(i))) {
+            registry_->OnPaidContentMetadataChanged();
+            return;
+          }
+        }
+        for (unsigned i = 0; i < record->removedNodes()->length(); ++i) {
+          if (IsA<HTMLScriptElement>(record->removedNodes()->item(i))) {
+            registry_->OnPaidContentMetadataChanged();
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(registry_);
+    visitor->Trace(observer_);
+    visitor->Trace(observing_);
+    MutationObserver::Delegate::Trace(visitor);
+  }
+
+ private:
+  Member<FrameMetadataObserverRegistry> registry_;
+  Member<MutationObserver> observer_;
+  WeakMember<Node> observing_;
+};
+
 class FrameMetadataObserverRegistry::MetaTagsMutationObserver final
     : public MutationObserver::Delegate {
  public:
   explicit MetaTagsMutationObserver(FrameMetadataObserverRegistry* registry);
-
-  void ObserveDocument(Document* document) {
-    // If a document is loaded without a head element, then we
-    // should add an observer here for dynamically added head elements.
-    // This should be rare, and if we choose to support this then care should
-    // be taken to ensure the listener is efficient.
-    return;
-  }
 
   void ObserveHead(HTMLHeadElement* head) {
     if (observing_ == head) {
@@ -85,6 +133,27 @@ class FrameMetadataObserverRegistry::MetaTagsMutationObserver final
   WeakMember<Node> observing_;
 };
 
+FrameMetadataObserverRegistry::PaidContentMutationObserver::
+    PaidContentMutationObserver(FrameMetadataObserverRegistry* registry)
+    : registry_(registry), observer_(MutationObserver::Create(this)) {}
+
+void FrameMetadataObserverRegistry::PaidContentMutationObserver::ObserveHead(
+    HTMLHeadElement* head) {
+  if (observing_ == head) {
+    return;
+  }
+
+  observer_->disconnect();
+  MutationObserverInit* init = MutationObserverInit::Create();
+  init->setChildList(true);
+  init->setAttributes(true);
+  init->setSubtree(false);
+  DummyExceptionStateForTesting exception_state;
+  observer_->observe(head, init, exception_state);
+  DCHECK(!exception_state.HadException());
+  observing_ = head;
+}
+
 FrameMetadataObserverRegistry::MetaTagsMutationObserver::
     MetaTagsMutationObserver(FrameMetadataObserverRegistry* registry)
     : registry_(registry), observer_(MutationObserver::Create(this)) {}
@@ -124,13 +193,18 @@ FrameMetadataObserverRegistry::FrameMetadataObserverRegistry(
       paid_content_metadata_observers_(frame.DomWindow()),
       metatags_observers_(frame.DomWindow()),
       meta_tags_mutation_observer_(
-          MakeGarbageCollected<MetaTagsMutationObserver>(this)) {
+          MakeGarbageCollected<MetaTagsMutationObserver>(this)),
+      paid_content_mutation_observer_(
+          MakeGarbageCollected<PaidContentMutationObserver>(this)) {
   // Observer endpoints are explicitly closed when the other side is no
   // longer interested, so clean up the meta tags requested by that
   // observer at disconnect time.
   metatags_observers_.set_disconnect_handler(
       blink::BindRepeating(&FrameMetadataObserverRegistry::DisconnectHandler,
                            WrapWeakPersistent(this)));
+  paid_content_metadata_observers_.set_disconnect_handler(blink::BindRepeating(
+      &FrameMetadataObserverRegistry::PaidContentDisconnectHandler,
+      WrapWeakPersistent(this)));
 }
 
 FrameMetadataObserverRegistry::~FrameMetadataObserverRegistry() = default;
@@ -151,6 +225,7 @@ void FrameMetadataObserverRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(metatags_observers_);
   visitor->Trace(remote_id_to_observer_data_);
   visitor->Trace(meta_tags_mutation_observer_);
+  visitor->Trace(paid_content_mutation_observer_);
 }
 
 class FrameMetadataObserverRegistry::DomContentLoadedListener final
@@ -230,7 +305,7 @@ void FrameMetadataObserverRegistry::OnDomContentLoaded() {
 }
 
 void FrameMetadataObserverRegistry::OnPaidContentMetadataChanged() {
-  if (paid_content_metadata_observers_.empty()) {
+  if (!UpdatePaidContentObserver()) {
     return;
   }
   PaidContent paid_content;
@@ -241,17 +316,13 @@ void FrameMetadataObserverRegistry::OnPaidContentMetadataChanged() {
     return;
   }
 
-  // TODO(gklassen): Add a MutationObserver to monitor for changes during
-  // the lifetime of the page.
-
   for (auto& observer : paid_content_metadata_observers_) {
     observer->OnPaidContentMetadataChanged(paid_content_exists);
   }
 }
 
 void FrameMetadataObserverRegistry::OnMetaTagsChanged() {
-  UpdateMetaTagsObserver();
-  if (metatags_observers_.empty()) {
+  if (!UpdateMetaTagsObserver()) {
     return;
   }
   Document* document = GetSupplementable();
@@ -291,10 +362,10 @@ void FrameMetadataObserverRegistry::OnMetaTagsChanged() {
   }
 }
 
-void FrameMetadataObserverRegistry::UpdateMetaTagsObserver() {
+bool FrameMetadataObserverRegistry::UpdateMetaTagsObserver() {
   if (metatags_observers_.empty()) {
     meta_tags_mutation_observer_->Disconnect();
-    return;
+    return false;
   }
   Document* document = GetSupplementable();
   HTMLHeadElement* head = document->head();
@@ -303,10 +374,30 @@ void FrameMetadataObserverRegistry::UpdateMetaTagsObserver() {
     // efficient than observing the whole document.
     meta_tags_mutation_observer_->ObserveHead(head);
   } else {
-    // There is no head element, so we should observe the document to be
-    // notified when one is added.
-    meta_tags_mutation_observer_->ObserveDocument(document);
+    // If a document is loaded without a head element, then we
+    // could add an observer here for dynamically added head elements.
+    // This should be rare, and if we choose to support this then care should
+    // be taken to ensure the listener is efficient.
   }
+  return true;
+}
+
+bool FrameMetadataObserverRegistry::UpdatePaidContentObserver() {
+  if (paid_content_metadata_observers_.empty()) {
+    paid_content_mutation_observer_->Disconnect();
+    return false;
+  }
+  Document* document = GetSupplementable();
+  HTMLHeadElement* head = document->head();
+  if (head) {
+    paid_content_mutation_observer_->ObserveHead(head);
+  } else {
+    // If a document is loaded without a head element, then we
+    // could add an observer here for dynamically added head elements.
+    // This should be rare, and if we choose to support this then care should
+    // be taken to ensure the listener is efficient.
+  }
+  return true;
 }
 
 void FrameMetadataObserverRegistry::DisconnectHandler(
@@ -330,6 +421,11 @@ void FrameMetadataObserverRegistry::DisconnectHandler(
   remote_id_to_observer_data_.erase(it);
 
   UpdateMetaTagsObserver();
+}
+
+void FrameMetadataObserverRegistry::PaidContentDisconnectHandler(
+    mojo::RemoteSetElementId id) {
+  UpdatePaidContentObserver();
 }
 
 }  // namespace blink
