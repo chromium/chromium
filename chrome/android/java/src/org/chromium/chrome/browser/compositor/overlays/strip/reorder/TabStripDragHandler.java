@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.dragdrop.ChromeDragDropUtils;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -599,6 +600,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     }
 
     public static boolean isDraggedItemPinned() {
+        if (!ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) return false;
+
         @Nullable Tab tab =
                 ChromeDragDropUtils.getTabFromGlobalState(
                         getDragDropGlobalState(/* dragEvent= */ null));
