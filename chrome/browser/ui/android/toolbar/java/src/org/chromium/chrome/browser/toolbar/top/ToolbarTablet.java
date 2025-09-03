@@ -91,8 +91,6 @@ public class ToolbarTablet extends ToolbarLayout {
     private BackButtonCoordinator mBackButtonCoordinator;
     private IncognitoIndicatorCoordinator mIncognitoIndicatorCoordinator;
     private ForwardButtonCoordinator mForwardButtonCoordinator;
-    private final OptionalButtonToolbarWidthConsumer mOptionalButtonToolbarWidthConsumer =
-            new OptionalButtonToolbarWidthConsumer();
 
     private final int mStartPaddingWithButtons;
     private final int mStartPaddingWithoutButtons;
@@ -401,7 +399,7 @@ public class ToolbarTablet extends ToolbarLayout {
         mToolbarWidthConsumers[ToolbarComponentId.FORWARD] = mForwardButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.RELOAD] = mReloadButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.ADAPTIVE_BUTTON] =
-                mOptionalButtonToolbarWidthConsumer;
+                new OptionalButtonToolbarWidthConsumer();
         mToolbarWidthConsumers[ToolbarComponentId.TAB_SWITCHER] = tabSwitcherButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.MENU] = menuButtonCoordinator;
     }
@@ -748,6 +746,11 @@ public class ToolbarTablet extends ToolbarLayout {
     void setForwardButtonCoordinatorForTesting(ForwardButtonCoordinator coordinator) {
         mForwardButtonCoordinator = coordinator;
         mToolbarWidthConsumers[ToolbarComponentId.FORWARD] = mForwardButtonCoordinator;
+    }
+
+    void ensureOptionalButtonWidthConsumerForTesting() {
+        mToolbarWidthConsumers[ToolbarComponentId.ADAPTIVE_BUTTON] =
+                new OptionalButtonToolbarWidthConsumer();
     }
 
     void setTabStackButtonCoordinatorForTesting(ToggleTabStackButtonCoordinator coordinator) {
