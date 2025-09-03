@@ -191,4 +191,11 @@ BASE_FEATURE(kDevToolsGdpProfiles,
 const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled{
     &kDevToolsGdpProfiles, "starter_badge_enabled",
     /*default_value=*/false};
+
+// Whether DevTools Live Edit (Debugger.setScriptSource usage in CDP) is
+// enabled.
+BASE_FEATURE(kDevToolsLiveEdit,
+             "DevToolsLiveEdit",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -103,6 +103,8 @@ extern const base::FeatureParam<bool> kDevToolsGlobalAiButtonPromotionEnabled;
 BASE_DECLARE_FEATURE(kDevToolsGdpProfiles);
 extern const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled;
 
+BASE_DECLARE_FEATURE(kDevToolsLiveEdit);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

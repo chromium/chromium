@@ -1968,6 +1968,11 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     response_dict.Set("devToolsGdpProfiles", std::move(gdp_profiles_dict));
   }
 
+  response_dict.Set(
+      "devToolsLiveEdit",
+      base::Value::Dict().Set("enabled", base::FeatureList::IsEnabled(
+                                             ::features::kDevToolsLiveEdit)));
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
