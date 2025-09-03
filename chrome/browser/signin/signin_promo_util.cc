@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -24,6 +25,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "components/sync/service/sync_prefs.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -120,6 +122,10 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
 // `ShouldShowAddressSignInPromo` and `ShouldShowPasswordSignInPromo`).
 // `profile` is the profile of the tab the promo would be shown on.
 bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
+  if (profile.IsOffTheRecord()) {
+    return false;
+  }
+
   // Don't show the promo if it does not pass the sync base checks.
   if (!signin::ShouldShowSyncPromo(profile)) {
     return false;
@@ -133,7 +139,6 @@ bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
   if (!sync_service) {
     return false;
   }
-  CHECK(!profile.IsOffTheRecord());
 
   syncer::DataType data_type = GetDataTypeFromSignInPromoType(type);
 
@@ -192,13 +197,19 @@ bool ShouldShowSyncPromo(Profile& profile) {
     return false;
   }
 
-  // Don't show if sign in is not allowed.
-  if (!original_profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
-    return false;
-  }
-
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(original_profile);
+  AccountInfo promo_account =
+      profile.IsOffTheRecord()
+          ? AccountInfo()  // Incognito profiles do not personalize promos.
+          : signin_ui_util::GetSingleAccountForPromos(identity_manager);
+
+  // Don't show if sign in can't be offered (ex: signin disallowed).
+  if (!CanOfferSignin(original_profile, promo_account.gaia, promo_account.email,
+                      /*allow_account_from_other_profile=*/true)
+           .IsOk()) {
+    return false;
+  }
 
   // No promo if the user is already syncing.
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {

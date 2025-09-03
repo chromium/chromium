@@ -27,6 +27,8 @@
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/features.h"
 #include "components/prefs/pref_service.h"
@@ -37,6 +39,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -234,16 +237,20 @@ void AccountsPolicyManager::OnSigninAllowedPrefChanged() {
 void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
     Profile* profile,
     signin_metrics::ProfileSignout clear_primary_account_source) {
+  signin::ConsentLevel consent_level =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync;
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (!identity_manager->HasPrimaryAccount(consent_level)) {
     return;
   }
 
   CoreAccountInfo primary_account =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
-  if (profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed) &&
-      signin::IsUsernameAllowedByPatternFromPrefs(
-          g_browser_process->local_state(), primary_account.email)) {
+      identity_manager->GetPrimaryAccountInfo(consent_level);
+  if (CanOfferSignin(profile, primary_account.gaia, primary_account.email,
+                     /*allow_account_from_other_profile=*/true)
+          .IsOk()) {
     return;
   }
 

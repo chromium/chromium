@@ -97,7 +97,9 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
@@ -112,6 +114,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -270,6 +273,11 @@ class ProfileMenuViewTestBase {
     ASSERT_TRUE(avatar_button);
     Click(avatar_button);
     ASSERT_NO_FATAL_FAILURE(WaitForMenuToBeActive(profile_menu_view()));
+
+    // A HoverButton may have focused itself if the mouse happened to be over it
+    // when it became visible. Clear the focus now to ensure that we advance to
+    // the right item.
+    profile_menu_view()->GetFocusManager()->ClearFocus();
   }
 
   ProfileMenuViewBase* profile_menu_view() {
@@ -809,6 +817,10 @@ class ProfileMenuViewWebOnlyTest : public ProfileMenuViewTestBase,
 
     ASSERT_FALSE(
         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+    signin::AccountsInCookieJarInfo cookie_info =
+        identity_manager->GetAccountsInCookieJar();
+    ASSERT_EQ(cookie_info.GetAllAccounts().size(), 1u);
+
     ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
   }
 
@@ -849,6 +861,10 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
                        /*is_sync_promo=*/true,
                        /*user_already_signed_in=*/false));
   ClickSigninButton();
+  EXPECT_EQ(IdentityManagerFactory::GetForProfile(browser()->profile())
+                ->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+            account_info_.account_id);
+
   // `Signin.SyncOptIn.Offered` should NOT be recorded if the sync opt-in is
   // not directly offered from the profile menu.
   histogram_tester.ExpectUniqueSample("Signin.SyncOptIn.Offered",
@@ -862,6 +878,54 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered.WithDefault",
                                       expected_access_point,
                                       /*expected_bucket_count=*/1);
+}
+
+// The user has a primary web account that cannot be used to sign in due to a
+// policy pattern, but they have a secondary account that can be used. The
+// "Continue as" button is shown, and clicking it uses the secondary account.
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest,
+                       SigninPatternDisallowedSecondaryAllowed) {
+  // Check that the setup was successful.
+  PrefService* local_state = g_browser_process->local_state();
+  constexpr char kAccountAllowed[] = "foo@signinallowed.com";
+  const CoreAccountInfo& disallowed_account = account_info_;
+  ASSERT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(local_state,
+                                                          kAccountAllowed));
+  ASSERT_FALSE(signin::IsUsernameAllowedByPatternFromPrefs(
+      local_state, disallowed_account.email));
+
+  // Add an account, not signed in, and allowed to sign in.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  AccountInfo allowed_account = signin::MakeAccountAvailable(
+      identity_manager,
+      signin::AccountAvailabilityOptionsBuilder()
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build(kAccountAllowed));
+  signin::SetCookieAccounts(
+      identity_manager, test_url_loader_factory(),
+      {{disallowed_account.email, disallowed_account.gaia},
+       {allowed_account.email, allowed_account.gaia}});
+  ASSERT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 2u);
+  signin::AccountsInCookieJarInfo cookie_info =
+      identity_manager->GetAccountsInCookieJar();
+  ASSERT_EQ(cookie_info.GetAllAccounts().size(), 2u);
+  // Disallowed account is the first in cookies.
+  ASSERT_EQ(cookie_info.GetAllAccounts()[0].email, disallowed_account.email);
+
+  ClickSigninButton();
+
+  EXPECT_EQ(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      allowed_account.account_id);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest,
+                       PRE_SigninPatternDisallowedSecondaryAllowed) {
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, "*@signinallowed.com");
 }
 
 class ProfileMenuViewSigninPendingTest : public ProfileMenuViewTestBase,
@@ -1035,11 +1099,6 @@ class ProfileMenuClickTest : public SyncTest,
   // This should be called in the test body.
   void RunTest() {
     ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
-
-    // A HoverButton may have focused itself if the mouse happened to be over it
-    // when it became visible. Clear the focus now to ensure that we advance to
-    // the right item.
-    profile_menu_view()->GetFocusManager()->ClearFocus();
 
     // These tests don't care about performing the actual menu actions, only
     // about the histogram recorded.
@@ -1228,6 +1287,8 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_WebOnly,
       identity_manager,
       builder.WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
           .Build(kTestEmail));
+  signin::SetCookieAccounts(identity_manager, &test_url_loader_factory_,
+                            {{account_info.email, account_info.gaia}});
   ASSERT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
@@ -1358,6 +1419,130 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SigninDisallowed,
                        PRE_ProfileMenuClickTest_SigninDisallowed) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSigninAllowedOnNextStartup, false);
+}
+
+// List of actionable items in the correct order as they appear in the menu when
+// the web account is disallowed by pattern. If a new button is added to the
+// menu, it should also be added to this list.
+constexpr std::array kActionableItems_SigninPatternDisallowed = {
+    // Non-personalized signin button.
+    ProfileMenuViewBase::ActionableItem::kSigninButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kSigninButton};
+
+// In this test, the user has an account on the web, but this account is not
+// allowed to be signed in due to a pattern set by policy.
+// The test checks that a generic non-personalized button is shown in the menu
+// -- as opposed to a personalized "Continue as" button. This is checked by
+// verifying that the first item in the menu is `kSigninButton`, and not
+// `kSigninAccountButton`.
+PROFILE_MENU_CLICK_TEST(kActionableItems_SigninPatternDisallowed,
+                        ProfileMenuClickTest_SigninPatternDisallowed) {
+  // Check that the setup was successful.
+  PrefService* local_state = g_browser_process->local_state();
+  constexpr char kAccountNotAllowed[] = "foo@notallowed.com";
+  ASSERT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(
+      local_state, "foo@signinallowed.com"));
+  ASSERT_FALSE(signin::IsUsernameAllowedByPatternFromPrefs(local_state,
+                                                           kAccountNotAllowed));
+
+  // Add an account, not signed in.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::AccountAvailabilityOptionsBuilder builder;
+  AccountInfo account_info = signin::MakeAccountAvailable(
+      identity_manager,
+      builder.WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build(kAccountNotAllowed));
+  signin::SetCookieAccounts(identity_manager, &test_url_loader_factory_,
+                            {{account_info.email, account_info.gaia}});
+  ASSERT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
+
+  RunTest();
+}
+
+IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SigninPatternDisallowed,
+                       PRE_ProfileMenuClickTest_SigninPatternDisallowed) {
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, "*@signinallowed.com");
+}
+
+// List of actionable items in the correct order as they appear in the menu when
+// the web account is disallowed by pattern, but a secondary account is allowed.
+// If a new button is added to the menu, it should also be added to this list.
+constexpr std::array kActionableItems_SigninPatternDisallowedSecondaryAllowed =
+    {
+        // Personalized signin button.
+        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+        // The first button is added again to finish the cycle and test that
+        // there are no other buttons at the end.
+        ProfileMenuViewBase::ActionableItem::kSigninAccountButton};
+
+// This test is similar to the previous one, but the user has a secondary
+// account that is allowed. The first button is now `kSigninAccountButton` which
+// is "Continue as". Clicking the button would sign the user in with the allowed
+// account, but this test does not actually check that.
+PROFILE_MENU_CLICK_TEST(
+    kActionableItems_SigninPatternDisallowedSecondaryAllowed,
+    ProfileMenuClickTest_SigninPatternDisallowedSecondaryAllowed) {
+  // Check that the setup was successful.
+  PrefService* local_state = g_browser_process->local_state();
+  constexpr char kAccountNotAllowed[] = "foo@notallowed.com";
+  constexpr char kAccountAllowed[] = "foo@signinallowed.com";
+  ASSERT_TRUE(signin::IsUsernameAllowedByPatternFromPrefs(local_state,
+                                                          kAccountAllowed));
+  ASSERT_FALSE(signin::IsUsernameAllowedByPatternFromPrefs(local_state,
+                                                           kAccountNotAllowed));
+
+  // Add an account, not signed in.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  AccountInfo disallowed_account = signin::MakeAccountAvailable(
+      identity_manager,
+      signin::AccountAvailabilityOptionsBuilder()
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build(kAccountNotAllowed));
+  AccountInfo allowed_account = signin::MakeAccountAvailable(
+      identity_manager,
+      signin::AccountAvailabilityOptionsBuilder()
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build(kAccountAllowed));
+  signin::SetCookieAccounts(
+      identity_manager, &test_url_loader_factory_,
+      {{disallowed_account.email, disallowed_account.gaia},
+       {allowed_account.email, allowed_account.gaia}});
+  ASSERT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 2u);
+  signin::AccountsInCookieJarInfo cookie_info =
+      identity_manager->GetAccountsInCookieJar();
+  ASSERT_EQ(cookie_info.GetAllAccounts().size(), 2u);
+  // Disallowed account is the first in cookies.
+  ASSERT_EQ(cookie_info.GetAllAccounts()[0].email, kAccountNotAllowed);
+
+  RunTest();
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ProfileMenuClickTest_SigninPatternDisallowedSecondaryAllowed,
+    PRE_ProfileMenuClickTest_SigninPatternDisallowedSecondaryAllowed) {
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, "*@signinallowed.com");
 }
 
 // List of actionable items in the correct order as they appear in the menu. If

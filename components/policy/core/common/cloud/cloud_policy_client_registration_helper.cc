@@ -94,6 +94,8 @@ CloudPolicyClientRegistrationHelper::~CloudPolicyClientRegistrationHelper() {
   // trying to register for policy.
   if (client_)
     client_->RemoveObserver(this);
+  // `client_` may be owned by `callback_`, reset to prevent dangling reference.
+  client_ = nullptr;
 }
 
 void CloudPolicyClientRegistrationHelper::StartRegistration(

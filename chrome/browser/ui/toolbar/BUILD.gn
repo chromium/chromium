@@ -207,6 +207,11 @@ source_set("impl") {
     ]
     if (is_chromeos) {
       deps += [ "//chrome/browser/policy:system_features_disable_list" ]
+    } else {
+      deps += [
+        "//chrome/browser/ui/webui/signin:signin_ui_error",
+        "//chrome/browser/ui/webui/signin:signin_utils",
+      ]
     }
     if (enable_glic) {
       deps += [

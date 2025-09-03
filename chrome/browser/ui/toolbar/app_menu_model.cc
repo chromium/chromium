@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -158,6 +159,9 @@
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "ui/display/screen.h"
+#else
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -597,9 +601,14 @@ int ProfileSubMenuModel::GetAndIncrementNextMenuID() {
 }
 
 bool ProfileSubMenuModel::BuildSyncSection() {
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/440342282): Support personalized signin button.
+  if (!CanOfferSignin(profile_, GaiaId(), /*email=*/std::string(),
+                      /*allow_account_from_other_profile=*/true)
+           .IsOk()) {
     return false;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (!SyncServiceFactory::IsSyncAllowed(profile_)) {
     return false;
