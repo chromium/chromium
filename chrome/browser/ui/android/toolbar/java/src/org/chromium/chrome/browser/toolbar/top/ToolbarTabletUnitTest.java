@@ -126,6 +126,7 @@ public final class ToolbarTabletUnitTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private NavigationPopup.HistoryDelegate mHistoryDelegate;
+
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
@@ -771,7 +772,6 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(5 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-
         assertToolbarComponentsReceivedWidth(
                 Set.of(MENU, BACK, RELOAD, ADAPTIVE_BUTTON, TAB_SWITCHER));
 
@@ -855,6 +855,43 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(widthForStaticComponents, EXACTLY), UNSPECIFIED);
         assertToolbarComponentsReceivedWidth(Set.of());
+    }
+
+    @SuppressLint("WrongCall")
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testResizeTabletToolbar_toggleOptionalButtonHidden() {
+        int widthForStaticComponents = mToolbarTablet.getWidthForStaticComponents();
+        int buttonWidth =
+                mToolbarTablet
+                        .getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_button_width);
+        int toolbarWidth = 8 * buttonWidth + widthForStaticComponents;
+        updateOptionalButton(
+                /* buttonVariant= */ AdaptiveToolbarButtonVariant.SHARE,
+                R.string.adaptive_toolbar_button_preference_share);
+
+        doReturn(toolbarWidth).when(mToolbarTablet).getWidth();
+
+        // The optional / adaptive button should be showing.
+        mToolbarTablet.onMeasure(MeasureSpec.makeMeasureSpec(toolbarWidth, EXACTLY), UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(
+                Set.of(MENU, HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON, TAB_SWITCHER));
+
+        // The optional / adaptive button should stop showing.
+        mToolbarTablet.hideOptionalButton();
+        mToolbarTablet.onMeasure(MeasureSpec.makeMeasureSpec(toolbarWidth, EXACTLY), UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(
+                Set.of(MENU, HOME, BACK, FORWARD, RELOAD, TAB_SWITCHER));
+
+        // The optional / adaptive button should start showing again after being updated.
+        updateOptionalButton(
+                /* buttonVariant= */ AdaptiveToolbarButtonVariant.SHARE,
+                R.string.adaptive_toolbar_button_preference_share);
+        mToolbarTablet.onMeasure(MeasureSpec.makeMeasureSpec(toolbarWidth, EXACTLY), UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(
+                Set.of(MENU, HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON, TAB_SWITCHER));
     }
 
     @SuppressWarnings("DirectInvocationOnMock")

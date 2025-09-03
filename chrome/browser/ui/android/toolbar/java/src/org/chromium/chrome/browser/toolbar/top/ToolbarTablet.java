@@ -82,6 +82,7 @@ public class ToolbarTablet extends ToolbarLayout {
 
     private boolean mIsInTabSwitcherMode;
     private boolean mToolbarButtonsVisible;
+    private boolean mOptionalButtonForciblyHidden;
     private @Nullable ImageButton mOptionalButton;
     private boolean mOptionalButtonUsesTint;
 
@@ -557,12 +558,14 @@ public class ToolbarTablet extends ToolbarLayout {
                 mOptionalButton.getPaddingBottom());
 
         mOptionalButton.setContentDescription(buttonSpec.getContentDescription());
+        mOptionalButtonForciblyHidden = false;
         setOptionalButtonVisibility(/* isVisible= */ true);
         mOptionalButton.setEnabled(buttonData.isEnabled());
     }
 
     @Override
     protected void hideOptionalButton() {
+        mOptionalButtonForciblyHidden = true;
         setOptionalButtonVisibility(/* isVisible= */ false);
     }
 
@@ -575,6 +578,10 @@ public class ToolbarTablet extends ToolbarLayout {
         @Override
         public int updateVisibility(int availableWidth) {
             assert isToolbarTabletResizeRefactorEnabled();
+            if (mOptionalButtonForciblyHidden) {
+                setOptionalButtonVisibility(false);
+                return 0;
+            }
 
             int width = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
             if (availableWidth >= width) {
