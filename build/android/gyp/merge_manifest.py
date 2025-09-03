@@ -21,18 +21,17 @@ _MANIFEST_MERGER_MAIN_CLASS = 'com.android.manifmerger.Merger'
 
 
 @contextlib.contextmanager
-def _ProcessMainManifest(manifest_path, min_sdk_version, target_sdk_version,
-                         max_sdk_version, manifest_package):
+def _ProcessMainManifest(manifest_path, manifest_package):
   """Patches the main Android manifest"""
   doc, manifest, _ = manifest_utils.ParseManifest(manifest_path)
-  manifest_utils.SetUsesSdk(manifest, target_sdk_version, min_sdk_version,
-                            max_sdk_version)
   assert manifest_utils.GetPackage(manifest) or manifest_package, \
             'Must set manifest package in GN or in AndroidManifest.xml'
   if manifest_package:
     manifest.set('package', manifest_package)
   tmp_prefix = manifest_path.replace(os.path.sep, '-')
   with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
+    # Manifest merger requires <uses-sdk> to not exist in the main manifest.
+    manifest_utils.RemoveUsesSdk(manifest)
     manifest_utils.SaveManifest(doc, patched_manifest.name)
     yield patched_manifest.name, manifest_utils.GetPackage(manifest)
 
@@ -123,9 +122,7 @@ def main(argv):
 
     with contextlib.ExitStack() as stack:
       root_manifest, package = stack.enter_context(
-          _ProcessMainManifest(args.root_manifest, args.min_sdk_version,
-                               args.target_sdk_version, args.max_sdk_version,
-                               args.manifest_package))
+          _ProcessMainManifest(args.root_manifest, args.manifest_package))
       if extras:
         seen_package_names = collections.Counter()
         extras_processed = [

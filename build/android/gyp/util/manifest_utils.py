@@ -118,6 +118,13 @@ def OverrideMinSdkVersionIfPresent(manifest_node, min_sdk_version):
     NamespacedSet(uses_sdk_node, 'minSdkVersion', min_sdk_version)
 
 
+def RemoveUsesSdk(manifest_node):
+  """Removes the <uses-sdk> tag from the manifest node."""
+  uses_sdk_node = manifest_node.find('./uses-sdk')
+  if uses_sdk_node is not None:
+    manifest_node.remove(uses_sdk_node)
+
+
 def _SortAndStripElementTree(root):
   # Sort alphabetically with two exceptions:
   # 1) Put <application> node last (since it's giant).
