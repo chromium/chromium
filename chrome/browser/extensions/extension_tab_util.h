@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/window_controller.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/base/window_open_disposition.h"
 
 // TODO(jamescook): Switch most of these guards to ENABLE_EXTENSIONS.
 #if !BUILDFLAG(IS_ANDROID)
@@ -24,7 +25,6 @@
 #include "components/tab_groups/tab_group_id.h"     // nogncheck
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
-#include "ui/base/window_open_disposition.h"
 #endif
 
 class Browser;
@@ -311,17 +311,11 @@ class ExtensionTabUtil {
   static GURL ResolvePossiblyRelativeURL(const std::string& url_string,
                                          const Extension* extension);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Navigates to a URL in a specific browser.
-  static void NavigateToURL(WindowOpenDisposition disposition,
-                            Browser* browser,
-                            const GURL& url);
-#else
   // Navigates to a URL in a specific web contents.
-  static void NavigateToURL(content::WebContents* web_contents,
+  static void NavigateToURL(WindowOpenDisposition disposition,
+                            content::WebContents* web_contents,
                             content::BrowserContext* browser_context,
                             const GURL& url);
-#endif
 
   // Returns true if navigating to `url` could kill a page or the browser
   // itself, whether by simulating a crash, browser quit, thread hang, or

@@ -23,6 +23,8 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -58,8 +60,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #else
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -74,8 +74,6 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"                   // nogncheck
 #include "chrome/browser/ui/browser_finder.h"            // nogncheck
-#include "chrome/browser/ui/browser_navigator.h"         // nogncheck
-#include "chrome/browser/ui/browser_navigator_params.h"  // nogncheck
 #include "chrome/browser/ui/browser_window.h"            // nogncheck
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"  // nogncheck
 #include "chrome/browser/ui/recently_audible_helper.h"             // nogncheck
@@ -1256,19 +1254,20 @@ GURL ExtensionTabUtil::ResolvePossiblyRelativeURL(const std::string& url_string,
   return url;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 void ExtensionTabUtil::NavigateToURL(WindowOpenDisposition disposition,
-                                     Browser* browser,
-                                     const GURL& url) {
-  NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_FROM_API);
-  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
-  navigate_params.disposition = disposition;
-  Navigate(&navigate_params);
-}
-#else
-void ExtensionTabUtil::NavigateToURL(content::WebContents* web_contents,
+                                     content::WebContents* web_contents,
                                      content::BrowserContext* browser_context,
                                      const GURL& url) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  NavigateParams params(Profile::FromBrowserContext(browser_context), url,
+                        ui::PAGE_TRANSITION_FROM_API);
+  params.disposition = disposition;
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  if (web_contents) {
+    params.source_contents = web_contents;
+  }
+  Navigate(&params);
+#else
   TabModel* const tab_model =
       TabModelList::GetTabModelForWebContents(web_contents);
   std::unique_ptr<content::WebContents> new_contents =
@@ -1280,8 +1279,8 @@ void ExtensionTabUtil::NavigateToURL(content::WebContents* web_contents,
   content::NavigationController::LoadURLParams load_params(url);
   load_params.transition_type = ui::PAGE_TRANSITION_FROM_API;
   new_web_contents->GetController().LoadURLWithParams(load_params);
-}
 #endif
+}
 
 bool ExtensionTabUtil::IsKillURL(const GURL& url) {
 #if DCHECK_IS_ON()
