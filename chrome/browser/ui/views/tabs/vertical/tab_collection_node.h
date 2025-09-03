@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_TAB_COLLECTION_NODE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -40,6 +41,7 @@ class TabCollectionNode {
 
   const tabs_api::mojom::DataPtr& data() const { return data_; }
   const Children& children() const { return children_; }
+  std::vector<views::View*> GetDirectChildren() const;
 
   Type GetType() const { return data_->which(); }
 

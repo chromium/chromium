@@ -460,3 +460,81 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   // The unpinned_node_view should have two children, the two tab views.
   ASSERT_EQ(unpinned_node_view->children().size(), 2u);
 }
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GetDirectChildren) {
+  AppendTab();
+  auto parent_view = std::make_unique<views::View>();
+
+  RootTabCollectionNode root_node(
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
+      base::BindRepeating(static_cast<views::View* (
+                              views::View::*)(std::unique_ptr<views::View>)>(
+                              &views::View::AddChildView),
+                          base::Unretained(parent_view.get())));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
+
+  // The root node should contain two nodes: one for pinned, one for unpinned.
+  ASSERT_EQ(root_node.children().size(), 2u);
+
+  // The parent_view should have one child, the root_node's view.
+  ASSERT_EQ(parent_view->children().size(), 1u);
+  const auto root_node_view = parent_view->children()[0];
+
+  // The root_node_view should have two children, the pinned and unpinned views.
+  ASSERT_EQ(root_node_view->children().size(), 2u);
+
+  const auto& child_views = root_node.GetDirectChildren();
+  ASSERT_EQ(child_views.size(), 2u);
+  EXPECT_EQ(child_views[0], root_node_view->children()[0]);
+  EXPECT_EQ(child_views[1], root_node_view->children()[1]);
+}
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+                       CollectionReturnsOnlyCollectionItems) {
+  AppendTab();
+  auto parent_view = std::make_unique<views::View>();
+  views::View* non_collection_view =
+      parent_view->AddChildView(std::make_unique<views::View>());
+
+  RootTabCollectionNode root_node(
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
+      base::BindRepeating(static_cast<views::View* (
+                              views::View::*)(std::unique_ptr<views::View>)>(
+                              &views::View::AddChildView),
+                          base::Unretained(parent_view.get())));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
+
+  // The root node should contain two nodes: one for pinned, one for unpinned.
+  ASSERT_EQ(root_node.children().size(), 2u);
+
+  // The parent_view should have two children, the non-collection view, and the
+  // root_node's view.
+  ASSERT_EQ(parent_view->children().size(), 2u);
+  const auto root_node_view = parent_view->children()[1];
+
+  views::View* non_collection_view_2 =
+      root_node_view->AddChildView(std::make_unique<views::View>());
+
+  // The root_node_view should have three children, the pinned and unpinned
+  // views, and the non-collection view.
+  ASSERT_EQ(root_node_view->children().size(), 3u);
+
+  const auto& child_views = root_node.GetDirectChildren();
+  ASSERT_EQ(child_views.size(), 2u);
+  EXPECT_NE(child_views[0], non_collection_view);
+  EXPECT_NE(child_views[1], non_collection_view);
+  EXPECT_NE(child_views[0], non_collection_view_2);
+  EXPECT_NE(child_views[1], non_collection_view_2);
+}
