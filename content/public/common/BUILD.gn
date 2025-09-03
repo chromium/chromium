@@ -357,17 +357,6 @@ source_set("common_sources") {
   }
 }
 
-_common_param_traits_headers = [ "common_param_traits_macros.h" ]
-_common_param_traits_deps = [
-  "//ipc",
-  "//services/network/public/cpp:cpp_base",
-  "//services/network/public/mojom",
-  "//third_party/blink/public:blink_headers",
-  "//ui/accessibility:ax_enums_mojo",
-  "//ui/base",
-  "//ui/gfx/ipc",
-]
-
 mojom("interfaces") {
   # We don't want Blink variants of these bindings to be generated.
   disable_variants = true
@@ -420,17 +409,6 @@ mojom("interfaces") {
     {
       types = [
         {
-          mojom = "content.mojom.DropData"
-          cpp = "::content::DropData"
-        },
-      ]
-      traits_headers = [ "drop_data.h" ]
-      traits_private_headers = _common_param_traits_headers
-      traits_deps = _common_param_traits_deps
-    },
-    {
-      types = [
-        {
           mojom = "content.mojom.WebPluginInfo"
           cpp = "::content::WebPluginInfo"
         },
@@ -444,6 +422,33 @@ mojom("interfaces") {
       traits_deps = [ "//ipc" ]
     },
   ]
+
+  if (is_mac) {
+    _common_param_traits_headers = [ "common_param_traits_macros.h" ]
+    _common_param_traits_deps = [
+      "//ipc",
+      "//services/network/public/cpp:cpp_base",
+      "//services/network/public/mojom",
+      "//third_party/blink/public:blink_headers",
+      "//ui/accessibility:ax_enums_mojo",
+      "//ui/base",
+      "//ui/gfx/ipc",
+    ]
+
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "content.mojom.DropData"
+            cpp = "::content::DropData"
+          },
+        ]
+        traits_headers = [ "drop_data.h" ]
+        traits_private_headers = _common_param_traits_headers
+        traits_deps = _common_param_traits_deps
+      },
+    ]
+  }
 }
 
 mojom("renderer_type") {

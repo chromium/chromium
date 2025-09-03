@@ -21,10 +21,6 @@ mojom("mojo_bindings") {
           cpp = "::NTPLoggingEventType"
         },
         {
-          mojom = "search.mojom.NTPTileImpression"
-          cpp = "::ntp_tiles::NTPTileImpression"
-        },
-        {
           mojom = "search.mojom.OmniboxFocusState"
           cpp = "::OmniboxFocusState"
         },

@@ -240,13 +240,9 @@ bool FromProto(
     const {{struct_type}}& input,
     {{mojom_type}}& output) {
 {%-   if struct|is_native_only_kind %}
-  memset((void*)&output, 0, sizeof(output));
-  if (input.native_bytes().size() < sizeof(output)) {
-    memcpy((void*)&output, input.native_bytes().data(), input.native_bytes().size());
-  } else {
-    memcpy((void*)&output, input.native_bytes().data(), sizeof(output));
-  }
-  return true;
+  auto data = base::Pickle::WithUnownedBuffer(base::as_bytes(base::span(input.native_bytes())));
+  base::PickleIterator iter(data);
+  return IPC::ReadParam(&data, &iter, &output);
 {%-   elif struct|is_typemapped_kind %}
 {%-     set dataview_type = (struct|get_qualified_name_for_kind(flatten_nested_kind=True)) ~ "DataView" %}
 {%-     set data_type = (struct|get_qualified_name_for_kind(flatten_nested_kind=True, internal=True)) %}
