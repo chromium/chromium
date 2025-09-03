@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/download/model/download_record_service.h"
+#import "ios/chrome/browser/download/model/download_record_service_impl.h"
 
 #import <memory>
 #import <optional>
@@ -53,7 +53,7 @@ class MockDownloadRecordObserver : public DownloadRecordObserver {
 
 }  // namespace
 
-class DownloadRecordServiceTest : public PlatformTest {
+class DownloadRecordServiceImplTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -62,16 +62,20 @@ class DownloadRecordServiceTest : public PlatformTest {
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-    service_ = std::make_unique<DownloadRecordService>(temp_dir_.GetPath());
-    ASSERT_TRUE(service_);
-
-    // Wait for database initialization to complete.
-    task_environment_.RunUntilIdle();
+    CreateService();
   }
 
   void TearDown() override {
     service_.reset();
     PlatformTest::TearDown();
+  }
+
+  void CreateService() {
+    service_ = std::make_unique<DownloadRecordServiceImpl>(temp_dir_.GetPath());
+    ASSERT_TRUE(service_);
+
+    // Wait for database initialization to complete.
+    task_environment_.RunUntilIdle();
   }
 
   std::unique_ptr<web::FakeDownloadTask> CreateFakeDownloadTask(
@@ -107,12 +111,12 @@ class DownloadRecordServiceTest : public PlatformTest {
   std::unique_ptr<DownloadRecordService> service_;
 };
 
-TEST_F(DownloadRecordServiceTest, RecordDownload) {
+TEST_F(DownloadRecordServiceImplTest, RecordDownload) {
   auto task = CreateFakeDownloadTask("test_download_1");
   RecordDownloadAndValidate(task.get());
 }
 
-TEST_F(DownloadRecordServiceTest, GetAllDownloads) {
+TEST_F(DownloadRecordServiceImplTest, GetAllDownloads) {
   auto task1 = CreateFakeDownloadTask("download_1");
   auto task2 = CreateFakeDownloadTask("download_2");
 
@@ -137,7 +141,7 @@ TEST_F(DownloadRecordServiceTest, GetAllDownloads) {
             result[1].download_id);
 }
 
-TEST_F(DownloadRecordServiceTest, GetDownloadById) {
+TEST_F(DownloadRecordServiceImplTest, GetDownloadById) {
   const std::string download_id = "test_download";
   auto task = CreateFakeDownloadTask(download_id);
   RecordDownloadAndValidate(task.get());
@@ -158,7 +162,7 @@ TEST_F(DownloadRecordServiceTest, GetDownloadById) {
   EXPECT_EQ(download_id, result->download_id);
 }
 
-TEST_F(DownloadRecordServiceTest, GetNonExistentDownloadById) {
+TEST_F(DownloadRecordServiceImplTest, GetNonExistentDownloadById) {
   base::RunLoop run_loop;
   std::optional<DownloadRecord> result;
 
@@ -174,7 +178,7 @@ TEST_F(DownloadRecordServiceTest, GetNonExistentDownloadById) {
   EXPECT_FALSE(result.has_value());
 }
 
-TEST_F(DownloadRecordServiceTest, RemoveDownloadById) {
+TEST_F(DownloadRecordServiceImplTest, RemoveDownloadById) {
   const std::string download_id = "test_download";
   auto task = CreateFakeDownloadTask(download_id);
   RecordDownloadAndValidate(task.get());
@@ -204,7 +208,7 @@ TEST_F(DownloadRecordServiceTest, RemoveDownloadById) {
   service_->RemoveObserver(&mock_observer);
 }
 
-TEST_F(DownloadRecordServiceTest, RemoveNonExistentDownloadById) {
+TEST_F(DownloadRecordServiceImplTest, RemoveNonExistentDownloadById) {
   base::RunLoop run_loop;
   bool removal_success = false;
 
@@ -220,7 +224,7 @@ TEST_F(DownloadRecordServiceTest, RemoveNonExistentDownloadById) {
   EXPECT_TRUE(removal_success);
 }
 
-TEST_F(DownloadRecordServiceTest, UpdateDownloadFilePath) {
+TEST_F(DownloadRecordServiceImplTest, UpdateDownloadFilePath) {
   auto task = CreateFakeDownloadTask(kTestDownloadId);
   RecordDownloadAndValidate(task.get());
 
@@ -252,7 +256,7 @@ TEST_F(DownloadRecordServiceTest, UpdateDownloadFilePath) {
   service_->RemoveObserver(&mock_observer);
 }
 
-TEST_F(DownloadRecordServiceTest, UpdateNonExistentDownloadFilePath) {
+TEST_F(DownloadRecordServiceImplTest, UpdateNonExistentDownloadFilePath) {
   const std::string non_existent_id = "non_existent_download";
   const base::FilePath test_path("/test/path/file.pdf");
 
@@ -270,7 +274,7 @@ TEST_F(DownloadRecordServiceTest, UpdateNonExistentDownloadFilePath) {
   EXPECT_FALSE(update_success);
 }
 
-TEST_F(DownloadRecordServiceTest, UpdateDownloadStates) {
+TEST_F(DownloadRecordServiceImplTest, UpdateDownloadStates) {
   const std::string download_id = "state_test_download";
   auto task = CreateFakeDownloadTask(download_id);
   RecordDownloadAndValidate(task.get());
@@ -301,7 +305,7 @@ TEST_F(DownloadRecordServiceTest, UpdateDownloadStates) {
   service_->RemoveObserver(&mock_observer);
 }
 
-TEST_F(DownloadRecordServiceTest, NotifiesAllObservers) {
+TEST_F(DownloadRecordServiceImplTest, NotifiesAllObservers) {
   MockDownloadRecordObserver observer1;
   MockDownloadRecordObserver observer2;
 
@@ -339,14 +343,14 @@ TEST_F(DownloadRecordServiceTest, NotifiesAllObservers) {
   service_->RemoveObserver(&observer2);
 }
 
-TEST_F(DownloadRecordServiceTest, PersistDataInDatabase) {
+TEST_F(DownloadRecordServiceImplTest, PersistDataInDatabase) {
   const std::string download_id = "persistent_download";
   auto task = CreateFakeDownloadTask(download_id);
   RecordDownloadAndValidate(task.get());
 
   // Creates new service instance with same database path.
   service_.reset();
-  service_ = std::make_unique<DownloadRecordService>(temp_dir_.GetPath());
+  CreateService();
 
   base::RunLoop verify_loop;
   std::optional<DownloadRecord> result;

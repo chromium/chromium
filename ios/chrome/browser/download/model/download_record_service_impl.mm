@@ -2,22 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/download/model/download_record_service.h"
+#import "ios/chrome/browser/download/model/download_record_service_impl.h"
+
+#import <memory>
+#import <optional>
+#import <string_view>
+#import <vector>
 
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
-#import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/download/model/download_record_database.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/web/public/download/download_task.h"
-#import "ios/web/public/download/download_task_observer.h"
 
 #pragma mark - Public
 
-DownloadRecordService::DownloadRecordService(const base::FilePath& profile_path)
+DownloadRecordServiceImpl::DownloadRecordServiceImpl(
+    const base::FilePath& profile_path)
     : database_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
@@ -29,7 +32,7 @@ DownloadRecordService::DownloadRecordService(const base::FilePath& profile_path)
 
   database_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<DownloadRecordService> service,
+                     [](base::WeakPtr<DownloadRecordServiceImpl> service,
                         const base::FilePath& profile_path) {
                        if (!service) {
                          return;
@@ -40,14 +43,14 @@ DownloadRecordService::DownloadRecordService(const base::FilePath& profile_path)
                      weak_ptr_factory_.GetWeakPtr(), profile_path));
 }
 
-DownloadRecordService::~DownloadRecordService() {
+DownloadRecordServiceImpl::~DownloadRecordServiceImpl() {
   // Ensure database is destroyed on the correct thread.
   if (database_) {
     database_task_runner_->DeleteSoon(FROM_HERE, std::move(database_));
   }
 }
 
-void DownloadRecordService::RecordDownload(web::DownloadTask* task) {
+void DownloadRecordServiceImpl::RecordDownload(web::DownloadTask* task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   CHECK(task);
 
@@ -57,10 +60,10 @@ void DownloadRecordService::RecordDownload(web::DownloadTask* task) {
 
   database_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&DownloadRecordService::InsertRecord,
+      base::BindOnce(&DownloadRecordServiceImpl::InsertRecord,
                      base::Unretained(this), record),
       base::BindOnce(
-          [](base::WeakPtr<DownloadRecordService> service,
+          [](base::WeakPtr<DownloadRecordServiceImpl> service,
              web::DownloadTask* task, const DownloadRecord& record,
              bool success) {
             if (service && success) {
@@ -71,28 +74,28 @@ void DownloadRecordService::RecordDownload(web::DownloadTask* task) {
           weak_ptr_factory_.GetWeakPtr(), task, record));
 }
 
-void DownloadRecordService::GetAllDownloadsAsync(
+void DownloadRecordServiceImpl::GetAllDownloadsAsync(
     DownloadRecordsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   database_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&DownloadRecordService::GetAllFromCache,
+      base::BindOnce(&DownloadRecordServiceImpl::GetAllFromCache,
                      base::Unretained(this)),
       std::move(callback));
 }
 
-void DownloadRecordService::GetDownloadByIdAsync(
+void DownloadRecordServiceImpl::GetDownloadByIdAsync(
     const std::string& download_id,
     DownloadRecordCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   database_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&DownloadRecordService::GetByIdFromCache,
+      base::BindOnce(&DownloadRecordServiceImpl::GetByIdFromCache,
                      base::Unretained(this), download_id),
       std::move(callback));
 }
 
-void DownloadRecordService::RemoveDownloadByIdAsync(
+void DownloadRecordServiceImpl::RemoveDownloadByIdAsync(
     const std::string& download_id,
     CompletionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
@@ -104,10 +107,10 @@ void DownloadRecordService::RemoveDownloadByIdAsync(
 
   database_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&DownloadRecordService::DeleteRecord,
+      base::BindOnce(&DownloadRecordServiceImpl::DeleteRecord,
                      base::Unretained(this), download_id),
       base::BindOnce(
-          [](base::WeakPtr<DownloadRecordService> service,
+          [](base::WeakPtr<DownloadRecordServiceImpl> service,
              const std::string& download_id, CompletionCallback callback,
              bool success) {
             if (service && success) {
@@ -120,7 +123,7 @@ void DownloadRecordService::RemoveDownloadByIdAsync(
           weak_ptr_factory_.GetWeakPtr(), download_id, std::move(callback)));
 }
 
-void DownloadRecordService::UpdateDownloadFilePathAsync(
+void DownloadRecordServiceImpl::UpdateDownloadFilePathAsync(
     const std::string& download_id,
     const base::FilePath& file_path,
     CompletionCallback callback) {
@@ -128,10 +131,10 @@ void DownloadRecordService::UpdateDownloadFilePathAsync(
 
   database_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&DownloadRecordService::UpdateFilePathInRecord,
+      base::BindOnce(&DownloadRecordServiceImpl::UpdateFilePathInRecord,
                      base::Unretained(this), download_id, file_path),
       base::BindOnce(
-          [](base::WeakPtr<DownloadRecordService> service,
+          [](base::WeakPtr<DownloadRecordServiceImpl> service,
              CompletionCallback callback,
              std::optional<DownloadRecord> updated_record) {
             bool success = updated_record.has_value();
@@ -145,7 +148,7 @@ void DownloadRecordService::UpdateDownloadFilePathAsync(
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-web::DownloadTask* DownloadRecordService::GetDownloadTaskById(
+web::DownloadTask* DownloadRecordServiceImpl::GetDownloadTaskById(
     std::string_view download_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // Search through all observed download tasks.
@@ -159,19 +162,20 @@ web::DownloadTask* DownloadRecordService::GetDownloadTaskById(
 
 #pragma mark - Observer Management
 
-void DownloadRecordService::AddObserver(DownloadRecordObserver* observer) {
+void DownloadRecordServiceImpl::AddObserver(DownloadRecordObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   observers_.AddObserver(observer);
 }
 
-void DownloadRecordService::RemoveObserver(DownloadRecordObserver* observer) {
+void DownloadRecordServiceImpl::RemoveObserver(
+    DownloadRecordObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   observers_.RemoveObserver(observer);
 }
 
 #pragma mark - web::DownloadTaskObserver
 
-void DownloadRecordService::OnDownloadUpdated(web::DownloadTask* task) {
+void DownloadRecordServiceImpl::OnDownloadUpdated(web::DownloadTask* task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   CHECK(task);
 
@@ -179,10 +183,10 @@ void DownloadRecordService::OnDownloadUpdated(web::DownloadTask* task) {
 
   database_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&DownloadRecordService::UpdateRecord,
+      base::BindOnce(&DownloadRecordServiceImpl::UpdateRecord,
                      base::Unretained(this), updated_record),
       base::BindOnce(
-          [](base::WeakPtr<DownloadRecordService> service,
+          [](base::WeakPtr<DownloadRecordServiceImpl> service,
              std::optional<DownloadRecord> record_opt) {
             if (service && record_opt.has_value()) {
               service->NotifyDownloadUpdated(record_opt.value());
@@ -191,25 +195,26 @@ void DownloadRecordService::OnDownloadUpdated(web::DownloadTask* task) {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DownloadRecordService::OnDownloadDestroyed(web::DownloadTask* task) {
+void DownloadRecordServiceImpl::OnDownloadDestroyed(web::DownloadTask* task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   download_task_observations_.RemoveObservation(task);
 }
 
 #pragma mark - Private
 
-void DownloadRecordService::NotifyDownloadAdded(const DownloadRecord& record) {
+void DownloadRecordServiceImpl::NotifyDownloadAdded(
+    const DownloadRecord& record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   observers_.Notify(&DownloadRecordObserver::OnDownloadAdded, record);
 }
 
-void DownloadRecordService::NotifyDownloadUpdated(
+void DownloadRecordServiceImpl::NotifyDownloadUpdated(
     const DownloadRecord& record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   observers_.Notify(&DownloadRecordObserver::OnDownloadUpdated, record);
 }
 
-void DownloadRecordService::NotifyDownloadsRemoved(
+void DownloadRecordServiceImpl::NotifyDownloadsRemoved(
     const std::vector<std::string_view>& download_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   observers_.Notify(&DownloadRecordObserver::OnDownloadsRemoved, download_ids);
@@ -217,7 +222,7 @@ void DownloadRecordService::NotifyDownloadsRemoved(
 
 #pragma mark - Database Thread Operations
 
-bool DownloadRecordService::ShouldPersistUpdate(
+bool DownloadRecordServiceImpl::ShouldPersistUpdate(
     const DownloadRecord& new_record,
     const DownloadRecord& cached_record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
@@ -228,7 +233,7 @@ bool DownloadRecordService::ShouldPersistUpdate(
   return !new_record.EqualsExcludingProgress(cached_record);
 }
 
-void DownloadRecordService::InitializeDatabase(
+void DownloadRecordServiceImpl::InitializeDatabase(
     const base::FilePath& profile_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
@@ -249,7 +254,7 @@ void DownloadRecordService::InitializeDatabase(
   }
 }
 
-void DownloadRecordService::LoadHistoricalRecords() {
+void DownloadRecordServiceImpl::LoadHistoricalRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
   if (!database_ || !database_->IsInitialized()) {
@@ -266,7 +271,7 @@ void DownloadRecordService::LoadHistoricalRecords() {
   CleanupInconsistentStates();
 }
 
-void DownloadRecordService::CleanupInconsistentStates() {
+void DownloadRecordServiceImpl::CleanupInconsistentStates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
   if (!database_ || !database_->IsInitialized()) {
@@ -289,7 +294,7 @@ void DownloadRecordService::CleanupInconsistentStates() {
   UpdateRecordsState(records_to_fix, web::DownloadTask::State::kFailed);
 }
 
-bool DownloadRecordService::InsertRecord(const DownloadRecord& record) {
+bool DownloadRecordServiceImpl::InsertRecord(const DownloadRecord& record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
   if (!database_ || !database_->IsInitialized()) {
@@ -304,7 +309,7 @@ bool DownloadRecordService::InsertRecord(const DownloadRecord& record) {
   return false;
 }
 
-std::optional<DownloadRecord> DownloadRecordService::UpdateRecord(
+std::optional<DownloadRecord> DownloadRecordServiceImpl::UpdateRecord(
     const DownloadRecord& updated_record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
@@ -340,7 +345,7 @@ std::optional<DownloadRecord> DownloadRecordService::UpdateRecord(
   return std::nullopt;
 }
 
-bool DownloadRecordService::UpdateRecordsState(
+bool DownloadRecordServiceImpl::UpdateRecordsState(
     const std::vector<std::string>& download_ids,
     web::DownloadTask::State new_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
@@ -368,7 +373,7 @@ bool DownloadRecordService::UpdateRecordsState(
   return false;
 }
 
-std::optional<DownloadRecord> DownloadRecordService::UpdateFilePathInRecord(
+std::optional<DownloadRecord> DownloadRecordServiceImpl::UpdateFilePathInRecord(
     const std::string& download_id,
     const base::FilePath& file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
@@ -385,7 +390,7 @@ std::optional<DownloadRecord> DownloadRecordService::UpdateFilePathInRecord(
   return UpdateRecord(updated_record);
 }
 
-bool DownloadRecordService::DeleteRecord(std::string_view id) {
+bool DownloadRecordServiceImpl::DeleteRecord(std::string_view id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
   if (!database_ || !database_->IsInitialized()) {
@@ -407,7 +412,7 @@ bool DownloadRecordService::DeleteRecord(std::string_view id) {
   return false;
 }
 
-std::vector<DownloadRecord> DownloadRecordService::GetAllFromCache() {
+std::vector<DownloadRecord> DownloadRecordServiceImpl::GetAllFromCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
   std::vector<DownloadRecord> records;
@@ -420,7 +425,7 @@ std::vector<DownloadRecord> DownloadRecordService::GetAllFromCache() {
   return records;
 }
 
-std::optional<DownloadRecord> DownloadRecordService::GetByIdFromCache(
+std::optional<DownloadRecord> DownloadRecordServiceImpl::GetByIdFromCache(
     std::string_view download_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(database_sequence_checker_);
 
