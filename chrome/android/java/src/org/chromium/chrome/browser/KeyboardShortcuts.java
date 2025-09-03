@@ -118,7 +118,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.ZOOM_OUT,
         KeyboardShortcutsSemanticMeaning.ZOOM_RESET,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_AVATAR_MENU,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FEEDBACK_FORM,
+        KeyboardShortcutsSemanticMeaning.FEEDBACK_FORM,
         KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HOME,
         KeyboardShortcutsSemanticMeaning.OPEN_HELP,
@@ -213,7 +213,7 @@ public class KeyboardShortcuts {
 
         // Misc.
         int NOT_IMPLEMENTED_AVATAR_MENU = 54;
-        int NOT_IMPLEMENTED_FEEDBACK_FORM = 55;
+        int FEEDBACK_FORM = 55;
         int FIND_IN_PAGE = 56;
         int NOT_IMPLEMENTED_HOME = 57;
         int OPEN_HELP = 58;
@@ -563,6 +563,11 @@ public class KeyboardShortcuts {
                     new KeyCombo(KeyEvent.KEYCODE_F10, NO_MODIFIER),
                     new KeyCombo(KeyEvent.KEYCODE_BUTTON_Y, NO_MODIFIER)
                 });
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.FEEDBACK_FORM,
+                new KeyCombo(KeyEvent.KEYCODE_I, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON),
+                R.string.keyboard_shortcut_send_feedback,
+                R.string.keyboard_shortcut_chrome_feature_group_header);
 
         // History shortcuts
         new KeyboardShortcutDefinition(
@@ -747,9 +752,6 @@ public class KeyboardShortcuts {
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_AVATAR_MENU,
                 new KeyCombo(KeyEvent.KEYCODE_M, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
-        new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FEEDBACK_FORM,
-                new KeyCombo(KeyEvent.KEYCODE_I, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON));
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HOME,
                 new KeyCombo(KeyEvent.KEYCODE_HOME, KeyEvent.META_ALT_ON));
@@ -1019,6 +1021,9 @@ public class KeyboardShortcuts {
                 // the default dispatchKeyEvent and cannot open the menu.
             case KeyboardShortcutsSemanticMeaning.OPEN_MENU:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.show_menu, false);
+                return true;
+            case KeyboardShortcutsSemanticMeaning.FEEDBACK_FORM:
+                menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.feedback_form, false);
                 return true;
             case KeyboardShortcutsSemanticMeaning.TOGGLE_BOOKMARK_BAR:
                 return menuOrKeyboardActionController.onMenuOrKeyboardAction(

@@ -2499,6 +2499,17 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return true;
         }
 
+        if (id == R.id.feedback_form) {
+            String url = currentTab != null ? currentTab.getUrl().getSpec() : "";
+            String helpContextId =
+                    HelpAndFeedbackLauncherImpl.getHelpContextIdFromUrl(
+                            this, url, getCurrentTabModel().isIncognitoBranded());
+            HelpAndFeedbackLauncherImpl.getForProfile(
+                            getTabModelSelector().getCurrentModel().getProfile())
+                    .showFeedback(this, url, helpContextId);
+            return true;
+        }
+
         if (id == R.id.open_history_menu_id) {
             if (currentTab != null && UrlUtilities.isNtpUrl(currentTab.getUrl())) {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_HISTORY_MANAGER);

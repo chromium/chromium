@@ -1740,7 +1740,7 @@ Unknown properties are collapsed to zero. -->
   <int value="52" label="Zoom out"/>
   <int value="53" label="Zoom reset"/>
   <int value="54" label="Show avatar menu (not implemented)"/>
-  <int value="55" label="Show feedback form (not implemented)"/>
+  <int value="55" label="Show feedback form"/>
   <int value="56" label="Find in page"/>
   <int value="57" label="Go to home page (not implemented)"/>
   <int value="58" label="Open help"/>
