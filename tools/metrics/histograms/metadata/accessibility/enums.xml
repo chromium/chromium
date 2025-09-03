@@ -2139,6 +2139,20 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_app_model.h:ReadAnythingEmptyState) -->
 
+<!-- LINT.IfChange(ReadAnythingExtensionInstallationState) -->
+
+<enum name="ReadAnythingExtensionInstallationState">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Terminated"/>
+  <int value="3" label="Blocked"/>
+  <int value="4" label="Ready"/>
+  <int value="5" label="Installing"/>
+  <int value="6" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h:EngineInstallationState) -->
+
 <!-- LINT.IfChange(ReadAnythingFontName) -->
 
 <enum name="ReadAnythingFontName">

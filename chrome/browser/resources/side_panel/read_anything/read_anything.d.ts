@@ -208,6 +208,11 @@ declare namespace chrome {
     // Called when the voice used for speech is changed via the webui toolbar.
     function onVoiceChange(voice: string, lang: string): void;
 
+    // Signals that a system voice was used during a speech playback session,
+    // which will be used to log the installation state of the TTS engine
+    // extension.
+    function logExtensionState(): void;
+
     // Called when the highlight granularity is changed via the webui toolbar.
     function onHighlightGranularityChanged(value: number): void;
 

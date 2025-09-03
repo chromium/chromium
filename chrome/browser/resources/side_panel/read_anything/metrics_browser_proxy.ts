@@ -152,6 +152,7 @@ export interface MetricsBrowserProxy {
   recordTime(umaName: string, time: number): void;
   recordVoiceSpeed(index: number): void;
   recordVoiceType(voiceType: ReadAnythingVoiceType): void;
+  recordExtensionState(): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -230,6 +231,10 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordSpeechPlaybackLength(time: number) {
     chrome.metricsPrivate.recordLongTime(UmaName.SPEECH_PLAYBACK, time);
+  }
+
+  recordExtensionState(): void {
+    chrome.readingMode.logExtensionState();
   }
 
   static getInstance(): MetricsBrowserProxy {

@@ -74,6 +74,11 @@ class WasmTTSEngineDirectory {
     FireCallbacks();
   }
 
+  bool IsSet() const {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    return !dir_.empty();
+  }
+
  private:
   void FireCallbacks() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -275,6 +280,15 @@ void WasmTtsEngineComponentInstallerPolicy::GetWasmTTSEngineDirectory(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   WasmTTSEngineDirectory* wasm_directory = WasmTTSEngineDirectory::Get();
   wasm_directory->Get(std::move(callback));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
+// static
+bool WasmTtsEngineComponentInstallerPolicy::IsWasmTTSEngineDirectorySet() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return WasmTTSEngineDirectory::Get()->IsSet();
+#else
+  return false;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 

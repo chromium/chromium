@@ -1176,6 +1176,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnSpeechRateChange)
       .SetMethod("getStoredVoice", &ReadAnythingAppController::GetStoredVoice)
       .SetMethod("onVoiceChange", &ReadAnythingAppController::OnVoiceChange)
+      .SetMethod("logExtensionState",
+                 &ReadAnythingAppController::LogExtensionState)
       .SetMethod("onLanguagePrefChange",
                  &ReadAnythingAppController::OnLanguagePrefChange)
       .SetMethod("getLanguagesEnabledInPref",
@@ -1865,6 +1867,12 @@ void ReadAnythingAppController::OnVoiceChange(const std::string& voice,
   std::string base_lang = std::string(language::ExtractBaseLanguage(lang));
   page_handler_->OnVoiceChange(voice, base_lang);
   read_aloud_model_.SetVoice(voice, base_lang);
+}
+
+void ReadAnythingAppController::LogExtensionState() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  page_handler_->LogExtensionState();
+#endif
 }
 
 void ReadAnythingAppController::OnLanguagePrefChange(const std::string& lang,

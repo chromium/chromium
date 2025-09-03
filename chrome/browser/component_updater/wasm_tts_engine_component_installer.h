@@ -32,6 +32,7 @@ class WasmTtsEngineComponentInstallerPolicy : public ComponentInstallerPolicy {
   static void RegisterPrefs(PrefRegistrySimple* registry);
   static void GetWasmTTSEngineDirectory(
       base::OnceCallback<void(const base::FilePath&)> callback);
+  static bool IsWasmTTSEngineDirectorySet();
 
  private:
   // The following methods override ComponentInstallerPolicy.

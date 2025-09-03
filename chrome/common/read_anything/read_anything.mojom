@@ -185,6 +185,10 @@ interface UntrustedPageHandler {
   // Informs the browser controller that the user enabled/disabled a language.
   OnLanguagePrefChange(string lang, bool enabled);
 
+  // Logs the installation state of the TTS engine extension when a system voice
+  // is used for a speech session.
+  LogExtensionState();
+
   // Informs the browser controller that the user updated the granularity of
   // the highlight that follows along with speech via the webui toolbar.
   OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);

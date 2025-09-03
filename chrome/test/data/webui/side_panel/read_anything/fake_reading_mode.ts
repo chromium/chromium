@@ -460,4 +460,7 @@ export class FakeReadingMode {
 
   // Resets the granularity index.
   resetGranularityIndex() {}
+
+  // Logs the extension state.
+  logExtenstionState() {}
 }

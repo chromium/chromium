@@ -131,6 +131,7 @@ class MockReadAnythingUntrustedPageHandler
               (const ::ui::AXTreeID& target_tree_id, int32_t target_node_id),
               (override));
   MOCK_METHOD(void, OnReadAloudAudioStateChange, (bool playing), (override));
+  MOCK_METHOD(void, LogExtensionState, (), (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {

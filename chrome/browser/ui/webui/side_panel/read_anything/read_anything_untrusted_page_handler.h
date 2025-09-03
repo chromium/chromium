@@ -40,6 +40,22 @@ class ScopedAccessibilityMode;
 
 class ReadAnythingUntrustedPageHandler;
 
+// LINT.IfChange(EngineInstallationState)
+// Installation state of the TTS engine extension
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class EngineInstallationState {
+  kEnabled = 0,
+  kDisabled = 1,
+  kTerminated = 2,
+  kBlocked = 3,
+  kReady = 4,
+  kInstalling = 5,
+  kUnknown = 6,
+  kMaxValue = kUnknown,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingExtensionInstallationState)
+
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingWebContentsObserver
 //
@@ -153,6 +169,10 @@ class ReadAnythingUntrustedPageHandler :
 
   // ReadAnythingSidePanelController::Observer:
   void OnTabWillDetach() override;
+
+  // Logs the extension installation state. Intended to get more information
+  // on system voice usage.
+  void LogExtensionState() override;
 
   // ash::SessionObserver
 #if BUILDFLAG(IS_CHROMEOS)

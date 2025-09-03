@@ -3216,6 +3216,18 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram
+    name="Accessibility.ReadAnything.SystemVoiceExtensionInstallationState"
+    enum="ReadAnythingExtensionInstallationState" expires_after="2026-06-01">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the installation state of the WASM TTS extension engine whenever a
+    system voice is used. This is intended to help understand when system voices
+    are being used over natural voices.
+  </summary>
+</histogram>
+
+<histogram
     name="Accessibility.ReadAnything.TimeFromEntryTriggeredToWebUIConnected"
     units="ms" expires_after="2026-06-01">
   <owner>lwinston@google.com</owner>
