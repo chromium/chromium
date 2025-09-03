@@ -6023,6 +6023,24 @@
             ]
         }
     ],
+    "ChromnientStraightToSrp": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensOverlayStraightToSrp"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientSurvey": [
         {
             "platforms": [
