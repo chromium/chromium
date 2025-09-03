@@ -2091,8 +2091,8 @@
   },
   {
     "name": "css-masonry-layout",
-    "owners": ["ethavar@microsoft.com", "celestepan@microsoft.com"],
-    "expiry_milestone": 142
+    "owners": ["almaher@microsoft.com", "celestepan@microsoft.com", "yanlingwang@microsoft.com"],
+    "expiry_milestone": 152
   },
   {
     "name": "cups-ipp-printing-backend",
