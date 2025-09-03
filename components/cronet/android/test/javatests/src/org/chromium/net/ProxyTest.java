@@ -882,6 +882,7 @@ public class ProxyTest {
             reason =
                     "This feature flag has not reached platform Cronet yet. Fallback provides no"
                             + " ProxyOptions support.")
+    @DisabledTest(message = "TODO(https://crbug.com/442024094): Reenable after flakiness is fixed")
     // Mockito fails on Marshmallow with NoClassDefFoundError:
     // org.mockito.internal.invocation.TypeSafeMatching$$ExternalSyntheticLambda0
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
