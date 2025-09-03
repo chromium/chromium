@@ -846,11 +846,11 @@ void WebNNTensorRepresentation::ConsumeWebNNTensor(
 }
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 IOSurfaceRef WebNNTensorRepresentation::GetIOSurface() const {
   NOTREACHED();
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 ///////////////////////////////////////////////////////////////////////////////
 // OverlayImageRepresentation
