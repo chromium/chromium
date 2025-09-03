@@ -6,8 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/notreached.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
 
 // Enums for the EGL_ANGLE_iosurface_client_buffer extension
@@ -17,8 +15,6 @@
 #define EGL_TEXTURE_TYPE_ANGLE 0x345C
 #define EGL_TEXTURE_INTERNAL_FORMAT_ANGLE 0x345D
 #define EGL_BIND_TO_TEXTURE_TARGET_ANGLE 0x348D
-
-using gfx::BufferFormat;
 
 namespace gl {
 
@@ -31,41 +27,37 @@ struct InternalFormatType {
   GLenum type;
 };
 
-// Convert a BufferFormat to a (internal format, type) combination from the
+// Convert a SharedImageFormat to a (internal format, type) combination from the
 // EGL_ANGLE_iosurface_client_buffer extension spec.
-InternalFormatType BufferFormatToInternalFormatType(BufferFormat format) {
-  switch (format) {
-    case BufferFormat::R_8:
-      return {GL_RED, GL_UNSIGNED_BYTE};
-    case BufferFormat::R_16:
-      return {GL_RED, GL_UNSIGNED_SHORT};
-    case BufferFormat::RG_88:
-      return {GL_RG, GL_UNSIGNED_BYTE};
-    case BufferFormat::RG_1616:
-      return {GL_RG, GL_UNSIGNED_SHORT};
-    case BufferFormat::BGRX_8888:
-    case BufferFormat::RGBX_8888:
-      return {GL_RGB, GL_UNSIGNED_BYTE};
-    case BufferFormat::BGRA_8888:
-      return {GL_BGRA_EXT, GL_UNSIGNED_BYTE};
-    case BufferFormat::RGBA_8888:
-      return {GL_RGBA, GL_UNSIGNED_BYTE};
-    case BufferFormat::RGBA_F16:
-      return {GL_RGBA, GL_HALF_FLOAT};
-    case BufferFormat::BGRA_1010102:
-      return {GL_RGB10_A2, GL_UNSIGNED_INT_2_10_10_10_REV};
-    case BufferFormat::BGR_565:
-    case BufferFormat::RGBA_4444:
-    case BufferFormat::RGBA_1010102:
-    case BufferFormat::YVU_420:
-    case BufferFormat::YUV_420_BIPLANAR:
-    case BufferFormat::YUVA_420_TRIPLANAR:
-    case BufferFormat::P010:
-      break;
-      return {GL_NONE, GL_NONE};
+InternalFormatType SharedImageFormatToInternalFormatType(
+    viz::SharedImageFormat format) {
+  if (!format.is_single_plane()) {
+    LOG(ERROR) << "Invalid format: " << format.ToString();
+    return {GL_NONE, GL_NONE};
   }
 
-  LOG(ERROR) << "Invalid format: " << BufferFormatToString(format);
+  if (format == viz::SinglePlaneFormat::kR_8) {
+    return {GL_RED, GL_UNSIGNED_BYTE};
+  } else if (format == viz::SinglePlaneFormat::kR_16) {
+    return {GL_RED, GL_UNSIGNED_SHORT};
+  } else if (format == viz::SinglePlaneFormat::kRG_88) {
+    return {GL_RG, GL_UNSIGNED_BYTE};
+  } else if (format == viz::SinglePlaneFormat::kRG_1616) {
+    return {GL_RG, GL_UNSIGNED_SHORT};
+  } else if (format == viz::SinglePlaneFormat::kBGRX_8888 ||
+             format == viz::SinglePlaneFormat::kRGBX_8888) {
+    return {GL_RGB, GL_UNSIGNED_BYTE};
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+    return {GL_BGRA_EXT, GL_UNSIGNED_BYTE};
+  } else if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+    return {GL_RGBA, GL_UNSIGNED_BYTE};
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return {GL_RGBA, GL_HALF_FLOAT};
+  } else if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+    return {GL_RGB10_A2, GL_UNSIGNED_INT_2_10_10_10_REV};
+  }
+
+  LOG(ERROR) << "Invalid format: " << format.ToString();
   return {GL_NONE, GL_NONE};
 }
 
@@ -80,7 +72,7 @@ std::unique_ptr<ScopedEGLSurfaceIOSurface> ScopedEGLSurfaceIOSurface::Create(
     unsigned target,
     IOSurfaceRef io_surface,
     uint32_t plane,
-    gfx::BufferFormat format) {
+    viz::SharedImageFormat format) {
   if (display == EGL_NO_DISPLAY) {
     LOG(ERROR) << "Invalid GLDisplayEGL.";
     return nullptr;
@@ -146,12 +138,13 @@ bool ScopedEGLSurfaceIOSurface::ValidateTarget(unsigned target) const {
 
 bool ScopedEGLSurfaceIOSurface::CreatePBuffer(IOSurfaceRef io_surface,
                                               uint32_t plane,
-                                              gfx::BufferFormat format) {
+                                              viz::SharedImageFormat format) {
   // Create the pbuffer representing this IOSurface lazily because we don't know
   // in the constructor if we're going to be used to bind plane 0 to a texture,
   // or to transform YUV to RGB.
   if (pbuffer_ == EGL_NO_SURFACE) {
-    InternalFormatType formatType = BufferFormatToInternalFormatType(format);
+    InternalFormatType formatType =
+        SharedImageFormatToInternalFormatType(format);
     if (formatType.format == GL_NONE || formatType.type == GL_NONE) {
       LOG(ERROR) << "Invalid resource format.";
       return false;
