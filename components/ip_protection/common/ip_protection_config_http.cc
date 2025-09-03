@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "net/base/features.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/mutable_network_traffic_annotation_tag_mojom_traits.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

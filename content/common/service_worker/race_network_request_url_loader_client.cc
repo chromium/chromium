@@ -20,6 +20,7 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/cpp/system/handle_signals_state.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"

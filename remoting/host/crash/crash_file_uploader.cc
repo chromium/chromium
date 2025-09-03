@@ -24,6 +24,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/crash/breakpad_utils.h"
 #include "services/network/public/cpp/resource_request.h"

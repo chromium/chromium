@@ -13,6 +13,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/renderer/extension_url_loader_throttle.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/platform/web_url.h"

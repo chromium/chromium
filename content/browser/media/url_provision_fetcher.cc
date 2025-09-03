@@ -9,6 +9,7 @@
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "media/base/media_switches.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"

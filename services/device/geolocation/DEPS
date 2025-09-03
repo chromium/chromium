@@ -14,3 +14,9 @@ include_rules = [
   "+services/network/test",
   "+third_party/cros_system_api/dbus",
 ]
+
+specific_include_rules = {
+  "network_location_request.cc": [
+    "+net/http/http_response_headers.h",
+  ],
+}

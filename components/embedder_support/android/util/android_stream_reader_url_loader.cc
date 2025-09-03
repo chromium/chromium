@@ -26,6 +26,7 @@
 #include "components/embedder_support/android/util/input_stream_reader.h"
 #include "net/base/io_buffer.h"
 #include "net/base/mime_sniffer.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cors/cors.h"

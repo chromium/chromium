@@ -12,6 +12,7 @@
 #include "net/http/http_status_code.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "net/http/http_response_headers.h"
 #include "net/third_party/quiche/src/quiche/binary_http/binary_http_message.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_data_writer.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"

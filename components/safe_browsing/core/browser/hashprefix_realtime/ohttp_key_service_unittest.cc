@@ -22,6 +22,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/variations/pref_names.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"

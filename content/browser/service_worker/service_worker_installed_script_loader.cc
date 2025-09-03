@@ -12,6 +12,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/cert_status_flags.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 

@@ -20,6 +20,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"

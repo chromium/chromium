@@ -11,3 +11,9 @@ include_rules = [
   "+services/network/test",
   "+sql",
 ]
+
+specific_include_rules = {
+  "hash_affiliation_fetcher.cc": [
+    "+net/http/http_response_headers.h",
+  ],
+}

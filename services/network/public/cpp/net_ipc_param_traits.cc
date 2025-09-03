@@ -11,6 +11,7 @@
 #include "ipc/ipc_platform_file.h"
 #include "net/base/hash_value.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 
 namespace IPC {

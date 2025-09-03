@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "services/network/public/cpp/resource_request.h"

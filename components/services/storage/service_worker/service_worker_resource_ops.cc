@@ -12,6 +12,7 @@
 #include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"

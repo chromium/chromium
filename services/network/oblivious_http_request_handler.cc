@@ -14,6 +14,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"

@@ -4,3 +4,12 @@ include_rules = [
   "+services/network/public",
   "+third_party/flac",
 ]
+
+specific_include_rules = {
+  "downstream_loader.cc": [
+    "+net/http/http_response_headers.h",
+  ],
+  "upstream_loader.cc": [
+    "+net/http/http_response_headers.h",
+  ],
+}
