@@ -631,11 +631,13 @@ class AttributionDataHostManagerImpl::Registrations {
   Registrations(RegistrationsId id,
                 RegistrationContext context,
                 bool waiting_on_navigation,
-                std::optional<int64_t> defer_until_navigation)
+                std::optional<int64_t> defer_until_navigation,
+                bool from_context_menu)
       : waiting_on_navigation_(waiting_on_navigation),
         defer_until_navigation_(defer_until_navigation),
         id_(id),
-        context_(std::move(context)) {}
+        context_(std::move(context)),
+        from_context_menu_(from_context_menu) {}
 
   Registrations(const Registrations&) = delete;
   Registrations& operator=(const Registrations&) = delete;
@@ -754,6 +756,8 @@ class AttributionDataHostManagerImpl::Registrations {
                        std::move(invalid_parameter), issue_type);
   }
 
+  bool from_context_menu() const { return from_context_menu_; }
+
  private:
   // True if navigation or beacon has completed.
   bool registrations_complete_ = false;
@@ -781,6 +785,8 @@ class AttributionDataHostManagerImpl::Registrations {
   base::circular_deque<PendingRegistrationData> pending_registration_data_;
 
   RegistrationContext context_;
+
+  bool from_context_menu_;
 };
 
 class AttributionDataHostManagerImpl::PendingRegistrationData {
@@ -1388,7 +1394,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     AttributionSuitableContext suitable_context,
     const blink::AttributionSrcToken& attribution_src_token,
     int64_t navigation_id,
-    std::string devtools_request_id) {
+    std::string devtools_request_id,
+    bool from_context_menu) {
   if (auto [it, inserted] = registrations_.emplace(
           RegistrationsId(attribution_src_token),
           RegistrationContext(suitable_context,
@@ -1396,7 +1403,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
                               std::move(devtools_request_id), navigation_id,
                               RegistrationMethod::kNavForeground),
           /*waiting_on_navigation=*/false,
-          /*defer_until_navigation=*/std::nullopt);
+          /*defer_until_navigation=*/std::nullopt, from_context_menu);
       !inserted) {
     RecordNavigationUnexpectedRegistration(
         NavigationUnexpectedRegistration::kRegistrationAlreadyExists);
@@ -1404,6 +1411,10 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
                             navigation_id);
     SCOPED_CRASH_KEY_NUMBER("AttributionReporting", "exist_nav_id",
                             it->navigation_id().value_or(0));
+    SCOPED_CRASH_KEY_BOOL("AttributionReporting", "start_ctx_menu",
+                          from_context_menu);
+    SCOPED_CRASH_KEY_BOOL("AttributionReporting", "exist_ctx_menu",
+                          it->from_context_menu());
     base::debug::DumpWithoutCrashing();
     return;
   }
@@ -1656,7 +1667,8 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
           attribution_src_token.has_value()
               ? RegistrationMethod::kNavBackgroundBrowser
               : RegistrationMethod::kForegroundOrBackgroundBrowser),
-      waiting_on_navigation, deferred_until);
+      waiting_on_navigation, deferred_until,
+      /*from_context_menu=*/false);
   CHECK(inserted);
 
   // We must indicate that the background registration was tied to the
@@ -1915,7 +1927,8 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
                               ? RegistrationMethod::kFencedFrameAutomaticBeacon
                               : RegistrationMethod::kFencedFrameBeacon),
       /*waiting_on_navigation=*/false,
-      /*defer_until_navigation=*/std::nullopt);
+      /*defer_until_navigation=*/std::nullopt,
+      /*from_context_menu=*/false);
   CHECK(inserted);
 }
 

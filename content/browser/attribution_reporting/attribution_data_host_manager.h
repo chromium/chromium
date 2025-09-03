@@ -76,7 +76,8 @@ class AttributionDataHostManager {
       AttributionSuitableContext suitable_context,
       const blink::AttributionSrcToken& attribution_src_token,
       int64_t navigation_id,
-      std::string devtools_request_id) = 0;
+      std::string devtools_request_id,
+      bool from_context_menu) = 0;
 
   // Notifies the manager that an attribution request tied to an
   // attribution-enabled navigation with token `attribution_src_token` has sent

@@ -215,7 +215,8 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
       // The devtools_navigation_token is going to be used as the
       // navigation's request devtools inspector ID if there is an enabled
       // agent host.
-      navigation_request->devtools_navigation_token().ToString());
+      navigation_request->devtools_navigation_token().ToString(),
+      navigation_handle->WasStartedFromContextMenu());
   auto [_, inserted] = ongoing_registration_eligible_navigations_.emplace(
       navigation_handle->GetNavigationId());
   CHECK(inserted);

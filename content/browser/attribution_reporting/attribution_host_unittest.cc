@@ -210,7 +210,8 @@ TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
               Property(&AttributionSuitableContext::root_render_frame_id,
                        main_rfh()->GetGlobalId())),
           impression.attribution_src_token,
-          /*navigation_id=*/_, /*devtools_request_id*/ _));
+          /*navigation_id=*/_, /*devtools_request_id*/ _,
+          /*from_context_menu=*/false));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -249,7 +250,8 @@ TEST_F(AttributionHostTest, ValidSourceRegistrations_ForwardedToManager) {
               Property(&AttributionSuitableContext::root_render_frame_id,
                        frame_id)),
           impression.attribution_src_token,
-          /*navigation_id=*/_, /*devtools_request_id*/ _));
+          /*navigation_id=*/_, /*devtools_request_id=*/_,
+          /*from_context_menu=*/false));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),
@@ -309,7 +311,8 @@ TEST_F(AttributionHostTest,
               Property(&AttributionSuitableContext::root_render_frame_id,
                        frame_id)),
           impression.attribution_src_token,
-          /*navigation_id=*/_, /*devtools_request_id*/ _));
+          /*navigation_id=*/_, /*devtools_request_id=*/_,
+          /*from_context_menu=*/false));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),
@@ -898,7 +901,8 @@ TEST_F(AttributionHostTest, InsecureTaintTracking) {
                 Property(&AttributionSuitableContext::root_render_frame_id,
                          main_rfh()->GetGlobalId())),
           impression.attribution_src_token,
-          /*navigation_id=*/_, /*devtools_request_id=*/_));
+          /*navigation_id=*/_, /*devtools_request_id=*/_,
+          /*from_context_menu=*/false));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),

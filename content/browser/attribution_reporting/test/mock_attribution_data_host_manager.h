@@ -63,7 +63,8 @@ class MockAttributionDataHostManager final : public AttributionDataHostManager {
               (AttributionSuitableContext suitable_context,
                const blink::AttributionSrcToken& attribution_src_token,
                int64_t navigation_id,
-               std::string devtools_request_id),
+               std::string devtools_request_id,
+               bool from_context_menu),
               (override));
 
   MOCK_METHOD(bool,

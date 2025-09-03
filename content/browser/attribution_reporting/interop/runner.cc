@@ -388,7 +388,8 @@ void Handle(const AttributionSimulationEvent::StartRequest& event,
         /*background_registrations_count=*/1);
     data_host_manager.NotifyNavigationRegistrationStarted(
         suitable_context, *attribution_src_token, kNavigationId,
-        /*devtools_request_id=*/"");
+        /*devtools_request_id=*/"",
+        /*from_context_menu=*/false);
     data_host_manager.NotifyNavigationRegistrationCompleted(
         *attribution_src_token);
   }

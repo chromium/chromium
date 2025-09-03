@@ -161,6 +161,8 @@ constexpr BackgroundRegistrationsId kBackgroundId(789);
 constexpr bool kViaServiceWorker = false;
 constexpr bool kIsForBackgroundRequests = true;
 
+constexpr bool kNotFromContextMenu = false;
+
 // Value used to call `RegisterNavigationDataHost`. It is inconsequential unless
 // kKeepAliveInBrowserMigration is enabled and background registrations are
 // received.
@@ -623,7 +625,8 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false,
           /*root_render_frame_id=*/kFrameId,
           /*last_navigation_id=*/kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   data_host_remote->SourceDataAvailable(
       reporting_origin, source_data,
@@ -664,7 +667,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   // 2 - A second navigation registrations, with the same
   // attribution_src_token,
@@ -676,7 +680,8 @@ TEST_F(AttributionDataHostManagerImplTest,
           source_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token,
-      /*navigation_id=*/second_navigation_id, kDevtoolsRequestId);
+      /*navigation_id=*/second_navigation_id, kDevtoolsRequestId,
+      kNotFromContextMenu);
   // kRegistrationAlreadyExists = 0
   histograms.ExpectBucketCount(kNavigationUnexpectedRegistrationHistogram,
                                /*sample=*/0, /*expected_count=*/1);
@@ -762,7 +767,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   task_environment_.RunUntilIdle();
 
   // kRegistered = 0, kProcessed = 3.
@@ -830,7 +836,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId);
+      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   const blink::AttributionSrcToken attribution_src_token_2;
   mojo::Remote<attribution_reporting::mojom::DataHost> data_host_remote_2;
@@ -848,7 +855,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId);
+      attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   task_environment_.RunUntilIdle();
   data_host_manager_.NotifyNavigationRegistrationCompleted(
@@ -903,7 +911,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId);
+      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   source_data.source_event_id = 1;
   data_host_remote->SourceDataAvailable(reporting_origin, source_data,
@@ -978,7 +987,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId);
+      attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   source_data.source_event_id = 7;
   source_data.attribution_scopes_data = attribution_scope_set;
@@ -1046,7 +1056,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId);
+      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   source_data.source_event_id = 1;
   source_data.attribution_scopes_data = attribution_scope_set_1;
@@ -1140,7 +1151,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId);
+      attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   source_data.source_event_id = 9;
   source_data.attribution_scopes_data = attribution_scope_set_2;
@@ -1160,7 +1172,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           page_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token_3, /*navigation_id=*/3, kDevtoolsRequestId);
+      attribution_src_token_3, /*navigation_id=*/3, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   source_data.source_event_id = 10;
   source_data.attribution_scopes_data.reset();
@@ -1294,7 +1307,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://page1.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
@@ -1348,7 +1362,7 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page1.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token,
-      /*navigation_id=*/kNavigationId, kDevtoolsRequestId);
+      /*navigation_id=*/kNavigationId, kDevtoolsRequestId, kNotFromContextMenu);
   // We complete the foreground navigation immediately to avoid trigger being
   // delayed due to waiting on foreground registrations.
   data_host_manager_.NotifyNavigationRegistrationCompleted(
@@ -1410,7 +1424,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -1469,7 +1484,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://page1.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -1524,7 +1540,8 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page1.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kLastNavigationId),
-      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId);
+      attribution_src_token, /*navigation_id=*/1, kDevtoolsRequestId,
+      kNotFromContextMenu);
   // We complete the foreground navigation immediately to avoid trigger being
   // delayed due to waiting on foreground registrations.
   data_host_manager_.NotifyNavigationRegistrationCompleted(
@@ -1560,7 +1577,8 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page1.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kLastNavigationId),
-      attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId);
+      attribution_src_token_2, /*navigation_id=*/2, kDevtoolsRequestId,
+      kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token_2);
   mojo::Remote<attribution_reporting::mojom::DataHost>
@@ -1595,7 +1613,8 @@ TEST_F(AttributionDataHostManagerImplTest,
           *SuitableOrigin::Deserialize("https://page1.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/kLastNavigationId),
-      attribution_src_token_3, /*navigation_id=*/3, kDevtoolsRequestId);
+      attribution_src_token_3, /*navigation_id=*/3, kDevtoolsRequestId,
+      kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token_3);
   mojo::Remote<attribution_reporting::mojom::DataHost>
@@ -1651,7 +1670,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://page1.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   // The trigger is linked to a different navigation id, so it should not be
   // deferred.
@@ -1686,7 +1706,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_site,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter_url);
   // Wait for parsing to finish.
@@ -1719,7 +1740,8 @@ TEST_F(AttributionDataHostManagerImplTest,
           {ContentBrowserClient::AttributionReportingOsRegistrar::kDisabled,
            ContentBrowserClient::AttributionReportingOsRegistrar::kDisabled},
           /*attribution_data_host_manager=*/nullptr),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   EXPECT_TRUE(data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter_url));
 
@@ -1753,7 +1775,8 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
       AttributionSuitableContext::CreateForTesting(
           source_site,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
@@ -1788,7 +1811,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_site,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter_url);
   // Wait for parsing to finish.
@@ -1814,7 +1838,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_site,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter_url);
   // Wait for parsing to finish.
@@ -1863,7 +1888,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           context_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   auto headers_2 = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers_2->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
@@ -2077,7 +2103,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_site, /*is_nested_within_fenced_frame=*/false, kFrameId,
           kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter_url);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
@@ -2110,7 +2137,8 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectSource_InOrder) {
       AttributionSuitableContext::CreateForTesting(
           source_site, /*is_nested_within_fenced_frame=*/false, kFrameId,
           kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   {
     auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
     headers->SetHeader(
@@ -2154,7 +2182,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_site, /*is_nested_within_fenced_frame=*/false, kFrameId,
           kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter_url);
@@ -2183,7 +2212,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_site, /*is_nested_within_fenced_frame=*/false, kFrameId,
           kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
 
@@ -2229,7 +2259,8 @@ TEST_F(AttributionDataHostManagerImplTest,
           source_site, /*is_nested_within_fenced_frame=*/false, kFrameId,
           kLastNavigationId),
 
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->SetHeader(kAttributionReportingRegisterSourceHeader,
@@ -2288,7 +2319,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_site, /*is_nested_within_fenced_frame=*/false, kFrameId,
           kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter_url);
   data_host_manager_.NotifyNavigationRegistrationData(
@@ -2429,7 +2461,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://page1.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -2501,7 +2534,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationDataHostNotRegistered) {
           *SuitableOrigin::Deserialize("https://page.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       attribution_src_token,
-      /*navigation_id=*/kNavigationId, kDevtoolsRequestId);
+      /*navigation_id=*/kNavigationId, kDevtoolsRequestId, kNotFromContextMenu);
 
   // kNotFound = 1.
   histograms.ExpectUniqueSample(kNavigationDataHostStatusHistogram, 1, 1);
@@ -2522,7 +2555,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://s.test"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   mojo::test::BadMessageObserver bad_message_observer;
 
@@ -2569,7 +2603,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://page.example"),
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
@@ -2657,7 +2692,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://source.test"),
           /*is_nested_within_fenced_frame=*/true, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   data_host_remote->SourceDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
@@ -2681,7 +2717,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           *SuitableOrigin::Deserialize("https://source.test"),
           /*is_nested_within_fenced_frame=*/true, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(),
       /*reporting_url=*/GURL("https://report.test"));
@@ -2811,7 +2848,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      blink::AttributionSrcToken(), kNavigationId, kDevtoolsRequestId);
+      blink::AttributionSrcToken(), kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -2979,7 +3017,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       AttributionSuitableContext::CreateForTesting(
           source_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   mojo::Remote<attribution_reporting::mojom::DataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -3337,7 +3376,8 @@ TEST_F(AttributionDataHostManagerImplTest, WebDisabled_SourceNotRegistered) {
             source_site,
             /*is_nested_within_fenced_frame=*/false, kFrameId,
             kLastNavigationId),
-        attribution_src_token, kNavigationId, kDevtoolsRequestId);
+        attribution_src_token, kNavigationId, kDevtoolsRequestId,
+        kNotFromContextMenu);
     auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
     headers->SetHeader(kAttributionReportingRegisterSourceHeader,
                        kRegisterSourceJson);
@@ -3503,7 +3543,8 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
       AttributionSuitableContext::CreateForTesting(
           context_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   auto headers_2 = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers_2->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
@@ -3622,7 +3663,8 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
       AttributionSuitableContext::CreateForTesting(
           context_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   auto headers_2 = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers_2->SetHeader(kAttributionReportingRegisterOsSourceHeader,
                        R"("https://r.test/x")");
@@ -3765,7 +3807,8 @@ TEST_F(
       AttributionSuitableContext::CreateForTesting(
           context_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   data_host_manager_.NotifyBackgroundRegistrationStarted(
       kBackgroundId,
@@ -3860,7 +3903,8 @@ TEST_F(
       AttributionSuitableContext::CreateForTesting(
           context_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
 
   // It should defer the trigger registration.
   BackgroundRegistrationsId trigger_background_id(321);
@@ -3938,7 +3982,8 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
       AttributionSuitableContext::CreateForTesting(
           context_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -4063,7 +4108,8 @@ TEST_F(
       AttributionSuitableContext::CreateForTesting(
           context_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
 
@@ -4130,7 +4176,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
 
   data_host_manager_.NotifyNavigationRegistrationStarted(
       suitable_context, attribution_src_token, kNavigationId,
-      kDevtoolsRequestId);
+      kDevtoolsRequestId, kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -4206,7 +4252,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
     if (navigation_eventually_starts) {
       data_host_manager_.NotifyNavigationRegistrationStarted(
           suitable_context, attribution_src_token, kNavigationId,
-          kDevtoolsRequestId);
+          kDevtoolsRequestId, kNotFromContextMenu);
     }
 
     data_host_manager_.NotifyNavigationRegistrationCompleted(
@@ -4278,7 +4324,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   // The navigation now start and complete.
   data_host_manager_.NotifyNavigationRegistrationStarted(
       suitable_context, attribution_src_token, kNavigationId,
-      kDevtoolsRequestId);
+      kDevtoolsRequestId, kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
       attribution_src_token);
 
@@ -4874,7 +4920,8 @@ TEST_P(AttributionDataHostManagerImplPreferredPlatformEnabledTest,
       AttributionSuitableContext::CreateForTesting(
           source_site,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
-      attribution_src_token, kNavigationId, kDevtoolsRequestId);
+      attribution_src_token, kNavigationId, kDevtoolsRequestId,
+      kNotFromContextMenu);
   data_host_manager_.NotifyNavigationRegistrationData(
       attribution_src_token, headers.get(), reporter_url);
   data_host_manager_.NotifyNavigationRegistrationCompleted(
@@ -5084,7 +5131,8 @@ TEST_F(AttributionDataHostManagerImplTest,
             page_origin,
             /*is_nested_within_fenced_frame=*/false, kFrameId,
             kLastNavigationId),
-        attribution_src_token, kNavigationId, kDevtoolsRequestId);
+        attribution_src_token, kNavigationId, kDevtoolsRequestId,
+        kNotFromContextMenu);
     data_host_manager_.NotifyNavigationRegistrationData(
         attribution_src_token, headers.get(), reporting_url);
     data_host_manager_.NotifyNavigationRegistrationCompleted(
@@ -5128,7 +5176,8 @@ TEST_F(AttributionDataHostManagerImplTest,
             page_origin,
             /*is_nested_within_fenced_frame=*/false, kFrameId,
             kLastNavigationId),
-        attribution_src_token, kNavigationId, kDevtoolsRequestId);
+        attribution_src_token, kNavigationId, kDevtoolsRequestId,
+        kNotFromContextMenu);
     data_host_manager_.NotifyNavigationRegistrationData(
         attribution_src_token, headers.get(), reporting_url);
     data_host_manager_.NotifyNavigationRegistrationCompleted(
@@ -5327,7 +5376,8 @@ TEST_F(AttributionDataHostManagerImplTest, RegistrationInfoErrorMetric) {
             page_origin,
             /*is_nested_within_fenced_frame=*/false, kFrameId,
             kLastNavigationId),
-        attribution_src_token, kNavigationId, kDevtoolsRequestId);
+        attribution_src_token, kNavigationId, kDevtoolsRequestId,
+        kNotFromContextMenu);
     data_host_manager_.NotifyNavigationRegistrationData(
         attribution_src_token, headers.get(), reporting_url);
     data_host_manager_.NotifyNavigationRegistrationCompleted(
