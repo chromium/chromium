@@ -91,26 +91,25 @@ using net::URLRequestFailedJob;
 
 namespace {
 
-// Searches for first node containing |text|, and if it finds one, searches
-// through all ancestors seeing if any of them is of class "hidden". Since it
-// relies on the hidden class used by network error pages, not suitable for
-// general use.
+// Returns true if there is any visible node containing `text`.
 [[nodiscard]] bool IsDisplayingText(content::RenderFrameHost* render_frame_host,
                                     const std::string& text) {
   // clang-format off
-  std::string command = base::StringPrintf(R"(
-    function isNodeVisible(node) {
-      if (!node || node.classList.contains('hidden'))
-        return false;
-      if (!node.parentElement)
-        return true;
-      // Otherwise, we must check all parent nodes
-      return isNodeVisible(node.parentElement);
+  std::string command = content::JsReplace(R"(
+    function isDisplayingText() {
+      // Iterate through all matching nodes and check visibility.
+      let nodes = document.evaluate('//*[contains(text(),$1)]', document,
+        null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
+      while (node = nodes.iterateNext()) {
+        if (node.checkVisibility()) {
+          return true;
+        }
+      }
+      return false;
     }
-    var node = document.evaluate("//*[contains(text(),'%s')]", document,
-      null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    isNodeVisible(node);
-  )", text.c_str());
+
+    isDisplayingText();
+  )", text);
   // clang-format on
   return content::EvalJs(render_frame_host, command).ExtractBool();
 }
@@ -119,6 +118,13 @@ namespace {
   return IsDisplayingText(
       browser->tab_strip_model()->GetActiveWebContents()->GetPrimaryMainFrame(),
       text);
+}
+
+// Expands the details box on the currently displayed error page.
+void ToggleDetails(Browser* browser) {
+  EXPECT_TRUE(
+      content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('details-button').click();"));
 }
 
 // Returns true if the diagnostics link suggestion is displayed.
@@ -315,6 +321,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, FileNotFound) {
 }
 
 // Test that a DNS error occurring in the main frame displays an error page.
+// Also test that the details button works as intended.
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_Basic) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL()));
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
@@ -323,6 +330,23 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_Basic) {
   EXPECT_EQ(WebContentsCanShowDiagnosticsTool(
                 browser()->tab_strip_model()->GetActiveWebContents()),
             IsDisplayingDiagnosticsLink(browser()));
+
+  // Initially, the details should be collapsed.
+  EXPECT_FALSE(IsDisplayingText(
+      browser(), l10n_util::GetStringUTF8(
+                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY)));
+
+  // Clicking the details button should result in showing the full details.
+  ToggleDetails(browser());
+  EXPECT_TRUE(IsDisplayingText(
+      browser(), l10n_util::GetStringUTF8(
+                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY)));
+
+  // Clicking it again should hide the details.
+  ToggleDetails(browser());
+  EXPECT_FALSE(IsDisplayingText(
+      browser(), l10n_util::GetStringUTF8(
+                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY)));
 }
 
 // Test that a DNS error occurring in the main frame does not result in an
@@ -401,6 +425,12 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_DoReload) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
+  // Click the details button to expand displayed information.
+  ToggleDetails(browser());
+  EXPECT_TRUE(IsDisplayingText(
+      browser(), l10n_util::GetStringUTF8(
+                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY)));
+
   // Clicking the reload button should load the error page again.
   content::TestNavigationObserver nav_observer(web_contents, 1);
   // Can't use content::ExecJs because it waits for scripts to send
@@ -410,7 +440,14 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_DoReload) {
       u"document.getElementById('reload-button').click();",
       base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   nav_observer.Wait();
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(nav_observer.last_net_error_code(), net::ERR_NAME_NOT_RESOLVED);
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
+
+  // The reloaded page should no longer be displaying the details.
+  EXPECT_FALSE(IsDisplayingText(
+      browser(), l10n_util::GetStringUTF8(
+                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY)));
 }
 
 // Test that the reload button on a DNS error page works after a same document
@@ -457,8 +494,12 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError) {
       ChildFrameAt(browser()->tab_strip_model()->GetActiveWebContents(), 0);
   ASSERT_TRUE(child_frame);
 
-  EXPECT_TRUE(IsDisplayingText(
+  // The error should not be displayed.
+  EXPECT_FALSE(IsDisplayingText(
       child_frame, net::ErrorToShortString(net::ERR_NAME_NOT_RESOLVED)));
+  // The hostname technically should be, in a short error message, though with
+  // opacity 0, which changes to 1 on hover.
+  EXPECT_TRUE(IsDisplayingText(child_frame, "mock.failed.request"));
 }
 
 // This test fails regularly on win_rel trybots. See crbug.com/121540
@@ -912,9 +953,10 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTestWithAllowDinosaurTrue,
 class ErrorPageForIDNTest : public InProcessBrowserTest {
  public:
   // Target hostname in different forms.
-  static const char kHostname[];
-  static const char kHostnameJSUnicode[];
-
+  static constexpr char kHostname[] = "xn--d1abbgf6aiiy.xn--p1ai";
+  static constexpr char kHostnameJsUtf8[] =
+      "\xD0\xBF\xD1\x80\xD0\xB5\xD0\xB7\xD0\xB8\xD0\xB4\xD0\xB5\xD0\xBD\xD1\x82"
+      "\x2E\xD1\x80\xD1\x84";
   ErrorPageForIDNTest() {
     // TODO(crbug.com/334954143) This test clears the AcceptLanguage Prefs which
     // causes Accept-Language to not work correctly. Fix the tests when turning
@@ -934,18 +976,12 @@ class ErrorPageForIDNTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-const char ErrorPageForIDNTest::kHostname[] =
-    "xn--d1abbgf6aiiy.xn--p1ai";
-const char ErrorPageForIDNTest::kHostnameJSUnicode[] =
-    "\\u043f\\u0440\\u0435\\u0437\\u0438\\u0434\\u0435\\u043d\\u0442."
-    "\\u0440\\u0444";
-
 // Make sure error page shows correct unicode for IDN.
 IN_PROC_BROWSER_TEST_F(ErrorPageForIDNTest, IDN) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), URLRequestFailedJob::GetMockHttpUrlForHostname(
                      net::ERR_UNSAFE_PORT, kHostname)));
-  EXPECT_TRUE(IsDisplayingText(browser(), kHostnameJSUnicode));
+  EXPECT_TRUE(IsDisplayingText(browser(), kHostnameJsUtf8));
 }
 
 // Make sure HTTP/0.9 is disabled on non-default ports by default.
