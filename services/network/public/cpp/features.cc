@@ -228,12 +228,6 @@ BASE_FEATURE_PARAM(int,
                    /*name=*/"MaxAcceptLanguage",
                    /*default_value=*/10);
 
-// Reduce PNA preflight response waiting time to 200ms.
-// See: https://wicg.github.io/private-network-access/#cors-preflight
-BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
-             "PrivateNetworkAccessPreflightShortTimeout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Local Network Access checks.
 // Blocks local network requests without user permission to prevent exploitation
 // of vulnerable local devices.

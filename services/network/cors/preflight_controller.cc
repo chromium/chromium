@@ -454,17 +454,6 @@ class PreflightController::PreflightLoader final {
       options |= mojom::kURLLoadOptionUseHeaderClient;
     }
     loader_->SetURLLoaderFactoryOptions(options);
-
-    // When private network access preflights are sent in warning mode, we
-    // should not wait around forever for a response. Certain servers never
-    // respond, and that should not fail the overall request. Instead, we should
-    // wait a short while then move on. See also https://crbug.com/1299382.
-    if (private_network_access_behavior_ ==
-            PrivateNetworkAccessPreflightBehavior::kWarnWithTimeout &&
-        base::FeatureList::IsEnabled(
-            features::kPrivateNetworkAccessPreflightShortTimeout)) {
-      loader_->SetTimeoutDuration(base::Milliseconds(200));
-    }
   }
 
   PreflightLoader(const PreflightLoader&) = delete;

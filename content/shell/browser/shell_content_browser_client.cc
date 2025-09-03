@@ -976,18 +976,6 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
 
   // Overrides for content/shell switches.
 
-  // Overrides for --run-web-tests.
-  if (switches::IsRunWebTestsSwitchPresent()) {
-    // Disable artificial timeouts for PNA-only preflights in warning-only mode
-    // for web tests. We do not exercise this behavior with web tests as it is
-    // intended to be a temporary rollout stage, and the short timeout causes
-    // flakiness when the test server takes just a tad too long to respond.
-    feature_overrides.emplace_back(
-        std::cref(
-            network::features::kPrivateNetworkAccessPreflightShortTimeout),
-        base::FeatureList::OVERRIDE_DISABLE_FEATURE);
-  }
-
   // Since this is a test-only code path, some arguments to SetUpFieldTrials are
   // null.
   // TODO(crbug.com/40790318): Consider passing a low entropy source.
