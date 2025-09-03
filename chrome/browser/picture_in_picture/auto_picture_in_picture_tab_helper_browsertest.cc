@@ -52,7 +52,9 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "net/dns/mock_host_resolver.h"
@@ -2568,7 +2570,13 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
     content::MediaStartStopObserver enter_pip_observer(
         web_contents,
         content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+    content::TestNavigationObserver document_pip_load_observer(
+        GURL("about:blank"));
+    document_pip_load_observer.StartWatchingNewWebContents();
     OpenNewTab(browser());
+    // Wait for the newly opened document picture-in-picture window to open and
+    // be loaded.
+    document_pip_load_observer.Wait();
     enter_pip_observer.Wait();
   }
   EXPECT_TRUE(web_contents->HasPictureInPictureDocument());

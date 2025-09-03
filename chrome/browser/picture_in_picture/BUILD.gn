@@ -203,6 +203,7 @@ if (!is_android) {
       "//components/viz/common",
       "//content/public/browser",
       "//content/public/common",
+      "//content/test:browsertest_support",
       "//content/test:test_support",
       "//media",
       "//net:test_support",
