@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_card_cell.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -55,9 +54,6 @@ class CardViewControllerTest : public LegacyChromeTableViewControllerTest {
 // 2. "No card items present" message is removed once there are card items to be
 // shown in the view.
 TEST_F(CardViewControllerTest, CheckNoDataItemsMessageRemoved) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
-
   CardViewController* card_view_controller =
       base::apple::ObjCCastStrict<CardViewController>(controller());
 

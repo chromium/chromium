@@ -17,9 +17,6 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-// Feature flag to enable the Keyboard Accessory Upgrade for iPads.
-BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgradeForIPad);
-
 // Test-only: Feature flag used to verify that EG2 can trigger flags. Must be
 // always disabled by default, because it is used to verify that enabling
 // features in tests works.

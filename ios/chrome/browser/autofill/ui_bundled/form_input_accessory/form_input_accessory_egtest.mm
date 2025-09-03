@@ -272,7 +272,6 @@ void SlowlyTypeText(NSString* text) {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(
       autofill::features::test::kAutofillServerCommunication);
-  config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   if ([self isRunningTest:@selector(testFillXframeCreditCardForm)] ||
       [self isRunningTest:@selector(testFillXframeCreditCardFormThrottled)] ||
       [self isRunningTest:@selector

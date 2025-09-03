@@ -205,10 +205,6 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 
 @implementation AddressViewControllerTestCase
 
-- (BOOL)shouldEnableKeyboardAccessoryUpgradeFeature {
-  return YES;
-}
-
 - (void)setUp {
   [super setUp];
   [AutofillAppInterface clearProfilesStore];
@@ -239,11 +235,6 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
-    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
-  } else {
-    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
-  }
   if ([self isRunningTest:@selector
             (testDoNotEditHomeAndWorkAddressFromOverflowMenu)]) {
     config.features_enabled.push_back(
@@ -700,27 +691,6 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
                                  addressCondition, cityCondition,
                                  stateCondition, zipCondition];
   [ChromeEarlGrey waitForJavaScriptCondition:condition];
-}
-
-@end
-
-// Rerun all the tests in this file but with Keyboard Accessory Upgrade
-// disabled. This will be removed once that feature launches fully, but ensures
-// regressions aren't introduced in the meantime.
-@interface AddressViewControllerKeyboardAccessoryUpgradeDisabledTestCase
-    : AddressViewControllerTestCase
-
-@end
-
-@implementation AddressViewControllerKeyboardAccessoryUpgradeDisabledTestCase
-
-- (BOOL)shouldEnableKeyboardAccessoryUpgradeFeature {
-  return NO;
-}
-
-// This causes the test case to actually be detected as a test case. The actual
-// tests are all inherited from the parent class.
-- (void)testEmpty {
 }
 
 @end

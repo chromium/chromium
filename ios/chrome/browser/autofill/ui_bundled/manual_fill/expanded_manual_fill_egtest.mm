@@ -248,10 +248,6 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-
-  // Enable the Keyboard Accessory Upgrade feature.
-  config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
-
   config.features_disabled.push_back(
       plus_addresses::features::kPlusAddressesEnabled);
 

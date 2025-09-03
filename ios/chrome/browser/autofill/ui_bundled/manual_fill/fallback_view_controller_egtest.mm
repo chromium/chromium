@@ -36,14 +36,6 @@ id<GREYMatcher> KeyboardAccessoryAddressManualFill() {
              : manual_fill::ProfilesIconMatcher();
 }
 
-// Matcher for the username chip button of a password option shown in the manual
-// fallback.
-id<GREYMatcher> UsernameChipButton() {
-  return grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabel(@"concrete username"),
-      grey_interactable(), nullptr);
-}
-
 }  // namespace
 
 // Integration Tests for fallback coordinator.
@@ -71,16 +63,6 @@ id<GREYMatcher> UsernameChipButton() {
   [AutofillAppInterface clearProfilesStore];
   [AutofillAppInterface clearProfilePasswordStore];
   [super tearDownHelper];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testPasswordsVisibleWhenOpenedFromNonPasswordField)]) {
-    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
-  }
-
-  return config;
 }
 
 // Tests that readonly fields don't have Manual Fallback icons.
@@ -134,33 +116,6 @@ id<GREYMatcher> UsernameChipButton() {
   // Verify that the address manual fill button is visible.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:KeyboardAccessoryAddressManualFill()];
-}
-
-// Tests that saved passwords for the current site are visible in the manual
-// fallback even when the focused field is not password-related.
-- (void)testPasswordsVisibleWhenOpenedFromNonPasswordField {
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"This test is for the older keyboard accessory");
-  }
-
-  // Save a password for the current site.
-  NSString* URLString =
-      base::SysUTF8ToNSString(self.testServer->GetURL(kFormHTMLFile).spec());
-  [AutofillAppInterface savePasswordFormForURLSpec:URLString];
-
-  // Tap the regular field.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementNormal)];
-
-  // Tap the password icon to open manual fallback.
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordIconMatcher()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Confirm that the password option is visible.
-  [[EarlGrey selectElementWithMatcher:UsernameChipButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

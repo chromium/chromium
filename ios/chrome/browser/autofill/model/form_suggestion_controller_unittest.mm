@@ -789,9 +789,6 @@ TEST_P(FormSuggestionControllerTest, AutofillSuggestionIPH) {
 
 // Tests that password generation suggestions always have an icon.
 TEST_P(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
-  base::test::ScopedFeatureList feature_list(
-      kIOSKeyboardAccessoryUpgradeForIPad);
-
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
 
   NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];

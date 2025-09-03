@@ -20,9 +20,6 @@
 #import "ios/chrome/common/channel_info.h"
 #import "ui/base/device_form_factor.h"
 
-BASE_FEATURE(IOSKeyboardAccessoryUpgradeForIPad,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(TestFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(SafetyCheckMagicStack, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -659,8 +656,7 @@ bool IsContentPushNotificationsSetUpListRegistrationOnly() {
 }
 
 bool IsKeyboardAccessoryUpgradeEnabled() {
-  return (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) ||
-         base::FeatureList::IsEnabled(kIOSKeyboardAccessoryUpgradeForIPad);
+  return true;
 }
 
 bool IsLiquidGlassEffectEnabled() {

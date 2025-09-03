@@ -435,9 +435,6 @@ extern const char kIOSFillRecoveryPasswordDescription[];
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 
-extern const char kIOSKeyboardAccessoryUpgradeForIPadName[];
-extern const char kIOSKeyboardAccessoryUpgradeForIPadDescription[];
-
 extern const char kIOSOmniboxAimShortcutName[];
 extern const char kIOSOmniboxAimShortcutDescription[];
 

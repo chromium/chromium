@@ -273,10 +273,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 @implementation PasswordViewControllerTestCase
 
-- (BOOL)shouldEnableKeyboardAccessoryUpgradeFeature {
-  return YES;
-}
-
 - (void)setUp {
   [super setUp];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -310,12 +306,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-
-  if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
-    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
-  } else {
-    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
-  }
 
   // TODO(crbug.com/371189341): Test fails on device.
 #if TARGET_OS_SIMULATOR
@@ -1505,27 +1495,6 @@ void CheckKeyboardIsUpAndNotCovered() {
   NSString* condition = [NSString
       stringWithFormat:@"%@ && %@", usernameCondition, passwordCondition];
   [ChromeEarlGrey waitForJavaScriptCondition:condition];
-}
-
-@end
-
-// Rerun all the tests in this file but with kIOSKeyboardAccessoryUpgradeForIPad
-// disabled. This will be removed once that feature launches fully, but ensures
-// regressions aren't introduced in the meantime.
-@interface PasswordViewControllerKeyboardAccessoryUpgradeDisabledTestCase
-    : PasswordViewControllerTestCase
-
-@end
-
-@implementation PasswordViewControllerKeyboardAccessoryUpgradeDisabledTestCase
-
-- (BOOL)shouldEnableKeyboardAccessoryUpgradeFeature {
-  return NO;
-}
-
-// This causes the test case to actually be detected as a test case. The actual
-// tests are all inherited from the parent class.
-- (void)testEmpty {
 }
 
 @end

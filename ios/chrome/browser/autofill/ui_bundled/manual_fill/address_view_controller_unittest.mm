@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/with_feature_override.h"
 #import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
@@ -68,9 +67,6 @@ class AddressViewControllerTest : public LegacyChromeTableViewControllerTest,
 // 3. "No address items present" message is removed once there are address items
 // to be shown in the view.
 TEST_P(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
-
   AddressViewController* address_view_controller =
       base::apple::ObjCCastStrict<AddressViewController>(controller());
 

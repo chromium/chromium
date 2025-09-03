@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/with_feature_override.h"
 #import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
@@ -71,9 +70,6 @@ class PasswordViewControllerTest : public LegacyChromeTableViewControllerTest,
 // 3. "No password items present" message is removed once there are password
 // items to be shown in the view.
 TEST_P(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
-
   PasswordViewController* password_view_controller =
       base::apple::ObjCCastStrict<PasswordViewController>(controller());
 
@@ -180,9 +176,6 @@ TEST_P(PasswordViewControllerTest, PlusAddressInCredentialSection) {
           plus_addresses::features::kPlusAddressesEnabled)) {
     return;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
 
   PasswordViewController* password_view_controller =
       base::apple::ObjCCastStrict<PasswordViewController>(controller());

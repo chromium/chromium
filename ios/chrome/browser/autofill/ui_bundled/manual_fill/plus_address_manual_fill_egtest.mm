@@ -130,10 +130,6 @@ void CheckPlusAddressCellVisibility(std::u16string chip_button_text,
            {"manage-url", {fakeLocalUrl}},
        }}});
 
-  // Enable the Keyboard Accessory Upgrade feature.
-  config.features_enabled_and_params.push_back(
-      {kIOSKeyboardAccessoryUpgradeForIPad, {}});
-
   return config;
 }
 

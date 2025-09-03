@@ -22,11 +22,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-class FallbackViewControllerTest : public LegacyChromeTableViewControllerTest,
-                                   public base::test::WithFeatureOverride {
+class FallbackViewControllerTest : public LegacyChromeTableViewControllerTest {
  public:
-  FallbackViewControllerTest()
-      : base::test::WithFeatureOverride(kIOSKeyboardAccessoryUpgradeForIPad) {}
+  FallbackViewControllerTest() {}
 
  protected:
   void SetUp() override {
@@ -68,7 +66,7 @@ class FallbackViewControllerTest : public LegacyChromeTableViewControllerTest,
 
 // Tests the order of the elements in the view when all of data, action and
 // header items are initialized.
-TEST_P(FallbackViewControllerTest, CheckItems) {
+TEST_F(FallbackViewControllerTest, CheckItems) {
   TableViewItem* item_one =
       [[TableViewItem alloc] initWithType:ItemTypeSampleOne];
   TableViewItem* item_two =
@@ -126,7 +124,7 @@ TEST_P(FallbackViewControllerTest, CheckItems) {
 }
 
 // Tests that unused data item sections are deleted as expected.
-TEST_P(FallbackViewControllerTest, RemoveUnusedDataItemSections) {
+TEST_F(FallbackViewControllerTest, RemoveUnusedDataItemSections) {
   TableViewItem* item_one =
       [[TableViewItem alloc] initWithType:ItemTypeSampleOne];
   TableViewItem* item_two =
@@ -156,7 +154,7 @@ TEST_P(FallbackViewControllerTest, RemoveUnusedDataItemSections) {
 
 // Tests that the "no data items to show" message is displayed in the right
 // place in the table view.
-TEST_P(FallbackViewControllerTest, CheckNoDataItemsMessage) {
+TEST_F(FallbackViewControllerTest, CheckNoDataItemsMessage) {
   FallbackViewController* fallback_view_controller =
       GetFallbackViewController();
 
@@ -217,7 +215,7 @@ TEST_P(FallbackViewControllerTest, CheckNoDataItemsMessage) {
 
 // Tests that the "no data items to show" message is displayed in the right
 // place in the table view even if there are no action items to show.
-TEST_P(FallbackViewControllerTest, CheckNoDataItemsMessageWhenNoActions) {
+TEST_F(FallbackViewControllerTest, CheckNoDataItemsMessageWhenNoActions) {
   // This test is only relevant when the Keyboard Accessory Upgrade feature is
   // enabled.
   if (!IsKeyboardAccessoryUpgradeEnabled()) {
@@ -247,7 +245,7 @@ TEST_P(FallbackViewControllerTest, CheckNoDataItemsMessageWhenNoActions) {
 
 // Tests that the actions are separated by sections if they belong to different
 // types.
-TEST_P(FallbackViewControllerTest,
+TEST_F(FallbackViewControllerTest,
        CheckDifferentSectionsForActionsOfDifferentTypes) {
   TableViewItem* item_one =
       [[TableViewItem alloc] initWithType:ItemTypeSampleOne];
@@ -267,5 +265,3 @@ TEST_P(FallbackViewControllerTest,
   EXPECT_EQ(GetTableViewItemType(/*section=*/0, /*item=*/0), ItemTypeSampleOne);
   EXPECT_EQ(GetTableViewItemType(/*section=*/1, /*item=*/0), ItemTypeSampleTwo);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FallbackViewControllerTest);
