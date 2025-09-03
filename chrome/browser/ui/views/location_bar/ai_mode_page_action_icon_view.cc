@@ -124,14 +124,24 @@ bool AiModePageActionIconView::ShouldShow() {
     return false;
   }
 
+  OmniboxView* omnibox_view = GetOmniboxView();
+  if (!omnibox_view) {
+    return false;
+  }
+
+  // If the user is currently in keyword mode, then suppress the AIM entrypoint.
+  if (omnibox_view->model()->is_keyword_selected()) {
+    return false;
+  }
+
   // If the feature is enabled to hide the AIM entrypoint on user input, don't
   // show the AIM entrypoint if the user typed text is non-empty.
   if (base::FeatureList::IsEnabled(omnibox::kHideAimEntrypointOnUserInput)) {
-    OmniboxView* omnibox_view = GetOmniboxView();
-    if (omnibox_view && !omnibox_view->model()->user_text().empty()) {
+    if (!omnibox_view->model()->user_text().empty()) {
       return false;
     }
   }
+
   // Otherwise, we should show the AIM view if the focus is within any view in
   // the location bar, including the omnibox, this view or any other page action
   // icon views.
