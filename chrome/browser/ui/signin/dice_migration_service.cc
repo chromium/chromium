@@ -44,7 +44,8 @@
 namespace {
 
 constexpr char kHelpCenterUrl[] =
-    "https://support.google.com/chrome/answer/185277";
+    "https://support.google.com/chrome/answer/"
+    "185277?p=manage_autofill_settings";
 
 constexpr base::TimeDelta kForcedSigninToastDelay = base::Seconds(5);
 
