@@ -3,25 +3,23 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
 String GapIntersection::ToString(bool verbose) const {
-  String str = String("(") + String(inline_offset.ToString()) + String(", ") +
-               String(block_offset.ToString());
-
   if (verbose) {
-    str = str + String(" - is_blocked_before: ") +
-          (is_blocked_before ? "true" : "false") +
-          String(" - is_blocked_after: ") +
-          (is_blocked_after ? "true" : "false") +
-          String(" - is_at_edge_of_container: ") +
-          (is_at_edge_of_container ? "true" : "false");
+    return StrCat(
+        {"(", inline_offset.ToString(), ", ", block_offset.ToString(),
+         " - is_blocked_before: ", is_blocked_before ? "true" : "false",
+         " - is_blocked_after: ", is_blocked_after ? "true" : "false",
+         " - is_at_edge_of_container: ",
+         is_at_edge_of_container ? "true" : "false", ")"});
   }
-
-  str = str + String(")");
-  return str;
+  return StrCat(
+      {"(", inline_offset.ToString(), ", ", block_offset.ToString(), ")"});
 }
 
 void GapGeometry::SetGapIntersections(
@@ -53,7 +51,7 @@ String GapGeometry::IntersectionsToString(
     result.Append("]");
     result.Append("\n");
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
@@ -112,17 +110,18 @@ PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
 }
 
 String GapGeometry::ToString(bool verbose) const {
-  String str = String("MainGaps: [");
+  StringBuilder builder;
+  builder << "MainGaps: [";
   for (const auto& main_gap : main_gaps_) {
-    str = str + main_gap.ToString(verbose) + ", ";
+    builder << main_gap.ToString(verbose) << ", ";
   }
-  str = str + String("] ");
-  str = str + String("CrossGaps: [");
+  builder << "] ";
+  builder << "CrossGaps: [";
   for (const auto& cross_gap : cross_gaps_) {
-    str = str + cross_gap.ToString(verbose) + ", ";
+    builder << cross_gap.ToString(verbose) << ", ";
   }
-  str = str + String("] ");
-  return str;
+  builder << "] ";
+  return builder.ReleaseString();
 }
 
 void GapGeometry::SetContentInlineOffsets(LayoutUnit start_offset,
