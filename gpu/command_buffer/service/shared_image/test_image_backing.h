@@ -109,7 +109,7 @@ class TestImageBacking : public SharedImageBacking {
 #endif
 
   bool upload_from_memory_called_ = false;
-  bool readback_to_memory_called_ = true;
+  bool readback_to_memory_called_ = false;
   PurgeableCallback set_purgeable_callback_;
   PurgeableCallback set_not_purgeable_callback_;
 };
