@@ -148,6 +148,28 @@ BrowserFrameViewWin::~BrowserFrameViewWin() = default;
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameViewWin, BrowserNonClientFrameView implementation:
 
+BrowserLayoutParams BrowserFrameViewWin::GetBrowserLayoutParams() const {
+  BrowserLayoutParams params;
+  params.visual_client_area = client_view_bounds_;
+  const int top = params.visual_client_area.y();
+  const auto& caption = caption_button_container_->bounds();
+  if (CaptionButtonsOnLeadingEdge()) {
+    params.leading_exclusion.content =
+        gfx::SizeF(caption.right(), caption.bottom() - top);
+  } else {
+    params.trailing_exclusion.content =
+        gfx::SizeF(width() - caption.x(), caption.bottom() - top);
+    if (window_icon_) {
+      const auto& icon = window_icon_->bounds();
+      params.leading_exclusion.content =
+          gfx::SizeF(icon.right(), icon.bottom() - top);
+      params.leading_exclusion.horizontal_padding = kIconTitleSpacing;
+      params.leading_exclusion.vertical_padding = icon.y() - top;
+    }
+  }
+  return params;
+}
+
 bool BrowserFrameViewWin::CaptionButtonsOnLeadingEdge() const {
   // Because we don't set WS_EX_LAYOUTRTL (which would conflict with Chrome's
   // own RTL layout logic), Windows always draws the caption buttons on the
@@ -240,6 +262,11 @@ gfx::Size BrowserFrameViewWin::GetMinimumSize() const {
 
 void BrowserFrameViewWin::WindowControlsOverlayEnabledChanged() {
   caption_button_container_->OnWindowControlsOverlayEnabledChanged();
+}
+
+BrowserFrameViewWin::BoundsAndMargins
+BrowserFrameViewWin::GetCaptionButtonBounds() const {
+  return BoundsAndMargins{gfx::RectF(caption_button_container_->bounds())};
 }
 
 void BrowserFrameViewWin::PaintAsActiveChanged() {

@@ -403,3 +403,17 @@ int BrowserNonClientFrameView::GetSystemMenuY() const {
 
 BEGIN_METADATA(BrowserNonClientFrameView)
 END_METADATA
+
+std::ostream& operator<<(std::ostream& os,
+                         const BrowserLayoutExclusionArea& exclusion) {
+  os << exclusion.content.ToString() << " +h: " << exclusion.horizontal_padding
+     << " +v: " << exclusion.vertical_padding;
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const BrowserLayoutParams& params) {
+  os << "client: " << params.visual_client_area.ToString() << " leading: { "
+     << params.leading_exclusion << "} trailing: { "
+     << params.trailing_exclusion << " }";
+  return os;
+}

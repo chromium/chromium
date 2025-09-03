@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_H_
 
+#include <ostream>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -341,5 +342,9 @@ std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
     BrowserView* browser_view);
 
 }  // namespace chrome
+
+// For debugging and testing.
+std::ostream& operator<<(std::ostream&, const BrowserLayoutExclusionArea&);
+std::ostream& operator<<(std::ostream&, const BrowserLayoutParams&);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_H_

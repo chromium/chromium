@@ -31,6 +31,7 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   ~BrowserFrameViewWin() override;
 
   // BrowserNonClientFrameView:
+  BrowserLayoutParams GetBrowserLayoutParams() const override;
   bool CaptionButtonsOnLeadingEdge() const override;
   gfx::Rect GetBoundsForTabStripRegion(
       const gfx::Size& tabstrip_minimum_size) const override;
@@ -79,6 +80,7 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
 
  protected:
   // BrowserNonClientFrameView:
+  BoundsAndMargins GetCaptionButtonBounds() const override;
   void PaintAsActiveChanged() override;
 
   // views::View:
