@@ -43,16 +43,6 @@ SortedTokenComparisonResult& SortedTokenComparisonResult::operator=(
 
 SortedTokenComparisonResult::~SortedTokenComparisonResult() = default;
 
-bool SortedTokenComparisonResult::IsSingleTokenSubset() const {
-  return status == SortedTokenComparisonStatus::kSubset &&
-         additional_tokens.size() == 1;
-}
-
-bool SortedTokenComparisonResult::IsSingleTokenSuperset() const {
-  return status == SortedTokenComparisonStatus::kSuperset &&
-         additional_tokens.size() == 1;
-}
-
 bool SortedTokenComparisonResult::OneIsSubset() const {
   return status == SortedTokenComparisonStatus::kSubset ||
          status == SortedTokenComparisonStatus::kSuperset;

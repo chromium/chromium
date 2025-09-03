@@ -71,10 +71,6 @@ struct SortedTokenComparisonResult {
   SortedTokenComparisonStatus status = SortedTokenComparisonStatus::kDistinct;
   // The additional elements in the super/subsets.
   std::vector<AddressToken> additional_tokens{};
-  // Returns true if the first is a subset of the second;
-  bool IsSingleTokenSubset() const;
-  // Return true if the first is a superset of the second;
-  bool IsSingleTokenSuperset() const;
   // Return true if one is a subset of the other.
   bool OneIsSubset() const;
   // Returns true if one contains the other.

@@ -87,21 +87,18 @@ enum MergeMode {
   kReplaceSubset = 1 << 4,
   // If both components have a different value, is the newer one.
   kUseNewerIfDifferent = 1 << 5,
-  // If the newer component contains one token more, apply a recursive strategy
-  // to merge the tokens.
-  kRecursivelyMergeSingleTokenSubset = 1 << 6,
   // If one is a substring of the other use the most recent one.
-  kUseMostRecentSubstring = 1 << 7,
+  kUseMostRecentSubstring = 1 << 6,
   // If the tokens match or one is a subset of the other, pick the shorter one.
-  kPickShorterIfOneContainsTheOther = 1 << 8,
+  kPickShorterIfOneContainsTheOther = 1 << 7,
   // If the normalized values are different, use the better one in terms
   // of verification score or the most recent one if both scores are the same.
-  kUseBetterOrMostRecentIfDifferent = 1 << 9,
+  kUseBetterOrMostRecentIfDifferent = 1 << 8,
   // Merge the child nodes and reformat the node from its children after merge
   // if the value has changed.
-  kMergeChildrenAndReformatIfNeeded = 1 << 10,
+  kMergeChildrenAndReformatIfNeeded = 1 << 9,
   // Make a merge decision based on canonicalized values.
-  kMergeBasedOnCanonicalizedValues = 1 << 11,
+  kMergeBasedOnCanonicalizedValues = 1 << 10,
   // Defines the default merging behavior.
   kDefault = kRecursivelyMergeTokenEquivalentValues
 };
@@ -445,11 +442,6 @@ class AddressComponent {
 
   // Clears all parsed and formatted values.
   void ClearAllParsedAndFormattedValues();
-
-  // Merge a component that has exactly one token less.
-  bool MergeSubsetComponent(
-      const AddressComponent& subset_component,
-      const SortedTokenComparisonResult& token_comparison_result);
 
   // Consumes an additional token into the most appropriate subcomponent.
   // Can be implemented by the specific node types.
