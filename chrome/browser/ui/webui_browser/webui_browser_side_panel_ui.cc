@@ -145,7 +145,36 @@ void WebUIBrowserSidePanelUI::PopulateSidePanel(
 
 void WebUIBrowserSidePanelUI::MaybeShowEntryOnTabStripModelChanged(
     SidePanelRegistry* old_contextual_registry,
-    SidePanelRegistry* new_contextual_registry) {}
+    SidePanelRegistry* new_contextual_registry) {
+  // Show an entry in the following fallback order: new contextual registry's
+  // active entry > active global entry > none (close the side panel).
+  std::optional<UniqueKey> unique_key =
+      IsSidePanelShowing() ? GetNewActiveKeyOnTabChanged() : std::nullopt;
+  if (!unique_key.has_value() && new_contextual_registry &&
+      new_contextual_registry->active_entry().has_value()) {
+    unique_key = UniqueKey{browser()->GetActiveTabInterface()->GetHandle(),
+                           (*new_contextual_registry->active_entry())->key()};
+  }
+
+  if (unique_key.has_value()) {
+    Show(*unique_key, SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
+         /*suppress_animations=*/true);
+    return;
+  }
+
+  // Store the old side panel, if there is one.
+  if (old_contextual_registry &&
+      old_contextual_registry->active_entry().has_value() &&
+      current_key().has_value() &&
+      (*old_contextual_registry->active_entry())->key() == current_key()->key &&
+      current_key()->tab_handle) {
+    auto* active_entry = old_contextual_registry->active_entry().value();
+    active_entry->CacheView(std::move(std::move(current_side_panel_view_)));
+    current_side_panel_view_.reset();
+  }
+
+  Close(/*suppress_animations=*/true);
+}
 
 void WebUIBrowserSidePanelUI::OnSidePanelClosed() {
   if (!current_key()) {
@@ -155,7 +184,9 @@ void WebUIBrowserSidePanelUI::OnSidePanelClosed() {
   const bool closing_global = !current_key()->tab_handle;
   SidePanelEntry* previous_entry = GetEntryForUniqueKey(*current_key());
   set_current_key(std::nullopt);
-  previous_entry->OnEntryHidden();
+  if (previous_entry) {
+    previous_entry->OnEntryHidden();
+  }
 
   // Reset active entry values for all observed registries and clear cache for
   // everything except remaining active entries (i.e. if another tab has an
