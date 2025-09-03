@@ -123,7 +123,7 @@ cr-searchbox[dropdown-is-visible] {
 
 #topContainer {
   grid-row: 1;
-  overflow: hidden;
+  min-width: 0;
 }
 
 #main {
