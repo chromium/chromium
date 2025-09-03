@@ -79,7 +79,7 @@ public class ReaderModeIphController implements ReaderModeActionRateLimiter.Obse
     // ReaderModeActionRateLimiter.Observer implementation.
 
     @Override
-    public void onWillStartSuppression() {
+    public void onActionSuppressed() {
         showIph();
     }
 }

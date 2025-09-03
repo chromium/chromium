@@ -204,7 +204,10 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
     private void notifyActionAvailable(
             Tab tab, boolean isDistillable, SignalAccumulator signalAccumulator) {
-        if (ReaderModeActionRateLimiter.getInstance().isActionSuppressed()) return;
+        if (ReaderModeActionRateLimiter.getInstance().isActionSuppressed()) {
+            ReaderModeActionRateLimiter.getInstance().onActionSuppressed();
+            return;
+        }
         signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.READER_MODE, isDistillable);
 
         long latency = System.currentTimeMillis() - signalAccumulator.getSignalStartTimeMs();

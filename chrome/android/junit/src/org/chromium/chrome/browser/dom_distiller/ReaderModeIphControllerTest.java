@@ -48,7 +48,7 @@ public class ReaderModeIphControllerTest {
 
     @Test
     public void testShowIph() {
-        mController.onWillStartSuppression();
+        mController.onActionSuppressed();
 
         ArgumentCaptor<IphCommand> captor = ArgumentCaptor.forClass(IphCommand.class);
         verify(mUserEducationHelper).requestShowIph(captor.capture());
