@@ -511,8 +511,7 @@ class MultiCaptureNotificationTest : public GetAllScreensMediaBrowserTestBase {
   void SetUpOnMainThread() override {
     GetAllScreensMediaBrowserTestBase::SetUpOnMainThread();
     client_ = static_cast<ChromeContentBrowserClient*>(
-        content::SetBrowserClientForTesting(nullptr));
-    content::SetBrowserClientForTesting(client_);
+        content::GetContentClientForTesting()->browser());
   }
 
   void TearDownOnMainThread() override {

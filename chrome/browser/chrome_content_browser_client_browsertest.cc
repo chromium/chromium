@@ -1131,8 +1131,7 @@ class KeepaliveDurationOnShutdownTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     client_ = static_cast<ChromeContentBrowserClient*>(
-        content::SetBrowserClientForTesting(nullptr));
-    content::SetBrowserClientForTesting(client_);
+        content::GetContentClientForTesting()->browser());
   }
 
   void TearDownOnMainThread() override {
@@ -1263,8 +1262,7 @@ class IsClipboardPasteAllowedTest : public InProcessBrowserTest {
             /*dm_token=*/std::string()));
 
     client_ = static_cast<ChromeContentBrowserClient*>(
-        content::SetBrowserClientForTesting(nullptr));
-    content::SetBrowserClientForTesting(client_);
+        content::GetContentClientForTesting()->browser());
   }
 
   void TearDownOnMainThread() override {
@@ -1983,8 +1981,7 @@ class TopChromeChromeContentBrowserClientTest
   void SetUpOnMainThread() override {
     ChromeContentBrowserClientBrowserTest::SetUpOnMainThread();
     client_ = static_cast<ChromeContentBrowserClient*>(
-        content::SetBrowserClientForTesting(nullptr));
-    content::SetBrowserClientForTesting(client_);
+        content::GetContentClientForTesting()->browser());
   }
 
   ChromeContentBrowserClient* client() { return client_; }
