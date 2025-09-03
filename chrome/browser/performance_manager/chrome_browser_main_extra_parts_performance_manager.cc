@@ -398,10 +398,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
   // This object requires the host frame sink manager to exist, which is
   // created after all the extra parts have run their PostCreateThreads.
-  performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
-      ->Start();
-  performance_manager::user_tuning::UserPerformanceTuningManager::GetInstance()
-      ->Start();
+  battery_saver_mode_manager_->Start();
+  user_performance_tuning_manager_->Start();
 
   // This object is created by the metrics service before threads, but it
   // needs the UserPerformanceTuningManager to exist. At this point it's
