@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 namespace {
@@ -126,6 +127,12 @@ void WebUIBrowserSidePanelUI::PopulateSidePanel(
 
   current_side_panel_view_ =
       content_view ? std::move(content_view.value()) : entry->GetContent();
+  // This view is never attached to a widget, so override the focus manager
+  // to use the top level widget's focus manager. This makes sure that
+  // View::GetFocusManager() does not crash (called during key event dispatch).
+  current_side_panel_view_->SetProperty(
+      views::kDetachedViewFocusManagerKey,
+      GetWebUIBrowserWindow()->widget()->GetFocusManager());
   set_current_key(unique_key);
   set_current_entry(entry->GetWeakPtr());
   GetWebUIBrowserWindow()->ShowSidePanel(entry->key());
