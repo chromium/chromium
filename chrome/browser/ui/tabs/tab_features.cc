@@ -257,9 +257,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
     if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
       collaboration_messaging_tab_data_ =
-          GetUserDataFactory()
-              .CreateInstance<tab_groups::CollaborationMessagingTabData>(tab,
-                                                                         &tab);
+          std::make_unique<tab_groups::CollaborationMessagingTabData>(profile);
     }
 
     if (IsPageActionMigrated(PageActionIconType::kCollaborationMessaging) &&
