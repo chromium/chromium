@@ -1060,14 +1060,9 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
     Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetInteger(
         prefs::kRestoreAppsAndPagesPrefName,
         static_cast<int>(full_restore::RestoreOption::kAskEveryTime));
-
-    multi_user_window_manager_ = MultiUserWindowManager::Create();
-    multi_user_window_manager_->SetPrimaryUser(GetPrimaryUserAccountId());
   }
 
   void TearDown() override {
-    multi_user_window_manager_.reset();
-
     SetInformedRestoreImagePathForTest(base::FilePath());
     LockStateControllerTest::TearDown();
   }
@@ -1092,9 +1087,6 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
   }
 
   const base::FilePath& file_path() const { return file_path_; }
-
- protected:
-  std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
 
  private:
   base::ScopedAllowBlockingForTesting allow_blocking_;
@@ -1481,13 +1473,14 @@ TEST_F(LockStateControllerInformedRestoreTest,
   // Setup two windows: one is owned by the primary user, and the other
   // is owned by the secondary user. Both are shown for the primary user.
   auto test_window = CreateTestWindow();
-  multi_user_window_manager_->SetWindowOwner(test_window.get(),
-                                             primary_account_id);
+  auto* multi_user_window_manager = Shell::Get()->multi_user_window_manager();
+  multi_user_window_manager->SetWindowOwner(test_window.get(),
+                                            primary_account_id);
   auto test_window2 = CreateTestWindow();
-  multi_user_window_manager_->SetWindowOwner(test_window2.get(),
-                                             secondary_account_id);
-  multi_user_window_manager_->ShowWindowForUser(test_window2.get(),
-                                                primary_account_id);
+  multi_user_window_manager->SetWindowOwner(test_window2.get(),
+                                            secondary_account_id);
+  multi_user_window_manager->ShowWindowForUser(test_window2.get(),
+                                               primary_account_id);
 
   base::RunLoop run_loop;
   lock_state_test_api_->set_informed_restore_image_callback(

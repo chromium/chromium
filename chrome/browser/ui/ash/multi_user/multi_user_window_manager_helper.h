@@ -38,6 +38,9 @@ class MultiUserWindowManagerHelper {
   // Gets the instance of the object.
   static MultiUserWindowManagerHelper* GetInstance();
 
+  // DEPRECATED. TODO(crbug.com/425160398): Replace the callers by
+  // MultiUserWindowManagerImpl::Get() or
+  // ash::Shell::Get()->multi_user_window_manager().
   static ash::MultiUserWindowManager* GetWindowManager();
 
   // Whether or not the window's title should show the avatar. On chromeos,
@@ -74,19 +77,8 @@ class MultiUserWindowManagerHelper {
                                const AccountId& account_id) const;
 
  private:
-  explicit MultiUserWindowManagerHelper(
-      std::unique_ptr<ash::MultiUserWindowManager> window_manager);
+  MultiUserWindowManagerHelper();
   ~MultiUserWindowManagerHelper();
-
-  ash::MultiUserWindowManager* GetWindowManagerImpl() {
-    return const_cast<ash::MultiUserWindowManager*>(
-        const_cast<const MultiUserWindowManagerHelper*>(this)
-            ->GetWindowManagerImpl());
-  }
-  const ash::MultiUserWindowManager* GetWindowManagerImpl() const;
-
-  // The MultiUserWindowManager implementation to use.
-  std::unique_ptr<ash::MultiUserWindowManager> multi_user_window_manager_;
 
   // Used in multi-profile support.
   std::unique_ptr<MultiProfileSupport> multi_profile_support_;

@@ -4787,7 +4787,7 @@ class DesksMultiUserTest : public NoSessionAshTestBase {
   ~DesksMultiUserTest() override = default;
 
   MultiUserWindowManager* multi_user_window_manager() {
-    return multi_user_window_manager_.get();
+    return Shell::Get()->multi_user_window_manager();
   }
   PrefService* user_1_prefs() { return user_1_prefs_; }
   PrefService* user_2_prefs() { return user_2_prefs_; }
@@ -4807,15 +4807,12 @@ class DesksMultiUserTest : public NoSessionAshTestBase {
   void TearDown() override {
     user_1_prefs_ = nullptr;
     user_2_prefs_ = nullptr;
-    multi_user_window_manager_.reset();
     NoSessionAshTestBase::TearDown();
   }
 
   void SimulateUser1Login() {
     auto account_id = SimulateUserLogin({kUser1Email}, std::nullopt,
                                         std::move(owned_user_1_prefs_));
-    multi_user_window_manager_ = MultiUserWindowManager::Create();
-    multi_user_window_manager_->SetPrimaryUser(account_id);
     MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
         MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
     GetSessionControllerClient()->SetSessionState(
@@ -4856,7 +4853,6 @@ class DesksMultiUserTest : public NoSessionAshTestBase {
   }
 
  private:
-  std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
   std::unique_ptr<PrefService> owned_user_1_prefs_;
   std::unique_ptr<PrefService> owned_user_2_prefs_;
   raw_ptr<PrefService> user_1_prefs_ = nullptr;

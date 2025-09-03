@@ -74,8 +74,6 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
     window_->Show();
 
     MultiUserWindowManagerHelper::CreateInstanceForTest();
-    MultiUserWindowManagerHelper::GetWindowManager()->SetPrimaryUser(
-        kAccountId1);
     MultiUserWindowManagerHelper::GetInstance()->AddUser(kAccountId1);
   }
 

@@ -15,7 +15,7 @@
 #include "components/sync/base/user_selectable_type.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "ash/multi_user/multi_user_window_manager_impl.h"
 #endif
 
 namespace web_app::integration_tests {
@@ -29,7 +29,7 @@ TwoClientWebAppsIntegrationTestBase::TwoClientWebAppsIntegrationTestBase()
       // TODO(crbug.com/425160398): Consider to redesign the tests to work
       // with the feature.
       multi_user_window_manager_resetter_(
-          MultiUserWindowManagerHelper::DisableForTesting()),
+          ash::MultiUserWindowManagerImpl::DisableForTesting()),
 #endif  // BUILDFLAG(IS_CHROMEOS)
       helper_(this) {
 }

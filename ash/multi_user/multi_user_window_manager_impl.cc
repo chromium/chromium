@@ -16,6 +16,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
@@ -41,6 +42,8 @@ constexpr base::TimeDelta kUserFadeTime = base::Milliseconds(110);
 constexpr base::TimeDelta kTeleportAnimationTime = base::Milliseconds(300);
 
 MultiUserWindowManagerImpl* g_instance = nullptr;
+
+bool g_multi_user_window_manager_enabled = true;
 
 bool HasSystemModalTransientChildWindow(aura::Window* window) {
   if (window == nullptr)
@@ -129,6 +132,19 @@ MultiUserWindowManagerImpl::~MultiUserWindowManagerImpl() {
 // static
 MultiUserWindowManagerImpl* MultiUserWindowManagerImpl::Get() {
   return g_instance;
+}
+
+// static
+bool MultiUserWindowManagerImpl::IsEnabled() {
+  return g_multi_user_window_manager_enabled;
+}
+
+// static
+base::AutoReset<bool> MultiUserWindowManagerImpl::DisableForTesting() {
+  CHECK(g_multi_user_window_manager_enabled)
+      << "MultiUserSignIn is already disabled";
+  base::AutoReset resetter(&g_multi_user_window_manager_enabled, false);
+  return resetter;
 }
 
 void MultiUserWindowManagerImpl::SetWindowOwner(aura::Window* window,
@@ -240,11 +256,6 @@ void MultiUserWindowManagerImpl::AddObserver(
 void MultiUserWindowManagerImpl::RemoveObserver(
     MultiUserWindowManagerObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void MultiUserWindowManagerImpl::SetPrimaryUser(const AccountId& account_id) {
-  // Emulate as if primary user, which was already logged in, is logged in now.
-  OnActiveUserSessionChanged(account_id);
 }
 
 bool MultiUserWindowManagerImpl::IsWindowOnDesktopOfUser(
@@ -585,11 +596,6 @@ base::TimeDelta MultiUserWindowManagerImpl::GetAdjustedAnimationTime(
              : (animation_speed_ == ANIMATION_SPEED_FAST
                     ? base::Milliseconds(10)
                     : base::TimeDelta());
-}
-
-// static
-std::unique_ptr<MultiUserWindowManager> MultiUserWindowManager::Create() {
-  return std::make_unique<MultiUserWindowManagerImpl>();
 }
 
 }  // namespace ash

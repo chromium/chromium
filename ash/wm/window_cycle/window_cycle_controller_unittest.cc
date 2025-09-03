@@ -3181,7 +3181,7 @@ class MultiUserWindowCycleControllerTest : public NoSessionAshTestBase {
   ~MultiUserWindowCycleControllerTest() override = default;
 
   MultiUserWindowManager* multi_user_window_manager() {
-    return multi_user_window_manager_.get();
+    return Shell::Get()->multi_user_window_manager();
   }
 
   void SetUp() override {
@@ -3193,6 +3193,10 @@ class MultiUserWindowCycleControllerTest : public NoSessionAshTestBase {
     shelf_view_test_->SetAnimationDuration(base::Milliseconds(1));
 
     generator_ = GetEventGenerator();
+
+    CHECK(MultiUserWindowManagerImpl::Get());
+    MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
+        MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
   }
 
   void TearDown() override {
@@ -3244,20 +3248,6 @@ class MultiUserWindowCycleControllerTest : public NoSessionAshTestBase {
 
   void SwitchActiveUser(const AccountId& account_id) {
     GetSessionControllerClient()->SwitchActiveUser(account_id);
-  }
-
-  void SimulateUserLogin(const AccountId& account_id) {
-    AshTestBase::SimulateUserLogin(account_id);
-    // TODO(crbug.com/425160398): Currently on the production,
-    // MultiUserWindowManager is created after primary user login.
-    // We should move the initialization.
-    if (!multi_user_window_manager_) {
-      multi_user_window_manager_ = MultiUserWindowManager::Create();
-      multi_user_window_manager_->SetPrimaryUser(account_id);
-      CHECK(MultiUserWindowManagerImpl::Get());
-      MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
-          MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
-    }
   }
 
   const aura::Window::Windows GetWindows(WindowCycleController* controller) {

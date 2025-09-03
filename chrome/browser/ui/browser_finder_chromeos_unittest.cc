@@ -51,8 +51,6 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
     // (crbug.com/4251603989).
     ASSERT_FALSE(MultiUserWindowManagerHelper::GetInstance());
     MultiUserWindowManagerHelper::CreateInstanceForTest();
-    MultiUserWindowManagerHelper::GetWindowManager()->SetPrimaryUser(
-        kTestAccountId1);
     MultiUserWindowManagerHelper::GetInstance()->AddUser(kTestAccountId1);
 
     // Create secondary user/profile.

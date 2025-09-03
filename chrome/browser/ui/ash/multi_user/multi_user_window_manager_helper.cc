@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 
+#include "ash/shell.h"
 #include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_stub.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
@@ -13,8 +14,6 @@
 
 namespace {
 MultiUserWindowManagerHelper* g_multi_user_window_manager_instance = nullptr;
-
-bool g_multi_user_window_manager_enabled = true;
 }  // namespace
 
 // static
@@ -25,16 +24,15 @@ MultiUserWindowManagerHelper* MultiUserWindowManagerHelper::GetInstance() {
 // static
 ash::MultiUserWindowManager* MultiUserWindowManagerHelper::GetWindowManager() {
   // In tests this may be called before the instance has been set.
-  return g_multi_user_window_manager_instance
-             ? g_multi_user_window_manager_instance->GetWindowManagerImpl()
+  return ash::Shell::HasInstance()
+             ? ash::Shell::Get()->multi_user_window_manager()
              : nullptr;
 }
 
 // static
 MultiUserWindowManagerHelper* MultiUserWindowManagerHelper::CreateInstance() {
   CHECK(!g_multi_user_window_manager_instance);
-  g_multi_user_window_manager_instance =
-      new MultiUserWindowManagerHelper(ash::MultiUserWindowManager::Create());
+  g_multi_user_window_manager_instance = new MultiUserWindowManagerHelper();
   return g_multi_user_window_manager_instance;
 }
 
@@ -67,19 +65,6 @@ void MultiUserWindowManagerHelper::CreateInstanceForTest() {
   CreateInstance();
 }
 
-// static
-bool MultiUserWindowManagerHelper::IsEnabled() {
-  return g_multi_user_window_manager_enabled;
-}
-
-// static
-base::AutoReset<bool> MultiUserWindowManagerHelper::DisableForTesting() {
-  CHECK(g_multi_user_window_manager_enabled)
-      << "MultiUserSignIn is already disabled";
-  base::AutoReset resetter(&g_multi_user_window_manager_enabled, false);
-  return resetter;
-}
-
 void MultiUserWindowManagerHelper::AddUser(const AccountId& account_id) {
   multi_profile_support_->AddUser(account_id);
 }
@@ -88,19 +73,12 @@ bool MultiUserWindowManagerHelper::IsWindowOnDesktopOfUser(
     aura::Window* window,
     const AccountId& account_id) const {
   const AccountId& presenting_user =
-      GetWindowManagerImpl()->GetUserPresentingWindow(window);
+      GetWindowManager()->GetUserPresentingWindow(window);
   return (!presenting_user.is_valid()) || presenting_user == account_id;
 }
 
-MultiUserWindowManagerHelper::MultiUserWindowManagerHelper(
-    std::unique_ptr<ash::MultiUserWindowManager> window_manager)
-    : multi_user_window_manager_(std::move(window_manager)),
-      multi_profile_support_(std::make_unique<MultiProfileSupport>(
-          multi_user_window_manager_.get())) {}
+MultiUserWindowManagerHelper::MultiUserWindowManagerHelper()
+    : multi_profile_support_(std::make_unique<MultiProfileSupport>(
+          MultiUserWindowManagerHelper::GetWindowManager())) {}
 
 MultiUserWindowManagerHelper::~MultiUserWindowManagerHelper() = default;
-
-const ash::MultiUserWindowManager*
-MultiUserWindowManagerHelper::GetWindowManagerImpl() const {
-  return multi_user_window_manager_.get();
-}

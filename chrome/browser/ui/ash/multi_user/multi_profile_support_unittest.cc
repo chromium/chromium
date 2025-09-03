@@ -229,6 +229,17 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::ACTIVE);
 
+    // Workaround with testing utilities. Currently, for primary user login
+    // case, OnActiveUserSessionChanged is not called via
+    // TestSessionControllerClient, so call it manually here.
+    // TODO(crbug.com/425160398): Make TestSessionControllerClient behavior
+    // closer to the production one, or get rid of it to connect actual
+    // UserManager and SessionManager in tests.
+    if (user_manager_->GetPrimaryUser() == user) {
+      ash::MultiUserWindowManagerImpl::Get()->OnActiveUserSessionChanged(
+          user->GetAccountId());
+    }
+
     if (user_manager_->GetActiveUser() != user) {
       user_manager_->SwitchActiveUser(user->GetAccountId());
       GetSessionControllerClient()->SwitchActiveUser(user->GetAccountId());
@@ -254,9 +265,6 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
     // initialization in the production.
     // TODO(crbug.com/425160398): This should be simplified for the bug fix.
     ::MultiUserWindowManagerHelper::CreateInstanceForTest();
-    ash::MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
-        ash::MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
-    ::MultiUserWindowManagerHelper::GetWindowManager()->SetPrimaryUser(ids[0]);
 
     for (const AccountId& account_id : ids.subspan(1u)) {
       LogInUser(account_id);
@@ -361,6 +369,9 @@ void MultiProfileSupportTest::SetUp() {
 
   ChromeAshTestBase::SetUp();
   GetSessionControllerClient()->set_pref_service_must_exist(true);
+
+  ash::MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
+      ash::MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
 
   profile_manager_ = std::make_unique<TestingProfileManager>(
       TestingBrowserProcess::GetGlobal());

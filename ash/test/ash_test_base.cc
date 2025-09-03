@@ -519,6 +519,7 @@ void AshTestBase::SetAccessibilityPanelHeight(int panel_height) {
 
 void AshTestBase::ClearLogin() {
   GetSessionControllerClient()->Reset();
+  Shell::Get()->RecreateMultiUserWindowManagerForTesting();
 }
 
 void AshTestBase::SetCanLockScreen(bool can_lock) {

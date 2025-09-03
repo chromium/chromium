@@ -217,13 +217,17 @@ TEST_F(KeyboardBacklightColorControllerTest,
             controller_->GetBacklightColor(account_id_1));
 
   // Simulate re-login for user2 and expect blue color to be set.
-  SimulateUserLogin(account_id_2);
+  {
+    TestWallpaperObserver observer;
+    SimulateUserLogin(account_id_2);
 
-  EXPECT_EQ(personalization_app::mojom::BacklightColor::kWallpaper,
-            controller_->GetBacklightColor(account_id_2));
-  EXPECT_EQ(ConvertBacklightColorToSkColor(
-                personalization_app::mojom::BacklightColor::kBlue),
-            displayed_color());
+    EXPECT_EQ(personalization_app::mojom::BacklightColor::kWallpaper,
+              controller_->GetBacklightColor(account_id_2));
+    EXPECT_EQ(ConvertBacklightColorToSkColor(
+                  personalization_app::mojom::BacklightColor::kBlue),
+              displayed_color());
+    observer.WaitForWallpaperColorsChanged();
+  }
 
   // Set the wallpaper and check that the displayed color now matches the
   // default color.

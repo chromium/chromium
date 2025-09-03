@@ -60,6 +60,11 @@ AshPixelTestHelper::AshPixelTestHelper(pixel_test::InitParams params)
 AshPixelTestHelper::~AshPixelTestHelper() = default;
 
 void AshPixelTestHelper::StabilizeUi() {
+  // Consumes pending tasks. Specifically, on user login simulation,
+  // it will trigger an async wallpaper setting task. SetWallpaper() needs
+  // to be called after the completion of the wallpaper setting task for
+  // login.
+  base::RunLoop().RunUntilIdle();
   MaybeSetDarkMode();
   SetWallpaper();
   SetBatteryState();

@@ -399,7 +399,7 @@ class SavedDeskTest : public OverviewTestBase {
   }
 
   MultiUserWindowManager* multi_user_window_manager() {
-    return multi_user_window_manager_.get();
+    return Shell::Get()->multi_user_window_manager();
   }
 
   // OverviewTestBase:
@@ -418,13 +418,10 @@ class SavedDeskTest : public OverviewTestBase {
     // this would lead to flaky tests.
     saved_desk_test_helper()->WaitForDeskModels();
     account_id_test_ = AccountId::FromUserEmail("test_user");
-    multi_user_window_manager_ = MultiUserWindowManager::Create();
-    multi_user_window_manager_->SetPrimaryUser(account_id_test_);
   }
 
   void TearDown() override {
     disable_app_id_check_.reset();
-    multi_user_window_manager_.reset();
     OverviewTestBase::TearDown();
   }
 
@@ -439,7 +436,6 @@ class SavedDeskTest : public OverviewTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
   AccountId account_id_test_;
 };
 

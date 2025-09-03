@@ -18,4 +18,7 @@ specific_include_rules = {
   "two_client_web_apps_integration_test_base\\.h": [
     "+chrome/browser/ui/views",
   ],
+  "two_client_web_apps_integration_test_base\\.cc": [
+    "+ash/multi_user/multi_user_window_manager_impl.h",
+  ],
 }

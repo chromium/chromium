@@ -110,6 +110,7 @@
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/multi_capture/multi_capture_service.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
+#include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/policy/policy_recommendation_restorer.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
@@ -677,9 +678,16 @@ void Shell::AddAccessibilityEventHandler(
   accessibility_event_handler_manager_->AddAccessibilityEventHandler(handler,
                                                                      type);
 }
+
 void Shell::RemoveAccessibilityEventHandler(ui::EventHandler* handler) {
   accessibility_event_handler_manager_->RemoveAccessibilityEventHandler(
       handler);
+}
+
+void Shell::RecreateMultiUserWindowManagerForTesting() {
+  // Destroy the object before instantiating the next one explicitly.
+  multi_user_window_manager_.reset();
+  multi_user_window_manager_ = std::make_unique<MultiUserWindowManagerImpl>();
 }
 
 WebAuthNDialogController* Shell::webauthn_dialog_controller() {
@@ -1012,6 +1020,9 @@ Shell::~Shell() {
   // path. (crbug.com/485438).
   mru_window_tracker_.reset();
 
+  // This must be destroyed before session_controller is destroyed.
+  multi_user_window_manager_.reset();
+
   // These need a valid Shell instance to clean up properly, so explicitly
   // delete them before invalidating the instance.
   // Alphabetical. TODO(oshima): sort.
@@ -1336,6 +1347,7 @@ void Shell::Init(
   peripheral_battery_notifier_ = std::make_unique<PeripheralBatteryNotifier>(
       peripheral_battery_listener_.get());
   power_event_observer_ = std::make_unique<PowerEventObserver>();
+  multi_user_window_manager_ = std::make_unique<MultiUserWindowManagerImpl>();
   window_cycle_controller_ = std::make_unique<WindowCycleController>();
 
   capture_mode_controller_ = std::make_unique<CaptureModeController>(

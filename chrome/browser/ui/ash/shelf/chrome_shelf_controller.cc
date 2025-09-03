@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
+#include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -316,13 +317,12 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   shelf_spinner_controller_ = std::make_unique<ShelfSpinnerController>(this);
 
   // Create either the real window manager or a stub.
-  if (ash::Shell::HasInstance() && MultiUserWindowManagerHelper::IsEnabled()) {
+  if (ash::Shell::HasInstance() &&
+      ash::MultiUserWindowManagerImpl::IsEnabled()) {
     MultiUserWindowManagerHelper::CreateInstance();
     auto active_account_id =
         user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
     LOG(ERROR) << "Active Account Id: " << active_account_id;
-    MultiUserWindowManagerHelper::GetWindowManager()->SetPrimaryUser(
-        active_account_id);
     MultiUserWindowManagerHelper::GetInstance()->AddUser(active_account_id);
   } else {
     // In some unit tests, ash::Shell is not initialized because they are

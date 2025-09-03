@@ -11,9 +11,11 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "ui/aura/window_observer.h"
@@ -61,6 +63,7 @@ class ASH_EXPORT MultiUserWindowManagerImpl
     ANIMATION_SPEED_DISABLED  // Unit tests which do not require animations.
   };
 
+  // TODO(crbug.com/425160398): make dependency more explicit.
   MultiUserWindowManagerImpl();
 
   MultiUserWindowManagerImpl(const MultiUserWindowManagerImpl&) = delete;
@@ -70,6 +73,14 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   ~MultiUserWindowManagerImpl() override;
 
   static MultiUserWindowManagerImpl* Get();
+
+  // Returns true if MultiUserSignIn is enabled. Always true on production.
+  static bool IsEnabled();
+
+  // Temporarily disables MultiUserSignIn for testing purpose.
+  // On destruction of the returned AutoReset instance, disabling is reset
+  // (so the following tests will run with MultiUserSignIn).
+  [[nodiscard]] static base::AutoReset<bool> DisableForTesting();
 
   // MultiUserWindowManager:
   void SetWindowOwner(aura::Window* window,
@@ -84,7 +95,6 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   const AccountId& CurrentAccountId() const override;
   void AddObserver(MultiUserWindowManagerObserver* observer) override;
   void RemoveObserver(MultiUserWindowManagerObserver* observer) override;
-  void SetPrimaryUser(const AccountId& account_id) override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;

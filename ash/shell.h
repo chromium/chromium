@@ -201,6 +201,7 @@ class MruWindowTracker;
 class MultiCaptureService;
 class MultiDeviceNotificationPresenter;
 class MultiDisplayMetricsController;
+class MultiUserWindowManager;
 class NearbyShareControllerImpl;
 class NearbyShareDelegate;
 class NightLightControllerImpl;
@@ -667,6 +668,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   MultiDisplayMetricsController* multi_display_metrics_controller() {
     return multi_display_metrics_controller_.get();
   }
+  MultiUserWindowManager* multi_user_window_manager() {
+    return multi_user_window_manager_.get();
+  }
   NearbyShareControllerImpl* nearby_share_controller() {
     return nearby_share_controller_.get();
   }
@@ -937,6 +941,10 @@ class ASH_EXPORT Shell : public SessionObserver,
     return login_unlock_throughput_recorder_.get();
   }
 
+  // Workaround for testing to simulat user sign-out without Chrome process
+  // termination, which conflicts with production behavior.
+  void RecreateMultiUserWindowManagerForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtendedDesktopTest, TestCursor);
   FRIEND_TEST_ALL_PREFIXES(WindowManagerTest, MouseEventCursors);
@@ -1095,6 +1103,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       multi_display_metrics_controller_;
   std::unique_ptr<MultiDeviceNotificationPresenter>
       multidevice_notification_presenter_;
+  std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
   std::unique_ptr<chromeos::MultitaskMenuNudgeController::Delegate>
       multitask_menu_nudge_delegate_;
   std::unique_ptr<NearbyShareControllerImpl> nearby_share_controller_;
