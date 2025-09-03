@@ -42,7 +42,7 @@ std::unique_ptr<KeyedService> FollowServiceFactory::BuildServiceInstanceFor(
   return ios::provider::CreateFollowService(configuration);
 }
 
-void FollowServiceFactory::RegisterBrowserStatePrefs(
+void FollowServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kFirstFollowUIShownCount, 0);
   registry->RegisterIntegerPref(prefs::kFirstFollowUpdateUIShownCount, 0);
