@@ -251,7 +251,8 @@ std::unique_ptr<DawnBufferRepresentation> SharedImageBacking::ProduceDawnBuffer(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
-    wgpu::BackendType backend_type) {
+    wgpu::BackendType backend_type,
+    scoped_refptr<SharedContextState> context_state) {
   return nullptr;
 }
 

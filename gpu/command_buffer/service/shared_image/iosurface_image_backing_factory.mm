@@ -369,9 +369,11 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   // reported immediately after allocation/upload and before other GL
   // operations.
   gfx::ScopedIOSurface io_surface;
+  const bool should_clear =
+      usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR) ? true : false;
   {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
-    const bool should_clear = false;
+
     const bool override_rgba_to_bgra =
 #if BUILDFLAG(IS_IOS)
         false;
@@ -387,7 +389,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   }
   SetIOSurfaceColorSpace(io_surface.get(), color_space);
 
-  const bool is_cleared = !pixel_data.empty();
+  const bool is_cleared = !pixel_data.empty() || should_clear;
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && angle_texture_usage_;
 

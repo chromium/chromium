@@ -2512,7 +2512,7 @@ TEST_F(D3DImageBackingFactoryBufferTest, CreateSharedImageImportToDawn) {
 
   auto dawn_representation =
       shared_image_representation_factory_->ProduceDawnBuffer(
-          mailbox, device, wgpu::BackendType::D3D12);
+          mailbox, device, wgpu::BackendType::D3D12, /*context_state=*/nullptr);
   ASSERT_NE(dawn_representation, nullptr);
 
   auto scoped_access = dawn_representation->BeginScopedAccess(

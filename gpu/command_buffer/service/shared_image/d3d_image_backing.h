@@ -150,7 +150,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
-      wgpu::BackendType backend_type) override;
+      wgpu::BackendType backend_type,
+      scoped_refptr<SharedContextState> context_state) override;
   wgpu::Buffer BeginAccessDawnBuffer(const wgpu::Device& device,
                                      wgpu::BackendType backend_type,
                                      wgpu::BufferUsage usage);

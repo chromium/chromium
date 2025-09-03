@@ -98,7 +98,8 @@ class GPU_GLES2_EXPORT SharedImageManager
       const Mailbox& mailbox,
       MemoryTypeTracker* ref,
       const wgpu::Device& device,
-      wgpu::BackendType backend_type);
+      wgpu::BackendType backend_type,
+      scoped_refptr<SharedContextState> context_state);
   std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);

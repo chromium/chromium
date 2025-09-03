@@ -1037,9 +1037,10 @@ std::unique_ptr<DawnBufferRepresentation>
 SharedImageRepresentationFactory::ProduceDawnBuffer(
     const Mailbox& mailbox,
     const wgpu::Device& device,
-    wgpu::BackendType backend_type) {
+    wgpu::BackendType backend_type,
+    scoped_refptr<SharedContextState> context_state) {
   return manager_->ProduceDawnBuffer(mailbox, memory_type_tracker_.get(),
-                                     device, backend_type);
+                                     device, backend_type, context_state);
 }
 
 std::unique_ptr<WebNNTensorRepresentation>

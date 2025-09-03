@@ -443,7 +443,8 @@ std::unique_ptr<DawnBufferRepresentation> SharedImageManager::ProduceDawnBuffer(
     const Mailbox& mailbox,
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
-    wgpu::BackendType backend_type) {
+    wgpu::BackendType backend_type,
+    scoped_refptr<SharedContextState> context_state) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -454,8 +455,8 @@ std::unique_ptr<DawnBufferRepresentation> SharedImageManager::ProduceDawnBuffer(
     return nullptr;
   }
 
-  auto representation =
-      backing->ProduceDawnBuffer(this, tracker, device, backend_type);
+  auto representation = backing->ProduceDawnBuffer(this, tracker, device,
+                                                   backend_type, context_state);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceDawnBuffer: Trying to produce a "
                   "Dawn buffer representation from an incompatible backing: "

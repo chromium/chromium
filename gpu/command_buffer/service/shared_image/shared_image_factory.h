@@ -251,7 +251,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
   std::unique_ptr<DawnBufferRepresentation> ProduceDawnBuffer(
       const Mailbox& mailbox,
       const wgpu::Device& device,
-      wgpu::BackendType backend_type);
+      wgpu::BackendType backend_type,
+      scoped_refptr<SharedContextState> context_state);
   std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
       const Mailbox& mailbox);
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(

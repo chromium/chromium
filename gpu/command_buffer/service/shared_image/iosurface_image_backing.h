@@ -186,6 +186,27 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   class SkiaGraphiteMetalRepresentation;
   class OverlayRepresentation;
 
+  class DawnBufferCopyRepresentation final : public DawnBufferRepresentation {
+   public:
+    DawnBufferCopyRepresentation(
+        SharedImageManager* manager,
+        SharedImageBacking* backing,
+        MemoryTypeTracker* tracker,
+        const wgpu::Device& device,
+        std::unique_ptr<DawnImageRepresentation> dawn_image_representation);
+
+    ~DawnBufferCopyRepresentation() override;
+
+    wgpu::Buffer BeginAccess(wgpu::BufferUsage usage) override;
+
+    void EndAccess() override;
+
+   private:
+    wgpu::Device device_;
+    std::unique_ptr<DawnImageRepresentation> dawn_image_representation_;
+    wgpu::Buffer buffer_;
+  };
+
   // SharedImageBacking:
   base::trace_event::MemoryAllocatorDump* OnMemoryDump(
       const std::string& dump_name,
@@ -225,6 +246,12 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
+  std::unique_ptr<DawnBufferRepresentation> ProduceDawnBuffer(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      const wgpu::Device& device,
+      wgpu::BackendType backend_type,
+      scoped_refptr<SharedContextState> context_state) override;
 
   // IOSurfaceBackingEGLState::Client:
   bool IOSurfaceBackingEGLStateBeginAccess(IOSurfaceBackingEGLState* egl_state,
