@@ -33,37 +33,86 @@ using testing::DistanceFrom;
 using testing::Le;
 using testing::ResultOf;
 
-uint32_t Red(SkColor color) {
+constexpr std::string_view kHostA = "a.test";
+constexpr std::string_view kHostASubdomain = "foo.a.test";
+constexpr std::string_view kHostB = "b.test";
+
+int64_t Red(SkColor color) {
   return SkColorGetR(color);
 }
-uint32_t Green(SkColor color) {
+int64_t Green(SkColor color) {
   return SkColorGetG(color);
 }
-uint32_t Blue(SkColor color) {
+int64_t Blue(SkColor color) {
   return SkColorGetB(color);
 }
 
 // Matches a Skia color, within a given tolerance.
-MATCHER_P2(IsColorWithinTolerance, color, tolerance, "") {
-  int64_t expected_red = SkColorGetR(color);
-  int64_t expected_green = SkColorGetG(color);
-  int64_t expected_blue = SkColorGetB(color);
-
+MATCHER_P2(IsColorWithinTolerance, expected_color, tolerance, "") {
   return testing::ExplainMatchResult(
       AllOf(ResultOf("red component", &Red,
-                     DistanceFrom(expected_red, Le(tolerance))),
+                     DistanceFrom(Red(expected_color), Le(tolerance))),
             ResultOf("green component", &Green,
-                     DistanceFrom(expected_green, Le(tolerance))),
+                     DistanceFrom(Green(expected_color), Le(tolerance))),
             ResultOf("blue component", &Blue,
-                     DistanceFrom(expected_blue, Le(tolerance)))),
+                     DistanceFrom(Blue(expected_color), Le(tolerance)))),
       arg, result_listener);
 }
 
-class MultiSourcePageContextFetcherBrowserTest
-    : public InProcessBrowserTest,
+class MultiSourcePageContextFetcherBrowserTest : public InProcessBrowserTest {
+ public:
+  MultiSourcePageContextFetcherBrowserTest() = default;
+
+  ~MultiSourcePageContextFetcherBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+    base::FilePath test_data_dir;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+    embedded_https_test_server().ServeFilesFromDirectory(test_data_dir);
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  GURL GetURL(std::string_view host, std::string_view path = "/") const {
+    return embedded_https_test_server().GetURL(host, path);
+  }
+
+  content::RenderFrameHost* GetPrimaryMainFrame() const {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
+  }
+
+  content::RenderFrameHost* GetSubframe() const {
+    auto* frame = ChildFrameAt(GetPrimaryMainFrame(), 0);
+    CHECK(frame);
+    return frame;
+  }
+
+  void SetBackground(content::RenderFrameHost* frame, std::string_view color) {
+    ASSERT_TRUE(content::ExecJs(
+        frame, base::StrCat({
+                   R"(document.body.setAttribute("style", "background-color:)",
+                   color,
+                   R"(");)",
+               })));
+  }
+};
+
+class ScreenshotBackendMultiSourcePageContextFetcherBrowserTest
+    : public MultiSourcePageContextFetcherBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
-  MultiSourcePageContextFetcherBrowserTest() {
+  ScreenshotBackendMultiSourcePageContextFetcherBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features{
         {kGlicTabScreenshotExperiment,
          {
@@ -84,44 +133,30 @@ class MultiSourcePageContextFetcherBrowserTest
                                             disabled_features);
   }
 
-  ~MultiSourcePageContextFetcherBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-
-    host_resolver()->AddRule("*", "127.0.0.1");
-    base::FilePath test_data_dir;
-    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-    embedded_https_test_server().ServeFilesFromDirectory(test_data_dir);
-    ASSERT_TRUE(embedded_https_test_server().Start());
-  }
-
   bool use_paint_preview_screenshot_backend() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList features_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         MultiSourcePageContextFetcherBrowserTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ScreenshotBackendMultiSourcePageContextFetcherBrowserTest,
+    testing::Bool());
 
-IN_PROC_BROWSER_TEST_P(MultiSourcePageContextFetcherBrowserTest,
-                       TakesScreenshot) {
+IN_PROC_BROWSER_TEST_P(
+    ScreenshotBackendMultiSourcePageContextFetcherBrowserTest,
+    TakesScreenshot) {
   GURL url = embedded_https_test_server().GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
 
-  ASSERT_TRUE(content::ExecJs(
-      web_contents,
-      R"(document.body.setAttribute("style", "background-color:red");)"));
+  SetBackground(web_contents()->GetPrimaryMainFrame(), "red");
 
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
 
   FetchPageContextOptions options;
   options.include_viewport_screenshot = true;
-  FetchPageContext(*web_contents, options, future.GetCallback());
+  FetchPageContext(*web_contents(), options, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
                        future.Take());
@@ -147,6 +182,142 @@ IN_PROC_BROWSER_TEST_P(MultiSourcePageContextFetcherBrowserTest,
                           // TODO(b/438825957): add test coverage for the output
                           // of the CopyFromSurface screenshot.
                           _));
+}
+
+class RedactingMultiSourcePageContextFetcherBrowserTest
+    : public MultiSourcePageContextFetcherBrowserTest {
+ public:
+  RedactingMultiSourcePageContextFetcherBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {kGlicTabScreenshotExperiment,
+         {
+             {"max_screenshot_width", "0"},
+             {"max_screenshot_height", "0"},
+             {"screenshot_jpeg_quality", "100"},
+             {"screenshot_timeout_ms", "10s"},
+         }},
+        {kGlicTabScreenshotPaintPreviewBackend,
+         {
+             {"screenshot_iframe_redaction", "cross-site"},
+         }},
+    };
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            /*disabled_features=*/{});
+  }
+
+  ~RedactingMultiSourcePageContextFetcherBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
+                       TakesScreenshot_SameOriginIframeNoRedaction) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL(kHostA, "/iframe.html")));
+
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(web_contents(), "test", GetURL(kHostA)));
+  SetBackground(web_contents()->GetPrimaryMainFrame(), "white");
+  // Remove the 8px margin applied by the user agent's stylesheet.
+  EXPECT_TRUE(
+      content::ExecJs(web_contents(), "document.body.style.margin = '0px';"));
+  SetBackground(GetSubframe(), "red");
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContextOptions options;
+  options.include_viewport_screenshot = true;
+  FetchPageContext(*web_contents(), options, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.jpeg_data.size(), 0);
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.jpeg_data);
+
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+  EXPECT_THAT(bitmap.getColor(10, 10), IsColorWithinTolerance(SK_ColorRED, 10));
+}
+
+IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
+                       TakesScreenshot_CrossOriginSameSiteIframeNoRedaction) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL(kHostA, "/iframe.html")));
+
+  ASSERT_TRUE(content::NavigateIframeToURL(web_contents(), "test",
+                                           GetURL(kHostASubdomain)));
+  SetBackground(web_contents()->GetPrimaryMainFrame(), "white");
+  // Remove the 8px margin applied by the user agent's stylesheet.
+  EXPECT_TRUE(
+      content::ExecJs(web_contents(), "document.body.style.margin = '0px';"));
+  SetBackground(GetSubframe(), "red");
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContextOptions options;
+  options.include_viewport_screenshot = true;
+  FetchPageContext(*web_contents(), options, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.jpeg_data.size(), 0);
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.jpeg_data);
+
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+  EXPECT_THAT(bitmap.getColor(10, 10), IsColorWithinTolerance(SK_ColorRED, 10));
+}
+
+IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
+                       TakesScreenshot_CrossSiteIframeRedacted) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURL(kHostA, "/iframe.html")));
+
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(web_contents(), "test", GetURL(kHostB)));
+  SetBackground(web_contents()->GetPrimaryMainFrame(), "white");
+  // Remove the 8px margin applied by the user agent's stylesheet.
+  EXPECT_TRUE(
+      content::ExecJs(web_contents(), "document.body.style.margin = '0px';"));
+  SetBackground(GetSubframe(), "red");
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContextOptions options;
+  options.include_viewport_screenshot = true;
+  FetchPageContext(*web_contents(), options, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->screenshot_result.has_value());
+
+  ScreenshotResult& screenshot = result->screenshot_result.value();
+
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.jpeg_data.size(), 0);
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.jpeg_data);
+
+  EXPECT_FALSE(bitmap.isNull());
+  EXPECT_FALSE(bitmap.empty());
+  EXPECT_THAT(bitmap.getColor(10, 10),
+              IsColorWithinTolerance(SK_ColorBLACK, 10));
 }
 
 }  // namespace page_content_annotations
