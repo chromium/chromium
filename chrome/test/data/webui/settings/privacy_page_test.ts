@@ -21,34 +21,19 @@ import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js'
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 const redesignedPages: Route[] = [
-  routes.SITE_SETTINGS_ADS,
-  routes.SITE_SETTINGS_AUTOMATIC_DOWNLOADS,
-  routes.SITE_SETTINGS_BACKGROUND_SYNC,
   routes.SITE_SETTINGS_CAMERA,
-  routes.SITE_SETTINGS_CLIPBOARD,
   routes.SITE_SETTINGS_FEDERATED_IDENTITY_API,
   routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
   routes.SITE_SETTINGS_HANDLERS,
   routes.SITE_SETTINGS_HID_DEVICES,
   routes.SITE_SETTINGS_IMAGES,
-  routes.SITE_SETTINGS_JAVASCRIPT,
-  routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER,
   routes.SITE_SETTINGS_MICROPHONE,
-  routes.SITE_SETTINGS_MIDI_DEVICES,
   routes.SITE_SETTINGS_NOTIFICATIONS,
-  routes.SITE_SETTINGS_PAYMENT_HANDLER,
   routes.SITE_SETTINGS_PDF_DOCUMENTS,
-  routes.SITE_SETTINGS_POPUPS,
   routes.SITE_SETTINGS_PROTECTED_CONTENT,
-  routes.SITE_SETTINGS_SENSORS,
   routes.SITE_SETTINGS_SERIAL_PORTS,
   routes.SITE_SETTINGS_SOUND,
   routes.SITE_SETTINGS_USB_DEVICES,
-
-  // WEB_PRINTING is currently only supported on ChromeOS.
-  // <if expr="is_chromeos">
-  routes.SITE_SETTINGS_WEB_PRINTING,
-  // </if>
 
   // TODO(crbug.com/40719916) After restructure add coverage for elements on
   // routes which depend on flags being enabled.

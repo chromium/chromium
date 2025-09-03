@@ -1,0 +1,19 @@
+  <style include="settings-shared site-settings-shared"></style>
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsJavascriptOptimizerDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.JAVASCRIPT_OPTIMIZER]]"
+      allow-option-label="$i18n{siteSettingsJavascriptOptimizerAllowed}"
+      allow-option-sub-label=
+          "$i18n{siteSettingsJavascriptOptimizerAllowedSubLabel}"
+      block-option-label="$i18n{siteSettingsJavascriptOptimizerBlocked}"
+      block-option-sub-label=
+          "$i18n{siteSettingsJavascriptOptimizerBlockedSubLabel}">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.JAVASCRIPT_OPTIMIZER]]"
+      allow-header="$i18n{siteSettingsJavascriptOptimizerAllowedExceptions}"
+      block-header="$i18n{siteSettingsJavascriptOptimizerBlockedExceptions}"
+      search-filter="[[searchFilter_]]">
+  </category-setting-exceptions>
