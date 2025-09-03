@@ -502,6 +502,18 @@ class ChromePasswordManagerClient
 
   autofill::LogManager* GetOrCreateLogManager() const;
 
+  // Notifies `password_manager_` of predictions received for `form_id`
+  // from a given `source`.
+  void PropagatePredictionsToPasswordManager(autofill::AutofillManager& manager,
+                                             autofill::FormGlobalId form_id,
+                                             FieldTypeSource source);
+
+  // Notifies `otp_manager_` of predictions received from for `form_id`
+  // from a given `source`.
+  void PropagatePredictionsToOtpManager(autofill::AutofillManager& manager,
+                                        autofill::FormGlobalId form_id,
+                                        FieldTypeSource source);
+
   const raw_ptr<Profile> profile_;
 
   password_manager::PasswordManager password_manager_;

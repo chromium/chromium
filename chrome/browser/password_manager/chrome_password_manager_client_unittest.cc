@@ -63,6 +63,7 @@
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_manager_settings_service.h"
+#include "components/password_manager/core/browser/one_time_passwords/otp_form_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -741,7 +742,8 @@ TEST_F(ChromePasswordManagerClientTest, PasswordManagerBlocklistPolicy) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
+TEST_F(ChromePasswordManagerClientTest,
+       PasswordManagerReceivesAutofillPredictions) {
   constexpr char kUrl[] = "https://www.foo.com/login.html";
 
   NavigateAndCommit(GURL(kUrl));
@@ -773,7 +775,7 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
 }
 
 TEST_F(ChromePasswordManagerClientTest,
-       ReceivesPasswordFormClassifierPredictions) {
+       PasswordManagerReceivesPasswordFormClassifierPredictions) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       {password_manager::features::kPasswordFormClientsideClassifier,
@@ -821,7 +823,7 @@ TEST_F(ChromePasswordManagerClientTest,
 }
 
 TEST_F(ChromePasswordManagerClientTest,
-       ReceivesAutofillPredictionsFromMultipleFrames) {
+       PasswordManagerReceivesAutofillPredictionsFromMultipleFrames) {
   constexpr char kUrl1[] = "https://www.foo.com/login.html";
   constexpr char kUrl2[] = "https://www.foo.com/otp.html";
 
@@ -2081,7 +2083,8 @@ TEST_F(ChromePasswordManagerClientTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_F(ChromePasswordManagerClientTest, OtpFieldsAreDetected) {
+TEST_F(ChromePasswordManagerClientTest,
+       OtpManagerReceivesClassifierPredictions) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       {password_manager::features::kPasswordFormClientsideClassifier,
@@ -2121,6 +2124,82 @@ TEST_F(ChromePasswordManagerClientTest, OtpFieldsAreDetected) {
 
   password_manager::OtpManager* otp_manager = GetClient()->GetOtpManager();
   EXPECT_EQ(1u, otp_manager->form_managers().size());
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       OtpManagerReceivesClassifierPredictionsMultipleFrames) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {password_manager::features::kPasswordFormClientsideClassifier,
+       password_manager::features::kApplyClientsideModelPredictionsForOtps},
+      /*disabled_features=*/{});
+  constexpr char kUrl1[] = "https://www.foo.com/login.html";
+  constexpr char kUrl2[] = "https://www.foo.com/otp.html";
+
+  NavigateAndCommit(GURL(kUrl1));
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild(std::string("child"));
+  child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL(kUrl2), child_rfh);
+  ContentAutofillClient* autofill_client =
+      ContentAutofillClient::FromWebContents(web_contents());
+  ASSERT_TRUE(autofill_client);
+  ContentAutofillDriver* main_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
+  ContentAutofillDriver* child_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(child_rfh);
+  ASSERT_TRUE(main_driver);
+  ASSERT_TRUE(child_driver);
+
+  FormData main_form = CreateFormDataForRenderFrameHost(
+      *main_rfh(), {CreateTestFormField("Username", "username", "",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("Password", "password", "",
+                                        FormControlType::kInputPassword)});
+  FormData child_form = CreateFormDataForRenderFrameHost(
+      *child_rfh,
+      {CreateTestFormField("OTP", "OTP", "", FormControlType::kInputText)});
+
+  // Ensure that the child frame is picked up as a child frame of `main_form`.
+  {
+    autofill::FrameTokenWithPredecessor child_frame_information;
+    child_frame_information.token = child_form.host_frame();
+    main_form.set_child_frames({child_frame_information});
+  }
+
+  {
+    autofill::TestAutofillManagerWaiter waiter(
+        main_driver->GetAutofillManager(),
+        {autofill::AutofillManagerEvent::kFormsSeen});
+    main_driver->renderer_events().FormsSeen(/*updated_forms=*/{main_form},
+                                             /*removed_forms=*/{});
+    child_driver->renderer_events().FormsSeen(/*updated_forms=*/{child_form},
+                                              /*removed_forms=*/{});
+    ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/2));
+  }
+
+  main_driver->GetAutofillManager()
+      .FindCachedFormById(child_form.fields()[0].global_id())
+      ->field(0)
+      ->set_heuristic_type(
+          autofill::HeuristicSource::kPasswordManagerMachineLearning,
+          autofill::FieldType::ONE_TIME_CODE);
+  using Observer = autofill::AutofillManager::Observer;
+  main_driver->GetAutofillManager().NotifyObservers(
+      &Observer::OnFieldTypesDetermined, main_form.global_id(),
+      Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
+
+  // Even though `OnFieldTypesDetermined` was only called for the browser form
+  // structure (with the global ID of `main_form`), OTP manager should have
+  // predictions for the child form, but keyed by the global ID of `main_form.
+  password_manager::OtpManager* otp_manager = GetClient()->GetOtpManager();
+  EXPECT_EQ(1u, otp_manager->form_managers().size());
+  ASSERT_TRUE(otp_manager->form_managers().contains(main_form.global_id()));
+  const std::vector<autofill::FieldGlobalId>& detected_otp_fields =
+      otp_manager->form_managers().at(main_form.global_id())->otp_field_ids();
+  ASSERT_EQ(1u, detected_otp_fields.size());
+  EXPECT_EQ(detected_otp_fields[0], child_form.fields()[0].global_id());
 }
 
 TEST_F(ChromePasswordManagerClientTest,

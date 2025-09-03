@@ -1938,13 +1938,21 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
     FieldTypeSource source) {
+  PropagatePredictionsToPasswordManager(manager, form_id, source);
+  PropagatePredictionsToOtpManager(manager, form_id, source);
+}
+
+void ChromePasswordManagerClient::PropagatePredictionsToPasswordManager(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form_id,
+    FieldTypeSource source) {
+  // `password_manager_` needs to receive data split by renderer forms.
   std::optional<autofill::RendererForms> renderer_forms =
       autofill::RendererFormsFromBrowserForm(manager, form_id);
   if (!renderer_forms.has_value()) {
     return;
   }
-
-  for (const auto& [form, rfh_id] : renderer_forms.value()) {
+  for (const auto& [renderer_form, rfh_id] : renderer_forms.value()) {
     auto* rfh = content::RenderFrameHost::FromID(rfh_id);
     if (!rfh) {
       continue;
@@ -1956,38 +1964,70 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
       continue;
     }
 
-    std::vector<autofill::FieldGlobalId> field_ids =
-        base::ToVector(form.fields(), &autofill::FormFieldData::global_id);
+    std::vector<autofill::FieldGlobalId> field_ids_for_renderer_form =
+        base::ToVector(renderer_form.fields(),
+                       &autofill::FormFieldData::global_id);
     switch (source) {
       case FieldTypeSource::kAutofillServer:
-      case FieldTypeSource::kAutofillAiModel: {
-        auto server_predictions =
-            manager.GetServerPredictionsForForm(form_id, field_ids);
-        password_manager_.ProcessAutofillPredictions(driver, form,
-                                                     server_predictions);
-        otp_manager_.ProcessServerPredictions(form, server_predictions);
+      case FieldTypeSource::kAutofillAiModel:
+        password_manager_.ProcessAutofillPredictions(
+            driver, renderer_form,
+            manager.GetServerPredictionsForForm(form_id,
+                                                field_ids_for_renderer_form));
         break;
-      }
-      case FieldTypeSource::kHeuristicsOrAutocomplete: {
-        auto predictions = manager.GetHeursticPredictionForForm(
-            autofill::HeuristicSource::kPasswordManagerMachineLearning, form_id,
-            field_ids);
+
+      case FieldTypeSource::kHeuristicsOrAutocomplete:
         if (base::FeatureList::IsEnabled(
                 password_manager::features::
                     kApplyClientsideModelPredictionsForPasswordTypes)) {
-          password_manager_.ProcessClassificationModelPredictions(driver, form,
-                                                                  predictions);
-        }
-
-        if (PredictionsContainOtpFields(predictions) &&
-            base::FeatureList::IsEnabled(
-                password_manager::features::
-                    kApplyClientsideModelPredictionsForOtps)) {
-          otp_manager_.ProcessClassificationModelPredictions(form, predictions);
+          auto model_predictions = manager.GetHeursticPredictionForForm(
+              autofill::HeuristicSource::kPasswordManagerMachineLearning,
+              form_id, field_ids_for_renderer_form);
+          password_manager_.ProcessClassificationModelPredictions(
+              driver, renderer_form, model_predictions);
         }
         break;
-      }
     }
+  }
+}
+
+void ChromePasswordManagerClient::PropagatePredictionsToOtpManager(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form_id,
+    FieldTypeSource source) {
+  // `otp_manager_` needs to receive data for the whole browser form.
+  const autofill::FormStructure* browser_form =
+      manager.FindCachedFormById(form_id);
+  if (!browser_form) {
+    return;
+  }
+
+  std::vector<autofill::FieldGlobalId> field_ids =
+      base::ToVector(browser_form->fields(),
+                     [](const std::unique_ptr<autofill::AutofillField>& field) {
+                       return field->global_id();
+                     });
+
+  switch (source) {
+    case FieldTypeSource::kAutofillServer:
+    case FieldTypeSource::kAutofillAiModel:
+      otp_manager_.ProcessServerPredictions(
+          browser_form->ToFormData(),
+          manager.GetServerPredictionsForForm(form_id, field_ids));
+      break;
+
+    case FieldTypeSource::kHeuristicsOrAutocomplete:
+      auto model_predictions = manager.GetHeursticPredictionForForm(
+          autofill::HeuristicSource::kPasswordManagerMachineLearning, form_id,
+          field_ids);
+      if (PredictionsContainOtpFields(model_predictions) &&
+          base::FeatureList::IsEnabled(
+              password_manager::features::
+                  kApplyClientsideModelPredictionsForOtps)) {
+        otp_manager_.ProcessClassificationModelPredictions(
+            browser_form->ToFormData(), model_predictions);
+      }
+      break;
   }
 }
 
