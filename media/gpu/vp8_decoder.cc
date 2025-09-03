@@ -49,7 +49,7 @@ void VP8Decoder::SetStream(int32_t id,
   DVLOG(4) << "New input stream id: " << id
            << ", buffer: " << decoder_buffer_->AsHumanReadableString();
   stream_id_ = id;
-  curr_frame_start_ = base::span(*decoder_buffer_).data();
+  curr_frame_start_ = decoder_buffer_->data();
   frame_size_ = decoder_buffer_->size();
 }
 
