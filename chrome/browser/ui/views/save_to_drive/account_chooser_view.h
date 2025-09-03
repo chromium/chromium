@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_view_delegate.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -20,10 +21,11 @@ class AccountChooserView : public views::FlexLayoutView {
   METADATA_HEADER(AccountChooserView, views::FlexLayoutView)
 
  public:
-  explicit AccountChooserView(
-      AccountChooserViewDelegate* parent_dialog,
-      const std::vector<AccountInfo>& accounts,
-      std::optional<CoreAccountId> primary_account_id);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopViewId);
+
+  AccountChooserView(AccountChooserViewDelegate* parent_dialog,
+                              const std::vector<AccountInfo>& accounts,
+                              std::optional<CoreAccountId> primary_account_id);
   ~AccountChooserView() override;
   // Updates the view with the new accounts and primary account id.
   void UpdateView(const std::vector<AccountInfo>& accounts,

@@ -15,10 +15,15 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace save_to_drive {
 class AccountChooserView;
@@ -26,14 +31,12 @@ class AccountChooserView;
 // This class is responsible for showing the flow for selecting an account to
 // save to Drive.
 class AccountChooserController
-    : public content::WebContentsObserver,  // observes
-                                            // add_account_popup
-      public signin::IdentityManager::Observer,
+    : public signin::IdentityManager::Observer,
       // ties lifetime to WebContents
       public content::WebContentsUserData<AccountChooserController>,
       public AccountChooserViewDelegate {
  public:
-  AccountChooserController(tabs::TabInterface* tab,
+  AccountChooserController(content::WebContents* web_contents,
                            signin::IdentityManager* identity_manager);
   AccountChooserController(const AccountChooserController&) = delete;
   AccountChooserController& operator=(const AccountChooserController&) = delete;
@@ -47,15 +50,27 @@ class AccountChooserController
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
 
-  // content::WebContentsObserver:
-  void WebContentsDestroyed() override;
-
  private:
+  // Stores account information for a profile.
+  struct ProfileInfo {
+    ProfileInfo();
+    ProfileInfo(const ProfileInfo&);
+    ProfileInfo& operator=(const ProfileInfo&);
+    ~ProfileInfo();
+    // Accounts with refresh tokens.
+    std::vector<AccountInfo> accounts;
+    // Primary account id, if it exists.
+    std::optional<CoreAccountId> primary_account_id = std::nullopt;
+  };
+
+  friend content::WebContentsUserData<AccountChooserController>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
   // If no accounts are present, shows the add account dialog. Otherwise,
   // shows the account chooser dialog.
-  void Show();
+  void Show(ProfileInfo profile_info);
   // Shows the account chooser dialog.
-  void ShowAccountChooserDialog();
+  void ShowAccountChooserDialog(ProfileInfo profile_info);
   // Shows the add account dialog.
   void ShowAddAccountDialog();
   // User clicked "Use different account" button in the account chooser dialog.
@@ -67,18 +82,25 @@ class AccountChooserController
   void OnAccountSelected(const AccountInfo& account_info) override;
   // User clicked "Save" button in the account chooser dialog.
   void OnSaveButtonClicked() override;
+  // Gets accounts associated with the profile.
+  ProfileInfo GetProfileInfo();
+  // Cleans up the account chooser widget.
+  void CloseWidget();
+  // Creates a dialog delegate for the account chooser dialog.
+  std::unique_ptr<views::DialogDelegate> CreateDialogDelegate(
+      std::unique_ptr<AccountChooserView> account_chooser_view);
 
-  // tabs::TabInterface* tab_;
-  // signin::IdentityManager* identity_manager_;
+  raw_ptr<tabs::TabInterface> tab_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   // base::ScopedObservation<signin::IdentityManager,
   //                         signin::IdentityManager::Observer>
   //     scoped_identity_manager_observation_{this};
   // base::OnceCallback<void(std::optional<AccountInfo>)>
   //     on_account_selected_callback_;
   // std::vector<AccountInfo> accounts_;
-  // raw_ptr<AccountChooserView> account_chooser_view_;
-  // // created using tab_dialog_manager.h
-  // std::unique_ptr<views::Widget> account_chooser_widget_;
+  raw_ptr<AccountChooserView> account_chooser_view_;
+  std::unique_ptr<views::DialogDelegate> account_chooser_dialog_delegate_;
+  std::unique_ptr<views::Widget> account_chooser_widget_;
   // std::optional<AccountInfo> selected_account_;
   // raw_ptr<content::WebContents> add_account_popup_;
 };

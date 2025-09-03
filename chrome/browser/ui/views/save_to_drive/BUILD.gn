@@ -27,6 +27,7 @@ source_set("save_to_drive") {
   deps = [
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/signin",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/save_to_drive",
     "//components/omnibox/browser:vector_icons",
@@ -71,5 +72,25 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
     "//ui/views",
     "//ui/views:test_support",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "account_chooser_controller_interactive_uitest.cc" ]
+  deps = [
+    ":save_to_drive",
+    ":test_support",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/sync:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
   ]
 }

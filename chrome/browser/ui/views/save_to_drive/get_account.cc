@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/save_to_drive/get_account.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/views/save_to_drive/account_chooser_controller.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 namespace save_to_drive {
@@ -13,7 +17,13 @@ void LaunchAccountChooserAndGetAccount(
     content::WebContents* web_contents,
     base::OnceCallback<void(std::optional<AccountInfo>)>
         on_account_selected_callback) {
-  // TODO(crbug.com/440292537): Implement.
+  AccountChooserController* account_chooser_controller =
+      AccountChooserController::GetOrCreateForWebContents(
+          web_contents,
+          IdentityManagerFactory::GetForProfile(
+              Profile::FromBrowserContext(web_contents->GetBrowserContext())));
+  account_chooser_controller->GetAccount(
+      std::move(on_account_selected_callback));
 }
 
 }  // namespace save_to_drive

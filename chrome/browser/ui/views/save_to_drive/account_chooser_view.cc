@@ -31,6 +31,7 @@ AccountChooserView::AccountChooserView(
     const std::vector<AccountInfo>& accounts,
     std::optional<CoreAccountId> primary_account_id)
     : parent_dialog_(parent_dialog) {
+  SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetOrientation(views::LayoutOrientation::kVertical);
   header_view_ = AddChildView(CreateHeaderView(accounts));
   body_view_ = AddChildView(CreateBodyView(accounts, primary_account_id));
@@ -301,4 +302,6 @@ void AccountChooserView::UpdateHeaderView(
 
 BEGIN_METADATA(AccountChooserView)
 END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AccountChooserView, kTopViewId);
 }  // namespace save_to_drive
