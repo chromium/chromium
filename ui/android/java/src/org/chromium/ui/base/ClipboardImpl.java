@@ -582,7 +582,7 @@ public class ClipboardImpl extends Clipboard
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        if (!hasFocus || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+        if (!hasFocus) {
             return;
         }
         onPrimaryClipTimestampInvalidated();
