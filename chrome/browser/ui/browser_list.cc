@@ -361,14 +361,6 @@ void BrowserList::NotifyBrowserNoLongerActive(Browser* browser) {
 }
 
 // static
-void BrowserList::NotifyBrowserCloseCancelled(Browser* browser,
-                                              BrowserClosingStatus reason) {
-  for (BrowserListObserver& observer : observers_.Get()) {
-    observer.OnBrowserCloseCancelled(browser, reason);
-  }
-}
-
-// static
 void BrowserList::NotifyBrowserCloseStarted(Browser* browser) {
   GetInstance()->currently_closing_browsers_.insert(browser);
 

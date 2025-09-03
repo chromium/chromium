@@ -875,8 +875,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[1]);
   ASSERT_GE(browsers_.size(), 2u);
-  EXPECT_NE(BrowserClosingStatus::kPermitted,
-            browsers_[1]->HandleBeforeClose());
+  EXPECT_FALSE(browsers_[1]->HandleBeforeClose());
   ASSERT_NO_FATAL_FAILURE(CancelClose());
   ASSERT_NO_FATAL_FAILURE(CancelClose());
   cancel_observer.Wait();
@@ -886,8 +885,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
   chrome::CloseAllBrowsersAndQuit();
   ASSERT_GE(browsers_.size(), 2u);
-  EXPECT_NE(BrowserClosingStatus::kPermitted,
-            browsers_[1]->HandleBeforeClose());
+  EXPECT_FALSE(browsers_[1]->HandleBeforeClose());
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
 
@@ -910,8 +908,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   chrome::CloseAllBrowsersAndQuit();
 
   ASSERT_FALSE(browsers_.empty());
-  EXPECT_NE(BrowserClosingStatus::kPermitted,
-            browsers_[0]->HandleBeforeClose());
+  EXPECT_FALSE(browsers_[0]->HandleBeforeClose());
   ASSERT_NO_FATAL_FAILURE(CancelClose());
   cancel_observer.Wait();
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
@@ -920,8 +917,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
   chrome::CloseAllBrowsersAndQuit();
   ASSERT_FALSE(browsers_.empty());
-  EXPECT_NE(BrowserClosingStatus::kPermitted,
-            browsers_[0]->HandleBeforeClose());
+  EXPECT_FALSE(browsers_[0]->HandleBeforeClose());
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
 

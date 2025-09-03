@@ -1016,22 +1016,36 @@ Browser::WarnBeforeClosingResult Browser::MaybeWarnBeforeClosing(
   return WarnBeforeClosingResult::kDoNotClose;
 }
 
-BrowserClosingStatus Browser::HandleBeforeClose() {
-  // If `force_skip_warning_user_` is true, then we should immediately
-  // return true.
-  if (force_skip_warning_user_on_close_) {
-    return BrowserClosingStatus::kPermitted;
-  }
+bool Browser::HandleBeforeClose() {
+  const auto get_closing_status =
+      [this]() -> BrowserWindowInterface::ClosingStatus {
+    // If `force_skip_warning_user_` is true, then we should immediately
+    // return true.
+    if (force_skip_warning_user_on_close_) {
+      return BrowserWindowInterface::ClosingStatus::kPermitted;
+    }
 
-  // If the user needs to see one or more warnings, hold off closing the
-  // browser.
-  const WarnBeforeClosingResult result = MaybeWarnBeforeClosing(base::BindOnce(
-      &Browser::FinishWarnBeforeClosing, weak_factory_.GetWeakPtr()));
-  if (result == WarnBeforeClosingResult::kDoNotClose) {
-    return BrowserClosingStatus::kDeniedByUser;
-  }
+    // If the user needs to see one or more warnings, hold off closing the
+    // browser.
+    const WarnBeforeClosingResult result =
+        MaybeWarnBeforeClosing(base::BindOnce(&Browser::FinishWarnBeforeClosing,
+                                              weak_factory_.GetWeakPtr()));
+    if (result == WarnBeforeClosingResult::kDoNotClose) {
+      return BrowserWindowInterface::ClosingStatus::kDeniedByUser;
+    }
 
-  return unload_controller_.GetBrowserClosingStatus();
+    return unload_controller_.GetBrowserClosingStatus();
+  };
+
+  // Notify clients if close was cancelled.
+  const BrowserWindowInterface::ClosingStatus close_status =
+      get_closing_status();
+  const bool close_permitted =
+      close_status == BrowserWindowInterface::ClosingStatus::kPermitted;
+  if (!close_permitted) {
+    browser_close_cancelled_callback_list_.Notify(this, close_status);
+  }
+  return close_permitted;
 }
 
 bool Browser::TryToCloseWindow(
@@ -1140,6 +1154,11 @@ bool Browser::ShouldHideUIForFullscreen() const {
 base::CallbackListSubscription Browser::RegisterBrowserDidClose(
     BrowserDidCloseCallback callback) {
   return browser_did_close_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription Browser::RegisterBrowserCloseCancelled(
+    BrowserCloseCancelledCallback callback) {
+  return browser_close_cancelled_callback_list_.Add(std::move(callback));
 }
 
 views::View* Browser::TopContainer() {
@@ -1321,9 +1340,7 @@ void Browser::OnWindowClosing() {
     return;
   }
 
-  if (const auto closing_status = HandleBeforeClose();
-      closing_status != BrowserClosingStatus::kPermitted) {
-    BrowserList::NotifyBrowserCloseCancelled(this, closing_status);
+  if (!HandleBeforeClose()) {
     return;
   }
 

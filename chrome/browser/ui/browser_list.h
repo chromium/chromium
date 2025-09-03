@@ -24,8 +24,6 @@
 #error This file should only be included on desktop.
 #endif
 
-enum class BrowserClosingStatus;
-
 class Browser;
 class Profile;
 
@@ -134,11 +132,6 @@ class BrowserList {
 
   // Notifies the observers when the current active browser becomes not active.
   static void NotifyBrowserNoLongerActive(Browser* browser);
-
-  // Notifies the observers that the attempted closure of `browser` was
-  // cancelled for a certain `reason`.
-  static void NotifyBrowserCloseCancelled(Browser* browser,
-                                          BrowserClosingStatus reason);
 
   // Notifies the observers when browser close was started. This may be called
   // more than once for a particular browser.

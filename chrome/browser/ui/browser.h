@@ -536,24 +536,25 @@ class Browser : public TabStripModelObserver,
   WarnBeforeClosingResult MaybeWarnBeforeClosing(
       WarnBeforeClosingCallback warn_callback);
 
-  // Gives beforeunload handlers the chance to cancel the close. Returns the
-  // closing status. Closing can be denied due to different reasons.
-  // This function checks if unload handlers are still executing. It further
-  // may ask the user for permission to close the browser (e.g. if downloads
-  // are ongoing).
+  // Gives beforeunload handlers the chance to cancel the close. Returns true if
+  // the close operation was permitted. Closing can be denied due to different
+  // reasons. This function checks if unload handlers are still executing. It
+  // further may ask the user for permission to close the browser (e.g. if
+  // downloads are ongoing).
   // If this function is called
-  // * but the user denied closure after being prompted, it returns
-  // `BrowserClosingStatus::kDeniedByUser`.
-  // * but the closure is not permitted by policy, it returns
-  // `BrowserClosingStatus::kDeniedByPolicy`.
-  // * while the process begun by TryToCloseWindow is in progress, it returns
-  // `BrowserClosingStatus::kDeniedUnloadHandlersNeedTime`.
+  // * but the user denied closure after being prompted, it returns false and
+  //   emits `BrowserWindowInterface::ClosingStatus::kDeniedByUser`.
+  // * but the closure is not permitted by policy, it returns false and emits
+  //   `BrowserWindowInterface::ClosingStatus::kDeniedByPolicy`.
+  // * while the process begun by `TryToCloseWindow()` is in progress, it
+  //   returns false and emits
+  //   `BrowserWindowInterface::ClosingStatus::kDeniedUnloadHandlersNeedTime`.
   //
   // If you don't care about beforeunload handlers and just want to prompt the
   // user that they might lose an in-progress operation, call
-  // MaybeWarnBeforeClosing() instead (HandleBeforeClose() also calls this
+  // `MaybeWarnBeforeClosing()` instead (`HandleBeforeClose()` also calls this
   // method).
-  BrowserClosingStatus HandleBeforeClose();
+  bool HandleBeforeClose();
 
   // Begins the process of confirming whether the associated browser can be
   // closed. If there are no tabs with beforeunload handlers it will immediately
@@ -803,6 +804,8 @@ class Browser : public TabStripModelObserver,
   bool ShouldHideUIForFullscreen() const override;
   base::CallbackListSubscription RegisterBrowserDidClose(
       BrowserDidCloseCallback callback) override;
+  base::CallbackListSubscription RegisterBrowserCloseCancelled(
+      BrowserCloseCancelledCallback callback) override;
   views::View* TopContainer() override;
   base::WeakPtr<BrowserWindowInterface> GetWeakPtr() override;
   views::View* LensOverlayView() override;
@@ -1404,6 +1407,11 @@ class Browser : public TabStripModelObserver,
   using BrowserDidCloseCallbackList =
       base::RepeatingCallbackList<void(BrowserWindowInterface*)>;
   BrowserDidCloseCallbackList browser_did_close_callback_list_;
+
+  using BrowserCloseCancelledCallbackList =
+      base::RepeatingCallbackList<void(BrowserWindowInterface*,
+                                       BrowserWindowInterface::ClosingStatus)>;
+  BrowserCloseCancelledCallbackList browser_close_cancelled_callback_list_;
 
   using DidActiveTabChangeCallbackList =
       base::RepeatingCallbackList<void(BrowserWindowInterface*)>;

@@ -29,6 +29,10 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               RegisterBrowserDidClose,
               (BrowserDidCloseCallback callback),
               (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterBrowserCloseCancelled,
+              (BrowserCloseCancelledCallback callback),
+              (override));
   MOCK_METHOD(views::View*, TopContainer, (), (override));
   MOCK_METHOD(base::WeakPtr<BrowserWindowInterface>,
               GetWeakPtr,

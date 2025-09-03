@@ -1021,14 +1021,11 @@ void WebUIBrowserWindow::OnWindowCloseRequested(
 
   // Give beforeunload handlers, the user, or policy the chance to cancel the
   // close before we hide the window below.
-  if (const auto closing_status = browser_->HandleBeforeClose();
-      closing_status != BrowserClosingStatus::kPermitted) {
+  if (!browser_->HandleBeforeClose()) {
     // Need to reset the synchronous close callback after each Close() call as
     // it's reset once used.  Close() is generally called twice during shutdown.
     widget_->MakeCloseSynchronous(base::BindOnce(
         &WebUIBrowserWindow::OnWindowCloseRequested, base::Unretained(this)));
-
-    BrowserList::NotifyBrowserCloseCancelled(browser_.get(), closing_status);
     return;
   }
 

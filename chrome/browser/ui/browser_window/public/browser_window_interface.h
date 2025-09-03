@@ -80,6 +80,14 @@ class ScopedWindowCallToAction {
 
 class BrowserWindowInterface : public content::PageNavigator {
  public:
+  // TODO(crbug.com/421758609): Hoist other enums above method declarations.
+  enum class ClosingStatus {
+    kPermitted,
+    kDeniedByUser,
+    kDeniedByPolicy,
+    kDeniedUnloadHandlersNeedTime
+  };
+
   // Returns the UnownedUserDataHost associated with this browser window. This
   // is used to retrieve arbitrary features from the browser window without
   // requiring BrowserWindowInterface to have knowledge of them.
@@ -200,6 +208,13 @@ class BrowserWindowInterface : public content::PageNavigator {
       base::RepeatingCallback<void(BrowserWindowInterface*)>;
   virtual base::CallbackListSubscription RegisterBrowserDidClose(
       BrowserDidCloseCallback callback) = 0;
+
+  // Register callbacks invoked when browser attempted to close but the close
+  // operation was cancelled.
+  using BrowserCloseCancelledCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*, ClosingStatus)>;
+  virtual base::CallbackListSubscription RegisterBrowserCloseCancelled(
+      BrowserCloseCancelledCallback callback) = 0;
 
   // Returns the top container view.
   virtual views::View* TopContainer() = 0;

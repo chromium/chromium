@@ -4888,9 +4888,7 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
 
   // Give beforeunload handlers, the user, or policy the chance to cancel the
   // close before we hide the window below.
-  if (const auto closing_status = browser_->HandleBeforeClose();
-      closing_status != BrowserClosingStatus::kPermitted) {
-    BrowserList::NotifyBrowserCloseCancelled(browser_.get(), closing_status);
+  if (!browser_->HandleBeforeClose()) {
     return views::CloseRequestResult::kCannotClose;
   }
 

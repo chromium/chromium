@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -20,6 +21,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -189,10 +191,6 @@ class WebAppUiManagerImpl : public BrowserListObserver,
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnBrowserCloseCancelled(Browser* browser,
-                               BrowserClosingStatus reason) override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
   void OnBrowserRemoved(Browser* browser) override;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -208,11 +206,12 @@ class WebAppUiManagerImpl : public BrowserListObserver,
 
  private:
   // Returns true if Browser is for an installed App.
-  bool IsBrowserForInstalledApp(Browser* browser);
+  bool IsBrowserForInstalledApp(const BrowserWindowInterface* browser) const;
 
   // Returns webapps::AppId of the Browser's installed App,
   // |IsBrowserForInstalledApp| must be true.
-  webapps::AppId GetAppIdForBrowser(Browser* browser);
+  webapps::AppId GetAppIdForBrowser(
+      const BrowserWindowInterface* browser) const;
 
   void OnExtensionSystemReady();
 
@@ -247,12 +246,21 @@ class WebAppUiManagerImpl : public BrowserListObserver,
   void ShowIPHPromoForAppsLaunchedViaLinkCapturing(Browser* browser,
                                                    const webapps::AppId& app_id,
                                                    bool is_activated);
-  void OnIPHPromoResponseForLinkCapturing(Browser* browser,
+  void OnIPHPromoResponseForLinkCapturing(BrowserWindowInterface* browser,
                                           const webapps::AppId& app_id);
 
-  void OnTabChangedDuringIph(Browser* browser);
+  void OnTabChangedDuringIph(BrowserWindowInterface* browser);
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnBrowserCloseCancelled(
+      BrowserWindowInterface* browser,
+      BrowserWindowInterface::ClosingStatus closing_status);
+
+  std::vector<base::CallbackListSubscription>
+      browser_close_cancelled_subscriptions_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const raw_ptr<Profile> profile_;
   std::map<webapps::AppId, std::vector<base::OnceClosure>>

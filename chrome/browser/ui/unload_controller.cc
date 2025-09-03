@@ -183,13 +183,14 @@ bool UnloadController::BeforeUnloadFired(content::WebContents* contents,
   return true;
 }
 
-BrowserClosingStatus UnloadController::GetBrowserClosingStatus() {
+BrowserWindowInterface::ClosingStatus
+UnloadController::GetBrowserClosingStatus() {
   if (IsUnclosableApp()) {
-    return BrowserClosingStatus::kDeniedByPolicy;
+    return BrowserWindowInterface::ClosingStatus::kDeniedByPolicy;
   }
 
   if (HasCompletedUnloadProcessing()) {
-    return BrowserClosingStatus::kPermitted;
+    return BrowserWindowInterface::ClosingStatus::kPermitted;
   }
 
   // Special case for when we quit an application. The devtools window can
@@ -197,7 +198,7 @@ BrowserClosingStatus UnloadController::GetBrowserClosingStatus() {
   // to the interception of it's content's beforeunload.
   if (browser_->is_type_devtools() &&
       DevToolsWindow::HasFiredBeforeUnloadEventForDevToolsBrowser(browser_)) {
-    return BrowserClosingStatus::kPermitted;
+    return BrowserWindowInterface::ClosingStatus::kPermitted;
   }
 
   // The behavior followed here varies based on the current phase of the
@@ -220,14 +221,15 @@ BrowserClosingStatus UnloadController::GetBrowserClosingStatus() {
   bool need_beforeunload_fired = !tabs_needing_before_unload_fired_.empty();
   if (need_beforeunload_fired == is_calling_before_unload_handlers()) {
     return need_beforeunload_fired
-               ? BrowserClosingStatus::kDeniedUnloadHandlersNeedTime
-               : BrowserClosingStatus::kPermitted;
+               ? BrowserWindowInterface::ClosingStatus::
+                     kDeniedUnloadHandlersNeedTime
+               : BrowserWindowInterface::ClosingStatus::kPermitted;
   }
 
   // Cases 2 and 3.
   on_close_confirmed_.Reset();
   ProcessPendingTabs(false);
-  return BrowserClosingStatus::kDeniedUnloadHandlersNeedTime;
+  return BrowserWindowInterface::ClosingStatus::kDeniedUnloadHandlersNeedTime;
 }
 
 bool UnloadController::TryToCloseWindow(

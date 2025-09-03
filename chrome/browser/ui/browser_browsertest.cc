@@ -414,12 +414,6 @@ class BrowserTest : public extensions::ExtensionBrowserTest,
     NOTREACHED();
   }
 
-  // BrowserListObserver:
-  MOCK_METHOD(void,
-              OnBrowserCloseCancelled,
-              (Browser * browser, BrowserClosingStatus reason),
-              (override));
-
  private:
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
@@ -3230,12 +3224,17 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, PreventCloseYieldsCancelledEvent) {
       web_app::LaunchWebAppBrowser(profile(), ash::kCalculatorAppId);
   ASSERT_TRUE(browser);
 
-  EXPECT_EQ(BrowserClosingStatus::kDeniedByPolicy,
-            browser->HandleBeforeClose());
-  EXPECT_CALL(*this, OnBrowserCloseCancelled(
-                         browser, BrowserClosingStatus::kDeniedByPolicy))
-      .Times(1);
+  int times_called = 0;
+  base::CallbackListSubscription browser_close_canelled_subscription =
+      browser->RegisterBrowserCloseCancelled(base::BindLambdaForTesting(
+          [&](BrowserWindowInterface* bwi,
+              BrowserWindowInterface::ClosingStatus status) {
+            EXPECT_EQ(BrowserWindowInterface::ClosingStatus::kDeniedByPolicy,
+                      status);
+            times_called++;
+          }));
   browser->OnWindowClosing();
+  EXPECT_EQ(1, times_called);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

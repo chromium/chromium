@@ -75,8 +75,9 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
   ASSERT_TRUE(browser);
 
   UnloadController unload_controller(browser);
-  EXPECT_EQ(kShouldPreventClose ? BrowserClosingStatus::kDeniedByPolicy
-                                : BrowserClosingStatus::kPermitted,
+  EXPECT_EQ(kShouldPreventClose
+                ? BrowserWindowInterface::ClosingStatus::kDeniedByPolicy
+                : BrowserWindowInterface::ClosingStatus::kPermitted,
             unload_controller.GetBrowserClosingStatus());
 }
 
@@ -105,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(browser);
 
   UnloadController unload_controller(browser);
-  EXPECT_EQ(BrowserClosingStatus::kPermitted,
+  EXPECT_EQ(BrowserWindowInterface::ClosingStatus::kPermitted,
             unload_controller.GetBrowserClosingStatus());
 }
 
