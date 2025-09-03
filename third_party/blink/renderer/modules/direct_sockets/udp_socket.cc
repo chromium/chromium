@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/inspector/protocol/network.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/direct_sockets/multicast_controller.h"
 #include "third_party/blink/renderer/modules/direct_sockets/socket.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -127,6 +129,15 @@ CreateConnectedUDPSocketOptions(const UDPSocketOptions* options,
     socket_options->send_buffer_size = options->sendBufferSize();
   }
 
+  if (RuntimeEnabledFeatures::MulticastInDirectSocketsEnabled()) {
+    if (options->hasMulticastTimeToLive()) {
+      socket_options->multicast_time_to_live = options->multicastTimeToLive();
+    }
+    if (options->hasMulticastLoopback()) {
+      socket_options->multicast_loopback = options->multicastLoopback();
+    }
+  }
+
   return socket_options;
 }
 
@@ -178,6 +189,19 @@ mojom::blink::DirectBoundUDPSocketOptionsPtr CreateBoundUDPSocketOptions(
   }
   if (options->hasSendBufferSize()) {
     socket_options->send_buffer_size = options->sendBufferSize();
+  }
+
+  if (RuntimeEnabledFeatures::MulticastInDirectSocketsEnabled()) {
+    if (options->hasMulticastAllowAddressSharing()) {
+      socket_options->multicast_allow_address_sharing =
+          options->multicastAllowAddressSharing();
+    }
+    if (options->hasMulticastTimeToLive()) {
+      socket_options->multicast_time_to_live = options->multicastTimeToLive();
+    }
+    if (options->hasMulticastLoopback()) {
+      socket_options->multicast_loopback = options->multicastLoopback();
+    }
   }
 
   return socket_options;
@@ -430,7 +454,8 @@ bool UDPSocket::HasPendingActivity() const {
   if (GetState() != State::kOpen) {
     return false;
   }
-  return writable_stream_wrapper_->HasPendingWrite();
+  return writable_stream_wrapper_->HasPendingWrite() ||
+         multicast_controller_->HasPendingActivity();
 }
 
 void UDPSocket::ContextDestroyed() {
@@ -446,10 +471,16 @@ void UDPSocket::SetState(State state) {
       break;
     case Socket::State::kClosed:
       probe::DirectUDPSocketClosed(GetExecutionContext(), inspector_id_);
+      if (auto* multicast_controller = multicast_controller_.Get()) {
+        multicast_controller->OnCloseOrAbort();
+      }
       break;
     case Socket::State::kAborted:
       probe::DirectUDPSocketAborted(GetExecutionContext(), inspector_id_,
                                     abort_net_error_);
+      if (auto* multicast_controller = multicast_controller_.Get()) {
+        multicast_controller->OnCloseOrAbort();
+      }
       break;
   }
 }
@@ -460,6 +491,7 @@ void UDPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(readable_stream_wrapper_);
   visitor->Trace(writable_stream_wrapper_);
   visitor->Trace(stream_error_);
+  visitor->Trace(multicast_controller_);
 
   ScriptWrappable::Trace(visitor);
   Socket::Trace(visitor);

@@ -50,6 +50,15 @@ struct DirectConnectedUDPSocketOptions {
   int32? receive_buffer_size;
 
   network.mojom.DnsQueryType? dns_query_type;
+
+  // Controls how far your multicast packets can travel across a network.
+  // If value is not specified, 1 will be used.
+  uint8? multicast_time_to_live;
+
+  // Sets whether multicast packets sent from the host to
+  // the multicast group will be looped back to the host.
+  // If value is not specified, true will be used.
+  bool? multicast_loopback;
 };
 
 struct DirectBoundUDPSocketOptions {
@@ -70,6 +79,20 @@ struct DirectBoundUDPSocketOptions {
   // IPv4/IPv6 connections. Leaving this value unset results in platform default
   // being applied (|true| on Windows, |false| on Posix).
   bool? ipv6_only;
+
+  // Allows reusing port and address for multicast sockets.
+  // SO_REUSEADDR / SO_REUSEPORT in unix.
+  // If value is not specified, false will be used.
+  bool? multicast_allow_address_sharing;
+
+  // Controls how far your multicast packets can travel across a network.
+  // If value is not specified, 1 will be used.
+  uint8? multicast_time_to_live;
+
+  // Sets whether multicast packets sent from the host to
+  // the multicast group will be looped back to the host.
+  // If value is not specified, true will be used.
+  bool? multicast_loopback;
 };
 
 struct DirectTCPServerSocketOptions {

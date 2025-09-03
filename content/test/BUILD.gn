@@ -2246,9 +2246,6 @@ test("content_browsertests") {
   } else {
     # Non-Android.
     sources += [
-      "../browser/direct_sockets/direct_sockets_open_browsertest.cc",
-      "../browser/direct_sockets/direct_sockets_tcp_browsertest.cc",
-      "../browser/direct_sockets/direct_sockets_udp_browsertest.cc",
       "../browser/font_preferences_browsertest.cc",
       "../browser/renderer_host/clipboard_host_impl_browsertest.cc",
       "../browser/speech/speech_recognition_browsertest.cc",
@@ -2275,6 +2272,13 @@ test("content_browsertests") {
 
     if (!is_ios) {
       data += [ "//content/test/data/clipboard/" ]
+    }
+    if (!is_ios && !is_fuchsia) {
+      sources += [
+        "../browser/direct_sockets/direct_sockets_open_browsertest.cc",
+        "../browser/direct_sockets/direct_sockets_tcp_browsertest.cc",
+        "../browser/direct_sockets/direct_sockets_udp_browsertest.cc",
+      ]
     }
   }
   if (is_posix) {
