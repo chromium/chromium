@@ -235,6 +235,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "lens_composebox_controller_browsertest.cc",
+    "lens_search_feature_flag_utils_browsertest.cc",
     "lens_overlay_controller_browsertest.cc",
     "lens_overlay_live_test.cc",
   ]
@@ -244,6 +245,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin/e2e_tests:test_support",

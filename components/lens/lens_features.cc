@@ -578,6 +578,9 @@ constexpr base::FeatureParam<int> kLensSearchSidePanelDefaultWidth{
 constexpr base::FeatureParam<std::string> kLensOverlayStraightToSrpQuery{
     &kLensOverlayStraightToSrp, "query", ""};
 
+constexpr base::FeatureParam<bool> kUseAimEligibilityService{
+    &kLensSearchAimM3, "use-aim-eligibility-service", true};
+
 constexpr base::FeatureParam<bool> kOpenAimInSidePanel{
     &kLensSearchAimM3, "open-aim-in-side-panel", true};
 
@@ -1095,6 +1098,15 @@ bool ShowContextualSearchboxZeroPrefixSuggest() {
 
 bool IsUpdatedClientContextEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayUpdatedClientContext);
+}
+
+bool IsAimM3Enabled() {
+  return base::FeatureList::IsEnabled(kLensSearchAimM3);
+}
+
+bool ShouldUseAimEligibilityService() {
+  return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
+         kUseAimEligibilityService.Get();
 }
 
 bool ShouldShowAimInSidePanel() {
