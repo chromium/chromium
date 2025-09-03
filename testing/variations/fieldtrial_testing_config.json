@@ -15487,6 +15487,7 @@
     "MemoryCacheStrongRefPruningTuneUp": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
@@ -15499,6 +15500,22 @@
                         "memory_cache_strong_ref_resource_size_threshold": "6291456",
                         "memory_cache_strong_ref_total_size_threshold": "31457280",
                         "strong_reference_prune_delay": "10m"
+                    },
+                    "enable_features": [
+                        "MemoryCacheChangeStrongReferencePruneDelay",
+                        "MemoryCacheStrongReference"
+                    ],
+                    "disable_features": [
+                        "ReleaseResourceDecodedDataOnMemoryPressure",
+                        "ReleaseResourceStrongReferencesOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "DefaultsX3",
+                    "params": {
+                        "memory_cache_strong_ref_resource_size_threshold": "9437184",
+                        "memory_cache_strong_ref_total_size_threshold": "47185920",
+                        "strong_reference_prune_delay": "15m"
                     },
                     "enable_features": [
                         "MemoryCacheChangeStrongReferencePruneDelay",
