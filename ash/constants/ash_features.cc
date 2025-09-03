@@ -264,6 +264,13 @@ BASE_FEATURE(BocaMarkerMode, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables Boca receiver app.
 BASE_FEATURE(BocaReceiverApp, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables using a configured number of students.
+BASE_FEATURE(BocaConfigureMaxStudents, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The maximum number of students allowed in a class.
+constexpr base::FeatureParam<int> kBocaMaxNumStudentsAllowed{
+    &kBocaConfigureMaxStudents, "BocaMaxNumStudentsAllowed", 100};
+
 BASE_FEATURE(CrosSwitcher, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -2560,6 +2567,10 @@ bool IsBocaMarkerModeEnabled() {
 
 bool IsBocaReceiverAppEnabled() {
   return base::FeatureList::IsEnabled(kBocaReceiverApp);
+}
+
+bool IsBocaConfigureMaxStudentsEnabled() {
+  return base::FeatureList::IsEnabled(kBocaConfigureMaxStudents);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {
