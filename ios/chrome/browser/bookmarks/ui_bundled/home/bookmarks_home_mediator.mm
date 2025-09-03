@@ -140,7 +140,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   bookmark_utils_ios::NodeSet _selectedNodesForEditMode;
 }
 
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   registry->RegisterBooleanPref(
       prefs::kIosBookmarkUploadSyncLeftBehindCompleted, false);
 }

@@ -751,9 +751,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   tab_resumption_prefs::RegisterProfilePrefs(registry);
   reader_mode_prefs::RegisterProfilePrefs(registry);
 
-  [BookmarkMediator registerBrowserStatePrefs:registry];
-  [BookmarkPathCache registerBrowserStatePrefs:registry];
-  [BookmarksHomeMediator registerBrowserStatePrefs:registry];
+  [BookmarkMediator registerProfilePrefs:registry];
+  [BookmarkPathCache registerProfilePrefs:registry];
+  [BookmarksHomeMediator registerProfilePrefs:registry];
   [ContentSuggestionsMediator registerProfilePrefs:registry];
   [HandoffManager registerBrowserStatePrefs:registry];
   [SigninCoordinator registerProfilePrefs:registry];

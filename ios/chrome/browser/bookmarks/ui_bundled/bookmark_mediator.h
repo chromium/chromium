@@ -38,7 +38,7 @@ class PrefRegistrySyncable;
     NS_DESIGNATED_INITIALIZER;
 
 // Registers the feature preferences.
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
 // Disconnects the mediator
 - (void)disconnect;

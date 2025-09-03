@@ -90,7 +90,7 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 @property(nonatomic, assign) const bookmarks::BookmarkNode* editingFolderNode;
 
 // Registers the feature preferences.
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
 // Designated initializer.
 // `bookmarkModel` must not be `nullptr`. It must also be loaded.

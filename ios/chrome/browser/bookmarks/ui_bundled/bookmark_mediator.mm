@@ -49,7 +49,7 @@ using bookmarks::BookmarkNode;
   raw_ptr<syncer::SyncService> _syncService;
 }
 
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   registry->RegisterInt64Pref(
       prefs::kIosBookmarkLastUsedFolderReceivingBookmarks,
       kLastUsedBookmarkFolderNone);
