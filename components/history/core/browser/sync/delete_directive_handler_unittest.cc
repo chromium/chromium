@@ -127,7 +127,8 @@ class HistoryDeleteDirectiveHandlerTest : public testing::Test {
   }
 
   QueryURLAndVisitsResult QueryURLAndVisits(const GURL& url) {
-    return history_backend_->QueryURLAndVisits(url);
+    return history_backend_->QueryURLAndVisits(
+        url, VisitQuery404sPolicy::kInclude404s);
   }
 
   HistoryDeleteDirectiveHandlerTest(const HistoryDeleteDirectiveHandlerTest&) =

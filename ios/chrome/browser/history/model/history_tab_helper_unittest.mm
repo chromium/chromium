@@ -52,7 +52,7 @@ class HistoryTabHelperTest : public PlatformTest {
 
     base::RunLoop loop;
     service->QueryURLAndVisits(
-        url,
+        url, history::VisitQuery404sPolicy::kInclude404s,
         base::BindLambdaForTesting(
             [&](history::QueryURLAndVisitsResult result) {
               latest_row_result_ = std::move(result.row);

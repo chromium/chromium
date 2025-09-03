@@ -1622,7 +1622,7 @@ TEST_F(TemplateURLServiceTest, GenerateVisitOnKeyword) {
   base::CancelableTaskTracker tracker;
   history::QueryURLAndVisitsResult query_url_result;
   history->QueryURLAndVisits(
-      GURL("http://keyword"),
+      GURL("http://keyword"), history::VisitQuery404sPolicy::kInclude404s,
       base::BindLambdaForTesting([&](history::QueryURLAndVisitsResult result) {
         query_url_result = std::move(result);
       }),

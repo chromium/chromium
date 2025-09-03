@@ -158,7 +158,7 @@ class HistoryServiceTest : public testing::Test {
   bool QueryURLAndVisits(const GURL& url) {
     base::RunLoop run_loop;
     history_service_->QueryURLAndVisits(
-        url,
+        url, VisitQuery404sPolicy::kInclude404s,
         base::BindLambdaForTesting(
             [&](history::QueryURLAndVisitsResult result) {
               query_url_result_ = std::move(result);

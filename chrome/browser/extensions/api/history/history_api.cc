@@ -253,7 +253,7 @@ ExtensionFunction::ResponseAction HistoryGetVisitsFunction::Run() {
   history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
       GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
   // Retrieve full history of a URL.
-  hs->QueryURLAndVisits(url,
+  hs->QueryURLAndVisits(url, history::VisitQuery404sPolicy::kExclude404s,
                         base::BindOnce(&HistoryGetVisitsFunction::QueryComplete,
                                        base::Unretained(this)),
                         &task_tracker_);

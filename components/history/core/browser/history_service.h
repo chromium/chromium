@@ -315,6 +315,7 @@ class HistoryService : public KeyedService,
   // Note: Virtual needed for mocking.
   virtual base::CancelableTaskTracker::TaskId QueryURLAndVisits(
       const GURL& url,
+      VisitQuery404sPolicy policy_for_404s,
       QueryURLAndVisitsCallback callback,
       base::CancelableTaskTracker* tracker);
 

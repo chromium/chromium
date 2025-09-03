@@ -2017,12 +2017,24 @@ QueryURLResult HistoryBackend::QueryURL(const GURL& url) {
   return result;
 }
 
-QueryURLAndVisitsResult HistoryBackend::QueryURLAndVisits(const GURL& url) {
+QueryURLAndVisitsResult HistoryBackend::QueryURLAndVisits(
+    const GURL& url,
+    VisitQuery404sPolicy policy_for_404s) {
   QueryURLAndVisitsResult result;
   result.success = db_ && db_->GetRowForURL(url, &result.row);
-  if (result.success) {
-    db_->GetVisitsForURL(result.row.id(), &result.visits);
+  if (!result.success) {
+    return result;
   }
+
+  switch (policy_for_404s) {
+    case VisitQuery404sPolicy::kInclude404s:
+      db_->GetVisitsForURL(result.row.id(), &result.visits);
+      break;
+    case VisitQuery404sPolicy::kExclude404s:
+      db_->GetNon404VisitsForURL(result.row.id(), &result.visits);
+      break;
+  }
+
   return result;
 }
 

@@ -152,7 +152,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
     base::TimeDelta visit_duration;
     base::RunLoop loop;
     history_service_->QueryURLAndVisits(
-        url,
+        url, history::VisitQuery404sPolicy::kInclude404s,
         base::BindLambdaForTesting(
             [&](history::QueryURLAndVisitsResult result) {
               EXPECT_TRUE(result.success);

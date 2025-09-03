@@ -544,6 +544,21 @@ bool VisitDatabase::GetVisitsForURL(URLID url_id, VisitVector* visits) {
   return FillVisitVector(statement, visits);
 }
 
+bool VisitDatabase::GetNon404VisitsForURL(URLID url_id, VisitVector* visits) {
+  visits->clear();
+
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                     "LEFT OUTER JOIN context_annotations "
+                     "ON visits.id = context_annotations.visit_id "
+                     "WHERE visits.url=? AND "
+                     "(context_annotations.response_code IS NULL "
+                     "OR context_annotations.response_code != 404) "
+                     "ORDER BY visits.visit_time ASC"));
+  statement.BindInt64(0, url_id);
+  return FillVisitVector(statement, visits);
+}
+
 bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
                                            const QueryOptions& options,
                                            VisitVector* visits) {

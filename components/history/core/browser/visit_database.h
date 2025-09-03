@@ -88,6 +88,13 @@ class VisitDatabase {
   // may still be no matches).
   bool GetVisitsForURL(URLID url_id, VisitVector* visits);
 
+  // Fills in the given vector with all of the visits that did not have an HTTP
+  // response code of 404 for the given page ID, sorted in ascending order of
+  // date. Returns true on success (although there may still be no matches). An
+  // empty `visits` does not imply that the URL has no visits overall, as there
+  // may be 404 visits.
+  bool GetNon404VisitsForURL(URLID url_id, VisitVector* visits);
+
   // Fills in the given vector with the visits for the given page ID which
   // should be user-visible, which excludes things like redirects and subframes,
   // and match the set of options passed, sorted in ascending order of date.

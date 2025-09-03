@@ -651,7 +651,7 @@ void PageContentAnnotationsService::QueryURL(
     PersistAnnotationsCallback callback,
     PageContentAnnotationsType annotation_type) {
   history_service_->QueryURLAndVisits(
-      visit.url,
+      visit.url, history::VisitQuery404sPolicy::kExclude404s,
       base::BindOnce(&PageContentAnnotationsService::OnURLQueried,
                      weak_ptr_factory_.GetWeakPtr(), visit, std::move(callback),
                      annotation_type),

@@ -223,7 +223,7 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     base::CancelableTaskTracker tracker;
     HistoryServiceFactory::GetForProfile(browser()->profile(),
                                          ServiceAccessType::EXPLICIT_ACCESS)
-        ->QueryURLAndVisits(url,
+        ->QueryURLAndVisits(url, history::VisitQuery404sPolicy::kInclude404s,
                             base::BindLambdaForTesting(
                                 [&](history::QueryURLAndVisitsResult result) {
                                   query_url_result = std::move(result);
