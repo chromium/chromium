@@ -95,8 +95,9 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
 
     void BindReceiver(mojo::GenericPendingReceiver receiver) override {
       if (*receiver.interface_name() !=
-          blink::mojom::SharedWorkerFactory::Name_)
+          blink::mojom::SharedWorkerFactory::Name_) {
         return;
+      }
       test_->BindSharedWorkerFactory(GetDeprecatedID(), receiver.PassPipe());
     }
 
@@ -110,28 +111,16 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
         SharedWorkerServiceImplTest* test)
         : test_(test) {}
 
-    RenderProcessHost* CreateRenderProcessHost(
+   protected:
+    std::unique_ptr<MockRenderProcessHost> BuildRenderProcessHost(
         BrowserContext* browser_context,
         SiteInstance* site_instance) override {
-      auto host = std::make_unique<MockRenderProcessHostForSharedWorker>(
+      return std::make_unique<MockRenderProcessHostForSharedWorker>(
           browser_context, test_);
-      processes_.push_back(std::move(host));
-      return processes_.back().get();
-    }
-
-    void Remove(MockRenderProcessHostForSharedWorker* host) {
-      for (auto it = processes_.begin(); it != processes_.end(); ++it) {
-        if (it->get() == host) {
-          processes_.erase(it);
-          break;
-        }
-      }
     }
 
    private:
     const raw_ptr<SharedWorkerServiceImplTest> test_;
-    std::vector<std::unique_ptr<MockRenderProcessHostForSharedWorker>>
-        processes_;
   };
 
   SharedWorkerServiceImplTest(const SharedWorkerServiceImplTest&) = delete;
@@ -165,8 +154,9 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
   // Receives a PendingReceiver<blink::mojom::SharedWorkerFactory>.
   void BindSharedWorkerFactory(int process_id,
                                mojo::ScopedMessagePipeHandle handle) {
-    if (factory_receiver_callback_)
+    if (factory_receiver_callback_) {
       std::move(factory_receiver_callback_).Run();
+    }
 
     factorys_receivers_.emplace(std::move(handle), process_id);
   }
@@ -200,8 +190,9 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
   }
 
   void TearDown() override {
-    if (url_loader_factory_wrapper_)
+    if (url_loader_factory_wrapper_) {
       url_loader_factory_wrapper_->Detach();
+    }
     render_process_host_factory_.reset();
 
     browser_context_.reset();
@@ -1282,8 +1273,9 @@ class TestSharedWorkerServiceObserver : public SharedWorkerService::Observer {
 
   size_t GetClientCount() {
     size_t client_count = 0;
-    for (const auto& worker : shared_workers_)
+    for (const auto& worker : shared_workers_) {
       client_count += worker.second.size();
+    }
     return client_count;
   }
 

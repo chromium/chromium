@@ -671,13 +671,7 @@ MockRenderProcessHostFactory::~MockRenderProcessHostFactory() = default;
 RenderProcessHost* MockRenderProcessHostFactory::CreateRenderProcessHost(
     BrowserContext* browser_context,
     SiteInstance* site_instance) {
-  const bool is_for_guests_only = site_instance && site_instance->IsGuest();
-  StoragePartitionConfig storage_partition_config =
-      GetOrCreateStoragePartitionConfig(browser_context, site_instance);
-  std::unique_ptr<MockRenderProcessHost> host =
-      std::make_unique<MockRenderProcessHost>(
-          browser_context, storage_partition_config, is_for_guests_only);
-  processes_.push_back(std::move(host));
+  processes_.push_back(BuildRenderProcessHost(browser_context, site_instance));
   return processes_.back().get();
 }
 
@@ -688,6 +682,17 @@ void MockRenderProcessHostFactory::Remove(MockRenderProcessHost* host) const {
       break;
     }
   }
+}
+
+std::unique_ptr<MockRenderProcessHost>
+MockRenderProcessHostFactory::BuildRenderProcessHost(
+    BrowserContext* browser_context,
+    SiteInstance* site_instance) {
+  const bool is_for_guests_only = site_instance && site_instance->IsGuest();
+  StoragePartitionConfig storage_partition_config =
+      GetOrCreateStoragePartitionConfig(browser_context, site_instance);
+  return std::make_unique<MockRenderProcessHost>(
+      browser_context, storage_partition_config, is_for_guests_only);
 }
 
 }  // namespace content
