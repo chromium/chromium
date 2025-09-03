@@ -117,6 +117,7 @@ source_set("impl") {
     "host/auth_controller.cc",
     "host/context/glic_focused_browser_manager.cc",
     "host/context/glic_focused_browser_manager.h",
+    "host/context/glic_focused_browser_manager_interface.h",
     "host/context/glic_focused_tab_manager.cc",
     "host/context/glic_page_context_fetcher.cc",
     "host/context/glic_pin_candidate_comparator.cc",
