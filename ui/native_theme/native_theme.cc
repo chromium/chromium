@@ -150,15 +150,6 @@ void NativeTheme::NotifyOnCaptionStyleUpdated() {
   native_theme_observers_.Notify(&NativeThemeObserver::OnCaptionStyleUpdated);
 }
 
-void NativeTheme::NotifyOnPreferredContrastUpdated() {
-  // This specific method is prone to being mistakenly called on the wrong
-  // sequence, because it is often invoked from a platform-specific event
-  // listener, and those events may be delivered on unexpected sequences.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  native_theme_observers_.Notify(
-      &NativeThemeObserver::OnPreferredContrastChanged);
-}
-
 // static
 float NativeTheme::AdjustBorderWidthByZoom(float border_width,
                                            float zoom_level) {
@@ -288,7 +279,7 @@ void NativeTheme::SetPreferredContrast(
     return;
   }
   preferred_contrast_ = preferred_contrast;
-  NotifyOnPreferredContrastUpdated();
+  NotifyOnNativeThemeUpdated();
 }
 
 bool NativeTheme::IsForcedDarkMode() {
