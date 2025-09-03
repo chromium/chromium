@@ -49,6 +49,19 @@ std::string BuildTitle(const sync_pb::ThemeSpecifics& specifics) {
   }
   return l10n_util::GetStringUTF8(IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL);
 }
+
+bool ShouldOfferBatchUpload(sync_pb::ThemeSpecifics specifics) {
+  // Do not offer batch upload for themes with only browser color scheme or
+  // only a user color theme. This is a good-enough trade-off to avoid showing
+  // batch upload dialog for auto-assigned theme upon new profile creation.
+  if (specifics.has_user_color_theme()) {
+    specifics.clear_user_color_theme();
+  } else {
+    specifics.clear_browser_color_scheme();
+  }
+  return ThemeSyncableService::HasNonDefaultTheme(specifics);
+}
+
 }  // namespace
 
 // static
@@ -110,11 +123,5 @@ ThemeLocalDataBatchUploader::GetNonDefaultSavedLocalTheme() const {
   if (!specifics) {
     return std::nullopt;
   }
-  sync_pb::ThemeSpecifics specifics_without_browser_color_scheme = *specifics;
-  // Do not offer batch upload for themes with only browser color scheme.
-  specifics_without_browser_color_scheme.clear_browser_color_scheme();
-  return ThemeSyncableService::HasNonDefaultTheme(
-             specifics_without_browser_color_scheme)
-             ? specifics
-             : std::nullopt;
+  return ShouldOfferBatchUpload(*specifics) ? specifics : std::nullopt;
 }
