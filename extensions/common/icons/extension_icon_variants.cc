@@ -5,7 +5,10 @@
 #include "extensions/common/icons/extension_icon_variants.h"
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/icons/extension_icon_variants_diagnostics.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

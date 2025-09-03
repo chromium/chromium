@@ -15,6 +15,7 @@ extensions_api_schema_files_ = [
   "events.json",
   "extension_types.json",
   "file_handlers.idl",
+  "icon_variants.idl",
   "i18n.json",
   "idle.json",
   "management.json",
@@ -70,7 +71,6 @@ if (enable_extensions) {
     "file_system.idl",
     "guest_view_internal.json",
     "hid.idl",
-    "icon_variants.idl",
     "mime_handler_private.idl",
     "mime_handler_view_guest_internal.json",
     "mojo_private.idl",
@@ -107,7 +107,6 @@ if (enable_extensions) {
 if (enable_desktop_android_extensions) {
   extensions_types_only_schema_files_ += [
     "clipboard.idl",
-    "icon_variants.idl",
     "scripts_internal.idl",
     "system_display.idl",
     "usb.idl",

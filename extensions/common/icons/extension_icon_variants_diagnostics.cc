@@ -6,6 +6,10 @@
 
 #include <optional>
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions::diagnostics::icon_variants {
 
 // List of diagnostics.
