@@ -25,7 +25,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT DecoderClient {
   virtual void OnConsoleMessage(int32_t id, const std::string& message) = 0;
 
   // Notifies the renderer process that the active GPU changed.
-  virtual void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {}
+  virtual void OnGpuSwitched() {}
 
   // Cache a blob (i.e. shader intermediates, shader bytecodes, pipelines, etc)
   // to persistent storage.

@@ -426,8 +426,7 @@ GLDisplayEGL::EGLGpuSwitchingObserver::EGLGpuSwitchingObserver(
   DCHECK(display != EGL_NO_DISPLAY);
 }
 
-void GLDisplayEGL::EGLGpuSwitchingObserver::OnGpuSwitched(
-    GpuPreference active_gpu_heuristic) {
+void GLDisplayEGL::EGLGpuSwitchingObserver::OnGpuSwitched() {
   eglHandleGPUSwitchANGLE(display_);
 }
 

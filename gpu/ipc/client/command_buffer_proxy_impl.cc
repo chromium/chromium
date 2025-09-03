@@ -171,10 +171,9 @@ void CommandBufferProxyImpl::OnConsoleMessage(const std::string& message) {
     gpu_control_client_->OnGpuControlErrorMessage(message.c_str(), /*id=*/0);
 }
 
-void CommandBufferProxyImpl::OnGpuSwitched(
-    gl::GpuPreference active_gpu_heuristic) {
+void CommandBufferProxyImpl::OnGpuSwitched() {
   if (gpu_control_client_)
-    gpu_control_client_->OnGpuSwitched(active_gpu_heuristic);
+    gpu_control_client_->OnGpuSwitched();
 }
 
 void CommandBufferProxyImpl::AddDeletionObserver(DeletionObserver* observer) {

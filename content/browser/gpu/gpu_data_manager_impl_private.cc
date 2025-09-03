@@ -781,7 +781,7 @@ void GpuDataManagerImplPrivate::RequestDawnInfo(bool delayed,
   base::OnceClosure task = base::BindOnce(
       [](bool collect_metrics) {
         GpuProcessHost* host = GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED,
-                                                   false /* force_create */);
+                                                   /*force_create=*/false);
         if (!host) {
           return;
         }
@@ -922,7 +922,7 @@ gpu::GpuFeatureStatus GpuDataManagerImplPrivate::GetFeatureStatus(
 void GpuDataManagerImplPrivate::RequestVideoMemoryUsageStatsUpdate(
     GpuDataManager::VideoMemoryUsageStatsCallback callback) const {
   GpuProcessHost::CallOnUI(
-      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, /*force_create=*/false ,
       base::BindOnce(&RequestVideoMemoryUsageStats, std::move(callback)));
 }
 
@@ -1139,7 +1139,7 @@ void GpuDataManagerImplPrivate::TerminateInfoCollectionGpuProcess() {
   // directly here from TerminateInfoCollectionGpuProcess(), which also runs on
   // the IO thread.
   GpuProcessHost* host = GpuProcessHost::Get(GPU_PROCESS_KIND_INFO_COLLECTION,
-                                             false /* force_create */);
+                                             /*force_create=*/false );
   if (host)
     host->ForceShutdown();
 }
@@ -1454,17 +1454,15 @@ base::Value::List GpuDataManagerImplPrivate::GetLogMessages() const {
 void GpuDataManagerImplPrivate::HandleGpuSwitch() {
   base::AutoUnlock unlock(owner_->lock_);
   // Notify observers in the browser process.
-  ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched(
-      active_gpu_heuristic_);
+  ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched();
   // Pass the notification to the GPU process to notify observers there.
-  GpuProcessHost::CallOnUI(
-      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
-      base::BindOnce(
-          [](gl::GpuPreference active_gpu, GpuProcessHost* host) {
-            if (host)
-              host->gpu_service()->GpuSwitched(active_gpu);
-          },
-          active_gpu_heuristic_));
+  GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
+                           /*force_create=*/false ,
+                           base::BindOnce([](GpuProcessHost* host) {
+                             if (host) {
+                               host->gpu_service()->GpuSwitched();
+                             }
+                           }));
 }
 
 void GpuDataManagerImplPrivate::OnDisplayAdded(
@@ -1475,7 +1473,7 @@ void GpuDataManagerImplPrivate::OnDisplayAdded(
   ui::GpuSwitchingManager::GetInstance()->NotifyDisplayAdded();
   // Pass the notification to the GPU process to notify observers there.
   GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-                           false /* force_create */,
+                           /*force_create=*/false ,
                            base::BindOnce([](GpuProcessHost* host) {
                              if (host)
                                host->gpu_service()->DisplayAdded();
@@ -1490,7 +1488,7 @@ void GpuDataManagerImplPrivate::OnDisplaysRemoved(
   ui::GpuSwitchingManager::GetInstance()->NotifyDisplayRemoved();
   // Pass the notification to the GPU process to notify observers there.
   GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-                           false /* force_create */,
+                           /*force_create=*/false ,
                            base::BindOnce([](GpuProcessHost* host) {
                              if (host)
                                host->gpu_service()->DisplayRemoved();
@@ -1506,7 +1504,7 @@ void GpuDataManagerImplPrivate::OnDisplayMetricsChanged(
   ui::GpuSwitchingManager::GetInstance()->NotifyDisplayMetricsChanged();
   // Pass the notification to the GPU process to notify observers there.
   GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-                           false /* force_create */,
+                           /*force_create=*/false ,
                            base::BindOnce([](GpuProcessHost* host) {
                              if (host)
                                host->gpu_service()->DisplayMetricsChanged();

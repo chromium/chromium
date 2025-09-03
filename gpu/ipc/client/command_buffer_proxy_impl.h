@@ -178,7 +178,7 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
 
   // mojom::CommandBufferClient:
   void OnConsoleMessage(const std::string& message) override;
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
+  void OnGpuSwitched() override;
   void OnDestroyed(gpu::error::ContextLostReason reason,
                    gpu::error::Error error) override;
   void OnReturnData(const std::vector<uint8_t>& data) override;

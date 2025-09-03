@@ -54,8 +54,6 @@ component("accelerated_widget_mac") {
       "accelerated_widget_mac_export.h",
       "ca_transaction_observer.h",
       "ca_transaction_observer.mm",
-      "io_surface_context.h",
-      "io_surface_context.mm",
       "window_resize_helper_mac.cc",
       "window_resize_helper_mac.h",
     ]

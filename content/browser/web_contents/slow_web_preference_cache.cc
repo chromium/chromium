@@ -125,7 +125,7 @@ void SlowWebPreferenceCache::OnInputDeviceConfigurationChanged(uint8_t) {
   }
 }
 
-void SlowWebPreferenceCache::OnGpuSwitched(gl::GpuPreference) {
+void SlowWebPreferenceCache::OnGpuSwitched() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (Update()) {
     observers_.Notify(

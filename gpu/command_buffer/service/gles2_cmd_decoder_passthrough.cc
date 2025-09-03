@@ -1594,10 +1594,9 @@ gpu::gles2::Logger* GLES2DecoderPassthroughImpl::GetLogger() {
   return &logger_;
 }
 
-void GLES2DecoderPassthroughImpl::OnGpuSwitched(
-    gl::GpuPreference active_gpu_heuristic) {
+void GLES2DecoderPassthroughImpl::OnGpuSwitched() {
   // Send OnGpuSwitched notification to renderer process via decoder client.
-  client()->OnGpuSwitched(active_gpu_heuristic);
+  client()->OnGpuSwitched();
 }
 
 void GLES2DecoderPassthroughImpl::BeginDecoding() {

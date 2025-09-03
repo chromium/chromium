@@ -352,9 +352,8 @@ base::WeakPtr<CommandBufferStub> GLES2CommandBufferStub::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void GLES2CommandBufferStub::OnGpuSwitched(
-    gl::GpuPreference active_gpu_heuristic) {
-  client().OnGpuSwitched(active_gpu_heuristic);
+void GLES2CommandBufferStub::OnGpuSwitched() {
+  client().OnGpuSwitched();
 }
 
 void GLES2CommandBufferStub::CreateGpuFenceFromHandle(

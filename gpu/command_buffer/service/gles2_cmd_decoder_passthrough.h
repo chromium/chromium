@@ -333,7 +333,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   bool CheckResetStatus() override;
 
   // Implement GpuSwitchingObserver.
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
+  void OnGpuSwitched() override;
 
   Logger* GetLogger() override;
 

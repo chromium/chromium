@@ -15,7 +15,7 @@ class GL_EXPORT GpuSwitchingObserver {
   virtual ~GpuSwitchingObserver() = default;
 
   // Called for any observer when the system switches to a different GPU.
-  virtual void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {}
+  virtual void OnGpuSwitched() {}
 
   // Called for any observer when a monitor is plugged in.
   virtual void OnDisplayAdded() {}

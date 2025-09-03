@@ -1034,11 +1034,10 @@ void GpuServiceImpl::WakeUpGpuOnMainThread() {
   }
 }
 
-void GpuServiceImpl::GpuSwitched(gl::GpuPreference active_gpu_heuristic) {
+void GpuServiceImpl::GpuSwitched() {
   if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&GpuServiceImpl::GpuSwitched, weak_ptr_,
-                                  active_gpu_heuristic));
+        FROM_HERE, base::BindOnce(&GpuServiceImpl::GpuSwitched, weak_ptr_));
     return;
   }
   DVLOG(1) << "GPU: GPU has switched";
@@ -1047,8 +1046,7 @@ void GpuServiceImpl::GpuSwitched(gl::GpuPreference active_gpu_heuristic) {
     watchdog_thread_->ReportProgress();
 
   if (!in_host_process()) {
-    ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched(
-        active_gpu_heuristic);
+    ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched();
   }
   GpuServiceImpl::UpdateGPUInfoGL();
 }

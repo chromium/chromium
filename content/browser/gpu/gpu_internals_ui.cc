@@ -713,9 +713,6 @@ class GpuMessageHandler
   // GpuDataManagerObserver implementation.
   void OnGpuInfoUpdate() override;
 
-  // ui::GpuSwitchingObserver implementation.
-  void OnGpuSwitched(gl::GpuPreference) override;
-
   // Messages
   void HandleGetGpuInfo(const base::Value::List& list);
   void HandleGetClientInfo(const base::Value::List& list);
@@ -757,11 +754,9 @@ void GpuMessageHandler::RegisterMessages() {
 
 void GpuMessageHandler::OnJavascriptAllowed() {
   GpuDataManagerImpl::GetInstance()->AddObserver(this);
-  ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
 }
 
 void GpuMessageHandler::OnJavascriptDisallowed() {
-  ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
   GpuDataManagerImpl::GetInstance()->RemoveObserver(this);
 }
 
@@ -899,11 +894,6 @@ base::Value::Dict GpuMessageHandler::GetGpuInfoDict() {
 
 void GpuMessageHandler::OnGpuInfoUpdate() {
   FireWebUIListener("gpu-info-updated", GetGpuInfoDict());
-}
-
-void GpuMessageHandler::OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {
-  // Currently, about:gpu page does not update GPU info after the GPU switch.
-  // If there is something to be updated, the code should be added here.
 }
 
 }  // namespace

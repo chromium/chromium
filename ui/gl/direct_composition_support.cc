@@ -1238,10 +1238,6 @@ void DirectCompositionOverlayCapsMonitor::NotifyOverlayCapsChanged() {
 }
 
 // Called from GpuSwitchingObserver on the GPU main thread.
-void DirectCompositionOverlayCapsMonitor::OnGpuSwitched(
-    gl::GpuPreference active_gpu_heuristic) {}
-
-// Called from GpuSwitchingObserver on the GPU main thread.
 void DirectCompositionOverlayCapsMonitor::OnDisplayAdded() {
   SetOverlayCapsValid(false);
   UpdateOverlaySupport();

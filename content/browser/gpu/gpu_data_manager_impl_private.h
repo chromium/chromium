@@ -251,7 +251,6 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   gpu::GpuFeatureInfo gpu_feature_info_;
   FixedGpuInfo fixed_gpu_info_;
   gpu::GPUInfo gpu_info_;
-  gl::GpuPreference active_gpu_heuristic_ = gl::GpuPreference::kDefault;
 #if BUILDFLAG(IS_WIN)
   bool gpu_info_dx_valid_ = false;
   bool gpu_info_dx_requested_ = false;

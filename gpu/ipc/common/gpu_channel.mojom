@@ -296,7 +296,7 @@ interface CommandBufferClient {
   OnConsoleMessage(string message);
 
   // Notifies the client of a GPU switch.
-  OnGpuSwitched(gl.mojom.GpuPreference active_gpu_heuristic);
+  OnGpuSwitched();
 
   // Tells the proxy that there was an error and the command buffer had to be
   // destroyed for some reason.

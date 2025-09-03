@@ -40,7 +40,7 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub final
   base::WeakPtr<CommandBufferStub> AsWeakPtr() override;
 
   // DecoderClient implementation.
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
+  void OnGpuSwitched() override;
 
  private:
   // CommandBufferStub overrides:

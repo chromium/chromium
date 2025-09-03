@@ -25,10 +25,8 @@ void GpuSwitchingManager::RemoveObserver(GpuSwitchingObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void GpuSwitchingManager::NotifyGpuSwitched(
-    gl::GpuPreference active_gpu_heuristic) {
-  observer_list_.Notify(&GpuSwitchingObserver::OnGpuSwitched,
-                        active_gpu_heuristic);
+void GpuSwitchingManager::NotifyGpuSwitched() {
+  observer_list_.Notify(&GpuSwitchingObserver::OnGpuSwitched);
 }
 
 void GpuSwitchingManager::NotifyDisplayAdded() {

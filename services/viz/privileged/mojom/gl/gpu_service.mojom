@@ -153,7 +153,7 @@ interface GpuService {
 
   // Tells GPU that host has seen a GPU switch. This can happen when the display
   // is reconfigured, for example.
-  GpuSwitched(gl.mojom.GpuPreference active_gpu_heuristic);
+  GpuSwitched();
 
   // Tells GPU that host has seen a monitor being plugged in.
   DisplayAdded();

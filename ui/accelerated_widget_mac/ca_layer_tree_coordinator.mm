@@ -17,7 +17,6 @@
 #include "ui/gl/gl_implementation.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "ui/accelerated_widget_mac/io_surface_context.h"
 #include "ui/gl/gl_context.h"
 #endif
 

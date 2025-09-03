@@ -226,7 +226,6 @@ class GL_EXPORT DirectCompositionOverlayCapsMonitor
   void NotifyOverlayCapsChanged();
 
   // Implements GpuSwitchingObserver.
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
   void OnDisplayAdded() override;
   void OnDisplayRemoved() override;
   void OnDisplayMetricsChanged() override;
