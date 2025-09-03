@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
-import("//components/plus_addresses/buildflags.gni")
-
 source_set("parsing") {
   sources = [
     "plus_address_parsing_utils.cc",
@@ -73,11 +70,6 @@ source_set("plus_addresses") {
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
-}
-
-buildflag_header("plus_addresses_buildflags") {
-  header = "plus_addresses_buildflags.h"
-  flags = [ "PLUS_ADDRESSES_USE_INTERNAL_ANDROID_RESOURCES=$plus_addresses_use_internal_android_resources" ]
 }
 
 source_set("unit_tests") {
