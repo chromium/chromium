@@ -58,6 +58,7 @@ class BrowserNonClientFrameViewChromeOS
   void Init();
 
   // BrowserNonClientFrameView:
+  BrowserLayoutParams GetBrowserLayoutParams() const override;
   gfx::Rect GetBoundsForTabStripRegion(
       const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
@@ -141,6 +142,7 @@ class BrowserNonClientFrameViewChromeOS
   // BrowserNonClientFrameView:
   void PaintAsActiveChanged() override;
   void AddedToWidget() override;
+  BoundsAndMargins GetCaptionButtonBounds() const override;
 
  private:
   friend class BrowserNonClientFrameViewChromeOSTestApi;

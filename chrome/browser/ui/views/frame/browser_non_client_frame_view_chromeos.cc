@@ -251,6 +251,27 @@ void BrowserNonClientFrameViewChromeOS::Init() {
   browser_view()->immersive_mode_controller()->AddObserver(this);
 }
 
+BrowserLayoutParams BrowserNonClientFrameViewChromeOS::GetBrowserLayoutParams()
+    const {
+  BrowserLayoutParams params;
+  const bool restored = !frame()->IsMaximized() && !frame()->IsFullscreen();
+  const auto top = GetTopInset(restored);
+  params.visual_client_area = gfx::Rect(0, top, width(), height() - top);
+  if (profile_indicator_icon_) {
+    params.leading_exclusion.content =
+        gfx::SizeF(profile_indicator_icon_->bounds().right(),
+                   profile_indicator_icon_->bounds().bottom());
+    params.leading_exclusion.horizontal_padding = kProfileIndicatorPadding;
+    params.leading_exclusion.vertical_padding =
+        profile_indicator_icon_->bounds().y();
+  }
+  if (GetShowCaptionButtonsWhenNotInOverview()) {
+    params.trailing_exclusion.content =
+        gfx::SizeF(caption_button_container_->GetPreferredSize());
+  }
+  return params;
+}
+
 gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForTabStripRegion(
     const gfx::Size& tabstrip_minimum_size) const {
   const int left_inset = GetTabStripLeftInset();
@@ -905,6 +926,13 @@ void BrowserNonClientFrameViewChromeOS::AddedToWidget() {
 
   highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(
       GetWidget(), std::make_unique<ash::WmHighlightBorderOverlayDelegate>());
+}
+
+BrowserNonClientFrameViewChromeOS::BoundsAndMargins
+BrowserNonClientFrameViewChromeOS::GetCaptionButtonBounds() const {
+  return BoundsAndMargins{GetShowCaptionButtonsWhenNotInOverview()
+                              ? gfx::RectF(caption_button_container_->bounds())
+                              : gfx::RectF()};
 }
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
