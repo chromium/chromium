@@ -63,7 +63,7 @@ std::unique_ptr<KeyedService> TipsManagerIOSFactory::BuildServiceInstanceFor(
   return BuildServiceInstance(context);
 }
 
-void TipsManagerIOSFactory::RegisterBrowserStatePrefs(
+void TipsManagerIOSFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   segmentation_platform::TipsManager::RegisterProfilePrefs(registry);
 }
