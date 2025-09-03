@@ -273,7 +273,7 @@ SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   return BuildSegmentationPlatformService(context);
 }
 
-void SegmentationPlatformServiceFactory::RegisterBrowserStatePrefs(
+void SegmentationPlatformServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   home_modules::HomeModulesCardRegistry::RegisterProfilePrefs(registry);
 }
