@@ -812,15 +812,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should be personal");
 }
 
-// TODO(crbug.com/433320893): Re-enable this test on device.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testProfileDeletedOnRemoveManagedAccount \
-  DISABLED_testProfileDeletedOnRemoveManagedAccount
-#else
-#define MAYBE_testProfileDeletedOnRemoveManagedAccount \
-  testProfileDeletedOnRemoveManagedAccount
-#endif
-- (void)MAYBE_testProfileDeletedOnRemoveManagedAccount {
+// TODO(crbug.com/411035267): Re-enable this test.
+- (void)DISABLED_testProfileDeletedOnRemoveManagedAccount {
   // Setup: There's 1 personal and 1 managed account. The personal account is
   // signed in.
   FakeSystemIdentity* const personalIdentity =
