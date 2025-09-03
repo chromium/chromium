@@ -67,8 +67,7 @@ static jlong JNI_MagnifierSurfaceControl_Create(
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(j_web_contents));
 
-  // Java MagnifierSurfaceControl calls release.
-  bool release_on_destroy = false;
+  bool release_on_destroy = true;
   gl::ScopedJavaSurfaceControl scoped_java_surface_control(j_surface_control,
                                                            release_on_destroy);
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
