@@ -143,7 +143,6 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT GLCapabilities {
   int max_viewport_height = 0;
   int num_compressed_texture_formats = 0;
   int num_shader_binary_formats = 0;
-  int bind_generates_resource_chromium = 0;
 
   int max_3d_texture_size = 0;
   int max_array_texture_layers = 0;
