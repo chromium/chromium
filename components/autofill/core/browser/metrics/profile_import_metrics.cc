@@ -98,36 +98,32 @@ AddressValidZipCodeSeparatorMetric GetAddressValidZipCodeSeparatorMetric(
 
 // LINT.IfChange(GetImportTypeMetricsString)
 
-std::string_view GetImportTypeMetricsString(AutofillProfileImportType type) {
+std::string_view GetImportTypeEditedMetricsString(
+    AutofillProfileImportType type) {
   switch (type) {
     case AutofillProfileImportType::kNewProfile:
       return "NewProfile";
     case AutofillProfileImportType::kConfirmableMerge:
-      return "ConfirmableMerge";
     case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
-      return "ConfirmableMergeAndSilentUpdate";
+      return "UpdateProfile";
     case AutofillProfileImportType::kProfileMigration:
-      return "ProfileMigration";
     case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
-      return "ProfileMigrationAndSilentUpdate";
+      return "MigrateProfile";
     case AutofillProfileImportType::kHomeAndWorkSuperset:
       return "HomeAndWorkSuperset";
     case AutofillProfileImportType::kNameEmailSuperset:
       return "NameEmailSuperset";
     case AutofillProfileImportType::kHomeWorkNameEmailMerge:
       return "HomeWorkNameEmailMerge";
+    // Those import types do not cause save/update/migrate/merge bubble to be
+    // displayed, thus they will never lead to emission of this metric.
     case AutofillProfileImportType::kDuplicateImport:
-      return "DuplicateImport";
     case AutofillProfileImportType::kSilentUpdate:
-      return "SilentUpdate";
     case AutofillProfileImportType::kSuppressedNewProfile:
-      return "SuppressedNewProfile";
     case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
-      return "SuppressedConfirmableMergeAndSilentUpdate";
     case AutofillProfileImportType::kSuppressedConfirmableMerge:
-      return "SuppressedConfirmableMerge";
     case AutofillProfileImportType::kImportTypeUnspecified:
-      return "ImportTypeUnspecified";
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -280,49 +276,13 @@ void LogHomeAndWorkSupersetAffectedType(FieldType affected_type) {
       ConvertSettingsVisibleFieldTypeForMetrics(affected_type));
 }
 
-void LogHomeAndWorkSupersetEditedType(FieldType edited_type) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.HomeAndWorkSupersetEditedType",
-      ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
-}
-
 void LogProfileImportTypeEditedType(AutofillProfileImportType import_type,
                                     FieldType edited_type) {
-  // TODO(crbug.com/441473556): Handle the rest of import types in a generic
-  // way.
-  switch (import_type) {
-    case AutofillProfileImportType::kNewProfile:
-      autofill_metrics::LogNewProfileEditedType(edited_type);
-      break;
-    case AutofillProfileImportType::kConfirmableMerge:
-    case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
-      autofill_metrics::LogProfileUpdateEditedType(edited_type);
-      break;
-    case AutofillProfileImportType::kProfileMigration:
-    case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
-      autofill_metrics::LogProfileMigrationEditedType(edited_type);
-      break;
-    case AutofillProfileImportType::kHomeAndWorkSuperset:
-      autofill_metrics::LogHomeAndWorkSupersetEditedType(edited_type);
-      break;
-    case AutofillProfileImportType::kNameEmailSuperset:
-    case AutofillProfileImportType::kHomeWorkNameEmailMerge:
-      base::UmaHistogramEnumeration(
-          base::StrCat({"Autofill.ProfileImport.",
-                        GetImportTypeMetricsString(import_type),
-                        ".EditedType"}),
-          ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
-      break;
-    // In the following cases the prompt is not offered to the user, thus no
-    // edits can happen.
-    case AutofillProfileImportType::kDuplicateImport:
-    case AutofillProfileImportType::kSilentUpdate:
-    case AutofillProfileImportType::kSuppressedNewProfile:
-    case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
-    case AutofillProfileImportType::kSuppressedConfirmableMerge:
-    case AutofillProfileImportType::kImportTypeUnspecified:
-      NOTREACHED();
-  }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.ProfileImport.",
+                    GetImportTypeEditedMetricsString(import_type),
+                    "EditedType"}),
+      ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
 }
 
 // static
@@ -344,12 +304,6 @@ void LogPhoneNumberImportParsingResult(bool parsed_successfully) {
                             parsed_successfully);
 }
 
-void LogNewProfileEditedType(FieldType edited_type) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.NewProfileEditedType",
-      ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
-}
-
 void LogProfileUpdateAffectedType(
     FieldType affected_type,
     AutofillClient::AddressPromptUserDecision decision) {
@@ -363,12 +317,6 @@ void LogProfileUpdateAffectedType(
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.UpdateProfileAffectedType.Any",
       ConvertSettingsVisibleFieldTypeForMetrics(affected_type));
-}
-
-void LogProfileUpdateEditedType(FieldType edited_type) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.UpdateProfileEditedType",
-      ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
 }
 
 void LogUpdateProfileNumberOfAffectedFields(
@@ -391,12 +339,6 @@ void LogProfileMigrationImportDecision(
     AutofillClient::AddressPromptUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.MigrateProfileDecision",
                                 decision);
-}
-
-void LogProfileMigrationEditedType(FieldType edited_type) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.MigrateProfileEditedType",
-      ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
 }
 
 void LogZipCodeLengthMetric(std::u16string_view zip) {

@@ -194,9 +194,6 @@ void LogHomeAndWorkSupersetImportDecision(
 // has changed/was added.
 void LogHomeAndWorkSupersetAffectedType(FieldType affected_type);
 
-// Logs that a type was edited manually in a home/work superset prompt.
-void LogHomeAndWorkSupersetEditedType(FieldType edited_type);
-
 // Logs that a type was edited manually for a specified import type.
 void LogProfileImportTypeEditedType(AutofillProfileImportType type,
                                     FieldType edited_type);
@@ -213,9 +210,6 @@ void LogRemovedSettingInaccessibleField(FieldType field);
 // only emitted when a number is present.
 void LogPhoneNumberImportParsingResult(bool parsed_successfully);
 
-// Logs that a specific type was edited in a save prompt.
-void LogNewProfileEditedType(FieldType edited_type);
-
 // Logs which storage a newly imported profile will be saved to.
 void LogNewProfileStorageLocation(const AutofillProfile& import_candidate);
 
@@ -225,9 +219,6 @@ void LogNewProfileStorageLocation(const AutofillProfile& import_candidate);
 void LogProfileUpdateAffectedType(
     FieldType affected_type,
     AutofillClient::AddressPromptUserDecision decision);
-
-// Logs that a specific type was edited in an update prompt.
-void LogProfileUpdateEditedType(FieldType edited_type);
 
 // Logs the number of changed fields for a profile update that received the
 // user |decision|. Note that additional manual edits in the update prompt are
@@ -240,9 +231,6 @@ void LogUpdateProfileNumberOfAffectedFields(
 // to `kAccount`.
 void LogProfileMigrationImportDecision(
     AutofillClient::AddressPromptUserDecision decision);
-
-// Logs that a specific type was edited in a migration prompt.
-void LogProfileMigrationEditedType(FieldType edited_type);
 
 // Logs the length of a zip code found in a valid and complete
 // profile considered for import.

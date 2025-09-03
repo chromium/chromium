@@ -1215,7 +1215,7 @@ TEST_F(AutofillProfileImportProcessTest,
   import_data.CollectMetrics(/*ukm_recorder=*/nullptr,
                              address_data_manager().GetProfiles());
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileImport.NameEmailSuperset.EditedType",
+      "Autofill.ProfileImport.NameEmailSupersetEditedType",
       SettingsVisibleFieldTypeForMetrics::kName, 1);
 }
 
@@ -1405,7 +1405,7 @@ TEST_F(AutofillProfileImportProcessTest,
   import_data.CollectMetrics(/*ukm_recorder=*/nullptr,
                              address_data_manager().GetProfiles());
   histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileImport.HomeWorkNameEmailMerge.EditedType",
+      "Autofill.ProfileImport.HomeWorkNameEmailMergeEditedType",
       SettingsVisibleFieldTypeForMetrics::kCity, 1);
 }
 
