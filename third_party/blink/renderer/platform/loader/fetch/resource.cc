@@ -443,11 +443,10 @@ const scoped_refptr<const SecurityOrigin>& Resource::GetOrigin() const {
 void Resource::DidDownloadToBlob(scoped_refptr<BlobDataHandle>) {}
 
 static base::TimeDelta CurrentAge(const ResourceResponse& response,
-                                  base::Time response_timestamp,
-                                  UseCounter& use_counter) {
+                                  base::Time response_timestamp) {
   // RFC2616 13.2.3
   // No compensation for latency as that is not terribly important in practice
-  std::optional<base::Time> date_value = response.Date(use_counter);
+  std::optional<base::Time> date_value = response.Date();
   base::TimeDelta apparent_age;
   if (date_value && response_timestamp >= date_value.value())
     apparent_age = response_timestamp - date_value.value();
@@ -459,8 +458,7 @@ static base::TimeDelta CurrentAge(const ResourceResponse& response,
 }
 
 static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
-                                         base::Time response_timestamp,
-                                         UseCounter& use_counter) {
+                                         base::Time response_timestamp) {
 #if !BUILDFLAG(IS_ANDROID)
   // On desktop, local files should be reloaded in case they change.
   if (response.CurrentRequestUrl().IsLocalFile())
@@ -476,12 +474,12 @@ static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
   std::optional<base::TimeDelta> max_age_value = response.CacheControlMaxAge();
   if (max_age_value)
     return max_age_value.value();
-  std::optional<base::Time> expires = response.Expires(use_counter);
-  std::optional<base::Time> date = response.Date(use_counter);
+  std::optional<base::Time> expires = response.Expires();
+  std::optional<base::Time> date = response.Date();
   base::Time creation_time = date ? date.value() : response_timestamp;
   if (expires)
     return expires.value() - creation_time;
-  std::optional<base::Time> last_modified = response.LastModified(use_counter);
+  std::optional<base::Time> last_modified = response.LastModified();
   if (last_modified)
     return (creation_time - last_modified.value()) * 0.1;
   // If no cache headers are present, the specification leaves the decision to
@@ -489,12 +487,12 @@ static base::TimeDelta FreshnessLifetime(const ResourceResponse& response,
   return base::TimeDelta();
 }
 
-base::TimeDelta Resource::FreshnessLifetime(UseCounter& use_counter) const {
+base::TimeDelta Resource::FreshnessLifetime() const {
   base::TimeDelta lifetime =
-      blink::FreshnessLifetime(GetResponse(), response_timestamp_, use_counter);
+      blink::FreshnessLifetime(GetResponse(), response_timestamp_);
   for (const auto& redirect : redirect_chain_) {
     base::TimeDelta redirect_lifetime = blink::FreshnessLifetime(
-        redirect.redirect_response_, response_timestamp_, use_counter);
+        redirect.redirect_response_, response_timestamp_);
     lifetime = std::min(lifetime, redirect_lifetime);
   }
   return lifetime;
@@ -502,8 +500,7 @@ base::TimeDelta Resource::FreshnessLifetime(UseCounter& use_counter) const {
 
 static bool CanUseResponse(const ResourceResponse& response,
                            bool allow_stale,
-                           base::Time response_timestamp,
-                           UseCounter& use_counter) {
+                           base::Time response_timestamp) {
   if (response.IsNull())
     return false;
 
@@ -519,18 +516,17 @@ static bool CanUseResponse(const ResourceResponse& response,
   if (response.HttpStatusCode() == 302 || response.HttpStatusCode() == 307) {
     // Default to not cacheable unless explicitly allowed.
     bool has_max_age = response.CacheControlMaxAge() != std::nullopt;
-    bool has_expires = response.Expires(use_counter) != std::nullopt;
+    bool has_expires = response.Expires() != std::nullopt;
     // TODO: consider catching Cache-Control "private" and "public" here.
     if (!has_max_age && !has_expires)
       return false;
   }
 
-  base::TimeDelta max_life =
-      FreshnessLifetime(response, response_timestamp, use_counter);
+  base::TimeDelta max_life = FreshnessLifetime(response, response_timestamp);
   if (allow_stale)
     max_life += response.CacheControlStaleWhileRevalidate();
 
-  return CurrentAge(response, response_timestamp, use_counter) <= max_life;
+  return CurrentAge(response, response_timestamp) <= max_life;
 }
 
 const ResourceRequestHead& Resource::LastResourceRequest() const {
@@ -1024,10 +1020,10 @@ void Resource::MatchPreload(const FetchParameters& params) {
   is_unused_preload_ = false;
 }
 
-bool Resource::CanReuseRedirectChain(UseCounter& use_counter) const {
+bool Resource::CanReuseRedirectChain() const {
   for (auto& redirect : redirect_chain_) {
     if (!CanUseResponse(redirect.redirect_response_, false /*allow_stale*/,
-                        response_timestamp_, use_counter)) {
+                        response_timestamp_)) {
       return false;
     }
     if (redirect.request_.CacheControlContainsNoCache() ||
@@ -1062,37 +1058,34 @@ bool Resource::MustReloadDueToVaryHeader(
   return false;
 }
 
-bool Resource::MustRevalidateDueToCacheHeaders(bool allow_stale,
-                                               UseCounter& use_counter) const {
-  return !CanUseResponse(GetResponse(), allow_stale, response_timestamp_,
-                         use_counter) ||
+bool Resource::MustRevalidateDueToCacheHeaders(bool allow_stale) const {
+  return !CanUseResponse(GetResponse(), allow_stale, response_timestamp_) ||
          GetResourceRequest().CacheControlContainsNoCache() ||
          GetResourceRequest().CacheControlContainsNoStore();
 }
 
 static bool ShouldRevalidateStaleResponse(const ResourceResponse& response,
-                                          base::Time response_timestamp,
-                                          UseCounter& use_counter) {
+                                          base::Time response_timestamp) {
   base::TimeDelta staleness = response.CacheControlStaleWhileRevalidate();
   if (staleness.is_zero())
     return false;
 
-  return CurrentAge(response, response_timestamp, use_counter) >
-         FreshnessLifetime(response, response_timestamp, use_counter);
+  return CurrentAge(response, response_timestamp) >
+         FreshnessLifetime(response, response_timestamp);
 }
 
-bool Resource::ShouldRevalidateStaleResponse(UseCounter& use_counter) const {
+bool Resource::ShouldRevalidateStaleResponse() const {
   for (auto& redirect : redirect_chain_) {
     // Use |response_timestamp_| since we don't store the timestamp
     // of each redirect response.
-    if (blink::ShouldRevalidateStaleResponse(
-            redirect.redirect_response_, response_timestamp_, use_counter)) {
+    if (blink::ShouldRevalidateStaleResponse(redirect.redirect_response_,
+                                             response_timestamp_)) {
       return true;
     }
   }
 
   return blink::ShouldRevalidateStaleResponse(GetResponse(),
-                                              response_timestamp_, use_counter);
+                                              response_timestamp_);
 }
 
 bool Resource::StaleRevalidationRequested() const {

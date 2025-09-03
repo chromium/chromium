@@ -6938,7 +6938,7 @@ std::optional<base::Time> Document::lastModifiedTime() const {
     }
   }
   if (!http_last_modified.empty()) {
-    return ParseDate(http_last_modified, const_cast<Document&>(*this));
+    return ParseDate(http_last_modified);
   }
   return std::nullopt;
 }

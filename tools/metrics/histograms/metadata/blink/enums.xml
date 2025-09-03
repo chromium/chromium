@@ -5682,8 +5682,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5125" label="V8PaymentManager_UserHint_AttributeGetter"/>
   <int value="5126" label="V8PaymentManager_UserHint_AttributeSetter"/>
   <int value="5127" label="PerformanceNavigationTimingConfidence"/>
-  <int value="5128" label="HttpParsersParseDateFromUTCStringDifferent"/>
-  <int value="5129" label="HttpParsersParseDateFromStringDifferent"/>
+  <int value="5128"
+      label="OBSOLETE_HttpParsersParseDateFromUTCStringDifferent"/>
+  <int value="5129" label="OBSOLETE_HttpParsersParseDateFromStringDifferent"/>
   <int value="5130" label="MediaQueryRangeSyntax"/>
   <int value="5131" label="ParseHTMLSafe"/>
   <int value="5132" label="SetHTMLSafe"/>

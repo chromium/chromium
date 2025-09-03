@@ -41,7 +41,6 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/strings/string_view_util.h"
-#include "base/time/time.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -59,15 +58,12 @@
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -564,43 +560,12 @@ bool ParseHTTPRefresh(const String& refresh,
   }
 }
 
-std::optional<base::Time> ParseDate(const String& value,
-                                    UseCounter& use_counter) {
-  const std::string utf8_value = value.Utf8();
-  if (RuntimeEnabledFeatures::ParseDateUsesBaseTimeFromUtcStringEnabled()) {
-    base::Time parsed_time;
-    if (!base::Time::FromUTCString(utf8_value.c_str(), &parsed_time)) {
-      return std::nullopt;
-    }
-    return parsed_time;
+std::optional<base::Time> ParseDate(const String& value) {
+  base::Time parsed_time;
+  if (!base::Time::FromUTCString(value.Utf8().c_str(), &parsed_time)) {
+    return std::nullopt;
   }
-  std::optional<base::Time> maybe_parsed_time =
-      ParseDateFromNullTerminatedCharacters(utf8_value.c_str());
-  {
-    // Assumes UTC if timezone isn't specified.
-    std::optional<base::Time> maybe_parsed_time_fromutcstring;
-    base::Time parsed_time;
-    if (base::Time::FromUTCString(utf8_value.c_str(), &parsed_time)) {
-      maybe_parsed_time_fromutcstring = parsed_time;
-    }
-    if (maybe_parsed_time != maybe_parsed_time_fromutcstring) {
-      use_counter.CountUse(
-          WebFeature::kHttpParsersParseDateFromUTCStringDifferent);
-    }
-  }
-  {
-    // Assumes local time if timezone isn't specified.
-    std::optional<base::Time> maybe_parsed_time_fromstring;
-    base::Time parsed_time;
-    if (base::Time::FromString(utf8_value.c_str(), &parsed_time)) {
-      maybe_parsed_time_fromstring = parsed_time;
-    }
-    if (maybe_parsed_time != maybe_parsed_time_fromstring) {
-      use_counter.CountUse(
-          WebFeature::kHttpParsersParseDateFromStringDifferent);
-    }
-  }
-  return maybe_parsed_time;
+  return parsed_time;
 }
 
 AtomicString ExtractMIMETypeFromMediaType(const AtomicString& media_type) {

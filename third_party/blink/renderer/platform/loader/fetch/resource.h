@@ -310,12 +310,11 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // Returns true if |this| resource is matched with the given parameters.
   virtual void MatchPreload(const FetchParameters&);
 
-  bool CanReuseRedirectChain(UseCounter& use_counter) const;
-  bool MustRevalidateDueToCacheHeaders(bool allow_stale,
-                                       UseCounter& use_counter) const;
-  bool ShouldRevalidateStaleResponse(UseCounter& use_counter) const;
+  bool CanReuseRedirectChain() const;
+  bool MustRevalidateDueToCacheHeaders(bool allow_stale) const;
+  bool ShouldRevalidateStaleResponse() const;
   virtual bool CanUseCacheValidator() const;
-  base::TimeDelta FreshnessLifetime(UseCounter& use_counter) const;
+  base::TimeDelta FreshnessLifetime() const;
   bool IsCacheValidator() const {
     return revalidation_status_ == RevalidationStatus::kRevalidating;
   }
