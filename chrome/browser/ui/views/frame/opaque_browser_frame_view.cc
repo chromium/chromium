@@ -654,6 +654,20 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
+OpaqueBrowserFrameView::BoundsAndMargins
+OpaqueBrowserFrameView::GetCaptionButtonBounds() const {
+  gfx::Rect bounds;
+  for (const auto& button :
+       {minimize_button_, maximize_button_, restore_button_, close_button_}) {
+    if (button && button->GetVisible()) {
+      bounds.Union(button->bounds());
+    }
+  }
+  // Opaque browser frame caption buttons tend to be solid rectangles, so there
+  // is no additional padding.
+  return BoundsAndMargins{gfx::RectF(bounds)};
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameView, private:
 

@@ -128,6 +128,9 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
+  // BrowserNonClientFrameView:
+  BoundsAndMargins GetCaptionButtonBounds() const override;
+
   // Paint various sub-components of this view.  The *FrameBorder() functions
   // also paint the background of the titlebar area, since the top frame border
   // and titlebar background are a contiguous component.

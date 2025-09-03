@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
+#include <string_view>
+
+#include "base/command_line.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -13,6 +18,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -27,10 +33,13 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/background.h"
+#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/window/hit_test_utils.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -39,14 +48,104 @@
 #include "ui/views/win/hwnd_util.h"
 #endif
 
+namespace {
+constexpr std::string_view kShowBrowserFrameRegionsCommandLineSwitch =
+    "show-browser-frame-regions";
+class ShowBrowserFrameRegionsView : public views::View {
+  METADATA_HEADER(ShowBrowserFrameRegionsView, views::View)
+ public:
+  explicit ShowBrowserFrameRegionsView(BrowserNonClientFrameView& frame)
+      : frame_(frame) {
+    SetCanProcessEventsWithinSubtree(false);
+    GetViewAccessibility().SetIsIgnored(true);
+    SetProperty(views::kViewIgnoredByLayoutKey, true);
+    SetFlipCanvasOnPaintForRTLUI(true);
+  }
+  ~ShowBrowserFrameRegionsView() override = default;
+
+  static views::View* Find(views::View& parent) {
+    for (auto& child : parent.children()) {
+      if (views::IsViewClass<ShowBrowserFrameRegionsView>(child)) {
+        return child;
+      }
+    }
+    return nullptr;
+  }
+
+  void OnPaint(gfx::Canvas* canvas) override {
+    const auto params = frame_->GetBrowserLayoutParams();
+    const gfx::RectF rect(params.visual_client_area);
+    canvas->DrawRect(rect, SK_ColorCYAN);
+    if (!params.leading_exclusion.IsEmpty()) {
+      canvas->DrawRect(
+          gfx::RectF(rect.origin(), params.leading_exclusion.content),
+          SK_ColorMAGENTA);
+      canvas->DrawRect(
+          gfx::RectF(rect.origin(),
+                     params.leading_exclusion.ContentWithPadding()),
+          SK_ColorRED);
+    }
+    if (!params.trailing_exclusion.IsEmpty()) {
+      const auto& trailing = params.trailing_exclusion;
+      canvas->DrawRect(
+          gfx::RectF(rect.right() - trailing.content.width(), rect.y(),
+                     trailing.content.width(), trailing.content.height()),
+          SK_ColorGREEN);
+      const auto with_padding = trailing.ContentWithPadding();
+      canvas->DrawRect(gfx::RectF(rect.right() - with_padding.width(), rect.y(),
+                                  with_padding.width(), with_padding.height()),
+                       SK_ColorYELLOW);
+    }
+  }
+
+ private:
+  const raw_ref<BrowserNonClientFrameView> frame_;
+};
+
+BEGIN_METADATA(ShowBrowserFrameRegionsView)
+END_METADATA
+}  // namespace
+
 BrowserNonClientFrameView::BrowserNonClientFrameView(BrowserFrame* frame,
                                                      BrowserView* browser_view)
     : frame_(frame), browser_view_(browser_view) {
   DCHECK(frame_);
   DCHECK(browser_view_);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kShowBrowserFrameRegionsCommandLineSwitch)) {
+    AddChildView(std::make_unique<ShowBrowserFrameRegionsView>(*this));
+  }
 }
 
 BrowserNonClientFrameView::~BrowserNonClientFrameView() = default;
+
+BrowserLayoutParams BrowserNonClientFrameView::GetBrowserLayoutParams() const {
+  BrowserLayoutParams params;
+  params.visual_client_area = GetBoundsForClientView();
+  const auto caption_bounds = GetCaptionButtonBounds();
+  if (caption_bounds.bounds.IsEmpty()) {
+    return params;
+  }
+  const int caption_height = base::ClampRound(caption_bounds.bounds.bottom()) -
+                             params.visual_client_area.y();
+  if (CaptionButtonsOnLeadingEdge()) {
+    params.leading_exclusion.content = gfx::SizeF(
+        caption_bounds.bounds.right() - params.visual_client_area.x(),
+        caption_height);
+    params.leading_exclusion.horizontal_padding =
+        caption_bounds.margins.right();
+    params.leading_exclusion.vertical_padding = caption_bounds.margins.bottom();
+  } else {
+    params.trailing_exclusion.content = gfx::SizeF(
+        params.visual_client_area.right() - caption_bounds.bounds.x(),
+        caption_height);
+    params.trailing_exclusion.horizontal_padding =
+        caption_bounds.margins.left();
+    params.trailing_exclusion.vertical_padding =
+        caption_bounds.margins.bottom();
+  }
+  return params;
+}
 
 void BrowserNonClientFrameView::OnBrowserViewInitViewsComplete() {
   UpdateMinimumSize();
@@ -192,6 +291,27 @@ void BrowserNonClientFrameView::PaintAsActiveChanged() {
   SchedulePaint();
 }
 
+BrowserNonClientFrameView::BoundsAndMargins
+BrowserNonClientFrameView::GetCaptionButtonBounds() const {
+  // This is a hacky solution that uses existing logic to compute bounds.
+  // It should ideally be overridden with platform-appropriate code.
+  const int fallback_height = TabStyle::Get()->GetStandardHeight();
+  const gfx::Rect proposed_tabstrip_bounds =
+      GetBoundsForTabStripRegion(gfx::Size(0, fallback_height));
+  gfx::RectF bounds;
+  if (CaptionButtonsOnLeadingEdge()) {
+    bounds = gfx::RectF(0, 0, proposed_tabstrip_bounds.x(),
+                        proposed_tabstrip_bounds.bottom());
+  } else {
+    const float x = proposed_tabstrip_bounds.right();
+    bounds = gfx::RectF(x, 0, width() - x, proposed_tabstrip_bounds.bottom());
+  }
+  // Because we only have the tabstrip region bounds to work from, it is not
+  // possible to determine which part of the region is button and which is
+  // padding; therefore assume all of it is button.
+  return BoundsAndMargins{bounds};
+}
+
 bool BrowserNonClientFrameView::ShouldPaintAsActiveForState(
     BrowserFrameActiveState active_state) const {
   return (active_state == BrowserFrameActiveState::kUseCurrent)
@@ -224,6 +344,26 @@ gfx::ImageSkia BrowserNonClientFrameView::GetFrameOverlayImage(
   return tp->HasCustomImage(frame_overlay_image_id)
              ? *tp->GetImageSkiaNamed(frame_overlay_image_id)
              : gfx::ImageSkia();
+}
+
+void BrowserNonClientFrameView::Layout(PassKey p) {
+  LayoutSuperclass<NonClientFrameView>(this);
+  // If the show browser frame view is present, make it fills this entire frame.
+  if (auto* view = ShowBrowserFrameRegionsView::Find(*this)) {
+    view->SetBoundsRect(GetLocalBounds());
+  }
+}
+
+views::View::Views BrowserNonClientFrameView::GetChildrenInZOrder() {
+  auto views = NonClientFrameView::GetChildrenInZOrder();
+  // If the show browser frame view is in the list, move it to the end so it
+  // paints over everything.
+  if (auto* view = ShowBrowserFrameRegionsView::Find(*this)) {
+    if (std::erase(views, view)) {
+      views.push_back(view);
+    }
+  }
+  return views;
 }
 
 #if BUILDFLAG(IS_WIN)
