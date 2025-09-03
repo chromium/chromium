@@ -5,7 +5,6 @@
 package org.chromium.base;
 
 import android.app.ActivityManager;
-import android.os.Build;
 import android.util.Pair;
 
 import androidx.test.annotation.UiThreadTest;
@@ -44,12 +43,6 @@ public class BinderCallsListenerTest {
         BinderCallsListener listener = BinderCallsListener.getInstance();
         boolean success = listener.installListener();
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            // The API was added in Android 10, but don't skip the test in earlier releases, to
-            // check that we don't cause crashes there.
-            Assert.assertFalse(success);
-            return;
-        }
         Assert.assertTrue(success);
         List<Pair<String, String>> actions = new ArrayList<>();
         listener.setBinderCallListenerObserverForTesting(
