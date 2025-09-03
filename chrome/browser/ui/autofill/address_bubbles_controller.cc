@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,7 +23,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
-#include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_address_bubble_controller.h"
@@ -254,24 +252,11 @@ void AddressBubblesController::SetUpAndShowBubble(
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
   // Don't show the bubble if it's already visible, and inform the backend.
-  if (bubble_view()) {
+  if (bubble_view() || !MaySetUpBubble()) {
     std::move(address_profile_save_prompt_callback)
         .Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
              std::nullopt);
     return;
-  }
-
-  const bool bubble_manager_enabled = base::FeatureList::IsEnabled(
-      features::kAutofillShowBubblesBasedOnPriorities);
-
-  if (bubble_manager_enabled) {
-    auto* manager = BubbleManager::GetForWebContents(web_contents());
-    if (!manager || manager->HasPendingBubble(*this)) {
-      std::move(address_profile_save_prompt_callback)
-          .Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
-               std::nullopt);
-      return;
-    }
   }
 
   if (address_profile_save_prompt_callback_) {
@@ -292,13 +277,7 @@ void AddressBubblesController::SetUpAndShowBubble(
               user_has_any_profile_saved,
               std::move(address_profile_save_prompt_callback));
 
-  if (bubble_manager_enabled) {
-    if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
-      manager->RequestShowController(*this);
-    }
-  } else {
-    ShowBubble();
-  }
+  QueueOrShowBubble();
 }
 
 void AddressBubblesController::SetUpBubble(

@@ -7,13 +7,11 @@
 #include <string>
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
-#include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -25,7 +23,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
@@ -144,16 +141,8 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     return;
   }
 
-  const bool bubble_manager_enabled = base::FeatureList::IsEnabled(
-      features::kAutofillShowBubblesBasedOnPriorities);
-
-  if (bubble_manager_enabled) {
-    auto* manager = BubbleManager::GetForWebContents(web_contents());
-    if (!manager || manager->HasPendingBubble(*this)) {
-      // Early return if a pre-existing of similar type is in the queue or the
-      // manager does not exist.
-      return;
-    }
+  if (!MaySetUpBubble()) {
+    return;
   }
 
   // Hides the old bubble. Sets bubble_state_ to show icon here since we are
@@ -163,13 +152,7 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
   SetupOfferNotification(offer, card);
 
   if (options.show_notification_automatically) {
-    if (bubble_manager_enabled) {
-      if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
-        manager->RequestShowController(*this);
-      }
-    } else {
-      ShowBubble();
-    }
+    QueueOrShowBubble();
   } else {
     HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
   }

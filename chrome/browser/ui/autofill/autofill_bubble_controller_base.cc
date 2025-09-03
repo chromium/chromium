@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -64,6 +66,34 @@ bool AutofillBubbleControllerBase::IsShowingBubble() const {
 
 bool AutofillBubbleControllerBase::IsMouseHovered() const {
   return IsShowingBubble() && bubble_view_->IsMouseHovered();
+}
+
+bool AutofillBubbleControllerBase::MaySetUpBubble() {
+#if BUILDFLAG(IS_ANDROID)
+  return true;
+#else  // BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillShowBubblesBasedOnPriorities)) {
+    return true;
+  }
+
+  auto* manager = BubbleManager::GetForWebContents(web_contents());
+  return manager && !manager->HasPendingBubble(*this);
+#endif
+}
+
+void AutofillBubbleControllerBase::QueueOrShowBubble() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowBubblesBasedOnPriorities)) {
+    if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
+      manager->RequestShowController(*this);
+    }
+    return;
+  }
+#endif
+
+  ShowBubble();
 }
 
 }  // namespace autofill

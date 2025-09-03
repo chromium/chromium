@@ -55,6 +55,14 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
 
   virtual void UpdatePageActionIcon();
 
+  // If the BubbleManager feature is enabled, this returns `false` if a bubble
+  // is already queued to be shown.
+  [[nodiscard]] bool MaySetUpBubble();
+
+  // Calls the bubble manager to show the bubble if bubble manager is enabled.
+  // Otherwise just shows the bubble.
+  void QueueOrShowBubble();
+
   AutofillBubbleBase* bubble_view() const { return bubble_view_; }
   void set_bubble_view(AutofillBubbleBase* bubble_view) {
     bubble_view_ = bubble_view;

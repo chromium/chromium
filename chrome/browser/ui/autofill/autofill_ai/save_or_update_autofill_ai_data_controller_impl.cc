@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
-#include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -25,7 +23,6 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -122,31 +119,13 @@ void SaveOrUpdateAutofillAiDataControllerImpl::ShowPrompt(
     AutofillClient::EntitySaveOrUpdatePromptResultCallback
         save_prompt_acceptance_callback) {
   // Don't show the bubble if it's already visible.
-  if (bubble_view()) {
+  if (bubble_view() || !MaySetUpBubble()) {
     return;
-  }
-
-  const bool bubble_manager_enabled = base::FeatureList::IsEnabled(
-      features::kAutofillShowBubblesBasedOnPriorities);
-
-  if (bubble_manager_enabled) {
-    auto* manager = BubbleManager::GetForWebContents(web_contents());
-    if (!manager || manager->HasPendingBubble(*this)) {
-      // Early return if a pre-existing of similar type is in the queue or the
-      // manager does not exist.
-      return;
-    }
   }
 
   SetupPrompt(std::move(new_entity), std::move(old_entity),
               std::move(save_prompt_acceptance_callback));
-  if (bubble_manager_enabled) {
-    if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
-      manager->RequestShowController(*this);
-    }
-  } else {
-    DoShowBubble();
-  }
+  QueueOrShowBubble();
 }
 
 void SaveOrUpdateAutofillAiDataControllerImpl::SetupPrompt(
