@@ -7,7 +7,7 @@
 
 #include <set>
 
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class Point;

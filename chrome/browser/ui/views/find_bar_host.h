@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/views/find_bar_owner.h"
 #include "chrome/browser/ui/views/find_bar_view.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/focus/focus_manager.h"
