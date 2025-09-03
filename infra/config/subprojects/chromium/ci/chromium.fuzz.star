@@ -922,10 +922,12 @@ libfuzzer_linux_builder(
 
 libfuzzer_builder(
     name = "Libfuzzer Upload iOS Catalyst Debug",
-    builderless = False,
+    builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     build_config = builder_config.build_config.DEBUG,
+    target_arch = builder_config.target_arch.INTEL,
     target_bits = 64,
     target_platform = builder_config.target_platform.IOS,
     chromium_extra_apply_configs = ["mac_toolchain"],
