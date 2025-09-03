@@ -22,6 +22,8 @@ experimental domain Autofill
   type AddressField extends object
     properties
       # address field name, for example GIVEN_NAME.
+      # The full list of supported field names:
+      # https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/field_types.cc;l=38
       string name
       # address field value, for example Jon Doe.
       string value
@@ -90,8 +92,10 @@ experimental domain Autofill
       DOM.BackendNodeId fieldId
       # Identifies the frame that field belongs to.
       optional Page.FrameId frameId
-      # Credit card information to fill out the form. Credit card data is not saved.
-      CreditCard card
+      # Credit card information to fill out the form. Credit card data is not saved.  Mutually exclusive with `address`.
+      optional CreditCard card
+      # Address to fill out the form. Address data is not saved. Mutually exclusive with `card`.
+      optional Address address
 
   # Set addresses so that developers can verify their forms implementation.
   command setAddresses

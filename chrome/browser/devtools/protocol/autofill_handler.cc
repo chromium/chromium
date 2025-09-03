@@ -20,6 +20,7 @@
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -89,7 +90,8 @@ AutofillHandler::~AutofillHandler() {
 protocol::Response AutofillHandler::Trigger(
     int field_id,
     std::optional<String> frame_id,
-    std::unique_ptr<protocol::Autofill::CreditCard> card) {
+    std::unique_ptr<protocol::Autofill::CreditCard> card,
+    std::unique_ptr<protocol::Autofill::Address> address) {
   auto host = content::DevToolsAgentHost::GetForId(target_id_);
   if (!host) {
     return Response::ServerError("Target not found");
@@ -143,23 +145,64 @@ protocol::Response AutofillHandler::Trigger(
     return Response::ServerError("RenderFrameHost is being destroyed");
   }
 
-  autofill::CreditCard tmp_autofill_card;
-  tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,
-                               base::UTF8ToUTF16(card->GetNumber()));
-  tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL,
-                               base::UTF8ToUTF16(card->GetName()));
-  tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_EXP_MONTH,
-                               base::UTF8ToUTF16(card->GetExpiryMonth()));
-  tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
-                               base::UTF8ToUTF16(card->GetExpiryYear()));
-  tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_VERIFICATION_CODE,
-                               base::UTF8ToUTF16(card->GetCvc()));
+  // Validate that card and address are mutually exclusive.
+  if (card && address) {
+    return Response::InvalidRequest("Card and address cannot both be provided");
+  }
 
-  static_cast<autofill::BrowserAutofillManager&>(
-      autofill_driver->GetAutofillManager())
-      .FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill, *form,
-                         global_field_id, &tmp_autofill_card,
-                         autofill::AutofillTriggerSource::kDevtools);
+  if (!card && !address) {
+    return Response::InvalidRequest("Either card or address must be provided");
+  }
+
+  if (card) {
+    autofill::CreditCard tmp_autofill_card;
+    tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,
+                                 base::UTF8ToUTF16(card->GetNumber()));
+    tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL,
+                                 base::UTF8ToUTF16(card->GetName()));
+    tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_EXP_MONTH,
+                                 base::UTF8ToUTF16(card->GetExpiryMonth()));
+    tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                                 base::UTF8ToUTF16(card->GetExpiryYear()));
+    tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_VERIFICATION_CODE,
+                                 base::UTF8ToUTF16(card->GetCvc()));
+    static_cast<autofill::BrowserAutofillManager&>(
+        autofill_driver->GetAutofillManager())
+        .FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill, *form,
+                           global_field_id, &tmp_autofill_card,
+                           autofill::AutofillTriggerSource::kDevtools);
+  }
+  if (address) {
+    std::string country_code =
+        autofill::i18n_model_definition::kLegacyHierarchyCountryCodeString;
+    for (const auto& field : *address->GetFields()) {
+      if (field->GetName() == "ADDRESS_HOME_COUNTRY") {
+        country_code = field->GetValue();
+        break;
+      }
+    }
+    autofill::AddressCountryCode address_country_code(country_code);
+    autofill::AutofillProfile tmp_autofill_profile(address_country_code);
+    for (const auto& field : *address->GetFields()) {
+      std::string field_name = field->GetName();
+      std::string field_value = field->GetValue();
+
+      // Map field names to FieldType and set them.
+      autofill::FieldType field_type =
+          autofill::TypeNameToFieldType(field_name);
+      if (!IsAddressType(field_type)) {
+        return Response::InvalidRequest("Unsupported field type: " +
+                                        field_name);
+      }
+      tmp_autofill_profile.SetRawInfo(field_type,
+                                      base::UTF8ToUTF16(field_value));
+    }
+    static_cast<autofill::BrowserAutofillManager&>(
+        autofill_driver->GetAutofillManager())
+        .FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill, *form,
+                           global_field_id, &tmp_autofill_profile,
+                           autofill::AutofillTriggerSource::kDevtools);
+  }
 
   return Response::Success();
 }
