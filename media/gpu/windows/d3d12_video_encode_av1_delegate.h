@@ -89,6 +89,10 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   // input_arguments_.PictureControlDesc.PictureControlCodecData
   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_CODEC_DATA picture_params_{};
 
+  // picture_params_.ReferenceFramesReconPictureDescriptors
+  std::array<D3D12_VIDEO_ENCODER_AV1_REFERENCE_PICTURE_DESCRIPTOR, 8>
+      reference_descriptors_{};
+
   // Bitrate controller for CBR encoding.
   std::unique_ptr<aom::AV1RateControlRTC> software_brc_;
 

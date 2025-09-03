@@ -840,12 +840,11 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
   if (request_keyframe) {
     // When encoding a key frame, as API requirements, all array entries in
     // ReferenceFramesReconPictureDescriptors should be set to invalid index.
-    for (auto& descriptor :
-         picture_params_.ReferenceFramesReconPictureDescriptors) {
-      descriptor.ReconstructedPictureResourceIndex = 0XFF;
-    }
+    reference_descriptors_.fill({.ReconstructedPictureResourceIndex = 0xFF});
     picture_params_.PrimaryRefFrame = kPrimaryRefNone;
   }
+  std::copy(reference_descriptors_.begin(), reference_descriptors_.end(),
+            picture_params_.ReferenceFramesReconPictureDescriptors);
 
   if (svc_layers_) {
     CHECK(metadata_.svc_generic.has_value());
@@ -1079,11 +1078,9 @@ void D3D12VideoEncodeAV1Delegate::RefreshDPBAndDescriptors() {
       .FrameType = picture_params_.FrameType,
       .OrderHint = picture_params_.OrderHint,
       .PictureIndex = picture_params_.PictureIndex};
-  base::span descriptors =
-      picture_params_.ReferenceFramesReconPictureDescriptors;
-  for (size_t i = 0; i < std::size(descriptors); i++) {
+  for (size_t i = 0; i < reference_descriptors_.size(); i++) {
     if (picture_params_.RefreshFrameFlags & (1 << i)) {
-      descriptors[i] = a_descriptor;
+      reference_descriptors_[i] = a_descriptor;
     }
   }
 }
