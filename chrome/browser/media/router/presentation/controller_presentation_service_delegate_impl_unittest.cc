@@ -43,7 +43,6 @@ using blink::mojom::PresentationConnectionMessage;
 using blink::mojom::PresentationConnectionResultPtr;
 using blink::mojom::PresentationInfo;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -447,10 +446,10 @@ TEST_F(ControllerPresentationServiceDelegateImplTest,
   // Set up a PresentationConnection so we can listen to it.
   MediaRouteResponseCallback route_response_callback;
   EXPECT_CALL(*router_, JoinRouteInternal(_, _, _, _, _, _))
-      .WillOnce(WithArgs<4>(Invoke(
+      .WillOnce(WithArgs<4>(
           [&route_response_callback](MediaRouteResponseCallback& callback) {
             route_response_callback = std::move(callback);
-          })));
+          }));
 
   const std::string kPresentationId("pid");
   presentation_urls_.push_back(GURL(kPresentationUrl3));

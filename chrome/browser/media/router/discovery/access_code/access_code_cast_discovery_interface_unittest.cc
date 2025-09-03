@@ -48,7 +48,6 @@ using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
 
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::InvokeArgument;
 using ::testing::Mock;
 using ::testing::NiceMock;

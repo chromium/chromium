@@ -230,8 +230,8 @@ class CastMirroringServiceHostBrowserTest
     base::RunLoop run_loop;
     EXPECT_CALL(*outbound_channel_receiver_, OnMessage(_))
         .WillOnce(
-            testing::Invoke([expected_delay_ms, &run_loop](
-                                mirroring::mojom::CastMessagePtr message) {
+            [expected_delay_ms,
+             &run_loop](mirroring::mojom::CastMessagePtr message) {
               const std::optional<base::Value> root_or_error =
                   base::JSONReader::Read(message->json_format_data);
               ASSERT_TRUE(root_or_error);
@@ -251,7 +251,7 @@ class CastMirroringServiceHostBrowserTest
                 }
               }
               run_loop.Quit();
-            }));
+            });
     host_->Start(std::move(session_params), std::move(observer),
                  std::move(outbound_channel),
                  inbound_channel_.BindNewPipeAndPassReceiver(), "Sink Name");

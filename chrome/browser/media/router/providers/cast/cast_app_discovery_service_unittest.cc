@@ -19,7 +19,6 @@
 
 using cast_channel::GetAppAvailabilityResult;
 using testing::_;
-using testing::Invoke;
 
 namespace media_router {
 
