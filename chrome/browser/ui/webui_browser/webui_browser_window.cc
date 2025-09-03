@@ -116,6 +116,8 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
   web_view_ = widget_->SetClientContentsView(std::move(web_view));
 
   widget_->Show();
+  // Give our main web contents the focus so that accelerators work.
+  ui_web_contents->SetInitialFocus();
 
   LoadAccelerators();
 }
