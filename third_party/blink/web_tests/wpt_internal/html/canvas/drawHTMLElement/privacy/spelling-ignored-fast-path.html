@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<title>drawHTMLElement with allowReadback does not draw spelling</title>
+<title>drawHTMLElement does not draw spelling</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:schenney@chromium.org">
 <link rel="match" href="spelling-ignored-fast-path-ref.html">
@@ -25,7 +25,7 @@
   function runTest() {
     addSpellingMarker(editable, 5, 10)
 
-    canvas.getContext("2d").drawHTMLElement(child, 0, 0, { allowReadback: true });
+    canvas.getContext("2d").drawHTMLElement(child, 0, 0);
   }
 
   onload = () => runTest();

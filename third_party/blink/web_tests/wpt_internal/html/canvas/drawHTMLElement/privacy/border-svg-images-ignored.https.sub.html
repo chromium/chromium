@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>drawHTMLElement with allowReadback does not draw cross-origin border images</title>
+  <title>drawHTMLElement does not draw cross-origin border images</title>
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
   <style>
@@ -49,7 +49,7 @@
     window.onload = () => {
       test(function(t) {
         var context = canvas.getContext("2d");
-        context.drawHTMLElement(child, 0, 0, { allowReadback: true });
+        context.drawHTMLElement(child, 0, 0);
       });
     }
   </script>

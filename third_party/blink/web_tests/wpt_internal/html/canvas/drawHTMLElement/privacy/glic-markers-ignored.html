@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
 <meta charset="UTF-8">
-<title>drawHTMLElement with allowReadback does not draw GLIC markers</title>
+<title>drawHTMLElement does not draw GLIC markers</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:schenney@chromium.org">
 <link rel="match" href="glic-markers-ignored-ref.html">
@@ -32,7 +32,7 @@
       internals.setMarker(document, range, "glic");
     }
     setTimeout(() => {
-      canvas.getContext("2d").drawHTMLElement(child, 0, 0, { allowReadback: true });
+      canvas.getContext("2d").drawHTMLElement(child, 0, 0);
       takeScreenshot();
     }, 500);
   }

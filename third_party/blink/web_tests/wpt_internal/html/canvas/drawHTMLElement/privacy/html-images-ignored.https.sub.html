@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>drawHTMLElement with allowReadback does not draw cross-origin iframes</title>
+  <title>drawHTMLElement does not draw cross-origin HTML images</title>
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
   <style>
@@ -25,19 +25,19 @@
 <body>
   <canvas id=canvas width="100" height="200" layoutsubtree>
     <div id=child>
-      <iframe id=sameOrigin width=100 height=100 src="https://{{location[host]}}/wpt_internal/html/canvas/drawHTMLElement/resources/iframe-subframe-red.html"></iframe>
-      <iframe id=crossOrigin width=100 height=100 src="https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawHTMLElement/resources/iframe-subframe-red.html"></iframe>
+      <img id=sameOrigin width=100 height=100 src="https://{{location[host]}}/css/css-masking/mask-image/support/red-100x100.png"/>
+      <img id=crossOrigin width=100 height=100 src="https://{{hosts[alt][www]}}:{{ports[h2][0]}}/css/css-masking/mask-image/support/red-100x100.png"/>
     </div>
   </canvas>
 
   <script>
-    let sPendingIframesToLoad = 2;
+    let sPendingImagesToLoad = 2;
 
-    function pendingIframeLoaded() {
-      if (!--sPendingIframesToLoad) {
+    function pendingImageLoaded() {
+      if (!--sPendingImagesToLoad) {
         test(function(t) {
           var context = canvas.getContext("2d");
-          context.drawHTMLElement(child, 0, 0, { allowReadback: true });
+          context.drawHTMLElement(child, 0, 0);
 
           pixel = context.getImageData(50, 50, 1, 1).data;
           assert_equals(pixel[0], 255, "Same origin should draw");
@@ -54,8 +54,8 @@
       }
     }
 
-    sameOrigin.onload = pendingIframeLoaded;
-    crossOrigin.onload = pendingIframeLoaded;
+    sameOrigin.onload = pendingImageLoaded;
+    crossOrigin.onload = pendingImageLoaded;
   </script>
 </body>
 </html>

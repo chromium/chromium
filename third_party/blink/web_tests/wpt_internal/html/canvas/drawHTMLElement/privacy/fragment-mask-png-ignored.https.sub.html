@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>drawHTMLElement with allowReadback does not use cross-origin mask images</title>
+  <title>drawHTMLElement does not use cross-origin mask images</title>
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
   <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
@@ -33,7 +33,7 @@
     window.onload = () => {
       test(function(t) {
         var context = canvas.getContext("2d");
-        context.drawHTMLElement(child, 0, 0, { allowReadback: true });
+        context.drawHTMLElement(child, 0, 0);
 
         pixel = context.getImageData(50, 25, 1, 1).data;
         assert_equals(pixel[0], 0, "Same origin should draw");

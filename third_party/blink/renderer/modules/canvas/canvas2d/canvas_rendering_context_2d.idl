@@ -56,25 +56,21 @@ interface CanvasRenderingContext2D {
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
     void drawElement(Element element,
-                     unrestricted double x, unrestricted double y,
-                     optional Canvas2DDrawElementOption options = {});
+                     unrestricted double x, unrestricted double y);
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
     void drawElement(Element element,
                      unrestricted double x, unrestricted double y,
-                     unrestricted double dwidth, unrestricted double dheight,
-                     optional Canvas2DDrawElementOption options = {});
+                     unrestricted double dwidth, unrestricted double dheight);
+
+    [RuntimeEnabled=CanvasDrawElement, RaisesException]
+    void drawHTMLElement(Element element,
+                         unrestricted double x, unrestricted double y);
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
     void drawHTMLElement(Element element,
                          unrestricted double x, unrestricted double y,
-                         optional Canvas2DDrawElementOption options = {});
-
-    [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    void drawHTMLElement(Element element,
-                         unrestricted double x, unrestricted double y,
-                         unrestricted double dwidth, unrestricted double dheight,
-                         optional Canvas2DDrawElementOption options = {});
+                         unrestricted double dwidth, unrestricted double dheight);
 
     [RuntimeEnabled=CanvasDrawElement, RaisesException]
     void setHitTestRegions(sequence<CanvasElementHitTestRegion> hitTestRegions);

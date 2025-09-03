@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<title>drawHTMLElement with allowReadback does not draw editing markers</title>
+<title>drawHTMLElement does not draw editing markers</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:schenney@chromium.org">
 <link rel="match" href="editing-markers-ignored-ref.html">
@@ -39,7 +39,7 @@
                                     "pink", "thin", "darkred");
     }
 
-    canvas.getContext("2d").drawHTMLElement(child, 0, 0, { allowReadback: true });
+    canvas.getContext("2d").drawHTMLElement(child, 0, 0);
   }
 
   onload = () => runTest();

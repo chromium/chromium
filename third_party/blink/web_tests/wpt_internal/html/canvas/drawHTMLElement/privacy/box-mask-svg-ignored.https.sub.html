@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>drawHTMLElement with allowReadback does not use cross-origin mask images</title>
+  <title>drawHTMLElement does not use cross-origin mask images</title>
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
   <style>
@@ -17,7 +17,7 @@
     width: 100px;
     height: 100px;
     background-color: red;
-    mask-image: url("https://{{location[host]}}/css/css-masking/mask-image/support/blue-100x50-transparent-100x50.png");
+    mask-image: url("https://{{location[host]}}/css/css-masking/mask-image/support/blue-100x50-transparent-100x50.svg");
   }
   #crossOrigin {
     position: absolute;
@@ -26,7 +26,7 @@
     width: 100px;
     height: 100px;
     background-color: red;
-    mask-image: url("https://{{hosts[alt][www]}}:{{ports[h2][0]}}/css/css-masking/mask-image/support/blue-100x50-transparent-100x50.png");
+    mask-image: url("https://{{hosts[alt][www]}}:{{ports[h2][0]}}/css/css-masking/mask-image/support/blue-100x50-transparent-100x50.svg");
   }
   </style>
 </head>
@@ -42,7 +42,7 @@
     window.onload = () => {
       test(function(t) {
         var context = canvas.getContext("2d");
-        context.drawHTMLElement(child, 0, 0, { allowReadback: true });
+        context.drawHTMLElement(child, 0, 0);
 
         pixel = context.getImageData(50, 25, 1, 1).data;
         assert_equals(pixel[0], 0, "Same origin should draw");

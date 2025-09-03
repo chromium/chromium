@@ -63,7 +63,6 @@
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_2d_draw_element_option.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_rendering_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -718,9 +717,8 @@ ImageData* CanvasRenderingContext2D::getImageDataInternal(
 void CanvasRenderingContext2D::drawElement(Element* element,
                                            double x,
                                            double y,
-                                           Canvas2DDrawElementOption* options,
                                            ExceptionState& exception_state) {
-  DrawElementInternal(element, x, y, std::nullopt, std::nullopt, options,
+  DrawElementInternal(element, x, y, std::nullopt, std::nullopt,
                       exception_state);
 }
 
@@ -729,18 +727,16 @@ void CanvasRenderingContext2D::drawElement(Element* element,
                                            double y,
                                            double dwidth,
                                            double dheight,
-                                           Canvas2DDrawElementOption* options,
                                            ExceptionState& exception_state) {
-  DrawElementInternal(element, x, y, dwidth, dheight, options, exception_state);
+  DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
 }
 
 void CanvasRenderingContext2D::drawHTMLElement(
     Element* element,
     double x,
     double y,
-    Canvas2DDrawElementOption* options,
     ExceptionState& exception_state) {
-  DrawElementInternal(element, x, y, std::nullopt, std::nullopt, options,
+  DrawElementInternal(element, x, y, std::nullopt, std::nullopt,
                       exception_state);
 }
 
@@ -750,9 +746,8 @@ void CanvasRenderingContext2D::drawHTMLElement(
     double y,
     double dwidth,
     double dheight,
-    Canvas2DDrawElementOption* options,
     ExceptionState& exception_state) {
-  DrawElementInternal(element, x, y, dwidth, dheight, options, exception_state);
+  DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
 }
 
 void CanvasRenderingContext2D::setHitTestRegions(
@@ -782,7 +777,6 @@ void CanvasRenderingContext2D::DrawElementInternal(
     double y,
     std::optional<double> dwidth,
     std::optional<double> dheight,
-    Canvas2DDrawElementOption* options,
     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
 
@@ -798,9 +792,6 @@ void CanvasRenderingContext2D::DrawElementInternal(
   if (!IsDrawElementEligible(element, "drawHTMLElement()", exception_state)) {
     return;
   }
-
-  // TODO(crbug.com/380277045): Taint for cross-origin and PII content.
-  // SetOriginTaintedByContent();
 
   PaintRecordBuilder builder;
   LayoutBox* layout_box = element->GetLayoutBox();
@@ -819,11 +810,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
 
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
   PaintFlags paint_flags = PaintFlag::kPaintingCanvasDrawElement;
-  if (options && options->allowReadback()) {
-    paint_flags |= PaintFlag::kPrivacyPreserving;
-  } else {
-    SetOriginTainted();
-  }
+  paint_flags |= PaintFlag::kPrivacyPreserving;
   paint_layer_painter.Paint(builder.Context(), paint_flags);
 
   PropertyTreeState property_tree_state = layer->GetLayoutObject()

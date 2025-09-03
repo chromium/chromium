@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<title>drawHTMLElement with allowReadback draws selection with custom highlights</title>
+<title>drawHTMLElement does not draw grammar with custom highlights</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <link rel="author" href="mailto:schenney@chromium.org">
-<link rel="match" href="selection-painted-overlay-path-ref.html">
-<meta name="assert" value="When preserving privacy for readback, do draw selection when using the highlight overlay painting path (triggered by the custom highlight).">
+<link rel="match" href="grammar-ignored-overlay-path-ref.html">
+<meta name="assert" value="When preserving privacy for readback, do not draw grammar markers when using the highlight overlay painting path (triggered by the custom highlight).">
 <script src="/wpt_internal/css/support/markers.js"></script>
 <style>
   #child {
     width: 100px;
     height: 100px;
     background: green;
-  }
-  :focus {
-    outline: none;
   }
   #canvas {
     background: grey;
@@ -22,28 +19,26 @@
     background-color: yellow;
     color: blue;
   }
-  ::selection {
+  ::grammar-error {
     background-color: lime;
     color: green;
-    text-decoration: 2px red underline;
-    text-shadow: pink 2px 5px;
   }
 </style>
 <canvas id=canvas width="200" height="200" layoutsubtree>
   <div id="child">
-    <div id="editable" contenteditable="true">Many things can happen.</div>
+    <div id="editable" contenteditable="true">Many thing can happen.</div>
   </div>
 </canvas>
 <script>
   function runTest() {
-    setSelection(editable, 5, 11)
+    addGrammarMarker(editable, 5, 10)
 
     let r = new Range();
-    r.setStart(editable, 0);
-    r.setEnd(editable, 1);
+    r.setStart(document.body, 0);
+    r.setEnd(document.body, 1);
     CSS.highlights.set("example-highlight", new Highlight(r));
 
-    canvas.getContext("2d").drawHTMLElement(child, 0, 0, { allowReadback: true });
+    canvas.getContext("2d").drawHTMLElement(child, 0, 0);
   }
 
   onload = () => runTest();

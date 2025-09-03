@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>drawHTMLElement with allowReadback does not use cross-origin mask images</title>
+  <title>drawHTMLElement does not draw cross-origin background images</title>
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
   <style>
@@ -16,8 +16,7 @@
     top: 0px;
     width: 100px;
     height: 100px;
-    background-color: red;
-    mask-image: url("https://{{location[host]}}/css/css-masking/mask-image/support/blue-100x50-transparent-100x50.svg");
+    background-image: url("https://{{location[host]}}/css/css-masking/mask-image/support/red-100x100.svg");
   }
   #crossOrigin {
     position: absolute;
@@ -25,8 +24,7 @@
     top: 100px;
     width: 100px;
     height: 100px;
-    background-color: red;
-    mask-image: url("https://{{hosts[alt][www]}}:{{ports[h2][0]}}/css/css-masking/mask-image/support/blue-100x50-transparent-100x50.svg");
+    background-image: url("https://{{hosts[alt][www]}}:{{ports[h2][0]}}/css/css-masking/mask-image/support/red-100x100.svg");
   }
   </style>
 </head>
@@ -42,25 +40,14 @@
     window.onload = () => {
       test(function(t) {
         var context = canvas.getContext("2d");
-        context.drawHTMLElement(child, 0, 0, { allowReadback: true });
+        context.drawHTMLElement(child, 0, 0);
 
-        pixel = context.getImageData(50, 25, 1, 1).data;
-        assert_equals(pixel[0], 0, "Same origin should draw");
-        assert_equals(pixel[1], 128, "Same origin should draw");
-        assert_equals(pixel[2], 0, "Same origin should draw");
-
-        pixel = context.getImageData(50, 75, 1, 1).data;
+        pixel = context.getImageData(50, 50, 1, 1).data;
         assert_equals(pixel[0], 255, "Same origin should draw");
         assert_equals(pixel[1], 0, "Same origin should draw");
         assert_equals(pixel[2], 0, "Same origin should draw");
 
-        // Missing mask image renders as black, blocking the red background
-        pixel = context.getImageData(50, 125, 1, 1).data;
-        assert_equals(pixel[0], 0, "Cross origin should not draw");
-        assert_equals(pixel[1], 128, "Cross origin should not draw");
-        assert_equals(pixel[2], 0, "Cross origin should not draw");
-
-        pixel = context.getImageData(50, 175, 1, 1).data;
+        pixel = context.getImageData(50, 150, 1, 1).data;
         assert_equals(pixel[0], 0, "Cross origin should not draw");
         assert_equals(pixel[1], 128, "Cross origin should not draw");
         assert_equals(pixel[2], 0, "Cross origin should not draw");
