@@ -74,6 +74,13 @@ bool BrowsingDataLifetimePolicyHandler::CheckPolicySettings(
                 browsing_data::GetSyncTypesForClearBrowsingData(
                     *browsing_data_policy);
 
+  if (!forced_disabled_sync_types_.empty()) {
+    errors->AddError(
+        this->policy_name(), IDS_POLICY_BROWSING_DATA_DEPENDENCY_APPLIED_INFO,
+            UserSelectableTypeSetToString(forced_disabled_sync_types_),
+        {}, policy::PolicyMap::MessageType::kInfo);
+  }
+
   return true;
 }
 
@@ -89,17 +96,4 @@ void BrowsingDataLifetimePolicyHandler::ApplyPolicySettings(
   if (!log_message.empty()) {
     LOG_POLICY(INFO, POLICY_PROCESSING) << log_message;
   }
-}
-
-void BrowsingDataLifetimePolicyHandler::PrepareForDisplaying(
-    policy::PolicyMap* policies) const {
-  policy::PolicyMap::Entry* entry = policies->GetMutable(policy_name());
-  if (!entry || forced_disabled_sync_types_.empty()) {
-    return;
-  }
-
-  entry->AddMessage(policy::PolicyMap::MessageType::kInfo,
-                    IDS_POLICY_BROWSING_DATA_DEPENDENCY_APPLIED_INFO,
-                    {base::UTF8ToUTF16(UserSelectableTypeSetToString(
-                        forced_disabled_sync_types_))});
 }

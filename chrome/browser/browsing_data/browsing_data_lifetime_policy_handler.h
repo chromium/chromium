@@ -23,7 +23,6 @@ class BrowsingDataLifetimePolicyHandler
                            policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
-  void PrepareForDisplaying(policy::PolicyMap* policies) const override;
 
  private:
   // Caches sync types required when the policy is checked, to
