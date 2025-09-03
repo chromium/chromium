@@ -22,8 +22,9 @@ std::unique_ptr<FormStructure> GetFormStructure(
     const test::FormDescription& form_description) {
   auto form_structure =
       std::make_unique<FormStructure>(test::GetFormData(form_description));
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);

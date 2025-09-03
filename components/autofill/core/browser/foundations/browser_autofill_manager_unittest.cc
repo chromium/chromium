@@ -2326,8 +2326,9 @@ TEST_F(BrowserAutofillManagerTestValuables,
       test::GetFormData({.fields = {{.role = EMAIL_OR_LOYALTY_MEMBERSHIP_ID},
                                     {.role = PASSWORD}}});
   auto form_structure = std::make_unique<FormStructure>(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -2403,8 +2404,9 @@ TEST_F(BrowserAutofillManagerTestValuables,
       test::GetFormData({.fields = {{.role = EMAIL_OR_LOYALTY_MEMBERSHIP_ID},
                                     {.role = PASSWORD}}});
   auto form_structure = std::make_unique<FormStructure>(form_data);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -4588,8 +4590,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   FormStructure* form_structure = form_structure_instance.get();
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -4642,8 +4645,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   FormStructure* form_structure = form_structure_instance.get();
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -4754,8 +4758,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   FormStructure* form_structure = form_structure_instance.get();
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -5104,8 +5109,9 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   FormStructure* form_structure = form_structure_instance.get();
-  HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -5127,8 +5133,9 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   auto form_structure_instance2 = std::make_unique<FormStructure>(form2);
   // This pointer is valid as long as autofill manager lives.
   FormStructure* form_structure2 = form_structure_instance2.get();
-  heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure2, nullptr);
+  heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure2->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure2->fields());
   form_structure2->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                 LanguageCode(""), nullptr);
@@ -5199,8 +5206,9 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by |manager()|.
   auto form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -5253,8 +5261,9 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
   FormStructure* form_structure = [&] {
     auto form_structure = std::make_unique<FormStructure>(form);
     FormStructure* ptr = form_structure.get();
-    const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-        GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+    const HeuristicPredictions heuristic_predictions =
+        DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                form_structure->ToFormData(), nullptr);
     heuristic_predictions.ApplyTo(form_structure->fields());
     form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                  LanguageCode(""), nullptr);
@@ -6042,8 +6051,9 @@ TEST_F(BrowserAutofillManagerTest,
                                        FormControlType::kInputText)});
 
   auto form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -7008,8 +7018,9 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   }
   // Override the types and simulate seeing the form on page load.
   auto form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -7440,8 +7451,8 @@ class BrowserAutofillManagerTest_AutofillAi
       auto fs = std::make_unique<FormStructure>(form);
       form_structure = fs.get();
       const HeuristicPredictions heuristic_predictions =
-          DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), *fs,
-                                  nullptr);
+          DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                  fs->ToFormData(), nullptr);
       heuristic_predictions.ApplyTo(fs->fields());
       fs->RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
                                        nullptr);

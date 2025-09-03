@@ -19,7 +19,6 @@
 namespace autofill {
 
 class AutofillField;
-class FormStructure;
 class LogManager;
 
 // Holds the predictions returned by DetermineHeuristicTypes().
@@ -27,7 +26,7 @@ class HeuristicPredictions {
  public:
   HeuristicPredictions(HeuristicSource source,
                        const FieldCandidatesMap& field_type_map,
-                       base::span<const std::unique_ptr<AutofillField>> fields);
+                       base::span<const FormFieldData> fields);
   HeuristicPredictions(const HeuristicPredictions&);
   HeuristicPredictions(HeuristicPredictions&&);
   HeuristicPredictions& operator=(const HeuristicPredictions&);
@@ -47,7 +46,7 @@ class HeuristicPredictions {
 [[nodiscard]] HeuristicPredictions DetermineHeuristicTypes(
     const GeoIpCountryCode& client_country,
     const LanguageCode& current_page_language,
-    FormStructure& form,
+    const FormData& form,
     LogManager* log_manager);
 
 }  // namespace autofill

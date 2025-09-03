@@ -540,8 +540,9 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
 
   auto form_structure = std::make_unique<FormStructure>(form);
   FormStructure* form_structure_ptr = form_structure.get();
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);

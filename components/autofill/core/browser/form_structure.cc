@@ -80,6 +80,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/security_state/core/security_state.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -138,7 +139,7 @@ bool is_password_field(const std::unique_ptr<AutofillField>& field) {
 
 // A field is active if it contributes to the form signature and it is are
 // included in queries to the Autofill server.
-bool is_active(const AutofillField& field) {
+bool is_active(const FormFieldData& field) {
   return !IsCheckable(field.check_status());
 }
 
@@ -463,12 +464,14 @@ bool FormStructure::ShouldBeParsed(ShouldBeParsedParams params,
 }
 
 bool FormStructure::ShouldRunHeuristics() const {
+  // Must be identical to FormData::ShouldRunHeuristics()!
   return AtLeastNumSatisfy(fields(), kMinRequiredFieldsForHeuristics,
                            is_active) &&
          HasAllowedScheme(source_url_);
 }
 
 bool FormStructure::ShouldRunHeuristicsForSingleFields() const {
+  // Must be identical to FormData::ShouldRunHeuristicsForSingleFields()!
   return AtLeastNumSatisfy(fields(), 1, is_active) &&
          HasAllowedScheme(source_url_);
 }

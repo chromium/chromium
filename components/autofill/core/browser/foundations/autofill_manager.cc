@@ -707,8 +707,8 @@ void AutofillManager::ParseFormsAsyncCommon(
     context.heuristic_predictions.reserve(context.form_structures.size());
     for (auto& form_structure : context.form_structures) {
       context.heuristic_predictions.push_back(DetermineHeuristicTypes(
-          context.country_code, context.current_page_language, *form_structure,
-          context.log_manager.get()));
+          context.country_code, context.current_page_language,
+          form_structure->ToFormData(), context.log_manager.get()));
     }
     return context;
   };

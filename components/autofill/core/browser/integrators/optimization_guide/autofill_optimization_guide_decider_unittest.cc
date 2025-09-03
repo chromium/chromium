@@ -145,9 +145,9 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  const HeuristicPredictions heuristic_predictions =
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              form_structure, /*log_manager=*/nullptr);
+  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+      GeoIpCountryCode(""), LanguageCode(""), form_structure.ToFormData(),
+      /*log_manager=*/nullptr);
   heuristic_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
@@ -171,9 +171,9 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  const HeuristicPredictions heuristic_predictions =
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              form_structure, /*log_manager=*/nullptr);
+  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+      GeoIpCountryCode(""), LanguageCode(""), form_structure.ToFormData(),
+      /*log_manager=*/nullptr);
   heuristic_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
@@ -196,9 +196,9 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  const HeuristicPredictions heuristic_predictions =
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              form_structure, /*log_manager=*/nullptr);
+  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+      GeoIpCountryCode(""), LanguageCode(""), form_structure.ToFormData(),
+      /*log_manager=*/nullptr);
   heuristic_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
@@ -218,9 +218,9 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  const HeuristicPredictions heuristic_predictions =
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              form_structure, /*log_manager=*/nullptr);
+  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+      GeoIpCountryCode(""), LanguageCode(""), form_structure.ToFormData(),
+      /*log_manager=*/nullptr);
   heuristic_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);

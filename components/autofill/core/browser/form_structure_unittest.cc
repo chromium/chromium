@@ -82,24 +82,13 @@ class FormStructureTestImpl : public test::FormStructureTest {
  protected:
   bool FormIsAutofillable(const FormData& form) {
     FormStructure form_structure(form);
-    const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-        GeoIpCountryCode(""), LanguageCode(""), form_structure, nullptr);
+    const HeuristicPredictions heuristic_predictions =
+        DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                form_structure.ToFormData(), nullptr);
     heuristic_predictions.ApplyTo(form_structure.fields());
     form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                 LanguageCode(""), nullptr);
     return form_structure.IsAutofillable();
-  }
-
-  bool FormShouldRunHeuristics(const FormData& form) {
-    return FormStructure(form).ShouldRunHeuristics();
-  }
-
-  bool FormShouldRunHeuristicsForSingleFields(const FormData& form) {
-    return FormStructure(form).ShouldRunHeuristicsForSingleFields();
-  }
-
-  bool FormShouldBeQueried(const FormData& form) {
-    return FormStructure(form).ShouldBeQueried();
   }
 
  private:
@@ -460,6 +449,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("http://wwww.foo.com/myform"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_TRUE(form_structure->ShouldBeParsed());
+  EXPECT_TRUE(form_structure->ToFormData().ShouldRunHeuristics());
   EXPECT_TRUE(form_structure->ShouldRunHeuristics());
   EXPECT_TRUE(form_structure->ShouldBeQueried());
   EXPECT_TRUE(form_structure->ShouldBeUploaded());
@@ -468,6 +458,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("https://wwww.foo.com/myform"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_TRUE(form_structure->ShouldBeParsed());
+  EXPECT_TRUE(form_structure->ToFormData().ShouldRunHeuristics());
   EXPECT_TRUE(form_structure->ShouldRunHeuristics());
   EXPECT_TRUE(form_structure->ShouldBeQueried());
   EXPECT_TRUE(form_structure->ShouldBeUploaded());
@@ -476,6 +467,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("chrome://settings"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(form_structure->ShouldBeParsed());
+  EXPECT_FALSE(form_structure->ToFormData().ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldBeQueried());
   EXPECT_FALSE(form_structure->ShouldBeUploaded());
@@ -484,6 +476,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("ftp://ftp.foo.com/form.html"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(form_structure->ShouldBeParsed());
+  EXPECT_FALSE(form_structure->ToFormData().ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldBeQueried());
   EXPECT_FALSE(form_structure->ShouldBeUploaded());
@@ -492,6 +485,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("blob://blob.foo.com/form.html"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(form_structure->ShouldBeParsed());
+  EXPECT_FALSE(form_structure->ToFormData().ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldBeQueried());
   EXPECT_FALSE(form_structure->ShouldBeUploaded());
@@ -500,6 +494,7 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   form.set_url(GURL("about://about.foo.com/form.html"));
   form_structure = std::make_unique<FormStructure>(form);
   EXPECT_FALSE(form_structure->ShouldBeParsed());
+  EXPECT_FALSE(form_structure->ToFormData().ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldRunHeuristics());
   EXPECT_FALSE(form_structure->ShouldBeQueried());
   EXPECT_FALSE(form_structure->ShouldBeUploaded());
@@ -883,15 +878,17 @@ TEST_F(FormStructureTestImpl,
   field.set_renderer_id(test::MakeFieldRendererId());
   test_api(form).Append(field);
 
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
+  EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
+  EXPECT_FALSE(form.ShouldRunHeuristics());
 
-  EXPECT_TRUE(FormShouldBeQueried(form));
+  EXPECT_TRUE(FormStructure(form).ShouldBeQueried());
 
   // Default configuration.
   {
     FormStructure form_structure(form);
-    const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-        GeoIpCountryCode(""), LanguageCode(""), form_structure, nullptr);
+    const HeuristicPredictions heuristic_predictions =
+        DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                form_structure.ToFormData(), nullptr);
     heuristic_predictions.ApplyTo(form_structure.fields());
     form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                 LanguageCode(""), nullptr);
@@ -918,8 +915,9 @@ TEST_F(FormStructureTestImpl,
                            FormControlType::kInputText, "given-name"),
        CreateTestFormField("Last Name", "lastname", "",
                            FormControlType::kInputText, "")});
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldBeQueried(form));
+  EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
+  EXPECT_FALSE(form.ShouldRunHeuristics());
+  EXPECT_TRUE(FormStructure(form).ShouldBeQueried());
 
   // As a side effect of parsing small forms, if any of the heuristics, query,
   // or upload minimums are disabled, we'll autofill fields with an
@@ -928,8 +926,9 @@ TEST_F(FormStructureTestImpl,
     FormData form_copy = form;
     test_api(form_copy).Remove(-1);
     FormStructure form_structure(form_copy);
-    const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-        GeoIpCountryCode(""), LanguageCode(""), form_structure, nullptr);
+    const HeuristicPredictions heuristic_predictions =
+        DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                form_structure.ToFormData(), nullptr);
     heuristic_predictions.ApplyTo(form_structure.fields());
     form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                 LanguageCode(""), nullptr);
@@ -957,13 +956,15 @@ TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
   field.set_renderer_id(test::MakeFieldRendererId());
   test_api(form).Append(field);
 
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
+  EXPECT_TRUE(FormStructure(form).ShouldRunHeuristicsForSingleFields());
+  EXPECT_TRUE(form.ShouldRunHeuristicsForSingleFields());
 
   // Default configuration.
   {
     FormStructure form_structure(form);
-    const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-        GeoIpCountryCode(""), LanguageCode(""), form_structure, nullptr);
+    const HeuristicPredictions heuristic_predictions =
+        DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                form_structure.ToFormData(), nullptr);
     heuristic_predictions.ApplyTo(form_structure.fields());
     form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                 LanguageCode(""), nullptr);
@@ -991,8 +992,9 @@ TEST_F(FormStructureTestImpl, PasswordFormShouldBeQueried) {
                    CreateTestFormField("Password", "Password", "",
                                        FormControlType::kInputPassword)});
   FormStructure form_structure(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure.ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                               LanguageCode(""), nullptr);
@@ -1027,8 +1029,9 @@ TEST_F(FormStructureTestImpl,
        CreateTestFormField("", "", "", FormControlType::kInputText,
                            "garbage billing email")});
   FormStructure form_structure(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure.ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                               LanguageCode(""), nullptr);
@@ -1057,8 +1060,9 @@ TEST_F(FormStructureTestImpl,
                    CreateTestFormField("", "", "", FormControlType::kInputText,
                                        "section-foo address-line1")});
   FormStructure form_structure(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure.ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                               LanguageCode(""), nullptr);
@@ -1136,8 +1140,9 @@ TEST_F(FormStructureTestImpl, HeuristicsSample8) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1214,8 +1219,9 @@ TEST_F(FormStructureTestImpl, HeuristicsSample6) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1292,8 +1298,9 @@ TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1360,8 +1367,9 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfo) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1432,8 +1440,9 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfoWithUnknownCardField) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1488,8 +1497,9 @@ TEST_F(FormStructureTestImpl, ThreeAddressLines) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1537,8 +1547,9 @@ TEST_F(FormStructureTestImpl, SurplusAddressLinesIgnored) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1589,8 +1600,9 @@ TEST_F(FormStructureTestImpl, ThreeAddressLinesExpedia) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1635,8 +1647,9 @@ TEST_F(FormStructureTestImpl, TwoAddressLinesEbay) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1676,8 +1689,9 @@ TEST_F(FormStructureTestImpl, HeuristicsStateWithProvince) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1758,8 +1772,9 @@ TEST_F(FormStructureTestImpl, HeuristicsWithBilling) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1816,8 +1831,9 @@ TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1867,8 +1883,9 @@ TEST_F(FormStructureTestImpl, HeuristicsInfernoCC) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -1932,8 +1949,9 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesNotFirst) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -2001,8 +2019,9 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesFirst) {
   test_api(form).Append(field);
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -2480,19 +2499,22 @@ TEST_F(FormStructureTestImpl, GetFormTypes_AutocompleteUnrecognized) {
 }
 
 // The test ensures that single field email forms are correctly parsed via
-// `FormShouldRunHeuristicsForSingleFields`.
+// `ShouldRunHeuristicsForSingleFields()`.
 TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsBehavior) {
   FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
+  EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
+  EXPECT_FALSE(form.ShouldRunHeuristics());
+  EXPECT_TRUE(FormStructure(form).ShouldRunHeuristicsForSingleFields());
+  EXPECT_TRUE(form.ShouldRunHeuristicsForSingleFields());
 
   {
     FormStructure form_structure(form);
-    const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-        GeoIpCountryCode(""), LanguageCode(""), form_structure, nullptr);
+    const HeuristicPredictions heuristic_predictions =
+        DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                form_structure.ToFormData(), nullptr);
     heuristic_predictions.ApplyTo(form_structure.fields());
     form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                 LanguageCode(""), nullptr);
@@ -2504,20 +2526,23 @@ TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsBehavior) {
 }
 
 // The test ensures that email fields are correctly parsed (via
-// `FormShouldRunHeuristicsForSingleFields`) on small forms with two fields.
+// `ShouldRunHeuristicsForSingleFields()`) on small forms with two fields.
 TEST_F(FormStructureTestImpl, TwoFieldFormEmailHeuristicsBehavior) {
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FULL}, {.role = EMAIL_ADDRESS}}});
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
+  EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
+  EXPECT_FALSE(form.ShouldRunHeuristics());
+  EXPECT_TRUE(FormStructure(form).ShouldRunHeuristicsForSingleFields());
+  EXPECT_TRUE(form.ShouldRunHeuristicsForSingleFields());
 
   {
     FormStructure form_structure(form);
-    const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-        GeoIpCountryCode(""), LanguageCode(""), form_structure, nullptr);
+    const HeuristicPredictions heuristic_predictions =
+        DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                form_structure.ToFormData(), nullptr);
     heuristic_predictions.ApplyTo(form_structure.fields());
     form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                 LanguageCode(""), nullptr);
@@ -2538,13 +2563,16 @@ TEST_F(FormStructureTestImpl,
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
+  EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
+  EXPECT_FALSE(form.ShouldRunHeuristics());
+  EXPECT_TRUE(FormStructure(form).ShouldRunHeuristicsForSingleFields());
+  EXPECT_TRUE(form.ShouldRunHeuristicsForSingleFields());
 
   {
     FormStructure form_structure(form);
-    const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-        GeoIpCountryCode(""), LanguageCode(""), form_structure, nullptr);
+    const HeuristicPredictions heuristic_predictions =
+        DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                form_structure.ToFormData(), nullptr);
     heuristic_predictions.ApplyTo(form_structure.fields());
     form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                 LanguageCode(""), nullptr);
@@ -2565,12 +2593,15 @@ TEST_F(FormStructureTestImpl,
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
-  EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
+  EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
+  EXPECT_FALSE(form.ShouldRunHeuristics());
+  EXPECT_TRUE(FormStructure(form).ShouldRunHeuristicsForSingleFields());
+  EXPECT_TRUE(form.ShouldRunHeuristicsForSingleFields());
   {
     FormStructure form_structure(form);
-    const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-        GeoIpCountryCode(""), LanguageCode(""), form_structure, nullptr);
+    const HeuristicPredictions heuristic_predictions =
+        DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                form_structure.ToFormData(), nullptr);
     heuristic_predictions.ApplyTo(form_structure.fields());
     form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                 LanguageCode(""), nullptr);
@@ -2628,8 +2659,9 @@ TEST_F(FormStructureTestImpl, LoyaltyCardsHeuristics_BigForms) {
                            FormControlType::kInputText, "phone")});
 
   form_structure = std::make_unique<FormStructure>(form);
-  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
-      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              form_structure->ToFormData(), nullptr);
   heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);

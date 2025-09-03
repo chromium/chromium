@@ -227,7 +227,7 @@ void FormStructureTest::CheckFormStructureTestData(
     if (test_case.form_flags.determine_heuristic_type) {
       const HeuristicPredictions heuristic_predictions =
           DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                                  *form_structure, nullptr);
+                                  form_structure->ToFormData(), nullptr);
       heuristic_predictions.ApplyTo(form_structure->fields());
       form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                    LanguageCode(""), nullptr);

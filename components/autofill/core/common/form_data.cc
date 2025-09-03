@@ -16,6 +16,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/stream_operator_util.h"
@@ -73,6 +75,34 @@ void LogDeserializationError(int version) {
            << " FormData from pickle.";
 }
 
+// Returns true if the scheme given by |url| is one for which autofill is
+// allowed to activate. By default this only returns true for HTTP and HTTPS.
+bool HasAllowedScheme(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS();
+}
+
+// A field is active if it contributes to the form signature and it is are
+// included in queries to the Autofill server.
+bool is_active(const FormFieldData& field) {
+  return !IsCheckable(field.check_status());
+}
+
+// Returns true if at least `num` fields satisfy `p`.
+// This is useful if `num` is significantly smaller than `fields.size()` because
+// it may avoid iterating over all of `fields`. It's equivalent to
+// `std::range::count_if(fields, [](auto& f) { p(*f); }) >= num`.
+template <typename Predicate>
+bool AtLeastNumSatisfy(base::span<const FormFieldData> fields,
+                       size_t num,
+                       Predicate p) {
+  for (auto it = fields.begin(); it != fields.end() && num > 0; ++it) {
+    if (std::invoke(p, *it)) {
+      --num;
+    }
+  }
+  return num == 0;
+}
+
 }  // namespace
 
 FrameTokenWithPredecessor::FrameTokenWithPredecessor() = default;
@@ -116,6 +146,28 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
     return false;
   }
   return true;
+}
+
+const FormFieldData* FormData::FindFieldByGlobalId(
+    const FieldGlobalId& global_id) const {
+  auto fields_it =
+      std::ranges::find(fields(), global_id, &FormFieldData::global_id);
+
+  // If the field is found, return a pointer to the field, otherwise return
+  // nullptr.
+  return fields_it != fields().end() ? &*fields_it : nullptr;
+}
+
+bool FormData::ShouldRunHeuristics() const {
+  // Must be identical to FormStructure::ShouldRunHeuristics()!
+  return AtLeastNumSatisfy(fields(), kMinRequiredFieldsForHeuristics,
+                           is_active) &&
+         HasAllowedScheme(url());
+}
+
+bool FormData::ShouldRunHeuristicsForSingleFields() const {
+  // Must be identical to FormStructure::ShouldRunHeuristicsForSingleFields()!
+  return AtLeastNumSatisfy(fields(), 1, is_active) && HasAllowedScheme(url());
 }
 
 bool FormHasNonEmptyPasswordField(const FormData& form) {
@@ -169,16 +221,6 @@ std::ostream& PrintWithIndentation(std::ostream& os,
 }
 
 }  // namespace internal
-
-const FormFieldData* FormData::FindFieldByGlobalId(
-    const FieldGlobalId& global_id) const {
-  auto fields_it =
-      std::ranges::find(fields(), global_id, &FormFieldData::global_id);
-
-  // If the field is found, return a pointer to the field, otherwise return
-  // nullptr.
-  return fields_it != fields().end() ? &*fields_it : nullptr;
-}
 
 void SerializeFormData(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteInt(kFormDataPickleVersion);

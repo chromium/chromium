@@ -24,21 +24,18 @@ namespace autofill {
 
 namespace {
 
-raw_ptr<const FormFieldData> to_form_field_data(
-    const std::unique_ptr<AutofillField>& field) {
-  return field.get();
+raw_ptr<const FormFieldData> ToPointer(const FormFieldData& field) {
+  return &field;
 }
 
 // Classifies each field using the regular expressions. The classifications
 // are returned, but not assigned to the `fields_` yet. Use
 // `AssignBestFieldTypes()` to do so.
-FieldCandidatesMap ParseFieldTypesWithPatterns(const FormStructure& form,
+FieldCandidatesMap ParseFieldTypesWithPatterns(const FormData& form,
                                                ParsingContext& context) {
   FieldCandidatesMap field_type_map;
 
-  auto form_field_data_vector = base::ToVector(
-      form.fields(),
-      [](const auto& f) -> raw_ptr<const FormFieldData> { return f.get(); });
+  auto form_field_data_vector = base::ToVector(form.fields(), &ToPointer);
   if (form.ShouldRunHeuristics()) {
     FormFieldParser::ParseFormFields(context, form_field_data_vector,
                                      field_type_map);
@@ -68,12 +65,12 @@ FieldCandidatesMap ParseFieldTypesWithPatterns(const FormStructure& form,
 HeuristicPredictions::HeuristicPredictions(
     HeuristicSource source,
     const FieldCandidatesMap& field_type_map,
-    base::span<const std::unique_ptr<AutofillField>> fields)
+    base::span<const FormFieldData> fields)
     : source_(source) {
   const HeuristicSource active_source = GetActiveHeuristicSource();
   std::vector<std::pair<FieldGlobalId, FieldType>> field_predictions;
-  for (const auto& field : fields) {
-    auto iter = field_type_map.find(field->global_id());
+  for (const FormFieldData& field : fields) {
+    auto iter = field_type_map.find(field.global_id());
     if (iter == field_type_map.end()) {
       continue;
     }
@@ -84,7 +81,7 @@ HeuristicPredictions::HeuristicPredictions(
           candidates.BestHeuristicTypeReason());
     }
 
-    field_predictions.emplace_back(field->global_id(),
+    field_predictions.emplace_back(field.global_id(),
                                    candidates.BestHeuristicType());
   }
   predictions_ = base::flat_map(std::move(field_predictions));
@@ -133,7 +130,7 @@ void HeuristicPredictions::ApplyTo(
 HeuristicPredictions DetermineHeuristicTypes(
     const GeoIpCountryCode& client_country,
     const LanguageCode& current_page_language,
-    FormStructure& form,
+    const FormData& form,
     LogManager* log_manager) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
@@ -141,7 +138,7 @@ HeuristicPredictions DetermineHeuristicTypes(
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
           ? current_page_language
           : LanguageCode();
-  ParsingContext context(base::ToVector(form.fields(), &to_form_field_data),
+  ParsingContext context(base::ToVector(form.fields(), &ToPointer),
                          client_country, page_language,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                          PatternFile::kDefault,
