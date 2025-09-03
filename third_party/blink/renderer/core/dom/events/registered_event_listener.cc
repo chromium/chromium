@@ -71,14 +71,12 @@ void RegisteredEventListener::SetCallback(EventListener* listener) {
   callback_ = listener;
 }
 
-bool RegisteredEventListener::Matches(
-    const EventListener* listener,
-    const EventListenerOptions* options) const {
+bool RegisteredEventListener::Matches(const EventListener* listener,
+                                      const OptionsForMatching& options) const {
   // Equality is soley based on the listener and useCapture flags.
   DCHECK(callback_);
   DCHECK(listener);
-  return callback_->Matches(*listener) &&
-         static_cast<bool>(use_capture_) == options->capture();
+  return callback_->Matches(*listener) && options == GetOptionsForMatching();
 }
 
 bool RegisteredEventListener::ShouldFire(const Event& event) const {

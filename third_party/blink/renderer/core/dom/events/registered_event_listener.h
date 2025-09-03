@@ -34,7 +34,6 @@ namespace blink {
 class AddEventListenerOptionsResolved;
 class Event;
 class EventListener;
-class EventListenerOptions;
 
 // RegisteredEventListener represents 'event listener' defined in the DOM
 // standard. https://dom.spec.whatwg.org/#concept-event-listener
@@ -78,8 +77,23 @@ class RegisteredEventListener final
     blocked_event_warning_emitted_ = true;
   }
 
+  struct OptionsForMatching {
+    STACK_ALLOCATED();
+
+   public:
+    OptionsForMatching() = default;
+    OptionsForMatching(const OptionsForMatching&) = default;
+    OptionsForMatching(bool use_capture) : use_capture_(use_capture) {}
+    bool operator==(const OptionsForMatching&) const = default;
+
+    bool use_capture_{false};
+  };
+
+  OptionsForMatching GetOptionsForMatching() const {
+    return OptionsForMatching(use_capture_);
+  }
   bool Matches(const EventListener* listener,
-               const EventListenerOptions* options) const;
+               const OptionsForMatching& options) const;
 
   bool ShouldFire(const Event&) const;
 

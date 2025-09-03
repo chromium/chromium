@@ -112,7 +112,7 @@ static bool AddListenerToVector(EventListenerVector* listener_vector,
                                 const AddEventListenerOptionsResolved* options,
                                 RegisteredEventListener** registered_listener) {
   for (auto& item : *listener_vector) {
-    if (item->Matches(listener, options)) {
+    if (item->Matches(listener, {options->capture()})) {
       // Duplicate listener.
       return false;
     }
@@ -154,7 +154,7 @@ bool EventListenerMap::Add(const AtomicString& event_type,
 static bool RemoveListenerFromVector(
     EventListenerVector* listener_vector,
     const EventListener* listener,
-    const EventListenerOptions* options,
+    const RegisteredEventListener::OptionsForMatching& options,
     RegisteredEventListener** registered_listener) {
   EventListenerVector::iterator end = listener_vector->end();
   for (EventListenerVector::iterator iter = listener_vector->begin();
@@ -169,10 +169,11 @@ static bool RemoveListenerFromVector(
   return false;
 }
 
-bool EventListenerMap::Remove(const AtomicString& event_type,
-                              const EventListener* listener,
-                              const EventListenerOptions* options,
-                              RegisteredEventListener** registered_listener) {
+bool EventListenerMap::Remove(
+    const AtomicString& event_type,
+    const EventListener* listener,
+    const RegisteredEventListener::OptionsForMatching& options,
+    RegisteredEventListener** registered_listener) {
   for (unsigned i = 0; i < entries_.size(); ++i) {
     if (entries_[i].first == event_type) {
       bool was_removed = RemoveListenerFromVector(

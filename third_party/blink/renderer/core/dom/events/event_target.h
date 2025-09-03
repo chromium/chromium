@@ -47,6 +47,7 @@ namespace blink {
 class AddEventListenerOptionsResolved;
 class DOMWindow;
 class Event;
+class EventListenerOptions;
 class ExceptionState;
 class ExecutionContext;
 class LocalDOMWindow;
@@ -342,9 +343,10 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   virtual bool AddEventListenerInternal(const AtomicString& event_type,
                                         EventListener*,
                                         const AddEventListenerOptionsResolved*);
-  bool RemoveEventListenerInternal(const AtomicString& event_type,
-                                   const EventListener*,
-                                   const EventListenerOptions*);
+  bool RemoveEventListenerInternal(
+      const AtomicString& event_type,
+      const EventListener*,
+      const RegisteredEventListener::OptionsForMatching&);
 
   // Called when an event listener has been successfully added.
   virtual void AddedEventListener(const AtomicString& event_type,
