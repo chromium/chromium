@@ -906,7 +906,7 @@ void AddSuggestionsDetails(int error_code,
         l10n_util::GetStringFUTF16(
             IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM,
             l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE),
-            l10n_util::GetStringUTF16(IDS_SETTINGS_SHOW_ADVANCED_SETTINGS),
+            l10n_util::GetStringUTF16(IDS_SYSTEM_TITLE),
             l10n_util::GetStringUTF16(IDS_OPTIONS_PROXIES_CONFIGURE_BUTTON));
 #else
         l10n_util::GetStringUTF16(
