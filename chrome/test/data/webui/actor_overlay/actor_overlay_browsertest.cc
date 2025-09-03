@@ -23,7 +23,12 @@ class ActorOverlayMochaTest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayMochaTest, Scrim) {
-  RunTest("actor_overlay/actor_overlay_test.js", "mocha.run()");
+  RunTest("actor_overlay/actor_overlay_test.js", "runMochaSuite('Scrim')");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayMochaTest, MagicCursor) {
+  RunTest("actor_overlay/actor_overlay_test.js",
+          "runMochaSuite('MagicCursor')");
 }
 
 }  // namespace

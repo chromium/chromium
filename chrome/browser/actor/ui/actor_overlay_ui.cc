@@ -28,6 +28,8 @@ ActorOverlayUI::ActorOverlayUI(content::WebUI* web_ui)
       Profile::FromWebUI(web_ui), chrome::kChromeUIActorOverlayHost);
   webui::SetupWebUIDataSource(source, kActorOverlayResources,
                               IDR_ACTOR_OVERLAY_ACTOR_OVERLAY_HTML);
+  source->AddBoolean("isMagicCursorEnabled",
+                     features::kGlicActorUiOverlayMagicCursor.Get());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ActorOverlayUI)
