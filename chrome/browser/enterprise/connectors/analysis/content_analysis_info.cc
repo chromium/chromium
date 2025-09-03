@@ -121,6 +121,21 @@ std::string ContentAreaUserProvider::GetUser(Profile* profile,
       .GetContentAreaAccountEmail();
 }
 
+// static
+std::string ContentAreaUserProvider::GetUser(
+    const content::ClipboardEndpoint& endpoint) {
+  if (!endpoint.data_transfer_endpoint() ||
+      !endpoint.data_transfer_endpoint()->IsUrlType() ||
+      !endpoint.data_transfer_endpoint()->GetURL() ||
+      !endpoint.browser_context()) {
+    return "";
+  }
+
+  return GetUser(Profile::FromBrowserContext(endpoint.browser_context()),
+                 endpoint.web_contents(),
+                 *endpoint.data_transfer_endpoint()->GetURL());
+}
+
 const GURL& ContentAreaUserProvider::tab_url() const {
   return *tab_url_;
 }

@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/data_controls/chrome_clipboard_context.h"
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#include "chrome/browser/enterprise/data_protection/content_area_user_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/policy/core/common/policy_types.h"

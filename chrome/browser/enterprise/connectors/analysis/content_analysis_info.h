@@ -48,6 +48,7 @@ class ContentAreaUserProvider : public ContentAnalysisInfo {
   static std::string GetUser(Profile* profile,
                              content::WebContents* web_contents,
                              const GURL& tab_url);
+  static std::string GetUser(const content::ClipboardEndpoint& endpoint);
 
   ~ContentAreaUserProvider();
 
