@@ -164,7 +164,7 @@ bool FontIndexer::DoFontsWithNameHaveVaryingSlopes(
 }
 
 void FontIndexer::PrintAllFontsWithName(blink::AtomicString name) {
-  WTF::HashSet<int64_t> set_of_digests;
+  blink::HashSet<int64_t> set_of_digests;
 
   // First, we load the font with default selection settings to verify any font
   // exists and for later comparison.
@@ -238,7 +238,7 @@ void FontIndexer::PrintAllFontsWithName(blink::AtomicString name) {
                   .GetOrComputeTypefaceDigest(font_data->PlatformData())
                   .ToUkmMetricValue();
           if (set_of_digests.insert(typeface_digest).is_new_entry) {
-            WTF::String postscript_name =
+            blink::String postscript_name =
                 font_data->PlatformData().GetPostScriptName();
 
             // Matches behavior in FontMatchingMetrics for lookups using the
