@@ -1034,7 +1034,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "17a5305f"
+          "17a5305k"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1057,7 +1057,7 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_17a5305f",
+              "name": "xcode_ios_17a5305k",
               "path": "Xcode.app"
             }
           ],
@@ -1073,7 +1073,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "17a5305f"
+          "17a5305k"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1096,7 +1096,7 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_17a5305f",
+              "name": "xcode_ios_17a5305k",
               "path": "Xcode.app"
             }
           ],
@@ -1121,7 +1121,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "17a5305f"
+          "17a5305k"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1146,7 +1146,7 @@
               "path": "Runtime-ios-18.2"
             },
             {
-              "name": "xcode_ios_17a5305f",
+              "name": "xcode_ios_17a5305k",
               "path": "Xcode.app"
             }
           ],
@@ -1166,7 +1166,7 @@
           "${ISOLATED_OUTDIR}",
           "--xctest",
           "--xcode-build-version",
-          "17a5305f"
+          "17a5305k"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1191,7 +1191,7 @@
               "path": "Runtime-ios-18.2"
             },
             {
-              "name": "xcode_ios_17a5305f",
+              "name": "xcode_ios_17a5305k",
               "path": "Xcode.app"
             }
           ],

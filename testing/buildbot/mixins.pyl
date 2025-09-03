@@ -933,12 +933,12 @@
   'xcode_26_main': {
     'args': [
       '--xcode-build-version',
-      '17a5305f',
+      '17a5305k',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_17a5305f',
+          'name': 'xcode_ios_17a5305k',
           'path': 'Xcode.app',
         },
       ],
