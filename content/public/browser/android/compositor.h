@@ -25,10 +25,6 @@ namespace cc::slim {
 class Layer;
 }
 
-namespace gpu {
-struct SharedMemoryLimits;
-}  // namespace gpu
-
 namespace ui {
 class ResourceManager;
 class UIResourceProvider;
@@ -54,7 +50,6 @@ class CONTENT_EXPORT Compositor {
   using ContextProviderCallback =
       base::OnceCallback<void(scoped_refptr<viz::ContextProvider>)>;
   static void CreateContextProvider(
-      gpu::SharedMemoryLimits shared_memory_limits,
       ContextProviderCallback callback);
 
   // Creates and returns a compositor instance.  |root_window| needs to outlive

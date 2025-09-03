@@ -982,20 +982,12 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
   // video decoding if gpu compositing is off.
   if (is_gpu_compositing_disabled_)
     return nullptr;
-  // This context is only used to create textures and mailbox them, so
-  // use lower limits than the default.
-  gpu::SharedMemoryLimits limits = gpu::SharedMemoryLimits::ForMailboxContext();
-  gpu::ContextCreationAttribs attributes;
-  attributes.lose_context_when_out_of_memory = true;
-  attributes.enable_gles2_interface = true;
-  attributes.enable_raster_interface = false;
-  attributes.enable_gpu_rasterization = false;
-  auto media_context_provider =
-      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          gpu_channel_host, kGpuStreamIdMedia, kGpuStreamPriorityMedia,
-          GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/Media"),
-          /*automatic_flushes=*/false, /*support_locking=*/false, limits,
-          attributes, viz::command_buffer_metrics::ContextType::MEDIA);
+
+  auto media_context_provider = viz::ContextProviderCommandBuffer::CreateForGL(
+      gpu_channel_host, kGpuStreamIdMedia, kGpuStreamPriorityMedia,
+      GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/Media"),
+      viz::command_buffer_metrics::ContextType::MEDIA,
+      /*lose_context_when_out_of_memory=*/true);
 
   const bool enable_video_decode_accelerator =
 #if BUILDFLAG(IS_LINUX)

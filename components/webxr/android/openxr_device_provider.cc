@@ -93,7 +93,6 @@ void OpenXrDeviceProvider::CreateContextProviderAsync(
       FROM_HERE, base::BindOnce(
                      [](content::Compositor::ContextProviderCallback callback) {
                        content::Compositor::CreateContextProvider(
-                           gpu::SharedMemoryLimits::ForMailboxContext(),
                            std::move(callback));
                      },
                      std::move(viz_context_provider_callback)));
