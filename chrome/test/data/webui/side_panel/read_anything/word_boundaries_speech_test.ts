@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, setupBasicSpeech} from './common.js';
@@ -68,11 +68,13 @@ suite('WordBoundariesUsedForSpeech', () => {
     SpeechBrowserProxyImpl.setInstance(speech);
     voiceLanguageController = new VoiceLanguageController();
     VoiceLanguageController.setInstance(voiceLanguageController);
+    wordBoundaries = new WordBoundaries();
+    WordBoundaries.setInstance(wordBoundaries);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
+    ContentController.setInstance(new ContentController());
 
     app = await createApp();
-    wordBoundaries = WordBoundaries.getInstance();
     setupBasicSpeech(speech);
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
   });

@@ -74,9 +74,11 @@ export class SpeechModel {
   // page.
   private wordsHeard_: number = 0;
 
-  // If the node id of the first text node that should be used by Read Aloud
-  // has been set. This is null if the id has not been set.
-  private firstTextNodeSetForReadAloud_: number|null = null;
+  // The context node used to initialize Read Aloud. This is null if it has
+  // not been set. When TS-based segmentation is enabled, this is the root
+  // node, and when V8-based segmentation is enabled, this is the first text
+  // node.
+  private readAloudContextNode_: Node|null = null;
 
   private resumeSpeechOnVoiceMenuClose_: boolean = false;
   private speechVolume_: number = 1.0;
@@ -113,12 +115,12 @@ export class SpeechModel {
     this.resumeSpeechOnVoiceMenuClose_ = shouldResume;
   }
 
-  getFirstTextNode(): number|null {
-    return this.firstTextNodeSetForReadAloud_;
+  getContextNode(): Node|null {
+    return this.readAloudContextNode_;
   }
 
-  setFirstTextNode(node: number|null) {
-    this.firstTextNodeSetForReadAloud_ = node;
+  setContextNode(node: Node|null) {
+    this.readAloudContextNode_ = node;
   }
 
   getPlaySessionStartTime(): number|null {

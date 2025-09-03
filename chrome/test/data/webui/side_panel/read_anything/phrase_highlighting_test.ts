@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ReadAloudHighlighter, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, ReadAloudHighlighter, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, emitEvent} from './common.js';
@@ -66,6 +66,7 @@ suite('PhraseHighlighting', () => {
     WordBoundaries.setInstance(wordBoundaries);
     ReadAloudHighlighter.setInstance(new ReadAloudHighlighter());
     SpeechController.setInstance(new SpeechController());
+    ContentController.setInstance(new ContentController());
     app = await createApp();
 
     // Use a tree with just one sentence. For the actual implementation of

@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MAX_SPEECH_LENGTH, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, MAX_SPEECH_LENGTH, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent} from './common.js';
@@ -95,6 +95,7 @@ suite('SpeechUsesMaxTextLength', () => {
     SpeechBrowserProxyImpl.setInstance(speech);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
+    ContentController.setInstance(new ContentController());
 
     app = await createApp();
     maxSpeechLength = MAX_SPEECH_LENGTH;

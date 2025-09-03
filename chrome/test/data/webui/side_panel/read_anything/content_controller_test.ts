@@ -130,7 +130,9 @@ suite('ContentController', () => {
     test('builds a link as a <span> tag when speech is playing', () => {
       const url = 'https://www.usecheeky.com/';
       chrome.readingMode.linksEnabled = true;
-      speechController.onPlayPauseToggle(null, 'Cause I\'m gonna show you');
+      const element = document.createElement('p');
+      element.textContent = 'Cause I\'m gonna show you';
+      speechController.onPlayPauseToggle(null, element);
       readingMode.getHtmlTag = () => 'a';
       readingMode.getUrl = () => url;
 

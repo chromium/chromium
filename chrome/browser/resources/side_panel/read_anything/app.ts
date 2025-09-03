@@ -580,7 +580,7 @@ export class AppElement extends AppElementBase implements
 
   protected onPlayPauseClick_() {
     this.speechController_.onPlayPauseToggle(
-        this.getSelection(), this.$.container.textContent);
+        this.getSelection(), this.$.container);
   }
 
   onIsSpeechActiveChange(): void {

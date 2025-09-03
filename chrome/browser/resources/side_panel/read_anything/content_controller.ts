@@ -130,7 +130,7 @@ export class ContentController {
     // This needs to be done after the text node is created and added to the
     // node store.
     if (chrome.readingMode.isReadAloudEnabled) {
-      this.speechController_.initializeSpeechTree(nodeId);
+      this.speechController_.initializeSpeechTree(textNode);
     }
 
     if (!shouldBold && !isOverline) {

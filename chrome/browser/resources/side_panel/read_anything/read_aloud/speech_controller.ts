@@ -165,23 +165,19 @@ export class SpeechController {
     };
   }
 
-  initializeSpeechTree(startingNodeId?: number) {
-    if (startingNodeId && !this.model_.getFirstTextNode()) {
-      this.model_.setFirstTextNode(startingNodeId);
+  initializeSpeechTree(context?: Node) {
+    if (context && !this.model_.getContextNode()) {
+      this.model_.setContextNode(context);
     }
 
-    const firstTextNode = this.model_.getFirstTextNode();
-    if (!firstTextNode || this.isSpeechTreeInitialized()) {
+    const contextNode = this.model_.getContextNode();
+    if (!contextNode || this.isSpeechTreeInitialized()) {
       return;
     }
 
     // TODO: crbug.com/40927698 - This step should be skipped on migrating to
     // a non-AXPosition-based text segmentation strategy.
-    const domNode = this.nodeStore_.getDomNode(firstTextNode);
-    if (!domNode) {
-      return;
-    }
-    const readAloudNode = ReadAloudNode.create(domNode);
+    const readAloudNode = ReadAloudNode.create(contextNode);
     if (!readAloudNode) {
       return;
     }
@@ -243,20 +239,20 @@ export class SpeechController {
     this.logger_.logHighlightGranularity(newGranularity);
   }
 
-  onPlayPauseToggle(selection: Selection|null, textContent: string|null) {
+  onPlayPauseToggle(selection: Selection|null, context: HTMLElement|null) {
     if (this.isSpeechActive()) {
       this.stopSpeech_(PauseActionSource.BUTTON_CLICK);
     } else {
-      this.playSpeech_(selection, textContent);
+      this.playSpeech_(selection, context);
       this.model_.setPlaySessionStartTime(Date.now());
     }
   }
 
-  private playSpeech_(selection: Selection|null, textContent: string|null) {
+  private playSpeech_(selection: Selection|null, context: HTMLElement|null) {
     if (this.hasSpeechBeenTriggered() && !this.isSpeechActive()) {
       this.resumeSpeech_(selection);
     } else {
-      this.playSpeechForTheFirstTime_(selection, textContent);
+      this.playSpeechForTheFirstTime_(selection, context);
     }
   }
 
@@ -335,8 +331,8 @@ export class SpeechController {
   }
 
   private playSpeechForTheFirstTime_(
-      selection: Selection|null, textContent: string|null) {
-    if (!textContent) {
+      selection: Selection|null, context: HTMLElement|null) {
+    if (!context || !context.textContent) {
       return;
     }
 
@@ -354,7 +350,11 @@ export class SpeechController {
       return;
     }
 
-    this.initializeSpeechTree();
+    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+      this.initializeSpeechTree(context);
+    } else {
+      this.initializeSpeechTree();
+    }
     if (this.isSpeechTreeInitialized() && !this.highlightAndPlayMessage_()) {
       // Ensure we're updating Read Aloud state if there's no text to speak.
       this.onSpeechFinished_();
@@ -819,7 +819,7 @@ export class SpeechController {
     };
     this.setState_(speechPlayingState);
     this.setPreviewVoicePlaying_(null);
-    this.model_.setFirstTextNode(null);
+    this.model_.setContextNode(null);
     this.model_.setResumeSpeechOnVoiceMenuClose(false);
     this.model_.setWordsHeard(0);
   }
