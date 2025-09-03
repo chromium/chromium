@@ -56,7 +56,6 @@ enterprise_connectors::CloudAnalysisSettings CloudAnalysisSettingsWithUrl(
 }  // namespace
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -244,14 +243,13 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
       request->set_device_token("fake_device_token");
     }
     ON_CALL(*request, GetRequestData(_))
-        .WillByDefault(
-            Invoke([](BinaryUploadService::Request::DataCallback callback) {
-              BinaryUploadService::Request::Data data;
-              data.contents = "contents";
-              data.size = data.contents.size();
-              std::move(callback).Run(BinaryUploadService::Result::SUCCESS,
-                                      std::move(data));
-            }));
+        .WillByDefault([](BinaryUploadService::Request::DataCallback callback) {
+          BinaryUploadService::Request::Data data;
+          data.contents = "contents";
+          data.size = data.contents.size();
+          std::move(callback).Run(BinaryUploadService::Result::SUCCESS,
+                                  std::move(data));
+        });
 
     return request;
   }
@@ -297,14 +295,14 @@ TEST_F(CloudBinaryUploadServiceTest, FailsForLargeFile) {
   request->set_analysis_connector(
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
   ON_CALL(*request, GetRequestData(_))
-      .WillByDefault(Invoke(
+      .WillByDefault(
           [file_path](BinaryUploadService::Request::DataCallback callback) {
             BinaryUploadService::Request::Data data;
             data.path = file_path;
             data.size = 4;  // Must not be zero.
             std::move(callback).Run(BinaryUploadService::Result::FILE_TOO_LARGE,
                                     std::move(data));
-          }));
+          });
   UploadForDeepScanning(std::move(request));
 
   content::RunAllTasksUntilIdle();
@@ -336,14 +334,14 @@ TEST_F(CloudBinaryUploadServiceTest, FailsForEncryptedFile) {
   request->set_analysis_connector(
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
   ON_CALL(*request, GetRequestData(_))
-      .WillByDefault(Invoke(
+      .WillByDefault(
           [file_path](BinaryUploadService::Request::DataCallback callback) {
             BinaryUploadService::Request::Data data;
             data.path = file_path;
             data.size = 4;  // Must not be zero.
             std::move(callback).Run(BinaryUploadService::Result::FILE_ENCRYPTED,
                                     std::move(data));
-          }));
+          });
   UploadForDeepScanning(std::move(request));
 
   content::RunAllTasksUntilIdle();
@@ -374,14 +372,14 @@ TEST_F(CloudBinaryUploadServiceTest, PassesForEncryptedFileIfEnabled) {
   request->set_analysis_connector(
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
   ON_CALL(*request, GetRequestData(_))
-      .WillByDefault(Invoke(
+      .WillByDefault(
           [file_path](BinaryUploadService::Request::DataCallback callback) {
             BinaryUploadService::Request::Data data;
             data.path = file_path;
             data.size = 4;  // Must not be zero.
             std::move(callback).Run(BinaryUploadService::Result::FILE_ENCRYPTED,
                                     std::move(data));
-          }));
+          });
   UploadForDeepScanning(std::move(request));
 
   // TODO(crbug.com/418020892): Use BrowserTaskEnvironment::RunUntilIdle()

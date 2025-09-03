@@ -34,7 +34,6 @@
 namespace safe_browsing {
 
 using ::testing::_;
-using ::testing::Invoke;
 
 class MultipartUploadRequestTest : public testing::Test {
  public:
@@ -148,10 +147,10 @@ TEST_F(MultipartUploadRequestTest, RetriesCorrectly) {
 
     EXPECT_CALL(mock_request, SendRequest())
         .Times(1)
-        .WillRepeatedly(Invoke([&mock_request]() {
+        .WillRepeatedly([&mock_request]() {
           mock_request.RetryOrFinish(net::OK, net::HTTP_BAD_REQUEST,
                                      "response");
-        }));
+        });
     mock_request.Start();
     task_environment_.FastForwardUntilNoTasksRemain();
   }
@@ -160,10 +159,10 @@ TEST_F(MultipartUploadRequestTest, RetriesCorrectly) {
 
     EXPECT_CALL(mock_request, SendRequest())
         .Times(3)
-        .WillRepeatedly(Invoke([&mock_request]() {
+        .WillRepeatedly([&mock_request]() {
           mock_request.RetryOrFinish(net::OK, net::HTTP_SERVICE_UNAVAILABLE,
                                      "response");
-        }));
+        });
     mock_request.Start();
     task_environment_.FastForwardUntilNoTasksRemain();
   }

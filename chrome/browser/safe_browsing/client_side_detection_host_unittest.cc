@@ -81,7 +81,6 @@ using ::testing::_;
 using ::testing::DeleteArg;
 using ::testing::DoAll;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::IsNull;
 using ::testing::Mock;
 using ::testing::NiceMock;
@@ -2264,10 +2263,9 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
     SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
     database_manager_->SetAllowlistLookupDetailsForUrl(example_url_, false);
     ON_CALL(*raw_token_fetcher_, Start(_))
-        .WillByDefault(
-            testing::Invoke([&](SafeBrowsingTokenFetcher::Callback callback) {
-              std::move(callback).Run("fake_access_token");
-            }));
+        .WillByDefault([&](SafeBrowsingTokenFetcher::Callback callback) {
+          std::move(callback).Run("fake_access_token");
+        });
 
     AsyncCheckTracker::CreateForWebContents(
         web_contents(),
@@ -2353,10 +2351,10 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
   base::RunLoop run_loop;
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::unique_ptr<ClientPhishingRequest>,
               ClientSideDetectionService::ClientReportPhishingRequestCallback,
-              const std::string&) { run_loop.Quit(); }));
+              const std::string&) { run_loop.Quit(); });
   // This call should trigger preclassification check again.
   CompleteAsyncCheck();
   run_loop.Run();
@@ -2398,10 +2396,10 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
   base::RunLoop run_loop;
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::unique_ptr<ClientPhishingRequest>,
               ClientSideDetectionService::ClientReportPhishingRequestCallback,
-              const std::string&) { run_loop.Quit(); }));
+              const std::string&) { run_loop.Quit(); });
   // This call should trigger preclassification check again.
   CompleteAsyncCheck();
   run_loop.Run();
@@ -2475,10 +2473,10 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
   base::RunLoop run_loop;
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](std::unique_ptr<ClientPhishingRequest>,
               ClientSideDetectionService::ClientReportPhishingRequestCallback,
-              const std::string&) { run_loop.Quit(); }));
+              const std::string&) { run_loop.Quit(); });
   CompleteAsyncCheck();
   run_loop.Run();
 
@@ -2618,10 +2616,9 @@ class ClientSideDetectionHostScamDetectionTest
     database_manager_->SetAllowlistLookupDetailsForUrl(example_url_, false);
 
     ON_CALL(*raw_token_fetcher_, Start(_))
-        .WillByDefault(
-            testing::Invoke([&](SafeBrowsingTokenFetcher::Callback callback) {
-              std::move(callback).Run("fake_access_token");
-            }));
+        .WillByDefault([&](SafeBrowsingTokenFetcher::Callback callback) {
+          std::move(callback).Run("fake_access_token");
+        });
     ON_CALL(*intelligent_scan_delegate_, ShouldRequestIntelligentScan(_))
         .WillByDefault(Return(true));
     ON_CALL(*intelligent_scan_delegate_, IsOnDeviceModelAvailable(_))
@@ -2693,7 +2690,7 @@ class ClientSideDetectionHostScamDetectionTest
 
   void SetInquireOnDeviceModelCallback(bool should_return_response) {
     EXPECT_CALL(*intelligent_scan_delegate_, InquireOnDeviceModel(_, _))
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [=, this](std::string rendered_text,
                       base::OnceCallback<void(
                           ClientSideDetectionHost::IntelligentScanDelegate::
@@ -2711,7 +2708,7 @@ class ClientSideDetectionHostScamDetectionTest
               scam_detection_response.brand = example_brand_;
               scam_detection_response.intent = example_intent_;
               std::move(callback).Run(scam_detection_response);
-            }));
+            });
   }
 
   void SetSendClientReportPhishingRequestCallback(
@@ -2722,7 +2719,7 @@ class ClientSideDetectionHostScamDetectionTest
       IntelligentScanVerdict returned_intelligent_scan_verdict) {
     EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
         .Times(1)
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [=, this](
                 std::unique_ptr<ClientPhishingRequest> request,
                 ClientSideDetectionService::ClientReportPhishingRequestCallback
@@ -2757,7 +2754,7 @@ class ClientSideDetectionHostScamDetectionTest
               std::move(callback).Run(example_url_, returned_is_phishing,
                                       net::HTTP_OK,
                                       returned_intelligent_scan_verdict);
-            }));
+            });
   }
 
   void VerifyExpectedCalls() {

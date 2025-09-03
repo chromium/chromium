@@ -20,7 +20,6 @@
 namespace safe_browsing {
 
 using ::testing::_;
-using ::testing::Invoke;
 
 namespace {
 
@@ -64,13 +63,13 @@ class ExternalAppRedirectCheckingTest : public ::testing::Test {
   TestingProfile& profile() { return profile_; }
   void SetSitesAllowlisted(bool allowlisted) {
     ON_CALL(*mock_database_, CheckUrlForHighConfidenceAllowlist(_, _))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [allowlisted](
                 const GURL& url,
                 SafeBrowsingDatabaseManager::
                     CheckUrlForHighConfidenceAllowlistCallback callback) {
               std::move(callback).Run(allowlisted, std::nullopt);
-            }));
+            });
   }
 
  private:

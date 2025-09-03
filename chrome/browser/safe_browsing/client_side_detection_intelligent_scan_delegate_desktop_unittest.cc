@@ -26,7 +26,6 @@ using ::optimization_guide::OptimizationGuideModelStreamingExecutionResult;
 using ::optimization_guide::proto::ModelExecutionInfo;
 using ::optimization_guide::proto::ScamDetectionResponse;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 
 namespace safe_browsing {
@@ -63,13 +62,12 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
     base::RunLoop run_loop_for_add_observer;
     EXPECT_CALL(mock_opt_guide_,
                 AddOnDeviceModelAvailabilityChangeObserver(_, _))
-        .WillOnce(
-            Invoke([&](optimization_guide::ModelBasedCapabilityKey feature,
-                       optimization_guide::OnDeviceModelAvailabilityObserver*
-                           observer) {
-              availability_observer = observer;
-              run_loop_for_add_observer.Quit();
-            }));
+        .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature,
+                      optimization_guide::OnDeviceModelAvailabilityObserver*
+                          observer) {
+          availability_observer = observer;
+          run_loop_for_add_observer.Quit();
+        });
 
     SetEnhancedProtectionPrefForTests(&pref_service_, true);
     run_loop_for_add_observer.Run();
@@ -86,12 +84,12 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
   void EnableOnDeviceModelWithSession() {
     EnableOnDeviceModel();
     EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [&](optimization_guide::ModelBasedCapabilityKey feature,
                 const std::optional<optimization_guide::SessionConfigParams>&
                     config_params) {
               return std::make_unique<NiceMock<MockSession>>(&session_);
-            }));
+            });
   }
 
   optimization_guide::StreamingResponse CreateScamDetectionResponse(
@@ -190,12 +188,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       nullptr;
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
-          }));
+          });
 
   SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
@@ -253,12 +251,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   testing::NiceMock<MockSession> session;
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) {
             return std::make_unique<NiceMock<MockSession>>(&session);
-          }));
+          });
   // No need to add the observer because the session is created immediately.
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .Times(0);
@@ -281,12 +279,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       nullptr;
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
-          }));
+          });
 
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", false, 0);
@@ -325,12 +323,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       nullptr;
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
-          }));
+          });
 
   SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
@@ -394,12 +392,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       nullptr;
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
-          }));
+          });
 
   SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
@@ -425,12 +423,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       nullptr;
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
-          }));
+          });
 
   SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
@@ -452,12 +450,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   // Start listening again should work.
   base::RunLoop run_loop_for_add_observer2;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer2.Quit();
-          }));
+          });
   SetEnhancedProtectionPrefForTests(&pref_service_, true);
 
   run_loop_for_add_observer2.Run();
@@ -477,12 +475,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       nullptr;
   base::RunLoop run_loop_for_add_observer;
   EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
-          }));
+          });
 
   CreateDelegate(/*is_enhanced_protection_enabled=*/true);
 
@@ -552,12 +550,12 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   // wasn't finished and the future callback wasn't completed, we will remove
   // the "old" session and recreate a new one.
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) {
             return std::make_unique<NiceMock<MockSession>>(&session_);
-          }));
+          });
 
   // Caller is responsible to call ResetOnDeviceSession() before calling
   // InquireOnDeviceModel again.
@@ -580,7 +578,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EnableOnDeviceModelWithSession();
 
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
@@ -592,7 +590,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
                                 ModelExecutionError::kGenericFailure)),
                 /*provided_by_on_device=*/true,
                 /*execution_info=*/CreateExecutionInfo(/*model_version=*/123)));
-          })));
+          }));
 
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->InquireOnDeviceModel("", future.GetCallback());
@@ -615,7 +613,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EnableOnDeviceModelWithSession();
 
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
@@ -624,7 +622,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
                                                      /*is_complete=*/false)),
                 /*provided_by_on_device=*/false,
                 /*execution_info=*/CreateExecutionInfo(/*model_version=*/123)));
-          })));
+          }));
 
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->InquireOnDeviceModel("", future.GetCallback());
@@ -654,7 +652,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       .response = AnyWrapProto(default_response), .is_complete = true};
 
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
@@ -662,7 +660,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
                 base::ok(default_streaming_response),
                 /*provided_by_on_device=*/true,
                 /*execution_info=*/CreateExecutionInfo(/*model_version=*/123)));
-          })));
+          }));
 
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->InquireOnDeviceModel("", future.GetCallback());
@@ -687,7 +685,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EnableOnDeviceModelWithSession();
 
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
@@ -696,7 +694,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
                                                      /*is_complete=*/true)),
                 /*provided_by_on_device=*/false,
                 /*execution_info=*/CreateExecutionInfo(/*model_version=*/123)));
-          })));
+          }));
 
   base::test::TestFuture<IntelligentScanResult> future;
   delegate_->InquireOnDeviceModel("", future.GetCallback());
@@ -725,7 +723,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EnableOnDeviceModelWithSession();
 
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
@@ -734,7 +732,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
                                                      /*is_complete=*/true)),
                 /*provided_by_on_device=*/false,
                 /*execution_info=*/CreateExecutionInfo(/*model_version=*/123)));
-          })));
+          }));
 
   // Create an empty callback.
   ClientSideDetectionHost::IntelligentScanDelegate::

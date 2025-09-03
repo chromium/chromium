@@ -155,7 +155,6 @@ using ::testing::AtMost;
 using ::testing::ContainerEq;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::NotNull;
@@ -704,9 +703,9 @@ class DownloadProtectionServiceTestBase
     display_name_ = display_name.value_or(final_path_.BaseName());
     hash_ = "hash";
 
-    EXPECT_CALL(*item, GetURL()).WillRepeatedly(Invoke([&]() -> const GURL& {
+    EXPECT_CALL(*item, GetURL()).WillRepeatedly([&]() -> const GURL& {
       return url_chain_.back();
-    }));
+    });
     EXPECT_CALL(*item, GetFullPath()).WillRepeatedly(ReturnRef(tmp_path_));
     EXPECT_CALL(*item, GetTargetFilePath())
         .WillRepeatedly(ReturnRef(final_path_));
@@ -2741,10 +2740,10 @@ TEST_F(DownloadProtectionServiceTest,
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
       .WillRepeatedly(
-          Invoke([&item](const GURL&, base::OnceCallback<void(bool)> callback) {
+          [&item](const GURL&, base::OnceCallback<void(bool)> callback) {
             item.reset();
             std::move(callback).Run(false);
-          }));
+          });
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
       .Times(0);
   EXPECT_CALL(*binary_feature_extractor_.get(),

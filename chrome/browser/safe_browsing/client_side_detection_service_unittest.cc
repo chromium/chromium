@@ -53,7 +53,6 @@
 
 using content::BrowserThread;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
