@@ -28,6 +28,7 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/buildflags.h"
+#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/focus/focus_manager_delegate.h"
 #include "ui/views/focus/focus_manager_factory.h"
@@ -568,6 +569,109 @@ TEST_F(FocusManagerTest, RotateFocus) {
   EXPECT_EQ(v4, focus_manager->GetFocusedView());
   focus_manager->AdvanceFocus(false);
   EXPECT_EQ(v3, focus_manager->GetFocusedView());
+}
+
+// Verifies that focus traversal wraps to the first view in a radio button group
+// when the last view is focused. It skips the view that is not part of the
+// radio button group.
+TEST_F(FocusManagerTest, RadioButtonGroupTraversalWrapsToFirstView) {
+  FocusManager* focus_manager = GetFocusManager();
+
+  // Create a radio button group ID.
+  const int kRadioGroupID = 1;
+
+  // Create 2 nested views.
+  views::View* grandparent_view = new View;
+  views::View* parent_view = new View;
+  grandparent_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  parent_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  GetContentsView()->AddChildViewRaw(grandparent_view);
+  grandparent_view->AddChildViewRaw(parent_view);
+  grandparent_view->SetOwnedGroup(kRadioGroupID);
+
+  // Create 3 radio buttons in a radio button group.
+  auto* radio1 = parent_view->AddChildView(
+      std::make_unique<RadioButton>(u"Option 1", kRadioGroupID));
+  radio1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  auto* radio2 = parent_view->AddChildView(
+      std::make_unique<RadioButton>(u"Option 2", kRadioGroupID));
+  radio2->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  auto* radio3 = parent_view->AddChildView(
+      std::make_unique<RadioButton>(u"Option 3", kRadioGroupID));
+  radio3->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  // This view is not in the radio button group.
+  auto* other_view = GetContentsView()->AddChildView(std::make_unique<View>());
+  other_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  // Focus the first radio button.
+  radio1->RequestFocus();
+  EXPECT_EQ(radio1, focus_manager->GetFocusedView());
+
+  const ui::KeyEvent down_key(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                              ui::EF_NONE);
+  focus_manager->OnKeyEvent(down_key);
+  EXPECT_EQ(radio2, focus_manager->GetFocusedView());
+
+  focus_manager->OnKeyEvent(down_key);
+  EXPECT_EQ(radio3, focus_manager->GetFocusedView());
+
+  // Focus should wrap within the group and not go to other_view.
+  focus_manager->OnKeyEvent(down_key);
+  EXPECT_EQ(radio1, focus_manager->GetFocusedView());
+
+  const ui::KeyEvent up_key(ui::EventType::kKeyPressed, ui::VKEY_UP,
+                            ui::EF_NONE);
+  focus_manager->OnKeyEvent(up_key);
+
+  EXPECT_EQ(radio3, focus_manager->GetFocusedView());
+}
+
+// Verifies that group traversal algorithm assumes that the direct parent of the
+// currently focused view is the group owner when the owner is not explicitly
+// set. In this case the group traversal won't visit the third radio button
+// because it's not the direct sibling of the other buttons of the same group.
+TEST_F(FocusManagerTest, RadioButtonGroupOwnerUndefined) {
+  FocusManager* focus_manager = GetFocusManager();
+
+  // Create a radio button group ID.
+  const int kRadioGroupID = 1;
+
+  // Create 2 nested views.
+  views::View* grandparent_view = new View;
+  views::View* parent_view = new View;
+  grandparent_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  parent_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  GetContentsView()->AddChildViewRaw(grandparent_view);
+  grandparent_view->AddChildViewRaw(parent_view);
+
+  // Create 3 radio buttons in a radio button group.
+  auto* radio1 = parent_view->AddChildView(
+      std::make_unique<RadioButton>(u"Option 1", kRadioGroupID));
+  radio1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  auto* radio2 = parent_view->AddChildView(
+      std::make_unique<RadioButton>(u"Option 2", kRadioGroupID));
+  radio2->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  auto* radio3 = grandparent_view->AddChildView(
+      std::make_unique<RadioButton>(u"Option 3", kRadioGroupID));
+  radio3->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  // Focus the first radio button.
+  radio1->RequestFocus();
+  EXPECT_EQ(radio1, focus_manager->GetFocusedView());
+
+  const ui::KeyEvent down_key(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                              ui::EF_NONE);
+  focus_manager->OnKeyEvent(down_key);
+  EXPECT_EQ(radio2, focus_manager->GetFocusedView());
+
+  // Focus should wrap within the group and not go to radio3.
+  focus_manager->OnKeyEvent(down_key);
+  EXPECT_EQ(radio1, focus_manager->GetFocusedView());
 }
 
 // Verifies the stored focus view tracks the focused view.

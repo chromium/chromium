@@ -1061,8 +1061,21 @@ void View::SetGroup(int gid) {
   }
 }
 
+void View::SetOwnedGroup(int group_id) {
+  // Don't change the owned group once it's set.
+  DCHECK(owned_group_ == -1 || owned_group_ == group_id);
+  if (owned_group_ != group_id) {
+    owned_group_ = group_id;
+    OnPropertyChanged(&owned_group_, kPropertyEffectsNone);
+  }
+}
+
 int View::GetGroup() const {
   return group_;
+}
+
+int View::GetOwnedGroup() const {
+  return owned_group_;
 }
 
 base::CallbackListSubscription View::AddGroupChangedCallback(
@@ -3916,6 +3929,7 @@ ADD_READONLY_PROPERTY_METADATA(bool, EnabledInViewsSubtree)
 ADD_PROPERTY_METADATA(View::FocusBehavior, FocusBehavior)
 ADD_PROPERTY_METADATA(bool, FlipCanvasOnPaintForRTLUI)
 ADD_PROPERTY_METADATA(int, Group)
+ADD_PROPERTY_METADATA(int, OwnedGroup)
 ADD_PROPERTY_METADATA(int, Height)
 ADD_PROPERTY_METADATA(int, ID)
 ADD_READONLY_PROPERTY_METADATA(bool, IsDrawn);

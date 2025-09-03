@@ -949,8 +949,16 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Groups are currently used to implement radio button mutual exclusion.
   // The group id is immutable once it's set.
   void SetGroup(int gid);
+
+  // Sets the group this view owns. Immutable once set.
+  void SetOwnedGroup(int group_id);
+
   // Returns the group id of the view, or -1 if the id is not set yet.
   int GetGroup() const;
+
+  // Returns the group id of the group that the view owns or -1 if the view does
+  // not own a group.
+  int GetOwnedGroup() const;
 
   // Adds a callback associated with the above |Group| property. The callback
   // will be invoked whenever the property changes.
@@ -2393,6 +2401,14 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // to find other radio buttons.
   int group_ = -1;
 
+  // The id of the group that this view owns. Some view subclasses use this id
+  // to find the common parent of the group. One example in Chrome is
+  // `CombinedSelectorRadioButton` that is in a `CombinedSelectorRowView` which
+  // is in a `CombinedSelectorListView`. In this example
+  // `CombinedSelectorRadioButton` is not the direct parent of the radio button,
+  // but it is its group owner.
+  int owned_group_ = -1;
+
   // Tree operations -----------------------------------------------------------
 
   // The widget that this view is attached to. This is null if the view is not
@@ -2710,6 +2726,7 @@ VIEW_BUILDER_PROPERTY(bool, Enabled)
 VIEW_BUILDER_PROPERTY(bool, FlipCanvasOnPaintForRTLUI)
 VIEW_BUILDER_PROPERTY(views::View::FocusBehavior, FocusBehavior)
 VIEW_BUILDER_PROPERTY(int, Group)
+VIEW_BUILDER_PROPERTY(int, OwnedGroup)
 VIEW_BUILDER_PROPERTY(int, ID)
 VIEW_BUILDER_PROPERTY(bool, Mirrored)
 VIEW_BUILDER_PROPERTY(bool, NotifyEnterExitOnChild)

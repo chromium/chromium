@@ -263,6 +263,8 @@ CombinedSelectorListView::CombinedSelectorListView(
         CombinedSelectorSheetModel::SelectionStatus::kSelected) {
       selected_view_ = row;
     }
+
+    SetOwnedGroup(kGroupId);
   }
 
   if (num_mechanisms > 1) {
