@@ -1,3 +1,7 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 'use strict';
 
 const assertEq = (actual, expected) => {
@@ -179,6 +183,24 @@ async function readWriteUdpOnError(socket) {
     }
   } catch (error) {
     return 'readWriteUdpOnError failed: ' + error;
+  }
+}
+
+async function multicastControllerAbsent(options) {
+  try {
+    let socket = new UDPSocket(options);
+    let {multicastController} = await socket.opened;
+    let hasMulticast = multicastController != null;
+
+    await socket.close();
+
+    if (hasMulticast) {
+      throw new TypeError('multicast must be absent');
+    } else {
+      return 'multicastControllerAbsent succeeded.';
+    }
+  } catch (error) {
+    return 'multicastControllerAbsent failed: ' + error;
   }
 }
 

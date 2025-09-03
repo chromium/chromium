@@ -6255,6 +6255,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5653" label="CredentialsGetImmediateMediationWithPasswordsOnly"/>
   <int value="5654" label="CSSAtRuleRoute"/>
   <int value="5655" label="AbsposPositionTryFallbacksChange"/>
+  <int value="5656" label="MulticastControllerJoinGroupFunction"/>
+  <int value="5657" label="MulticastControllerLeaveGroupFunction"/>
+  <int value="5658" label="MulticastControllerJoinedGroupsAttribute"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -6407,6 +6410,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="139" label="LanguageModel"/>
   <int value="140" label="AriaNotify"/>
   <int value="141" label="DigitalCredentialsCreate"/>
+  <int value="142" label="MulticastInDirectSockets"/>
 </enum>
 
 <!-- LINT.IfChange(FedCmAccountChooserResult) -->

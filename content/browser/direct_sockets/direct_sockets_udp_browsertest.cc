@@ -78,8 +78,7 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
-    client_ = std::make_unique<test::IsolatedWebAppContentBrowserClient>(
-        url::Origin::Create(GetTestPageURL()));
+    client_ = CreateContentBrowserClient();
     runner_ =
         std::make_unique<content::test::AsyncJsRunner>(shell()->web_contents());
 
@@ -91,6 +90,12 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     ContentBrowserTest::SetUp();
+  }
+
+  virtual std::unique_ptr<test::IsolatedWebAppContentBrowserClient>
+  CreateContentBrowserClient() {
+    return std::make_unique<test::IsolatedWebAppContentBrowserClient>(
+        url::Origin::Create(GetTestPageURL()));
   }
 
   std::pair<net::IPEndPoint,
@@ -159,6 +164,14 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, MulticastTimeToLiveParam) {
           "closeUdp({ localAddress: '127.0.0.1', multicastTimeToLive: 256 })")
           .ExtractString(),
       ::testing::StartsWith("closeUdp failed"));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, MulticastParamsAllowed) {
+  EXPECT_EQ(
+      "closeUdp succeeded",
+      EvalJs(shell(),
+             "closeUdp({ localAddress: '127.0.0.1', multicastTimeToLive: 100, "
+             "multicastAllowAddressSharing: true, multicastLoopback: true })"));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdpAfterClose) {
@@ -455,6 +468,82 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, UdpMessageConfigurations) {
                     "UDPMessage: 'remoteAddress' and "
                     "'remotePort' must not be specified in 'connected'"));
   }
+}
+
+// A ContentBrowserClient that does not grant direct-sockets-multicast
+// permission policy.
+class NoMulticastPermissionIsolatedWebAppContentBrowserClient
+    : public test::IsolatedWebAppContentBrowserClient {
+ public:
+  explicit NoMulticastPermissionIsolatedWebAppContentBrowserClient(
+      const url::Origin& isolated_app_origin)
+      : IsolatedWebAppContentBrowserClient(isolated_app_origin) {}
+
+  std::optional<network::ParsedPermissionsPolicy>
+  GetPermissionsPolicyForIsolatedWebApp(
+      WebContents* web_contents,
+      const url::Origin& app_origin) override {
+    network::ParsedPermissionsPolicyDeclaration coi_decl(
+        network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+        /*allowed_origins=*/{},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/true, /*matches_opaque_src=*/false);
+
+    network::ParsedPermissionsPolicyDeclaration sockets_decl(
+        network::mojom::PermissionsPolicyFeature::kDirectSockets,
+        /*allowed_origins=*/{},
+        /*self_if_matches=*/app_origin,
+        /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
+
+    network::ParsedPermissionsPolicyDeclaration sockets_pna_decl(
+        network::mojom::PermissionsPolicyFeature::kDirectSocketsPrivate,
+        /*allowed_origins=*/{},
+        /*self_if_matches=*/app_origin,
+        /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
+
+    return {{coi_decl, sockets_decl, sockets_pna_decl}};
+  }
+};
+
+class DirectSocketsUdpNoMulticastPolicyBrowserTest
+    : public DirectSocketsUdpBrowserTest {
+ protected:
+  std::unique_ptr<test::IsolatedWebAppContentBrowserClient>
+  CreateContentBrowserClient() override {
+    return std::make_unique<
+        NoMulticastPermissionIsolatedWebAppContentBrowserClient>(
+        url::Origin::Create(GetTestPageURL()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsUdpNoMulticastPolicyBrowserTest,
+                       NoMulticastPermissionPolicy) {
+  EXPECT_EQ("multicastControllerAbsent succeeded.",
+            EvalJs(shell(),
+                   "multicastControllerAbsent({ localAddress: '127.0.0.1' })"));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsUdpNoMulticastPolicyBrowserTest,
+                       MulticastParamsNotAllowedWithoutPolicy) {
+  EXPECT_THAT(
+      EvalJs(
+          shell(),
+          "closeUdp({ localAddress: '127.0.0.1', multicastTimeToLive: 100 })")
+          .ExtractString(),
+      ::testing::StartsWith("closeUdp failed"));
+
+  EXPECT_THAT(EvalJs(shell(),
+                     "closeUdp({ localAddress: '127.0.0.1', "
+                     "multicastAllowAddressSharing: true })")
+                  .ExtractString(),
+              ::testing::StartsWith("closeUdp failed"));
+
+  EXPECT_THAT(
+      EvalJs(
+          shell(),
+          "closeUdp({ localAddress: '127.0.0.1', multicastLoopback: false })")
+          .ExtractString(),
+      ::testing::StartsWith("closeUdp failed"));
 }
 
 }  // namespace content

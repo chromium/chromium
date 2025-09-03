@@ -140,6 +140,7 @@ domain Page
       digital-credentials-create
       digital-credentials-get
       direct-sockets
+      direct-sockets-multicast
       direct-sockets-private
       display-capture
       document-domain

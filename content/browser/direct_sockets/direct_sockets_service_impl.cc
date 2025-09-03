@@ -44,7 +44,6 @@
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -165,9 +164,9 @@ bool IsMulticastAllowed(const Context& context) {
 
   return std::visit(
       absl::Overload{[](content::RenderFrameHost* rfh) {
-                       // TODO(crbug.com/398934282): check the necessary
-                       // permission policy
-                       return true;
+                       return rfh->IsFeatureEnabled(
+                           network::mojom::PermissionsPolicyFeature::
+                               kMulticastInDirectSockets);
                      },
                      [](base::WeakPtr<SharedWorkerHost> shared_worker) {
                        // TODO(crbug.com/398934282): add shared worker support.

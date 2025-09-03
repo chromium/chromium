@@ -341,6 +341,10 @@ enum PermissionsPolicyFeature {
   // Digital Credentials (https://w3c-fedid.github.io/digital-credentials/)
   kDigitalCredentialsCreate = 141,
 
+  // Controls access to Multicast in Direct Sockets.
+  // See https://github.com/explainers-by-googlers/multicast-in-direct-sockets.
+  kMulticastInDirectSockets = 142,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in
