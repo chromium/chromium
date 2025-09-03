@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/views/find_bar_owner.h"
 #include "chrome/browser/ui/views/find_bar_view.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_window_types.h"
@@ -49,7 +50,7 @@ class FindBarHost : public FindBar,
                     public views::AnimationDelegateViews,
                     public views::WidgetDelegate {
  public:
-  explicit FindBarHost(BrowserView* browser_view);
+  explicit FindBarHost(FindBarOwner* find_bar_owner);
 
   FindBarHost(const FindBarHost&) = delete;
   FindBarHost& operator=(const FindBarHost&) = delete;
@@ -65,9 +66,7 @@ class FindBarHost : public FindBar,
   // Returns true if the find bar view is visible, or false otherwise.
   bool IsVisible() const;
 
-  // TODO(https://crbug.com/40183900): Remove this and migrate the caller to
-  // something more specific.
-  BrowserView* browser_view() { return browser_view_; }
+  FindBarOwner* find_bar_owner() { return find_bar_owner_; }
 
 #if BUILDFLAG(IS_MAC)
   // Get the host widget.
@@ -208,8 +207,8 @@ class FindBarHost : public FindBar,
   // the state of the widget can be out of sync.
   bool is_visible_ = false;
 
-  // The BrowserView that created us.
-  const raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
+  // The FindBarOwner that created us.
+  const raw_ptr<FindBarOwner, DanglingUntriaged> find_bar_owner_;
 
   // The focus manager we register with to keep track of focus changes.
   raw_ptr<views::FocusManager, DanglingUntriaged> focus_manager_ = nullptr;

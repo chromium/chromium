@@ -84,16 +84,16 @@ class FindBarHostHelper
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FindBarHostHelper);
 
 gfx::Rect GetLocationForFindBarView(gfx::Rect view_location,
-                                    const gfx::Rect& dialog_bounds,
+                                    const gfx::Rect& clipping_box,
                                     const gfx::Rect& avoid_overlapping_rect) {
-  // Clamp to the `dialog_bounds`.
+  // Clamp to the `clipping_box`.
   view_location.set_width(
-      std::min(view_location.width(), dialog_bounds.width()));
+      std::min(view_location.width(), clipping_box.width()));
   if (base::i18n::IsRTL()) {
-    int boundary = dialog_bounds.width() - view_location.width();
+    int boundary = clipping_box.width() - view_location.width();
     view_location.set_x(std::min(view_location.x(), boundary));
   } else {
-    view_location.set_x(std::max(view_location.x(), dialog_bounds.x()));
+    view_location.set_x(std::max(view_location.x(), clipping_box.x()));
   }
 
   gfx::Rect new_pos = view_location;
@@ -111,8 +111,8 @@ gfx::Rect GetLocationForFindBarView(gfx::Rect view_location,
                     avoid_overlapping_rect.width() +
                     (2 * kMinFindWndDistanceFromSelection));
 
-      // If we moved it off-screen to the right, we won't move it at all.
-      if (new_pos.x() + new_pos.width() > dialog_bounds.width()) {
+      // If we moved it to be clipped on the right, we won't move it at all.
+      if (new_pos.x() + new_pos.width() > clipping_box.width()) {
         new_pos = view_location;  // Reset.
       }
     } else {
@@ -141,8 +141,9 @@ static bool kDisableAnimationsForTesting = false;
 ////////////////////////////////////////////////////////////////////////////////
 // FindBarHost, public:
 
-FindBarHost::FindBarHost(BrowserView* browser_view)
-    : AnimationDelegateViews(browser_view), browser_view_(browser_view) {
+FindBarHost::FindBarHost(FindBarOwner* find_bar_owner)
+    : AnimationDelegateViews(find_bar_owner->GetOwnerWidget()),
+      find_bar_owner_(find_bar_owner) {
   auto find_bar_view = std::make_unique<FindBarView>(this);
   // The |clip_view| exists to paint to a layer so that it can clip descendent
   // Views which also paint to a Layer. See http://crbug.com/589497
@@ -153,13 +154,14 @@ FindBarHost::FindBarHost(BrowserView* browser_view)
   view_ = clip_view->AddChildView(std::move(find_bar_view));
 
   // Initialize the host.
-  host_ = std::make_unique<ThemeCopyingWidget>(browser_view_->GetWidget());
+  host_ =
+      std::make_unique<ThemeCopyingWidget>(find_bar_owner_->GetOwnerWidget());
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_CONTROL);
   params.delegate = this;
   params.name = "FindBarHost";
-  params.parent = browser_view_->GetWidgetForAnchoring()->GetNativeView();
+  params.parent = find_bar_owner_->GetWidgetForAnchoring()->GetNativeView();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 #if BUILDFLAG(IS_MAC)
   params.activatable = views::Widget::InitParams::Activatable::kYes;
@@ -490,9 +492,7 @@ std::u16string FindBarHost::GetAccessibleWindowTitle() const {
   if (!controller) {
     return std::u16string();
   }
-  return l10n_util::GetStringFUTF16(
-      IDS_FIND_IN_PAGE_ACCESSIBLE_TITLE,
-      browser_view_->browser()->GetWindowTitleForCurrentTab(false));
+  return find_bar_owner_->GetFindBarAccessibleWindowTitle();
 }
 
 FindBarView* FindBarHost::GetFindBarViewForTesting() {
@@ -580,10 +580,7 @@ void FindBarHost::OnVisibilityChanged() {
   if (is_visible_) {
     visible_bounds = host_->GetWindowBoundsInScreen();
   }
-  browser_view_->immersive_mode_controller()->OnFindBarVisibleBoundsChanged(
-      visible_bounds);
-
-  browser_view_->browser()->OnFindBarVisibilityChanged();
+  find_bar_owner_->OnFindBarVisibilityChanged(visible_bounds);
 }
 
 void FindBarHost::RegisterAccelerators() {
@@ -611,9 +608,9 @@ void FindBarHost::UnregisterAccelerators() {
 
 gfx::Rect FindBarHost::GetDialogPosition(gfx::Rect avoid_overlapping_rect) {
   // Find the area we have to work with (after accounting for scrollbars, etc).
-  // The BrowserView does Layout for the components that we care about
+  // The owner does layout for the components that we care about
   // positioning relative to, so we ask it to tell us where we should go.
-  gfx::Rect find_bar_bounds = browser_view_->GetFindBarBoundingBox();
+  gfx::Rect find_bar_bounds = find_bar_owner_->GetFindBarBoundingBox();
   if (find_bar_bounds.IsEmpty()) {
     return gfx::Rect();
   }
@@ -647,9 +644,9 @@ gfx::Rect FindBarHost::GetDialogPosition(gfx::Rect avoid_overlapping_rect) {
     GetWidgetPositionNative(&avoid_overlapping_rect);
   }
 
-  gfx::Rect widget_bounds = browser_view_->bounds();
+  gfx::Rect clipping_box = find_bar_owner_->GetFindBarClippingBox();
 
-  return GetLocationForFindBarView(view_location, widget_bounds,
+  return GetLocationForFindBarView(view_location, clipping_box,
                                    avoid_overlapping_rect);
 }
 
@@ -662,13 +659,7 @@ void FindBarHost::SetDialogPosition(const gfx::Rect& new_pos) {
 
   host_->SetBounds(new_pos);
 
-  // Tell the immersive mode controller about the find bar's new bounds. The
-  // immersive mode controller uses the bounds to keep the top-of-window views
-  // revealed when the mouse is hovered over the find bar.
-  browser_view_->immersive_mode_controller()->OnFindBarVisibleBoundsChanged(
-      host_->GetWindowBoundsInScreen());
-
-  browser_view_->browser()->OnFindBarVisibilityChanged();
+  find_bar_owner_->OnFindBarVisibilityChanged(host_->GetWindowBoundsInScreen());
 }
 
 void FindBarHost::OnWillChangeFocus(views::View* focused_before,

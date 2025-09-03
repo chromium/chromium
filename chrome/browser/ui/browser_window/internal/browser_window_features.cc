@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_border_controller.h"
+#include "chrome/browser/ui/views/frame/find_bar_owner_views.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/scrim_view_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -656,6 +657,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 #endif
 
   user_education_->Init(browser_view);
+
+  find_bar_owner_ = std::make_unique<FindBarOwnerViews>(browser_view);
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
@@ -751,6 +754,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   if (auto* const provider = browser_elements_->AsA<BrowserElementsViews>()) {
     provider->TearDown();
   }
+
+  find_bar_owner_.reset();
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

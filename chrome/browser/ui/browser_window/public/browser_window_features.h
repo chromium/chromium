@@ -52,6 +52,7 @@ class DevtoolsUIController;
 class ExtensionKeybindingRegistryViews;
 class ExclusiveAccessManager;
 class FindBarController;
+class FindBarOwner;
 class FullscreenControlHost;
 class HistoryClustersSidePanelCoordinator;
 class HistorySidePanelCoordinator;
@@ -457,6 +458,8 @@ class BrowserWindowFeatures {
     return accelerator_provider_;
   }
 
+  FindBarOwner* find_bar_owner() { return find_bar_owner_.get(); }
+
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -692,6 +695,8 @@ class BrowserWindowFeatures {
   // AcceleratorProvider. Consider eliminating this inheritance and composing
   // this functionality into its own class.
   raw_ptr<ui::AcceleratorProvider> accelerator_provider_;
+
+  std::unique_ptr<FindBarOwner> find_bar_owner_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

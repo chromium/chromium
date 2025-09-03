@@ -312,8 +312,8 @@ FindBarView::~FindBarView() = default;
 
 void FindBarView::SetHost(FindBarHost* host) {
   find_bar_host_ = host;
-  find_text_->SetShouldDoLearning(
-      host && !host->browser_view()->GetProfile()->IsOffTheRecord());
+  find_text_->SetShouldDoLearning(host &&
+                                  !host->find_bar_owner()->IsOffTheRecord());
 }
 
 void FindBarView::SetFindTextAndSelectedRange(
