@@ -3418,6 +3418,9 @@ extern const char kNtpSafeBrowsingModuleDescription[];
 extern const char kNtpSharepointModuleName[];
 extern const char kNtpSharepointModuleDescription[];
 
+extern const char kNtpTabGroupsModuleZeroStateName[];
+extern const char kNtpTabGroupsModuleZeroStateDescription[];
+
 extern const char kNtpTabGroupsModuleName[];
 extern const char kNtpTabGroupsModuleDescription[];
 
