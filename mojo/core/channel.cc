@@ -27,6 +27,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/process/current_process.h"
 #include "base/process/process_handle.h"
+#include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
@@ -233,6 +234,10 @@ struct TrivialMessage : public Channel::Message {
 
 static_assert(sizeof(TrivialMessage) == 256,
               "Expected TrivialMessage to be 256 bytes");
+
+bool ShouldRecordSubsampledHistograms() {
+  return base::ShouldRecordSubsampledMetric(0.001);
+}
 
 }  // namespace
 
@@ -970,7 +975,7 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
                            next_read_size_hint);
     if (result == DispatchResult::kOK) {
       if (ShouldRecordSubsampledHistograms()) {
-        LogHistogramForIPCMetrics(MessageType::kReceive);
+        RecordReceivedMessageProcessType();
       }
       read_buffer_->Discard(*next_read_size_hint);
       *next_read_size_hint = 0;
@@ -1145,20 +1150,6 @@ bool Channel::OnControlMessage(Message::MessageType message_type,
   return false;
 }
 
-// static
-void Channel::LogHistogramForIPCMetrics(MessageType type) {
-  if (type == MessageType::kSent) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Mojo.Channel.WriteSendMessageProcessType",
-        base::CurrentProcess::GetInstance().GetShortType({}));
-  }
-  if (type == MessageType::kReceive) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Mojo.Channel.WriteReceiveMessageProcessType",
-        base::CurrentProcess::GetInstance().GetShortType({}));
-  }
-}
-
 // Currently only CrOs, Linux, and Android support upgrades.
 #if !(BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 // static
@@ -1174,13 +1165,22 @@ MOJO_SYSTEM_IMPL_EXPORT void Channel::OfferChannelUpgrade() {
 void Channel::RecordSentMessageMetrics(size_t payload_size) {
   if (ShouldRecordSubsampledHistograms()) {
     UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize", payload_size);
-    LogHistogramForIPCMetrics(MessageType::kSent);
+    RecordSentMessageProcessType();
   }
 }
 
-bool Channel::ShouldRecordSubsampledHistograms() {
-  base::AutoLock hold(lock_);
-  return sub_sampler_.ShouldSample(0.001);
+// static
+void Channel::RecordReceivedMessageProcessType() {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Mojo.Channel.WriteReceiveMessageProcessType",
+      base::CurrentProcess::GetInstance().GetShortType({}));
+}
+
+// static
+void Channel::RecordSentMessageProcessType() {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Mojo.Channel.WriteSendMessageProcessType",
+      base::CurrentProcess::GetInstance().GetShortType({}));
 }
 
 }  // namespace mojo::core

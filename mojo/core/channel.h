@@ -507,21 +507,18 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
                                 std::vector<PlatformHandle> handles);
 
  protected:
-  enum class MessageType {
-    kSent,
-    kReceive,
-  };
-
   void RecordSentMessageMetrics(size_t payload_size);
 
  private:
-  // Returns true for ~1/1000 calls. Used to reduce reporting overhead.
-  bool ShouldRecordSubsampledHistograms();
-  // Records histograms that count sent/received messages per process type.
-  // Must be guarded by a call to ShouldRecordSubsampledHistograms().
-  static void LogHistogramForIPCMetrics(MessageType type);
-
   friend class base::RefCountedThreadSafe<Channel>;
+
+  // Records histograms counting sent messages per process type. Must be
+  // subsampled.
+  static void RecordSentMessageProcessType();
+
+  // Records histograms counting received messages per process type. Must be
+  // subsampled.
+  static void RecordReceivedMessageProcessType();
 
   class ReadBuffer;
 
@@ -532,12 +529,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
   // Handle to the process on the other end of this Channel, iff known.
   base::Process remote_process_;
-
-  mutable base::Lock lock_;
-  // base::MetricsSubSampler uses InsecureRandomGenerator to generate
-  // pseudo-random numbers which leaves the synchronization to the client and is
-  // not thread-safe, hence guarded by lock here.
-  base::MetricsSubSampler sub_sampler_ GUARDED_BY(lock_);
 
   FRIEND_TEST_ALL_PREFIXES(ChannelTest, IpczHeaderCompatibilityTest);
   FRIEND_TEST_ALL_PREFIXES(ChannelTest, TryDispatchMessageWithEnvelope);
