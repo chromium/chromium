@@ -346,7 +346,7 @@
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">مصغّر</translation>
 <translation id="311015743332597320">مرِّر سريعًا بأربعة أصابع إلى يسار الشاشة.</translation>
-<translation id="3112457281078985179">‏لتفعيل ChromeVox أو إيقاف تشغيله، استخدم Control+Alt+Z.</translation>
+<translation id="3112457281078985179">‏لتفعيل ChromeVox أو إيقاف تشغيله، يرجى استخدام Control+Alt+Z.</translation>
 <translation id="3115800313647508384">هل تريد إيقاف الشاشة؟</translation>
 <translation id="3131002934070407451">طريقة قراءة الأرقام:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -394,7 +394,7 @@
 <translation id="335581015389089642">الحديث</translation>
 <translation id="3356951775008366684">الإعلان عن النطق الصوتي للكلمة</translation>
 <translation id="3359142382821736686">seprtr</translation>
-<translation id="3363015957057974366">‏يمكنك أيضًا استخدام مفتاح التبويب (Tab) للانتقال إلى العنصر التفاعلي التالي على الشاشة. ابحث عن مفتاح التبويب (Tab) الموجود فوق مفتاح البحث مباشرةً. للمواصلة، اضغط على مفتاح التبويب (Tab).</translation>
+<translation id="3363015957057974366">‏يمكنك أيضًا استخدام مفتاح التبويب (Tab) للانتقال إلى العنصر التفاعلي التالي على الشاشة. يرجى البحث عن مفتاح التبويب (Tab) الموجود فوق مفتاح البحث مباشرةً. للمواصلة، يمكنك الضغط على مفتاح التبويب (Tab).</translation>
 <translation id="3366946046494222386">برنامج <ph name="TOPIC" /> التعليمي، <ph name="LESSONS" /> درس</translation>
 <translation id="338583716107319301">فاصل</translation>
 <translation id="3389259863310851658">حقل النموذج السابق</translation>
@@ -430,7 +430,7 @@
 <translation id="3594207934078151302">أخضر بحري متوسط</translation>
 <translation id="3599054940393788245">ليس داخل الرياضيات</translation>
 <translation id="360241989769010433">شكر وتقدير</translation>
-<translation id="3616016838842055984">إذا وصلت إلى عنصر وتريد النقر عليه، اضغط على مفتاح البحث + مفتاح المسافة. جرِّب الضغط عليهما الآن للمواصلة.</translation>
+<translation id="3616016838842055984">إذا وصلت إلى عنصر وأردت النقر عليه، يرجى الضغط على مفتاح البحث + مفتاح المسافة. يرجى محاولة الضغط عليهما الآن للمواصلة.</translation>
 <translation id="3616113530831147358">المقاطع الصوتية</translation>
 <translation id="3622350485154495700">النقر مرَّتين بإصبع واحد</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
@@ -526,7 +526,7 @@
 <translation id="4253168017788158739">ملاحظة</translation>
 <translation id="4254798249533888099">متفرع</translation>
 <translation id="4255016471934258618">فتح الفم</translation>
-<translation id="4259220820964911921">‏هل تريد تفعيل التحكّم في ميزة FaceGaze؟</translation>
+<translation id="4259220820964911921">تفعيل ميزة "التحكّم بالوجه"؟</translation>
 <translation id="4271220233568730077">التعبير الرياضي التالي</translation>
 <translation id="4275397969489577657">تفعيل ميزة تسجيل بث الحدث</translation>
 <translation id="4278486392851938658">ليس هناك رابط سابق تم الانتقال إليه.</translation>
@@ -668,7 +668,7 @@
 <translation id="5263034204789987535">أصفر باهت</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">إنهاء</translation>
-<translation id="5290220123487191192">لنبدأ ببعض الإيماءات التي ستستخدمها بانتظام. إذا وصلت إلى عنصر تريد تفعيله، انقر مرّتين على الشاشة بإصبع واحد. للمتابعة، انقر مرّتين الآن.</translation>
+<translation id="5290220123487191192">لنبدأ ببعض الإيماءات التي يتمّ استخدامها بانتظام. لتفعيل أيّ عنصر، عليك النقر مرّتين على الشاشة بإصبع واحد. للمتابعة، يُرجى النقر مرّتين الآن.</translation>
 <translation id="5291860916305032607">استئناف ميزة "التحكّم بالوجه"</translation>
 <translation id="5302089807023311274">مرجع قائمة مراجع</translation>
 <translation id="530391007967514163">يمكنك الانتقال بسرعة بين العناوين للتنقُّل بين النصوص أدناه.</translation>
@@ -735,7 +735,7 @@
 <translation id="5655682562155942719">أوامر الانتقال السريع</translation>
 <translation id="56637627897541303">منطقة النص</translation>
 <translation id="5666746275818170484">اضغط على مفتاح السهم المتّجه لليسار</translation>
-<translation id="5669637233317991674">للتنقّل في هذا الدرس، اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين أو لليسار.</translation>
+<translation id="5669637233317991674">للتنقّل في هذا الدرس، عليك الضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين أو لليسار.</translation>
 <translation id="5677240841070992068">الموقع الحالي</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5678971933640285754">.input {$$COUNT :number} .match $$COUNT 1{{right brace}} *{{{$$COUNT} right braces}}</translation>

@@ -102,7 +102,7 @@
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقة واحدة ({THRESHOLD}).}zero{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}two{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقتَين ({THRESHOLD}).}few{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقائق.}many{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}other{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}}</translation>
 <translation id="3367797402528056312">‏إنهاء عملية إعداد Chrome</translation>
 <translation id="3371064404604898522">‏ضبط Chrome كمتصفِّح تلقائي</translation>
-<translation id="3399930248910934354">‏افتَح إعدادات Chrome.</translation>
+<translation id="3399930248910934354">‏يرجى فتح إعدادات Chrome</translation>
 <translation id="3440830787838130530">‏يتيح لك "مدير كلمات المرور في Google" الآن مشاركة أي كلمة مرور مع مجموعة عائلتك بسهولة وأمان</translation>
 <translation id="3460369101684070455">‏للوصول بسهولة إلى كلمات المرور المحفوظة واستخدامها في تطبيقاتك الأخرى، ما عليك سوى استخدام ميزة "الملء التلقائي" في Chrome</translation>
 <translation id="3472587960215700950">‏يستخدم Chrome "خرائط Google" لإعلامك بالاتجاهات مع معلومات محلية عن العناوين المكتشفة.</translation>

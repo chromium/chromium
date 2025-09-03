@@ -57,6 +57,7 @@
 <translation id="7221920857098237570">ອ່ອນໂຍນ</translation>
 <translation id="7237590978482584900">ສົດຊື່ນ</translation>
 <translation id="7282547042039404307">ຄ່ອງແຄ້ວ</translation>
+<translation id="7514257690823355037">ຍ້າຍໄປຫາລາຍການຕໍ່ໄປ</translation>
 <translation id="8004767876552422827">ສະໜາມ</translation>
 <translation id="8136852699834914183">ບໍ່ສາມາດໃຊ້ການຫຼິ້ນສຳລັບໜ້ານີ້ໄດ້.</translation>
 <translation id="8198036737896977997">ອາກາດ</translation>
@@ -68,5 +69,6 @@
 <translation id="8756370108715456837">ບໍ່ຖືກຕ້ອງຕາມຂໍ້ເທັດຈິງ</translation>
 <translation id="8953618380150219653">ເປີດຕົວຫຼິ້ນ “ຟັງໜ້ານີ້” ແບບເຕັມຄວາມສູງແລ້ວ.</translation>
 <translation id="9087782179025630211">ຕົວຄວບຄຸມການຫຼິ້ນ. ຜ່ານໄປແລ້ວ <ph name="ELAPSED" /> ຈາກທັງໝົດ <ph name="TOTAL" />.</translation>
+<translation id="9193673272519126093">ຍ້າຍໄປຫາລາຍການກ່ອນໜ້າ</translation>
 <translation id="978117257931832348">ສຽງຕ່ຳ</translation>
 </translationbundle>

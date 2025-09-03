@@ -19,6 +19,7 @@
 <translation id="1152920704813762236">‏מידע על ChromeOS</translation>
 <translation id="1154147086299354128">‏&amp;פתיחה ב-Chrome</translation>
 <translation id="1157985233335035034">שפות אחרונות</translation>
+<translation id="1158134713295836892">‏‫Gemini ב-Chrome</translation>
 <translation id="1184145431117212167">‏ההתקנה נכשלה כי הגרסה של Windows לא נתמכת.</translation>
 <translation id="1194807384646768652">‏Chrome חסם את ההורדה הזאת כי לרוב לא מתבצעת הורדה של קבצים מהסוג הזה ויכול להיות שהקובץ מסוכן</translation>
 <translation id="1203500561924088507">תודה שהתקנת. עליך להפעיל מחדש את הדפדפן לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
@@ -393,7 +394,7 @@
 <translation id="5824893331272123205">לא הצלחנו לטעון את החלונית, אפשר לנסות שוב</translation>
 <translation id="5825922397106002626">‏הסרה של <ph name="EXTENSION_NAME" /> מ-Chrome</translation>
 <translation id="58431560289969279">‏כשמחוברים לחשבון, אפשר להשתמש בסיסמאות ובפרטים נוספים מחשבון Google ב-Chrome. אפשר לשנות את זה בכל שלב ב'הגדרות'.</translation>
-<translation id="5858486459377137936">‏אם סוגרים את כל החלונות של Chrome, מתבצעת יציאה מהחשבון ברוב האתרים, אבל לא מחשבון Google, אם נכנסת אליו ב-Chromium. כדי לאפשר לאתרים לזכור אותך, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5858486459377137936">‏אם כל החלונות של Chrome נסגרים מתבצעת יציאה מהחשבון ברוב האתרים, אבל לא מהחשבון שלך ב-Google (אם נכנסת אליו דרך הדפדפן). רוצה שהאתרים יזכרו אותך? <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563">‏<ph name="BEGIN_LINK" />ב-Chrome מוצגות אזהרות<ph name="END_LINK" /> מפני הורדות ואתרים לא בטוחים</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – כניסה לרשת</translation>
@@ -506,7 +507,7 @@
 <translation id="7106741999175697885">‏מנהל המשימות - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{‏יש עדכון חדש בשביל Chrome והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש.}=1{‏יש עדכון חדש בשביל Chrome והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. החלון האנונימי הפרטי לא ייפתח מחדש.}one{‏יש עדכון חדש בשביל Chrome והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות הפרטיים לא ייפתחו מחדש.}two{‏יש עדכון חדש בשביל Chrome והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות הפרטיים לא ייפתחו מחדש.}other{‏יש עדכון חדש בשביל Chrome והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות הפרטיים לא ייפתחו מחדש.}}</translation>
 <translation id="7155997830309522122">‏אם שינית את הסיסמה הזו, יש לערוך את הסיסמה השמורה ב-Chrome כך שהיא תתאים לסיסמה החדשה שלך.</translation>
-<translation id="7161904924553537242">‏ברוך הבא ל-Google Chrome</translation>
+<translation id="7161904924553537242">‏איזה כיף שבחרת ב-Google Chrome</translation>
 <translation id="7193885263065350793">‏לפי הגדרת הארגון שלכם, Chrome נסגר אוטומטית כשלא משתמשים בו במשך <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">‏נכנסת עם חשבון מנוהל שנותן לאדמין שלו שליטה על הפרופיל שלך ב-Google Chrome. הנתונים שלך ב-Chrome, כמו אפליקציות, סימניות, היסטוריה, סיסמאות והגדרות אחרות יקושרו באופן קבוע ל-<ph name="USER_NAME" />. אפשר למחוק את הנתונים האלה דרך לוח הבקרה של חשבונות Google, אבל אי אפשר לשייך אותם לחשבון אחר. לחלופין, יש לך אפשרות ליצור פרופיל חדש כדי לשמור את הנתונים הקיימים שלך ב-Chrome בנפרד.<ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">‏הארגון '<ph name="MANAGER" />' מנהל את Chrome</translation>
@@ -570,7 +571,7 @@
 <translation id="7849037457735762883">‏רוצה להמשיך מהמקום שבו הפסקת? Chrome יכול לשחזר את הכרטיסיות שלך בכל הפעלה מחדש. כדי להפעיל את האפשרות הזו, צריך לעבור אל</translation>
 <translation id="7872446069773932638">מתבצעת הורדה… יש עוד <ph name="SECONDS" /> שנ'</translation>
 <translation id="7886087451482920026">‏בחירה של טקסט באמצעות Google Lens</translation>
-<translation id="7890208801193284374">‏כשמשתפים מחשב, חברים ובני משפחה יכולים לגלוש בנפרד ולהגדיר את Chrome בדיוק כפי שהם רוצים.</translation>
+<translation id="7890208801193284374">‏אם כמה חברים או בני משפחה משתמשים באותו מחשב, הם יכולים לגלוש בנפרד ולהגדיר את Chrome בדיוק כמו שהם רוצים.</translation>
 <translation id="7896673875602241923">‏מישהו נכנס בעבר ל-Chrome מהמחשב הזה כ-<ph name="ACCOUNT_EMAIL_LAST" />. צריך ליצור משתמש חדש ל-Chrome כדי שהמידע שלכם לא יתערבב.</translation>
 <translation id="7917876797003313048">‏יש לך אפשרות לנהל את חשבונות Google שאליהם נכנסת. כדי ליהנות מחיבור לחשבון בדפדפן Chrome, בחנות Play, ב-‏Gmail ובשירותים נוספים, עליך להיכנס עם חשבונות Google שלך. כדי להוסיף חשבון של מישהו אחר, כמו חבר/ה בקבוצה המשפחתית, יש להוסיף משתמש חדש ל-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">‏Chrome חסם את ההורדה הזאת כי הקובץ מטעה ועשוי לבצע שינויים לא צפויים במכשיר שלך</translation>

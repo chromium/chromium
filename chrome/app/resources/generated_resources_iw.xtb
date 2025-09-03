@@ -1529,9 +1529,9 @@
 <translation id="2031914984822377766">יש להוסיף את <ph name="LINK_BEGIN" />שפות האתר<ph name="LINK_END" /> המועדפות. השפה המובילה מהרשימה תשמש לתרגומים.</translation>
 <translation id="2032837042715970520">‏חובה להזין OTP</translation>
 <translation id="2034346955588403444">‏הוספת עוד רשת Wi-Fi</translation>
-<translation id="2037445849770872822">‏הוגדר פיקוח על חשבון Google הזה. כדי להגדיר עוד אפשרויות של בקרת הורים יש ללחוץ על 'המשך'.
+<translation id="2037445849770872822">‏הוגדר פיקוח על החשבון הזה ב-Google. כדי להגדיר עוד אפשרויות של בקרת הורים, צריך ללחוץ על "המשך".
 
-אחרת, יש לצאת עכשיו כדי שהשינויים בחשבון יופיעו במכשיר הזה.
+אחרת, עליך לצאת עכשיו כדי שהשינויים בחשבון יופיעו במכשיר.
 
 כדי לנהל את הגדרות החשבון הזה אפשר להתקין את האפליקציה Family Link במכשיר.  שלחנו לך הוראות באימייל.</translation>
 <translation id="2037486735086318591">הגדרה של <ph name="FEATURE_NAME" /> מאפשרת לכם לשתף קבצים עם אנשים אחרים בסביבה ולקבל מהם קבצים</translation>
@@ -1729,7 +1729,7 @@
 <translation id="2165177462441582039">יש לבחור את משך הזמן שבו ההדגשה תוצב על פריט כלשהו</translation>
 <translation id="2166369534954157698">דג סקרן שט בים זך ולפתע מצא חבורה נחמדה</translation>
 <translation id="2169062631698640254">אני רוצה להיכנס בכל זאת</translation>
-<translation id="2173302385160625112">יש לבדוק את החיבור לאינטרנט</translation>
+<translation id="2173302385160625112">צריך לבדוק את החיבור לאינטרנט</translation>
 <translation id="2173801458090845390">הוספת מזהה דרישה למכשיר הזה</translation>
 <translation id="2175384018164129879">ניהול של מנועי החיפוש ושל החיפוש באתרים ספציפיים</translation>
 <translation id="2175526076681939329">שימוש במקלדת הראשית</translation>
@@ -2012,7 +2012,7 @@
 <translation id="2355314311311231464">הקצאת המשאבים נכשלה מאחר שלא ניתן היה לאחזר את פרטי החשבון שלך. יש לנסות שוב. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="2355477091455974894">אפשרויות לחיסכון באנרגיה</translation>
 <translation id="2355604387869345912">הפעלת שיתוף אינטרנט מיידי בין מכשירים</translation>
-<translation id="2356070529366658676">לשאול</translation>
+<translation id="2356070529366658676">לשאלה בצ'אט</translation>
 <translation id="2357330829548294574">הסרה של <ph name="USER_NAME" /></translation>
 <translation id="2357343506242630761">הוספת אתר לרשימת האתרים המותרים</translation>
 <translation id="2358777858338503863">יש ללחוץ כדי לתת גישה לתוסף בכתובת <ph name="ORIGIN" />:</translation>
@@ -2253,7 +2253,7 @@
 <translation id="251425554130284360">‏מוצגים דפים שביקרת בהם והצעות לחיפושים כדי שיהיה קל לחזור לפעילות האחרונה שלך.
         <ph name="BREAK" />
         <ph name="BREAK" />
-        ניתן לנהל את ההגדרות דרך התפריט בכרטיס או לראות עוד אפשרויות ב'התאמה אישית של Chrome'.</translation>
+        ניתן לנהל את ההגדרות דרך התפריט בכרטיס או לראות עוד אפשרויות ב"התאמה אישית של Chrome".</translation>
 <translation id="2514326558286966059">ביטול נעילה במהירות באמצעות טביעת אצבע</translation>
 <translation id="2514465118223423406">כשהעכבר מחובר</translation>
 <translation id="2514938842036917377">הפעולה הזו תגרום למחיקת נתונים בנפח של <ph name="TOTAL_USAGE" /> שאוחסנו על ידי <ph name="SITE_NAME" />, אתרים קשורים והאפליקציות המותקנות</translation>
@@ -3122,7 +3122,7 @@
 <translation id="3124332159330678621">‏אפשר להתאים אישית את Chrome כדי לשנות את מראה הדפדפן</translation>
 <translation id="3125816458150005808">אפשר לבטל את ההצמדה ולפתוח אותה מהתפריט</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127860049873093642">‏כדי להימנע מבעיות בטעינה ובביצועים, יש להשתמש במתאם מתח תואם של Dell, או מסוג USB-C.</translation>
+<translation id="3127860049873093642">‏כדי להימנע מבעיות בטעינה ובביצועים, יש להשתמש במתאם מתח תואם של Dell, או USB Type-C.</translation>
 <translation id="3127862849166875294">‏שינוי הגודל של שטח האחסון של Linux בכונן</translation>
 <translation id="3129150892373332590">‏הפעולה הזו תשבית את השיתוף המתמשך של מכשירי USB עם אורחים, ותאפס את כל האפשרויות. להמשיך?</translation>
 <translation id="3129173833825111527">שוליים שמאליים</translation>
@@ -3246,6 +3246,7 @@
 <translation id="3226487301970807183">החלפת מצב לחלונית הצדדית משמאל</translation>
 <translation id="322708765617468434">תמיד אפשר להוסיף אדם נוסף למכשיר אחרי ההגדרה. כל משתמש יכול להתאים אישית את חוויית המשתמש שלו ולהגן על פרטיות הנתונים.</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
+<translation id="3227701057281907159">תיקון</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{‏אפשר להסיר את התוסף, או להחליף אותו בתוספים דומים מ<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" />.}one{‏אפשר להסיר את התוספים, או להחליף אותם בתוספים דומים מ<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" />}two{‏אפשר להסיר את התוספים, או להחליף אותם בתוספים דומים מ<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" />}other{‏אפשר להסיר את התוספים, או להחליף אותם בתוספים דומים מ<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">צריך לבדוק שהתאריך תקין</translation>
 <translation id="3230539834943294477">עיון במאמרי עזרה או חיפוש תמיכה במכשיר</translation>
@@ -3410,6 +3411,7 @@
 <translation id="3347086966102161372">העתקת כתובת &amp;תמונה</translation>
 <translation id="3348038390189153836">זוהה התקן נשלף</translation>
 <translation id="3348131053948466246">‏הצעות לאמוג'י. כדי לעבור בין ההצעות, מקישים על החיצים למעלה או למטה. כדי להוסיף אמוג'י, מקישים על Enter.</translation>
+<translation id="3348973040180736882">חילוץ</translation>
 <translation id="3349933790966648062">הזיכרון שבשימוש</translation>
 <translation id="3350450887151703713">הפעלה מחדש של 10 שניות</translation>
 <translation id="3351472127384196879">הוספה או זיהוי כפתורים בעט</translation>
@@ -3983,7 +3985,7 @@
 <translation id="3730298295914858769">‏היכולות של Wi-Fi ישיר:</translation>
 <translation id="3732078975418297900">שגיאה בשורה <ph name="ERROR_LINE" /></translation>
 <translation id="3732108843630241049">המכשיר הזה כבר לא מקבל עדכוני תוכנה אוטומטיים. מומלץ להפעיל את עדכוני האבטחה המורחבים כדי להמשיך לקבל עדכונים שקשורים לאבטחה, ליציבות ולביצועים. חלק מהתכונות יהיו מוגבלות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
-<translation id="3732414796052961578">המשך בתור <ph name="ACCOUNT_NAME" /></translation>
+<translation id="3732414796052961578">להמשך בתור <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">קוד האימות יכול להיות באורך של 63 תווים לכל היותר</translation>
 <translation id="3732706448780793442">הזנה ידנית</translation>
 <translation id="3733296813637058299">‏נתקין את האפליקציות האלו בשבילך. אפליקציות נוספות בשביל <ph name="DEVICE_TYPE" /> זמינות בחנות Play.</translation>
@@ -3999,7 +4001,7 @@
 <translation id="3740945083753997630">הקטנה של התצוגה והטקסט</translation>
 <translation id="3741056951918180319">תמיד אפשר ללחוץ על התוסף כדי להשתמש בו בכל אתר שהוא</translation>
 <translation id="374124333420280219">פרטי האפליקציה:</translation>
-<translation id="3741510433331996336">צריך להפעיל מחדש את המכשיר כדי לסיים את העדכון</translation>
+<translation id="3741510433331996336">כדי לסיים את העדכון, צריך להפעיל מחדש את המכשיר</translation>
 <translation id="3742235229730461951">פריסת מקלדת בקוריאנית</translation>
 <translation id="3743842571276656710">צריך להזין קוד אימות כדי להתאים עם <ph name="DEVICE_NAME" /></translation>
 <translation id="3744219658596020825">הסיסמאות שלך לא יובאו</translation>
@@ -5270,7 +5272,7 @@
 <translation id="4632655012900268062">התאמה אישית של הכרטיסים</translation>
 <translation id="4633003931260532286">כדי להשתמש בתוסף יש צורך ב-"<ph name="IMPORT_NAME" />" בגרסה "<ph name="IMPORT_VERSION" />" לפחות, אך הגרסה המותקנת היא רק "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">‏רוצה לגבות ב-Google Drive? זה מאפשר לשחזר נתונים או להחליף מכשיר מתי שרוצים. הגיבוי כולל נתוני אפליקציות. הגיבויים מועלים ל-Google ומוצפנים באמצעות סיסמת חשבון Google של הילד או הילדה שלך.</translation>
-<translation id="4634575639321169635">אפשר להגדיר את המכשיר לעבודה או לשימוש אישי</translation>
+<translation id="4634575639321169635">להגדרת המכשיר לעבודה או לשימוש אישי</translation>
 <translation id="4635072447747973225">‏הסרה של Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> לא זמין למשתמשים במצב אורח.</translation>
 <translation id="4636187126182557415">העדפות המערכת</translation>
@@ -5704,7 +5706,7 @@
 <translation id="4930406318748549391">המיקום של החלונית הצדדית</translation>
 <translation id="4930447554870711875">מפתחים</translation>
 <translation id="4930714375720679147">הפעלה</translation>
-<translation id="4931347390544064118">אם בוחרים ברשת ברירת המחדל, לא בטוח שתמיד יהיה חיבור מאובטח. מומלץ לבחור ספק אחר כדי שהחיבור שלך תמיד יהיה מאובטח.</translation>
+<translation id="4931347390544064118">אם בוחרים ברשת ברירת המחדל, לא בטוח שתמיד יהיה חיבור מאובטח. מומלץ לבחור ספק אחר כדי שהחיבור תמיד יהיה מאובטח.</translation>
 <translation id="4931387733184123331">ליקויי מאורות</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="4933484234309072027">מוטבע ב-<ph name="URL" /></translation>
@@ -5900,7 +5902,7 @@
 <translation id="5083035541015925118">‏Ctrl +‏ Alt + חץ למעלה</translation>
 <translation id="5084328598860513926">תהליך ההכנה לשימוש נקטע. יש לנסות שוב, או לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">יותר סביר שאתרים יפעלו כצפוי</translation>
-<translation id="5084686326967545037">פועלים לפי השלבים במכשיר</translation>
+<translation id="5084686326967545037">יש לפעול לפי השלבים במכשיר</translation>
 <translation id="5085162214018721575">חיפוש עדכונים מתבצע</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">ההערה מכילה יותר מ-1,000 תווים</translation>
@@ -6259,7 +6261,7 @@
 <translation id="5337207153202941678">השבתת ההדגשה</translation>
 <translation id="5337771866151525739">הותקן על ידי צד שלישי.</translation>
 <translation id="5337926771328966926">השם הנוכחי של המכשיר הוא <ph name="DEVICE_NAME" /></translation>
-<translation id="5338338064218053691">אפשר לגלוש בפרטיות באמצעות חלון אנונימי</translation>
+<translation id="5338338064218053691">אפשר לגלוש בפרטיות באמצעות חלון פרטי</translation>
 <translation id="5338503421962489998">אחסון מקומי</translation>
 <translation id="5340787663756381836">&amp;חיפוש ועריכה</translation>
 <translation id="5341793073192892252">‏קובצי ה-Cookie הבאים נחסמו (קובצי Cookie של צד שלישי נחסמים ללא יוצא מן הכלל)</translation>
@@ -7893,7 +7895,7 @@
 <translation id="652492607360843641">התחברת אל רשת <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6525767484449074555">לוחצים על 'התקנה'</translation>
 <translation id="6527303717912515753">שיתוף</translation>
-<translation id="6527574156657772563">‏אין מכשירים זמינים. צריך להוסיף את חשבון Google לטלפון שלך כדי לחבר אותו ל-<ph name="DEVICE_TYPE" /> הזה. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="6527574156657772563">‏אין מכשירים זמינים. כדי לחבר את ה-<ph name="DEVICE_TYPE" /> לטלפון, צריך להוסיף את חשבון Google לטלפון. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="652948702951888897">‏היסטוריה של Chrome</translation>
 <translation id="6530030995840538405">תמונה <ph name="INDEX" /> של <ph name="SUBJECT" /> שנוצרה</translation>
 <translation id="6530186581263215931">את ההגדרות האלה אוכף מנהל המערכת</translation>
@@ -8314,9 +8316,9 @@
 <translation id="6808166974213191158">‏כלי לכתיבה של תמונת המערכת של ChromeOS Flex</translation>
 <translation id="6808193438228982088">שועל</translation>
 <translation id="6809470175540814047">פתיחה בחלון אנונימי</translation>
-<translation id="6809656734323672573">‏אם נקבל את הסכמתך, Google Assistant תעבור למצב המתנה לזיהוי הפקודה “Hey Google” ותוכל לזהות באמצעות Voice Match שהפקודה היא ממך.
+<translation id="6809656734323672573">‏אם נקבל את ההסכמה שלך, Google Assistant תעבור למצב המתנה לזיהוי הפקודה “Hey Google” ותוכל לזהות באמצעות Voice Match שהפקודה היא ממך.
     <ph name="BR" />
-    התכונה Voice Match מאפשרת ל-Assistant לזהות את הקול שלך ולהבדיל בינך לאחרים. Assistant משתמשת בקטעי קול שלך כדי ליצור תבנית קול ייחודית, המאוחסנת רק במכשיר שלך. יכול להיות שתבנית הקול שלך תישלח באופן זמני אל Google כדי לשפר את זיהוי הקול שלך.
+    התכונה Voice Match מאפשרת ל-Assistant לזהות את הקול שלך ולהבדיל בינך לאחרים. ‫Assistant משתמשת בקטעי הקול שלך כדי ליצור תבנית קול ייחודית, שנשמרת רק במכשיר שלך. יכול להיות שתבנית הקול תישלח באופן זמני אל Google כדי לשפר את זיהוי הקול שלך.
     <ph name="BR" />
     החלטת שהתכונה Voice Match לא מתאימה לך? בכל שלב ניתן להסיר את התכונה בהגדרות של Assistant. יש לך אפשרות לראות או למחוק את קטעי הקול שהקלטת בהגדרה של Voice Match בכתובת <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
@@ -9272,7 +9274,7 @@
 <translation id="7479221278376295180">סקירה כללית של השימוש בשטח אחסון</translation>
 <translation id="747981547666531654">‏יש חיבור למכשירי Bluetooth בשם <ph name="FIRST_DEVICE" /> ו-<ph name="SECOND_DEVICE" /></translation>
 <translation id="7481312909269577407">קדימה</translation>
-<translation id="7481358317100446445">מוכן</translation>
+<translation id="7481358317100446445">אפשר להתחיל</translation>
 <translation id="748138892655239008">מגבלות בסיסיות של אישור </translation>
 <translation id="7482823403440483089">מילוי אוטומטי משופר</translation>
 <translation id="7483732342458943943">הקישור הזה לא עובד</translation>
@@ -9565,7 +9567,7 @@
 המידע יכול לכלול פרטים על תוכנות שהותקנו, קבצים, הדפדפן, מערכת ההפעלה של המכשיר וכתובות IP.</translation>
 <translation id="7683373461016844951">כדי להמשיך יש ללחוץ על 'אישור' ולאחר מכן ללחוץ על 'הוספת משתמש' כדי ליצור פרופיל חדש בשביל כתובת האימייל שלך ב-<ph name="DOMAIN" />.</translation>
 <translation id="7683834360226457448">כלי תצוגה ללקויי ראייה</translation>
-<translation id="7684212569183643648">הותקן על ידי מנהל המערכת שלך</translation>
+<translation id="7684212569183643648">הותקן על ידי האדמין השלך</translation>
 <translation id="7684559058815332124">מעבר אל דף ההתחברות לפורטל החובה</translation>
 <translation id="7684718995427157417">‏כדי ליצור ולבדוק אפליקציות, יש להפעיל את ממשק הגישור של Android‏ (ADB). הערה: לאחר ביצוע הפעולה הזו יתאפשר להתקין אפליקציות ל-Android שלא אומתו על-ידי Google. כמו כן, כדי להשבית את התכונה, יש לאפס את המכשיר להגדרות היצרן.</translation>
 <translation id="7684913007876670600">כדי להציג תצוגה פשוטה יותר של הדף הזה, פותחים את החלונית הצדדית ובוחרים באפשרות "מצב קריאה"</translation>
@@ -10561,7 +10563,7 @@
 <translation id="8352287103893778223">שם קבוצת הכרטיסיות</translation>
 <translation id="835238322900896202">היתה שגיאה בתהליך ההסרה. יש להסיר את ההתקנה דרך הטרמינל.</translation>
 <translation id="8353420862507374944">‏הפעלת Cast, שמירה ושיתוף</translation>
-<translation id="8353683614194668312">יכול:</translation>
+<translation id="8353683614194668312">התוסף יכול:</translation>
 <translation id="8354034204605718473">קוד האימות של הילד או הילדה נוסף</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">כבר רשמת את המכשיר הזה. אין צורך לרשום אותו שוב.</translation>
@@ -11205,7 +11207,7 @@
 <translation id="879413103056696865">בזמן שהנקודה לשיתוף אינטרנט פועלת, <ph name="PHONE_NAME" />:</translation>
 <translation id="8794548468611058947">‏במקום להזין את הסיסמה לחשבון Google כדי להיכנס, אפשר ליצור קוד אימות למכשיר <ph name="DEVICE_TYPE" /> הזה</translation>
 <translation id="8795916974678578410">חלון חדש</translation>
-<translation id="8796919761992612392">‏&amp;התאמה אישית של Chrome</translation>
+<translation id="8796919761992612392">‏התאמה אישית של Chrome</translation>
 <translation id="8797459392481275117">אל תתרגמו את האתר הזה אף פעם</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
 <translation id="8800034312320686233">האתר לא פועל?</translation>
@@ -11699,7 +11701,7 @@
 <translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />כדי ליהנות מהחוויה הכי טובה, צריך להתקין את <ph name="DEVICE_OS" /> בדיסק הפנימי. יש לך גם אפשרות להתקין את זה בהמשך ממסך ההתחברות.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />אם לא מתאים לך להתקין עכשיו, אפשר להריץ את המערכת מ-USB ולנסות אותה. מערכת ההפעלה והנתונים הנוכחיים שלך ימשיכו לפעול, אבל ייתכן שיהיו מגבלות על נפח אחסון וביצועים.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">התאמה אישית של סרגל הכלים</translation>
-<translation id="9120800848981545750">‏כדאי להוריד את Chrome ל-iOS כדי לגשת לכרטיסיות, לסימניות ולסיסמאות בטלפון.</translation>
+<translation id="9120800848981545750">‏רוצה לגשת לכרטיסיות, לסימניות ולסיסמאות בטלפון? אפשר להוריד את Chrome ל-iOS</translation>
 <translation id="9121814364785106365">פתיחה ככרטיסייה מוצמדת</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{לסגור את הכרטיסייה ולמחוק את הקבוצה?}=1{לסגור את הכרטיסיות ולמחוק את הקבוצה?}one{לסגור את הכרטיסיות ולמחוק את הקבוצות?}two{לסגור את הכרטיסיות ולמחוק את הקבוצות?}other{לסגור את הכרטיסיות ולמחוק את הקבוצות?}}</translation>
 <translation id="9122788874051694311">לשמור את מפתח הגישה הזה מחוץ למצב הפרטי?</translation>
@@ -11779,6 +11781,7 @@
 <translation id="9173063514323762371">הסתרת סרגל הסימניות</translation>
 <translation id="917350715406657904">הגעת למגבלת הזמן שנקבעה על ידי ההורה שלך לאפליקציה <ph name="APP_NAME" />. מחר אפשר יהיה להשתמש בה למשך <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174401638287877180">‏שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים. כדי לתרום לשיפור חוויית המשתמש של הילד או הילדה ב-Android, אפשר לשלוח אל Google באופן אוטומטי נתוני אבחון, נתוני מכשיר ונתוני שימוש באפליקציות. הנתונים האלה לא ישמשו כדי לזהות את הילד או הילדה שלך, והם יעזרו לנו לשמור על היציבות של המערכת ושל האפליקציות ולבצע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google וכן יעזרו לשותפים של Google, כמו מפתחים של Android. אם ההגדרה 'פעילות באפליקציות ובאתרי אינטרנט נוספים' הופעלה עבור הילד או הילדה שלך, ייתכן שהנתונים יישמרו בחשבון Google שלהם.</translation>
+<translation id="9174854240439014335">אפשר לגרור ולשחרר את התצוגה המפוצלת בקצה השמאלי או הימני של החלון</translation>
 <translation id="9176611096776448349">‏<ph name="WINDOW_TITLE" /> - מכשיר Bluetooth מחובר</translation>
 <translation id="9177859716483578738">כדי להמשיך, הפרטים <ph name="FIELDS_STRING" /> שלך ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה. <ph name="BEGIN_LINK" />כאן מפורטת מדיניות הפרטיות<ph name="END_LINK" /> של האתר הזה.</translation>
 <translation id="9178061802301856367">מחיקת פרטי הכניסה</translation>

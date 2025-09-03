@@ -241,7 +241,7 @@
 <translation id="2166228530126694506">גרסה <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">התכונה 'תיאורי תמונות' מושבתת</translation>
 <translation id="2172905120685242547">לסגור את החלון?</translation>
-<translation id="2173302385160625112">יש לבדוק את החיבור לאינטרנט</translation>
+<translation id="2173302385160625112">צריך לבדוק את החיבור לאינטרנט</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="2184272387334793084">לאחר הכניסה לחשבון, הסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="218608176142494674">שיתוף</translation>
@@ -322,7 +322,7 @@
 <translation id="253498598929009420">האתר יוכל לראות את תוכן המסך שלך</translation>
 <translation id="2535807170289627159">כל הכרטיסיות</translation>
 <translation id="2536728043171574184">מוצג העתק לא מקוון של עמוד זה</translation>
-<translation id="2539002604555291451">‏גופן Sans Serif</translation>
+<translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542548955756682219">‫<ph name="TAB_TITLE" />, כרטיסייה</translation>
 <translation id="2546283357679194313">‏קובצי Cookie ונתונים מאתרים</translation>
 <translation id="2547843573592965873">‏נעילת הפרופיל מאבטחת את המידע שלך ברכב, כולל סיסמאות, תשלומים ועוד מידע ששמור בחשבון שלך ב-Google.</translation>
@@ -392,7 +392,7 @@
 <translation id="2869430948265924908">כדי להגן על תוכן רגיש ברכב, עליך ליצור נעילת פרופיל ברכב.  אפשר לעשות זאת באמצעות קוד אימות, קוד או סיסמה.</translation>
 <translation id="2870560284913253234">אתר</translation>
 <translation id="2871733351037274014">טעינה מראש של דפים</translation>
-<translation id="2876136027428473467">נשלחה מ<ph name="CHILD_NAME" /> בקשה לאישור כדי לבקר באתר הבא:</translation>
+<translation id="2876136027428473467">‫<ph name="CHILD_NAME" /> רוצה את האישור שלך כדי לבקר באתר הבא:</translation>
 <translation id="2876628302275096482">‏<ph name="BEGIN_LINK" />מידע נוסף לגבי השמירה על פרטיות הנתונים ב-Chrome<ph name="END_LINK" /></translation>
 <translation id="2885355868600171871">מעבר לסרגל הכתובות</translation>
 <translation id="2888126860611144412">‏מידע כללי על Chrome</translation>
@@ -721,7 +721,7 @@
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{הכרטיסייה <ph name="TAB_TITLE" /> וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}one{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}two{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{הכרטיסייה <ph name="TAB_TITLE" /> ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
 <translation id="4426508677408162512">כל הסימניות</translation>
 <translation id="4430277756566635951">החשבון הנוכחי: <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
-<translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
+<translation id="4452411734226507615">סגירת הכרטיסייה "<ph name="TAB_TITLE" />"</translation>
 <translation id="4452548195519783679">התווסף לסימניות ב-<ph name="FOLDER_NAME" /></translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{סימנייה אחת}one{‫# סימניות}two{‫# סימניות}other{‫# סימניות}}</translation>
 <translation id="4478161224666880173">אפשר להשתמש בחשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> באתר הזה. כדי להמשיך עליך להיכנס אל <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>

@@ -648,7 +648,7 @@
 <translation id="3533860663366814939">‏يُرجى فتح إعدادات "الملء التلقائي وكلمات المرور" (Autofill &amp; Password)</translation>
 <translation id="3540141921715814660">الإضافة إلى الإشارات المرجعية</translation>
 <translation id="3546122170015471515">‏"معاينة الخرائط" (Maps Previews) على Google.com</translation>
-<translation id="3547356470684043247">اطّلِع على تقييمات العملاء للمنتجات أو الخدمات أو التجارب لمساعدتك في اتخاذ قرارات مدروسة بشأن المراجعات</translation>
+<translation id="3547356470684043247">يمكنك الاطلاع على تقييمات العملاء للمنتجات أو الخدمات أو التجارب لمساعدتك في اتخاذ قرارات مدروسة</translation>
 <translation id="3547933853190131743">‏البحث باستخدام "وضع AI"</translation>
 <translation id="3557336313807607643">إضافة إلى جهات الاتصال</translation>
 <translation id="355765753469272474">تراجع</translation>
@@ -851,7 +851,7 @@
 <translation id="4367971618859387374">الاسم المعروض</translation>
 <translation id="4375772272517383391">إغلاق جميع علامات التبويب</translation>
 <translation id="4378154925671717803">هاتف</translation>
-<translation id="4389019817280890563">انقر لتغيير اللغة.</translation>
+<translation id="4389019817280890563">يُرجى النقر لتغيير اللغة.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{بعد يوم واحد}zero{بعد {COUNT} يوم}two{بعد يومَين ({COUNT})}few{بعد {COUNT} أيام}many{بعد {COUNT} يومًا}other{بعد {COUNT} يوم}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{علامة تبويب واحدة}zero{‫# علامة تبويب}two{علامتا تبويب}few{‫# علامات تبويب}many{‫# علامة تبويب}other{‫# علامة تبويب}}</translation>
 <translation id="4404790787924017676">يتيح ذلك تلقّي تنبيهات بشأن انخفاض أسعار المنتجات التي يتم تتبُّعها</translation>
@@ -860,7 +860,7 @@
 <translation id="4415276339145661267">‏إدارة حسابك على Google</translation>
 <translation id="4420409367264901497">تعديل الإشارة المرجعية</translation>
 <translation id="4425365312778464779">هذا الحساب مُدار</translation>
-<translation id="4430277756566635951">الحساب الذي تم اختياره حاليًا هو <ph name="EMAIL" />. اختَر حسابًا.</translation>
+<translation id="4430277756566635951">الحساب الذي تم اختياره حاليًا هو <ph name="EMAIL" />. يُرجى اختيار حساب.</translation>
 <translation id="4430505936695785931">أصبح بإمكانك الآن ملء كلمات المرور المحفوظة في تطبيقات أخرى</translation>
 <translation id="4431224949908513835">اختَر طريقة دفع لاستخدامها.</translation>
 <translation id="4432122368769493392">الإعدادات…</translation>
@@ -1423,7 +1423,7 @@
 <translation id="6505334220040167806">تصغير مجموعة علامات التبويب</translation>
 <translation id="6506996418997555004">مشاركة مجموعة علامات التبويب "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">سجِّل الدخول لعرض قائمة القراءة على جميع أجهزتك.</translation>
-<translation id="6518133107902771759">تحقق</translation>
+<translation id="6518133107902771759">تأكيد</translation>
 <translation id="6518861084553706202">سيتم إغلاق علامات التبويب. وقد تشمل البيانات المحذوفة كلمات المرور وسجلّ التصفّح وملفات تعريف الارتباط وغير ذلك.</translation>
 <translation id="6523575793810663688">الاطّلاع على الإرشادات</translation>
 <translation id="6524082013156754186">الحفظ في الحساب</translation>
@@ -1718,7 +1718,7 @@
 <translation id="7662316065255305764">معلومات الموقع الإلكتروني</translation>
 <translation id="7665369617277396874">إضافة حساب</translation>
 <translation id="7666861622396822790">يمكنك إدارة هذه الميزة من خلال <ph name="BEGIN_LINK" />إعدادات المحتوى<ph name="END_LINK" />.</translation>
-<translation id="7669493687462784703">هل تريد مواصلة تنزيل ملف شخصي يتضمّن إعدادات من موقع <ph name="WEBSITE" /> الإلكتروني؟</translation>
+<translation id="7669493687462784703">هل المطلوب مواصلة تنزيل ملف شخصي يتضمّن إعدادات من موقع <ph name="WEBSITE" /> الإلكتروني؟</translation>
 <translation id="7673346542062368520">يمكنك التمرير سريعًا إلى اليمين للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="7679915578945954324">تم نسخ عناوين المواقع الإلكترونية.</translation>
 <translation id="7695953765525234038">شريط البحث</translation>
@@ -1728,7 +1728,7 @@
 <translation id="7708994397325774423">الحصول على جميع كلمات المرور</translation>
 <translation id="7711440461521638739">لم يتم العثور على أي كلمات مرور مستخدَمة لحساب آخر.</translation>
 <translation id="7712361583414030698">عرض النسخة بلا إنترنت</translation>
-<translation id="7719038820139380048">سجِّل الدخول للحصول على محتوى استنادًا إلى اهتماماتك.</translation>
+<translation id="7719038820139380048">يُرجى تسجيل الدخول للحصول على محتوى يتلاءم مع اهتماماتك.</translation>
 <translation id="7720901330179380635">جارٍ البحث باستخدام <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7724085059277147439">{count,plural, =1{‏تم حفظ العنصر في حسابك على Google،‏ {email}.}zero{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}two{‏تم حفظ العنصرين في حسابك على Google،‏ {email}.}few{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}many{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}other{‏تم حفظ العناصر في حسابك على Google،‏ {email}.}}</translation>
 <translation id="7729458878441927652">يجب مزامنة علامات التبويب والسجلّ للاطّلاع عليها من أجهزتك الأخرى.</translation>

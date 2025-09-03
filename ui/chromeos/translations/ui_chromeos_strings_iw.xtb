@@ -508,7 +508,7 @@
 <translation id="4987699874727873250">אנגלית (הודו)</translation>
 <translation id="4988205478593450158">הקובץ <ph name="FILE_NAME" /> יימחק. להמשיך?</translation>
 <translation id="498902553138568924">פרפר אדום</translation>
-<translation id="4992066212339426712">ביטול השתקה</translation>
+<translation id="4992066212339426712">ביטול ההשתקה</translation>
 <translation id="5010406651457630570">מחשבים</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">הפעולה נמשכת זמן רב מהצפוי. רוצה לבטל אותה?</translation>
@@ -664,7 +664,7 @@
 <translation id="613750717151263950">יפנית עם מקלדת אמריקאית</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, אין רשת</translation>
 <translation id="6146563240635539929">סרטונים</translation>
-<translation id="6150853954427645995">כדי לשמור קובץ זה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקובץ ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="6150853954427645995">כדי לשמור את הקובץ הזה לשימוש במצב אופליין, עליך לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקובץ ולבחור באפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">פרפרים</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6170470584681422115">כריך</translation>

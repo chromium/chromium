@@ -3233,6 +3233,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3226487301970807183">Sol yan panelə keçin</translation>
 <translation id="322708765617468434">Ayarlamadan sonra cihaza başqa şəxs əlavə edə bilərsiniz. Hamı öz təcrübəsini fərdiləşdirə və datanı məxfi saxlaya bilər.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3227701057281907159">Düzəliş edilir</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Onu silin və ya <ph name="BEGIN_LINK" />Chrome Veb Marketdən<ph name="END_LINK" /> bənzər artırmalar ilə əvəz edin.}other{Onları silin və ya <ph name="BEGIN_LINK" />Chrome Veb Marketdən<ph name="END_LINK" /> bənzər artırmalar ilə əvəz edin}}</translation>
 <translation id="3229254977651514276">Tarixi yoxlayın</translation>
 <translation id="3230539834943294477">Yardım məqalələrinə baxın və ya cihaz dəstəyi alın</translation>
@@ -3397,6 +3398,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3347086966102161372">Şəkil ünvanını kopyalayın</translation>
 <translation id="3348038390189153836">Çıxarıla bilən cihaz aşkarlandı</translation>
 <translation id="3348131053948466246">Emoji təklif edilib. Hərəkət etmək üçün yuxarı və ya aşağı, daxil etmək üçün isə enter düyməsinə basın.</translation>
+<translation id="3348973040180736882">Sıxılmış fayl açılır</translation>
 <translation id="3349933790966648062">Yaddaş Sahəsi</translation>
 <translation id="3350450887151703713">10 saniyə təkrar oxudun</translation>
 <translation id="3351472127384196879">Qələmdə düymələr əlavə edin və ya yerlərini müəyyənləşdirin</translation>
@@ -11752,6 +11754,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9173063514323762371">&amp;Əlfəcin panelini gizlədin</translation>
 <translation id="917350715406657904">Valideyniniz tərəfindən <ph name="APP_NAME" /> üçün təyin edilən limitə çatdınız. Ondan sabah <ph name="TIME_LIMIT" /> müddətinə istifadə edə bilərsiniz.</translation>
 <translation id="9174401638287877180">İstifadə və diaqnostika datasını göndərin. Diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik olaraq Google'a göndərməklə uşağınızın Android təcrübəsini təkmilləşdirməyə kömək edin. Bu məlumatlardan uşağınızı müəyyən etmək üçün istifadə edilməyəcək. Onlar sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Uşağınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabınızda saxlanıla bilər.</translation>
+<translation id="9174854240439014335">Pəncərənin sol və ya sağ kənarında bölünmüş görünüşü sürüşdürüb buraxmağa icazə verin</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth cihazı qoşuldu</translation>
 <translation id="9177859716483578738">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> kimi məlumatlarınızı bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK" />məxfilik siyasətinə<ph name="END_LINK" /> baxın.</translation>
 <translation id="9178061802301856367">Giriş datasını silin</translation>

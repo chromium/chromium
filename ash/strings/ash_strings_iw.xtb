@@ -345,7 +345,7 @@
 <translation id="2152796271648108398">מזג האוויר הנוכחי</translation>
 <translation id="2152895518047545149">נראה שכלום לא חסר. כל הכבוד!</translation>
 <translation id="2159568970844941445">אין תמונות באפליקציית 'קבצים'</translation>
-<translation id="2161132820593978283">אפשר להפעיל את הפריים האוטומטי במצלמה כדי למקם את עצמך במרכז המסך בשיחות וידאו. ניתן להפעיל אותו בהגדרות המהירות.</translation>
+<translation id="2161132820593978283">אפשר להפעיל את הפריים האוטומטי במצלמה כדי למקם את עצמך במרכז המסך בשיחות וידאו. כדי לנסות, צריך להיכנס להגדרות המהירות.</translation>
 <translation id="216955976692983107">Tiled resize window toward the right</translation>
 <translation id="2185166372312820725">מעבר לכרטיסייה הקודמת</translation>
 <translation id="2185444992308415167">מקשי קיצור למעבר בין כרטיסיות 1 עד 8</translation>
@@ -1050,7 +1050,7 @@
 <translation id="4445159312344259901">היכנסו כדי לבטל את הנעילה</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{התראה חשובה אחת}one{# התראות חשובות}two{# התראות חשובות}other{# התראות חשובות}}</translation>
 <translation id="4450893287417543264">אין להציג שוב</translation>
-<translation id="4451374464530248585">‏מקשי הקיצור Alt + חץ למטה הוחלפו. כדי לדמות את הפעולה של המקש Page Down, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ למטה.</translation>
+<translation id="4451374464530248585">‏מקשי הקיצור Alt + חץ למטה הוחלפו. כדי לדמות את הפעולה של המקש Page Down, צריך ללחוץ על <ph name="LAUNCHER_KEY_NAME" /> + החץ למטה.</translation>
 <translation id="4453876312474547652">‏הלוח מוצג כשלוחצים לחיצה ארוכה על Ctrl + V. אם רוצים להשבית את מקש הקיצור הזה, משביתים את התכונה הניסיונית ‎#clipboard-history-longpress בכתובת chrome://flags (ב-Lacros, בכתובת os://flags).</translation>
 <translation id="445765352722456792">שינוי ההעדפות להצעות</translation>
 <translation id="445864333228800152">ערב טוב,</translation>
@@ -1411,7 +1411,7 @@
 <translation id="5572632238877308040">האפליקציות שחייבים להכיר</translation>
 <translation id="557563299383177668">הפסקה הבאה</translation>
 <translation id="5577082622442191756">‏הפעלה או השבתה של Bluetooth. <ph name="STATE_TEXT" />.</translation>
-<translation id="5577281275355252094">‏יש לבדוק שה-Bluetooth פועל בטלפון כדי להשתמש ב-Phone Hub</translation>
+<translation id="5577281275355252094">‏רוצה להשתמש ב-Phone Hub? צריך לבדוק שה-Bluetooth פועל בטלפון</translation>
 <translation id="5578188167649348993">זיכרון</translation>
 <translation id="5580000943347215299">ספרייה</translation>
 <translation id="5586388332127302891">התכונה 'זכוכית מגדלת במצב מעוגן' מופעלת. אפשר להקיש שוב על <ph name="ACCELERATOR" /> כדי להשבית אותה.</translation>
@@ -1910,7 +1910,7 @@
 <translation id="7189412385142492784">מה המרחק בין כדור הארץ לנוגה</translation>
 <translation id="7198435252016571249">המצלמה מוצמדת לפינה השמאלית התחתונה. התנגשות עם תצוגת המערכת.</translation>
 <translation id="7219573373513695352">אין מכשירים מחוברים</translation>
-<translation id="7228968829656641943">‏בחירה כדי לחפש במסך שלי. כדי לנווט באמצעות המקלדת, מקישים על מקש Tab ואז על מקש הרווח.</translation>
+<translation id="7228968829656641943">‏כדי לחפש, צריך לסמן אזור במסך. כדי לנווט באמצעות המקלדת, צריך ללחוץ על מקש Tab ואז על מקש הרווח.</translation>
 <translation id="7229029500464092426">זיכרון פנוי: <ph name="AVAILABLE_MEMORY" /> | סה"כ: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7239814253344511868">שני כפתורי העכבר</translation>
 <translation id="7240636904654154599">‏נוצר גיליון אלקטרוני ב-Google Sheets</translation>
@@ -2213,7 +2213,7 @@
 <translation id="8149413265954228307">‏צפייה בהגדרות Bluetooth‏. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">‏כדי לסגור, יש להקיש על Ctrl +‏ W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, השלמה אוטומטית</translation>
-<translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ההגדרה הזו מנוהלת על-ידי מנהל המערכת שלך.</translation>
+<translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ההגדרה הזו מנוהלת על ידי האדמין שלך.</translation>
 <translation id="8155628902202578800">פתיחת תיבת דו-שיח עם מידע על <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">המיקום הנוכחי הוא<ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">תוכן</translation>
@@ -2512,7 +2512,7 @@
 <translation id="9195990613383871904">מחר</translation>
 <translation id="9198992156681343238">הרזולוציה של <ph name="DISPLAY_NAME" /> שונתה ל-<ph name="RESOLUTION" />. לשמירת השינויים, יש ללחוץ על 'אישור'. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">‏יש לחבר את <ph name="NAME" /> ל-Chromebook הזה</translation>
-<translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
+<translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, הרשת מנוהלת על ידי האדמין שלך</translation>
 <translation id="9207682216934703221">‏כך <ph name="APP_NAME" />,‏ <ph name="APP2_NAME" /> וכל האפליקציות והאתרים עם הרשאת המיקום ו-ChromeOS יוכלו להשתמש במיקום ב-Wi-Fi וברשתות סלולריות.</translation>
 <translation id="9210037371811586452">‏יציאה ממצב Unified Desktop</translation>
 <translation id="9211490828691860325">כל שולחנות העבודה הווירטואליים</translation>

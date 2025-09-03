@@ -3241,6 +3241,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3226487301970807183">Slå av/på venstrejustert sidepanel</translation>
 <translation id="322708765617468434">Du kan når som helst legge til flere personer på enheten etter konfigureringen. Hver person kan få en personlig opplevelse og holde dataene sine private.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3227701057281907159">Feilretting</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Fjern eller erstatt den med lignende utvidelser fra <ph name="BEGIN_LINK" />Chrome Nettmarked<ph name="END_LINK" />.}other{Fjern eller erstatt dem med lignende utvidelser fra <ph name="BEGIN_LINK" />Chrome Nettmarked<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Sjekk datoen</translation>
 <translation id="3230539834943294477">Se hjelpeartikler, eller finn brukerstøtte for enheten</translation>
@@ -3405,6 +3406,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3347086966102161372">K&amp;opiér bildeadressen</translation>
 <translation id="3348038390189153836">Oppdaget flyttbar enhet</translation>
 <translation id="3348131053948466246">En emoji er foreslått. Bruk pil opp og pil ned for å navigere og Enter for å sette inn.</translation>
+<translation id="3348973040180736882">Dekomprimering</translation>
 <translation id="3349933790966648062">Minnebruk</translation>
 <translation id="3350450887151703713">Spill av de siste 10 sekundene på nytt</translation>
 <translation id="3351472127384196879">Legg til eller finn knapper på pekepennen</translation>
@@ -11763,6 +11765,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9173063514323762371">&amp;Skjul bokmerkeraden</translation>
 <translation id="917350715406657904">Du har nådd tidsgrensen som forelderen din har angitt for <ph name="APP_NAME" />. Du kan bruke appen i <ph name="TIME_LIMIT" /> i morgen.</translation>
 <translation id="9174401638287877180">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen bedre for barnet ditt ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto.</translation>
+<translation id="9174854240439014335">Tillat dra-og-slipp for delt visning på venstre eller høyre kant av vinduet</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – en Bluetooth-enhet er tilkoblet</translation>
 <translation id="9177859716483578738">Før du kan fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele <ph name="FIELDS_STRING" /> med dette nettstedet. Se nettstedets <ph name="BEGIN_LINK" />personvernregler<ph name="END_LINK" />.</translation>
 <translation id="9178061802301856367">Slett påloggingsinformasjon</translation>

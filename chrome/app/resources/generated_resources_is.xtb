@@ -3248,6 +3248,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3226487301970807183">Sýna/fela hliðarglugga sem er jafnaður til vinstri</translation>
 <translation id="322708765617468434">Þú getur alltaf bætt öðrum einstakling við tækið eftir uppsetningu. Hver einstaklingur getur sérsniðið upplifun sína og haldið gögnunum sínum lokuðum.</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
+<translation id="3227701057281907159">Plástrar</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Fjarlægðu hana eða skiptu henni út með svipuðum viðbótum úr <ph name="BEGIN_LINK" />vefverslun Chrome<ph name="END_LINK" />.}one{Fjarlægðu þær eða skiptu þeim út með svipuðum viðbótum úr <ph name="BEGIN_LINK" />vefverslun Chrome<ph name="END_LINK" />.}other{Fjarlægðu þær eða skiptu þeim út með svipuðum viðbótum úr <ph name="BEGIN_LINK" />vefverslun Chrome<ph name="END_LINK" />.}}</translation>
 <translation id="3229254977651514276">Athugaðu dagsetninguna</translation>
 <translation id="3230539834943294477">Skoða hjálpargreinar eða finna stuðning við tæki</translation>
@@ -3412,6 +3413,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3347086966102161372">A&amp;frita slóð myndar</translation>
 <translation id="3348038390189153836">Laust tæki fannst</translation>
 <translation id="3348131053948466246">Tillaga að emoji. Ýttu upp eða niður til að fletta og ýttu á Enter til að færa inn.</translation>
+<translation id="3348973040180736882">Afþjappar</translation>
 <translation id="3349933790966648062">Minnisferill</translation>
 <translation id="3350450887151703713">Endurspila 10 sekúndur</translation>
 <translation id="3351472127384196879">Bættu við eða staðsettu hnappa á pennanum</translation>
@@ -11776,6 +11778,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9173063514323762371">Fela bókamerkjastiku</translation>
 <translation id="917350715406657904">Þú hefur náð tímamörkunum sem foreldri þitt stillti fyrir <ph name="APP_NAME" />. Þú getur notað forritið í <ph name="TIME_LIMIT" /> á morgun.</translation>
 <translation id="9174401638287877180">Senda notkunar- og greiningargögn. Hjálpaðu okkur að bæta Android fyrir barnið þitt með því að senda sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta verður ekki notað til að bera kennsl á barnið þitt og mun stuðla að stöðugleika kerfa og forrita og öðrum endurbótum. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Ef kveikt er á ítarlegri vef- og forritavirkni fyrir barnið geta þessi gögn verið vistuð á Google-reikningi barnsins.</translation>
+<translation id="9174854240439014335">Leyfa að draga og sleppa á vinstri eða hægri jaðri glugga í skjáskiptingu</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth-tæki tengt</translation>
 <translation id="9177859716483578738"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> mun deila <ph name="FIELDS_STRING" /> með þessu vefsvæði til að geta haldið áfram. Sjá <ph name="BEGIN_LINK" />persónuverndarstefnu<ph name="END_LINK" /> vefsvæðisins.</translation>
 <translation id="9178061802301856367">Eyða innskráningargögnum</translation>

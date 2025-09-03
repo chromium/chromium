@@ -3250,6 +3250,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3226487301970807183">Toglo'r panel ochr sydd wedi'i alinio i'r chwith</translation>
 <translation id="322708765617468434">Gallwch chi bob amser ychwanegu person arall at y ddyfais ar ôl gosod. Gall pob person bersonoleiddio eu profiad a chadw data yn breifat.</translation>
 <translation id="3227137524299004712">Meicroffon</translation>
+<translation id="3227701057281907159">Wrthi'n patsio</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Tynnwch neu amnewidiwch ef gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}zero{Tynnwch neu amnewidiwch nhw gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}two{Tynnwch neu amnewidiwch nhw gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}few{Tynnwch neu amnewidiwch nhw gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}many{Tynnwch neu amnewidiwch nhw gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}other{Tynnwch neu amnewidiwch nhw gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Gwiriwch y dyddiad</translation>
 <translation id="3230539834943294477">Gweld erthyglau cymorth neu ddod o hyd i gymorth dyfais</translation>
@@ -3414,6 +3415,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3347086966102161372">Copïo cyfeiriad y llun</translation>
 <translation id="3348038390189153836">Mae dyfais y gellir ei thynnu wedi'i chanfod</translation>
 <translation id="3348131053948466246">Awgrymir Emoji. Pwyswch i fyny neu i lawr i lywio ac Enter i fewnosod.</translation>
+<translation id="3348973040180736882">Wrthi'n dadgywasgu</translation>
 <translation id="3349933790966648062">Ôl-troed Cof</translation>
 <translation id="3350450887151703713">Ailchwarae 10 eiliad</translation>
 <translation id="3351472127384196879">Ychwanegu neu leoli botymau ar eich pin ysgrifennu</translation>
@@ -11787,6 +11789,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="9173063514323762371">&amp;Cuddio'r Bar Nodau Tudalen</translation>
 <translation id="917350715406657904">Gwnaethoch gyrraedd y terfyn amser a osodwyd gan eich rhiant ar gyfer <ph name="APP_NAME" />. Gallwch ei ddefnyddio am <ph name="TIME_LIMIT" /> yfory.</translation>
 <translation id="9174401638287877180">Anfon data defnydd a diagnostig. Helpwch i wella profiad Android eich plentyn drwy anfon data diagnostig, dyfais ac ap yn awtomatig at Google. Ni ddefnyddir hwn i adnabod eich plentyn a bydd yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Os yw'r gosodiad Gweithgarwch ar y We ac Apiau ychwanegol wedi'i droi ymlaen ar gyfer eich plentyn, gellir cadw'r data hyn i'w Gyfrif Google.</translation>
+<translation id="9174854240439014335">Caniatáu llusgo a gollwng gwedd hollt ar ymyl chwith neu dde'r ffenestr</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Mae dyfais Bluetooth wedi'i chysylltu</translation>
 <translation id="9177859716483578738">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu'ch <ph name="FIELDS_STRING" /> â'r wefan hon. Gweld <ph name="BEGIN_LINK" />polisi preifatrwydd<ph name="END_LINK" /> y wefan hon.</translation>
 <translation id="9178061802301856367">Dileu data mewngofnodi</translation>

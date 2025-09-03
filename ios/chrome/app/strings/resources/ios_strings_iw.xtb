@@ -80,7 +80,7 @@
 <translation id="1312168552565502328">‏קובצי cookie, נתוני אתרים</translation>
 <translation id="1312721752506309252">מופעלת הגנה משופרת</translation>
 <translation id="1321993286294231467">קרתה שגיאה בשמירת התמונה.</translation>
-<translation id="1322735045095424339">מצב אנונימי נדרש על ידי הארגון שלך</translation>
+<translation id="1322735045095424339">הארגון שלך דורש שימוש במצב פרטי</translation>
 <translation id="1323735185997015385">מחיקה</translation>
 <translation id="132683371494960526">יש ללחוץ פעמיים כדי לשנות את תיקיית האב.</translation>
 <translation id="1333455942675373522">מקלדת</translation>
@@ -241,7 +241,7 @@
 <translation id="1902277226107477495">זיהוי הכתובת מושבת. אפשר להפעיל אותו בחזרה ב"הגדרות".</translation>
 <translation id="1904580727789512086">‏כתובות ה-URL שביקרת בהן נשמרות בחשבון שלך ב-Google</translation>
 <translation id="1911619930368729126">‏העלאה אל Google Drive</translation>
-<translation id="1925706052394657380">‏פתיחת ההגדרות של <ph name="BEGIN_BOLD" />אפליקציות ברירת המחדל<ph name="END_BOLD" /> ב-iOS</translation>
+<translation id="1925706052394657380">‏פותחים את ההגדרות של <ph name="BEGIN_BOLD" />יישומי ברירת מחדל<ph name="END_BOLD" /> ב-iOS</translation>
 <translation id="1941314575388338491">כדי להעתיק, לוחצים לחיצה כפולה.</translation>
 <translation id="1943478190258551035">תפריט ← הגדרות</translation>
 <translation id="1952728750904661634">כניסה עם חשבון מנוהל</translation>
@@ -251,7 +251,7 @@
 <translation id="1962348300797608157">שותפה איתכם סיסמה לאתר <ph name="WEBSITE" /> על ידי <ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /></translation>
 <translation id="1962969542251276847">נעילת מסך</translation>
 <translation id="1963976881984600709">הגנה רגילה</translation>
-<translation id="1964507856799750384">לחיצה על <ph name="BEGIN_BOLD" />אפליקציית דפדפן<ph name="END_BOLD" /></translation>
+<translation id="1964507856799750384">לוחצים על <ph name="BEGIN_BOLD" />דפדפן היישומים<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">נתונים מאתרים</translation>
 <translation id="1967461193809857427">{count,plural, =1{‏רוצה לחזור לכרטיסייה האחרונה שבה גלשת ב-Android?}one{‏רוצה לחזור לכרטיסיות האחרונות שבהן גלשת ב-Android?}two{‏רוצה לחזור לכרטיסיות האחרונות שבהן גלשת ב-Android?}other{‏רוצה לחזור לכרטיסיות האחרונות שבהן גלשת ב-Android?}}</translation>
 <translation id="1972325230031091483">מהירות הגלישה תגבר כי התוכן ייטען באופן יזום, על סמך הביקור הנוכחי שלך בדף האינטרנט</translation>

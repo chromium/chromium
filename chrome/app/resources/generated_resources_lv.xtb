@@ -3234,6 +3234,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3226487301970807183">Pārvietot kreisās puses sānu paneli</translation>
 <translation id="322708765617468434">Pēc iestatīšanas varēsiet jebkurā brīdī ierīcē pievienot citu personu. Katra persona var personalizēt savu pieredzi, un katras personas dati ir konfidenciāli.</translation>
 <translation id="3227137524299004712">Mikrofons</translation>
+<translation id="3227701057281907159">Notiek ielāpa lietošana…</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Noņemiet paplašinājumu vai aizstājiet to ar līdzīgiem paplašinājumiem no <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}zero{Noņemiet paplašinājumus vai aizstājiet tos ar līdzīgiem paplašinājumiem no <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}one{Noņemiet paplašinājumus vai aizstājiet tos ar līdzīgiem paplašinājumiem no <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Noņemiet paplašinājumus vai aizstājiet tos ar līdzīgiem paplašinājumiem no <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}}</translation>
 <translation id="3229254977651514276">Pārbaudiet datumu</translation>
 <translation id="3230539834943294477">Varat skatīt palīdzības rakstus vai atrast ierīces atbalsta informāciju</translation>
@@ -3398,6 +3399,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3347086966102161372">Kopēt attēla adresi</translation>
 <translation id="3348038390189153836">Konstatēta noņemama ierīce</translation>
 <translation id="3348131053948466246">Tiek ieteikta emocijzīme. Lai pārvietotos, nospiediet augšupvērsto vai lejupvērsto bultiņu. Lai ievietotu emocijzīmi, nospiediet ievadīšanas taustiņu.</translation>
+<translation id="3348973040180736882">Notiek atspiešana…</translation>
 <translation id="3349933790966648062">Atmiņas pēdas nospiedums</translation>
 <translation id="3350450887151703713">Atskaņot 10 sekundes vēlreiz</translation>
 <translation id="3351472127384196879">Pievienojiet vai atrodiet pildspalvas pogas</translation>
@@ -11762,6 +11764,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9173063514323762371">&amp;Slēpt grāmatzīmju joslu</translation>
 <translation id="917350715406657904">Ir sasniegts laika ierobežojums, ko jūsu vecāki iestatīja lietotnes <ph name="APP_NAME" /> izmantošanai. Rīt varēsiet to izmantot <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174401638287877180">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot bērna Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija netiks izmantota jūsu bērna identificēšanai, un tā palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Ja jūsu bērnam ir ieslēgts iestatījums “papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti bērna Google kontā.</translation>
+<translation id="9174854240439014335">Atļaut dalītā skata vilkšanu un nomešanu loga kreisajā vai labajā malā</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> — pievienota Bluetooth ierīce</translation>
 <translation id="9177859716483578738">Lai turpinātu, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kopīgos ar šo vietni šādus jūsu datus: <ph name="FIELDS_STRING" />. Skatiet šīs vietnes <ph name="BEGIN_LINK" />konfidencialitātes politiku<ph name="END_LINK" />.</translation>
 <translation id="9178061802301856367">Pierakstīšanās datu dzēšana</translation>

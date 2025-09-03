@@ -3238,6 +3238,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3226487301970807183">Vasakule joondatud külgpaneeli kuvamine/peitmine</translation>
 <translation id="322708765617468434">Teil on võimalik pärast seadistamist alati inimesi seadmesse juurde lisada. Iga inimene saab oma kasutuskogemuse isikupärastada ja andmed privaatsena hoida.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3227701057281907159">Paikamine</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Eemaldage see või asendage sarnase laiendusega <ph name="BEGIN_LINK" />Chrome'i veebipoest<ph name="END_LINK" />}other{Eemaldage need või asendage sarnaste laiendustega <ph name="BEGIN_LINK" />Chrome'i veebipoest<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Kontrollige kuupäeva</translation>
 <translation id="3230539834943294477">Abikeskuse artiklite kuvamine või seadmetoe otsimine</translation>
@@ -3402,6 +3403,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3347086966102161372">K&amp;opeeri kujutise aadress</translation>
 <translation id="3348038390189153836">Leiti irdseade</translation>
 <translation id="3348131053948466246">Soovitatakse emotikone. Navigeerimiseks vajutage üles- või allanoolt ja sisestamiseks sisestusklahvi.</translation>
+<translation id="3348973040180736882">Lahtipakkimine</translation>
 <translation id="3349933790966648062">Mälu jalajälg</translation>
 <translation id="3350450887151703713">Esita 10 sekundit uuesti</translation>
 <translation id="3351472127384196879">Pliiatsi nuppude lisamine või nende asukoha leidmine</translation>
@@ -11765,6 +11767,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="9173063514323762371">Peida järjehoidjariba</translation>
 <translation id="917350715406657904">Jõudsid piiranguni, mille sinu vanem teenuses <ph name="APP_NAME" /> määras. Saad seda homme kasutada <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174401638287877180">Kasutus- ja diagnostikaandmete saatmine. Aidake täiustada oma lapse Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole.</translation>
+<translation id="9174854240439014335">Luba jagatud vaate pukseerimine akna vasakus või paremas servas</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetoothi seade on ühendatud</translation>
 <translation id="9177859716483578738">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie andmeid (<ph name="FIELDS_STRING" />). Vaadake selle saidi <ph name="BEGIN_LINK" />privaatsuseeskirju<ph name="END_LINK" />.</translation>
 <translation id="9178061802301856367">Sisselogimisandmete kustutamine</translation>

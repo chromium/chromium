@@ -3236,6 +3236,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3226487301970807183">Uključivanje/isključivanje bočne ploče s lijevim poravnanjem</translation>
 <translation id="322708765617468434">Nakon postavljanja uvijek možete dodati drugu osobu na uređaj. Svaka osoba može prilagoditi svoje iskustvo i zadržati privatnost svojih podataka.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3227701057281907159">Primjena zakrpe</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Uklonite ga ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome web-trgovine<ph name="END_LINK" />.}one{Uklonite ih ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome web-trgovine<ph name="END_LINK" />}few{Uklonite ih ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome web-trgovine<ph name="END_LINK" />}other{Uklonite ih ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome web-trgovine<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Provjerite datum</translation>
 <translation id="3230539834943294477">Pogledajte članke pomoći ili pronađite podršku za uređaj</translation>
@@ -3400,6 +3401,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3347086966102161372">K&amp;opiraj adresu slike</translation>
 <translation id="3348038390189153836">Otkriven je uklonjivi uređaj</translation>
 <translation id="3348131053948466246">Emoji je predložen. Pritisnite tipke za gore ili dolje za kretanje i tipku Enter za umetanje.</translation>
+<translation id="3348973040180736882">Dekomprimiranje</translation>
 <translation id="3349933790966648062">Upotreba memorije</translation>
 <translation id="3350450887151703713">Ponovno reproduciraj 10 s</translation>
 <translation id="3351472127384196879">Dodajte ili pronađite gumbe na olovci</translation>
@@ -11764,6 +11766,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9173063514323762371">&amp;Sakrij traku oznaka</translation>
 <translation id="917350715406657904">Dosegnuto je vremensko ograničenje koje je tvoj roditelj postavio za aplikaciju <ph name="APP_NAME" />. Sutra je možeš koristiti <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174401638287877180">Slanje podataka o upotrebi i dijagnostici. Pomognite poboljšati djetetov doživljaj Androida automatskim slanjem dijagnostičkih podataka i podataka o upotrebi uređaja i aplikacija Googleu. Ti se podaci neće upotrebljavati za identifikaciju vašeg djeteta, a pomoći će poboljšati sustav, stabilnost aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ako je za vaše dijete uključena dodatna aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na djetetov Google račun.</translation>
+<translation id="9174854240439014335">Dopusti povlačenje i ispuštanje u podijeljenom prikazu na lijevom ili desnom rubu prozora</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth uređaj povezan</translation>
 <translation id="9177859716483578738">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će podijeliti vaše podatke, odnosno <ph name="FIELDS_STRING" /> s ovom web-lokacijom. Pogledajte <ph name="BEGIN_LINK" />pravila o privatnosti<ph name="END_LINK" /> ove web-lokacije.</translation>
 <translation id="9178061802301856367">Brisanje podataka za prijavu</translation>

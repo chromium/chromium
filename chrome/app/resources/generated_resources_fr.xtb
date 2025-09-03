@@ -3233,6 +3233,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3226487301970807183">Activer/désactiver le panneau latéral aligné à gauche</translation>
 <translation id="322708765617468434">Vous pourrez toujours ajouter une autre personne à l'appareil après la configuration. Chaque personne pourra personnaliser son expérience et préserver la confidentialité de ses données.</translation>
 <translation id="3227137524299004712">Micro</translation>
+<translation id="3227701057281907159">Application d'un fichier correctif…</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Supprimez-la ou remplacez-la par des extensions similaires du <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}one{Supprimez-la ou remplacez-la par des extensions similaires du <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Supprimez-les ou remplacez-les par des extensions similaires du <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}}</translation>
 <translation id="3229254977651514276">Vérifiez la date</translation>
 <translation id="3230539834943294477">Consulter les articles d'aide ou obtenir de l'aide concernant les appareils</translation>
@@ -3397,6 +3398,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3347086966102161372">C&amp;opier l'adresse de l'image</translation>
 <translation id="3348038390189153836">Nouveau matériel détecté</translation>
 <translation id="3348131053948466246">Emoji suggérés. Appuyez sur la flèche vers le haut ou vers le bas pour sélectionner un emoji, puis sur Entrée pour l'insérer.</translation>
+<translation id="3348973040180736882">Décompression…</translation>
 <translation id="3349933790966648062">Espace mémoire utilisé</translation>
 <translation id="3350450887151703713">Relire 10 secondes</translation>
 <translation id="3351472127384196879">Ajouter ou localiser des boutons sur le stylet</translation>
@@ -11762,6 +11764,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9173063514323762371">Masquer la barre de favoris</translation>
 <translation id="917350715406657904">Tu as atteint la limite de temps définie par un parent pour <ph name="APP_NAME" />. Tu pourras de nouveau l'utiliser demain pendant <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174401638287877180">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de l'expérience de votre enfant sur Android en envoyant automatiquement à Google des données liées à l'utilisation de l'appareil et des applications, ainsi que des données de diagnostic. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Si vous avez activé le paramètre "Activité additionnelle sur le Web et les applications" pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>
+<translation id="9174854240439014335">Autoriser le glisser-déposer en vue fractionnée sur le bord gauche ou droit de la fenêtre</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Appareil Bluetooth connecté</translation>
 <translation id="9177859716483578738">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site <ph name="FIELDS_STRING" />. Consultez les <ph name="BEGIN_LINK" />Règles de confidentialité<ph name="END_LINK" /> de ce site.</translation>
 <translation id="9178061802301856367">Supprimer les données de connexion</translation>

@@ -3246,6 +3246,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3226487301970807183">Aktivirajte/deaktivirajte bočnu ploču poredanu nalijevo</translation>
 <translation id="322708765617468434">Uvijek možete dodati drugu osobu na uređaj nakon postavljanja. Svaka osoba može personalizirati svoje iskustvo i čuvati privatnost podataka.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3227701057281907159">Primjena zakrpe</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Uklonite je ili zamijenite sličnim ekstenzijama iz <ph name="BEGIN_LINK" />Chrome Web trgovine<ph name="END_LINK" />.}one{Uklonite ih ili zamijenite sličnim ekstenzijama iz <ph name="BEGIN_LINK" />Chrome Web trgovine<ph name="END_LINK" />}few{Uklonite ih ili zamijenite sličnim ekstenzijama iz <ph name="BEGIN_LINK" />Chrome Web trgovine<ph name="END_LINK" />}other{Uklonite ih ili zamijenite sličnim ekstenzijama iz <ph name="BEGIN_LINK" />Chrome Web trgovine<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Provjerite datum</translation>
 <translation id="3230539834943294477">Pregledajte članke za pomoć ili pronađite podršku za uređaj</translation>
@@ -3410,6 +3411,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3347086966102161372">K&amp;opiraj adresu slike</translation>
 <translation id="3348038390189153836">Otkriven je uklonjivi uređaj</translation>
 <translation id="3348131053948466246">Predložena je emoji sličica. Pritisnite strelicu nadolje ili nagore za kretanje i tipku enter za umetanje.</translation>
+<translation id="3348973040180736882">Dekompresija</translation>
 <translation id="3349933790966648062">Otisak iz memorije</translation>
 <translation id="3350450887151703713">Ponovo reproduciraj 10 s</translation>
 <translation id="3351472127384196879">Dodajte ili pronađite dugmad na olovci</translation>
@@ -11779,6 +11781,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9173063514323762371">&amp;Sakrij traku oznaka</translation>
 <translation id="917350715406657904">Dostignuto je vremensko ograničenje koje je tvoj roditelj postavio za <ph name="APP_NAME" />. Sutra je možeš koristiti <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174401638287877180">Šaljite podatke o korištenju i dijagnostici. Poboljšajte iskustvo koje vaše dijete ima s Androidom automatskim slanjem podataka o dijagnostici, uređaju i korištenju aplikacija Googleu. Ovo se neće koristiti za identifikaciju vašeg djeteta i pomoći će stabilnosti sistema i aplikacije, kao i drugim unapređenjima. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri. Ako je za vaše dijete uključena postavka za dodatnu Aktivnost na webu i u aplikacijama, ovi podaci mogu biti sačuvani na Google računu djeteta.</translation>
+<translation id="9174854240439014335">Dozvoli prevlačenje i ispuštanje u podijeljenom prikazu na lijevom ili desnom rubu prozora</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth uređaj je povezan</translation>
 <translation id="9177859716483578738">Da nastavite, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će dijeliti vaše <ph name="FIELDS_STRING" /> s ovom web lokacijom. Pogledajte <ph name="BEGIN_LINK" />pravila privatnosti<ph name="END_LINK" /> ove web lokacije.</translation>
 <translation id="9178061802301856367">Izbrišite podatke za prijavu</translation>

@@ -3248,6 +3248,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3226487301970807183">Guqula ukuqondanisa ngakwesobunxele iphaneli eseceleni</translation>
 <translation id="322708765617468434">Ungakwazi ukwengeza omunye umuntu kudivayisi ngemva kokusetha. Umuntu ngamunye angaqondanisa i-akhawunti yakhe nomuntu siqu futhi agcine idatha iyimfihlo.</translation>
 <translation id="3227137524299004712">Imakrofoni</translation>
+<translation id="3227701057281907159">Ukupesha</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Isuse noma ishintshe nezandiso ezifanayo ezivela <ph name="BEGIN_LINK" />ku-Chrome Web Store<ph name="END_LINK" />.}one{Zisuse noma zishintshe nezandiso ezifanayo ezivela <ph name="BEGIN_LINK" />ku-Chrome Web Store<ph name="END_LINK" />}other{Zisuse noma zishintshe nezandiso ezifanayo ezivela <ph name="BEGIN_LINK" />ku-Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Hlola usuku</translation>
 <translation id="3230539834943294477">Bheka izihloko zosizo noma uthole ukwesekwa kwedivayisi</translation>
@@ -3412,6 +3413,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3347086966102161372">K&amp;opisha ikheli lesithombe</translation>
 <translation id="3348038390189153836">Kutholwe idivayisi engasuseka</translation>
 <translation id="3348131053948466246">I-emoji iphakanyisiwe. Cindezela umcibisholo waphezulu noma waphansi ukuze uzulazule kanye no-enter ukuze ufake.</translation>
+<translation id="3348973040180736882">Ukuminyanisa</translation>
 <translation id="3349933790966648062">I-Footprint yememori</translation>
 <translation id="3350450887151703713">Dlala futhi imizuzwana engu-10</translation>
 <translation id="3351472127384196879">Yengeza noma thola izinkinobho kupeni lakho</translation>
@@ -11775,6 +11777,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="9173063514323762371">&amp;Fihla Ibha Yamabhukhimakhi</translation>
 <translation id="917350715406657904">Ufinyelele umkhawulo wesikhathi sakho osibekelwe ngumzali se-<ph name="APP_NAME" />. Ungalisebenzisa ngokungu-<ph name="TIME_LIMIT" /> kusasa.</translation>
 <translation id="9174401638287877180">Thumela idatha yokusetshenziswa neyokuxilonga. Siza ukuthuthukisa umuzwa we-Android wengane yakho ngokuthumela ngokuzenzakalela idatha yokuxilonga, yedivayisi, neyokusetshenziswa ku-app kuGoogle. Lokhu ngeke kusetshenziselwe ukukhomba ingane yakho futhi kuzosiza ukuzinza kwesistimu noku-app nokunye ukuthuthukiswa. Enye idatha izophinda isize ama-app eGoogle nozakwethu, abafana nonjiniyela be-Android. Uma isethingi eyengeziwe sewebhu nese-app ivulelwe ingane yakho, le datha ingalondolozwa ku-akhawunti yakhe yeGoogle.</translation>
+<translation id="9174854240439014335">Vumela ukuhudula udedele kokubuka okuhlukanisiwe emaphethelweni ngakwesokunxele noma ngakwesokudla kwewindi</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Idivayisi ye-Bluetooth ixhunyiwe</translation>
 <translation id="9177859716483578738">Ukuze uqhubeke, i-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> izokwabelana nge-<ph name="FIELDS_STRING" /> yakho nale sayithi. Bheka <ph name="BEGIN_LINK" />inqubomgomo yobumfihlo<ph name="END_LINK" /> yale sayithi.</translation>
 <translation id="9178061802301856367">Sula idatha yokungena ngemvume</translation>

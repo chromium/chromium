@@ -3248,6 +3248,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3226487301970807183">I-toggle ang panel sa gilid na naka-align sa kaliwa</translation>
 <translation id="322708765617468434">Puwede kang magdagdag ng isa pang tao sa device anumang oras pagkatapos ng pag-set up. Magagawa ng bawat taong i-personalize ang kanyang experience at panatilihing pribado ang data.</translation>
 <translation id="3227137524299004712">Mikropono</translation>
+<translation id="3227701057281907159">Pag-patch</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Alisin o palitan ito ng mga katulad na extension mula sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}one{Alisin o palitan ang mga ito ng mga katulad na extension mula sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}other{Alisin o palitan ang mga ito ng mga katulad na extension mula sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Tingnan ang petsa</translation>
 <translation id="3230539834943294477">Tumingin ng mga artikulo ng tulong o humanap ng suporta sa device</translation>
@@ -3412,6 +3413,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3347086966102161372">K&amp;opyahin ang address ng larawan</translation>
 <translation id="3348038390189153836">Natuklasan ang natatanggal na device</translation>
 <translation id="3348131053948466246">Iminumungkahi ang emoji Pindutin ang up o down para mag-navigate at ang enter para maglagay.</translation>
+<translation id="3348973040180736882">Pag-decompress</translation>
 <translation id="3349933790966648062">Footprint ng Memory</translation>
 <translation id="3350450887151703713">I-replay nang 10 segundo</translation>
 <translation id="3351472127384196879">Magdagdag o magtakda ng mga button sa iyong pen</translation>
@@ -11780,6 +11782,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9173063514323762371">&amp;Itago ang Bookmarks Bar</translation>
 <translation id="917350715406657904">Naabot mo na ang limitasyon sa oras na itinakda ng iyong magulang para sa <ph name="APP_NAME" />. Puwede mo itong magamit nang <ph name="TIME_LIMIT" /> bukas.</translation>
 <translation id="9174401638287877180">Magpadala ng data ng paggamit at diagnostic. Tumulong sa pagpapaganda ng karanasan sa Android ng iyong anak sa pamamagitan ng awtomatikong pagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang karagdagang setting ng Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google Account.</translation>
+<translation id="9174854240439014335">Payagan ang pag-drag at pag-drop sa kaliwa o kanang gilid ng window sa split view</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - May nakakonektang bluetooth device</translation>
 <translation id="9177859716483578738">Para magpatuloy, ishe-share ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong <ph name="FIELDS_STRING" /> sa site na ito. Tingnan ang <ph name="BEGIN_LINK" />patakaran sa privacy<ph name="END_LINK" /> ng site na ito.</translation>
 <translation id="9178061802301856367">I-delete ang data sa pag-sign in</translation>

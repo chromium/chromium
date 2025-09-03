@@ -3232,6 +3232,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3226487301970807183">Commuta el tauler lateral alineat a l'esquerra</translation>
 <translation id="322708765617468434">Sempre pots afegir una altra persona al dispositiu després de la configuració. Cada persona pot personalitzar la seva experiència i mantenir la privadesa de les dades.</translation>
 <translation id="3227137524299004712">Micròfon</translation>
+<translation id="3227701057281907159">S'està aplicant el pedaç</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Suprimeix-la o substitueix-la per una extensió similar de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Suprimeix-les o substitueix-les per extensions similars de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}}</translation>
 <translation id="3229254977651514276">Comprova la data</translation>
 <translation id="3230539834943294477">Consulta els articles d'ajuda o cerca assistència per a dispositius</translation>
@@ -3396,6 +3397,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3347086966102161372">C&amp;opia l'adreça de la imatge</translation>
 <translation id="3348038390189153836">S'ha detectat un dispositiu extraïble</translation>
 <translation id="3348131053948466246">Se suggereixen emojis. Prem les tecles amunt i avall per navegar-hi i Retorn per inserir-ne un.</translation>
+<translation id="3348973040180736882">S'està descomprimint</translation>
 <translation id="3349933790966648062">Ús de la memòria</translation>
 <translation id="3350450887151703713">Torna a reproduir 10 segons</translation>
 <translation id="3351472127384196879">Afegeix o localitza botons al llapis</translation>
@@ -11756,6 +11758,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9173063514323762371">Amaga la barra d'adreces d'interès</translation>
 <translation id="917350715406657904">Has arribat al límit de temps que els teus pares han definit per a l'aplicació <ph name="APP_NAME" />. Demà podràs utilitzar-la durant <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174401638287877180">Envia dades d'ús i de diagnòstic. Ajuda a millorar l'experiència a Android del teu fill enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades no es faran servir per identificar el teu fill i ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si l'opció Activitat al web i en aplicacions addicional està activada per al teu fill, és possible que aquestes dades es desin al seu Compte de Google.</translation>
+<translation id="9174854240439014335">Permet arrossegar i deixar anar la visualització dividida a la vora esquerra o dreta de la finestra</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: hi ha un dispositiu Bluetooth connectat</translation>
 <translation id="9177859716483578738">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà la teva informació (<ph name="FIELDS_STRING" />) amb aquest lloc web. Consulta la <ph name="BEGIN_LINK" />política de privadesa<ph name="END_LINK" /> d'aquest lloc web.</translation>
 <translation id="9178061802301856367">Suprimeix les dades d'inici de sessió</translation>

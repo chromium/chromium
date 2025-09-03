@@ -145,7 +145,7 @@
 <translation id="2546283357679194313">ملفات تعريف الارتباط وبيانات المواقع الإلكترونية
 </translation>
 <translation id="2570922361219980984">‏الوصول إلى الموقع الجغرافي متوقف لهذا الجهاز أيضًا. يمكنك تفعليه في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">تم التوسيع - انقر للتصغير.</translation>
+<translation id="257931822824936280">تم التوسيع - يرجى النقر للتصغير.</translation>
 <translation id="2586657967955657006">الحافظة</translation>
 <translation id="2588271083332682494">تَنظيم متصفّحك من خلال "مجموعات علامات التبويب"</translation>
 <translation id="2597457036804169544">عدم تطبيق "المظهر الداكن" على المواقع الإلكترونية</translation>
@@ -331,7 +331,7 @@
 <translation id="4645575059429386691">يديره والداك</translation>
 <translation id="4663373278480897665">تم السماح باستخدام الكاميرا</translation>
 <translation id="4670064810192446073">الواقع الافتراضي</translation>
-<translation id="4672315773691449562">‏انقر على "تطبيق المتصفّح"، ثم انقر على Chrome</translation>
+<translation id="4672315773691449562">‏عليك النقر على "تطبيق المتصفّح"، ثم النقر على Chrome</translation>
 <translation id="4676059169848868271">للسماح لـ "<ph name="APP_NAME" />" باستخدام ميزة "تتبُّع اليد"، يجب تفعيل الميزة في <ph name="BEGIN_LINK" />إعدادات النظام<ph name="END_LINK" /> أيضًا.</translation>
 <translation id="4751476147751820511">أجهزة استشعار الإضاءة أو الحركة</translation>
 <translation id="4755971844837804407">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية عرض أي إعلان لك. وعند إيقافه، لا يمكن للمواقع الإلكترونية عرض إعلانات مضلِّلة أو متداخلة.</translation>
@@ -674,8 +674,8 @@
 <translation id="868929229000858085">البحث في جهات الاتصال</translation>
 <translation id="8707904142362025782">السماح للموقع الإلكتروني بطلب استخدام الكاميرا</translation>
 <translation id="8712637175834984815">حسنًا</translation>
-<translation id="8715862698998036666">اسحب الشاشة من الأعلى ومرِّر سريعًا من الحافة اليسرى أو اليمنى للخروج من وضع ملء الشاشة.</translation>
-<translation id="8719283222052720129">‏فعِّل الإذن لتطبيق <ph name="APP_NAME" /> في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
+<translation id="8715862698998036666">للخروج من وضع ملء الشاشة، عليك سحب الشاشة من الأعلى والتمرير سريعًا من الحافة اليسرى أو اليمنى.</translation>
+<translation id="8719283222052720129">‏يرجى تفعيل الإذن لتطبيق <ph name="APP_NAME" /> في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية طلب البحث عن أجهزة تتضمّن بلوتوث. وعند إيقافه، لا يمكن للمواقع الإلكترونية البحث عن تلك الأجهزة.</translation>
 <translation id="8725066075913043281">إعادة المحاولة</translation>
 <translation id="8730621377337864115">تم</translation>

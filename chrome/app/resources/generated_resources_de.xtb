@@ -3229,6 +3229,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3226487301970807183">Linke Seitenleiste ein-/ausblenden</translation>
 <translation id="322708765617468434">Nach der Einrichtung kannst du dem Gerät jederzeit eine weitere Person hinzufügen. Jeder Nutzer kann seine Einstellungen personalisieren. Dabei bleiben die Daten der einzelnen Nutzer privat.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3227701057281907159">Patchen</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Entferne sie oder ersetze sie durch ähnliche Erweiterungen aus dem <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Entferne sie oder ersetze sie durch ähnliche Erweiterungen aus dem <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Bitte überprüfe das Datum</translation>
 <translation id="3230539834943294477">Hilfeartikel ansehen oder Gerätesupport erhalten</translation>
@@ -3393,6 +3394,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3347086966102161372">Bildadresse k&amp;opieren</translation>
 <translation id="3348038390189153836">Externes Gerät erkannt</translation>
 <translation id="3348131053948466246">Emoji vorgeschlagen. Drücke die Nach-oben- oder Nach-unten-Taste, um ein Emoji auszuwählen und bestätige die Auswahl mit der Eingabetaste.</translation>
+<translation id="3348973040180736882">Entpacken</translation>
 <translation id="3349933790966648062">Speicherbedarf</translation>
 <translation id="3350450887151703713">10 Sekunden zurückspulen</translation>
 <translation id="3351472127384196879">Tasten an deinem Stift hinzufügen oder finden</translation>
@@ -11751,6 +11753,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9173063514323762371">&amp;Lesezeichenleiste ausblenden</translation>
 <translation id="917350715406657904">Du hast das Zeitlimit erreicht, das deine Eltern für <ph name="APP_NAME" /> festgelegt haben. Morgen kannst du die App wieder <ph name="TIME_LIMIT" /> lang nutzen.</translation>
 <translation id="9174401638287877180">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Du kannst uns helfen, Android für dein Kind zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert.</translation>
+<translation id="9174854240439014335">Drag-and-drop für geteilte Ansicht am linken oder rechten Fensterrand zulassen</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth-Gerät verbunden</translation>
 <translation id="9177859716483578738"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren <ph name="FIELDS_STRING" /> mit dieser Website. Lies die <ph name="BEGIN_LINK" />Datenschutzerklärung<ph name="END_LINK" /> dieser Website.</translation>
 <translation id="9178061802301856367">Anmeldedaten löschen</translation>

@@ -47,7 +47,7 @@
 <translation id="1167755866710282443">افتح القائمة لتخصيص المفاتيح. اسحب القائمة لنقلها.</translation>
 <translation id="1171349345463658120">بحيرة ساحلية رملية</translation>
 <translation id="1174073918202301297">تمت إضافة الاختصار</translation>
-<translation id="11743817593307477">‏استخدِم مفاتيح الأسهم لنقل عنصر التحكّم هذا إلى الإجراء الذي تريده في اللعبة. استخدِم مفتاح Enter لوضع عنصر التحكّم. واستخدِم مفتاح Esc للإلغاء.</translation>
+<translation id="11743817593307477">‏يمكنك استخدام مفاتيح الأسهم لنقل عنصر التحكّم هذا إلى الإجراء المطلوب في اللعبة، واستخدام مفتاح Enter لوضع عنصر التحكّم، ومفتاح Esc للإلغاء.</translation>
 <translation id="1175697296044146566">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">إشارة متوسطة (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
@@ -1058,7 +1058,7 @@
 <translation id="5662240986744577912">إيقاف/تفعيل ميزة "شاشة الخصوصية"</translation>
 <translation id="5669267381087807207">تفعيل</translation>
 <translation id="5670702108860320605">BSSID</translation>
-<translation id="5674943355143004615">يُرجى وصف الخلفية التي تريد إنشاءها</translation>
+<translation id="5674943355143004615">يُرجى وصف الخلفية المُراد إنشاؤها</translation>
 <translation id="5680504961595602662">لوحة سريالية تعرض <ph name="SURREAL_LANDSCAPE" /> مع <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">كرز</translation>
 <translation id="5691511426247308406">العائلة</translation>
@@ -1698,7 +1698,7 @@
 <translation id="8477536061607044749">التصميم الطباعي</translation>
 <translation id="8477551185774834963">وقت استجابة "نظام أسماء النطاقات" أعلى بقليل من الحدّ الأقصى المسموح به.</translation>
 <translation id="8481308460877552925">يضم معلومات غير صحيحة</translation>
-<translation id="8482376765267780829">اختَر جزءًا من النص لتبسيطه</translation>
+<translation id="8482376765267780829">يرجى اختيار جزء من النص لتبسيطه</translation>
 <translation id="8483248364096924578">‏عنوان IP</translation>
 <translation id="8491311378305535241">‏تعذَّر اجتياز جدار الحماية للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTP من خلال تطبيقات Android.</translation>
 <translation id="8495070016475833911">اللبّاد</translation>

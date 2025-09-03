@@ -70,7 +70,7 @@
 <translation id="4227991223508142681">أداة إدارة حسابات المضيفين</translation>
 <translation id="4240294130679914010">‏أداة إزالة مضيف التوافق مع نظام التشغيل Chrome</translation>
 <translation id="4257751272692708833">‏برنامج إعادة توجيه عناوين URL من خلال "<ph name="PRODUCT_NAME" />"</translation>
-<translation id="4277736576214464567">رمز الدخول غير صالح، يُرجى إعادة المحاولة.</translation>
+<translation id="4277736576214464567">رمز الدخول غير صالح. يُرجى إعادة المحاولة.</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
 <translation id="4405930547258349619">المكتبة الأساسية</translation>
 <translation id="443560535555262820">فتح إعدادات "أدوات تسهيل الاستخدام" المفضّلة</translation>
@@ -91,7 +91,7 @@
 <translation id="4974476491460646149">تم إغلاق الاتصال بـ <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">تحتاج أولاً إلى إعداد جهاز الكمبيوتر لإتاحة الدخول عن بُعد</translation>
 <translation id="4987330545941822761">‏لا يمكن لميزة "الوصول إلى الكمبيوتر المكتبي عن بُعد من Chrome" تحديد المتصفّح الذي يجب استخدامه لفتح عناوين URL على الجهاز. يُرجى اختيار المتصفّح من القائمة أدناه.</translation>
-<translation id="5064360042339518108"><ph name="HOSTNAME" /> (في وضع عدم اتصال)</translation>
+<translation id="5064360042339518108"><ph name="HOSTNAME" /> (غير متصل بالإنترنت)</translation>
 <translation id="507204348399810022">هل المطلوب فعلاً إيقاف الاتصالات عن بُعد بـ <ph name="HOSTNAME" />؟</translation>
 <translation id="5095424396646120601">إعداد تقارير الأعطال</translation>
 <translation id="5170982930780719864">رقم تعريف المضيف غير صالح.</translation>
@@ -109,7 +109,7 @@
 <translation id="579702532610384533">إعادة الاتصال</translation>
 <translation id="5810269635982033450">تعمل الشاشة كلوحة تتبع</translation>
 <translation id="5823554426827907568">طلب "<ph name="CLIENT_USERNAME" />" إذنًا بالوصول إلى جهاز الكمبيوتر الخاص بك للاطّلاع على شاشة جهازك والتحكّم بلوحة المفاتيح والماوس. يُرجى النقر على "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" إذا لم يكن هذا الطلب متوقَّعًا. ويمكنك النقر على "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" للسماح بهذا الاتصال في حال كنت على استعداد.</translation>
-<translation id="5823658491130719298">‏على جهاز الكمبيوتر الذي تريد الدخول إليه عن بُعد، افتح Chrome وانتقل إلى <ph name="INSTALLATION_LINK" /></translation>
+<translation id="5823658491130719298">‏على الكمبيوتر المراد الوصول إليه عن بُعد، يرجى فتح Chrome والانتقال إلى <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">خيارات العرض</translation>
 <translation id="6033507038939587647">خيارات لوحة المفاتيح</translation>
 <translation id="6040143037577758943">إغلاق</translation>
@@ -153,7 +153,7 @@
 <translation id="7665369617277396874">إضافة حساب</translation>
 <translation id="7678209621226490279">إرساء إلى اليمين</translation>
 <translation id="7693372326588366043">تحديث قائمة المضيفين</translation>
-<translation id="7714222945760997814">الإبلاغ عن هذا الإخفاق</translation>
+<translation id="7714222945760997814">الإبلاغ عن هذا</translation>
 <translation id="7868137160098754906">يُرجى إدخال رقم التعريف الشخصي لجهاز الكمبيوتر البعيد.</translation>
 <translation id="7895403300744144251">لا تسمح سياسات الأمان على جهاز الكمبيوتر البعيد بالاتصالات من حسابك.</translation>
 <translation id="7936528439960309876">إرساء إلى اليسار</translation>

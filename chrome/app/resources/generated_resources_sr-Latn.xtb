@@ -3232,6 +3232,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3226487301970807183">Uključite/isključite bočnu tablu sa leve strane</translation>
 <translation id="322708765617468434">Uvek možete da dodate drugu osobu na uređaj posle podešavanja. Svaka osoba može da personalizuje doživljaj i čuva privatnost podataka.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3227701057281907159">Koristi se zakrpa</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Uklonite ga ili zamenite sličnim dodacima iz <ph name="BEGIN_LINK" />Chrome veb-prodavnice<ph name="END_LINK" />.}one{Uklonite ih ili zamenite sličnim dodacima iz <ph name="BEGIN_LINK" />Chrome veb-prodavnice<ph name="END_LINK" />}few{Uklonite ih ili zamenite sličnim dodacima iz <ph name="BEGIN_LINK" />Chrome veb-prodavnice<ph name="END_LINK" />}other{Uklonite ih ili zamenite sličnim dodacima iz <ph name="BEGIN_LINK" />Chrome veb-prodavnice<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Proverite datum</translation>
 <translation id="3230539834943294477">Pogledajte članke pomoći ili pronađite podršku za uređaje</translation>
@@ -3396,6 +3397,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3347086966102161372">K&amp;opiraj adresu slike</translation>
 <translation id="3348038390189153836">Otkriven je prenosivi uređaj</translation>
 <translation id="3348131053948466246">Emodži je predložen. Pritisnite nagore ili nadole da biste se kretali i Enter za unos.</translation>
+<translation id="3348973040180736882">Dekomprimuje se</translation>
 <translation id="3349933790966648062">Memorijski prostor u upotrebi</translation>
 <translation id="3350450887151703713">Ponovo pusti 10 sekundi</translation>
 <translation id="3351472127384196879">Dodajte ili pronađite dugmad na olovci</translation>
@@ -11764,6 +11766,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9173063514323762371">Sakrij traku sa obeleživačima</translation>
 <translation id="917350715406657904">Dostigao/la si vremensko ograničenje koje je roditelj podesio za: <ph name="APP_NAME" />. Sutra imaš <ph name="TIME_LIMIT" /> na raspolaganju.</translation>
 <translation id="9174401638287877180">Šaljite podatke o korišćenju i dijagnostičke podatke. Pomozite nam da poboljšamo Android doživljaj za dete tako što ćete automatski slati Google-u podatke o dijagnostici i korišćenju uređaja i aplikacija. Te informacije se neće koristiti za identifikaciju deteta i pomoći će u održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. Ako za dete uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu deteta.</translation>
+<translation id="9174854240439014335">Dozvoli prevlačenje i otpuštanje u podeljenom prikazu na levoj ili desnoj ivici prozora</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth uređaje je povezan</translation>
 <translation id="9177859716483578738">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti <ph name="FIELDS_STRING" /> sa ovim sajtom. Pogledajte <ph name="BEGIN_LINK" />politiku privatnosti<ph name="END_LINK" /> ovog sajta.</translation>
 <translation id="9178061802301856367">Izbrišite podatke za prijavljivanje</translation>

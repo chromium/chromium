@@ -194,7 +194,7 @@
 <translation id="2500392669976258912">الغوجاراتية الصوتية</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">فحص</translation>
-<translation id="252641322760726369">انقر مع الاستمرار على ملف ثم انقر على الرمز <ph name="ICON" /> واختَر "<ph name="PIN_COMMAND" />" للوصول سريعًا إلى هذا الملف في الرف.</translation>
+<translation id="252641322760726369">يرجى النقر مع الاستمرار على ملف ثم النقر على الرمز <ph name="ICON" /> واختيار "<ph name="PIN_COMMAND" />" للوصول سريعًا إلى هذا الملف في الرف.</translation>
 <translation id="2534460670861217804">‏خادم وكيل HTTP الآمن</translation>
 <translation id="2541377937973966830">محتوى هذا الملف للقراءة فقط. وبعض النشاطات غير متاحة فيه.</translation>
 <translation id="2542049655219295786">‏جدول من Google</translation>
@@ -422,7 +422,7 @@
 <translation id="4398096759193130964">يمكنك استعادة العناصر أو سحبها إلى مجلد جديد خارج "المهملات".</translation>
 <translation id="4401287888955153199">استخراج الكل</translation>
 <translation id="4410695710508688828">تعذّرت عملية استخراج الملفات. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="4414834425328380570">سيتم حذف "<ph name="FILE_NAME" />" ولن تتمكّن من استعادته.</translation>
+<translation id="4414834425328380570">سيتم حذف "<ph name="FILE_NAME" />" وستتعذّر استعادته.</translation>
 <translation id="4418686080762064601">إنشاء اختصار للملفات</translation>
 <translation id="4425149324548788773">ملفاتي</translation>
 <translation id="4432921877815220091">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز، هذه الشبكة يديرها المشرف</translation>
@@ -511,7 +511,7 @@
 <translation id="4992066212339426712">إعادة الصوت</translation>
 <translation id="5010406651457630570">أجهزة الكمبيوتر</translation>
 <translation id="5011233892417813670">Chromebook</translation>
-<translation id="5024856940085636730">توجد عملية تستغرق وقتًا أكثر من المتوقع. هل ترغب في إيقافها؟</translation>
+<translation id="5024856940085636730">توجد عملية تستغرق وقتًا أكثر من المتوقع. هل لديك رغبة في إيقافها؟</translation>
 <translation id="5036159836254554629">‏إدارة المشاركة في نظام Parallels Desktop</translation>
 <translation id="5038625366300922036">مشاهدة المزيد...</translation>
 <translation id="5044852990838351217">الأرمينية</translation>
@@ -1050,7 +1050,7 @@
 <translation id="9007990314804111233">‏سجِّل الدخول إلى حسابك على Microsoft</translation>
 <translation id="9017798300203431059">روسية صوتية</translation>
 <translation id="9034924485347205037">‏ملفات نظام التشغيل Linux</translation>
-<translation id="9035012421917565900">لا يمكن نقل العناصر مرة أخرى إلى '<ph name="DESTINATION_NAME" />'، لذلك لن تتمكن من التراجع عن هذا الإجراء.</translation>
+<translation id="9035012421917565900">لا يمكن نقل العناصر مرة أخرى إلى "<ph name="DESTINATION_NAME" />"، لذلك لن تتمكن من التراجع عن هذا الإجراء.</translation>
 <translation id="9035689366572880647">إدخال رقم التعريف الشخصي الحالي</translation>
 <translation id="9038620279323455325">الملف الذي يحمل الاسم "<ph name="FILE_NAME" />" موجود من قبل. يُرجى اختيار اسم مختلف.</translation>
 <translation id="9046895021617826162">تعذّر الاتصال</translation>
