@@ -1247,7 +1247,7 @@ chromium-metrics-reviews@google.com.
   <int value="8"
       label=":-X Unknown password typed, no saved credentials existed and
              site is blocklisted by the smart bubble"/>
-  <int value="9" label=":-) User used manual fallback to fill the form"/>
+  <int value="9" label=":-| User used manual fallback to fill the form"/>
 </enum>
 
 <enum name="PasswordManagerFillingSource">
