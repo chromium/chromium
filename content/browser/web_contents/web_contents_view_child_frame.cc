@@ -114,7 +114,11 @@ void WebContentsViewChildFrame::SetInitialFocus() {
 }
 
 gfx::Rect WebContentsViewChildFrame::GetViewBounds() const {
-  NOTREACHED();
+  if (RenderWidgetHostView* view = web_contents_->GetRenderWidgetHostView()) {
+    return view->GetViewBounds();
+  }
+
+  return gfx::Rect();
 }
 
 void WebContentsViewChildFrame::CreateView(gfx::NativeView context) {

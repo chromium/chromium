@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
+#include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
@@ -792,8 +793,8 @@ views::NativeWidget* WebUIBrowserWindow::CreateNativeWidget() {
 #endif
 
 std::unique_ptr<FindBar> WebUIBrowserWindow::CreateFindBar() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return std::make_unique<FindBarHost>(
+      browser_->GetFeatures().find_bar_owner());
 }
 
 web_modal::WebContentsModalDialogHost*
@@ -992,8 +993,7 @@ void WebUIBrowserWindow::OnExclusiveAccessUserInput() {
 }
 
 content::WebContents* WebUIBrowserWindow::GetWebContentsForExclusiveAccess() {
-  // TODO(webium): Implement this.
-  NOTREACHED();
+  return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
 bool WebUIBrowserWindow::CanUserEnterFullscreen() const {

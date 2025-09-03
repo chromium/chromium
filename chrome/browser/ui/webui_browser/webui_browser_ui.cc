@@ -171,6 +171,7 @@ void WebUIBrowserUI::CreatePageHandler(
 const std::vector<ui::ElementIdentifier>&
 WebUIBrowserUI::GetKnownElementIdentifiers() const {
   static const std::vector<ui::ElementIdentifier> kKnownElementIdentifiers{
+      kContentsContainerViewElementId, kLocationBarElementId,
       kToolbarAppMenuButtonElementId, kToolbarAvatarButtonElementId};
   return kKnownElementIdentifiers;
 }

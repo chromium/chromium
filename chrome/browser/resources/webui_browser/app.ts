@@ -88,9 +88,13 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     // super.connectedCallback().
     super.connectedCallback();
     this.trackedElementManager_.startTracking(
+        this.$.address, 'kLocationBarElementId');
+    this.trackedElementManager_.startTracking(
         this.$.appMenuButton, 'kToolbarAppMenuButtonElementId');
     this.trackedElementManager_.startTracking(
         this.$.avatarButton, 'kToolbarAvatarButtonElementId');
+    this.trackedElementManager_.startTracking(
+        this.$.contentRegion, 'kContentsContainerViewElementId');
   }
 
   // TabStripControllerDelegate:
