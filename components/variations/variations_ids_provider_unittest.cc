@@ -47,6 +47,7 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_Valid) {
             provider.ForceVariationIds({"12", "456", "t789"}, ""));
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
+  ASSERT_TRUE(headers);
   EXPECT_FALSE(headers->headers_map.empty());
   const std::string variations =
       headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
@@ -68,6 +69,7 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_ValidCommandLine) {
             provider.ForceVariationIds({"12"}, "456,t789"));
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
+  ASSERT_TRUE(headers);
   EXPECT_FALSE(headers->headers_map.empty());
   const std::string variations =
       headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
@@ -126,6 +128,7 @@ TEST_F(VariationsIdsProviderTest, ForceDisableVariationIds_ValidCommandLine) {
   EXPECT_TRUE(provider.ForceDisableVariationIds("2,t4,6,t8"));
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
+  ASSERT_TRUE(headers);
   EXPECT_FALSE(headers->headers_map.empty());
   const std::string variations =
       headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
@@ -161,6 +164,7 @@ TEST_F(VariationsIdsProviderTest, LowEntropySourceValue_Valid) {
   provider.SetLowEntropySourceValue(valid_low_entropy_source_value);
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
+  ASSERT_TRUE(headers);
   EXPECT_FALSE(headers->headers_map.empty());
 
   const std::string variations_header_first_party = headers->headers_map.at(
@@ -196,6 +200,7 @@ TEST_F(VariationsIdsProviderTest, LowEntropySourceValue_Null) {
   CreateTrialAndAssociateId("t2", "g2", GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, 456);
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
+  ASSERT_TRUE(headers);
   EXPECT_FALSE(headers->headers_map.empty());
 
   const std::string variations_header_first_party = headers->headers_map.at(
