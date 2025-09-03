@@ -18,7 +18,7 @@
 // Saves image with the given framing coordinates.
 - (void)saveImage:(UIImage*)image
     withFramingCoordinates:(HomeCustomizationFramingCoordinates*)coordinates
-                completion:(base::OnceClosure)completion;
+                completion:(base::OnceCallback<void(BOOL success)>)completion;
 
 @end
 

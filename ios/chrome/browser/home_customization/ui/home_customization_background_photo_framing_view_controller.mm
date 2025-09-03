@@ -27,6 +27,7 @@ const CGFloat kButtonHeight = 50.0;
 const CGFloat kButtonCornerRadius = 8.0;
 const CGFloat kButtonSpacing = 12.0;
 const CGFloat kButtonMaxWidth = 500;
+const CGFloat kSaveButtonImagePadding = 4;
 const CGFloat kContentPadding = 16.0;
 const CGFloat kTopSpacingHeight = 5.0;
 const CGFloat kPinchIconSize = 18.0;
@@ -48,6 +49,8 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
   UIImageView* _imageView;
   // Bottom section container.
   UIView* _bottomSection;
+  // The save button.
+  UIButton* _saveButton;
   // Scroll view for zooming and panning.
   UIScrollView* _scrollView;
   // Stack view to hold the pinch instruction views (label and icon).
@@ -237,14 +240,30 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
   saveConfig.baseForegroundColor = [UIColor colorNamed:kSolidButtonTextColor];
   saveConfig.cornerStyle = UIButtonConfigurationCornerStyleFixed;
   saveConfig.background.cornerRadius = kButtonCornerRadius;
+  // Configuration options for the activity indicator.
+  saveConfig.imagePlacement = NSDirectionalRectEdgeTrailing;
+  saveConfig.imagePadding = kSaveButtonImagePadding;
 
-  UIButton* saveButton = [UIButton buttonWithConfiguration:saveConfig
-                                             primaryAction:nil];
-  saveButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [saveButton addTarget:self
-                 action:@selector(saveButtonTapped)
-       forControlEvents:UIControlEventTouchUpInside];
-  [bottomStack addArrangedSubview:saveButton];
+  _saveButton = [UIButton buttonWithConfiguration:saveConfig primaryAction:nil];
+  _saveButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [_saveButton addTarget:self
+                  action:@selector(saveButtonTapped)
+        forControlEvents:UIControlEventTouchUpInside];
+  _saveButton.configurationUpdateHandler = ^(UIButton* button) {
+    UIButtonConfiguration* configuration = button.configuration;
+    // When disabled, set the background color  explicitly, as by default,
+    // UIButton transforms the baseBackgroundColor to be semi-transparent which
+    // does not look good with an image in the background.
+    if (button.isEnabled) {
+      configuration.background.backgroundColor = nil;
+    } else {
+      configuration.background.backgroundColor =
+          [UIColor colorNamed:kDisabledTintColor];
+    }
+    button.configuration = configuration;
+  };
+
+  [bottomStack addArrangedSubview:_saveButton];
 
   // Cancel button.
   UIButtonConfiguration* cancelConfig =
@@ -287,7 +306,7 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
         constraintEqualToAnchor:self.view.centerXAnchor],
 
     // Button heights.
-    [saveButton.heightAnchor constraintEqualToConstant:kButtonHeight],
+    [_saveButton.heightAnchor constraintEqualToConstant:kButtonHeight],
     [cancelButton.heightAnchor constraintEqualToConstant:kButtonHeight]
   ]];
 }
@@ -404,6 +423,10 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
 }
 
 - (void)saveButtonTapped {
+  UIButtonConfiguration* configuration = _saveButton.configuration;
+  configuration.showsActivityIndicator = YES;
+  _saveButton.configuration = configuration;
+  _saveButton.enabled = NO;
   if (!_mutator) {
     [self.delegate imageFramingViewControllerDidCancel:self];
     return;
@@ -414,10 +437,22 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
   __weak __typeof(self) weakSelf = self;
   [_mutator saveImage:_originalImage
       withFramingCoordinates:framingCoordinates
-                  completion:base::BindOnce(^{
-                    [weakSelf.delegate
-                        imageFramingViewControllerDidSucceed:weakSelf];
+                  completion:base::BindOnce(^(BOOL success) {
+                    [weakSelf handleImageSave:success];
                   })];
+}
+
+// Handles image save completion.
+- (void)handleImageSave:(BOOL)success {
+  if (!success) {
+    UIButtonConfiguration* configuration = _saveButton.configuration;
+    configuration.showsActivityIndicator = NO;
+    _saveButton.configuration = configuration;
+    _saveButton.enabled = YES;
+    return;
+  }
+
+  [self.delegate imageFramingViewControllerDidSucceed:self];
 }
 
 // Calculates the center point of the visible area in content coordinates.

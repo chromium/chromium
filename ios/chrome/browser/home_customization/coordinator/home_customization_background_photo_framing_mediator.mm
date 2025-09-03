@@ -42,32 +42,31 @@
 
 - (void)saveImage:(UIImage*)image
     withFramingCoordinates:(HomeCustomizationFramingCoordinates*)coordinates
-                completion:(base::OnceClosure)completion {
+                completion:(base::OnceCallback<void(BOOL success)>)completion {
   DCHECK(image);
   DCHECK(coordinates);
 
   __weak __typeof(self) weakSelf = self;
   _userUploadedImageManager->StoreUserUploadedImage(
-      image, base::BindOnce(
-                 ^(base::OnceClosure finalCompletion, base::FilePath path) {
-                   [weakSelf imageSavedAtPath:path
-                           framingCoordinates:coordinates
-                                   completion:std::move(finalCompletion)];
-                 },
-                 std::move(completion)));
+      image, base::BindOnce(^BOOL(base::FilePath path) {
+               return [weakSelf imageSavedAtPath:path
+                              framingCoordinates:coordinates];
+             }).Then(std::move(completion)));
 }
 
 #pragma mark - Private
 
-- (void)imageSavedAtPath:(base::FilePath)imagePath
-      framingCoordinates:(HomeCustomizationFramingCoordinates*)coordinates
-              completion:(base::OnceClosure)completion {
+// Completion handler for when the image is saved. Returns YES if the save is
+// successful and NO otherwise.
+- (BOOL)imageSavedAtPath:(base::FilePath)imagePath
+      framingCoordinates:(HomeCustomizationFramingCoordinates*)coordinates {
   if (!imagePath.empty() && _backgroundService) {
     _backgroundService->SetCurrentUserUploadedBackground(
         imagePath.value(),
         FramingCoordinatesFromHomeCustomizationFramingCoordinates(coordinates));
   }
-  std::move(completion).Run();
+
+  return !imagePath.empty();
 }
 
 @end
