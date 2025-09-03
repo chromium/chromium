@@ -19,8 +19,6 @@ static_library("test_support") {
     "new_aura_window_watcher.h",
     "test_app_data_load_waiter.cc",
     "test_app_data_load_waiter.h",
-    "web_kiosk_base_test.cc",
-    "web_kiosk_base_test.h",
   ]
 
   public_deps = [
