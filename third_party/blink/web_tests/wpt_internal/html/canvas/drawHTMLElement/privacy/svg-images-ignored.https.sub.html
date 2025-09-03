@@ -15,31 +15,24 @@
   </canvas>
 
   <script>
-    let sPendingImagesToLoad = 2;
+    window.onload = function() {
+      test(function(t) {
+        var context = canvas.getContext("2d");
+        context.drawHTMLElement(child, 0, 0);
 
-    function pendingImageLoaded() {
-      if (!--sPendingImagesToLoad) {
-        test(function(t) {
-          var context = canvas.getContext("2d");
-          context.drawHTMLElement(child, 0, 0);
+        pixel = context.getImageData(50, 50, 1, 1).data;
+        assert_equals(pixel[0], 255, "Same origin should draw");
+        assert_equals(pixel[1], 0, "Same origin should draw");
+        assert_equals(pixel[2], 0, "Same origin should draw");
 
-          pixel = context.getImageData(50, 50, 1, 1).data;
-          assert_equals(pixel[0], 255, "Same origin should draw");
-          assert_equals(pixel[1], 0, "Same origin should draw");
-          assert_equals(pixel[2], 0, "Same origin should draw");
+        pixel = context.getImageData(50, 150, 1, 1).data;
+        assert_equals(pixel[0], 0, "Cross origin should not draw");
+        assert_equals(pixel[1], 128, "Cross origin should not draw");
+        assert_equals(pixel[2], 0, "Cross origin should not draw");
 
-          pixel = context.getImageData(50, 150, 1, 1).data;
-          assert_equals(pixel[0], 0, "Cross origin should not draw");
-          assert_equals(pixel[1], 128, "Cross origin should not draw");
-          assert_equals(pixel[2], 0, "Cross origin should not draw");
-
-          t.done();
-        });
-      }
-    }
-
-    sameOrigin.onload = pendingImageLoaded;
-    crossOrigin.onload = pendingImageLoaded;
+        t.done();
+      });
+    };
   </script>
 </body>
 </html>

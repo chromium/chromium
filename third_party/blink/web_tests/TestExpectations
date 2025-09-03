@@ -9606,8 +9606,6 @@ crbug.com/435121429 external/wpt/web-animations/timing-model/animations/setting-
 # Gardener 2025-08-15
 crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/getCharacteristics/blocklisted-characteristics.https.window.js [ Failure Pass ]
 crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.js [ Failure Pass ]
-# Flaky on all platforms.
-crbug.com/439012788 wpt_internal/html/canvas/drawHTMLElement/privacy/html-images-ignored.https.sub.html [ Failure Pass ]
 
 # ICE related failures are happening on Mac bots but not locally causing
 # assertion failures where we expect media to flow. Allow failing for now.
