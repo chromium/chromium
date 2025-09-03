@@ -43,110 +43,86 @@
 
 namespace content {
 
-namespace {
+TestAuthenticatorRequestDelegate::TestAuthenticatorRequestDelegate(
+    RenderFrameHost* render_frame_host,
+    base::OnceClosure action_callbacks_registered_callback,
+    base::OnceClosure started_over_callback,
+    bool simulate_user_cancelled,
+    std::optional<bool>* enclave_authenticator_should_be_discovered,
+    base::flat_set<device::FidoTransportProtocol>* discovered_transports)
+    : action_callbacks_registered_callback_(
+          std::move(action_callbacks_registered_callback)),
+      started_over_callback_(std::move(started_over_callback)),
+      does_block_request_on_failure_(!started_over_callback_.is_null()),
+      simulate_user_cancelled_(simulate_user_cancelled),
+      enclave_authenticator_should_be_discovered_(
+          enclave_authenticator_should_be_discovered),
+      discovered_transports_(discovered_transports) {}
 
-// TestAuthenticatorRequestDelegate is a test fake implementation of the
-// AuthenticatorRequestClientDelegate embedder interface.
-class TestAuthenticatorRequestDelegate
-    : public AuthenticatorRequestClientDelegate {
- public:
-  TestAuthenticatorRequestDelegate(
-      RenderFrameHost* render_frame_host,
-      base::OnceClosure action_callbacks_registered_callback,
-      base::OnceClosure started_over_callback,
-      bool simulate_user_cancelled,
-      std::optional<bool>* enclave_authenticator_should_be_discovered,
-      base::flat_set<device::FidoTransportProtocol>* discovered_transports)
-      : action_callbacks_registered_callback_(
-            std::move(action_callbacks_registered_callback)),
-        started_over_callback_(std::move(started_over_callback)),
-        does_block_request_on_failure_(!started_over_callback_.is_null()),
-        simulate_user_cancelled_(simulate_user_cancelled),
-        enclave_authenticator_should_be_discovered_(
-            enclave_authenticator_should_be_discovered),
-        discovered_transports_(discovered_transports) {}
+TestAuthenticatorRequestDelegate::~TestAuthenticatorRequestDelegate() = default;
 
-  TestAuthenticatorRequestDelegate(const TestAuthenticatorRequestDelegate&) =
-      delete;
-  TestAuthenticatorRequestDelegate& operator=(
-      const TestAuthenticatorRequestDelegate&) = delete;
+void TestAuthenticatorRequestDelegate::RegisterActionCallbacks(
+    base::OnceClosure cancel_callback,
+    base::OnceClosure immediate_not_found_callback,
+    base::RepeatingClosure start_over_callback,
+    AccountPreselectedCallback account_preselected_callback,
+    PasswordSelectedCallback password_selected_callback,
+    device::FidoRequestHandlerBase::RequestCallback request_callback,
+    base::OnceClosure cancel_ui_timeout_callback,
+    base::RepeatingClosure bluetooth_adapter_power_on_callback,
+    base::RepeatingCallback<
+        void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+        ble_status_callback) {
+  ASSERT_TRUE(action_callbacks_registered_callback_)
+      << "RegisterActionCallbacks called twice.";
+  cancel_callback_ = std::move(cancel_callback);
+  std::move(action_callbacks_registered_callback_).Run();
+  if (started_over_callback_) {
+    action_callbacks_registered_callback_ = std::move(started_over_callback_);
+    start_over_callback_ = start_over_callback;
+  }
+}
 
-  void RegisterActionCallbacks(
-      base::OnceClosure cancel_callback,
-      base::OnceClosure immediate_not_found_callback,
-      base::RepeatingClosure start_over_callback,
-      AccountPreselectedCallback account_preselected_callback,
-      PasswordSelectedCallback password_selected_callback,
-      device::FidoRequestHandlerBase::RequestCallback request_callback,
-      base::OnceClosure cancel_ui_timeout_callback,
-      base::RepeatingClosure bluetooth_adapter_power_on_callback,
-      base::RepeatingCallback<
-          void(device::FidoRequestHandlerBase::BlePermissionCallback)>
-          ble_status_callback) override {
-    ASSERT_TRUE(action_callbacks_registered_callback_)
-        << "RegisterActionCallbacks called twice.";
-    cancel_callback_ = std::move(cancel_callback);
-    std::move(action_callbacks_registered_callback_).Run();
-    if (started_over_callback_) {
-      action_callbacks_registered_callback_ = std::move(started_over_callback_);
-      start_over_callback_ = start_over_callback;
-    }
+void TestAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo transport_info) {
+  if (discovered_transports_) {
+    *discovered_transports_ = transport_info.available_transports;
+  }
+  // Simulate the behaviour of Chrome's |AuthenticatorRequestDialogModel|
+  // which shows a specific error when no transports are available and lets
+  // the user cancel the request.
+  if (transport_info.available_transports.empty() || simulate_user_cancelled_) {
+    std::move(cancel_callback_).Run();
+  }
+}
+
+bool TestAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
+    InterestingFailureReason reason) {
+  if (!does_block_request_on_failure_) {
+    return false;
   }
 
-  void OnTransportAvailabilityEnumerated(
-      device::FidoRequestHandlerBase::TransportAvailabilityInfo transport_info)
-      override {
-    if (discovered_transports_) {
-      *discovered_transports_ = transport_info.available_transports;
-    }
-    // Simulate the behaviour of Chrome's |AuthenticatorRequestDialogModel|
-    // which shows a specific error when no transports are available and lets
-    // the user cancel the request.
-    if (transport_info.available_transports.empty() ||
-        simulate_user_cancelled_) {
-      std::move(cancel_callback_).Run();
-    }
+  std::move(start_over_callback_).Run();
+  does_block_request_on_failure_ = false;
+  return true;
+}
+
+void TestAuthenticatorRequestDelegate::ConfigureDiscoveries(
+    const url::Origin& origin,
+    const std::string& rp_id,
+    RequestSource request_source,
+    device::FidoRequestType request_type,
+    std::optional<device::ResidentKeyRequirement> resident_key_requirement,
+    device::UserVerificationRequirement user_verification_requirement,
+    std::optional<std::string_view> user_name,
+    base::span<const device::CableDiscoveryData> pairings_from_extension,
+    bool is_enclave_authenticator_available,
+    device::FidoDiscoveryFactory* fido_discovery_factory) {
+  if (enclave_authenticator_should_be_discovered_) {
+    *enclave_authenticator_should_be_discovered_ =
+        is_enclave_authenticator_available;
   }
-
-  bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override {
-    if (!does_block_request_on_failure_) {
-      return false;
-    }
-
-    std::move(start_over_callback_).Run();
-    does_block_request_on_failure_ = false;
-    return true;
-  }
-
-  void ConfigureDiscoveries(
-      const url::Origin& origin,
-      const std::string& rp_id,
-      RequestSource request_source,
-      device::FidoRequestType request_type,
-      std::optional<device::ResidentKeyRequirement> resident_key_requirement,
-      device::UserVerificationRequirement user_verification_requirement,
-      std::optional<std::string_view> user_name,
-      base::span<const device::CableDiscoveryData> pairings_from_extension,
-      bool is_enclave_authenticator_available,
-      device::FidoDiscoveryFactory* fido_discovery_factory) override {
-    if (enclave_authenticator_should_be_discovered_) {
-      *enclave_authenticator_should_be_discovered_ =
-          is_enclave_authenticator_available;
-    }
-  }
-
-  base::OnceClosure action_callbacks_registered_callback_;
-  base::OnceClosure cancel_callback_;
-  base::OnceClosure started_over_callback_;
-  base::OnceClosure start_over_callback_;
-  bool does_block_request_on_failure_ = false;
-  bool simulate_user_cancelled_ = false;
-  bool browser_provided_passkeys_available_ = false;
-  raw_ptr<std::optional<bool>> enclave_authenticator_should_be_discovered_;
-  raw_ptr<base::flat_set<device::FidoTransportProtocol>> discovered_transports_;
-};
-
-}  // namespace
+}
 
 TestWebAuthenticationRequestProxy::Config::Config() = default;
 TestWebAuthenticationRequestProxy::Config::~Config() = default;

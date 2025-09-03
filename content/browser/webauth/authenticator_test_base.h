@@ -209,6 +209,68 @@ PublicKeyCredentialRequestOptionsPtr GetTestPublicKeyCredentialRequestOptions();
 
 GetCredentialOptionsPtr GetTestGetCredentialOptions();
 
+// TestAuthenticatorRequestDelegate is a test fake implementation of the
+// AuthenticatorRequestClientDelegate embedder interface.
+class TestAuthenticatorRequestDelegate
+    : public AuthenticatorRequestClientDelegate {
+ public:
+  TestAuthenticatorRequestDelegate(
+      RenderFrameHost* render_frame_host,
+      base::OnceClosure action_callbacks_registered_callback,
+      base::OnceClosure started_over_callback,
+      bool simulate_user_cancelled,
+      std::optional<bool>* enclave_authenticator_should_be_discovered,
+      base::flat_set<device::FidoTransportProtocol>* discovered_transports);
+
+  TestAuthenticatorRequestDelegate(const TestAuthenticatorRequestDelegate&) =
+      delete;
+  TestAuthenticatorRequestDelegate& operator=(
+      const TestAuthenticatorRequestDelegate&) = delete;
+
+  ~TestAuthenticatorRequestDelegate() override;
+
+  void RegisterActionCallbacks(
+      base::OnceClosure cancel_callback,
+      base::OnceClosure immediate_not_found_callback,
+      base::RepeatingClosure start_over_callback,
+      AccountPreselectedCallback account_preselected_callback,
+      PasswordSelectedCallback password_selected_callback,
+      device::FidoRequestHandlerBase::RequestCallback request_callback,
+      base::OnceClosure cancel_ui_timeout_callback,
+      base::RepeatingClosure bluetooth_adapter_power_on_callback,
+      base::RepeatingCallback<
+          void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+          ble_status_callback) override;
+
+  void OnTransportAvailabilityEnumerated(
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo transport_info)
+      override;
+
+  bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override;
+
+  void ConfigureDiscoveries(
+      const url::Origin& origin,
+      const std::string& rp_id,
+      RequestSource request_source,
+      device::FidoRequestType request_type,
+      std::optional<device::ResidentKeyRequirement> resident_key_requirement,
+      device::UserVerificationRequirement user_verification_requirement,
+      std::optional<std::string_view> user_name,
+      base::span<const device::CableDiscoveryData> pairings_from_extension,
+      bool is_enclave_authenticator_available,
+      device::FidoDiscoveryFactory* fido_discovery_factory) override;
+
+  base::OnceClosure action_callbacks_registered_callback_;
+  base::OnceClosure cancel_callback_;
+  base::OnceClosure started_over_callback_;
+  base::OnceClosure start_over_callback_;
+  bool does_block_request_on_failure_ = false;
+  bool simulate_user_cancelled_ = false;
+  bool browser_provided_passkeys_available_ = false;
+  raw_ptr<std::optional<bool>> enclave_authenticator_should_be_discovered_;
+  raw_ptr<base::flat_set<device::FidoTransportProtocol>> discovered_transports_;
+};
+
 // TestWebAuthenticationRequestProxy is a test fake implementation of the
 // WebAuthenticationRequestProxy embedder interface.
 class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
