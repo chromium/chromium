@@ -19,6 +19,12 @@ TestModelInfoBuilder::TestModelInfoBuilder() {
   model_.mutable_model()->set_download_url(kTestAbsoluteFilePath);
   model_.mutable_model_info()->set_version(123);
 }
+TestModelInfoBuilder::TestModelInfoBuilder(const ModelInfo& model_info) {
+  SetModelFilePath(model_info.GetModelFilePath());
+  SetVersion(model_info.GetVersion());
+  SetModelMetadata(model_info.GetModelMetadata());
+  SetAdditionalFiles(model_info.GetAdditionalFiles());
+}
 TestModelInfoBuilder::~TestModelInfoBuilder() = default;
 
 TestModelInfoBuilder& TestModelInfoBuilder::SetModelFilePath(
@@ -32,6 +38,19 @@ TestModelInfoBuilder& TestModelInfoBuilder::SetAdditionalFiles(
   for (const base::FilePath& file_path : additional_files) {
     model_.mutable_model_info()->add_additional_files()->set_file_path(
         FilePathToString(file_path));
+  }
+  return *this;
+}
+
+TestModelInfoBuilder& TestModelInfoBuilder::RemoveAdditionalFileWithBasename(
+    const base::FilePath::StringType& base_name) {
+  auto* files = model_.mutable_model_info()->mutable_additional_files();
+  for (auto it = files->begin(); it != files->end(); it++) {
+    std::optional<base::FilePath> path = StringToFilePath(it->file_path());
+    if (path && path->BaseName().value() == base_name) {
+      files->erase(it);
+      return *this;
+    }
   }
   return *this;
 }

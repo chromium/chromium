@@ -146,4 +146,14 @@ proto::SubstitutedString FormatTestMessage() {
   return result;
 }
 
+proto::OnDeviceModelExecutionFeatureConfig SimpleTestFeatureConfig() {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_feature(
+      ToModelExecutionFeatureProto(ModelBasedCapabilityKey::kTest));
+  *config.mutable_input_config() =
+      TestInputConfig(FormatTestMessage(), FormatTestMessage());
+  *config.mutable_output_config() = ResponseHolderOutputConfig();
+  return config;
+}
+
 }  // namespace optimization_guide

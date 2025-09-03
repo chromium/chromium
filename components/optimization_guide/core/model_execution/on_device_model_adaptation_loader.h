@@ -21,6 +21,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace optimization_guide {
 
@@ -73,7 +74,7 @@ enum class AdaptationUnavailability {
   kNotSupported = 1,
 };
 
-class OnDeviceModelAdaptationMetadata {
+class OnDeviceModelAdaptationMetadata final {
  public:
   OnDeviceModelAdaptationMetadata(
       on_device_model::AdaptationAssetPaths* asset_paths,
@@ -105,7 +106,7 @@ using MaybeAdaptationMetadata =
 
 // Adaptation map stores adaptation metadata or unavailability reason for each
 // feature, defaulting to AdaptationUnavailability::kUpdatePending.
-class AdaptationMetadataMap {
+class AdaptationMetadataMap final {
  public:
   AdaptationMetadataMap();
   ~AdaptationMetadataMap();
@@ -124,26 +125,24 @@ class AdaptationMetadataMap {
 // Loads model adaptation assets for a particular feature. Performs adaptation
 // model compatibility checks with the base model and reloads the assets if the
 // base model changes.
-class OnDeviceModelAdaptationLoader
-    : public OptimizationTargetModelObserver,
-      public OnDeviceModelComponentStateManager::Observer,
-      public UsageTracker::Observer {
+class OnDeviceModelAdaptationLoader final
+    : public OptimizationTargetModelObserver {
  public:
   using OnLoadFn = base::RepeatingCallback<void(MaybeAdaptationMetadata)>;
 
-  OnDeviceModelAdaptationLoader(
-      ModelBasedCapabilityKey feature,
-      OptimizationGuideModelProvider* model_provider,
-      base::WeakPtr<OnDeviceModelComponentStateManager>
-          on_device_component_state_manager,
-      UsageTracker& usage_tracker,
-      PrefService* local_state,
-      OnLoadFn on_load_fn);
+  OnDeviceModelAdaptationLoader(ModelBasedCapabilityKey feature,
+                                OptimizationGuideModelProvider& model_provider,
+                                OnLoadFn on_load_fn);
   ~OnDeviceModelAdaptationLoader() override;
 
   OnDeviceModelAdaptationLoader(const OnDeviceModelAdaptationLoader&) = delete;
   OnDeviceModelAdaptationLoader& operator=(
       const OnDeviceModelAdaptationLoader&) = delete;
+
+  // Registers for adaptation model download, if the conditions are right.
+  void MaybeRegisterModelDownload(
+      base::optional_ref<const OnDeviceBaseModelSpec> new_spec,
+      bool was_feature_recently_used);
 
  private:
   friend class OnDeviceModelAdaptationLoaderTest;
@@ -156,39 +155,41 @@ class OnDeviceModelAdaptationLoader
       optimization_guide::proto::OptimizationTarget optimization_target,
       base::optional_ref<const optimization_guide::ModelInfo> model_info) final;
 
-  // OnDeviceModelComponentStateManager::Observer.
-  void StateChanged(const OnDeviceModelComponentState* state) final;
-
-  // UsageTracker::Observer:
-  void OnDeviceEligibleFeatureFirstUsed(ModelBasedCapabilityKey feature) final;
-
-  // Registers for adaptation model download, if the conditions are right.
-  void MaybeRegisterModelDownload(const OnDeviceModelComponentState* state,
-                                  bool was_feature_recently_used);
-
   ModelBasedCapabilityKey feature_;
   proto::OptimizationTarget target_;
 
   // The model provider to observe for updates to model adaptations.
-  raw_ptr<OptimizationGuideModelProvider> model_provider_;
-  base::WeakPtr<OnDeviceModelComponentStateManager>
-      on_device_component_state_manager_;
-  raw_ref<UsageTracker> usage_tracker_;
-  raw_ptr<PrefService> local_state_;
+  raw_ref<OptimizationGuideModelProvider> model_provider_;
   OnLoadFn on_load_fn_;
-
-  base::ScopedObservation<OnDeviceModelComponentStateManager,
-                          OnDeviceModelComponentStateManager::Observer>
-      component_state_manager_observation_{this};
-
-  base::ScopedObservation<UsageTracker, UsageTracker::Observer>
-      usage_tracker_observation_{this};
 
   // The compatibility spec that we've registered for adaptations with.
   std::optional<OnDeviceBaseModelSpec> registered_spec_;
 
   // Background thread where file processing should be performed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+};
+
+class AdaptationLoaderMap final {
+ public:
+  // A method to call when a new asset is available.
+  using OnLoadFn = base::RepeatingCallback<void(ModelBasedCapabilityKey,
+                                                MaybeAdaptationMetadata)>;
+  AdaptationLoaderMap(OptimizationGuideModelProvider& provider,
+                      OnLoadFn on_load_fn);
+  AdaptationLoaderMap(AdaptationLoaderMap&) = delete;
+  AdaptationLoaderMap(AdaptationLoaderMap&&) = delete;
+  ~AdaptationLoaderMap();
+
+  // Registers for adaptation model download, if the conditions are right.
+  void MaybeRegisterModelDownload(
+      ModelBasedCapabilityKey feature,
+      base::optional_ref<const OnDeviceBaseModelSpec> state,
+      bool was_feature_recently_used);
+
+ private:
+  absl::flat_hash_map<ModelBasedCapabilityKey,
+                      std::unique_ptr<OnDeviceModelAdaptationLoader>>
+      loaders_;
 };
 
 }  // namespace optimization_guide

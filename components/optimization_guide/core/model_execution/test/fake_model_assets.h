@@ -68,6 +68,7 @@ class FakeAdaptationAsset {
   struct Content {
     proto::OnDeviceModelExecutionFeatureConfig config;
     std::optional<uint32_t> weight;
+    proto::OnDeviceBaseModelMetadata metadata;
   };
   explicit FakeAdaptationAsset(Content&& content);
   ~FakeAdaptationAsset();
@@ -76,11 +77,16 @@ class FakeAdaptationAsset {
   ModelBasedCapabilityKey feature() const { return feature_; }
   OnDeviceModelAdaptationMetadata metadata() const { return *metadata_; }
 
+  const ModelInfo& model_info() { return *model_info_; }
+
   void SendTo(OnDeviceModelServiceController& controller) const;
+
+  base::FilePath dir() { return temp_dir_.GetPath(); }
 
  private:
   base::ScopedTempDir temp_dir_;
   ModelBasedCapabilityKey feature_;
+  std::unique_ptr<ModelInfo> model_info_;
   std::unique_ptr<on_device_model::AdaptationAssetPaths> paths_;
   std::unique_ptr<OnDeviceModelAdaptationMetadata> metadata_;
 };

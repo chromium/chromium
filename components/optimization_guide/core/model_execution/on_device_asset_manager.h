@@ -4,39 +4,37 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_ASSET_MANAGER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_ASSET_MANAGER_H_
 
-#include <map>
-#include <memory>
-
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/prefs/pref_service.h"
 
 namespace optimization_guide {
 
 class UsageTracker;
-class OnDeviceModelAdaptationLoader;
 class OnDeviceModelServiceController;
 class OptimizationGuideModelProvider;
 
 // Registers for on-device asset downloads and notifies about updates.
 class OnDeviceAssetManager final
     : public OptimizationTargetModelObserver,
-      public OnDeviceModelComponentStateManager::Observer {
+      public OnDeviceModelComponentStateManager::Observer,
+      public UsageTracker::Observer {
  public:
   OnDeviceAssetManager(
-      PrefService* local_state,
+      PrefService& local_state,
       UsageTracker& usage_tracker,
-      base::WeakPtr<OnDeviceModelServiceController> service_controller,
-      base::WeakPtr<OnDeviceModelComponentStateManager> component_state_manager,
-      raw_ptr<OptimizationGuideModelProvider> model_provider);
+      OnDeviceModelComponentStateManager& component_state_manager,
+      OnDeviceModelServiceController& service_controller,
+      OptimizationGuideModelProvider& model_provider);
   ~OnDeviceAssetManager() final;
 
   // OptimizationTargetModelObserver:
@@ -54,20 +52,23 @@ class OnDeviceAssetManager final
   // OnDeviceModelComponentStateManager::Observer:
   void StateChanged(const OnDeviceModelComponentState* state) override;
 
-  // Controller for the on-device service.
-  base::WeakPtr<OnDeviceModelServiceController>
-      on_device_model_service_controller_;
+  // UsageTracker::Observer:
+  void OnDeviceEligibleFeatureFirstUsed(ModelBasedCapabilityKey feature) final;
 
-  base::WeakPtr<OnDeviceModelComponentStateManager>
+  raw_ref<PrefService> local_state_;
+  raw_ref<UsageTracker> usage_tracker_;
+  raw_ref<OnDeviceModelComponentStateManager>
       on_device_component_state_manager_;
 
+  // Controller for the on-device service.
+  raw_ref<OnDeviceModelServiceController> service_controller_;
+
   // The model provider to observe for updates to auxiliary models.
-  raw_ptr<OptimizationGuideModelProvider> model_provider_;
+  raw_ref<OptimizationGuideModelProvider> model_provider_;
 
   // Map from feature to its model adaptation loader. Present only for features
   // that require model adaptation.
-  const std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationLoader>
-      model_adaptation_loaders_;
+  AdaptationLoaderMap adaptation_loaders_;
 
   // Whether the user registered for supplementary on-device models.
   bool did_register_for_supplementary_on_device_models_ = false;

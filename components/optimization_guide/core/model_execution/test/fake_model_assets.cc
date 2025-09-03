@@ -85,14 +85,27 @@ void FakeBaseModelAsset::SetReadyIn(
 
 FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
     : feature_(ToModelBasedCapabilityKey(content.config.feature())) {
+  CHECK(temp_dir_.CreateUniqueTempDir());
+  base::FilePath config_path =
+      temp_dir_.GetPath().Append(kOnDeviceModelExecutionConfigFile);
+  {
+    proto::OnDeviceModelExecutionConfig config;
+    *config.add_feature_configs() = content.config;
+    CHECK(base::WriteFile(config_path, config.SerializeAsString()));
+  }
+  TestModelInfoBuilder builder;
+  builder.SetVersion(version())
+      .SetAdditionalFiles({config_path})
+      .SetModelMetadata(AnyWrapProto(content.metadata));
   if (content.weight) {
-    CHECK(temp_dir_.CreateUniqueTempDir());
     paths_ = std::make_unique<on_device_model::AdaptationAssetPaths>();
     paths_->weights =
         temp_dir_.GetPath().Append(kOnDeviceModelAdaptationWeightsFile);
     CHECK(base::WriteFile(paths_->weights,
                           base::NumberToString(content.weight.value())));
+    builder.SetAdditionalFiles({config_path, paths_->weights});
   }
+  model_info_ = builder.Build();
   metadata_ = std::make_unique<OnDeviceModelAdaptationMetadata>(
       paths_.get(), version(),
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(

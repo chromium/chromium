@@ -7,6 +7,9 @@
 #include "base/task/current_thread.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/optimization_guide/core/delivery/model_provider_registry.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/test/fake_remote.h"
@@ -159,6 +162,53 @@ TEST(ModelBrokerClientTest, UsesRemoteFallbackNotUsedWithOnDeviceOnly) {
 
   // The execution should just fail without invoking the remote.
   ASSERT_FALSE(response.GetFinalStatus());
+}
+
+// Sometimes a feature is not supported for certain base models (e.g. EE model).
+// Attempts to create a Session for such features should fully resolve as
+// unavailable.
+TEST(ModelBrokerClientTest, UnavailableAdaptationRejectsSession) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  // Note: We pass a compose asset here, so the kTest feature will still be in
+  // kPendingAsset status.
+  FakeAdaptationAsset compose_asset{{
+      .config = SimpleComposeConfig(),
+  }};
+  FakeModelBroker broker{compose_asset};
+  // Mark feature used to trigger download.
+  // broker.broker_state().usage_tracker().OnDeviceEligibleFeatureUsed(
+  //     ModelBasedCapabilityKey::kTest);
+  OptimizationGuideLogger logger;
+  ModelProviderRegistry model_provider_{&logger};
+  auto asset_manager = broker.CreateAssetManager(&model_provider_);
+
+  mojo::PendingReceiver<mojom::ModelBroker> pending_broker;
+  ModelBrokerClient broker_client(
+      broker.BindAndPassRemote(),
+      CreateSessionArgs(logger.GetWeakPtr(), FailOnRemoteFallback()));
+
+  base::test::TestFuture<
+      std::unique_ptr<OptimizationGuideModelExecutor::Session>>
+      session_future;
+  broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kTest,
+                              std::nullopt, session_future.GetCallback());
+
+  // Session should not resolve yet, because test adaptation asset has a
+  // kUpdatePending status.
+  task_environment.FastForwardBy(base::Hours(1));
+  ASSERT_FALSE(session_future.IsReady());
+
+  // Emulate receiving info that a adaptation is not available from server.
+  // Provider removes the target when the server says no matching model is
+  // available.
+  model_provider_.RemoveModel(
+      *features::internal::GetOptimizationTargetForCapability(
+          ModelBasedCapabilityKey::kTest));
+
+  // Session should resolve to unavailable.
+  auto session = session_future.Take();
+  ASSERT_FALSE(session);
 }
 
 }  // namespace optimization_guide

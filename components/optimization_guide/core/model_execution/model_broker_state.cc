@@ -39,8 +39,8 @@ void ModelBrokerState::Init() {
 std::unique_ptr<OnDeviceAssetManager> ModelBrokerState::CreateAssetManager(
     OptimizationGuideModelProvider* provider) {
   return std::make_unique<OnDeviceAssetManager>(
-      local_state_.get(), usage_tracker_, service_controller_->GetWeakPtr(),
-      component_state_manager_.GetWeakPtr(), provider);
+      *local_state_, usage_tracker_, component_state_manager_,
+      *service_controller_, *provider);
 }
 
 }  // namespace optimization_guide

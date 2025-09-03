@@ -18,7 +18,7 @@
 
 namespace optimization_guide {
 
-FakeModelBroker::FakeModelBroker(const FakeAdaptationAsset& asset) {
+ScopedModelBrokerFeatureList::ScopedModelBrokerFeatureList() {
   feature_list_.InitWithFeaturesAndParameters(
       {{features::kOptimizationGuideModelExecution, {}},
        {features::internal::kOnDeviceModelTestFeature, {}},
@@ -30,8 +30,16 @@ FakeModelBroker::FakeModelBroker(const FakeAdaptationAsset& asset) {
        {features::kOnDeviceModelValidation,
         {{"on_device_model_validation_delay", "0"}}}},
       {});
+}
+ScopedModelBrokerFeatureList::~ScopedModelBrokerFeatureList() = default;
+
+ModelBrokerPrefService::ModelBrokerPrefService() {
   model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
-  UpdatePerformanceClassPref(&local_state_,
+}
+ModelBrokerPrefService::~ModelBrokerPrefService() = default;
+
+FakeModelBroker::FakeModelBroker(const FakeAdaptationAsset& asset) {
+  UpdatePerformanceClassPref(&local_state_.local_state(),
                              OnDeviceModelPerformanceClass::kHigh);
   model_broker_state_.Init();
   base_model_.SetReadyIn(model_broker_state_.component_state_manager());
