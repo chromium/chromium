@@ -68,21 +68,16 @@ constexpr NSString* kExampleBackupPassword = @"backup password";
 
 // Matcher for the autofill password suggestion chip in the keyboard accessory.
 id<GREYMatcher> KeyboardAccessoryPasswordSuggestion(NSString* realm) {
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    NSString* chip_text = kExampleUsername;
-    if ([ChromeEarlGrey isIPadIdiom]) {
-      // On iPad, the suggestion text is an attributed string containing the
-      // signon realm on the 2nd line.
-      chip_text = [NSString stringWithFormat:@"%@\n%@", chip_text, realm];
-    }
-    return grey_allOf(grey_text(chip_text),
-                      grey_ancestor(grey_accessibilityID(
-                          kFormInputAccessoryViewAccessibilityID)),
-                      nil);
+  NSString* chip_text = kExampleUsername;
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // On iPad, the suggestion text is an attributed string containing the
+    // signon realm on the 2nd line.
+    chip_text = [NSString stringWithFormat:@"%@\n%@", chip_text, realm];
   }
-
-  return grey_accessibilityLabel(
-      [NSString stringWithFormat:@"%@ ••••••••", kExampleUsername]);
+  return grey_allOf(grey_text(chip_text),
+                    grey_ancestor(grey_accessibilityID(
+                        kFormInputAccessoryViewAccessibilityID)),
+                    nil);
 }
 
 // Matcher for the autofill backup password suggestion chip in the keyboard
@@ -106,8 +101,7 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestion() {
 
   NSString* username = base::SysUTF16ToNSString(card.GetInfo(
       autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride()));
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled] &&
-      [ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     // On iPad, the suggestion text is an attributed string containing the
     // obfuscated credit card on the 2nd line.
     NSString* network = base::SysUTF16ToNSString(
@@ -123,8 +117,7 @@ id<GREYMatcher> KeyboardAccessoryAddressSuggestion(
     autofill::FieldType field_type) {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   NSString* value = base::SysUTF16ToNSString(profile.GetRawInfo(field_type));
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled] &&
-      [ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     // On iPad, the suggestion text is an attributed string containing the
     // street address on the 2nd line.
     NSString* street_address = base::SysUTF16ToNSString(
@@ -141,8 +134,7 @@ id<GREYMatcher> KeyboardAccessoryNameSuggestion() {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   NSString* name =
       base::SysUTF16ToNSString(profile.GetRawInfo(autofill::NAME_FULL));
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled] &&
-      [ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     // On iPad, the suggestion text is an attributed string containing the state
     // on the 2nd line.
     NSString* state = base::SysUTF16ToNSString(
@@ -1000,11 +992,9 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 // Tests that the manual fill button title is hidden in compact mode (tablets
 // only).
 - (void)testManualFillButtonTitleIsHiddenInCompactMode {
-  if (![ChromeEarlGrey areMultipleWindowsSupported] ||
-      ![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(
-        @"Skipped for iPhone (the manual fill button has no title on iPhone) "
-        @"or when the Keyboard Accessory Upgrade feature is disabled.");
+        @"Skipped for iPhone (the manual fill button has no title on iPhone)");
   }
   if (@available(iOS 19.0, *)) {
     // TODO(crbug.com/427699033): Re-enable test on iOS 26.

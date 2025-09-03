@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -25,12 +24,7 @@ int BOTTOM_BUTTON_2_INDEX = 2;
 
 // Returns the title of the given `button`.
 NSString* ButtonTitle(UIButton* button) {
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    UIButtonConfiguration* button_configuration = button.configuration;
-    return button_configuration.attributedTitle.string;
-  }
-
-  return button.currentTitle;
+  return button.configuration.attributedTitle.string;
 }
 
 }  // namespace

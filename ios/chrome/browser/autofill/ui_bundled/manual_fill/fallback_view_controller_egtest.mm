@@ -5,7 +5,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -30,10 +29,8 @@ constexpr char kFormHTMLFile[] = "/readonly_form.html";
 
 // Matcher for the address manual fill button.
 id<GREYMatcher> KeyboardAccessoryAddressManualFill() {
-  return [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
-             ? grey_accessibilityLabel(l10n_util::GetNSString(
-                   IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA))
-             : manual_fill::ProfilesIconMatcher();
+  return grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA));
 }
 
 }  // namespace
