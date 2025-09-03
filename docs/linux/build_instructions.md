@@ -237,7 +237,7 @@ authentication method, instance name, etc. to work with your backend.
 `RBE_service_no_security=true`.
 - If it uses mTLS, export environment variable `RBE_tls_client_auth_key` and
 `RBE_tls_client_auth_cert`.
-- If it uses Google OAuth2, you may use `gcluod`. run `gcloud auth login`
+- If it uses Google OAuth2, you may use `gcloud`. run `gcloud auth login`
   (and export environment variable `SISO_CREDENTIAL_HELPER=gcloud` since
   siso v1.3.12).
 - Otherwise, you may need to use your own
