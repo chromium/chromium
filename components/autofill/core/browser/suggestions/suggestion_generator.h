@@ -7,6 +7,7 @@
 
 #include <variant>
 
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/identity_credential/identity_credential.h"
@@ -100,9 +101,9 @@ class SuggestionGenerator {
  protected:
   // Returns the vector of `SuggestionData` for a specific `FillingProduct`
   // from the `all_suggestion_data` vector.
-  std::vector<SuggestionGenerator::SuggestionData>
+  static std::vector<SuggestionGenerator::SuggestionData>
   ExtractSuggestionDataForFillingProduct(
-      const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+      base::span<const std::pair<FillingProduct, std::vector<SuggestionData>>>
           all_suggestion_data,
       FillingProduct filling_product);
 };

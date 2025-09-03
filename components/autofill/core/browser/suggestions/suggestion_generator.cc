@@ -4,11 +4,14 @@
 
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 
+#include "base/containers/span.h"
+
 namespace autofill {
 
+// static
 std::vector<SuggestionGenerator::SuggestionData>
 SuggestionGenerator::ExtractSuggestionDataForFillingProduct(
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    base::span<const std::pair<FillingProduct, std::vector<SuggestionData>>>
         all_suggestion_data,
     FillingProduct filling_product) {
   auto it = std::ranges::find(
