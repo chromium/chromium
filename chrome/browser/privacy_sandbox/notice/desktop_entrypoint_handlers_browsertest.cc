@@ -141,8 +141,14 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
   Mock::VerifyAndClearExpectations(mock_view_manager());
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NoPromptInSmallBrowser DISABLED_NoPromptInSmallBrowser
+#else
+#define MAYBE_NoPromptInSmallBrowser NoPromptInSmallBrowser
+#endif
+// TODO(crbug.com/427760680): Re-enable once flakiness on Wayland is addressed.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeEntryPointHandlersTest,
-                       NoPromptInSmallBrowser) {
+                       MAYBE_NoPromptInSmallBrowser) {
   EXPECT_CALL(*mock_view_manager(), HandleChromeOwnedPageNavigation).Times(0);
 
   ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 50, 50));
