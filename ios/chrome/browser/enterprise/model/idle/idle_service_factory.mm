@@ -30,7 +30,7 @@ std::unique_ptr<KeyedService> IdleServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<IdleService>(ProfileIOS::FromBrowserState(context));
 }
 
-void IdleServiceFactory::RegisterBrowserStatePrefs(
+void IdleServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimeDeltaPref(enterprise_idle::prefs::kIdleTimeout,
                                   base::TimeDelta());
