@@ -479,50 +479,6 @@ class PageContextFetcher : public content::WebContentsObserver {
       return;
     }
 
-    if (!pending_result_->annotated_page_content_result ||
-        !base::FeatureList::IsEnabled(kGlicPageContextEligibility)) {
-      std::move(callback_).Run(base::ok(std::move(pending_result_)));
-      return;
-    }
-
-    if (optimization_guide::PageContextEligibility::IsInitialized()) {
-      OnGotPageContextEligibility(
-          optimization_guide::PageContextEligibility::Get());
-      return;
-    }
-
-    // PageContextEligibility::Get may create the underlying singleton, which is
-    // blocking, so we need to run this on a threadpool.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(&optimization_guide::PageContextEligibility::Get),
-        base::BindOnce(&PageContextFetcher::OnGotPageContextEligibility,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnGotPageContextEligibility(
-      const optimization_guide::PageContextEligibility* eligibility) {
-    CHECK(pending_result_->annotated_page_content_result);
-    if (eligibility) {
-      // TODO(gklassen): Switch this to a shared helper to use the precursor
-      // origin if the committed origin is opaque.
-      content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-      const auto url =
-          optimization_guide::GetURLForFrameMetadata(rfh->GetLastCommittedURL(),
-                                                     rfh->GetLastCommittedOrigin());
-      const auto metadata = optimization_guide::GetFrameMetadataFromPageContent(
-          *pending_result_->annotated_page_content_result);
-      const bool is_eligible = optimization_guide::IsPageContextEligible(
-          url.host(), url.path(), metadata, eligibility);
-
-      if (!is_eligible) {
-        std::move(callback_).Run(base::unexpected(FetchPageContextErrorDetails{
-            FetchPageContextError::kPageContextNotEligible,
-            "page context is not eligible for sharing"}));
-        return;
-      }
-    }
-
     std::move(callback_).Run(base::ok(std::move(pending_result_)));
   }
 
