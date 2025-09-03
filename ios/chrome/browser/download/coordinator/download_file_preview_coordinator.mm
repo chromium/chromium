@@ -37,6 +37,13 @@
 
   _currentFileURL = fileURL;
 
+  // If a preview controller is already presented, just reload the data.
+  if (_previewController) {
+    [_previewController reloadData];
+    return;
+  }
+
+  // Create and present new preview controller.
   _previewController = [[QLPreviewController alloc] init];
   _previewController.dataSource = self;
   _previewController.delegate = self;
@@ -49,12 +56,7 @@
 #pragma mark - Private Methods
 
 - (void)dismissPreviewIfPresented {
-  if (_previewController) {
-    [_previewController.presentingViewController
-        dismissViewControllerAnimated:YES
-                           completion:nil];
-    _previewController = nil;
-  }
+  [_previewController dismissViewControllerAnimated:NO completion:nil];
 }
 
 #pragma mark - QLPreviewControllerDataSource

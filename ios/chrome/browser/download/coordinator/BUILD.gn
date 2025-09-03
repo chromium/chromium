@@ -70,6 +70,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ar_quick_look_coordinator_unittest.mm",
+    "download_file_preview_coordinator_unittest.mm",
     "download_manager_coordinator_unittest.mm",
     "download_manager_mediator_unittest.mm",
     "pass_kit_coordinator_unittest.mm",
