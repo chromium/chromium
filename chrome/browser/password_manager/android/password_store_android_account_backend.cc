@@ -41,10 +41,9 @@ void ReplyWithEmptyList(CallbackType callback) {
 
 }  // namespace
 
-PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
-    password_manager::IsAccountStore is_account_store)
+PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend()
     : PasswordStoreAndroidBackend(
-          PasswordStoreAndroidBackendBridgeHelper::Create(is_account_store),
+          PasswordStoreAndroidBackendBridgeHelper::Create(kAccountStore),
           std::make_unique<PasswordManagerLifecycleHelperImpl>()) {
   sync_controller_delegate_ =
       std::make_unique<PasswordSyncControllerDelegateAndroid>(

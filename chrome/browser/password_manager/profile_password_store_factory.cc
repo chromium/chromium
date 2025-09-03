@@ -7,8 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/notimplemented.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -17,16 +20,16 @@
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_paths_internal.h"
+#include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
-#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
@@ -37,6 +40,12 @@ using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 
 namespace {
+
+network::mojom::NetworkContext* GetNetworkContext(Profile* profile) {
+  return g_browser_process->profile_manager()->IsValidProfile(profile)
+             ? profile->GetDefaultStoragePartition()->GetNetworkContext()
+             : nullptr;
+}
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     content::BrowserContext* context) {
@@ -50,43 +59,26 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   Profile* profile = Profile::FromBrowserContext(context);
-
   DCHECK(!profile->IsOffTheRecord());
-
-  scoped_refptr<PasswordStore> ps = new password_manager::PasswordStore(
-      CreateProfilePasswordStoreBackend(profile->GetPath(), profile->GetPrefs(),
-                                        g_browser_process->os_crypt_async()));
-
+  scoped_refptr<PasswordStore> ps =
+      new password_manager::PasswordStore(CreatePasswordStoreBackend(
+          password_manager::kProfileStore, profile->GetPath(),
+          profile->GetPrefs(), g_browser_process->os_crypt_async()));
   affiliations::AffiliationService* affiliation_service =
       AffiliationServiceFactory::GetForProfile(profile);
-  std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper =
-      std::make_unique<AffiliatedMatchHelper>(affiliation_service);
-
-  ps->Init(std::move(affiliated_match_helper));
-
-  auto network_context_getter = base::BindRepeating(
-      [](Profile* profile) -> network::mojom::NetworkContext* {
-        if (!g_browser_process->profile_manager()->IsValidProfile(profile)) {
-          return nullptr;
-        }
-        return profile->GetDefaultStoragePartition()->GetNetworkContext();
-      },
-      profile);
+  ps->Init(std::make_unique<AffiliatedMatchHelper>(affiliation_service));
   password_manager::SanitizeAndMigrateCredentials(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
       password_manager::kProfileStore, profile->GetPrefs(), base::Seconds(60),
-      network_context_getter);
-
+      base::BindRepeating(&GetNetworkContext, profile));
 #if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<password_manager::PasswordAffiliationSourceAdapter>
-      password_affiliation_adapter = std::make_unique<
-          password_manager::PasswordAffiliationSourceAdapter>();
+  // Android gets logins with affiliations directly from the backend.
+  auto password_affiliation_adapter =
+      std::make_unique<password_manager::PasswordAffiliationSourceAdapter>();
   password_affiliation_adapter->RegisterPasswordStore(ps.get());
   affiliation_service->RegisterSource(std::move(password_affiliation_adapter));
 #endif
-
   DelayReportingPasswordStoreMetrics(profile);
-
   return ps;
 }
 
@@ -121,7 +113,7 @@ ProfilePasswordStoreFactory* ProfilePasswordStoreFactory::GetInstance() {
 
 ProfilePasswordStoreFactory::ProfilePasswordStoreFactory()
     : RefcountedProfileKeyedServiceFactory(
-          "PasswordStore",
+          "ProfilePasswordStore",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .WithAshInternals(ProfileSelection::kNone)

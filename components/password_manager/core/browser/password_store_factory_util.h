@@ -31,10 +31,8 @@ class CredentialsCleanerRunner;
 // Creates a LoginDatabase. Looks in |db_directory| for the database file.
 // Does not call LoginDatabase::Init() -- to avoid UI jank, that needs to be
 // called by PasswordStore::Init() on the background thread.
-std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
-    const base::FilePath& db_directory,
-    PrefService* prefs);
-std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
+std::unique_ptr<LoginDatabase> CreateLoginDatabase(
+    password_manager::IsAccountStore is_account_store,
     const base::FilePath& db_directory,
     PrefService* prefs);
 #endif  // !BUILDFLAG(IS_ANDROID)

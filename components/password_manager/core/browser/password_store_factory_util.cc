@@ -45,22 +45,15 @@ LoginDatabase::DeletingUndecryptablePasswordsEnabled GetPolicyFromPrefs(
 }  // namespace
 
 #if !BUILDFLAG(IS_ANDROID)
-std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
+std::unique_ptr<LoginDatabase> CreateLoginDatabase(
+    password_manager::IsAccountStore is_account_store,
     const base::FilePath& db_directory,
     PrefService* prefs) {
   base::FilePath login_db_file_path =
-      db_directory.Append(kLoginDataForProfileFileName);
-  return std::make_unique<LoginDatabase>(
-      login_db_file_path, IsAccountStore(false), GetPolicyFromPrefs(prefs));
-}
-
-std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
-    const base::FilePath& db_directory,
-    PrefService* prefs) {
-  base::FilePath login_db_file_path =
-      db_directory.Append(kLoginDataForAccountFileName);
-  return std::make_unique<LoginDatabase>(
-      login_db_file_path, IsAccountStore(true), GetPolicyFromPrefs(prefs));
+      db_directory.Append(is_account_store ? kLoginDataForAccountFileName
+                                           : kLoginDataForProfileFileName);
+  return std::make_unique<LoginDatabase>(login_db_file_path, is_account_store,
+                                         GetPolicyFromPrefs(prefs));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

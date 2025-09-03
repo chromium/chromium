@@ -23,10 +23,7 @@ class AffiliatedMatchHelper;
 class PasswordStoreAndroidAccountBackend : public PasswordStoreBackend,
                                            public PasswordStoreAndroidBackend {
  public:
-  // `is_account_store` allows to control whether the backend is used by profile
-  // or account password store.
-  explicit PasswordStoreAndroidAccountBackend(
-      password_manager::IsAccountStore is_account_store);
+  PasswordStoreAndroidAccountBackend();
 
   PasswordStoreAndroidAccountBackend(
       base::PassKey<class PasswordStoreAndroidAccountBackendTest>,

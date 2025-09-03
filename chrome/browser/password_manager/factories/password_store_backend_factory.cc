@@ -9,6 +9,7 @@
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
+#include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
@@ -27,8 +28,6 @@
 
 namespace {
 
-using ::password_manager::PasswordStoreBackend;
-
 #if !BUILDFLAG(IS_ANDROID)
 void SetIsUserDataDirPolicySet(
     password_manager::LoginDatabase* login_database) {
@@ -43,49 +42,35 @@ void SetIsUserDataDirPolicySet(
 
 }  // namespace
 
-std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(
-    const base::FilePath& login_db_directory,
-    PrefService* prefs,
-    os_crypt_async::OSCryptAsync* os_crypt_async) {
-  TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
+std::unique_ptr<password_manager::PasswordStoreBackend>
+CreatePasswordStoreBackend(password_manager::IsAccountStore is_account_store,
+                           const base::FilePath& login_db_directory,
+                           PrefService* prefs,
+                           os_crypt_async::OSCryptAsync* os_crypt_async) {
+  TRACE_EVENT0("passwords", is_account_store
+                                ? "AccountPasswordStoreBackendCreation"
+                                : "ProfilePasswordStoreBackendCreation");
 
 #if BUILDFLAG(IS_ANDROID)
   using password_manager_android_util::PasswordManagerUtilBridge;
   if (!password_manager_android_util::IsPasswordManagerAvailable(
           std::make_unique<PasswordManagerUtilBridge>())) {
     return std::make_unique<password_manager::PasswordStoreEmptyBackend>();
+  }
+  if (is_account_store) {
+    return std::make_unique<
+        password_manager::PasswordStoreAndroidAccountBackend>();
   }
   return std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>();
 #else   //  BUILDFLAG(IS_ANDROID)
   std::unique_ptr<password_manager::LoginDatabase> login_db(
-      password_manager::CreateLoginDatabaseForProfileStorage(login_db_directory,
-                                                             prefs));
+      password_manager::CreateLoginDatabase(is_account_store,
+                                            login_db_directory, prefs));
   SetIsUserDataDirPolicySet(login_db.get());
+  auto behavior = is_account_store
+                      ? syncer::WipeModelUponSyncDisabledBehavior::kAlways
+                      : syncer::WipeModelUponSyncDisabledBehavior::kNever;
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-      std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kNever,
-      prefs, os_crypt_async);
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
-    const base::FilePath& login_db_directory,
-    PrefService* prefs,
-    os_crypt_async::OSCryptAsync* os_crypt_async) {
-#if BUILDFLAG(IS_ANDROID)
-  using password_manager_android_util::PasswordManagerUtilBridge;
-  if (!password_manager_android_util::IsPasswordManagerAvailable(
-          std::make_unique<PasswordManagerUtilBridge>())) {
-    return std::make_unique<password_manager::PasswordStoreEmptyBackend>();
-  }
-  return std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
-      password_manager::kAccountStore);
-#else   // BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<password_manager::LoginDatabase> login_db(
-      password_manager::CreateLoginDatabaseForAccountStorage(login_db_directory,
-                                                             prefs));
-  SetIsUserDataDirPolicySet(login_db.get());
-  return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-      std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-      prefs, os_crypt_async);
+      std::move(login_db), behavior, prefs, os_crypt_async);
 #endif  // BUILDFLAG(IS_ANDROID)
 }

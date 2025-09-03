@@ -158,6 +158,7 @@ source_set("store_factory") {
     "//base",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
+    "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager",
