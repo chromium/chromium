@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"

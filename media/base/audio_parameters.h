@@ -7,12 +7,10 @@
 
 #include <stdint.h>
 
-#include <atomic>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
