@@ -319,7 +319,8 @@ TEST_F(CookieControlsUserBypassTest, SiteCounts) {
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
+                  /*should_highlight=*/false))
+      .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 0, 1);
@@ -358,11 +359,6 @@ TEST_F(CookieControlsUserBypassTest, PreferenceDisabled) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // Disabling the feature should disable the UI.
-  EXPECT_CALL(
-      *mock(),
-      OnStatusChanged(CookieControlsState::kHidden,
-                      CookieControlsEnforcement::kNoEnforcement,
-                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, CookieControlsState::kHidden,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -388,12 +384,7 @@ TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 
-  // Disable all cookies - an OnStatusCallback should get triggered.
-  EXPECT_CALL(
-      *mock(),
-      OnStatusChanged(CookieControlsState::kBlocked3pc,
-                      CookieControlsEnforcement::kNoEnforcement,
-                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  // Disable all cookies should hide the icon.
   EXPECT_CALL(*mock(),
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/false, CookieControlsState::kBlocked3pc,
@@ -411,7 +402,8 @@ TEST_F(CookieControlsUserBypassTest, AllCookiesBlocked) {
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
+                  /*should_highlight=*/false))
+      .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 0, 1);
@@ -446,7 +438,8 @@ TEST_F(CookieControlsUserBypassTest, DisableForSite) {
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
+                  /*should_highlight=*/false))
+      .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   testing::Mock::VerifyAndClearExpectations(mock());
 
@@ -489,7 +482,8 @@ TEST_F(CookieControlsUserBypassTest, DisableForSite) {
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/false, CookieControlsState::kBlocked3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
+                  /*should_highlight=*/false))
+      .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
@@ -555,8 +549,8 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
-
+                  /*should_highlight=*/false))
+      .Times(2);
   EXPECT_CALL(
       incognito_mock,
       OnStatusChanged(CookieControlsState::kAllowed3pc,
@@ -566,8 +560,10 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
       incognito_mock,
       OnCookieControlsIconStatusChanged(
           /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
-          CookieBlocking3pcdStatus::kNotIn3pcd, /*should_highlight=*/false));
+          CookieBlocking3pcdStatus::kNotIn3pcd, /*should_highlight=*/false))
+      .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  incognito_cookie_controls.Update(incognito_web_contents.get());
   testing::Mock::VerifyAndClearExpectations(mock());
   testing::Mock::VerifyAndClearExpectations(&incognito_mock);
 
@@ -584,8 +580,8 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, CookieControlsState::kHidden,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
-                           /*should_highlight=*/false));
-
+                           /*should_highlight=*/false))
+      .Times(2);
   EXPECT_CALL(
       incognito_mock,
       OnStatusChanged(CookieControlsState::kAllowed3pc,
@@ -599,6 +595,7 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kIncognitoOnly));
+  cookie_controls()->Update(web_contents());
   incognito_cookie_controls.Update(incognito_web_contents.get());
   testing::Mock::VerifyAndClearExpectations(mock());
   testing::Mock::VerifyAndClearExpectations(&incognito_mock);
@@ -635,7 +632,8 @@ TEST_F(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/false, CookieControlsState::kBlocked3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
+                  /*should_highlight=*/false))
+      .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(true);
   testing::Mock::VerifyAndClearExpectations(mock());
 }
@@ -860,7 +858,8 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
+                  /*should_highlight=*/false))
+      .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 2, 1);
@@ -944,7 +943,8 @@ TEST_F(CookieControlsUserBypassTest, InfrequentPageReloads) {
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
+                  /*should_highlight=*/false))
+      .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 1, 1);
@@ -1106,7 +1106,8 @@ TEST_F(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
+                  /*should_highlight=*/false))
+      .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, true, 1);
   t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 0, 1);
@@ -1140,7 +1141,18 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
                   /*should_highlight=*/false));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
-
+  // When the user adds a custom content setting we only update the icon as the
+  // bubble itself won't be open.
+  EXPECT_CALL(*mock(),
+              OnCookieControlsIconStatusChanged(
+                  /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
+                  CookieBlocking3pcdStatus::kNotIn3pcd,
+                  /*should_highlight=*/false));
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("cool.things.com"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  testing::Mock::VerifyAndClearExpectations(mock());
   // Creating an exception turns protections off. The exception doesn't contain
   // wildcards in the domain and isn't enforced.
   EXPECT_CALL(
@@ -1153,10 +1165,7 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
                   /*should_highlight=*/false));
-  hcsm->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("cool.things.com"),
-      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
@@ -1176,9 +1185,20 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
                   /*should_highlight=*/false));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
-
-  // Creating an exception turns protections off. The exception has wildcard in
-  // the domain and cannot be reset, it is enforced by cookie setting.
+  // When the user adds a custom content setting we only update the icon as the
+  // bubble itself won't be open.
+  EXPECT_CALL(*mock(),
+              OnCookieControlsIconStatusChanged(
+                  /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
+                  CookieBlocking3pcdStatus::kNotIn3pcd,
+                  /*should_highlight=*/false));
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("[*.]cool.things.com"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  testing::Mock::VerifyAndClearExpectations(mock());
+  // Manual exceptions with a wildcard that come from settings are shown as
+  // enforced.
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsState::kAllowed3pc,
@@ -1189,10 +1209,7 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
                   /*should_highlight=*/false));
-  hcsm->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("[*.]cool.things.com"),
-      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
@@ -1213,16 +1230,8 @@ TEST_F(CookieControlsUserBypassTest,
                   /*should_highlight=*/false));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
-
-  // Creating an exception changes turns protections off. The exception
-  // has wildcard in the domain and cannot be reset, it is enforced by cookie
-  // setting.
-  EXPECT_CALL(
-      *mock(),
-      OnStatusChanged(CookieControlsState::kAllowed3pc,
-                      CookieControlsEnforcement::kEnforcedByCookieSetting,
-                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-
+  // When the user adds a custom content setting we only update the icon as the
+  // bubble itself won't be open.
   EXPECT_CALL(*mock(),
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
@@ -1232,6 +1241,20 @@ TEST_F(CookieControlsUserBypassTest,
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromString("[*.]things.com"),
       ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  testing::Mock::VerifyAndClearExpectations(mock());
+  // Manual exceptions with a wildcard that come from settings are shown as
+  // enforced.
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(CookieControlsState::kAllowed3pc,
+                      CookieControlsEnforcement::kEnforcedByCookieSetting,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(*mock(),
+              OnCookieControlsIconStatusChanged(
+                  /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
+                  CookieBlocking3pcdStatus::kNotIn3pcd,
+                  /*should_highlight=*/false));
+  cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
@@ -1251,10 +1274,20 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
                   /*should_highlight=*/false));
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
-
-  // Creating an exception turns protections off. The exception
-  // is set at the TLD level and cannot be reset, it is enforced by cookie
-  // setting.
+  // When the user adds a custom content setting we only update the icon as the
+  // bubble itself won't be open.
+  EXPECT_CALL(*mock(),
+              OnCookieControlsIconStatusChanged(
+                  /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
+                  CookieBlocking3pcdStatus::kNotIn3pcd,
+                  /*should_highlight=*/false));
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("[*.]com"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  testing::Mock::VerifyAndClearExpectations(mock());
+  // Manual exceptions with a wildcard that come from settings are shown as
+  // enforced.
   EXPECT_CALL(
       *mock(),
       OnStatusChanged(CookieControlsState::kAllowed3pc,
@@ -1265,10 +1298,7 @@ TEST_F(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
                   /*should_highlight=*/false));
-  hcsm->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("[*.]com"),
-      ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW);
+  cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
 
@@ -1384,7 +1414,8 @@ TEST_F(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
+                  /*should_highlight=*/false))
+      .Times(2);
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   ValidateCookieControlsActivatedUKM(
       /*fed_cm_initiated=*/false,
@@ -1570,6 +1601,7 @@ TEST_F(CookieControlsUserBypassTest,
   EXPECT_TRUE(stored_value.is_none());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
+
 class CookieControlsUserBypassIncognitoTest
     : public CookieControlsUserBypassTest {
  public:
@@ -1655,7 +1687,8 @@ TEST_F(CookieControlsUserBypassIncognitoTest, ToggleUpdatesUi) {
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
+                  /*should_highlight=*/false))
+      .Times(2);
 
   incognito_cookie_controls()->OnCookieBlockingEnabledForSite(false);
   testing::Mock::VerifyAndClearExpectations(mock());
@@ -1854,13 +1887,8 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, CookieControlsState::kAllowed3pc,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
-
-  EXPECT_CALL(
-      *incognito_mock(),
-      OnStatusChanged(std::get<0>(GetParam()),
-                      CookieControlsEnforcement::kEnforcedByCookieSetting,
-                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+                  /*should_highlight=*/false))
+      .Times(2);
 
   EXPECT_CALL(*incognito_mock(),
               OnCookieControlsIconStatusChanged(
@@ -1914,7 +1942,8 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/true, std::get<0>(GetParam()),
                   CookieBlocking3pcdStatus::kNotIn3pcd,
-                  /*should_highlight=*/false));
+                  /*should_highlight=*/false))
+      .Times(2);
 
   incognito_cookie_controls()->OnTrackingProtectionsChangedForSite();
 

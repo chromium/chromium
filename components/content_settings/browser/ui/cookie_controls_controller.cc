@@ -354,12 +354,14 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
     cookie_settings_->ResetThirdPartyCookieSetting(url);
+    Update(GetWebContents());
     return;
   }
 
   CHECK(!block_third_party_cookies);
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
   cookie_settings_->SetCookieSettingForUserBypass(url);
+  Update(GetWebContents());
   // Record expiration metadata for the newly created exception, and increased
   // the activation count.
   base::Value::Dict metadata = GetMetadata(settings_map_, url);
@@ -530,13 +532,13 @@ void CookieControlsController::OnPageFinishedLoading() {
 void CookieControlsController::OnThirdPartyCookieBlockingChanged(
     bool block_third_party_cookies) {
   if (GetWebContents()) {
-    Update(GetWebContents());
+    UpdateUserBypass();
   }
 }
 
 void CookieControlsController::OnCookieSettingChanged() {
   if (GetWebContents()) {
-    Update(GetWebContents());
+    UpdateUserBypass();
   }
 }
 
