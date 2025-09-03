@@ -721,10 +721,8 @@ void ClientSharedImage::EndAccess(bool readonly) {
 
 std::unique_ptr<SharedImageTexture> ClientSharedImage::CreateGLTexture(
     gles2::GLES2Interface* gl) {
-  SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel", debug_label_);
-  SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage", metadata_.usage);
-  DUMP_WILL_BE_CHECK(metadata_.usage.Has(SHARED_IMAGE_USAGE_GLES2_READ) ||
-                     metadata_.usage.Has(SHARED_IMAGE_USAGE_GLES2_WRITE));
+  CHECK(metadata_.usage.Has(SHARED_IMAGE_USAGE_GLES2_READ) ||
+        metadata_.usage.Has(SHARED_IMAGE_USAGE_GLES2_WRITE));
   return base::WrapUnique(new SharedImageTexture(gl, this));
 }
 
@@ -736,11 +734,7 @@ std::unique_ptr<RasterScopedAccess> ClientSharedImage::BeginRasterAccess(
       metadata_.usage.Has(SHARED_IMAGE_USAGE_RASTER_READ) ||
       metadata_.usage.Has(SHARED_IMAGE_USAGE_RASTER_WRITE) ||
       metadata_.usage.Has(SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE);
-  if (!has_raster_usage) {
-    SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel", debug_label_);
-    SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage", metadata_.usage);
-    DUMP_WILL_BE_CHECK(has_raster_usage);
-  }
+  CHECK(has_raster_usage);
   return base::WrapUnique(
       new RasterScopedAccess(raster_interface, this, sync_token, readonly));
 }
@@ -995,15 +989,10 @@ SharedImageTexture::~SharedImageTexture() {
 std::unique_ptr<SharedImageTexture::ScopedAccess>
 SharedImageTexture::BeginAccess(const SyncToken& sync_token, bool readonly) {
   CHECK(!has_active_access_);
-  SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel",
-                            shared_image_->debug_label());
-  SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage", shared_image_->usage());
   if (readonly) {
-    DUMP_WILL_BE_CHECK(
-        shared_image_->usage().Has(SHARED_IMAGE_USAGE_GLES2_READ));
+    CHECK(shared_image_->usage().Has(SHARED_IMAGE_USAGE_GLES2_READ));
   } else {
-    DUMP_WILL_BE_CHECK(
-        shared_image_->usage().Has(SHARED_IMAGE_USAGE_GLES2_WRITE));
+    CHECK(shared_image_->usage().Has(SHARED_IMAGE_USAGE_GLES2_WRITE));
   }
   has_active_access_ = true;
   shared_image_->BeginAccess(readonly);
@@ -1026,23 +1015,15 @@ RasterScopedAccess::RasterScopedAccess(InterfaceBase* raster_interface,
   CHECK(raster_interface_);
   shared_image_->BeginAccess(readonly);
   raster_interface_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  bool has_read_usage =
-      shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_READ) ||
-      shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE);
-  bool has_write_usage =
-      shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_WRITE);
-  if (readonly && !has_read_usage) {
-    SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel",
-                              shared_image_->debug_label());
-    SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage",
-                            shared_image_->usage());
-    DUMP_WILL_BE_CHECK(has_read_usage);
-  } else if (!readonly && !has_write_usage) {
-    SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel",
-                              shared_image_->debug_label());
-    SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage",
-                            shared_image_->usage());
-    DUMP_WILL_BE_CHECK(has_write_usage);
+  if (readonly) {
+    bool has_read_usage =
+        shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_READ) ||
+        shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE);
+    CHECK(has_read_usage);
+  } else {
+    bool has_write_usage =
+        shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_WRITE);
+    CHECK(has_write_usage);
   }
 }
 
