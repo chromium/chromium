@@ -47,7 +47,7 @@ void FakeFrameConsumer::set_on_frame_callback(
 std::unique_ptr<webrtc::DesktopFrame> FakeFrameConsumer::AllocateFrame(
     const webrtc::DesktopSize& size) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return std::make_unique<webrtc::BasicDesktopFrame>(size);
+  return std::make_unique<webrtc::BasicDesktopFrame>(size, webrtc::FOURCC_ARGB);
 }
 
 void FakeFrameConsumer::DrawFrame(std::unique_ptr<webrtc::DesktopFrame> frame,

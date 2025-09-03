@@ -25,8 +25,8 @@ std::unique_ptr<webrtc::DesktopFrame> ScrollFrameGenerator::GenerateFrame(
   int position = static_cast<int>(kScrollSpeedPixelsPerSecond *
                                   (now - start_time_).InSecondsF()) %
                  base_frame_->size().height();
-  std::unique_ptr<webrtc::DesktopFrame> result(
-      new webrtc::BasicDesktopFrame(base_frame_->size()));
+  auto result = std::make_unique<webrtc::BasicDesktopFrame>(
+      base_frame_->size(), webrtc::FOURCC_ARGB);
 
   int top_height = base_frame_->size().height() - position;
 

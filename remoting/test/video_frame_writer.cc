@@ -39,6 +39,7 @@ VideoFrameWriter::~VideoFrameWriter() = default;
 
 void VideoFrameWriter::WriteFrameToPath(const webrtc::DesktopFrame& frame,
                                         const base::FilePath& image_path) {
+  CHECK_EQ(frame.pixel_format(), webrtc::FOURCC_ARGB);
   uint8_t* frame_data = reinterpret_cast<unsigned char*>(frame.data());
 
   std::optional<std::vector<uint8_t>> png_encoded_data = gfx::PNGCodec::Encode(

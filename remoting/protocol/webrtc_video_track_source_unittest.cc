@@ -64,7 +64,8 @@ TEST_F(WebrtcVideoTrackSourceTest, AddSinkTriggersCallback) {
 }
 
 TEST_F(WebrtcVideoTrackSourceTest, CapturedFrameSentToAddedSink) {
-  auto frame = std::make_unique<BasicDesktopFrame>(DesktopSize(123, 234));
+  auto frame = std::make_unique<BasicDesktopFrame>(DesktopSize(123, 234),
+                                                   webrtc::FOURCC_ARGB);
   EXPECT_CALL(video_sink_, OnFrame(Property(&VideoFrame::width, 123)));
 
   webrtc::scoped_refptr<WebrtcVideoTrackSource> source(
@@ -88,12 +89,15 @@ TEST_F(WebrtcVideoTrackSourceTest, FramesHaveIncrementingIds) {
       new webrtc::RefCountedObject<WebrtcVideoTrackSource>(
           add_sink_callback_.Get()));
   source->AddOrUpdateSink(&video_sink_, webrtc::VideoSinkWants());
-  source->SendCapturedFrame(
-      std::make_unique<BasicDesktopFrame>(DesktopSize(100, 100)), nullptr);
-  source->SendCapturedFrame(
-      std::make_unique<BasicDesktopFrame>(DesktopSize(100, 100)), nullptr);
-  source->SendCapturedFrame(
-      std::make_unique<BasicDesktopFrame>(DesktopSize(100, 100)), nullptr);
+  source->SendCapturedFrame(std::make_unique<BasicDesktopFrame>(
+                                DesktopSize(100, 100), webrtc::FOURCC_ARGB),
+                            nullptr);
+  source->SendCapturedFrame(std::make_unique<BasicDesktopFrame>(
+                                DesktopSize(100, 100), webrtc::FOURCC_ARGB),
+                            nullptr);
+  source->SendCapturedFrame(std::make_unique<BasicDesktopFrame>(
+                                DesktopSize(100, 100), webrtc::FOURCC_ARGB),
+                            nullptr);
 
   task_environment_.FastForwardUntilNoTasksRemain();
 }

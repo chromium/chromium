@@ -19,7 +19,7 @@ LoggingFrameConsumer::~LoggingFrameConsumer() = default;
 
 std::unique_ptr<webrtc::DesktopFrame> LoggingFrameConsumer::AllocateFrame(
     const webrtc::DesktopSize& size) {
-  return std::make_unique<webrtc::BasicDesktopFrame>(size);
+  return std::make_unique<webrtc::BasicDesktopFrame>(size, webrtc::FOURCC_ARGB);
 }
 
 void LoggingFrameConsumer::DrawFrame(

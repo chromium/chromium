@@ -331,8 +331,8 @@ bool mojo::StructTraits<
     return false;
   }
 
-  std::unique_ptr<::webrtc::DesktopFrame> new_frame(
-      new ::webrtc::BasicDesktopFrame(image_size));
+  auto new_frame = std::make_unique<::webrtc::BasicDesktopFrame>(
+      image_size, webrtc::FOURCC_ARGB);
   memcpy(new_frame->data(), image_data.data(), image_data.size());
 
   // ::webrtc::MouseCursor methods take a raw pointer *and* take ownership.

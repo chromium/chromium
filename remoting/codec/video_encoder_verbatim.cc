@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "remoting/base/util.h"
 #include "remoting/proto/video.pb.h"
@@ -28,6 +29,7 @@ VideoEncoderVerbatim::~VideoEncoderVerbatim() = default;
 std::unique_ptr<VideoPacket> VideoEncoderVerbatim::Encode(
     const webrtc::DesktopFrame& frame) {
   DCHECK(frame.data());
+  CHECK_EQ(frame.pixel_format(), webrtc::FOURCC_ARGB);
 
   // If nothing has changed in the frame then return NULL to indicate that
   // we don't need to actually send anything (e.g. nothing to top-off).

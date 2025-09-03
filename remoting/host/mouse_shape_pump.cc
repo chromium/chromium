@@ -84,6 +84,7 @@ void MouseShapePump::OnMouseCursor(webrtc::MouseCursor* cursor) {
       cursor_proto->set_hotspot_x(cursor->hotspot().x());
       cursor_proto->set_hotspot_y(cursor->hotspot().y());
 
+      CHECK_EQ(cursor->image()->pixel_format(), webrtc::FOURCC_ARGB);
       uint8_t* current_row = cursor->image()->data();
       for (int y = 0; y < cursor->image()->size().height(); ++y) {
         cursor_proto->mutable_data()->append(

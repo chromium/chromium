@@ -95,6 +95,9 @@ void ScreenshotDataCollector::SetPickerFactoryForTesting(
 void ScreenshotDataCollector::ConvertDesktopFrameToBase64JPEG(
     std::unique_ptr<webrtc::DesktopFrame> frame,
     std::string& image_base64) {
+  // TODO(crbug.com/352187279): Support other pixel formats.
+  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
+
   // First converts `frame` to SkBitmap.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(frame->size().width(), frame->size().height(), true);

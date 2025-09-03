@@ -51,8 +51,9 @@ std::unique_ptr<webrtc::DesktopFrame> LoadDesktopFrameFromPng(
   }
   SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(file_content));
   CHECK(!bitmap.isNull());
-  std::unique_ptr<webrtc::DesktopFrame> frame(new webrtc::BasicDesktopFrame(
-      webrtc::DesktopSize(bitmap.width(), bitmap.height())));
+  auto frame = std::make_unique<webrtc::BasicDesktopFrame>(
+      webrtc::DesktopSize(bitmap.width(), bitmap.height()),
+      webrtc::FOURCC_ARGB);
   CopyPixelsToBuffer(bitmap, frame->data(), frame->stride());
   return frame;
 }

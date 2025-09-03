@@ -64,14 +64,16 @@ class VideoDecoderTester {
   VideoDecoderTester(VideoDecoder* decoder, const DesktopSize& screen_size)
       : strict_(false),
         decoder_(decoder),
-        frame_(new BasicDesktopFrame(screen_size)),
+        frame_(std::make_unique<BasicDesktopFrame>(screen_size,
+                                                   webrtc::FOURCC_ARGB)),
         expected_frame_(nullptr) {}
 
   VideoDecoderTester(const VideoDecoderTester&) = delete;
   VideoDecoderTester& operator=(const VideoDecoderTester&) = delete;
 
   void Reset() {
-    frame_ = std::make_unique<BasicDesktopFrame>(frame_->size());
+    frame_ = std::make_unique<BasicDesktopFrame>(frame_->size(),
+                                                 webrtc::FOURCC_ARGB);
     expected_region_.Clear();
   }
 
@@ -197,7 +199,7 @@ class VideoEncoderTester {
 };
 
 std::unique_ptr<DesktopFrame> PrepareFrame(const DesktopSize& size) {
-  std::unique_ptr<DesktopFrame> frame(new BasicDesktopFrame(size));
+  auto frame = std::make_unique<BasicDesktopFrame>(size, webrtc::FOURCC_ARGB);
 
   srand(0);
   int memory_size = size.width() * size.height() * kBytesPerPixel;
@@ -324,7 +326,8 @@ void TestVideoEncoderDecoderGradient(VideoEncoder* encoder,
                                      const DesktopSize& screen_size,
                                      double max_error_limit,
                                      double mean_error_limit) {
-  std::unique_ptr<BasicDesktopFrame> frame(new BasicDesktopFrame(screen_size));
+  auto frame =
+      std::make_unique<BasicDesktopFrame>(screen_size, webrtc::FOURCC_ARGB);
   FillWithGradient(frame.get());
   frame->mutable_updated_region()->SetRect(DesktopRect::MakeSize(screen_size));
 

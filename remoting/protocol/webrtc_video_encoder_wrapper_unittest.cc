@@ -90,7 +90,7 @@ VideoCodec GetVp9Codec() {
 
 VideoFrame MakeVideoFrame() {
   DesktopSize size(kInputFrameWidth, kInputFrameHeight);
-  auto frame = std::make_unique<BasicDesktopFrame>(size);
+  auto frame = std::make_unique<BasicDesktopFrame>(size, webrtc::FOURCC_ARGB);
   auto stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
   stats->screen_id = kTestScreenId;
   frame->mutable_updated_region()->SetRect(webrtc::DesktopRect::MakeSize(size));
@@ -100,7 +100,7 @@ VideoFrame MakeVideoFrame() {
 
 VideoFrame MakeEmptyVideoFrame() {
   DesktopSize size(kInputFrameWidth, kInputFrameHeight);
-  auto frame = std::make_unique<BasicDesktopFrame>(size);
+  auto frame = std::make_unique<BasicDesktopFrame>(size, webrtc::FOURCC_ARGB);
   auto stats = std::make_unique<WebrtcVideoEncoder::FrameStats>();
   stats->screen_id = kTestScreenId;
   return WebrtcVideoFrameAdapter::CreateVideoFrame(std::move(frame),

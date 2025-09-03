@@ -150,8 +150,8 @@ class FakeScreenCapturer : public ThumbnailCapturer {
 
   void CaptureFrame() override {
     DCHECK(consumer_);
-    std::unique_ptr<webrtc::DesktopFrame> frame(
-        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(10, 10)));
+    auto frame = std::make_unique<webrtc::BasicDesktopFrame>(
+        webrtc::DesktopSize(10, 10), webrtc::FOURCC_ARGB);
     consumer_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,
                                std::move(frame));
   }
@@ -207,8 +207,8 @@ class FakeWindowCapturer : public ThumbnailCapturer {
 
     auto it = frame_values_.find(selected_window_id_);
     int8_t value = (it != frame_values_.end()) ? it->second : 0;
-    std::unique_ptr<webrtc::DesktopFrame> frame(
-        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(10, 10)));
+    auto frame = std::make_unique<webrtc::BasicDesktopFrame>(
+        webrtc::DesktopSize(10, 10), webrtc::FOURCC_ARGB);
     UNSAFE_TODO(
         memset(frame->data(), value, frame->stride() * frame->size().height()));
     consumer_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,

@@ -76,6 +76,8 @@ SkBitmap CaptureScreen() {
 
   // Create an image from the frame.
   SkBitmap result;
+  // TODO(crbug.com/352187279): Support other pixel formats.
+  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
   result.allocN32Pixels(frame->size().width(), frame->size().height(), true);
   UNSAFE_TODO(memcpy(result.getAddr32(0, 0), frame->data(),
                      frame->size().width() * frame->size().height() *

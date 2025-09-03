@@ -97,8 +97,8 @@ class TestScreenCapturer : public DesktopCapturer {
     }
 
     // Return black 100x100 frame.
-    std::unique_ptr<webrtc::DesktopFrame> frame(
-        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(100, 100)));
+    auto frame = std::make_unique<webrtc::BasicDesktopFrame>(
+        webrtc::DesktopSize(100, 100), webrtc::FOURCC_ARGB);
     memset(frame->data(), frame_index_,
            frame->stride() * frame->size().height());
     frame_index_++;

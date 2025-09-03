@@ -147,6 +147,8 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
     return;
   }
 
+  // TODO(crbug.com/352187279): Support other pixel formats.
+  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
   frame_.allocN32Pixels(frame->size().width(), frame->size().height(), true);
   UNSAFE_TODO(memcpy(frame_.getAddr32(0, 0), frame->data(),
                      frame->size().height() * frame->stride()));

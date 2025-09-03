@@ -58,7 +58,8 @@ class ScreenshotDataCollectorTest : public ::testing::Test {
     bitmap_ = gfx::JPEGCodec::Decode(base::as_byte_span(data));
 
     webrtc::DesktopSize size(bitmap_.width(), bitmap_.height());
-    frame_ = std::make_unique<webrtc::BasicDesktopFrame>(std::move(size));
+    frame_ = std::make_unique<webrtc::BasicDesktopFrame>(std::move(size),
+                                                         webrtc::FOURCC_ARGB);
     UNSAFE_TODO(std::memcpy(frame_->data(), bitmap_.getAddr32(0, 0),
                             bitmap_.rowBytes() * bitmap_.height()));
     jpeg_data_ = base::MakeRefCounted<base::RefCountedString>(std::move(data));

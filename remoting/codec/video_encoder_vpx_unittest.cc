@@ -27,8 +27,8 @@ const uint32_t kGreenColor = 0x00ff00;
 // in the updated_region().
 static std::unique_ptr<webrtc::DesktopFrame> CreateTestFrame(
     const webrtc::DesktopSize& frame_size) {
-  std::unique_ptr<webrtc::DesktopFrame> frame(
-      new webrtc::BasicDesktopFrame(frame_size));
+  auto frame = std::make_unique<webrtc::BasicDesktopFrame>(frame_size,
+                                                           webrtc::FOURCC_ARGB);
   for (int x = 0; x < frame_size.width(); ++x) {
     for (int y = 0; y < frame_size.height(); ++y) {
       uint8_t* pixel_u8 =

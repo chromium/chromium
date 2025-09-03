@@ -28,7 +28,8 @@ TEST(GlicScreenshotCapturerTest, MANUAL_ConvertFrameToJpeg) {
   ASSERT_FALSE(input_bitmap.drawsNothing());
 
   webrtc::DesktopSize size(input_bitmap.width(), input_bitmap.height());
-  auto frame = std::make_unique<webrtc::BasicDesktopFrame>(size);
+  auto frame =
+      std::make_unique<webrtc::BasicDesktopFrame>(size, webrtc::FOURCC_ARGB);
   UNSAFE_TODO(memcpy(frame->data(), input_bitmap.getPixels(),
                      input_bitmap.computeByteSize()));
   frame->mutable_updated_region()->SetRect(webrtc::DesktopRect::MakeSize(size));

@@ -32,6 +32,8 @@ namespace {
 std::vector<uint8_t> ConvertFrameToJpeg(
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   CHECK(frame);
+  // TODO(crbug.com/352187279): Support other pixel formats.
+  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
   SkImageInfo image_info =
       SkImageInfo::Make(frame->size().width(), frame->size().height(),
                         kBGRA_8888_SkColorType, kPremul_SkAlphaType);

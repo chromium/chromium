@@ -258,6 +258,7 @@ class StructTraits<remoting::mojom::MouseCursorDataView,
         ::webrtc::DesktopFrame::kBytesPerPixel);
     buffer_size *= image_size.width();
     buffer_size *= image_size.height();
+    CHECK_EQ(cursor.image()->pixel_format(), webrtc::FOURCC_ARGB);
     return base::span<const uint8_t>(cursor.image()->data(),
                                      buffer_size.ValueOrDie());
   }

@@ -8,6 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/numerics/checked_math.h"
+#include "third_party/webrtc/media/base/video_common.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/ScreenCapture_jni.h"
@@ -140,7 +141,8 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
   const auto height = plane.crop_bottom - plane.crop_top;
   const webrtc::DesktopSize size(width.ValueOrDie<int32_t>(),
                                  height.ValueOrDie<int32_t>());
-  next_frame_.reset(new webrtc::BasicDesktopFrame(size));
+  next_frame_ =
+      std::make_unique<webrtc::BasicDesktopFrame>(size, webrtc::FOURCC_ARGB);
 
   // We don't have access to this information to Android, but this is only
   // used for mouse cursor stuff, which we don't support currently.

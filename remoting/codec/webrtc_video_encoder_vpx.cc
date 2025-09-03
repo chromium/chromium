@@ -488,6 +488,7 @@ void WebrtcVideoEncoderVpx::PrepareImage(
 
   // Convert the updated region to YUV ready for encoding.
   const uint8_t* rgb_data = frame->data();
+  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
   const int rgb_stride = frame->stride();
   const int y_stride = image_->stride[0];
   DCHECK_EQ(image_->stride[1], image_->stride[2]);

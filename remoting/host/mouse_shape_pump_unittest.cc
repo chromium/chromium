@@ -53,10 +53,11 @@ class TestMouseCursorMonitor : public webrtc::MouseCursorMonitor {
     ASSERT_TRUE(callback_);
     capture_call_count_++;
 
-    std::unique_ptr<webrtc::MouseCursor> mouse_cursor(new webrtc::MouseCursor(
+    auto mouse_cursor = std::make_unique<webrtc::MouseCursor>(
         new webrtc::BasicDesktopFrame(
-            webrtc::DesktopSize(kCursorWidth, kCursorHeight)),
-        webrtc::DesktopVector(kHotspotX, kHotspotY)));
+            webrtc::DesktopSize(kCursorWidth, kCursorHeight),
+            webrtc::FOURCC_ARGB),
+        webrtc::DesktopVector(kHotspotX, kHotspotY));
 
     callback_->OnMouseCursor(mouse_cursor.release());
   }

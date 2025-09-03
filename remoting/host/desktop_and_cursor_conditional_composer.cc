@@ -32,7 +32,8 @@ void DesktopAndCursorConditionalComposer::SetComposeEnabled(bool enabled) {
     }
   } else {
     webrtc::MouseCursor* empty = new webrtc::MouseCursor(
-        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(0, 0)),
+        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(0, 0),
+                                      webrtc::FOURCC_ARGB),
         webrtc::DesktopVector(0, 0));
     capturer_->OnMouseCursor(empty);
   }
