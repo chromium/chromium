@@ -26,7 +26,7 @@ class GoogleGroupsManagerFactory : public ProfileKeyedServiceFactoryIOS {
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
 
-  void RegisterBrowserStatePrefs(
+  void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 

@@ -35,7 +35,7 @@ GoogleGroupsManagerFactory::BuildServiceInstanceFor(
       *profile->GetPrefs());
 }
 
-void GoogleGroupsManagerFactory::RegisterBrowserStatePrefs(
+void GoogleGroupsManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   GoogleGroupsManager::RegisterProfilePrefs(registry);
 }
