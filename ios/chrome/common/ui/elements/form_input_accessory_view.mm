@@ -618,10 +618,11 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
         0, 0, 0, LiquidGlassCloseButtonTrailingInset);
   }
 
-  if (!_isCompact) {
+  FormInputAccessoryViewTextData* textData =
+      [self.delegate textDataforFormInputAccessoryView:self];
+
+  if (!_isCompact && textData.manualFillButtonTitle) {
     // Set the button title with a custom sized font.
-    FormInputAccessoryViewTextData* textData =
-        [self.delegate textDataforFormInputAccessoryView:self];
     UIFont* font = [UIFont systemFontOfSize:kManualFillTitleFontSize
                                      weight:UIFontWeightMedium];
     NSDictionary* attributes;
