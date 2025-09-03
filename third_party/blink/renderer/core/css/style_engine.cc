@@ -3965,7 +3965,33 @@ void StyleEngine::RebuildTransitionPseudoLayoutTrees() {
 void StyleEngine::RecalcStyle() {
   RecalcStyle(
       {}, StyleRecalcContext::FromAncestors(style_recalc_root_.RootElement()));
-  RecalcTransitionPseudoStyle();
+  ViewTransition* transition = ViewTransitionUtils::GetTransition(*document_);
+  if (transition && !transition->IsCreatedViaScriptAPI()) {
+    // MPA transitions require a separate style update pass for view
+    // transitions.
+    // TODO(crbug.com/442622988): Determine if we need to keep this restriction.
+    // Ideally, this is not a fundamental blocker to streamlining the style
+    // update process.
+    RecalcTransitionPseudoStyle();
+  } else {
+    // SPA transitions and scoped view-transitions are updated as part of the
+    // regular style update process. This sanity check ensures that no dirty
+    // style bits remain after the update process.
+#if EXPENSIVE_DCHECKS_ARE_ON()
+    ViewTransitionUtils::ForEachTransition(
+        *document_, [&](ViewTransition& transition) {
+          auto validate_style = [](PseudoElement* pseudo_element) {
+            DCHECK(!pseudo_element->NeedsStyleRecalc())
+                << *pseudo_element << " is dirty after RecalcStyle()";
+          };
+          Element* scope = transition.Scope();
+          if (!scope) {
+            return;
+          }
+          ViewTransitionUtils::ForEachTransitionPseudo(*scope, validate_style);
+        });
+#endif
+  }
 }
 
 void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {

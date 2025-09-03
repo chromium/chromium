@@ -4769,6 +4769,16 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     }
   }
 
+  if (ViewTransition* view_transition =
+          ViewTransitionUtils::GetTransition(*this)) {
+    if (view_transition->Scope() == this) {
+      view_transition->RecalcTransitionPseudoTreeStyle();
+    } else if (child_change.TraversePseudoElements(*this) &&
+               IsTransitionPseudoElement(GetPseudoId())) {
+      UpdateTransitionPseudoElements(child_change, child_recalc_context);
+    }
+  }
+
   if (child_change.TraversePseudoElements(*this)) {
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
@@ -11747,6 +11757,60 @@ void Element::RecalcTransitionPseudoTreeStyle(
   // (typically) no children / dirty child style. However, here we do need to
   // clear the child dirty bit.
   transition_pseudo->ClearChildNeedsStyleRecalc();
+}
+
+void Element::UpdateTransitionPseudoElements(
+    const StyleRecalcChange style_recalc_change,
+    const StyleRecalcContext& style_recalc_context) {
+  // TODO(crbug.com/442622988): Ideally we handle the originating element here
+  // as well and deprecate RecalcTransitionPseudoTreeStyle. Presently,
+  // RecalcTransitionPseudoTreeStyle handles creation of the group hierarchy,
+  // and this method updates pseudo-elements -- treating the hierarchy as
+  // immutable. Note that the hierarchy is only allowed to change in a post-
+  // capture style update. The capture phases are run before and after the
+  // DOM callback in StartViewTransition.
+  DCHECK(IsTransitionPseudoElement(GetPseudoId()));
+  switch (GetPseudoId()) {
+    case kPseudoIdViewTransition:
+    case kPseudoIdViewTransitionGroupChildren: {
+      for (const AtomicString& name : To<ViewTransitionPseudoElementBase>(this)
+                                          ->GetViewTransitionNames()) {
+        if (GetPseudoElement(kPseudoIdViewTransitionGroup, name)) {
+          UpdatePseudoElement(kPseudoIdViewTransitionGroup, style_recalc_change,
+                              style_recalc_context, name);
+        }
+      }
+      break;
+    }
+
+    case kPseudoIdViewTransitionGroup:
+      UpdatePseudoElement(kPseudoIdViewTransitionImagePair, style_recalc_change,
+                          style_recalc_context,
+                          To<PseudoElement>(this)->view_transition_name());
+      if (GetPseudoElement(kPseudoIdViewTransitionGroupChildren,
+                           To<PseudoElement>(this)->view_transition_name())) {
+        UpdatePseudoElement(kPseudoIdViewTransitionGroupChildren,
+                            style_recalc_change, style_recalc_context,
+                            To<PseudoElement>(this)->view_transition_name());
+      }
+      break;
+
+    case kPseudoIdViewTransitionImagePair:
+      UpdatePseudoElement(kPseudoIdViewTransitionOld, style_recalc_change,
+                          style_recalc_context,
+                          To<PseudoElement>(this)->view_transition_name());
+      UpdatePseudoElement(kPseudoIdViewTransitionNew, style_recalc_change,
+                          style_recalc_context,
+                          To<PseudoElement>(this)->view_transition_name());
+      break;
+
+    case kPseudoIdViewTransitionOld:
+    case kPseudoIdViewTransitionNew:
+      break;
+
+    default:
+      NOTREACHED();
+  }
 }
 
 void Element::ClearTransitionPseudoTreeIfNeeded(
