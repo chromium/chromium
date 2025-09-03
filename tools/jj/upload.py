@@ -167,6 +167,10 @@ def main(args):
             # Allows it to run with a dirty tree and on no branch
             '--force',
             '--parallel',
+            # Unfortunately, upload skips certain checks which would be
+            # useful. However, it also skips certain checks we really don't
+            # want to run. CheckTreeIsOpen(), for example.
+            '--upload',
             f'--json={out}',
             next(iter(immutable_parents))
         ])
@@ -176,9 +180,10 @@ def main(args):
             fatal('git cl presubmit had warnings.\n' +
                   'Hint: maybe you want --allow-warnings?')
     else:
-      fatal('git cl presubmit only supports running on the revision @. ' +
-            'Please either run `jj new/edit` to check out the change before ' +
-            'uploading it, or rerun with `--bypass-hooks`')
+      # For consistency's sake, we warn if the intersection of commits is small,
+      # so we should also warn if the intersection is emmpty.
+      logging.warning('git cl presubmit only supports running on the ' +
+                      'revision @. `git cl presubmit` will be skipped')
 
   # This could be simplified by another call to jj_log on heads(...),
   # but this is more performant.
