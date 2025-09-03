@@ -53,10 +53,15 @@ void VirtualCardEnrollBubbleControllerImpl::SetupAndShowBubble(
     const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,
     base::OnceClosure decline_virtual_card_callback) {
+  if (!MaySetUpBubble()) {
+    return;
+  }
+
   SetupBubble(virtual_card_enrollment_fields,
               std::move(accept_virtual_card_callback),
               std::move(decline_virtual_card_callback));
-  ShowBubble();
+
+  QueueOrShowBubble();
 
   VirtualCardEnrollMetricsLogger::OnCardArtAvailable(
       ui_model_->enrollment_fields().card_art_image,
@@ -106,7 +111,7 @@ void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
                     /*card_label=*/ui_model_->enrollment_fields()
                         .credit_card.NetworkAndLastFourDigits());
   // Show enrollment confirmation bubble.
-  ShowBubble();
+  QueueOrShowBubble();
 #endif
 }
 
