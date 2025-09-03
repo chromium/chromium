@@ -11,10 +11,6 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "third_party/ashmem/ashmem.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace base {
 
 namespace features {
@@ -47,7 +43,6 @@ DiscardableMemoryBacking GetBackingForFieldTrial() {
       GetDiscardableMemoryBackingFieldTrialGroup();
   switch (trial_group) {
     case DiscardableMemoryTrialGroup::kEmulatedSharedMemory:
-    case DiscardableMemoryTrialGroup::kAshmem:
       return DiscardableMemoryBacking::kSharedMemory;
     case DiscardableMemoryTrialGroup::kMadvFree:
       return DiscardableMemoryBacking::kMadvFree;
@@ -64,11 +59,6 @@ DiscardableMemoryBacking GetBackingForFieldTrial() {
 // Probe capabilities of this device to determine whether we should participate
 // in the discardable memory backing trial.
 bool DiscardableMemoryBackingFieldTrialIsEnabled() {
-#if BUILDFLAG(IS_ANDROID)
-  if (!ashmem_device_is_supported()) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
   if (base::GetMadvFreeSupport() != base::MadvFreeSupport::kSupported) {
     return false;
   }
@@ -97,12 +87,6 @@ DiscardableMemoryBacking GetDiscardableMemoryBacking() {
   }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_ANDROID)
-  if (ashmem_device_is_supported()) {
-    return DiscardableMemoryBacking::kSharedMemory;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_POSIX)
   if (base::FeatureList::IsEnabled(

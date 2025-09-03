@@ -75,19 +75,6 @@ TEST_F(DiscardableMemoryBackingFieldTrialTest,
   EXPECT_EQ(backing, DiscardableMemoryBacking::kMadvFree);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(DiscardableMemoryBackingFieldTrialTest, AshmemBackingMatchesTrialGroup) {
-  std::unique_ptr<test::ScopedFeatureList> scoped_feature =
-      GetScopedFeatureListForDiscardableMemoryTrialGroup(
-          DiscardableMemoryTrialGroup::kAshmem);
-  if (!DiscardableMemoryBackingFieldTrialIsEnabled()) {
-    return;
-  }
-  DiscardableMemoryBacking backing = GetDiscardableMemoryBacking();
-  EXPECT_EQ(backing, DiscardableMemoryBacking::kSharedMemory);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace base
 
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||

@@ -17,15 +17,11 @@
 namespace base {
 
 // Enumeration of the possible experiment groups in the discardable memory
-// backing trial. Note that |kAshmem| and |kEmulatedSharedMemory| both map to
-// discardable shared memory, except the former allows for the use of ashmem for
-// unpinning memory. Ensure that the order of the enum values matches those in
+// backing trial. Ensure that the order of the enum values matches those in
 // |kDiscardableMemoryBackingParamOptions|.
 enum DiscardableMemoryTrialGroup : int {
   kEmulatedSharedMemory = 0,
   kMadvFree,
-  // Only Android devices will be assigned to the ashmem group.
-  kAshmem,
 };
 
 namespace features {
@@ -38,7 +34,6 @@ constexpr inline auto kDiscardableMemoryBackingParamOptions =
     std::to_array<base::FeatureParam<DiscardableMemoryTrialGroup>::Option>({
         {DiscardableMemoryTrialGroup::kEmulatedSharedMemory, "shmem"},
         {DiscardableMemoryTrialGroup::kMadvFree, "madvfree"},
-        {DiscardableMemoryTrialGroup::kAshmem, "ashmem"},
     });
 
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(DiscardableMemoryTrialGroup,
