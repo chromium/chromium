@@ -4488,7 +4488,11 @@ if (!is_android) {
     }
 
     if (enable_bound_session_credentials) {
-      sources += [ "../browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl_browsertest.cc" ]
+      sources += [
+        "../browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl_browsertest.cc",
+        "../browser/signin/bound_session_oauth_multilogin_browsertest.cc",
+      ]
+      deps += [ "//components/unexportable_keys:test_support" ]
     }
 
     if (is_win || is_linux) {
