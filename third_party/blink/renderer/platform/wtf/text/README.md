@@ -155,18 +155,33 @@ be representable in Latin-1, you should consider using
 checking whether all the source characters can be represented in
 Latin-1.
 
+## Concatenation
+
+We have multiple ways to create a new string by concatenating multiple
+input strings. Use `blink::StrCat()` if the number of input strings is
+fixed. Use `StringBuilder` otherwise.
+
+### `StrCat()`
+
+The `StrCat()` function is the most efficient way to concatenate strings.
+We can use it if the number of input strings is known at compile time
+because `StrCat()`'s argument is a `std::initializer_list`.
 
 ### `operator+`
 
-The + operator on Strings is the most efficient way to combine smaller
-strings into larger strings. Using templates, `operator+` builds a
-tree of temporary objects that mirrors the tree of `operator+`
+The `+` operator on Blink string types is the simplest way to combine
+smaller strings into larger strings. Using templates, `operator+` builds
+a tree of temporary objects that mirrors the tree of `operator+`
 invocations. When the temporary objects are (implicitly) collapsed to
 a `String`, we first compute the length of the final string and then
 allocate a single `StringImpl` object of exactly the correct size.
 After allocating the object, we copy all the characters into the
 string. This approach means we copy the characters exactly once into
-the correctly sized buffer, which is maximally efficient.
+the correctly sized buffer, which is efficient.
+
+Because of the complex template usages, code size generated for
+`operator+` is much larger than `StrCat()`, and its runtime speed is
+slightly slower than `StrCat()`.
 
 ### `StringBuilder`
 
