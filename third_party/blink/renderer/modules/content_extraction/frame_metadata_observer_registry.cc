@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/content_extraction/frame_metadata_observer_registry.h"
 
+#include <optional>
+
 #include "mojo/public/cpp/bindings/lib/wtf_clone_equals_util.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom-blink.h"
@@ -28,7 +30,62 @@
 
 namespace blink {
 
-namespace {}  // namespace
+namespace {
+
+template <typename T>
+void DeliverMutation(const HeapVector<Member<MutationRecord>>& records,
+                     base::RepeatingClosure on_changed) {
+  // We are looking for changes to elements of type T.
+  for (const auto& record : records) {
+    if (record->type() == "attributes") {
+      if (IsA<T>(record->target())) {
+        on_changed.Run();
+        return;
+      }
+    } else {  // "childList"
+      for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
+        if (IsA<T>(record->addedNodes()->item(i))) {
+          on_changed.Run();
+          return;
+        }
+      }
+      for (unsigned i = 0; i < record->removedNodes()->length(); ++i) {
+        if (IsA<T>(record->removedNodes()->item(i))) {
+          on_changed.Run();
+          return;
+        }
+      }
+    }
+  }
+}
+
+void ObserveHead(WeakMember<Node>& observing,
+                 MutationObserver* observer,
+                 HTMLHeadElement* head,
+                 const std::optional<Vector<String>>& attribute_filter) {
+  if (observing.Get() == head) {
+    return;
+  }
+  observer->disconnect();
+  MutationObserverInit* init = MutationObserverInit::Create();
+  init->setChildList(true);
+  init->setAttributes(true);
+  init->setSubtree(true);
+  if (attribute_filter) {
+    init->setAttributeFilter(*attribute_filter);
+  }
+  DummyExceptionStateForTesting exception_state;
+  observer->observe(head, init, exception_state);
+  DCHECK(!exception_state.HadException());
+  observing = head;
+}
+
+template <typename ObserverSet, typename MutationObserver>
+bool UpdateObserver(Document* document,
+                    ObserverSet& observer_set,
+                    MutationObserver& mutation_observer);
+
+}  // namespace
 
 class FrameMetadataObserverRegistry::PaidContentMutationObserver final
     : public MutationObserver::Delegate {
@@ -48,28 +105,11 @@ class FrameMetadataObserverRegistry::PaidContentMutationObserver final
 
   void Deliver(const HeapVector<Member<MutationRecord>>& records,
                MutationObserver&) override {
-    // We are looking for changes to script tags which indicate paid content.
-    for (const auto& record : records) {
-      if (record->type() == "attributes") {
-        if (IsA<HTMLScriptElement>(record->target())) {
-          registry_->OnPaidContentMetadataChanged();
-          return;
-        }
-      } else {  // "childList"
-        for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
-          if (IsA<HTMLScriptElement>(record->addedNodes()->item(i))) {
-            registry_->OnPaidContentMetadataChanged();
-            return;
-          }
-        }
-        for (unsigned i = 0; i < record->removedNodes()->length(); ++i) {
-          if (IsA<HTMLScriptElement>(record->removedNodes()->item(i))) {
-            registry_->OnPaidContentMetadataChanged();
-            return;
-          }
-        }
-      }
-    }
+    DeliverMutation<HTMLScriptElement>(
+        records,
+        BindRepeating(
+            &FrameMetadataObserverRegistry::OnPaidContentMetadataChanged,
+            WrapWeakPersistent(registry_.Get())));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -90,21 +130,7 @@ class FrameMetadataObserverRegistry::MetaTagsMutationObserver final
  public:
   explicit MetaTagsMutationObserver(FrameMetadataObserverRegistry* registry);
 
-  void ObserveHead(HTMLHeadElement* head) {
-    if (observing_ == head) {
-      return;
-    }
-    observer_->disconnect();
-    MutationObserverInit* init = MutationObserverInit::Create();
-    init->setChildList(true);
-    init->setAttributes(true);
-    init->setSubtree(true);
-    init->setAttributeFilter(Vector<String>{"name", "content"});
-    DummyExceptionStateForTesting exception_state;
-    observer_->observe(head, init, exception_state);
-    DCHECK(!exception_state.HadException());
-    observing_ = head;
-  }
+  void ObserveHead(HTMLHeadElement* head);
 
   void Disconnect() {
     observer_->disconnect();
@@ -115,9 +141,12 @@ class FrameMetadataObserverRegistry::MetaTagsMutationObserver final
     return registry_->GetSupplementable()->GetExecutionContext();
   }
 
-  void Deliver(const HeapVector<Member<MutationRecord>>&,
+  void Deliver(const HeapVector<Member<MutationRecord>>& records,
                MutationObserver&) override {
-    registry_->OnMetaTagsChanged();
+    DeliverMutation<HTMLMetaElement>(
+        records,
+        BindRepeating(&FrameMetadataObserverRegistry::OnMetaTagsChanged,
+                           WrapWeakPersistent(registry_.Get())));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -139,24 +168,18 @@ FrameMetadataObserverRegistry::PaidContentMutationObserver::
 
 void FrameMetadataObserverRegistry::PaidContentMutationObserver::ObserveHead(
     HTMLHeadElement* head) {
-  if (observing_ == head) {
-    return;
-  }
-
-  observer_->disconnect();
-  MutationObserverInit* init = MutationObserverInit::Create();
-  init->setChildList(true);
-  init->setAttributes(true);
-  init->setSubtree(false);
-  DummyExceptionStateForTesting exception_state;
-  observer_->observe(head, init, exception_state);
-  DCHECK(!exception_state.HadException());
-  observing_ = head;
+  ::blink::ObserveHead(observing_, observer_.Get(), head, std::nullopt);
 }
 
 FrameMetadataObserverRegistry::MetaTagsMutationObserver::
     MetaTagsMutationObserver(FrameMetadataObserverRegistry* registry)
     : registry_(registry), observer_(MutationObserver::Create(this)) {}
+
+void FrameMetadataObserverRegistry::MetaTagsMutationObserver::ObserveHead(
+    HTMLHeadElement* head) {
+  ::blink::ObserveHead(observing_, observer_.Get(), head,
+              Vector<String>{"name", "content"});
+}
 
 // static
 const char FrameMetadataObserverRegistry::kSupplementName[] =
@@ -363,41 +386,13 @@ void FrameMetadataObserverRegistry::OnMetaTagsChanged() {
 }
 
 bool FrameMetadataObserverRegistry::UpdateMetaTagsObserver() {
-  if (metatags_observers_.empty()) {
-    meta_tags_mutation_observer_->Disconnect();
-    return false;
-  }
-  Document* document = GetSupplementable();
-  HTMLHeadElement* head = document->head();
-  if (head) {
-    // A head element exists, so we observe it for future changes, which is more
-    // efficient than observing the whole document.
-    meta_tags_mutation_observer_->ObserveHead(head);
-  } else {
-    // If a document is loaded without a head element, then we
-    // could add an observer here for dynamically added head elements.
-    // This should be rare, and if we choose to support this then care should
-    // be taken to ensure the listener is efficient.
-  }
-  return true;
+  return UpdateObserver(GetSupplementable(), metatags_observers_,
+                        meta_tags_mutation_observer_);
 }
 
 bool FrameMetadataObserverRegistry::UpdatePaidContentObserver() {
-  if (paid_content_metadata_observers_.empty()) {
-    paid_content_mutation_observer_->Disconnect();
-    return false;
-  }
-  Document* document = GetSupplementable();
-  HTMLHeadElement* head = document->head();
-  if (head) {
-    paid_content_mutation_observer_->ObserveHead(head);
-  } else {
-    // If a document is loaded without a head element, then we
-    // could add an observer here for dynamically added head elements.
-    // This should be rare, and if we choose to support this then care should
-    // be taken to ensure the listener is efficient.
-  }
-  return true;
+  return UpdateObserver(GetSupplementable(), paid_content_metadata_observers_,
+                        paid_content_mutation_observer_);
 }
 
 void FrameMetadataObserverRegistry::DisconnectHandler(
@@ -427,5 +422,24 @@ void FrameMetadataObserverRegistry::PaidContentDisconnectHandler(
     mojo::RemoteSetElementId id) {
   UpdatePaidContentObserver();
 }
+
+namespace {
+
+template <typename ObserverSet, typename MutationObserver>
+bool UpdateObserver(Document* document,
+                    ObserverSet& observer_set,
+                    MutationObserver& mutation_observer) {
+  if (observer_set.empty()) {
+    mutation_observer->Disconnect();
+    return false;
+  }
+  HTMLHeadElement* head = document->head();
+  if (head) {
+    mutation_observer->ObserveHead(head);
+  }
+  return true;
+}
+
+}  // namespace
 
 }  // namespace blink
