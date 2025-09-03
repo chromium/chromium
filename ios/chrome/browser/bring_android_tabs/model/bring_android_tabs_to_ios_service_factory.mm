@@ -48,7 +48,7 @@ BringAndroidTabsToIOSServiceFactory::~BringAndroidTabsToIOSServiceFactory() {
   DependsOn(SessionSyncServiceFactory::GetInstance());
 }
 
-void BringAndroidTabsToIOSServiceFactory::RegisterBrowserStatePrefs(
+void BringAndroidTabsToIOSServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kIosBringAndroidTabsPromptDisplayed,
                                 false);
