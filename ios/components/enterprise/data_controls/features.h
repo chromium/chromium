@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_FEATURES_H_
-#define IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_FEATURES_H_
+#ifndef IOS_COMPONENTS_ENTERPRISE_DATA_CONTROLS_FEATURES_H_
+#define IOS_COMPONENTS_ENTERPRISE_DATA_CONTROLS_FEATURES_H_
 
 #import "base/feature_list.h"
 
@@ -16,4 +16,4 @@ BASE_DECLARE_FEATURE(kEnableClipboardDataControlsIOS);
 
 }  // namespace data_controls
 
-#endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_FEATURES_H_
+#endif  // IOS_COMPONENTS_ENTERPRISE_DATA_CONTROLS_FEATURES_H_

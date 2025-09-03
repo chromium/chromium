@@ -8,6 +8,7 @@ specific_include_rules = {
     "+components/page_image_service/features.h",
     "+components/sharing_message/features.h",
     "+ios/chrome/browser",
+    "+ios/components/enterprise/data_controls/features.h",
   ],
   "^ios_chrome_field_trials.mm": [
     "+ios/chrome/browser/variations/model",

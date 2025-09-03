@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/enterprise/buildflags/buildflags.gni")
 import("//ios/build/chrome_build.gni")
 
 source_set("flags") {
@@ -115,6 +114,7 @@ source_set("flags") {
     "//ios/chrome/browser/text_selection/model:model_utils",
     "//ios/chrome/browser/web/model:feature_flags",
     "//ios/chrome/browser/whats_new/coordinator:util",
+    "//ios/components/enterprise/data_controls:features",
     "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/web/common",
@@ -122,10 +122,6 @@ source_set("flags") {
     "//ios/web/common:web_view_creation_util",
     "//ios/web/public",
   ]
-
-  if (enterprise_data_controls) {
-    deps += [ "//ios/chrome/browser/enterprise/data_controls:features" ]
-  }
 
   if (ios_enable_screen_time) {
     deps += [ "//ios/chrome/browser/screen_time/model:feature_flags" ]
