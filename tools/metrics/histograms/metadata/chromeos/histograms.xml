@@ -282,7 +282,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Apps.IntentPickerDestinationPlatform"
-    enum="ArcIntentHandlerDestinationPlatform" expires_after="2025-09-14">
+    enum="ArcIntentHandlerDestinationPlatform" expires_after="2026-09-14">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
@@ -2405,7 +2405,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Intents.IntentPickerAction"
-    enum="IntentPickerDialogAction" expires_after="2025-06-01">
+    enum="IntentPickerDialogAction" expires_after="2026-09-14">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
@@ -2413,16 +2413,22 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     action button) when the user navigates to a page whose URL can be handled by
     an installed app. This metric is recorded when the dialog is closed and
     records the user action which caused it to close.
+
+    Warning: this histogram was expired from 2025-06-01 to 2025-09-03; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="ChromeOS.Intents.IntentPickerIconEvent"
-    enum="IntentPickerIconEvent" expires_after="2025-06-01">
+    enum="IntentPickerIconEvent" expires_after="2026-09-14">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
     Records events associated with the intent picker icon in the omnibox.
     Recorded when the icon is shown or interacted with.
+
+    Warning: this histogram was expired from 2025-06-01 to 2025-09-03; data may
+    be missing.
   </summary>
 </histogram>
 
