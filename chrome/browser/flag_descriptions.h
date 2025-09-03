@@ -2547,11 +2547,6 @@ extern const char kWebAuthnPasskeyUpgradeDescription[];
 extern const char kWebAuthnImmediateGetName[];
 extern const char kWebAuthnImmediateGetDescription[];
 
-#if BUILDFLAG(IS_MAC)
-extern const char kWebAuthnLargeBlobForICloudKeychainName[];
-extern const char kWebAuthnLargeBlobForICloudKeychainDescription[];
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kWebAppInstallationApiName[];
 extern const char kWebAppInstallationApiDescription[];

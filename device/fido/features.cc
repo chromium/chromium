@@ -170,13 +170,6 @@ BASE_FEATURE(kWebAuthnImmediateGetAutoselect,
              "WebAuthenticationImmediateGetAutoselect",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC)
-// Default enabled in M139. Remove in or after M142.
-BASE_FEATURE(kWebAuthnLargeBlobForICloudKeychain,
-             "WebAuthenticationLargeBlobICloudKeychain",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
-
 // Default enabled in M140. Remove in or after M143.
 BASE_FEATURE(kWebAuthnLargeBlobForGPM,
              "WebAuthenticationLargeBlobGPM",

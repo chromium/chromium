@@ -22,13 +22,11 @@
 #include "base/notreached.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
@@ -194,8 +192,6 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
   std::unique_ptr<FidoDiscoveryBase> discovery_;
   raw_ptr<FidoAuthenticator> authenticator_ = nullptr;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kWebAuthnLargeBlobForICloudKeychain};
 };
 
 TEST_F(iCloudKeychainTest, RequestAuthorization) {

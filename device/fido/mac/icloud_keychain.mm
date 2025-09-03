@@ -54,10 +54,6 @@ std::vector<uint8_t> ToVector(NSData* data) {
 }
 
 bool SupportsLargeBlob() {
-  if (!base::FeatureList::IsEnabled(
-          device::kWebAuthnLargeBlobForICloudKeychain)) {
-    return false;
-  }
   if (@available(macOS 14.0, *)) {
     return true;
   }

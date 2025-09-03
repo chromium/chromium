@@ -119,12 +119,6 @@ BASE_DECLARE_FEATURE_PARAM(int, kWebAuthnImmediateMediationTimeoutMilliseconds);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnImmediateGetAutoselect);
 
-// Enables large blob support for iCloud Keychain in MacOS.
-#if BUILDFLAG(IS_MAC)
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnLargeBlobForICloudKeychain);
-#endif  // BUILDFLAG(IS_MAC)
-
 // Enables large blob support for Google Password Manager.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnLargeBlobForGPM);
