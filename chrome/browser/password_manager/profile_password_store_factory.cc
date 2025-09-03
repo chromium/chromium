@@ -20,7 +20,6 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
-#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
@@ -41,18 +40,14 @@ namespace {
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     content::BrowserContext* context) {
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-
+#if BUILDFLAG(IS_ANDROID)
   password_manager_android_util::PasswordManagerUtilBridge util_bridge;
   if (!util_bridge.IsInternalBackendPresent()) {
     LOG(ERROR)
-        << "Password store is not supported: use_login_database_as_backend is "
-           "false when Chrome's internal backend is not present. Please, set "
-           "use_login_database_as_backend=true in the args.gn file to enable "
-           "Chrome password store.";
+        << "Password store not supported: Chrome's internal backend missing";
     return nullptr;
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   Profile* profile = Profile::FromBrowserContext(context);
 

@@ -184,10 +184,8 @@ class PasswordStoreTest : public testing::Test {
     OSCryptMocker::SetUp();
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWereOldGoogleLoginsRemoved, false);
-#if !BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kClearingUndecryptablePasswords, false);
-#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_IOS)
     pref_service_.registry()->RegisterBooleanPref(
@@ -1456,90 +1454,6 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfUpdateReturnsError) {
   store->RemoveObserver(&mock_observer);
   store->ShutdownOnUIThread();
 }
-
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordStoreTest, CallOnLoginsRetainedIfUpdateProvidesNoChanges) {
-  base::HistogramTester histogram_tester;
-  const char kOnLoginRetainedMetric[] =
-      "PasswordManager.PasswordStore.OnLoginsRetained";
-  std::vector<PasswordForm> all_credentials;
-  all_credentials.push_back(*FillPasswordFormWithData(
-      CreateTestPasswordFormDataByOrigin(kTestWebRealm1),
-      /*is_account_store=*/false));
-  all_credentials.push_back(*FillPasswordFormWithData(
-      CreateTestPasswordFormDataByOrigin(kTestAndroidRealm1),
-      /*is_account_store=*/false));
-  const PasswordForm kTestForm = all_credentials[0];
-  const PasswordForm kOtherForm = all_credentials[1];
-  MockPasswordStoreObserver mock_observer;
-  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
-  EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
-        std::move(completion).Run(true);
-      }));
-  store->Init(/*affiliated_match_helper=*/nullptr);
-  store->AddObserver(&mock_observer);
-
-  // Expect that observers receive the full list if the backend invokes the
-  // reply with a nullopt.
-  EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
-      .WillOnce(WithArg<1>([](PasswordChangesOrErrorReply reply) -> void {
-        std::move(reply).Run(std::nullopt);
-      }));
-  EXPECT_CALL(*mock_backend, GetAllLoginsAsync(_))
-      .WillOnce(
-          WithArg<0>([&all_credentials](LoginsOrErrorReply reply) -> void {
-            std::move(reply).Run(std::move(all_credentials));
-          }));
-  EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
-  EXPECT_CALL(mock_observer,
-              OnLoginsRetained(store.get(),
-                               UnorderedElementsAre(kTestForm, kOtherForm)));
-  store->UpdateLogin(kTestForm);
-  WaitForPasswordStore();
-
-  store->RemoveObserver(&mock_observer);
-  store->ShutdownOnUIThread();
-  histogram_tester.ExpectUniqueSample(kOnLoginRetainedMetric, /*Update*/ 2, 1);
-  histogram_tester.ExpectTotalCount(kOnLoginRetainedMetric, 1);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordStoreTest, RecordsPotentialOnLoginsRetainedInvokations) {
-  base::HistogramTester histogram_tester;
-  const PasswordForm kTestForm = MakePasswordForm(kTestWebRealm1);
-  MockPasswordStoreObserver mock_observer;
-  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
-  EXPECT_CALL(*mock_backend, InitBackend)
-      .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
-        std::move(completion).Run(true);
-      }));
-  store->Init(/*affiliated_match_helper=*/nullptr);
-  store->AddObserver(&mock_observer);
-
-  // A changelist will be returned, so `OnLoginsRetained` call is not issued.
-  // But the changelist is empty, so `OnLoginsChanged` is not issued either.
-  // Regardless, this is a case where `OnLoginsRetained` would be called if the
-  // GMS backend was active — therefore record the potential call.
-  EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
-      .WillOnce(WithArg<1>([](PasswordChangesOrErrorReply reply) -> void {
-        std::move(reply).Run(PasswordStoreChangeList());
-      }));
-  EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
-  EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
-  store->UpdateLogin(kTestForm);
-  WaitForPasswordStore();
-
-  const char kOnLoginRetainedMetric[] =
-      "PasswordManager.PasswordStore.OnLoginsRetained";
-  histogram_tester.ExpectUniqueSample(kOnLoginRetainedMetric, /*Update*/ 2, 1);
-  histogram_tester.ExpectTotalCount(kOnLoginRetainedMetric, 1);
-
-  store->RemoveObserver(&mock_observer);
-  store->ShutdownOnUIThread();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordStoreTest, AbleToSavePasswords) {
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();

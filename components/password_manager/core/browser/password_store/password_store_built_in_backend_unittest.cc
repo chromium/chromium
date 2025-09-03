@@ -21,12 +21,12 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/login_database_async_helper.h"
@@ -136,10 +136,8 @@ class PasswordStoreBuiltInBackendBaseTest : public testing::Test {
   void SetUp() override {
     OSCryptMocker::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-#if !BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kClearingUndecryptablePasswords, false);
-#endif
     pref_service_.registry()->RegisterIntegerPref(
         password_manager::prefs::kPasswordRemovalReasonForAccount, 0);
     pref_service_.registry()->RegisterIntegerPref(
@@ -856,16 +854,6 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   backend->GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
   RunUntilIdle();
 }
-
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-TEST_P(PasswordStoreBuiltInBackendTest,
-       NotAbleToSavePasswordsAfterDeprecation) {
-  PasswordStoreBackend* backend = CreateBackend();
-  InitializeBackend(backend);
-  EXPECT_FALSE(backend->IsAbleToSavePasswords());
-}
-
-#endif
 
 TEST_P(PasswordStoreBuiltInBackendTest, NotAbleSavePasswordsWhenDatabaseIsBad) {
   PasswordStoreBackend* bad_backend =

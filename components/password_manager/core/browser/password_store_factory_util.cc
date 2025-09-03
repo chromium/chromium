@@ -17,15 +17,19 @@
 #include "components/password_manager/core/browser/os_crypt_async_migrator.h"
 #include "components/password_manager/core/browser/password_change_backup_password_cleaner.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
-#include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/password_manager/core/browser/password_store/login_database.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace password_manager {
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 LoginDatabase::DeletingUndecryptablePasswordsEnabled GetPolicyFromPrefs(
     PrefService* prefs) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -36,9 +40,11 @@ LoginDatabase::DeletingUndecryptablePasswordsEnabled GetPolicyFromPrefs(
   return LoginDatabase::DeletingUndecryptablePasswordsEnabled(true);
 #endif
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
     const base::FilePath& db_directory,
     PrefService* prefs) {
@@ -56,6 +62,7 @@ std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
   return std::make_unique<LoginDatabase>(
       login_db_file_path, IsAccountStore(true), GetPolicyFromPrefs(prefs));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(http://crbug.com/890318): Add unitests to check cleaners are correctly
 // created.

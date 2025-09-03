@@ -129,14 +129,12 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
 
   void OnInitComplete(base::OnceCallback<void(bool)> completion, bool result);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Sets the pref responsible for maintaining groups population in
   // the kClearUndecryptablePasswords experiment.
   // Records the passwords removal reason prefs.
   // TODO(b/40286735): Remove after this feature is launched.
   void SetClearingUndecryptablePasswordsIsEnabledPref(
       IsAccountStore is_account_store);
-#endif
 
   // Ensures that all methods are called on the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);

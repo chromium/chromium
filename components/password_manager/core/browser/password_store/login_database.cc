@@ -1291,11 +1291,11 @@ bool LoginDatabase::Init(
 }
 
 void LoginDatabase::ReportBubbleSuppressionMetrics() {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_IOS)
   base::UmaHistogramCustomCounts(
       "PasswordManager.BubbleSuppression.AccountsInStatisticsTable2",
       stats_table_.GetNumAccounts(), 0, 1000, 100);
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 void LoginDatabase::ReportInaccessiblePasswordsMetrics() {

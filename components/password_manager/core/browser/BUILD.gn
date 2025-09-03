@@ -233,7 +233,6 @@ static_library("browser") {
     ]
     public_deps += [ ":split_stores_and_local_upm" ]
     deps += [
-      ":password_manager_buildflags",
       "//components/webauthn/android",
       "//services/metrics/public/cpp:ukm_builders",
     ]
@@ -270,7 +269,6 @@ if (is_android) {
       "split_stores_and_local_upm.h",
     ]
     deps = [
-      ":password_manager_buildflags",
       "//base",
       "//components/password_manager/core/browser/features:password_features",
       "//components/password_manager/core/common",
@@ -617,8 +615,5 @@ source_set("unit_tests") {
 
 buildflag_header("password_manager_buildflags") {
   header = "password_manager_buildflags.h"
-  flags = [
-    "USE_LOGIN_DATABASE_AS_BACKEND=$use_login_database_as_backend",
-    "PASSWORD_MANAGER_USE_INTERNAL_ANDROID_RESOURCES=$password_manager_use_internal_android_resources",
-  ]
+  flags = [ "PASSWORD_MANAGER_USE_INTERNAL_ANDROID_RESOURCES=$password_manager_use_internal_android_resources" ]
 }

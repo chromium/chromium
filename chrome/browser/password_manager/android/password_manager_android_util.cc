@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge_interface.h"
-#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -34,7 +33,6 @@ bool HasMinGmsVersionForFullUpmSupport() {
          gms_version >= password_manager::GetSplitStoresUpmMinVersion();
 }
 
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 // Called on startup to delete the login data files.
 void DeleteLoginDataFiles(const base::FilePath& login_db_directory) {
   base::FilePath profile_db_path =
@@ -75,8 +73,6 @@ void DeleteAutoExportedCsv(PrefService* prefs,
         "PasswordManager.UPM.AutoExportedCsvStartupDeletionSuccess", success);
   }
 }
-
-#endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
 }  // namespace
 
@@ -134,13 +130,11 @@ void MaybeDeleteLoginDatabases(
     const base::FilePath& login_db_directory,
     std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge) {
   RecordLocalUpmActivationMetrics(util_bridge.get());
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   DeleteLoginDataFiles(login_db_directory);
   if (pref_service->GetBoolean(
           password_manager::prefs::kUpmAutoExportCsvNeedsDeletion)) {
     DeleteAutoExportedCsv(pref_service, login_db_directory);
   }
-#endif
 }
 
 }  // namespace password_manager_android_util

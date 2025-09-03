@@ -67,7 +67,6 @@
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
@@ -1183,15 +1182,15 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::AUTOFILL_VALUABLE);
   }
 
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, PASSWORDS require that Google Play Services is present.
   password_manager_android_util::PasswordManagerUtilBridge util_bridge;
   if (util_bridge.IsInternalBackendPresent()) {
     allowed_types.Put(syncer::PASSWORDS);
   }
-#else   // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+#else   // BUILDFLAG(IS_ANDROID)
   allowed_types.Put(syncer::PASSWORDS);
-#endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {

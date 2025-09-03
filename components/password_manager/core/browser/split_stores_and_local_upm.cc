@@ -8,7 +8,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/buildflag.h"
-#include "components/password_manager/core/browser/password_manager_buildflags.h"
 
 namespace password_manager {
 
@@ -21,9 +20,6 @@ const int kSplitStoresUpmMinVersionForAuto = 241512000;
 }  // namespace
 
 bool IsGmsCoreUpdateRequired() {
-#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  return false;
-#else
   const std::string& gms_version_str =
       base::android::device_info::gms_version_code();
   int gms_version;
@@ -33,7 +29,6 @@ bool IsGmsCoreUpdateRequired() {
   }
   // Returns whether GMSCore version is pre account/local password separation.
   return gms_version < GetSplitStoresUpmMinVersion();
-#endif  //  BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }
 
 int GetSplitStoresUpmMinVersion() {

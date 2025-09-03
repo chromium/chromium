@@ -184,7 +184,7 @@ std::vector<T> GetColumnValuesFromDatabase(const base::FilePath& database_path,
   return results;
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Set the new password value for all the rows with the specified username.
 void UpdatePasswordValueForUsername(const base::FilePath& database_path,
                                     const std::u16string& username,
@@ -201,7 +201,7 @@ void UpdatePasswordValueForUsername(const base::FilePath& database_path,
 
   CHECK(s.Run());
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool AddZeroClickableLogin(LoginDatabase* db,
                            const std::string& unique_string,
@@ -1702,10 +1702,10 @@ TEST_P(LoginDatabaseTest, ReportMetricsTest) {
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ProfileStore.InaccessiblePasswords3", 0, 1);
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_IOS)
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.BubbleSuppression.AccountsInStatisticsTable2", 4, 1);
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 // This test is mostly a copy of ReportMetricsTest, but covering the account
@@ -1980,8 +1980,8 @@ TEST_P(LoginDatabaseTest, EncryptionEnabled) {
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-// On Android and ChromeOS there is a mix of plain-text and obfuscated
+#if BUILDFLAG(IS_CHROMEOS)
+// On ChromeOS there is a mix of plain-text and obfuscated
 // passwords. Verify that they can both be accessed. Obfuscated passwords start
 // with "v10". Some password values also start with "v10". Test that both are
 // accessible (this doesn't work for any plain-text value).
@@ -2033,7 +2033,7 @@ TEST_P(LoginDatabaseTest, HandleObfuscationMix) {
                   Field(&PasswordForm::password_value, k_plain_text_pw116),
                   Field(&PasswordForm::password_value, k_plain_text_pw216)));
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // If the database initialisation fails, the initialisation transaction should
 // roll back without crashing.
