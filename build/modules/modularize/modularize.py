@@ -57,6 +57,7 @@ def main(args):
           'use_remoteexec = true',
           'symbol_level = 0',
           'is_debug = false',
+          'running_modularize = true',
       ]))
 
     error_log = None if args.error_log is None else args.error_log / platform

@@ -24,12 +24,14 @@ IGNORED_MODULES = [
     '_stddef',
 ]
 
-# When any of the following directory names are in the path, it's treated as a toolchain directory.
+# When any of the following directory names are in the path, it's treated as a
+# sysroot directory.
 SYSROOT_DIRS = {
     'android_toolchain',
     'debian_bullseye_amd64-sysroot',
     'debian_bullseye_arm64-sysroot',
     'debian_bullseye_armhf-sysroot',
+    'debian_bullseye_i386-sysroot',
     'fuchsia-sdk',
     'MacOSX.platform',
     'win_toolchain',

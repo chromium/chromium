@@ -8,6 +8,7 @@
 # you add a new build file, there must be some path of dependencies from this
 # file to your new one or GN won't know about it.
 
+import("//build/config/c++/modules.gni")
 import("//build/config/cast.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
@@ -1681,15 +1682,20 @@ if (use_blink && !is_cronet_build) {
   }
 }
 
-# TODO(cassew): Add more OS's that don't support x86.
-is_valid_x86_target =
-    target_os != "ios" && target_os != "mac" &&
-    (target_os != "linux" || use_libfuzzer || !build_with_chromium)
+# While linux-x86 is unsupported, chromeos-x86 is not, and since ChromeOS uses
+# the linux sysroot (and thus linux modulemaps), generating chromeos-x86
+# modulemaps requires building targets on linux-x86
+if (!running_modularize) {
+  # TODO(cassew): Add more OS's that don't support x86.
+  is_valid_x86_target =
+      target_os != "ios" && target_os != "mac" &&
+      (target_os != "linux" || use_libfuzzer || !build_with_chromium)
 
-# Note: v8_target_cpu == arm allows using the V8 arm simulator on x86 for fuzzing.
-assert(
-    is_valid_x86_target || target_cpu != "x86" || v8_target_cpu == "arm",
-    "'target_cpu=x86' is not supported for 'target_os=$target_os'. Consider omitting 'target_cpu' (default) or using 'target_cpu=x64' instead.")
+  # Note: v8_target_cpu == arm allows using the V8 arm simulator on x86 for fuzzing.
+  assert(
+      is_valid_x86_target || target_cpu != "x86" || v8_target_cpu == "arm",
+      "'target_cpu=x86' is not supported for 'target_os=$target_os'. Consider omitting 'target_cpu' (default) or using 'target_cpu=x64' instead.")
+}
 
 group("chromium_builder_perf") {
   testonly = true

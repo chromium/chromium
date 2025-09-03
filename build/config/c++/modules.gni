@@ -6,6 +6,9 @@ import("//build/config/apple/apple_sdk.gni")
 import("//build/config/clang/clang.gni")
 
 declare_args() {
+  # Set to true when being run by build/modules/modularize.py
+  running_modularize = false
+
   # It's a nontrivial switch, with differing APIs, so it's somewhat difficult
   # to migrate over one platform at a time.
   # In general, this should be true unless we have specifically supported
