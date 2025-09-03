@@ -4,17 +4,12 @@
 
 package org.chromium.components.browser_ui.util;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -73,48 +68,9 @@ public class DownloadUtils {
     }
 
     /**
-     * Adds a download to the Android DownloadManager.
-     *
-     * @see android.app.DownloadManager#addCompletedDownload(String, String, boolean, String,
-     *     String, long, boolean)
-     */
-    public static long addCompletedDownload(
-            String fileName,
-            String description,
-            String mimeType,
-            String filePath,
-            long fileSizeBytes,
-            GURL originalUrl,
-            GURL referer) {
-        assert !ThreadUtils.runningOnUiThread();
-        assert Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-                : "addCompletedDownload is deprecated in Q, may cause crash.";
-        Context context = ContextUtils.getApplicationContext();
-        DownloadManager manager =
-                (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        boolean useSystemNotification = !NotificationProxyUtils.areNotificationsEnabled();
-        try {
-            // OriginalUri has to be null or non-empty http(s) scheme.
-            Uri originalUri = parseOriginalUrl(originalUrl.getSpec());
-            Uri refererUri = GURL.isEmptyOrInvalid(referer) ? null : Uri.parse(referer.getSpec());
-            return manager.addCompletedDownload(
-                    fileName,
-                    description,
-                    true,
-                    mimeType,
-                    filePath,
-                    fileSizeBytes,
-                    useSystemNotification,
-                    originalUri,
-                    refererUri);
-        } catch (Exception e) {
-            return INVALID_SYSTEM_DOWNLOAD_ID;
-        }
-    }
-
-    /**
      * Parses an originating URL string and returns a valid Uri that can be inserted into
      * DownloadManager. The returned Uri has to be null or non-empty http(s) scheme.
+     *
      * @param originalUrl String representation of the originating URL.
      * @return A valid Uri that can be accepted by DownloadManager.
      */

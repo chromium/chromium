@@ -6,19 +6,16 @@ package org.chromium.components.browser_ui.share;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.app.DownloadManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -37,12 +34,10 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -219,10 +214,7 @@ public class ShareImageFileUtils {
                     bitmap =
                             ApiCompatibilityUtils.getBitmapByUri(
                                     context.getContentResolver(), imageUri);
-                    // We don't want to use hardware bitmaps in case of software rendering. See
-                    // https://crbug.com/1172883.
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                            && isHardwareBitmap(bitmap)) {
+                    if (isHardwareBitmap(bitmap)) {
                         bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, /* mutable= */ false);
                     }
                 } catch (IOException e) {
@@ -242,9 +234,7 @@ public class ShareImageFileUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private static boolean isHardwareBitmap(Bitmap bitmap) {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         return bitmap.getConfig() == Bitmap.Config.HARDWARE;
     }
 
@@ -315,16 +305,7 @@ public class ShareImageFileUtils {
                 (File destFile) -> {
                     Uri uri = null;
                     if (!isTemporary) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            uri = addToMediaStore(destFile);
-                        } else {
-                            long downloadId = addCompletedDownload(destFile);
-                            DownloadManager manager =
-                                    (DownloadManager)
-                                            ContextUtils.getApplicationContext()
-                                                    .getSystemService(Context.DOWNLOAD_SERVICE);
-                            uri = manager.getUriForDownloadedFile(downloadId);
-                        }
+                        uri = addToMediaStore(destFile);
                     } else {
                         uri = FileUtils.getUriForFile(destFile);
                     }
@@ -453,30 +434,7 @@ public class ShareImageFileUtils {
         fos.write(data);
     }
 
-    /**
-     * This is a pass through to the {@link AndroidDownloadManager} function of the same name.
-     * @param file The File corresponding to the download.
-     * @return the download ID of this item as assigned by the download manager.
-     */
-    public static long addCompletedDownload(File file) {
-        String title = file.getName();
-        String path = file.getPath();
-        long length = file.length();
-
-        return DownloadUtils.addCompletedDownload(
-                title,
-                title,
-                getImageMimeType(file),
-                path,
-                length,
-                GURL.emptyGURL(),
-                GURL.emptyGURL());
-    }
-
-    @RequiresApi(29)
     public static @Nullable Uri addToMediaStore(File file) {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-
         final ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, file.getName());
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, getImageMimeType(file));
