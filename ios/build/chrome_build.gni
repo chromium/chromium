@@ -14,10 +14,10 @@ assert(target_platform == "iphoneos",
 
 # LINT.IfChange
 
-# Xcode 16.0 or higher is required to build Chromium on iOS. This file should
+# Xcode 26.0 or higher is required to build Chromium on iOS. This file should
 # only be included when building Chromium, not other related projects (cronet,
 # webrtc, ...).
-assert(xcode_version_int >= 1600, "Xcode 16.0 or higher is required.")
+assert(xcode_version_int >= 2600, "Xcode 26.0 or higher is required.")
 
 # LINT.ThenChange(//docs/ios/build_instructions.md)
 
