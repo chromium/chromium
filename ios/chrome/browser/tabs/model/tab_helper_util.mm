@@ -287,9 +287,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   // TODO(crbug.com/41360476): pre-rendered WebState have lots of unnecessary
   // tab helpers for historical reasons. For the moment, AttachTabHelpers
-  // allows to inhibit the creation of some of them. Once PreloadController
-  // has been refactored to only create the necessary tab helpers, this
-  // condition can be removed.
+  // allows to inhibit the creation of some of them.
   if (!for_lens_overlay && !for_prerender) {
     SadTabTabHelper::CreateForWebState(
         web_state, SadTabTabHelper::kDefaultRepeatFailureInterval);

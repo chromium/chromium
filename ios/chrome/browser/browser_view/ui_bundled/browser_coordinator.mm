@@ -167,8 +167,8 @@
 #import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_coordinator.h"
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h"
-#import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
+#import "ios/chrome/browser/prerender/model/prerender_browser_agent_delegate.h"
 #import "ios/chrome/browser/presenters/ui_bundled/vertical_animation_container.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_view_coordinator.h"
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
@@ -403,7 +403,7 @@ enum class ToolbarKind {
     PriceTrackedItemsCommands,
     PromosManagerCommands,
     PolicyChangeCommands,
-    PreloadControllerDelegate,
+    PrerenderBrowserAgentDelegate,
     QuickDeleteCommands,
     ReaderModeBrowserAgentDelegate,
     ReaderModeCommands,
@@ -3907,12 +3907,7 @@ enum class ToolbarKind {
   self.passwordSuggestionCoordinator = nil;
 }
 
-#pragma mark - PreloadControllerDelegate methods
-
-- (web::WebState*)webStateToReplace {
-  return self.browser ? self.browser->GetWebStateList()->GetActiveWebState()
-                      : nullptr;
-}
+#pragma mark - PrerenderBrowserAgentDelegate methods
 
 - (UIView*)webViewContainer {
   return self.browserContainerCoordinator.viewController.view;

@@ -7,24 +7,17 @@ source_set("prerender_pref") {
 }
 
 source_set("model") {
-  public = [
-    "preload_controller_delegate.h",
+  sources = [
     "prerender_browser_agent.h",
+    "prerender_browser_agent.mm",
+    "prerender_browser_agent_delegate.h",
     "prerender_tab_helper.h",
+    "prerender_tab_helper.mm",
     "prerender_tab_helper_delegate.h",
   ]
-  sources = [
-    "preload_controller.h",
-    "preload_controller.mm",
-    "prerender_browser_agent.mm",
-    "prerender_tab_helper.mm",
-  ]
-
-  friend = [ ":unit_tests" ]
-
-  public_deps = [ "//base" ]
   deps = [
     ":prerender_pref",
+    "//base",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/signin/ios/browser",
@@ -59,7 +52,7 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "preload_controller_unittest.mm" ]
+  sources = [ "prerender_browser_agent_unittest.mm" ]
   deps = [
     ":model",
     ":prerender_pref",
@@ -71,8 +64,11 @@ source_set("unit_tests") {
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common:features",
     "//components/supervised_user/test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/web/public/test",
