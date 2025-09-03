@@ -997,6 +997,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.IsSitePerProcessOrStricter.AndroidDesktop"
+    enum="Boolean" expires_after="2026-08-28">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>wenz@chromium.org</owner>
+  <summary>
+    Whether the site isolation mode is site-per-process or more strict
+    specifically for Android Desktop devices. Recorded once shortly after
+    browser startup, because the value does not change at runtime.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.MissedReuseOpportunity.Found.MainFrame"
     enum="Boolean" expires_after="2026-07-18">
   <owner>aattar@google.com</owner>

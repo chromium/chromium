@@ -52,6 +52,7 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
+#include "build/android_buildflags.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -860,6 +861,12 @@ int BrowserMainLoop::PreCreateThreads() {
   // Process" or a stricter mode, such as "Strict Origin Isolation."
   base::UmaHistogramBoolean("SiteIsolation.IsSitePerProcessOrStricter",
                             SiteIsolationPolicy::IsSitePerProcessOrStricter());
+
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_DESKTOP_ANDROID)
+  base::UmaHistogramBoolean(
+      "SiteIsolation.IsSitePerProcessOrStricter.AndroidDesktop",
+      SiteIsolationPolicy::IsSitePerProcessOrStricter());
+#endif
 
   // Generate the browser process salt. This is then accessible by calls to
   // GetPseudonymizationSalt in the browser process. This generation is only
