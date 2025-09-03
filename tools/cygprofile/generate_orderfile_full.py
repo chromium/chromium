@@ -62,31 +62,7 @@ class StepRecorder:
   """Records steps and timings."""
 
   def __init__(self):
-    self.timings = []
-    self._previous_step = ('', 0.0)
     self._error_recorded = False
-
-  def BeginStep(self, name):
-    """Marks a beginning of the next step in the generator.
-
-    Args:
-      name: The name of the step.
-    """
-    self.EndStep()
-    self._previous_step = (name, time.time())
-    logging.info('Running step: %s', name)
-
-  def EndStep(self):
-    """Records successful completion of the current step.
-
-    This is optional if the step is immediately followed by another BeginStep.
-    """
-    if self._previous_step[0]:
-      elapsed = time.time() - self._previous_step[1]
-      logging.info('Step %s took %f seconds', self._previous_step[0], elapsed)
-      self.timings.append((self._previous_step[0], elapsed))
-
-    self._previous_step = ('', 0.0)
 
   def FailStep(self, message=None):
     """Marks that a particular step has failed.
@@ -96,11 +72,9 @@ class StepRecorder:
     Args:
       message: An optional explanation as to why the step failed.
     """
-    logging.error('STEP FAILED!!')
     if message:
       logging.error(message)
     self._error_recorded = True
-    self.EndStep()
 
   def ErrorRecorded(self):
     """True if FailStep has been called."""
@@ -205,7 +179,7 @@ class ClankCompiler:
       instrumented: (bool) Whether we want to build an instrumented binary.
       target: (str) The name of the ninja target to build.
     """
-    self._step_recorder.BeginStep('Compile %s' % target)
+    logging.info('Compile %s' % target)
     gn_args = self._GenerateGnArgs(instrumented)
     self._step_recorder.RunCommand([
         sys.executable,
@@ -406,7 +380,7 @@ class OrderfileGenerator:
     The produced list of offsets is saved in
     self._GetUnpatchedOrderfileFilename().
     """
-    self._step_recorder.BeginStep('Generate Profile Data')
+    logging.info('Generate Profile Data')
     files = []
     logging.getLogger().setLevel(logging.DEBUG)
 
@@ -436,7 +410,7 @@ class OrderfileGenerator:
     Args:
       file: Profile files pulled locally.
     """
-    self._step_recorder.BeginStep('Process Phased Orderfile')
+    logging.info('Process Phased Orderfile')
     assert self._compiler is not None
     ordered_symbols, symbols_size = orderfile_shared.ProcessProfiles(
         files, self._compiler.lib_chrome_so)
@@ -454,12 +428,12 @@ class OrderfileGenerator:
   def _AddDummyFunctions(self):
     # TODO(crbug.com/340534475): Stop writing the `unpatched_orderfile` and
     # saving it locally.
-    self._step_recorder.BeginStep('Add dummy functions')
+    logging.info('Add dummy functions')
     orderfile_shared.AddDummyFunctions(self._GetUnpatchedOrderfileFilename(),
                                        self._GetPathToOrderfile())
 
   def _VerifySymbolOrder(self):
-    self._step_recorder.BeginStep('Verify Symbol Order')
+    logging.info('Verify Symbol Order')
     assert self._compiler is not None
     return check_orderfile.ExtractAndVerifySymbolOrder(
         self._compiler.lib_chrome_so, self._GetPathToOrderfile())
@@ -469,7 +443,7 @@ class OrderfileGenerator:
     Args:
       apk: Path to the apk.
     """
-    self._step_recorder.BeginStep("Running system_health.webview_startup")
+    logging.info('Running system_health.webview_startup')
     try:
       chromium_out_dir = os.path.abspath(
           os.path.join(os.path.dirname(apk), '..'))
@@ -514,7 +488,7 @@ class OrderfileGenerator:
       results: ([int]) Values of native code memory footprint in bytes from the
                        benchmark results.
     """
-    self._step_recorder.BeginStep("Running orderfile.memory_mobile")
+    logging.info('Running orderfile.memory_mobile')
     try:
       out_dir = tempfile.mkdtemp()
       cmd = [
@@ -562,7 +536,7 @@ class OrderfileGenerator:
     Returns:
       results: Speedometer2.0 results samples in milliseconds.
     """
-    self._step_recorder.BeginStep("Running Speedometer2.0.")
+    logging.info('Running Speedometer2.0.')
     try:
       out_dir = tempfile.mkdtemp()
       cmd = [
@@ -692,7 +666,6 @@ class OrderfileGenerator:
           self.RunBenchmark(self._uninstrumented_out_dir),
           self.RunBenchmark(self._no_orderfile_out_dir, no_orderfile=True))
 
-    self._step_recorder.EndStep()
     return not self._step_recorder.ErrorRecorded()
 
   def CompileAndVerify(self):
@@ -704,8 +677,7 @@ class OrderfileGenerator:
     return self._VerifySymbolOrder()
 
   def GetReportingData(self):
-    """Get a dictionary of reporting data (timings, output hashes)"""
-    self._output_data['timings'] = self._step_recorder.timings
+    """Get a dictionary of reporting data."""
     return self._output_data
 
 
