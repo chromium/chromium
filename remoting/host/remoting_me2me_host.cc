@@ -122,6 +122,7 @@
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/rtc_base/event_tracer.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -143,6 +144,7 @@
 #if defined(REMOTING_USE_X11)
 #include <gtk/gtk.h>
 
+#include "remoting/host/linux/gnome_remote_desktop_session.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xlib_support.h"
@@ -1832,6 +1834,21 @@ void HostProcess::StartHost() {
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
   SetState(HOST_STARTED);
+
+#if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
+  if (webrtc::DesktopCapturer::IsRunningUnderWayland()) {
+    GnomeRemoteDesktopSession::GetInstance()->Init(
+        base::BindOnce([](base::expected<void, std::string> result) {
+          if (result.has_value()) {
+            LOG(INFO)
+                << "Gnome remote desktop session initialization succeeded.";
+          } else {
+            LOG(ERROR) << "Gnome remote desktop session initialization failed: "
+                       << result.error();
+          }
+        }));
+  }
+#endif
 
   InitializeSignaling();
 
