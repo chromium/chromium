@@ -109,9 +109,22 @@ class InformedRestoreTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_{features::kSanitize};
 };
 
-// TODO(crbug.com/413281717): Test is flaky
 // Creates 2 browser windows that will be restored in the main test.
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_PRE_LaunchBrowsers) {
+//
+// TODO(crbug.com/431933537): Disabled on MSAN due to a renderer crash. The
+// crash is caused by a use-of-uninitialized-value in
+// blink::CSSParserImpl::ParseStyleSheet when parsing default stylesheets,
+// indicating an underlying Blink issue rather than a problem with the test
+// logic.
+//
+// A separate bug (crbug.com/431933537) is filed to specifically track the
+// blink::CSSParserImpl::ParseStyleSheet issue.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PRE_LaunchBrowsers DISABLED_PRE_LaunchBrowsers
+#else
+#define MAYBE_PRE_LaunchBrowsers PRE_LaunchBrowsers
+#endif
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, MAYBE_PRE_LaunchBrowsers) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -123,10 +136,23 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_PRE_LaunchBrowsers) {
   AppLaunchInfoSaveWaiter::Wait();
 }
 
-// TODO(crbug.com/413281717): Test is flaky
 // Verify that with two elements in the full restore file, we enter overview on
 // login. Then when we click the restore button, we restore two browsers.
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_LaunchBrowsers) {
+//
+// TODO(crbug.com/431933537): Disabled on MSAN due to a renderer crash. The
+// crash is caused by a use-of-uninitialized-value in
+// blink::CSSParserImpl::ParseStyleSheet when parsing default stylesheets,
+// indicating an underlying Blink issue rather than a problem with the test
+// logic.
+//
+// A separate bug (crbug.com/431933537) is filed to specifically track the
+// blink::CSSParserImpl::ParseStyleSheet issue.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_LaunchBrowsers DISABLED_LaunchBrowsers
+#else
+#define MAYBE_LaunchBrowsers LaunchBrowsers
+#endif
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, MAYBE_LaunchBrowsers) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Verify we have entered overview. The restore button will be null if we
