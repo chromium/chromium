@@ -103,55 +103,6 @@ TEST_F(PasswordManagerAndroidUtilTest, PasswordManagerAvailable) {
   EXPECT_TRUE(IsPasswordManagerAvailable(std::move(mock_util_bridge)));
 }
 
-TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmNotActiveWhenNoGms) {
-  base::android::device_info::set_gms_version_code_for_test(
-      base::NumberToString(GetSplitStoresUpmMinVersion() - 1));
-
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<MockPasswordManagerUtilBridge> mock_bridge =
-      GetMockBridgeWithBackendPresent();
-  EXPECT_CALL(*mock_bridge, IsGooglePlayServicesUpdatable)
-      .WillOnce(Return(false));
-  MaybeDeleteLoginDatabases(pref_service(), login_db_directory(),
-                            std::move(mock_bridge));
-  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.Android.NotAvailableReason",
-      PasswordManagerNotAvailableReason::kNoGmsCore, 1);
-}
-
-TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmNotActiveWhenGmsTooOld) {
-  base::android::device_info::set_gms_version_code_for_test(
-      base::NumberToString(GetSplitStoresUpmMinVersion() - 1));
-
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<MockPasswordManagerUtilBridge> mock_bridge =
-      GetMockBridgeWithBackendPresent();
-  EXPECT_CALL(*mock_bridge, IsGooglePlayServicesUpdatable)
-      .WillOnce(Return(true));
-  MaybeDeleteLoginDatabases(pref_service(), login_db_directory(),
-                            std::move(mock_bridge));
-  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.Android.NotAvailableReason",
-      PasswordManagerNotAvailableReason::kOutdatedGmsCore, 1);
-}
-
-TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmActive) {
-  base::android::device_info::set_gms_version_code_for_test(
-      base::NumberToString(GetSplitStoresUpmMinVersion()));
-
-  base::HistogramTester histogram_tester;
-  MaybeDeleteLoginDatabases(pref_service(), login_db_directory(),
-                            GetMockBridgeWithBackendPresent());
-  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated", true,
-                                      1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.Android.NotAvailableReason", 0);
-}
-
 TEST_F(PasswordManagerAndroidUtilTest, DeletesLoginDataFiles) {
   base::HistogramTester histogram_tester;
   const char kRemovalStatusProfileMetric[] =

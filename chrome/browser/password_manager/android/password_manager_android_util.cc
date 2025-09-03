@@ -76,38 +76,6 @@ void DeleteAutoExportedCsv(PrefService* prefs,
 
 }  // namespace
 
-PasswordManagerNotAvailableReason GetPasswordManagerNotActiveReason(
-    PasswordManagerUtilBridgeInterface* util_bridge,
-    bool is_internal_backend_present) {
-  if (!is_internal_backend_present) {
-    return PasswordManagerNotAvailableReason::kInternalBackendNotPresent;
-  }
-
-  if (!HasMinGmsVersionForFullUpmSupport()) {
-    if (!util_bridge->IsGooglePlayServicesUpdatable()) {
-      return PasswordManagerNotAvailableReason::kNoGmsCore;
-    }
-    return PasswordManagerNotAvailableReason::kOutdatedGmsCore;
-  }
-
-  NOTREACHED();
-}
-
-void RecordLocalUpmActivationMetrics(
-    PasswordManagerUtilBridgeInterface* util_bridge) {
-  bool is_internal_backend_present = util_bridge->IsInternalBackendPresent();
-  bool is_pwm_available =
-      IsPasswordManagerAvailable(is_internal_backend_present);
-  base::UmaHistogramBoolean("PasswordManager.LocalUpmActivated",
-                            is_pwm_available);
-  if (!is_pwm_available) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.Android.NotAvailableReason",
-        GetPasswordManagerNotActiveReason(util_bridge,
-                                          is_internal_backend_present));
-  }
-}
-
 bool IsPasswordManagerAvailable(
     std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge) {
   return IsPasswordManagerAvailable(util_bridge->IsInternalBackendPresent());
@@ -129,7 +97,6 @@ void MaybeDeleteLoginDatabases(
     PrefService* pref_service,
     const base::FilePath& login_db_directory,
     std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge) {
-  RecordLocalUpmActivationMetrics(util_bridge.get());
   DeleteLoginDataFiles(login_db_directory);
   if (pref_service->GetBoolean(
           password_manager::prefs::kUpmAutoExportCsvNeedsDeletion)) {
