@@ -957,8 +957,8 @@
       status: "stable",
     },
     {
+      // TODO(crbug.com/440374239): Disabled due to https://crbug.com/440374239.
       name: "ClipElementVisibleBoundsInLocalRoot",
-      status: "stable",
     },
     {
       name: "ClipPathNestedRasterOptimization",
