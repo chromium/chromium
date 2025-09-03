@@ -68,7 +68,7 @@ public class TabUiThemeUtil {
         if (isIncognito) {
             return ContextCompat.getColor(context, R.color.tab_strip_tablet_bg_incognito);
         }
-        return SurfaceColorUpdateUtils.getTabStripBackgroundColorDefault(context);
+        return SemanticColorUtils.getColorSurfaceContainerHigh(context);
     }
 
     private static @ColorInt int getTabStripBackgroundColorUnfocused(
@@ -77,7 +77,9 @@ public class TabUiThemeUtil {
         if (isIncognito) {
             return ContextCompat.getColor(context, R.color.tab_strip_tablet_bg_unfocused_incognito);
         }
-        return SurfaceColorUpdateUtils.getTabStripBackgroundColorUnfocused(context);
+        @ColorInt int darkThemeColor = SemanticColorUtils.getColorSurfaceContainerLow(context);
+        @ColorInt int lightThemeColor = SemanticColorUtils.getColorSurfaceContainer(context);
+        return ColorUtils.inNightMode(context) ? darkThemeColor : lightThemeColor;
     }
 
     /** Returns the tab strip selected tab color. */

@@ -77,43 +77,6 @@ public class SurfaceColorUpdateUtils {
     }
 
     /**
-     * Determine the background color for tab strip based on surface color update flags.
-     *
-     * @see TabUiThemeUtil#getTabStripBackgroundColor
-     * @param context {@link Context} used to retrieve colors.
-     * @return The background color.
-     */
-    public static @ColorInt int getTabStripBackgroundColorDefault(Context context) {
-        if (useNewToolbarSurfaceColor()) {
-            return SemanticColorUtils.getColorSurfaceDim(context);
-        }
-        return SemanticColorUtils.getColorSurfaceContainerHigh(context);
-    }
-
-    /**
-     * Determine the background color for tab strip when unfocused based on surface color update
-     * flags.
-     *
-     * @see TabUiThemeUtil#getTabStripBackgroundColor
-     * @param context {@link Context} used to retrieve colors.
-     * @return The background color.
-     */
-    public static @ColorInt int getTabStripBackgroundColorUnfocused(Context context) {
-        if (useNewToolbarSurfaceColor()) {
-            @ColorInt int baseColor = SemanticColorUtils.getColorSurfaceDim(context);
-            @ColorInt int overlayColor = SemanticColorUtils.getColorOnSurfaceInverse(context);
-            float fraction =
-                    context.getResources()
-                            .getFraction(R.fraction.tab_strip_background_unfocused_fraction, 1, 1);
-            return ColorUtils.overlayColor(baseColor, overlayColor, fraction);
-        }
-
-        @ColorInt int darkThemeColor = SemanticColorUtils.getColorSurfaceContainerLow(context);
-        @ColorInt int lightThemeColor = SemanticColorUtils.getColorSurfaceContainer(context);
-        return ColorUtils.inNightMode(context) ? darkThemeColor : lightThemeColor;
-    }
-
-    /**
      * Returns the background color for the grid tab switcher based on the enabled flag and
      * incognito.
      *

@@ -42,10 +42,7 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [
-    "java/res/values/colors.xml",
-    "java/res/values/values.xml",
-  ]
+  sources = [ "java/res/values/colors.xml" ]
   deps = [
     "//chrome/browser/tab_ui/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",

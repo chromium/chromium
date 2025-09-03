@@ -92,7 +92,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
@@ -120,7 +119,6 @@ import java.util.List;
 @DisableFeatures({
     ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION,
     ChromeFeatureList.DATA_SHARING,
-    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY
 })
 public class StripLayoutHelperManagerTest {
@@ -386,7 +384,7 @@ public class StripLayoutHelperManagerTest {
         // Default state
         assertEquals(
                 "Initial strip background color is incorrect.",
-                SemanticColorUtils.getColorSurfaceDim(mActivity),
+                SemanticColorUtils.getColorSurfaceContainerHigh(mActivity),
                 mStripLayoutHelperManager.getBackgroundColor());
 
         // Incognito
@@ -404,7 +402,12 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onTopResumedActivityChanged(false);
         assertEquals(
                 "Unfocused strip background color is incorrect.",
-                SurfaceColorUpdateUtils.getTabStripBackgroundColorUnfocused(mActivity),
+                TabUiThemeUtil.getTabStripBackgroundColor(
+                        mActivity,
+                        /* isIn
+                        cognito= */ false,
+                        /* isInDesktopWindow= */ true,
+                        /* isActivityFocused= */ false),
                 mStripLayoutHelperManager.getBackgroundColor());
 
         // Unfocused incognito
