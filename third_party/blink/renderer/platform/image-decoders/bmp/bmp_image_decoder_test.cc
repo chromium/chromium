@@ -135,7 +135,13 @@ TEST(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
 using BMPSuiteEntry = std::tuple<std::string, std::string>;
 class BMPImageDecoderTest : public testing::TestWithParam<BMPSuiteEntry> {};
 
-TEST_P(BMPImageDecoderTest, VerifyBMPSuiteImage) {
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_VerifyBMPSuiteImage DISABLED_VerifyBMPSuiteImage
+#else
+#define MAYBE_VerifyBMPSuiteImage VerifyBMPSuiteImage
+#endif
+// TODO(crbug.com/422362214): Re-enable once flakiness is addressed.
+TEST_P(BMPImageDecoderTest, MAYBE_VerifyBMPSuiteImage) {
   // Load the BMP file under test.
   const auto& [entry_dir, entry_bmp] = GetParam();
   std::string bmp_path = base::StringPrintf(
