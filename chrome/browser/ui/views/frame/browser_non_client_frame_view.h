@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -272,7 +272,7 @@ class BrowserNonClientFrameView : public views::NonClientFrameView {
     // The bounds of a view or collection of views.
     gfx::RectF bounds;
     // The preferred margins around `bounds`.
-    gfx::InsetsF margins;
+    gfx::OutsetsF margins;
   };
 
   // Gets the bounds of the caption buttons, and their required margins if any.
