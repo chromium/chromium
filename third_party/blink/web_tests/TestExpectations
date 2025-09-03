@@ -117,10 +117,6 @@ crbug.com/1339285 [ Mac ] fast/loader/iframe-window-open-stealing-focus.html [ P
 crbug.com/1393073 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/anchor-focus.https.html [ Failure Pass ]
 crbug.com/340949930 virtual/fenced-frame-mparch/external/wpt/fenced-frame/intersection-observer.https.html [ Failure Timeout ]
 
-# temporarily disabled to land a devtools CL
-crbug.com/407752215 http/tests/devtools/network/network-choose-preview-view.js [ Failure Pass ]
-crbug.com/407752215 http/tests/devtools/network/preview-searchable.js [ Failure Pass ]
-
 # WPT Test harness doesn't deal with finding an about:blank ref test
 crbug.com/895777 external/wpt/infrastructure/assumptions/blank.html [ Timeout ]
 crbug.com/895777 external/wpt/css/css-transforms/text-perspective-001.html [ Timeout ]
@@ -9320,7 +9316,7 @@ crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-013.html [ F
 crbug.com/41493642 external/wpt/html/semantics/embedded-content/the-canvas-element/toBlob-cross-realm-callback-report-exception.html [ Failure Pass ]
 
 #Disable due to high frequency flakiness
-# temporarily skipped to land crrev.com/c/6889751 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/network/preview-searchable.js [ Failure Pass Timeout ]
+crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/network/preview-searchable.js [ Failure Pass Timeout ]
 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-xhr.js [ Failure Pass Timeout ]
 
 # Gardener 2025-01-21
