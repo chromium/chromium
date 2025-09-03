@@ -5184,11 +5184,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "fetch-gaia-hash-on-sign-in",
-    "owners":["nwokedi@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "field-classification-model-caching",
     "owners": [ "kazinova@google.com", "lamort@google.com", "chrome-password-manager-team@google.com" ],
     "expiry_milestone": 144
