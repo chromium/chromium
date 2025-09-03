@@ -1914,6 +1914,46 @@ TEST_F(WatchTimeRecorderTest, AutoPipReasonMediaPlaybackAudioAndVideo) {
   ExpectWatchTime({auto_pip_key_str, display_key_str}, kWatchTime);
 }
 
+TEST_F(WatchTimeRecorderTest, AutoPipReasonBrowserInitiatedkAudioAndVideo) {
+  mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
+      true, true, false, false, false, false, false,
+      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+  mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
+      CreateSecondaryProperties();
+  Initialize(properties.Clone());
+  wtr_->UpdateSecondaryProperties(secondary_properties.Clone());
+
+  EXPECT_CALL(*this, AutoPipReason)
+      .WillRepeatedly(testing::Return(
+          PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated));
+
+  constexpr base::TimeDelta kWatchTime = base::Seconds(54);
+  wtr_->RecordWatchTime(WatchTimeKey::kAudioVideoDisplayPictureInPicture,
+                        kWatchTime);
+  wtr_->FinalizeWatchTime({WatchTimeKey::kAudioVideoDisplayPictureInPicture});
+
+  wtr_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
+    EXPECT_UKM(UkmEntry::kWatchTime_DisplayPictureInPictureName,
+               kWatchTime.InMilliseconds());
+    EXPECT_UKM(UkmEntry::kWatchTime_AutoPipName, kWatchTime.InMilliseconds());
+  }
+
+  auto auto_pip_key_str = ConvertWatchTimeKeyToStringForUma(
+      WatchTimeKey::kAudioVideoAutoPipMediaPlayback);
+  auto display_key_str = ConvertWatchTimeKeyToStringForUma(
+      WatchTimeKey::kAudioVideoDisplayPictureInPicture);
+  ASSERT_TRUE(!auto_pip_key_str.empty());
+  ASSERT_TRUE(!display_key_str.empty());
+  ExpectWatchTime({auto_pip_key_str, display_key_str}, kWatchTime);
+}
+
 TEST_F(WatchTimeRecorderTest, AutoPipReasonMediaPlaybackAudio) {
   mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
       true, false, false, false, false, false, false,
@@ -1926,6 +1966,42 @@ TEST_F(WatchTimeRecorderTest, AutoPipReasonMediaPlaybackAudio) {
   EXPECT_CALL(*this, AutoPipReason)
       .WillRepeatedly(testing::Return(
           PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback));
+
+  constexpr base::TimeDelta kWatchTime = base::Seconds(54);
+  wtr_->RecordWatchTime(WatchTimeKey::kAudioDisplayPictureInPicture,
+                        kWatchTime);
+  wtr_->FinalizeWatchTime({WatchTimeKey::kAudioDisplayPictureInPicture});
+
+  wtr_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
+    EXPECT_NO_UKM(UkmEntry::kWatchTime_DisplayPictureInPictureName);
+    EXPECT_UKM(UkmEntry::kWatchTime_AutoPipName, kWatchTime.InMilliseconds());
+  }
+
+  auto auto_pip_key_str = ConvertWatchTimeKeyToStringForUma(
+      WatchTimeKey::kAudioAutoPipMediaPlayback);
+  ASSERT_TRUE(!auto_pip_key_str.empty());
+  ExpectWatchTime({auto_pip_key_str}, kWatchTime);
+}
+
+TEST_F(WatchTimeRecorderTest, AutoPipReasonBrowserInitiatedAudio) {
+  mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
+      true, false, false, false, false, false, false,
+      mojom::MediaStreamType::kNone, RendererType::kRendererImpl);
+  mojom::SecondaryPlaybackPropertiesPtr secondary_properties =
+      CreateSecondaryProperties();
+  Initialize(properties.Clone());
+  wtr_->UpdateSecondaryProperties(secondary_properties.Clone());
+
+  EXPECT_CALL(*this, AutoPipReason)
+      .WillRepeatedly(testing::Return(
+          PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated));
 
   constexpr base::TimeDelta kWatchTime = base::Seconds(54);
   wtr_->RecordWatchTime(WatchTimeKey::kAudioDisplayPictureInPicture,

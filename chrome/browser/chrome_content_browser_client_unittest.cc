@@ -410,6 +410,11 @@ TEST_F(ChromeContentBrowserClientWindowTest, GetAutoPipInfo_AutoPipReason) {
       media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback);
   EXPECT_EQ(media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback,
             client.GetAutoPipInfo(*web_contents).auto_pip_reason);
+
+  tab_helper->set_auto_pip_trigger_reason_for_testing(
+      media::PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated);
+  EXPECT_EQ(media::PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated,
+            client.GetAutoPipInfo(*web_contents).auto_pip_reason);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

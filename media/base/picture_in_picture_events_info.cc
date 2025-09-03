@@ -26,6 +26,8 @@ std::string PictureInPictureEventsInfo::AutoPipReasonToString(
       return "VideoConferencing";
     case AutoPipReason::kMediaPlayback:
       return "MediaPlayback";
+    case AutoPipReason::kBrowserInitiated:
+      return "BrowserInitiated";
   }
 
   NOTREACHED() << "Invalid auto_pip_reason provided: "

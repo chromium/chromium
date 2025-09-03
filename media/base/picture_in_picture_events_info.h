@@ -32,7 +32,10 @@ class MEDIA_EXPORT PictureInPictureEventsInfo {
     // Entered auto picture in picture due to media playback.
     kMediaPlayback = 2,
 
-    kMaxValue = kMediaPlayback,
+    // Entered auto picture in picture due to browser initiated action.
+    kBrowserInitiated = 3,
+
+    kMaxValue = kBrowserInitiated,
   };
 
   struct MEDIA_EXPORT AutoPipInfo {

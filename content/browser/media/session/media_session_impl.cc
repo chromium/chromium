@@ -1148,6 +1148,9 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
 
   info->meets_visibility_threshold = HasSufficientlyVisibleVideo();
 
+  info->can_enter_browser_initiated_autopip =
+      CanEnterBrowserInitiatedAutomaticPictureInPicture();
+
   return info;
 }
 
@@ -1842,7 +1845,7 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
 
   // If the website could enter browser initiated automatic picture in picture,
   // then we should expose EnterAutoPictureInPicture as an available action.
-  if (CouldEnterBrowserInitiatedAutomaticPictureInPicture()) {
+  if (CanEnterBrowserInitiatedAutomaticPictureInPicture()) {
     actions.insert(
         media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
     actions.insert(
@@ -2154,10 +2157,21 @@ bool MediaSessionImpl::IsActivelyUsingCameraOrMicrophone() const {
              media_session::mojom::CameraState::kTurnedOn;
 }
 
-bool MediaSessionImpl::CouldEnterBrowserInitiatedAutomaticPictureInPicture()
+bool MediaSessionImpl::CanEnterBrowserInitiatedAutomaticPictureInPicture()
     const {
   if (!base::FeatureList::IsEnabled(
           blink::features::kBrowserInitiatedAutomaticPictureInPicture)) {
+    return false;
+  }
+
+  // If the website has specified an action handler for 'enterpictureinpicture',
+  // then we should not enter browser initiated automatic picture-in-picture.
+  if (routed_service_ &&
+      base::FeatureList::IsEnabled(
+          blink::features::kMediaSessionEnterPictureInPicture) &&
+      base::Contains(
+          routed_service_->actions(),
+          media_session::mojom::MediaSessionAction::kEnterPictureInPicture)) {
     return false;
   }
 
@@ -2190,7 +2204,7 @@ bool MediaSessionImpl::CouldEnterBrowserInitiatedAutomaticPictureInPicture()
 
 void MediaSessionImpl::MaybeEnterBrowserInitiatedAutomaticPictureInPicture()
     const {
-  if (!CouldEnterBrowserInitiatedAutomaticPictureInPicture()) {
+  if (!CanEnterBrowserInitiatedAutomaticPictureInPicture()) {
     return;
   }
 

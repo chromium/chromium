@@ -2182,7 +2182,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}.PromptResultV2"
-    enum="MediaAutoPictureInPicturePromptResult" expires_after="2026-01-18">
+    enum="MediaAutoPictureInPicturePromptResult" expires_after="2026-06-18">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2203,7 +2203,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}.TotalTime"
-    units="ms" expires_after="2026-01-18">
+    units="ms" expires_after="2026-06-18">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2223,7 +2223,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}.TotalTimeForSession"
-    units="ms" expires_after="2026-01-18">
+    units="ms" expires_after="2026-06-18">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2245,7 +2245,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}.TotalTimeForSessionV2"
-    units="ms" expires_after="2026-01-11">
+    units="ms" expires_after="2026-06-11">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2271,7 +2271,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}.TotalTimeV2"
-    units="ms" expires_after="2026-01-18">
+    units="ms" expires_after="2026-06-18">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2288,6 +2288,134 @@ chromium-metrics-reviews@google.com.
     but with a maximum of 10 hours and a bucket size of 100.
   </summary>
   <token key="AutomaticReason">
+    <variant name="MediaPlayback"/>
+    <variant name="VideoConferencing"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2.{AutomaticReason}.PromptResultV2"
+    enum="MediaAutoPictureInPicturePromptResult" expires_after="2026-06-18">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded for automatic picture in picture reason
+    &quot;{AutomaticReason}&quot;, when the user either selects an option from
+    the Automatic picture-in-picture permission prompt, or when the user
+    manually closes the picture-in-picture window without responding to the
+    prompt, or when we decide to not show the prompt at all. When the prompt is
+    shown, this records their selection (or &quot;Ignored&quot; if they did not
+    select an option). When the prompt is not shown, records why it was not
+    shown.
+
+    The AutomaticReasonV2 histograms add the BrowserInitiated bucket.
+  </summary>
+  <token key="AutomaticReason">
+    <variant name="BrowserInitiated"/>
+    <variant name="MediaPlayback"/>
+    <variant name="VideoConferencing"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2.{AutomaticReason}.TotalTime"
+    units="ms" expires_after="2026-06-18">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total time spent on a Picture in Picture window for automatic picture in
+    picture reason &quot;{AutomaticReason}&quot;. The timer starts counting
+    every time the AutoPictureInPictureTabHelper calls
+    `EnterAutoPictureInPicture`; the time elapsed is recorded when the Picture
+    in Picture window is closed. This metric is recorded regardless of the
+    Picture in Picture window type (document vs video), and of the reason for
+    closing the window (UI interaction, returning back to opener tab, etc.).
+
+    The AutomaticReasonV2 histograms add the BrowserInitiated bucket.
+  </summary>
+  <token key="AutomaticReason">
+    <variant name="BrowserInitiated"/>
+    <variant name="MediaPlayback"/>
+    <variant name="VideoConferencing"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2.{AutomaticReason}.TotalTimeForSession"
+    units="ms" expires_after="2026-06-18">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total time spent accross all Picture in Picture windows opened by the
+    `AutoPictureInPictureTabHelper`, for automatic picture in picture reason
+    &quot;{AutomaticReason}&quot;. The timer starts counting every time the
+    AutoPictureInPictureTabHelper calls `EnterAutoPictureInPicture`; the time is
+    accumulated any time the tab helper opens and subsequently closes a picture
+    in picture window. The total picture in picture time is recorded when the
+    `AutoPictureInPictureTabHelper` is destroyed. This metric does not
+    differentiate between the Picture in Picture window types (document vs
+    video).
+
+    The AutomaticReasonV2 histograms add the BrowserInitiated bucket.
+  </summary>
+  <token key="AutomaticReason">
+    <variant name="BrowserInitiated"/>
+    <variant name="MediaPlayback"/>
+    <variant name="VideoConferencing"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2.{AutomaticReason}.TotalTimeForSessionV2"
+    units="ms" expires_after="2026-06-11">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total time spent accross all Picture in Picture windows opened by the
+    `AutoPictureInPictureTabHelper`, for automatic picture in picture reason
+    &quot;{AutomaticReason}&quot;. The timer starts counting every time the
+    AutoPictureInPictureTabHelper calls `EnterAutoPictureInPicture`; the time is
+    accumulated any time the tab helper opens and subsequently closes a picture
+    in picture window. The total picture in picture time is recorded when the
+    `AutoPictureInPictureTabHelper` is destroyed. This metric does not
+    differentiate between the Picture in Picture window types (document vs
+    video).
+
+    Similar to
+    Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}.TotalTimeForSession,
+    but with a maximum of 10 hours and a bucket size of 100.
+
+    The AutomaticReasonV2 histograms add the BrowserInitiated bucket.
+  </summary>
+  <token key="AutomaticReason">
+    <variant name="BrowserInitiated"/>
+    <variant name="MediaPlayback"/>
+    <variant name="VideoConferencing"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2.{AutomaticReason}.TotalTimeV2"
+    units="ms" expires_after="2026-06-18">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total time spent on a Picture in Picture window for automatic picture in
+    picture reason &quot;{AutomaticReason}&quot;. The timer starts counting
+    every time the AutoPictureInPictureTabHelper calls
+    `EnterAutoPictureInPicture`; the time elapsed is recorded when the Picture
+    in Picture window is closed. This metric is recorded regardless of the
+    Picture in Picture window type (document vs video), and of the reason for
+    closing the window (UI interaction, returning back to opener tab, etc.).
+
+    Similar to
+    Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}.TotalTime,
+    but with a maximum of 10 hours and a bucket size of 100.
+
+    The AutomaticReasonV2 histograms add the BrowserInitiated bucket.
+  </summary>
+  <token key="AutomaticReason">
+    <variant name="BrowserInitiated"/>
     <variant name="MediaPlayback"/>
     <variant name="VideoConferencing"/>
   </token>

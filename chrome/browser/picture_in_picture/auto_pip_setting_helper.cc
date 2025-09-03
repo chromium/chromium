@@ -194,6 +194,10 @@ void AutoPipSettingHelper::RecordResult(
           "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
           "VideoConferencing.PromptResultV2",
           result);
+      base::UmaHistogramEnumeration(
+          "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+          "VideoConferencing.PromptResultV2",
+          result);
       RecordUkms(auto_pip_reason, source_id, result);
       break;
     case media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback:
@@ -201,7 +205,17 @@ void AutoPipSettingHelper::RecordResult(
           "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
           "MediaPlayback.PromptResultV2",
           result);
+      base::UmaHistogramEnumeration(
+          "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+          "MediaPlayback.PromptResultV2",
+          result);
       RecordUkms(auto_pip_reason, source_id, result);
+      break;
+    case media::PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated:
+      base::UmaHistogramEnumeration(
+          "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+          "BrowserInitiated.PromptResultV2",
+          result);
       break;
   }
 }
@@ -231,6 +245,10 @@ void AutoPipSettingHelper::RecordUkms(
               source_id.value())
               .SetMediaPlayback(static_cast<uintmax_t>(result))
               .Record(ukm_recorder);
+      break;
+    case media::PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated:
+      // TODO(crbug.com/408502322): Add UKM support for browser initiated
+      // auto-pip.
       break;
   }
 }

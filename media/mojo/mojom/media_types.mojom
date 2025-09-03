@@ -698,6 +698,7 @@ enum AutoPipReason {
   kUnknown = 0,
   kVideoConferencing = 1,
   kMediaPlayback = 2,
+  kBrowserInitiated = 3,
 };
 
 // See media/base/picture_in_picture_events_info.h for description. Typemapped

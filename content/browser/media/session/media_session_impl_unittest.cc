@@ -1260,6 +1260,68 @@ TEST_F(MediaSessionImplTest,
 }
 
 TEST_F(MediaSessionImplTest,
+       DoesNotEnterBrowserInitiatedAutoPip_WhenPictureInPictureNotAvailable) {
+  MockMediaSessionMojoObserver observer(*GetMediaSession());
+  FlushForTesting(GetMediaSession());
+
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterAutoPictureInPicture));
+  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->can_enter_browser_initiated_autopip);
+
+  int player = player_observer_->StartNewPlayer();
+  player_observer_->SetIsPictureInPictureAvailable(player, false);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+  FlushForTesting(GetMediaSession());
+
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterAutoPictureInPicture));
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->can_enter_browser_initiated_autopip);
+
+  GetMediaSession()->EnterAutoPictureInPicture();
+  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
+}
+
+TEST_F(
+    MediaSessionImplTest,
+    CanEnterBrowserInitiatedAutoPipIsFalse_WhenEnterPictureInPictureIsPresent) {
+  MockMediaSessionMojoObserver observer(*GetMediaSession());
+  FlushForTesting(GetMediaSession());
+
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterAutoPictureInPicture));
+  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->can_enter_browser_initiated_autopip);
+
+  int player = player_observer_->StartNewPlayer();
+  player_observer_->SetIsPictureInPictureAvailable(player, true);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+  FlushForTesting(GetMediaSession());
+
+  // With no action handler, `can_enter_browser_initiated_autopip` should be
+  // true.
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kEnterAutoPictureInPicture));
+  EXPECT_TRUE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                  ->can_enter_browser_initiated_autopip);
+
+  // Enable the enterpictureinpicture action handler.
+  mock_media_session_service().EnableAction(
+      MediaSessionAction::kEnterPictureInPicture);
+  FlushForTesting(GetMediaSession());
+
+  // With the enterpictureinpicture action handler enabled,
+  // `can_enter_browser_initiated_autopip` should be false.
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kEnterAutoPictureInPicture));
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->can_enter_browser_initiated_autopip);
+}
+
+TEST_F(MediaSessionImplTest,
        ReportAutoPictureInPictureInfoChanged_Deduplicates) {
   int player = player_observer_->StartNewPlayer();
   GetMediaSession()->AddPlayer(player_observer_.get(), player);

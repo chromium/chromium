@@ -485,8 +485,10 @@ void WatchTimeRecorder::MaybeRecordWatchTimeForAutoPipReason(
     current_auto_pip_reason_ = auto_pip_reason_cb_.Run();
   }
 
-  if (current_auto_pip_reason_ !=
-      PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback) {
+  if ((current_auto_pip_reason_ !=
+       PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback) &&
+      (current_auto_pip_reason_ !=
+       PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated)) {
     return;
   }
 

@@ -35,6 +35,9 @@ const char kVideoConferencingHistogram[] =
 const char kMediaPlaybackHistogram[] =
     "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
     "MediaPlayback.PromptResultV2";
+const char kBrowserInitiatedHistogram[] =
+    "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+    "BrowserInitiated.PromptResultV2";
 
 struct TestParams {
   AutoPipReason auto_pip_reason;
@@ -343,7 +346,8 @@ TEST_F(AutoPipSettingHelperTest,
 const struct TestParams kTestHistogramNameParams[] = {
     {AutoPipReason::kUnknown},
     {AutoPipReason::kVideoConferencing},
-    {AutoPipReason::kMediaPlayback}};
+    {AutoPipReason::kMediaPlayback},
+    {AutoPipReason::kBrowserInitiated}};
 
 INSTANTIATE_TEST_SUITE_P(AllHistogramNames,
                          AutoPipSettingHelperTest,
@@ -366,17 +370,26 @@ TEST_P(AutoPipSettingHelperTest, HistogramExpectedCounts) {
       histograms.GetHistogramSamplesSinceCreation(kVideoConferencingHistogram);
   auto media_playback_samples =
       histograms.GetHistogramSamplesSinceCreation(kMediaPlaybackHistogram);
+  auto browser_initiated_samples =
+      histograms.GetHistogramSamplesSinceCreation(kBrowserInitiatedHistogram);
 
   const auto auto_pip_reason = GetParam().auto_pip_reason;
   if (auto_pip_reason == AutoPipReason::kUnknown) {
     EXPECT_EQ(0, video_conferencing_samples->TotalCount());
     EXPECT_EQ(0, media_playback_samples->TotalCount());
+    EXPECT_EQ(0, browser_initiated_samples->TotalCount());
   } else if (auto_pip_reason == AutoPipReason::kVideoConferencing) {
     EXPECT_EQ(1, video_conferencing_samples->TotalCount());
     EXPECT_EQ(0, media_playback_samples->TotalCount());
+    EXPECT_EQ(0, browser_initiated_samples->TotalCount());
   } else if (auto_pip_reason == AutoPipReason::kMediaPlayback) {
     EXPECT_EQ(0, video_conferencing_samples->TotalCount());
     EXPECT_EQ(1, media_playback_samples->TotalCount());
+    EXPECT_EQ(0, browser_initiated_samples->TotalCount());
+  } else if (auto_pip_reason == AutoPipReason::kBrowserInitiated) {
+    EXPECT_EQ(0, video_conferencing_samples->TotalCount());
+    EXPECT_EQ(0, media_playback_samples->TotalCount());
+    EXPECT_EQ(1, browser_initiated_samples->TotalCount());
   } else {
     FAIL() << "Unhandled auto picture in picture reason: "
            << static_cast<int>(auto_pip_reason);

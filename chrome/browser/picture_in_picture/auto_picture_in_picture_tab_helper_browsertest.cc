@@ -136,6 +136,10 @@ const char kMediaPlaybackTotalTimeForSessionHistogram[] =
     "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
     "MediaPlayback.TotalTimeForSession";
 
+const char kBrowserInitiatedHistogram[] =
+    "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+    "BrowserInitiated.PromptResultV2";
+
 class MockInputObserver : public content::RenderWidgetHost::InputEventObserver {
  public:
   MOCK_METHOD(void,
@@ -3197,4 +3201,42 @@ IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
   // Auto-pip should take place.
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
+                       PromptResultRecorded_BrowserInitiatedAllowOnce) {
+  // Load a page that does not register for autopip and start video playback.
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  GURL test_page_url = embedded_https_test_server().GetURL(
+      "a.com", base::FilePath(FILE_PATH_LITERAL("/"))
+                   .Append(kNotRegisteredPage)
+                   .MaybeAsASCII());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  // Set content setting to CONTENT_SETTING_ASK to show the prompt.
+  SetContentSetting(web_contents, CONTENT_SETTING_ASK);
+
+  base::HistogramTester histograms;
+  SwitchToNewTabAndWaitForAutoPip();
+  EXPECT_TRUE(web_contents->HasPictureInPictureVideo());
+
+  auto* const overlay_view = GetOverlayViewFromVideoPipWindow();
+  ASSERT_TRUE(overlay_view);
+  overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
+      AutoPipSettingView::UiResult::kAllowOnce);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples =
+      histograms.GetHistogramSamplesSinceCreation(kBrowserInitiatedHistogram);
+
+  // Verify metrics.
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(static_cast<int>(PromptResult::kAllowOnce)));
 }

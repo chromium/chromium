@@ -551,9 +551,9 @@ class MediaSessionImpl : public MediaSession,
   // currently actively used, false otherwise.
   bool IsActivelyUsingCameraOrMicrophone() const;
 
-  // Returns true if there exists a single normal "playing" player with picture
-  // in picture available, false otherwise.
-  bool CouldEnterBrowserInitiatedAutomaticPictureInPicture() const;
+  // Returns true if we can enter browser initiated automatic
+  // picture-in-picture, false otherwise.
+  bool CanEnterBrowserInitiatedAutomaticPictureInPicture() const;
 
   // Automatically enter picture-in-picture from a non-user source (e.g. in
   // reaction to content being hidden), if the EnterAutoPictureInPicture action

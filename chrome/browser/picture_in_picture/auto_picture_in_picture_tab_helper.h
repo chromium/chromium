@@ -269,6 +269,10 @@ class AutoPictureInPictureTabHelper
   // exist an empty optional is returned.
   std::optional<content::RenderFrameHost*> GetPrimaryMainRoutedFrame() const;
 
+  // Returns true if the media session can enter browser initiated automatic
+  // picture-in-picture.
+  bool CanEnterBrowserInitiatedAutoPictureInPicture() const;
+
   // Returns the page UKM SourceId associated with the primary main routed frame
   // for the MediaSession, if it exists.
   std::optional<ukm::SourceId> GetUkmSourceId() const;
@@ -286,13 +290,10 @@ class AutoPictureInPictureTabHelper
 
   // Accumulates the total time spent in picture in picture during the lifetime
   // of `this`, separated by the reason for entering auto picture in picture:
-  // video conferencing or media playback.
-  //
-  // If `is_video_conferencing` is true, `total_pip_time` will be accumulated
-  // for video conferencing, otherwise the time will be accumulated for media
-  // playback.
-  void AccumulateTotalPipTimeForSession(const base::TimeDelta total_pip_time,
-                                        bool is_video_conferencing);
+  // video conferencing, media playback or browser initiated.
+  void AccumulateTotalPipTimeForSession(
+      const base::TimeDelta total_pip_time,
+      media::PictureInPictureEventsInfo::AutoPipReason reason);
 
   // Records the total time spent on a picture in picture window, regardless of
   // the Picture-in-Picture window type (document vs video) and the reason for
@@ -389,21 +390,26 @@ class AutoPictureInPictureTabHelper
 
   // Set to the current time when `this` calls the MediaSession
   // `EnterAutoPictureInPicture` method.
-  std::optional<base::TimeTicks> current_enter_pip_time_ = std::nullopt;
+  std::optional<base::TimeTicks> current_enter_pip_time_;
 
   // The total accumulated time spent in picture in picture due to video
   // conferencing. The accumulated time does not differentiate between the
   // different types of picture in picture windows (document vs video).
   // Accumulated time is recorded during the destruction of `this`.
-  std::optional<base::TimeDelta>
-      total_video_conferencing_pip_time_for_session_ = std::nullopt;
+  std::optional<base::TimeDelta> total_video_conferencing_pip_time_for_session_;
 
   // The total accumulated time spent in picture in picture due to media
   // playback. The accumulated time does not differentiate between the different
   // types of picture in picture windows (document vs video). Accumulated time
   // is recorded during the destruction of `this`.
-  std::optional<base::TimeDelta> total_media_playback_pip_time_for_session_ =
-      std::nullopt;
+  std::optional<base::TimeDelta> total_media_playback_pip_time_for_session_;
+
+  // The total accumulated time spent in picture in picture due to browser
+  // initiated automatic picture-in-picture. The accumulated time does not
+  // differentiate between the different types of picture in picture windows
+  // (document vs video). Accumulated time is recorded during the destruction of
+  // `this`.
+  std::optional<base::TimeDelta> total_browser_initiated_pip_time_for_session_;
 
   // Clock used for metric related to the total time spent with a
   // picture-in-picture window open.

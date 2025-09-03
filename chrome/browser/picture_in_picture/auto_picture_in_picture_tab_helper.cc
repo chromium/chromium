@@ -91,19 +91,32 @@ void AutoPictureInPictureTabHelper::PrimaryPageChanged(content::Page& page) {
 
 void AutoPictureInPictureTabHelper::AccumulateTotalPipTimeForSession(
     const base::TimeDelta total_pip_time,
-    bool is_video_conferencing) {
-  if (is_video_conferencing) {
-    if (!total_video_conferencing_pip_time_for_session_) {
-      total_video_conferencing_pip_time_for_session_ = total_pip_time;
-    } else {
-      total_video_conferencing_pip_time_for_session_.value() += total_pip_time;
-    }
-  } else {
-    if (!total_media_playback_pip_time_for_session_) {
-      total_media_playback_pip_time_for_session_ = total_pip_time;
-    } else {
-      total_media_playback_pip_time_for_session_.value() += total_pip_time;
-    }
+    media::PictureInPictureEventsInfo::AutoPipReason reason) {
+  switch (reason) {
+    case media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing:
+      if (!total_video_conferencing_pip_time_for_session_) {
+        total_video_conferencing_pip_time_for_session_ = total_pip_time;
+      } else {
+        total_video_conferencing_pip_time_for_session_.value() +=
+            total_pip_time;
+      }
+      break;
+    case media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback:
+      if (!total_media_playback_pip_time_for_session_) {
+        total_media_playback_pip_time_for_session_ = total_pip_time;
+      } else {
+        total_media_playback_pip_time_for_session_.value() += total_pip_time;
+      }
+      break;
+    case media::PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated:
+      if (!total_browser_initiated_pip_time_for_session_) {
+        total_browser_initiated_pip_time_for_session_ = total_pip_time;
+      } else {
+        total_browser_initiated_pip_time_for_session_.value() += total_pip_time;
+      }
+      break;
+    case media::PictureInPictureEventsInfo::AutoPipReason::kUnknown:
+      break;
   }
 }
 
@@ -132,8 +145,14 @@ void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
         "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
         "VideoConferencing.TotalTimeV2",
         total_pip_time, base::Milliseconds(1), base::Hours(10), 100);
-    AccumulateTotalPipTimeForSession(total_pip_time,
-                                     /*is_video_conferencing=*/true);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+        "VideoConferencing.TotalTime",
+        total_pip_time, base::Milliseconds(1), base::Minutes(2), 50);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+        "VideoConferencing.TotalTimeV2",
+        total_pip_time, base::Milliseconds(1), base::Hours(10), 100);
   } else if (auto_pip_trigger_reason_ ==
              media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
@@ -144,14 +163,33 @@ void AutoPictureInPictureTabHelper::MaybeRecordPictureInPictureChanged(
         "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
         "MediaPlayback.TotalTimeV2",
         total_pip_time, base::Milliseconds(1), base::Hours(10), 100);
-    AccumulateTotalPipTimeForSession(total_pip_time,
-                                     /*is_video_conferencing=*/false);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+        "MediaPlayback.TotalTime",
+        total_pip_time, base::Milliseconds(1), base::Minutes(2), 50);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+        "MediaPlayback.TotalTimeV2",
+        total_pip_time, base::Milliseconds(1), base::Hours(10), 100);
+  } else if (auto_pip_trigger_reason_ == media::PictureInPictureEventsInfo::
+                                             AutoPipReason::kBrowserInitiated) {
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+        "BrowserInitiated.TotalTime",
+        total_pip_time, base::Milliseconds(1), base::Minutes(2), 50);
+    UMA_HISTOGRAM_CUSTOM_TIMES(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+        "BrowserInitiated.TotalTimeV2",
+        total_pip_time, base::Milliseconds(1), base::Hours(10), 100);
   }
+
+  AccumulateTotalPipTimeForSession(total_pip_time, auto_pip_trigger_reason_);
 }
 
 void AutoPictureInPictureTabHelper::MaybeRecordTotalPipTimeForSession() {
   if (!total_video_conferencing_pip_time_for_session_ &&
-      !total_media_playback_pip_time_for_session_) {
+      !total_media_playback_pip_time_for_session_ &&
+      !total_browser_initiated_pip_time_for_session_) {
     return;
   }
 
@@ -163,6 +201,16 @@ void AutoPictureInPictureTabHelper::MaybeRecordTotalPipTimeForSession() {
         base::Milliseconds(1), base::Minutes(2), 50);
     base::UmaHistogramCustomTimes(
         "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+        "VideoConferencing.TotalTimeForSessionV2",
+        total_video_conferencing_pip_time_for_session_.value(),
+        base::Milliseconds(1), base::Hours(10), 100);
+    base::UmaHistogramCustomTimes(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+        "VideoConferencing.TotalTimeForSession",
+        total_video_conferencing_pip_time_for_session_.value(),
+        base::Milliseconds(1), base::Minutes(2), 50);
+    base::UmaHistogramCustomTimes(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
         "VideoConferencing.TotalTimeForSessionV2",
         total_video_conferencing_pip_time_for_session_.value(),
         base::Milliseconds(1), base::Hours(10), 100);
@@ -179,10 +227,34 @@ void AutoPictureInPictureTabHelper::MaybeRecordTotalPipTimeForSession() {
         "MediaPlayback.TotalTimeForSessionV2",
         total_media_playback_pip_time_for_session_.value(),
         base::Milliseconds(1), base::Hours(10), 100);
+    base::UmaHistogramCustomTimes(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+        "MediaPlayback.TotalTimeForSession",
+        total_media_playback_pip_time_for_session_.value(),
+        base::Milliseconds(1), base::Minutes(2), 50);
+    base::UmaHistogramCustomTimes(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+        "MediaPlayback.TotalTimeForSessionV2",
+        total_media_playback_pip_time_for_session_.value(),
+        base::Milliseconds(1), base::Hours(10), 100);
+  }
+
+  if (total_browser_initiated_pip_time_for_session_) {
+    base::UmaHistogramCustomTimes(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+        "BrowserInitiated.TotalTimeForSession",
+        total_browser_initiated_pip_time_for_session_.value(),
+        base::Milliseconds(1), base::Minutes(2), 50);
+    base::UmaHistogramCustomTimes(
+        "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
+        "BrowserInitiated.TotalTimeForSessionV2",
+        total_browser_initiated_pip_time_for_session_.value(),
+        base::Milliseconds(1), base::Hours(10), 100);
   }
 
   total_video_conferencing_pip_time_for_session_ = std::nullopt;
   total_media_playback_pip_time_for_session_ = std::nullopt;
+  total_browser_initiated_pip_time_for_session_ = std::nullopt;
 }
 
 void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
@@ -582,6 +654,19 @@ void AutoPictureInPictureTabHelper::EnsureAutoPipSettingHelper() {
   }
 }
 
+bool AutoPictureInPictureTabHelper::
+    CanEnterBrowserInitiatedAutoPictureInPicture() const {
+  content::MediaSession* media_session =
+      content::MediaSession::GetIfExists(web_contents());
+  if (!media_session) {
+    return false;
+  }
+
+  media_session::mojom::MediaSessionInfoPtr info =
+      media_session->GetMediaSessionInfoSync();
+  return info && info->can_enter_browser_initiated_autopip;
+}
+
 std::optional<content::RenderFrameHost*>
 AutoPictureInPictureTabHelper::GetPrimaryMainRoutedFrame() const {
   content::MediaSession* media_session =
@@ -627,7 +712,19 @@ media::PictureInPictureEventsInfo::AutoPipReason
 AutoPictureInPictureTabHelper::GetAutoPipReason() const {
   if (IsUsingCameraOrMicrophone()) {
     return media::PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing;
-  } else if (MeetsVideoPlaybackConditions()) {
+  }
+
+  // Note that order matters here since
+  // `CanEnterBrowserInitiatedAutoPictureInPicture` and
+  // `MeetsVideoPlaybackConditions` can both be true at the same time. The
+  // disambiguating condition is that browser initiated
+  // automatic-picture-in-picture can only be true when there is no action
+  // handler registered for the media session enterpictureinpicture action.
+  if (CanEnterBrowserInitiatedAutoPictureInPicture()) {
+    return media::PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated;
+  }
+
+  if (MeetsVideoPlaybackConditions()) {
     return media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
   }
 
