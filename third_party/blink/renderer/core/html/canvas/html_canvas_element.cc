@@ -1212,8 +1212,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
   // That test should be run manually against CLs that touch this code.
   if (IsPrinting() && IsRenderingContext2D() &&
       RenderingContext()->GetResourceProviderForCanvas2D()) {
-    auto* provider = RenderingContext()->GetResourceProviderForCanvas2D();
-    provider->FlushCanvas(FlushReason::kPrinting);
+    RenderingContext()->FlushCanvas(FlushReason::kPrinting);
     // `FlushRecording` might be a no-op if a flush already happened before.
     // Fortunately, the last flush recording was kept by the context.
     const std::optional<cc::PaintRecord>& last_recording =

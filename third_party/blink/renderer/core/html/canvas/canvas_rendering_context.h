@@ -270,6 +270,9 @@ class CORE_EXPORT CanvasRenderingContext
   void WillProcessTask(const base::PendingTask&, bool) final {}
 
   // Canvas2D-specific interface
+  virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason) {
+    NOTREACHED();
+  }
   virtual void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const {}
   virtual void Reset() {}
   virtual void RestoreFromInvalidSizeIfNeeded() {}
