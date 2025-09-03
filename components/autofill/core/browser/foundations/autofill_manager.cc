@@ -145,7 +145,8 @@ struct AutofillManager::AsyncContext {
 
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   std::vector<HeuristicPredictions> heuristic_predictions;
-  // TODO(crbug.com/427787155): Add members for heuristic and model predictions.
+  std::vector<ModelPredictions> autofill_predictions;
+  std::vector<ModelPredictions> password_manager_predictions;
   GeoIpCountryCode country_code;
   LanguageCode current_page_language;
   std::unique_ptr<BufferingLogManager> log_manager;
@@ -727,19 +728,28 @@ void AutofillManager::ParseFormsAsyncCommon(
         }
         CHECK_EQ(context.heuristic_predictions.size(),
                  context.form_structures.size());
-        for (auto [form_structure, heuristic_predictions] : base::zip(
-                 context.form_structures, context.heuristic_predictions)) {
-          FormStructure& raw_form_structure = *form_structure;
-          self->form_structures_[raw_form_structure.global_id()] =
-              std::move(form_structure);
-          heuristic_predictions.ApplyTo(raw_form_structure.fields());
-          raw_form_structure.RationalizeAndAssignSections(
-              context.country_code, context.current_page_language,
-              context.log_manager.get());
-          raw_form_structure.LogDeveloperEngagementMetric();
-          self->LogCurrentFieldTypes(raw_form_structure);
+        for (size_t i = 0; i < context.form_structures.size(); ++i) {
+          FormStructure& f = *context.form_structures[i];
+          self->form_structures_[f.global_id()] =
+              std::move(context.form_structures[i]);
+
+          if (!context.autofill_predictions.empty()) {
+            context.autofill_predictions[i].ApplyTo(f.fields());
+          }
+          if (!context.password_manager_predictions.empty()) {
+            context.password_manager_predictions[i].ApplyTo(f.fields());
+          }
+          if (!context.heuristic_predictions.empty()) {
+            context.heuristic_predictions[i].ApplyTo(f.fields());
+          }
+          f.RationalizeAndAssignSections(context.country_code,
+                                         context.current_page_language,
+                                         context.log_manager.get());
+
+          f.LogDeveloperEngagementMetric();
+          self->LogCurrentFieldTypes(f);
           self->NotifyObservers(
-              &Observer::OnFieldTypesDetermined, raw_form_structure.global_id(),
+              &Observer::OnFieldTypesDetermined, f.global_id(),
               Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
         }
         std::move(callback).Run(*self);
@@ -825,11 +835,23 @@ void AutofillManager::RunMlModels(
   auto receive_predictions =
       [](AsyncContext context,
          std::vector<ModelPredictions> model_predictions) {
-        // TODO(crbug.com/427787155): Store the `model_predictions` in
-        // `context`.
-        for (const auto [form_structure, predictions] :
-             base::zip(context.form_structures, model_predictions)) {
-          predictions.ApplyTo(form_structure->fields());
+        if (model_predictions.empty()) {
+          return context;
+        }
+        const HeuristicSource source = model_predictions.front().source();
+        DCHECK(std::ranges::all_of(model_predictions,
+                                   [source](const ModelPredictions& p) {
+                                     return p.source() == source;
+                                   }));
+        switch (source) {
+          case HeuristicSource::kAutofillMachineLearning:
+            context.autofill_predictions = std::move(model_predictions);
+            break;
+          case HeuristicSource::kPasswordManagerMachineLearning:
+            context.password_manager_predictions = std::move(model_predictions);
+            break;
+          case HeuristicSource::kRegexes:
+            NOTREACHED();
         }
         return context;
       };
