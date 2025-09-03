@@ -37,9 +37,8 @@ class Mesh2DBuffer : public ScriptWrappable {
   Mesh2DBuffer& operator=(const Mesh2DBuffer&) = delete;
 
   ~Mesh2DBuffer() override {
-    external_memory_accounter_.Decrease(
-        v8::Isolate::GetCurrent(),
-        base::checked_cast<int64_t>(buffer_->data().size() * sizeof(T)));
+    external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(),
+                                        buffer_->data().size() * sizeof(T));
   }
 
   scoped_refptr<cc::RefCountedBuffer<T>> GetBuffer() const { return buffer_; }
@@ -47,9 +46,8 @@ class Mesh2DBuffer : public ScriptWrappable {
  protected:
   explicit Mesh2DBuffer(scoped_refptr<cc::RefCountedBuffer<T>> buffer)
       : buffer_(std::move(buffer)) {
-    external_memory_accounter_.Increase(
-        v8::Isolate::GetCurrent(),
-        base::checked_cast<int64_t>(buffer_->data().size() * sizeof(T)));
+    external_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                        buffer_->data().size() * sizeof(T));
   }
 
  private:

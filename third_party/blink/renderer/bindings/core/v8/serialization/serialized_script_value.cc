@@ -653,9 +653,7 @@ void SerializedScriptValue::RegisterMemoryAllocatedWithCurrentScriptContext() {
   DCHECK_NE(v8::Isolate::GetCurrent(), nullptr);
   has_registered_external_allocation_ = true;
   isolate_ = v8::Isolate::GetCurrent();
-  int64_t diff = static_cast<int64_t>(DataLengthInBytes());
-  DCHECK_GE(diff, 0);
-  external_memory_accounter_.Increase(isolate_.get(), diff);
+  external_memory_accounter_.Increase(isolate_.get(), DataLengthInBytes());
 }
 
 const v8::SharedValueConveyor*

@@ -46,7 +46,7 @@ class StringResourceBase {
   StringResourceBase& operator=(const StringResourceBase&) = delete;
 
   void Unaccount(v8::Isolate* isolate) {
-    int64_t reduced_external_memory = 0;
+    size_t reduced_external_memory = 0;
     if (!parkable_string_.IsNull()) {
       DCHECK(plain_string_.IsNull());
       DCHECK(atomic_string_.IsNull());
