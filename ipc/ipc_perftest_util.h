@@ -102,7 +102,6 @@ class MojoPerfTestClient {
 
  private:
   base::SingleThreadTaskExecutor main_task_executor_;
-  std::unique_ptr<ChannelReflectorListener> listener_;
   std::unique_ptr<Channel> channel_;
   mojo::ScopedMessagePipeHandle handle_;
 };

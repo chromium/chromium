@@ -19,14 +19,8 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
   ChromeLegacyIpc::MessageClass message_class =
       ChromeLegacyIpc::CLASS_UNSPECIFIED;
   switch (IPC_MESSAGE_ID_CLASS(message_id)) {
-    case AutomationMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_AUTOMATION;
-      break;
     case TestMsgStart:
       message_class = ChromeLegacyIpc::CLASS_TEST;
-      break;
-    case WorkerMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_WORKER;
       break;
   }
   legacy_ipc->set_message_class(message_class);

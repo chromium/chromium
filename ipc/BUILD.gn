@@ -291,8 +291,6 @@ if (use_blink) {
     sources = [
       "ipc_cpu_perftest.cc",
       "ipc_mojo_perftest.cc",
-      "ipc_perftest_messages.cc",
-      "ipc_perftest_messages.h",
       "ipc_perftest_util.cc",
       "ipc_perftest_util.h",
       "run_all_perftests.cc",
