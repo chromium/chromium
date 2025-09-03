@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/containers/fixed_flat_set.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/string_number_conversions.h"
@@ -31,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
@@ -51,11 +50,10 @@ static constexpr auto kGoogleWorkspaceBlocklist =
         {"assistant.google.com", "calendar.google.com", "docs.google.com",
          "drive.google.com", "mail.google.com", "photos.google.com"});
 
-// Helper function to generate the snackbar message.
-NSString* GenerateSnackbarMessage(bool is_distillable_page) {
-  std::string message = "\nDistillation Result: ";
-  message += (is_distillable_page ? "Distillable" : "Not Distillable");
-  return base::SysUTF8ToNSString(message);
+// Helper function to generate the snackbar message subtitle.
+NSString* GetDistillationResultString(bool is_distillable_page) {
+  return base::SysUTF8ToNSString(is_distillable_page ? "Distillable"
+                                                     : "Not Distillable");
 }
 
 // Returns the Readability heuristic result if it is available otherwise returns
@@ -454,10 +452,10 @@ void ReaderModeTabHelper::PageDistillationCompleted(
   if (IsReaderModeSnackbarEnabled()) {
     // Show a snackbar with the heuristic result, latency and page distillation
     // result and latency.
-    MDCSnackbarMessage* message = [MDCSnackbarMessage
-        messageWithText:GenerateSnackbarMessage(is_distillable_page)];
-    message.duration = MDCSnackbarMessageDurationMax;
-    [snackbar_handler_ showSnackbarMessage:message];
+    SnackbarMessage* message =
+        [[SnackbarMessage alloc] initWithTitle:@"Distillation Result:"];
+    message.subtitle = GetDistillationResultString(is_distillable_page);
+    [snackbar_handler_ showCustomSnackbarMessage:message];
   }
 
   if (IsReaderModeAvailable()) {
