@@ -43,7 +43,7 @@ void WebApkDatabase::OpenDatabase(RegistryOpenedCallback callback) {
       data_type_store_service_->GetStoreFactory();
 
   std::move(store_factory)
-      .Run(syncer::WEB_APPS,
+      .Run(syncer::WEB_APKS,
            base::BindOnce(&WebApkDatabase::OnDatabaseOpened,
                           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
