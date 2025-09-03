@@ -520,6 +520,8 @@ public class FeedSurfaceCoordinator
                     v -> {
                         showNtpCustomizationBottomSheet();
                     });
+            mNtpCustomizationButton.setContentDescription(
+                    mActivity.getString(R.string.ntp_customization_title));
             mRootView.addView(mNtpCustomizationButton);
         }
 
