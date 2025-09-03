@@ -321,11 +321,10 @@ if (symbol_level == -1) {
     # Sanitizers also require symbols for filename suppressions to work.
     symbol_level = 1
   } else if ((!is_linux && !is_chromeos && !is_fuchsia &&
-              current_os != "aix") || is_debug || is_castos ||
-             is_cast_android) {
+              current_os != "aix") || is_debug) {
     # Linux builds slower by having symbols as part of the target binary,
     # whereas Mac and Windows have them separate, so in Release Linux, default
-    # them off, but keep them on for Chromecast builds.
+    # them off.
     symbol_level = 2
   } else {
     symbol_level = 0
