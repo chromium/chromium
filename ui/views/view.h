@@ -36,6 +36,7 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/metadata/metadata_utils.h"
@@ -933,6 +934,15 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Returns NULL if no matching child view is found.
   const View* GetViewByID(int id) const;
   View* GetViewByID(int id);
+
+  // Searches this view and the descendants of this View for a View with the
+  // given identifier and returns the first matching View, or null if none.
+  //
+  // Prefer using ElementTrackerViews or BrowserElements[Views] unless you need
+  // to specifically search a subtree of the Views hierarchy.
+  virtual View* GetViewByElementId(ui::ElementIdentifier element_id);
+  virtual const View* GetViewByElementId(
+      ui::ElementIdentifier element_id) const;
 
   // Gets and sets the ID for this view. ID should be unique within the subtree
   // that you intend to search for it. 0 is the default ID for views.

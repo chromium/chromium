@@ -5323,6 +5323,17 @@ void BrowserView::OnDragEntered(const ui::DropTargetEvent& event) {
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }
 
+views::View* BrowserView::GetViewByElementId(ui::ElementIdentifier element_id) {
+  NOTREACHED()
+      << "Use BrowserElements isntead when searching the entire browser";
+}
+
+const views::View* BrowserView::GetViewByElementId(
+    ui::ElementIdentifier element_id) const {
+  NOTREACHED()
+      << "Use BrowserElements isntead when searching the entire browser";
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, ui::AcceleratorTarget overrides:
 

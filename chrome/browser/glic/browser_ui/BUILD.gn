@@ -70,6 +70,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/tabs/alert:tab_alert",
+    "//chrome/browser/ui/views/frame",
     "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support_ui",

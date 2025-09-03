@@ -35,6 +35,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -7453,6 +7454,53 @@ TEST_F(BaseActionViewInterfaceTest, TestActionChanged) {
   // Test some properties to ensure that the right ActionViewInterface is linked
   // to the view.
   EXPECT_FALSE(action_view->GetEnabled());
+}
+
+TEST_F(ViewTest, GetViewByElementId) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kUniqueElementId1);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kUniqueElementId2);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDuplicateElementId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kUnusedElementId);
+
+  // Create a view hierarchy for testing:
+  // root
+  // |-- child1 (kDuplicateElementId)
+  // |   |-- grandchild1 (kUniqueElementId1)
+  // |-- child2 (kUniqueElementId2)
+  // |   |-- grandchild2 (kDuplicateElementId)
+  auto root = std::make_unique<View>();
+  View* child1 = root->AddChildView(std::make_unique<View>());
+  View* grandchild1 = child1->AddChildView(std::make_unique<View>());
+  View* child2 = root->AddChildView(std::make_unique<View>());
+  View* grandchild2 = child2->AddChildView(std::make_unique<View>());
+
+  grandchild1->SetProperty(kElementIdentifierKey, kUniqueElementId1);
+  child2->SetProperty(kElementIdentifierKey, kUniqueElementId2);
+  child1->SetProperty(kElementIdentifierKey, kDuplicateElementId);
+  grandchild2->SetProperty(kElementIdentifierKey, kDuplicateElementId);
+
+  // Search from root.
+  EXPECT_EQ(grandchild1, root->GetViewByElementId(kUniqueElementId1));
+  EXPECT_EQ(child2, root->GetViewByElementId(kUniqueElementId2));
+  EXPECT_EQ(nullptr, root->GetViewByElementId(kUnusedElementId));
+
+  // The search is depth-first, so the shallower view (child1) is found
+  // before the deeper view in a subsequent branch (grandchild2).
+  EXPECT_EQ(child1, root->GetViewByElementId(kDuplicateElementId));
+
+  // Search from a subtree.
+  EXPECT_EQ(grandchild1, child1->GetViewByElementId(kUniqueElementId1));
+  EXPECT_EQ(nullptr, child1->GetViewByElementId(kUniqueElementId2));
+
+  // Search from the view itself.
+  EXPECT_EQ(grandchild1, grandchild1->GetViewByElementId(kUniqueElementId1));
+
+  // Test const version.
+  const View* const_root = root.get();
+  EXPECT_EQ(grandchild1, const_root->GetViewByElementId(kUniqueElementId1));
+  EXPECT_EQ(child2, const_root->GetViewByElementId(kUniqueElementId2));
+  EXPECT_EQ(nullptr, const_root->GetViewByElementId(kUnusedElementId));
+  EXPECT_EQ(child1, const_root->GetViewByElementId(kDuplicateElementId));
 }
 
 }  // namespace views

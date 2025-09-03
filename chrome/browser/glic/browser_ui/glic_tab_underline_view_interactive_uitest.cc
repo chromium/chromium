@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/common/chrome_features.h"
@@ -38,6 +39,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/switches.h"
 #include "ui/views/test/widget_activation_waiter.h"
+#include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace glic {
 
@@ -243,9 +246,13 @@ class GlicTabUnderlineViewUiTest : public test::InteractiveGlicTest {
   }
 
   AlertIndicatorButton* GetAlertIndicatorButtonOfActiveTab() {
-    auto* tabstrip = static_cast<BrowserView*>(browser()->window())->tabstrip();
-    return tabstrip->tab_at(tabstrip->GetActiveIndex().value())
-        ->alert_indicator_button_for_testing();
+    TabStripViewInterface* tab_strip_view =
+        static_cast<BrowserView*>(browser()->window())->tab_strip_view();
+    views::View* button =
+        tab_strip_view
+            ->GetTabAnchorViewAt(browser()->tab_strip_model()->active_index())
+            ->GetViewByElementId(kTabAlertIndicatorButtonElementId);
+    return views::AsViewClass<AlertIndicatorButton>(button);
   }
 
  private:
