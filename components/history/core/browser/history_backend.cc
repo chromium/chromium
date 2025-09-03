@@ -1676,12 +1676,6 @@ bool HistoryBackend::GetAllTypedURLs(URLRows* urls) {
   return true;
 }
 
-bool HistoryBackend::GetVisitsForURL(URLID id, VisitVector* visits) {
-  if (db_)
-    return db_->GetVisitsForURL(id, visits);
-  return false;
-}
-
 bool HistoryBackend::GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) {
   if (db_)
     return db_->GetMostRecentVisitForURL(id, visit_row);

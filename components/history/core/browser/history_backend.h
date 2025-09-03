@@ -651,9 +651,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   //   - GetMostRecentVisitsForUrlId(URLID id, int max_visits)
   //   - GetMostRecentVisitsForGurl(GURL url, int max_visits)
   //   - GetMostRecentVisitsForEachGurl(std::vector<GURL> urls, int max_visits)
-
-  // TODO(manukh): DEPRECATED (see above comment)
-  bool GetVisitsForURL(URLID id, VisitVector* visits);
+  // Likewise `VisitDatabase::Get[MostRecent]VisitsFor[Gurl|Url|EachGurl]`
+  // methods.
 
   // TODO(manukh): DEPRECATED (see above comment)
   bool GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) override;

@@ -91,6 +91,8 @@ const int kLargeEdgeSize = 32;
 const gfx::Size kSmallSize = gfx::Size(kSmallEdgeSize, kSmallEdgeSize);
 const gfx::Size kLargeSize = gfx::Size(kLargeEdgeSize, kLargeEdgeSize);
 
+const int kMaxVisitsToQuery = 1000;
+
 MATCHER_P(HasVisitID, visit_id, "") {
   return arg.visit_id == visit_id;
 }
@@ -1232,8 +1234,8 @@ TEST_F(HistoryBackendTest, AddPage404) {
   URLRow url_row;
   ASSERT_TRUE(backend_->GetURL(url, &url_row));
   VisitVector visits;
-  ASSERT_TRUE(backend_->GetVisitsForURL(
-      backend_->db()->GetRowForURL(url, nullptr), &visits));
+  ASSERT_TRUE(backend_->GetMostRecentVisitsForURL(
+      backend_->db()->GetRowForURL(url, nullptr), kMaxVisitsToQuery, &visits));
   ASSERT_EQ(1u, visits.size());
 
   // ...but it should not be tracked by `VisitTracker`.
@@ -3269,7 +3271,7 @@ TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
   for (size_t i = 0; i < std::size(args); ++i) {
     args[i].url =
         GURL("http://example" + std::string((i % 2 == 0 ? ".com" : ".net")));
-    args[i].time = base::Time::FromInternalValue(i);
+    args[i].time = base::Time() + base::Microseconds(i);
     backend_->AddPage(args[i]);
   }
   EXPECT_EQ(base::Time(), backend_->GetFirstRecordedTimeForTest());
@@ -3281,36 +3283,34 @@ TEST_F(HistoryBackendTest, ExpireHistoryForTimes) {
   std::set<base::Time> times;
   times.insert(args[5].time);
   // Invalid time (outside range), should have no effect.
-  times.insert(base::Time::FromInternalValue(10));
-  backend_->ExpireHistoryForTimes(times, base::Time::FromInternalValue(2),
-                                  base::Time::FromInternalValue(8));
+  times.insert(base::Time() + base::Microseconds(10));
+  backend_->ExpireHistoryForTimes(times, base::Time() + base::Microseconds(2),
+                                  base::Time() + base::Microseconds(8));
 
-  EXPECT_EQ(base::Time::FromInternalValue(0),
-            backend_->GetFirstRecordedTimeForTest());
+  EXPECT_EQ(base::Time(), backend_->GetFirstRecordedTimeForTest());
 
   // Visits to http://example.com are untouched.
   VisitVector visit_vector;
-  EXPECT_TRUE(backend_->GetVisitsForURL(
+  EXPECT_TRUE(backend_->GetMostRecentVisitsForURL(
       backend_->db_->GetRowForURL(GURL("http://example.com"), nullptr),
-      &visit_vector));
+      kMaxVisitsToQuery, &visit_vector));
   ASSERT_EQ(5u, visit_vector.size());
-  EXPECT_EQ(base::Time::FromInternalValue(0), visit_vector[0].visit_time);
-  EXPECT_EQ(base::Time::FromInternalValue(2), visit_vector[1].visit_time);
-  EXPECT_EQ(base::Time::FromInternalValue(4), visit_vector[2].visit_time);
-  EXPECT_EQ(base::Time::FromInternalValue(6), visit_vector[3].visit_time);
-  EXPECT_EQ(base::Time::FromInternalValue(8), visit_vector[4].visit_time);
+  EXPECT_EQ(base::Time() + base::Microseconds(8), visit_vector[0].visit_time);
+  EXPECT_EQ(base::Time() + base::Microseconds(6), visit_vector[1].visit_time);
+  EXPECT_EQ(base::Time() + base::Microseconds(4), visit_vector[2].visit_time);
+  EXPECT_EQ(base::Time() + base::Microseconds(2), visit_vector[3].visit_time);
+  EXPECT_EQ(base::Time(), visit_vector[4].visit_time);
 
   // Visits to http://example.net between [2,8] are removed.
   visit_vector.clear();
-  EXPECT_TRUE(backend_->GetVisitsForURL(
+  EXPECT_TRUE(backend_->GetMostRecentVisitsForURL(
       backend_->db_->GetRowForURL(GURL("http://example.net"), nullptr),
-      &visit_vector));
+      kMaxVisitsToQuery, &visit_vector));
   ASSERT_EQ(2u, visit_vector.size());
-  EXPECT_EQ(base::Time::FromInternalValue(1), visit_vector[0].visit_time);
-  EXPECT_EQ(base::Time::FromInternalValue(9), visit_vector[1].visit_time);
+  EXPECT_EQ(base::Time() + base::Microseconds(9), visit_vector[0].visit_time);
+  EXPECT_EQ(base::Time() + base::Microseconds(1), visit_vector[1].visit_time);
 
-  EXPECT_EQ(base::Time::FromInternalValue(0),
-            backend_->GetFirstRecordedTimeForTest());
+  EXPECT_EQ(base::Time(), backend_->GetFirstRecordedTimeForTest());
 }
 
 TEST_F(HistoryBackendTest, ExpireHistory) {
@@ -3643,13 +3643,13 @@ TEST_F(HistoryBackendTest, RedirectWithQualifiers) {
 
   // Grab the resulting visits.
   VisitVector visits1;
-  backend_->GetVisitsForURL(url1.id(), &visits1);
+  backend_->GetMostRecentVisitsForURL(url1.id(), kMaxVisitsToQuery, &visits1);
   ASSERT_EQ(visits1.size(), 1u);
   VisitVector visits2;
-  backend_->GetVisitsForURL(url2.id(), &visits2);
+  backend_->GetMostRecentVisitsForURL(url2.id(), kMaxVisitsToQuery, &visits2);
   ASSERT_EQ(visits2.size(), 1u);
   VisitVector visits3;
-  backend_->GetVisitsForURL(url3.id(), &visits3);
+  backend_->GetMostRecentVisitsForURL(url3.id(), kMaxVisitsToQuery, &visits3);
   ASSERT_EQ(visits3.size(), 1u);
 
   // The page transition, including the qualifier, should have been preserved
@@ -4188,8 +4188,8 @@ TEST_F(HistoryBackendTest, ExpireVisitDeletes) {
   ASSERT_TRUE(backend_->GetURL(url, &url_row));
 
   VisitVector visits;
-  ASSERT_TRUE(backend_->GetVisitsForURL(
-      backend_->db_->GetRowForURL(url, nullptr), &visits));
+  ASSERT_TRUE(backend_->GetMostRecentVisitsForURL(
+      backend_->db_->GetRowForURL(url, nullptr), kMaxVisitsToQuery, &visits));
   ASSERT_EQ(1u, visits.size());
 
   const VisitID visit_id = visits[0].visit_id;
