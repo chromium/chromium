@@ -807,16 +807,13 @@ PaintPreviewClient::GetOrInsertRecorder(
   CHECK_EQ(render_frame_host.GetEmbeddingToken().value_or(
                base::UnguessableToken::Null()),
            frame_guid);
-  auto interface_it = interface_ptrs_.find(frame_guid);
-  if (interface_it == interface_ptrs_.end()) {
-    interface_it = interface_ptrs_.insert(
-        interface_it,
-        {frame_guid, mojo::AssociatedRemote<mojom::PaintPreviewRecorder>()});
+  mojo::AssociatedRemote<mojom::PaintPreviewRecorder>& recorder_remote =
+      interface_ptrs_[frame_guid];
+  if (!recorder_remote.is_bound()) {
     render_frame_host.GetRemoteAssociatedInterfaces()->GetInterface(
-        &interface_it->second);
+        &recorder_remote);
   }
-
-  return interface_it->second;
+  return recorder_remote;
 }
 
 void PaintPreviewClient::OnPaintPreviewCapturedCallback(
