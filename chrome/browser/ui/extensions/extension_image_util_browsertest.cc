@@ -38,11 +38,11 @@ using ImageUtilTest = extensions::ExtensionBrowserTest;
 // toolbar color into image_util::kDefaultToolbarColor. If not possible,
 // consider deleting this test.
 IN_PROC_BROWSER_TEST_F(ImageUtilTest, DISABLED_CheckDefaultToolbarColor) {
-  // This test relies on being run with the default light mode system theme.
+  // This test relies on being run with the default light mode theme.
   ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
 #if BUILDFLAG(IS_LINUX)
   ui::LinuxUiGetter::set_instance(nullptr);
-#endif  // BUILDFLAG(IS_LINUX)
+#endif
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 
   EXPECT_EQ(extensions::image_util::kDefaultToolbarColor,

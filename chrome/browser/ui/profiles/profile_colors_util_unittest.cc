@@ -188,6 +188,10 @@ class ProfileColorsUtilTestDarkModeParam
     : public ProfileColorsUtilTest,
       public testing::WithParamInterface<bool> {
  public:
+  ProfileColorsUtilTestDarkModeParam() {
+    ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(GetParam());
+  }
+
   void ExpectAllSaturatedColorsMatchingColorSchemeAvailable() {
     std::set<int> available_colors = GetAvailableColorsIds();
     for (size_t i = 0; i < kColorsCount; ++i) {
@@ -206,7 +210,6 @@ class ProfileColorsUtilTestDarkModeParam
 // available with no other profiles.
 TEST_P(ProfileColorsUtilTestDarkModeParam,
        GenerateNewProfileColorWithNoColoredProfile) {
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(GetParam());
   ExpectAllSaturatedColorsMatchingColorSchemeAvailable();
 
   // Add some profiles with the default theme.
