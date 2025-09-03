@@ -113,7 +113,7 @@
       <message name="IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_TITLE" desc="Title of the error dialog that is shown when a supervised user asks for local parental approval, but during the request something went wrong.">
       Something went wrong
       </message>
-      <message name="IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_DESCRIPTION" desc="Description of the error dialog that is shown when a supervised user asks for local parental approval, but the request failed. In this scenario, we don't know why the request didn't work, so they need to try again.">
+      <message name="IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_DESCRIPTION" desc="Description of the error dialog that is shown when a supervised user asks for local parental approval, but the request failed. In this scenario, we don't know why the request didn't work, so they need to try again." meaning="Body text of error dialog">
       Try again
       </message>
       <message name="IDS_PARENTAL_LOCAL_APPROVAL_DIALOG_GENERIC_ERROR_BACK_BUTTON" desc="Button of the error dialog that is shown when a supervised user asks for local parental approval, but the request failed. In this scenario, we don't know why the request didn't work, so they need to go back to the previous screen and try again.">
