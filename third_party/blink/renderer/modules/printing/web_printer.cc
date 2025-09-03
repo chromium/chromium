@@ -79,6 +79,7 @@ WebPrinter::WebPrinter(ExecutionContext* execution_context,
                 execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   attributes_ = WebPrinterAttributes::Create();
   attributes_->setPrinterName(printer_info->printer_name);
+  attributes_->setPrinterId(printer_info->printer_id);
 }
 
 WebPrinter::~WebPrinter() = default;
@@ -165,6 +166,7 @@ void WebPrinter::OnFetchAttributes(
   auto* new_attributes = mojo::ConvertTo<WebPrinterAttributes*>(
       std::move(result->get_printer_attributes()));
   new_attributes->setPrinterName(attributes_->printerName());
+  new_attributes->setPrinterId(attributes_->printerId());
   attributes_ = new_attributes;
 
   fetch_attributes_resolver_->Resolve(attributes_);

@@ -53,6 +53,7 @@ dictionary WebPrintJobTemplateAttributes {
 
 dictionary WebPrinterAttributes {
   DOMString printerName;
+  DOMString printerId;
 
   unsigned long copiesDefault;
   WebPrintingRange copiesSupported;
