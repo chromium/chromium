@@ -906,6 +906,7 @@ void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible,
     }
     GetControlsContainerView()->layer()->SetOpacity(wanted_visibility ? 1.0
                                                                       : 0.0);
+    GetControlsContainerView()->SetVisible(wanted_visibility);
   }
 }
 
