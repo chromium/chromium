@@ -22,9 +22,6 @@
 // The bottom offset for the snackbar.
 @property(nonatomic, assign) CGFloat bottomOffset;
 
-// The view that should receive accessibility focus when the snackbar appears.
-@property(nonatomic, strong, readonly) UIView* accessibilityFocusView;
-
 // Designated initializer.
 - (instancetype)initWithMessage:(SnackbarMessage*)message
     NS_DESIGNATED_INITIALIZER;
@@ -32,6 +29,12 @@
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
+// Presents the snackbar.
+- (void)presentAnimated:(BOOL)animated completion:(void (^)(void))completion;
+
+// Dismisses the snackbar.
+- (void)dismissAnimated:(BOOL)animated completion:(void (^)(void))completion;
 
 @end
 

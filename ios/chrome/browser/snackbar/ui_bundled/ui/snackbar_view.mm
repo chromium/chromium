@@ -17,6 +17,14 @@
 
 namespace {
 
+// The amount of time after a snackbar is presented, during which it will
+// retain a11y focus so that VoiceOver is not interrupted by a modal dismissal
+// transition.
+const double kRetainA11yFocusSeconds = 0.75;
+
+// Animation constants.
+const NSTimeInterval kSnackbarAnimationDuration = 0.3;
+
 // Snackbar constants.
 const CGFloat kSnackbarCornerRadius = 16.0;
 const CGFloat kHorizontalPadding = 16.0;
@@ -79,6 +87,53 @@ const CGFloat kTextSpacing = 2.0;
   return self;
 }
 
+#pragma mark - Public
+
+- (void)presentAnimated:(BOOL)animated completion:(void (^)(void))completion {
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    [self retainAccessibilityFocus];
+  }
+
+  if (animated && !UIAccessibilityIsReduceMotionEnabled()) {
+    self.alpha = 0.0;
+    [UIView animateWithDuration:kSnackbarAnimationDuration
+        animations:^{
+          self.alpha = 1.0;
+        }
+        completion:^(BOOL finished) {
+          [self scheduleDismissal];
+          if (completion) {
+            completion();
+          }
+        }];
+  } else {
+    [self scheduleDismissal];
+    if (completion) {
+      completion();
+    }
+  }
+}
+
+- (void)dismissAnimated:(BOOL)animated completion:(void (^)(void))completion {
+  if (animated && !UIAccessibilityIsReduceMotionEnabled()) {
+    [UIView animateWithDuration:kSnackbarAnimationDuration
+        animations:^{
+          self.alpha = 0.0;
+        }
+        completion:^(BOOL finished) {
+          if (completion) {
+            completion();
+          }
+        }];
+  } else {
+    if (completion) {
+      completion();
+    }
+  }
+}
+
+#pragma mark - UIView
+
 - (void)didMoveToWindow {
   [super didMoveToWindow];
   [self updateUserInterfaceStyle];
@@ -97,16 +152,21 @@ const CGFloat kTextSpacing = 2.0;
   }
 }
 
-- (UIView*)accessibilityFocusView {
-  return _titleLabel;
-}
-
-#pragma mark - UIView
-
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
   // The snackbar view can be larger than its content view. Only intercept
   // touches that are within the content view.
   return CGRectContainsPoint(_contentView.frame, point);
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+       shouldReceiveTouch:(UITouch*)touch {
+  // Don't handle taps on the action button.
+  if (touch.view == _button) {
+    return NO;
+  }
+  return YES;
 }
 
 #pragma mark - Private
@@ -443,18 +503,49 @@ const CGFloat kTextSpacing = 2.0;
 
 // Handles the view tap.
 - (void)handleViewTap {
-  [self.delegate snackbarViewWasTapped:self];
+  [self.delegate snackbarViewDidRequestDismissal:self animated:YES];
 }
 
-#pragma mark - UIGestureRecognizerDelegate
+// If another view becomes focused, the focus is forced back to the title view.
+- (void)retainAccessibilityFocus {
+  __weak UIView* weakView = _titleLabel;
+  auto retainFocus = ^(NSNotification* notification) {
+    id focusedElement = notification.userInfo[UIAccessibilityFocusedElementKey];
+    if (weakView && focusedElement != weakView) {
+      UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                      weakView);
+    }
+  };
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
-       shouldReceiveTouch:(UITouch*)touch {
-  // Don't handle taps on the action button.
-  if (touch.view == _button) {
-    return NO;
+  // Observe accessibility focus changes.
+  id observer = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIAccessibilityElementFocusedNotification
+                  object:nil
+                   queue:nil
+              usingBlock:retainFocus];
+
+  // Stop observing after `kRetainA11yFocusSeconds`.
+  dispatch_time_t time =
+      dispatch_time(DISPATCH_TIME_NOW, kRetainA11yFocusSeconds * NSEC_PER_SEC);
+  dispatch_after(time, dispatch_get_main_queue(), ^{
+    [[NSNotificationCenter defaultCenter] removeObserver:observer];
+  });
+}
+
+// Schedules the automatic dismissal of the snackbar.
+- (void)scheduleDismissal {
+  // Don't auto-dismiss if VoiceOver is running.
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    return;
   }
-  return YES;
+
+  __weak __typeof(self) weakSelf = self;
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                               (int64_t)(self.message.duration * NSEC_PER_SEC)),
+                 dispatch_get_main_queue(), ^{
+                   [weakSelf.delegate snackbarViewDidRequestDismissal:weakSelf
+                                                             animated:YES];
+                 });
 }
 
 @end

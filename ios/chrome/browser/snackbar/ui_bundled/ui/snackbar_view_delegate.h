@@ -13,8 +13,9 @@
 // Called when the action button is tapped.
 - (void)snackbarViewDidTapActionButton:(SnackbarView*)snackbarView;
 
-// Called when the snackbar view itself is tapped.
-- (void)snackbarViewWasTapped:(SnackbarView*)snackbarView;
+// Called when the snackbar view requests to be dismissed.
+- (void)snackbarViewDidRequestDismissal:(SnackbarView*)snackbarView
+                               animated:(BOOL)animated;
 
 @end
 

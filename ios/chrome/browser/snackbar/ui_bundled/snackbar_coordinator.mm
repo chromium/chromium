@@ -18,15 +18,6 @@
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view.h"
 #import "ios/chrome/browser/snackbar/ui_bundled/ui/snackbar_view_delegate.h"
 
-namespace {
-// The amount of time after a snackbar is presented, during which it will
-// retain a11y focus so that VoiceOver is not interrupted by a modal dismissal
-// transition.
-const double kRetainA11yFocusSeconds = 0.75;
-// The duration of the snackbar fade in/out animation.
-const NSTimeInterval kSnackbarAnimationDuration = 0.3;
-}  // namespace
-
 @interface SnackbarCoordinator () <SnackbarViewDelegate>
 @end
 
@@ -34,6 +25,9 @@ const NSTimeInterval kSnackbarAnimationDuration = 0.3;
   __weak id<SnackbarCoordinatorDelegate> _delegate;
   SnackbarView* _snackbarView;
   ChromeOverlayWindow* _overlay_window;
+  // Flag to prevent dismissal logic from running multiple times from concurrent
+  // events (e.g., user tap and timer firing simultaneously).
+  BOOL _isDismissing;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -166,22 +160,22 @@ const NSTimeInterval kSnackbarAnimationDuration = 0.3;
     return;
   }
 
+  // A dismissal can be triggered by the timer and by a user tap concurrently.
+  // This flag prevents the dismissal logic from running more than once.
+  if (_isDismissing) {
+    return;
+  }
+  _isDismissing = YES;
+
   if (_snackbarView.message.completionHandler) {
     _snackbarView.message.completionHandler(NO);
   }
 
-  BOOL shouldAnimate = animated && !UIAccessibilityIsReduceMotionEnabled();
-  if (shouldAnimate) {
-    [UIView animateWithDuration:kSnackbarAnimationDuration
-        animations:^{
-          [self updateSnackbarAlpha:0.0];
-        }
-        completion:^(BOOL finished) {
-          [self removeSnackbarView];
-        }];
-  } else {
-    [self removeSnackbarView];
-  }
+  __weak __typeof(self) weakSelf = self;
+  [_snackbarView dismissAnimated:animated
+                      completion:^{
+                        [weakSelf removeSnackbarView];
+                      }];
 }
 
 #pragma mark - SnackbarViewDelegate
@@ -190,8 +184,9 @@ const NSTimeInterval kSnackbarAnimationDuration = 0.3;
   [self dismissSnackbar:snackbarView animated:YES];
 }
 
-- (void)snackbarViewWasTapped:(SnackbarView*)snackbarView {
-  [self dismissSnackbar:snackbarView animated:YES];
+- (void)snackbarViewDidRequestDismissal:(SnackbarView*)snackbarView
+                               animated:(BOOL)animated {
+  [self dismissSnackbar:snackbarView animated:animated];
 }
 
 #pragma mark - Private
@@ -200,78 +195,35 @@ const NSTimeInterval kSnackbarAnimationDuration = 0.3;
 // presents a new `SnackbarView`.
 - (void)presentSnackbar:(SnackbarMessage*)message
        withBottomOffset:(CGFloat)offset {
+  // If a snackbar is already showing, dismiss it before showing the new one.
   if (_snackbarView) {
     [self dismissAllSnackbars];
   }
+  _isDismissing = NO;
 
+  // Create and configure the new snackbar view.
   _snackbarView = [[SnackbarView alloc] initWithMessage:message];
   _snackbarView.delegate = self;
   _snackbarView.bottomOffset = offset;
 
+  // Add the snackbar to the window and present it.
   [_overlay_window activateOverlay:_snackbarView withLevel:UIWindowLevelNormal];
-
-  if (!UIAccessibilityIsReduceMotionEnabled()) {
-    [self updateSnackbarAlpha:0.0];
-    [UIView animateWithDuration:kSnackbarAnimationDuration
-                     animations:^{
-                       [self updateSnackbarAlpha:1.0];
-                     }];
-  }
-
-  if (UIAccessibilityIsVoiceOverRunning()) {
-    [self retainAccessibilityFocusOnView:_snackbarView.accessibilityFocusView
-                                 seconds:kRetainA11yFocusSeconds];
-    // Don't dismiss the snackbar if VoiceOver is running.
-    return;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  __weak SnackbarView* weakSnackbarView = _snackbarView;
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                               (int64_t)(message.duration * NSEC_PER_SEC)),
-                 dispatch_get_main_queue(), ^{
-                   [weakSelf dismissSnackbar:weakSnackbarView animated:YES];
-                 });
-}
-
-// Updates the alpha of the snackbar view.
-- (void)updateSnackbarAlpha:(CGFloat)alpha {
-  _snackbarView.alpha = alpha;
+  [_snackbarView
+      presentAnimated:YES
+           completion:^{
+               // The view will now schedule its own dismissal and call
+               // the delegate when it's time.
+           }];
 }
 
 // Removes the snackbar view from the hierarchy and nils out the ivar.
 - (void)removeSnackbarView {
+  if (!_snackbarView) {
+    return;
+  }
   [_overlay_window deactivateOverlay:_snackbarView];
   _snackbarView = nil;
-}
-
-#pragma mark - Private
-
-// Forces `view` to retain the accessibility focus for `seconds`. If
-// another view becomes focused, the focus is forced back to `view`.
-- (void)retainAccessibilityFocusOnView:(UIView*)view seconds:(double)seconds {
-  __weak UIView* weakView = view;
-  auto retainFocus = ^(NSNotification* notification) {
-    id focusedElement = notification.userInfo[UIAccessibilityFocusedElementKey];
-    if (weakView && focusedElement != weakView) {
-      UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                      weakView);
-    }
-  };
-
-  // Observe accessibility focus changes.
-  id observer = [[NSNotificationCenter defaultCenter]
-      addObserverForName:UIAccessibilityElementFocusedNotification
-                  object:nil
-                   queue:nil
-              usingBlock:retainFocus];
-
-  // Stop observing after `seconds`.
-  dispatch_time_t time =
-      dispatch_time(DISPATCH_TIME_NOW, seconds * NSEC_PER_SEC);
-  dispatch_after(time, dispatch_get_main_queue(), ^{
-    [[NSNotificationCenter defaultCenter] removeObserver:observer];
-  });
+  _isDismissing = NO;
 }
 
 @end
