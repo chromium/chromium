@@ -65,7 +65,7 @@ class SaveOrUpdateAutofillAiDataControllerImpl
       const std::string& app_locale);
 
   // AutofillBubbleControllerBase::
-  PageActionIconType GetPageActionIconType() override;
+  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
 
  private:

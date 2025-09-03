@@ -222,7 +222,8 @@ void AddressBubblesController::WebContentsDestroyed() {
                  std::nullopt);
 }
 
-PageActionIconType AddressBubblesController::GetPageActionIconType() {
+std::optional<PageActionIconType>
+AddressBubblesController::GetPageActionIconType() {
   return PageActionIconType::kAutofillAddress;
 }
 

@@ -306,7 +306,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
 #endif
 }
 
-PageActionIconType
+std::optional<PageActionIconType>
 VirtualCardEnrollBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kVirtualCardEnroll;
 }

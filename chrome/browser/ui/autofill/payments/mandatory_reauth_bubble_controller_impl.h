@@ -58,7 +58,7 @@ class MandatoryReauthBubbleControllerImpl
       content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
-  PageActionIconType GetPageActionIconType() override;
+  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
   void UpdatePageActionIcon() override;
 

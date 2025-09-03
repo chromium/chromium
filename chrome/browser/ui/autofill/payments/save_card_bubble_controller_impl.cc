@@ -752,7 +752,8 @@ void SaveCardBubbleControllerImpl::OnVisibilityChanged(
   }
 }
 
-PageActionIconType SaveCardBubbleControllerImpl::GetPageActionIconType() {
+std::optional<PageActionIconType>
+SaveCardBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kSaveCard;
 }
 

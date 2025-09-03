@@ -80,7 +80,7 @@ class OfferNotificationBubbleControllerImpl
 
   // AutofillBubbleControllerBase:
   void OnVisibilityChanged(content::Visibility visibility) override;
-  PageActionIconType GetPageActionIconType() override;
+  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
 
   // Returns whether the web content associated with this controller is active.

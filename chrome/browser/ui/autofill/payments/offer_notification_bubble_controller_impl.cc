@@ -214,7 +214,7 @@ void OfferNotificationBubbleControllerImpl::OnVisibilityChanged(
   UpdatePageAction();
 }
 
-PageActionIconType
+std::optional<PageActionIconType>
 OfferNotificationBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kPaymentsOfferNotification;
 }

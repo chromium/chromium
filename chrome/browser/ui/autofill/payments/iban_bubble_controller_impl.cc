@@ -478,7 +478,8 @@ IbanBubbleControllerImpl::GetConfirmationUiParams() const {
   return confirmation_ui_params_.value();
 }
 
-PageActionIconType IbanBubbleControllerImpl::GetPageActionIconType() {
+std::optional<PageActionIconType>
+IbanBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kSaveIban;
 }
 

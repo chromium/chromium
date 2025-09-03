@@ -88,7 +88,7 @@ class VirtualCardEnrollBubbleControllerImpl
 
   // AutofillBubbleControllerBase::
   void OnVisibilityChanged(content::Visibility visibility) override;
-  PageActionIconType GetPageActionIconType() override;
+  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
 
  private:

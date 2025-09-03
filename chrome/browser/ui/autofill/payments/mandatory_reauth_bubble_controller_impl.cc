@@ -220,7 +220,7 @@ MandatoryReauthBubbleControllerImpl::GetMandatoryReauthBubbleType() const {
   return current_bubble_type_;
 }
 
-PageActionIconType
+std::optional<PageActionIconType>
 MandatoryReauthBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kMandatoryReauth;
 }

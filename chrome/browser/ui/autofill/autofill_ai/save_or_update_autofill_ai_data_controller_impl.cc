@@ -298,10 +298,9 @@ void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleClosed(
   }
 }
 
-PageActionIconType
+std::optional<PageActionIconType>
 SaveOrUpdateAutofillAiDataControllerImpl::GetPageActionIconType() {
-  // TODO(crbug.com/362227379): Update icon.
-  return PageActionIconType::kAutofillAddress;
+  return std::nullopt;
 }
 
 void SaveOrUpdateAutofillAiDataControllerImpl::DoShowBubble() {

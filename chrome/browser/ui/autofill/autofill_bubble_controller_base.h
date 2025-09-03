@@ -47,7 +47,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   void WebContentsDestroyed() override;
 
  protected:
-  virtual PageActionIconType GetPageActionIconType() = 0;
+  virtual std::optional<PageActionIconType> GetPageActionIconType() = 0;
 
   // Subclasses should implement this method to actually show the bubble and
   // potentially log metrics.

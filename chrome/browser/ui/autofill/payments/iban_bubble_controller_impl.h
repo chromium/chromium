@@ -114,7 +114,7 @@ class IbanBubbleControllerImpl
   explicit IbanBubbleControllerImpl(content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
-  PageActionIconType GetPageActionIconType() override;
+  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
   using AutofillBubbleControllerBase::HideBubble;
 

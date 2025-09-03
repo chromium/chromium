@@ -389,7 +389,7 @@ void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
   }
 }
 
-PageActionIconType
+std::optional<PageActionIconType>
 FilledCardInformationBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kFilledCardInformation;
 }

@@ -77,7 +77,7 @@ class AddressBubblesController
  protected:
   // AutofillBubbleControllerBase:
   void WebContentsDestroyed() override;
-  PageActionIconType GetPageActionIconType() override;
+  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
 
  private:
