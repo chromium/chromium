@@ -120,6 +120,10 @@ enum class ScreenshotIframeRedactionScope {
 extern const base::FeatureParam<ScreenshotIframeRedactionScope>
     kScreenshotIframeRedaction;
 
+// Controls the maximum memory/file bytes used for the capture of a single
+// frame. 0 means no maximum.
+extern const base::FeatureParam<size_t> kScreenshotMaxPerCaptureBytes;
+
 // Enables page context eligibility checks.
 BASE_DECLARE_FEATURE(kGlicPageContextEligibility);
 

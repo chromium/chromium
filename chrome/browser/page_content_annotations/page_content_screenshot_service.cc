@@ -26,8 +26,6 @@ namespace page_content_annotations {
 using BitmapCallback = PageContentScreenshotService::BitmapCallback;
 namespace {
 
-constexpr size_t kMaxScreenshotFileSize = 50 * 1000L * 1000L;  // 50 MB.
-
 paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
 PrepareCompositeRequest(
     std::unique_ptr<paint_preview::CaptureResult> capture_result) {
@@ -74,7 +72,7 @@ class ScreenshotRequest {
     capture_params.clip_y_coord_override = params_.clip_y_coord_override;
     capture_params.persistence =
         paint_preview::RecordingPersistence::kMemoryBuffer;
-    capture_params.max_per_capture_size = kMaxScreenshotFileSize;
+    capture_params.max_per_capture_size = params_.max_per_capture_bytes;
     capture_params.redaction_params = std::move(params_.redaction_params);
 
     screenshot_service_->CapturePaintPreview(
