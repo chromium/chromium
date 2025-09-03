@@ -5497,6 +5497,7 @@ static_library("test_support") {
     "//ui/gl:test_support",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
+    "//ui/native_theme",
     "//ui/ozone",
     "//ui/platform_window/common",
     "//ui/shell_dialogs",

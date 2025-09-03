@@ -24,6 +24,7 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/image_view.h"
 
 // This tests both the helper functions in network_icon, and ActiveNetworkIcon
@@ -682,7 +683,7 @@ TEST_F(NetworkIconTest, GetImageModelForWiFiEnabledState) {
   widget->SetFullscreen(true);
   widget->SetContentsView(image_view);
 
-  ui::NativeTheme* native_theme = widget->GetNativeTheme();
+  auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   native_theme->set_use_dark_colors(true);
   native_theme->NotifyOnNativeThemeUpdated();
 

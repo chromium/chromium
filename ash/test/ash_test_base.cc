@@ -70,7 +70,6 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/init/input_method_initializer.h"
-#include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -81,6 +80,7 @@
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/test/test_widget_builder.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -728,9 +728,10 @@ void AshTestBase::PrepareForPixelDiffTest() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kStabilizeTimeDependentViewForTests);
 
-  // Enable the dark mode switch to maintain the dark mode before user login.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kForceDarkMode);
+  // Use dark mode by default, which is what many gold images expect.
+  auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  native_theme->set_use_dark_colors(true);
+  native_theme->NotifyOnNativeThemeUpdated();
 
   DCHECK(!pixel_differ_);
   pixel_differ_ =
