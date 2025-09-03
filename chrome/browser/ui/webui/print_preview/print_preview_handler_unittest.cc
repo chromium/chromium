@@ -280,10 +280,9 @@ class FakePrintPreviewUI : public PrintPreviewUI {
   FakePrintPreviewUI& operator=(const FakePrintPreviewUI&) = delete;
   ~FakePrintPreviewUI() override = default;
 
-  void GetPrintPreviewDataForIndex(
-      int index,
-      scoped_refptr<base::RefCountedMemory>* data) const override {
-    *data = base::MakeRefCounted<base::RefCountedStaticMemory>(
+  scoped_refptr<base::RefCountedMemory> GetPrintPreviewDataForIndex(
+      int index) const override {
+    return base::MakeRefCounted<base::RefCountedStaticMemory>(
         base::byte_span_from_cstring(kTestData));
   }
 

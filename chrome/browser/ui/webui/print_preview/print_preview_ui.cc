@@ -498,10 +498,9 @@ void PrintPreviewUI::ClearPreviewUIId() {
   id_.reset();
 }
 
-void PrintPreviewUI::GetPrintPreviewDataForIndex(
-    int index,
-    scoped_refptr<base::RefCountedMemory>* data) const {
-  PrintPreviewDataService::GetInstance()->GetDataEntry(*id_, index, data);
+scoped_refptr<base::RefCountedMemory>
+PrintPreviewUI::GetPrintPreviewDataForIndex(int index) const {
+  return PrintPreviewDataService::GetInstance()->GetDataEntry(*id_, index);
 }
 
 void PrintPreviewUI::SetPrintPreviewDataForIndex(

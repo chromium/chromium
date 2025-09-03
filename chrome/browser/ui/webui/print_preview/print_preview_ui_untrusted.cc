@@ -28,7 +28,7 @@ namespace printing {
 namespace {
 
 bool ShouldHandleRequestCallback(const std::string& path) {
-  return !!ParseDataPath(path);
+  return ParseDataPath(path).has_value();
 }
 
 }  // namespace
@@ -56,10 +56,10 @@ PrintPreviewUIUntrusted::GetPrintPreviewData(const std::string& path) {
   std::optional<PrintPreviewIdAndPageIndex> parsed = ParseDataPath(path);
   CHECK(parsed);
 
-  scoped_refptr<base::RefCountedMemory> data;
-  PrintPreviewDataService::GetInstance()->GetDataEntry(
-      parsed->ui_id, parsed->page_index, &data);
-  if (data.get()) {
+  scoped_refptr<base::RefCountedMemory> data =
+      PrintPreviewDataService::GetInstance()->GetDataEntry(parsed->ui_id,
+                                                           parsed->page_index);
+  if (data) {
     return data;
   }
 

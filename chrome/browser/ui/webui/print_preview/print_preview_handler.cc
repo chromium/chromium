@@ -720,9 +720,9 @@ void PrintPreviewHandler::HandleDoPrint(const base::Value::List& args) {
     return;
   }
 
-  scoped_refptr<base::RefCountedMemory> data;
-  print_preview_ui()->GetPrintPreviewDataForIndex(
-      COMPLETE_PREVIEW_DOCUMENT_INDEX, &data);
+  scoped_refptr<base::RefCountedMemory> data =
+      print_preview_ui()->GetPrintPreviewDataForIndex(
+          COMPLETE_PREVIEW_DOCUMENT_INDEX);
   if (!data) {
     // Nothing to print, no preview available.
     RejectJavascriptCallback(base::Value(callback_id), base::Value("NO_DATA"));
