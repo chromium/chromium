@@ -20,6 +20,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
 import org.chromium.ui.listmenu.ListItemType;
+import org.chromium.ui.listmenu.ListMenuUtils.FlyoutHandler;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,6 +38,7 @@ public class ContextMenuMediator {
     private final ContextMenuHeaderCoordinator mContextMenuHeaderCoordinator;
     private final Callback<Integer> mOnItemClicked;
     private final Runnable mDismissDialog;
+    private final boolean mUsePopupWindow;
 
     /**
      * Returns a mediator ({@link ContextMenuMediator}) to be used for a context menu. See {@link
@@ -46,16 +48,19 @@ public class ContextMenuMediator {
      * @param headerCoordinator The {@link ContextMenuHeaderCoordinator} to use.
      * @param onItemClicked A callback that takes the MENU_ITEM_ID of an item, to use on click.
      * @param dismissDialog The {@link Runnable} to use to dismiss the context menu.
+     * @param isPopup Whether the context menu window should be shown as a popup.
      */
     /* package */ ContextMenuMediator(
             Activity activity,
             ContextMenuHeaderCoordinator headerCoordinator,
             Callback<Integer> onItemClicked,
-            Runnable dismissDialog) {
+            Runnable dismissDialog,
+            boolean usePopupWindow) {
         mActivity = activity;
         mContextMenuHeaderCoordinator = headerCoordinator;
         mOnItemClicked = onItemClicked;
         mDismissDialog = dismissDialog;
+        mUsePopupWindow = usePopupWindow;
     }
 
     /**
@@ -86,7 +91,8 @@ public class ContextMenuMediator {
      * @param hasHeader Whether the context menu list has a header item.
      * @return The {@link ModelList} to show in the context menu.
      */
-    /*package*/ ModelList updateAndGetModelList(List<ModelList> items, boolean hasHeader) {
+    /*package*/ ModelList updateAndGetModelList(
+            List<ModelList> items, boolean hasHeader, FlyoutHandler flyoutHandler) {
 
         mModelList.clear();
 
@@ -114,8 +120,8 @@ public class ContextMenuMediator {
                 /* headerModelList= */ null,
                 mModelList,
                 mDismissDialog,
-                /* flyoutHandler= */ null,
-                /* drillDownOverrideValue= */ null);
+                flyoutHandler,
+                /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
         // Add callbacks to all other first-level items.
         for (ListItem item : mModelList) {
             if (item.type == ListItemType.MENU_ITEM

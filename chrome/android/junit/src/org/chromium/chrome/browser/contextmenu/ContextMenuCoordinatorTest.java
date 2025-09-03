@@ -5,11 +5,20 @@
 package org.chromium.chrome.browser.contextmenu;
 
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.util.Pair;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -52,8 +61,11 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragStateTracker;
+import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -130,6 +142,13 @@ public class ContextMenuCoordinatorTest {
         @Implementation
         public static Profile fromWebContents(WebContents webContents) {
             return sProfileFromWebContents;
+        }
+    }
+
+    /** Helper class to access the protected constructor of ViewAndroidDelegate. */
+    public static class TestViewAndroidDelegate extends ViewAndroidDelegate {
+        public TestViewAndroidDelegate(ViewGroup containerView) {
+            super(containerView);
         }
     }
 
@@ -281,8 +300,10 @@ public class ContextMenuCoordinatorTest {
                 displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
         ShadowContextMenuDialog shadowDialog = Shadow.extract(dialog);
 
-        ContextMenuListView listView = mCoordinator.getListViewForTest();
-        Assert.assertNotNull("List view should not be null.", listView);
+        List<ContextMenuListView> listViews = mCoordinator.getListViewsForTest();
+        Assert.assertEquals("There should be exactly 1 ListView.", 1, listViews.size());
+        ContextMenuListView listView = listViews.get(0);
+
         Assert.assertFalse(
                 "Fading edge should not be enabled.", listView.isVerticalFadingEdgeEnabled());
 
@@ -321,8 +342,10 @@ public class ContextMenuCoordinatorTest {
                 displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
         ShadowContextMenuDialog shadowDialog = Shadow.extract(dialog);
 
-        ContextMenuListView listView = mCoordinator.getListViewForTest();
-        Assert.assertNotNull("List view should not be null.", listView);
+        List<ContextMenuListView> listViews = mCoordinator.getListViewsForTest();
+        Assert.assertEquals("There should be exactly 1 ListView.", 1, listViews.size());
+        ContextMenuListView listView = listViews.get(0);
+
         Assert.assertTrue("Fading edge should be enabled.", listView.isVerticalFadingEdgeEnabled());
         Assert.assertEquals(
                 "Fading edge size is wrong.",
@@ -349,6 +372,80 @@ public class ContextMenuCoordinatorTest {
                 "rect.bottom for ContextMenuDialog does not match.",
                 /*200 + 17 + 40 / 2 =*/ 237,
                 rect.bottom);
+    }
+
+    @Test
+    @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @Config(
+            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
+            qualifiers = "mdpi")
+    @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
+    public void testAddFlyoutWindow() {
+        final int triggeringTouchXDp = 100;
+        final int triggeringTouchYDp = 200;
+        ContextMenuDialog dialog =
+                displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
+        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
+        shadowDialog.show();
+
+        ListItem parentItem =
+                new ListItem(
+                        MENU_ITEM_WITH_SUBMENU,
+                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                                .with(TITLE, "Parent item")
+                                .with(ENABLED, true)
+                                .with(SUBMENU_ITEMS, new ArrayList<>())
+                                .build());
+        View mockAnchorView = mock(View.class);
+        mCoordinator.addFlyoutWindow(parentItem, mockAnchorView);
+
+        Assert.assertEquals(
+                "There should be 2 dialogs after adding a flyout.",
+                2,
+                mCoordinator.getDialogsForTest().size());
+        Assert.assertEquals(
+                "There should be 2 ListViews after adding a flyout.",
+                2,
+                mCoordinator.getListViewsForTest().size());
+    }
+
+    @Test
+    @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @Config(
+            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
+            qualifiers = "mdpi")
+    @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
+    public void testRemoveFlyoutWindow() {
+        final int triggeringTouchXDp = 100;
+        final int triggeringTouchYDp = 200;
+        ContextMenuDialog dialog =
+                displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
+        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
+        shadowDialog.show();
+
+        // Add the flyout popup to be removed.
+        ListItem parentItem =
+                new ListItem(
+                        MENU_ITEM_WITH_SUBMENU,
+                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                                .with(TITLE, "Parent item")
+                                .with(ENABLED, true)
+                                .with(SUBMENU_ITEMS, new ArrayList<>())
+                                .build());
+        View mockAnchorView = mock(View.class);
+        mCoordinator.addFlyoutWindow(parentItem, mockAnchorView);
+
+        // Remove the flyout popup.
+        mCoordinator.removeFlyoutWindows(1);
+
+        Assert.assertEquals(
+                "There should be 1 dialog after removing the last flyout.",
+                1,
+                mCoordinator.getDialogsForTest().size());
+        Assert.assertEquals(
+                "There should be 1 ListView after removing the last flyout.",
+                1,
+                mCoordinator.getListViewsForTest().size());
     }
 
     private ContextMenuDialog createContextMenuDialogForTest(boolean isPopup) {
@@ -396,17 +493,27 @@ public class ContextMenuCoordinatorTest {
 
         final WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         final Window window = Mockito.mock(Window.class);
+
         doReturn(new WeakReference<>(mActivity)).when(windowAndroid).getActivity();
         doReturn(window).when(windowAndroid).getWindow();
+        final WindowManager.LayoutParams attrs = new WindowManager.LayoutParams();
+        doReturn(attrs).when(window).getAttributes();
+        final View mockDecorView = Mockito.mock(View.class);
+        doReturn(mockDecorView).when(window).getDecorView();
+
+        final ViewGroup mockContainerView = Mockito.mock(ViewGroup.class);
+        final ViewAndroidDelegate viewAndroidDelegate =
+                new TestViewAndroidDelegate(mockContainerView);
+        doReturn(viewAndroidDelegate).when(mWebContentsMock).getViewAndroidDelegate();
 
         List<ModelList> rawItems = new ArrayList<>();
 
         mCoordinator.displayMenu(
                 windowAndroid, mWebContentsMock, params, rawItems, null, null, null);
 
-        ContextMenuDialog dialog = mCoordinator.getDialogForTest();
-        Assert.assertNotNull("ContextMenuDialog is null", dialog);
-        return dialog;
+        List<Pair<ListItem, ContextMenuDialog>> dialogs = mCoordinator.getDialogsForTest();
+        Assert.assertEquals("mDialogs contains no windows.", 1, dialogs.size());
+        return dialogs.get(0).second;
     }
 
     private void setupMocksForDragShadowImage(

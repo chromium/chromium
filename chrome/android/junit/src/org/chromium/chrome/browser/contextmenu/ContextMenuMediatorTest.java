@@ -87,7 +87,11 @@ public class ContextMenuMediatorTest {
     public void setup() {
         mMediator =
                 new ContextMenuMediator(
-                        mActivity, mHeaderCoordinator, mClickCallback, mDismissDialog);
+                        mActivity,
+                        mHeaderCoordinator,
+                        mClickCallback,
+                        mDismissDialog,
+                        /* usePopupWindow= */ false);
 
         mListItemWithModelClickCallback =
                 new ListItem(
@@ -342,7 +346,7 @@ public class ContextMenuMediatorTest {
     }
 
     private ModelList getItemList(List<ModelList> items, boolean hasHeader) {
-        return mMediator.updateAndGetModelList(items, hasHeader);
+        return mMediator.updateAndGetModelList(items, hasHeader, /* flyoutHandler= */ null);
     }
 
     private ListItem createListItem(@ChromeContextMenuItem.Item int item) {

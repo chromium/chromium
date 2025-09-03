@@ -442,6 +442,20 @@ public class ListMenuUtils {
         }
     }
 
+    /**
+     * Constructs a {@link ModelList} containing the submenu items of a given parent item.
+     *
+     * @param item The parent {@link ListItem} that contains the submenu.
+     * @return A new {@link ModelList} populated with the children of the given item.
+     */
+    public static ModelList getModelListSubtree(ListItem item) {
+        ModelList modelList = new ModelList();
+        for (ListItem listItem : item.model.get(SUBMENU_ITEMS)) {
+            modelList.add(listItem);
+        }
+        return modelList;
+    }
+
     /** Watches a ModelList and updates the accessibility pane title of the View accordingly. */
     public static class AccessibilityListObserver implements ListObserver<Void> {
 
