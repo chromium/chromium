@@ -22,8 +22,8 @@
 
   const result = await session.evaluateAsync(async () => {
     const screenDetails = await getScreenDetails();
-    const screenInfos = screenDetails.screens.map(
-        s => `devicePixelRatio=${s.devicePixelRatio}`);
+    const screenInfos =
+        screenDetails.screens.map(s => `colorDepth=${s.colorDepth}`);
     return screenInfos.join('\n');
   });
 

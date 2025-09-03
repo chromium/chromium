@@ -1,2 +1,2 @@
 Tests screen details color depth.
-devicePixelRatio=1
+colorDepth=32
