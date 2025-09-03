@@ -36,10 +36,8 @@ void DevtoolsDurableMessageCollector::Retrieve(
   auto message = request_id_to_message_map_.find(devtools_request_id);
   if (message != request_id_to_message_map_.end() &&
       message->second->is_complete()) {
-    mojo_base::BigBuffer retrieved_message(message->second->byte_size());
-    CHECK(message->second->CopyTo(retrieved_message));
     return std::move(callback).Run(
-        std::make_optional(std::move(retrieved_message)));
+        std::make_optional(message->second->Retrieve()));
   }
 
   return std::move(callback).Run(std::nullopt);

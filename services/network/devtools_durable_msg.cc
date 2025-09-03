@@ -4,7 +4,45 @@
 
 #include "services/network/devtools_durable_msg.h"
 
+#include "base/functional/callback_helpers.h"
+#include "net/base/io_buffer.h"
+#include "net/filter/filter_source_stream.h"
+#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
+
 namespace network {
+
+class DurableMessageEncodedSourceStream : public net::SourceStream {
+ public:
+  explicit DurableMessageEncodedSourceStream(
+      base::span<const uint8_t> encoded_bytes)
+      : SourceStream(net::SourceStreamType::kNone),
+        encoded_bytes_(encoded_bytes) {}
+
+  int Read(net::IOBuffer* dest_buffer,
+           int buffer_size,
+           net::CompletionOnceCallback callback) override {
+    size_t consume = std::min(base::checked_cast<size_t>(buffer_size),
+                              encoded_bytes_.size());
+    if (consume <= 0) {
+      return 0;
+    }
+
+    auto split_buffer = encoded_bytes_.split_at(consume);
+    dest_buffer->span().copy_prefix_from(split_buffer.first);
+    encoded_bytes_ = split_buffer.second;
+    return base::checked_cast<int>(consume);
+  }
+
+  std::string Description() const override {
+    return "DurableMessageEncodedSourceStream";
+  }
+
+  bool MayHaveMoreBytes() const override { return !encoded_bytes_.empty(); }
+
+ private:
+  base::raw_span<const uint8_t> encoded_bytes_;
+};
 
 DevtoolsDurableMessage::DevtoolsDurableMessage(
     std::string request_id,
@@ -29,13 +67,39 @@ void DevtoolsDurableMessage::AddBytes(base::span<const uint8_t> bytes,
   encoded_byte_size_ += encoded_byte_size;
 }
 
-bool DevtoolsDurableMessage::CopyTo(base::span<uint8_t> destination) const {
+mojo_base::BigBuffer DevtoolsDurableMessage::Retrieve() const {
   CHECK(is_complete_);
-  if (destination.size() < byte_size()) {
-    return false;
+
+  if (client_decoding_types_.empty()) {
+    return mojo_base::BigBuffer(bytes_);
   }
-  destination.copy_prefix_from(bytes_);
-  return true;
+
+  // Stored data needs to be decoded before shipping out.
+  std::unique_ptr<DurableMessageEncodedSourceStream> encoded_stream =
+      std::make_unique<DurableMessageEncodedSourceStream>(bytes_);
+  std::unique_ptr<net::SourceStream> decoding_stream =
+      net::FilterSourceStream::CreateDecodingSourceStream(
+          std::move(encoded_stream), client_decoding_types_);
+  scoped_refptr<net::GrowableIOBuffer> decode_buffer =
+      base::MakeRefCounted<net::GrowableIOBuffer>();
+  // Set to encoded size initially.
+  decode_buffer->SetCapacity(encoded_byte_size_);
+  while (decoding_stream->MayHaveMoreBytes()) {
+    if (decode_buffer->RemainingCapacity() == 0) {
+      decode_buffer->SetCapacity(decode_buffer->capacity() * 2);
+    }
+    int result = decoding_stream->Read(decode_buffer.get(),
+                                       decode_buffer->RemainingCapacity(),
+                                       base::DoNothing());
+    if (result > 0) {
+      // Update the offset of the `decode_buffer` to reflect the new data.
+      decode_buffer->DidConsume(result);
+    } else {
+      break;
+    }
+  }
+
+  return mojo_base::BigBuffer(decode_buffer->span_before_offset());
 }
 
 void DevtoolsDurableMessage::MarkComplete() {

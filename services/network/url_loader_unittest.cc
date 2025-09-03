@@ -3034,15 +3034,9 @@ TEST_F(URLLoaderTest, WritesToDurableMessage) {
   ASSERT_EQ(accounting_delegate.size(), kGzippedBodyLength);
   ASSERT_EQ(durable_message.encoded_byte_size(),
             static_cast<size_t>(kGzippedBodyLength));
-  ASSERT_EQ(durable_message.byte_size(), body.size());
+  ASSERT_EQ(durable_message.byte_size_for_testing(), body.size());
   // Retrieve the stored body and verify that it is accurate.
-  std::vector<uint8_t> buffer(durable_message.byte_size());
-  EXPECT_TRUE(durable_message.CopyTo(buffer));
-  // TODO(414864477): Returned body should be in decoded form, regardless of
-  // whether body decoding was done or deferred by the Network stack. Once
-  // deferred decoding is implemented in durable messages, add a test for
-  // client-side-decoded response correctness.
-  EXPECT_EQ(buffer, base::as_byte_span(body));
+  EXPECT_EQ(durable_message.Retrieve(), base::as_byte_span(body));
 }
 
 TEST_F(URLLoaderTest, DurableMessageWorksWithMimeSniffing) {
@@ -3059,19 +3053,20 @@ TEST_F(URLLoaderTest, DurableMessageWorksWithMimeSniffing) {
   EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
               ElementsAre(net::SourceStreamType::kGzip));
   EXPECT_TRUE(did_mime_sniff());
+  EXPECT_THAT(durable_message.GetClientDecodingTypesForTesting(),
+              ElementsAre(net::SourceStreamType::kGzip));
   EXPECT_EQ(encoded_body, ReadTestFile("content-sniffer-test0.html.gz"));
   EXPECT_TRUE(durable_message.is_complete());
   ASSERT_EQ(accounting_delegate.size(), kGzippedBodyLength);
   ASSERT_EQ(durable_message.encoded_byte_size(),
             static_cast<size_t>(kGzippedBodyLength));
-  ASSERT_EQ(durable_message.byte_size(), encoded_body.size());
-  // TODO(414864477): Returned body should be in decoded form, regardless of
-  // whether body decoding was done or deferred by the Network stack. Once
-  // deferred decoding is implemented in durable messages, add a test for
-  // client-side-decoded response correctness.
-  std::vector<uint8_t> buffer(durable_message.byte_size());
-  EXPECT_TRUE(durable_message.CopyTo(buffer));
-  EXPECT_EQ(buffer, base::as_byte_span(encoded_body));
+  ASSERT_EQ(durable_message.byte_size_for_testing(), encoded_body.size());
+  // Retrieve the stored body and verify that it is accurate and contents are in
+  // decoded form.
+  mojo_base::BigBuffer buffer = durable_message.Retrieve();
+  auto decoded_body = ReadTestFile("content-sniffer-test0.html");
+  EXPECT_EQ(buffer.size(), decoded_body.size());
+  EXPECT_EQ(buffer, base::as_byte_span(decoded_body));
 }
 
 // Tests a large response body, which would result in multiple asynchronous
@@ -3121,16 +3116,38 @@ TEST_F(URLLoaderMockSocketTest, DurableMessageWorksWithLotsOfData) {
               ElementsAre(net::SourceStreamType::kGzip));
   EXPECT_TRUE(durable_message.is_complete());
   size_t compressed_size = compressed.size();
-  ASSERT_EQ(static_cast<size_t>(accounting_delegate.size()), compressed_size);
+  ASSERT_EQ(accounting_delegate.size(), static_cast<int64_t>(compressed_size));
   ASSERT_EQ(durable_message.encoded_byte_size(), compressed_size);
-  ASSERT_EQ(durable_message.byte_size(), compressed_size);
-  // TODO(414864477): Returned body should be in decoded form, regardless of
-  // whether body decoding was done or deferred by the Network stack. Once
-  // deferred decoding is implemented in durable messages, add a test for
-  // client-side-decoded response correctness.
-  std::vector<uint8_t> buffer(durable_message.byte_size());
-  EXPECT_TRUE(durable_message.CopyTo(buffer));
-  EXPECT_EQ(buffer, base::as_byte_span(compressed));
+  ASSERT_EQ(durable_message.byte_size_for_testing(), compressed_size);
+  EXPECT_EQ(durable_message.Retrieve(), base::as_byte_span(response_body));
+}
+
+// Tests that client side decoding types are written into DurableMessage and the
+// body is decoded on retrieval.
+TEST_F(URLLoaderTest, DurableMessagePerformsClientSideDecodingGzip) {
+  MockDurableMessageAccountingDelegate accounting_delegate;
+  DevtoolsDurableMessage durable_message("test", accounting_delegate);
+  set_durable_message(durable_message.GetWeakPtr());
+  size_t kGzippedBodyLength = 60;
+  set_sniff();
+  set_client_side_content_decoding_enabled();
+  std::string encoded_body;
+  EXPECT_EQ(net::OK,
+            Load(test_server()->GetURL("/hello.html.gz"), &encoded_body));
+  EXPECT_THAT(client()->response_head()->client_side_content_decoding_types,
+              ElementsAre(net::SourceStreamType::kGzip));
+  EXPECT_THAT(durable_message.GetClientDecodingTypesForTesting(),
+              ElementsAre(net::SourceStreamType::kGzip));
+  EXPECT_TRUE(durable_message.is_complete());
+  ASSERT_EQ(accounting_delegate.size(),
+            static_cast<int64_t>(kGzippedBodyLength));
+  ASSERT_EQ(durable_message.encoded_byte_size(), kGzippedBodyLength);
+  // Retrieve the stored body and verify that it is accurate and contents are in
+  // decoded form.
+  mojo_base::BigBuffer buffer = durable_message.Retrieve();
+  auto decoded_body = ReadTestFile("hello.html");
+  EXPECT_EQ(buffer.size(), decoded_body.size());
+  EXPECT_EQ(buffer, base::as_byte_span(decoded_body));
 }
 
 // Tests that URLLoader still completes the load without errors/crashing, but

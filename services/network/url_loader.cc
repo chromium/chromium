@@ -1314,6 +1314,13 @@ void URLLoader::ContinueOnResponseStarted() {
     }
   }
 
+  // If client-side content decoding is requested, store the types of decoding
+  // to be used with the Durable Message so it can decode on retrieval.
+  if (devtools_durable_message_) {
+    devtools_durable_message_->SetClientDecodingTypes(
+        response_->client_side_content_decoding_types);
+  }
+
   // If client-side content decoding is requested and either ORB or MIME
   // sniffing is needed, use PartialDecoder to get decoded data for sniffing.
   if (!response_->client_side_content_decoding_types.empty() &&
