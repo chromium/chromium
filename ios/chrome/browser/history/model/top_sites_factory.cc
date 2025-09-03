@@ -56,7 +56,7 @@ scoped_refptr<RefcountedKeyedService> TopSitesFactory::BuildServiceInstanceFor(
   return top_sites;
 }
 
-void TopSitesFactory::RegisterBrowserStatePrefs(
+void TopSitesFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   history::TopSitesImpl::RegisterPrefs(registry);
 }

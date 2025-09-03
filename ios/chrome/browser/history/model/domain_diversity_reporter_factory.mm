@@ -58,7 +58,7 @@ DomainDiversityReporterFactory::BuildServiceInstanceFor(
       history_service, profile->GetPrefs(), base::DefaultClock::GetInstance());
 }
 
-void DomainDiversityReporterFactory::RegisterBrowserStatePrefs(
+void DomainDiversityReporterFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   DomainDiversityReporter::RegisterProfilePrefs(registry);
 }

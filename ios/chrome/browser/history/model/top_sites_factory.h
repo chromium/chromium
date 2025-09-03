@@ -32,7 +32,7 @@ class TopSitesFactory : public RefcountedProfileKeyedServiceFactoryIOS {
   // RefcountedBrowserStateKeyedServiceFactory implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  void RegisterBrowserStatePrefs(
+  void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 
