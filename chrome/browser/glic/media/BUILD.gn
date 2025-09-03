@@ -30,6 +30,7 @@ source_set("media") {
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
+    "//services/media_session/public/cpp",
   ]
 }
 

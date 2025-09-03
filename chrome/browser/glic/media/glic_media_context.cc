@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
@@ -13,9 +14,11 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
+#include "services/media_session/public/cpp/media_metadata.h"
 
 namespace glic {
 
@@ -28,14 +31,18 @@ GlicMediaContext::~GlicMediaContext() {
   // If we got any transcript, then record its max length we saw as its total.
   // If anything is close to the cut-off, then we can infer that we likely
   // truncated it.
-  if (max_transcript_size_ > 0) {
-    UMA_HISTOGRAM_COUNTS_1M("Glic.Media.TotalContextLength",
-                            max_transcript_size_);
+  for (const auto& pair : transcripts_by_title_) {
+    const auto& transcript = pair.second;
+    if (transcript->max_transcript_size_ > 0) {
+      UMA_HISTOGRAM_COUNTS_1M("Glic.Media.TotalContextLength",
+                              transcript->max_transcript_size_);
+    }
   }
 }
 
 bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
-  if (IsExcludedFromTranscript()) {
+  Transcript* transcript = GetOrCreateTranscript();
+  if (!transcript) {
     return false;
   }
 
@@ -62,73 +69,77 @@ bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
   TranscriptChunk new_chunk = {result.transcription, media_timestamp_range};
 
   if (!result.is_final) {
-    HandleNonFinalResult(std::move(new_chunk));
+    HandleNonFinalResult(transcript, std::move(new_chunk));
   } else {
     // Record timestamp metric for final result.
-    base::UmaHistogramExactLinear("Glic.Media.TimestampRangeCount",
-                                  timestamp_count, 10);
-    HandleFinalResult(std::move(new_chunk));
+    base::UmaHistogramExactLinear("Glic.Media.TimestampCount", timestamp_count,
+                                  10);
+    HandleFinalResult(transcript, std::move(new_chunk));
   }
 
   return true;
 }
 
-void GlicMediaContext::HandleNonFinalResult(TranscriptChunk new_chunk) {
+void GlicMediaContext::HandleNonFinalResult(Transcript* transcript,
+                                            TranscriptChunk new_chunk) {
   // If a non-final chunk already exists, it must be removed before adding the
   // new one, unless it's being updated in-place.
-  if (nonfinal_chunk_it_ != transcript_chunks_.end()) {
+  if (transcript->nonfinal_chunk_it_ != transcript->transcript_chunks_.end()) {
     // If the new chunk has a timestamp and its start time matches the existing
     // non-final chunk, we can update it in-place.
     if (new_chunk.HasMediaTimestamps() &&
-        nonfinal_chunk_it_->HasMediaTimestamps() &&
-        new_chunk.GetStartTime() == nonfinal_chunk_it_->GetStartTime()) {
-      nonfinal_chunk_it_->text = new_chunk.text;
-      nonfinal_chunk_it_->media_timestamp_range =
+        transcript->nonfinal_chunk_it_->HasMediaTimestamps() &&
+        new_chunk.GetStartTime() ==
+            transcript->nonfinal_chunk_it_->GetStartTime()) {
+      transcript->nonfinal_chunk_it_->text = new_chunk.text;
+      transcript->nonfinal_chunk_it_->media_timestamp_range =
           new_chunk.media_timestamp_range;
       return;
     }
     // Otherwise, the old non-final chunk is invalid.
-    transcript_chunks_.erase(nonfinal_chunk_it_);
-    nonfinal_chunk_it_ = transcript_chunks_.end();
+    transcript->transcript_chunks_.erase(transcript->nonfinal_chunk_it_);
+    transcript->nonfinal_chunk_it_ = transcript->transcript_chunks_.end();
   }
 
   // Now, insert the new non-final chunk.
   if (new_chunk.HasMediaTimestamps()) {
     // Insert in order of its start time.
     auto insert_pos = std::upper_bound(
-        transcript_chunks_.begin(), transcript_chunks_.end(), new_chunk,
+        transcript->transcript_chunks_.begin(),
+        transcript->transcript_chunks_.end(), new_chunk,
         [](const TranscriptChunk& a, const TranscriptChunk& b) {
           return a.GetStartTime() < b.GetStartTime();
         });
-    nonfinal_chunk_it_ =
-        transcript_chunks_.insert(insert_pos, std::move(new_chunk));
+    transcript->nonfinal_chunk_it_ =
+        transcript->transcript_chunks_.insert(insert_pos, std::move(new_chunk));
   } else {
     // A non-final chunk without a timestamp can't be sorted by time. Instead,
     // insert it right after the last final chunk.
-    auto insert_pos = last_insertion_it_;
-    if (insert_pos != transcript_chunks_.end()) {
+    auto insert_pos = transcript->last_insertion_it_;
+    if (insert_pos != transcript->transcript_chunks_.end()) {
       ++insert_pos;
     }
-    nonfinal_chunk_it_ =
-        transcript_chunks_.insert(insert_pos, std::move(new_chunk));
+    transcript->nonfinal_chunk_it_ =
+        transcript->transcript_chunks_.insert(insert_pos, std::move(new_chunk));
   }
 }
 
-void GlicMediaContext::HandleFinalResult(TranscriptChunk new_chunk) {
-  if (nonfinal_chunk_it_ != transcript_chunks_.end()) {
+void GlicMediaContext::HandleFinalResult(Transcript* transcript,
+                                         TranscriptChunk new_chunk) {
+  if (transcript->nonfinal_chunk_it_ != transcript->transcript_chunks_.end()) {
     // A non-final chunk exists and we will remove it so that the new final
     // chunk can be added in media time order.
-    transcript_chunks_.erase(nonfinal_chunk_it_);
-    nonfinal_chunk_it_ = transcript_chunks_.end();
+    transcript->transcript_chunks_.erase(transcript->nonfinal_chunk_it_);
+    transcript->nonfinal_chunk_it_ = transcript->transcript_chunks_.end();
   }
 
   // Process final result.
-  new_chunk.sequence_number = next_sequence_number_++;
+  new_chunk.sequence_number = transcript->next_sequence_number_++;
 
   if (new_chunk.HasMediaTimestamps()) {
     // New chunk has timing information, process overlaps by removing existing
     // overlapping chunks.
-    RemoveOverlappingChunks(new_chunk);
+    RemoveOverlappingChunks(transcript, new_chunk);
 
     // Insert the new chunk into the updated list, maintaining order by start
     // time.  This is the place before which the chunk will be inserted, so
@@ -136,12 +147,14 @@ void GlicMediaContext::HandleFinalResult(TranscriptChunk new_chunk) {
     std::optional<std::list<TranscriptChunk>::iterator> insert_pos;
 
     // Optimization: check if we can insert after the last insertion point.
-    if (last_insertion_it_ != transcript_chunks_.end()) {
-      if (new_chunk.GetStartTime() >= last_insertion_it_->GetStartTime()) {
+    if (transcript->last_insertion_it_ !=
+        transcript->transcript_chunks_.end()) {
+      if (new_chunk.GetStartTime() >=
+          transcript->last_insertion_it_->GetStartTime()) {
         // The new chunk does come after the previous chunk.  Make sure that the
         // next chunk comes after, or there's no next chunk.
-        auto next_it = std::next(last_insertion_it_);
-        if (next_it == transcript_chunks_.end() ||
+        auto next_it = std::next(transcript->last_insertion_it_);
+        if (next_it == transcript->transcript_chunks_.end() ||
             new_chunk.GetStartTime() < next_it->GetStartTime()) {
           // Insert immediately before this.
           insert_pos = next_it;
@@ -152,47 +165,49 @@ void GlicMediaContext::HandleFinalResult(TranscriptChunk new_chunk) {
     // If the optimization didn't work, find the correct position.
     if (!insert_pos) {
       insert_pos = std::upper_bound(
-          transcript_chunks_.begin(), transcript_chunks_.end(), new_chunk,
+          transcript->transcript_chunks_.begin(),
+          transcript->transcript_chunks_.end(), new_chunk,
           [](const TranscriptChunk& a, const TranscriptChunk& b) {
             return a.GetStartTime() < b.GetStartTime();
           });
     }
-    last_insertion_it_ =
-        transcript_chunks_.insert(*insert_pos, std::move(new_chunk));
+    transcript->last_insertion_it_ = transcript->transcript_chunks_.insert(
+        *insert_pos, std::move(new_chunk));
   } else {
     // New chunk without a timestamp will be inserted right after the last final
     // chunk.
-    auto insert_pos = last_insertion_it_;
-    if (insert_pos != transcript_chunks_.end()) {
+    auto insert_pos = transcript->last_insertion_it_;
+    if (insert_pos != transcript->transcript_chunks_.end()) {
       ++insert_pos;
     }
-    last_insertion_it_ =
-        transcript_chunks_.insert(insert_pos, std::move(new_chunk));
+    transcript->last_insertion_it_ =
+        transcript->transcript_chunks_.insert(insert_pos, std::move(new_chunk));
   }
 
-  TrimTranscript();
+  TrimTranscript(transcript);
 }
 
-void GlicMediaContext::TrimTranscript() {
+void GlicMediaContext::TrimTranscript(Transcript* transcript) {
   // Trim `transcript_chunks_` to a reasonable size.
   constexpr size_t kMaxTranscriptLength = 1000000;
   size_t total_size = 0;
-  for (const auto& chunk : transcript_chunks_) {
+  for (const auto& chunk : transcript->transcript_chunks_) {
     total_size += chunk.text.length();
   }
 
   // For metrics, record the maximum size this transcript reaches.
-  if (total_size > max_transcript_size_) {
-    max_transcript_size_ = total_size;
+  if (total_size > transcript->max_transcript_size_) {
+    transcript->max_transcript_size_ = total_size;
   }
 
   while (total_size > kMaxTranscriptLength) {
     auto oldest_chunk_it = std::min_element(
-        transcript_chunks_.begin(), transcript_chunks_.end(),
+        transcript->transcript_chunks_.begin(),
+        transcript->transcript_chunks_.end(),
         [](const TranscriptChunk& a, const TranscriptChunk& b) {
           return a.sequence_number < b.sequence_number;
         });
-    if (oldest_chunk_it == transcript_chunks_.end()) {
+    if (oldest_chunk_it == transcript->transcript_chunks_.end()) {
       // This should not be reached if `total_size` is greater than zero.
       break;
     }
@@ -200,20 +215,21 @@ void GlicMediaContext::TrimTranscript() {
     // If we're about to remove the chunk that was also the append point,
     // start over.  This should be unlikely; unless there's ~one really big
     // chunk, we're not appending after the oldest chunk.
-    if (last_insertion_it_ == oldest_chunk_it) {
-      last_insertion_it_ = transcript_chunks_.end();
+    if (transcript->last_insertion_it_ == oldest_chunk_it) {
+      transcript->last_insertion_it_ = transcript->transcript_chunks_.end();
     }
-    transcript_chunks_.erase(oldest_chunk_it);
+    transcript->transcript_chunks_.erase(oldest_chunk_it);
   }
 }
 
 std::string GlicMediaContext::GetContext() const {
-  if (IsExcludedFromTranscript()) {
+  const Transcript* transcript = GetTranscriptIfExists();
+  if (!transcript) {
     return "";
   }
 
   std::vector<std::string_view> pieces;
-  for (const auto& chunk : transcript_chunks_) {
+  for (const auto& chunk : transcript->transcript_chunks_) {
     pieces.push_back(chunk.text);
   }
   return base::JoinString(pieces, "");
@@ -221,10 +237,11 @@ std::string GlicMediaContext::GetContext() const {
 
 std::list<GlicMediaContext::TranscriptChunk>
 GlicMediaContext::GetTranscriptChunks() const {
-  if (IsExcludedFromTranscript()) {
+  const Transcript* transcript = GetTranscriptIfExists();
+  if (!transcript) {
     return {};
   }
-  return transcript_chunks_;
+  return transcript->transcript_chunks_;
 }
 
 void GlicMediaContext::OnPeerConnectionAdded() {
@@ -245,20 +262,21 @@ bool GlicMediaContext::IsExcludedFromTranscript() const {
 }
 
 void GlicMediaContext::RemoveOverlappingChunks(
+    Transcript* transcript,
     const TranscriptChunk& new_chunk) {
-  auto it = transcript_chunks_.begin();
-  while (it != transcript_chunks_.end()) {
+  auto it = transcript->transcript_chunks_.begin();
+  while (it != transcript->transcript_chunks_.end()) {
     if (it->HasMediaTimestamps()) {
       // Existing chunk has timing information, check for overlap.
       if (new_chunk.DoesOverlapWith(*it)) {
         // If `new_chunk` somehow overlaps with the insertion hint, forget the
         // hint and search the whole list next time.  This is very rare; it
         // requires the next chunk to overlap with the chunk we just added.
-        if (last_insertion_it_ == it) {
-          last_insertion_it_ = transcript_chunks_.end();
+        if (transcript->last_insertion_it_ == it) {
+          transcript->last_insertion_it_ = transcript->transcript_chunks_.end();
         }
         // Overlap, erase the current chunk and get the iterator to the next.
-        it = transcript_chunks_.erase(it);
+        it = transcript->transcript_chunks_.erase(it);
       } else {
         // No overlap, move to the next chunk.
         ++it;
@@ -270,6 +288,66 @@ void GlicMediaContext::RemoveOverlappingChunks(
     }
   }
 }
+
+std::optional<std::u16string> GlicMediaContext::GetTranscriptTitle() const {
+  if (IsExcludedFromTranscript()) {
+    return {};
+  }
+
+  content::MediaSession* session =
+      const_cast<GlicMediaContext*>(this)->GetMediaSessionIfExists();
+
+  // If there is a session, then insist that it matches the routed frame else
+  // this frame shouldn't be contributing to the routed frame's transcript.  If
+  // there is not a session, then probably this is a test.
+  if (session && session->GetRoutedFrame() != &render_frame_host()) {
+    return {};
+  }
+
+  std::u16string title = u"Unknown";
+  if (session) {
+    const media_session::MediaMetadata& metadata =
+        session->GetMediaSessionMetadata();
+    if (!metadata.title.empty()) {
+      title = metadata.title;
+    }
+  }
+  return title;
+}
+
+GlicMediaContext::Transcript* GlicMediaContext::GetOrCreateTranscript() {
+  if (auto* transcript = GetTranscriptIfExists()) {
+    return transcript;
+  }
+
+  auto title = GetTranscriptTitle();
+  if (!title) {
+    return nullptr;
+  }
+
+  // Create a new transcript for this title.
+  auto new_transcript = std::make_unique<Transcript>();
+  Transcript* transcript_ptr = new_transcript.get();
+  transcripts_by_title_[*title] = std::move(new_transcript);
+  return transcript_ptr;
+}
+
+GlicMediaContext::Transcript* GlicMediaContext::GetTranscriptIfExists() const {
+  auto title = GetTranscriptTitle();
+  if (!title) {
+    return nullptr;
+  }
+
+  auto it = transcripts_by_title_.find(*title);
+  if (it == transcripts_by_title_.end()) {
+    return nullptr;
+  }
+
+  return it->second.get();
+}
+
+GlicMediaContext::Transcript::Transcript() = default;
+GlicMediaContext::Transcript::~Transcript() = default;
 
 GlicMediaContext::TranscriptChunk::TranscriptChunk() = default;
 GlicMediaContext::TranscriptChunk::TranscriptChunk(
@@ -315,6 +393,12 @@ bool GlicMediaContext::TranscriptChunk::DoesOverlapWith(
 
 bool GlicMediaContext::TranscriptChunk::HasMediaTimestamps() const {
   return media_timestamp_range.has_value();
+}
+
+content::MediaSession* GlicMediaContext::GetMediaSessionIfExists() const {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  return content::MediaSession::GetIfExists(web_contents);
 }
 
 }  // namespace glic
