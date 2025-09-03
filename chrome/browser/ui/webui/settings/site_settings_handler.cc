@@ -1644,7 +1644,21 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
       PermissionDecisionAutoBlockerFactory::GetForProfile(profile_)
           ->RemoveEmbargoAndResetCounts(origin, content_type);
     }
-    map->SetContentSettingDefaultScope(origin, origin, content_type, setting);
+
+    content_settings::ContentSettingConstraints constraints;
+
+    // Enable last-visit tracking for eligible permissions granted from
+    // Site Settings UI. This allows Safety Hub to auto-revoke the permission
+    // if the site is not visited for a finite amount of time.
+    if (base::FeatureList::IsEnabled(
+            features::kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
+        content_settings::CanBeAutoRevokedAsUnusedPermission(
+            content_type, content_settings::ContentSettingToValue(setting))) {
+      constraints.set_track_last_visit_for_autoexpiration(true);
+    }
+
+    map->SetContentSettingDefaultScope(origin, origin, content_type, setting,
+                                       constraints);
 
     const content_settings::WebsiteSettingsInfo::ScopingType scoping_type =
         content_settings::WebsiteSettingsRegistry::GetInstance()
@@ -1859,8 +1873,20 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
           target_profile, primary_pattern, secondary_pattern, content_type,
           permissions::PermissionSourceUI::SITE_SETTINGS);
 
+  content_settings::ContentSettingConstraints constraints;
+
+  // Enable last-visit tracking for eligible permissions granted from
+  // Site Settings UI. This allows Safety Hub to auto-revoke the permission
+  // if the site is not visited for a finite amount of time.
+  if (base::FeatureList::IsEnabled(
+          features::kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
+      content_settings::CanBeAutoRevokedAsUnusedPermission(
+          content_type, content_settings::ContentSettingToValue(setting))) {
+    constraints.set_track_last_visit_for_autoexpiration(true);
+  }
+
   map->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
-                                    content_type, setting);
+                                    content_type, setting, constraints);
 
   // Record which type of exception pattern was entered.
   if (primary_pattern == ContentSettingsPattern::Wildcard() ||

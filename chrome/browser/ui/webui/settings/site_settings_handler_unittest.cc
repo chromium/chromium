@@ -340,6 +340,9 @@ class ContentSettingSourceSetter {
 
 class SiteSettingsHandlerBaseTest : public testing::Test {
  public:
+  // Defer any initialization and setup to SetUp(). This is done so that
+  // subclasses can configure feature flags in their constructor, before the
+  // test environment is fully established.
   SiteSettingsHandlerBaseTest() = default;
 
   void SetUp() override {
@@ -1018,6 +1021,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   const std::string_view kStorageAccess =
       site_settings::ContentSettingsTypeToGroupName(
           ContentSettingsType::STORAGE_ACCESS);
+  const std::string_view kGeolocation =
+      site_settings::ContentSettingsTypeToGroupName(
+          ContentSettingsType::GEOLOCATION);
 
   const ContentSettingsType kPermissionNotifications =
       ContentSettingsType::NOTIFICATIONS;
@@ -6670,5 +6676,245 @@ INSTANTIATE_TEST_SUITE_P(
                     ContentSettingsType::MEDIASTREAM_MIC,
                     ContentSettingsType::GEOLOCATION));
 #endif
+
+// Test suite for verifying that permissions granted through Site Settings
+// surfaces are correctly marked as eligible for Safety Hub auto-revocation
+// when the kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is enabled.
+//
+// Only permissions of certain `ContentSettingType` are eligible. They are
+// marked as such upon grant by initializing the `last_visited` timestamp from
+// a default null value to the (coarsened) current time. Once initialized, the
+// timestamp is updated on each navigation to the origin for which the
+// permission was granted. Then permissions with a `last_visited` timestamp
+// older than a certain threshold are eventually auto-revoked by Safety Hub.
+class SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest
+    : public SiteSettingsHandlerBaseTest {
+ public:
+  SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetOriginPermissions_LastVisitedTracked) {
+  const GURL primary_url("https://example.com");
+  const GURL secondary_url;
+  base::Time now = base::Time::Now();
+
+  // Allow GEOLOCATION for an origin from Site Settings UI.
+  base::Value::List reset_args;
+  reset_args.Append(primary_url.spec());
+  reset_args.Append(std::move(kGeolocation));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  handler()->HandleSetOriginPermissions(reset_args);
+
+  // Verify that 'last_visited` was recorded and lies within the past 7 days.
+  //
+  // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to privacy.
+  // It rounds given timestamp down to the nearest multiple of 7 in the past.
+  // [1] components/content_settings/core/browser/content_settings_utils.cc
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+  EXPECT_LE(info.metadata.last_visited(), now);
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetOriginPermissions_LastVisitedNotTracked_WrongValue) {
+  const GURL primary_url("https://example.com");
+  const GURL secondary_url;
+
+  // Block GEOLOCATION for an origin from Site Settings UI.
+  base::Value::List reset_args;
+  reset_args.Append(primary_url.spec());
+  reset_args.Append(std::move(kGeolocation));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  handler()->HandleSetOriginPermissions(reset_args);
+
+  // Verify that 'last_visited` is not recorded unless the value is ALLOW.
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetOriginPermissions_LastVisitedNotTracked_WrongType) {
+  const GURL primary_url("https://example.com");
+  const GURL secondary_url;
+
+  // Allow NOTIFICATIONS an origin from Site Settings UI.
+  base::Value::List reset_args;
+  reset_args.Append(primary_url.spec());
+  reset_args.Append(std::move(kNotifications));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  handler()->HandleSetOriginPermissions(reset_args);
+
+  // Verify that 'last_visited` is not recorded for ineligible types
+  // (e.g. NOTIFICATIONS).
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::NOTIFICATIONS, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetOriginPermissions_LastVisitedNotTracked_FeatureOff) {
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
+      features::kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  const GURL primary_url("https://example.com");
+  const GURL secondary_url;
+
+  // Allow GEOLOCATION an origin from Site Settings UI.
+  base::Value::List reset_args;
+  reset_args.Append(primary_url.spec());
+  reset_args.Append(std::move(kGeolocation));
+  reset_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  handler()->HandleSetOriginPermissions(reset_args);
+
+  // Verify that 'last_visited` is not recorded when the feature is off.
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetCategoryPermissionForPattern_LastVisitedTracked) {
+  constexpr char kOrigin[] = "https://www.google.com";
+  const std::string primary_pattern(kOrigin);
+  const std::string secondary_pattern;
+  const GURL primary_url(kOrigin);
+  const GURL secondary_url;
+  base::Time now = base::Time::Now();
+
+  // Allow GEOLOCATION for a pattern from Site Settings UI.
+  base::Value::List set_args;
+  set_args.Append(primary_pattern);
+  set_args.Append(secondary_pattern);
+  set_args.Append(kGeolocation);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  set_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+
+  // Verify that 'last_visited` was recorded and lies within the past 7 days.
+  //
+  // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to privacy.
+  // It rounds given timestamp down to the nearest multiple of 7 in the past.
+  // [1] components/content_settings/core/browser/content_settings_utils.cc
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+  EXPECT_LE(info.metadata.last_visited(), now);
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetCategoryPermissionForPattern_LastVisitedTracked_WrongValue) {
+  constexpr char kOrigin[] = "https://www.google.com";
+  const std::string primary_pattern(kOrigin);
+  const std::string secondary_pattern;
+  const GURL primary_url(kOrigin);
+  const GURL secondary_url;
+
+  // Block GEOLOCATION for a pattern from Site Settings UI.
+  base::Value::List set_args;
+  set_args.Append(primary_pattern);
+  set_args.Append(secondary_pattern);
+  set_args.Append(kGeolocation);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  set_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+
+  // Verify that 'last_visited` is not recorded unless the value is ALLOW.
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetCategoryPermissionForPattern_LastVisitedTracked_WrongType) {
+  constexpr char kOrigin[] = "https://www.google.com";
+  const std::string primary_pattern(kOrigin);
+  const std::string secondary_pattern;
+  const GURL primary_url(kOrigin);
+  const GURL secondary_url;
+
+  // Allow NOTIFICATIONS for a pattern from Site Settings UI.
+  base::Value::List set_args;
+  set_args.Append(primary_pattern);
+  set_args.Append(secondary_pattern);
+  set_args.Append(kNotifications);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  set_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+
+  // Verify that 'last_visited` is not recorded for ineligible types
+  // (e.g. NOTIFICATIONS).
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::NOTIFICATIONS, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(SiteSettingsHandlerUnusedPermissionRevocationForAllSurfacesTest,
+       SetCategoryPermissionForPattern_LastVisitedTracked_FeatureOff) {
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
+      features::kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  constexpr char kOrigin[] = "https://www.google.com";
+  const std::string primary_pattern(kOrigin);
+  const std::string secondary_pattern;
+  const GURL primary_url(kOrigin);
+  const GURL secondary_url;
+
+  // Allow GEOLOCATION for a pattern from Site Settings UI.
+  base::Value::List set_args;
+  set_args.Append(primary_pattern);
+  set_args.Append(secondary_pattern);
+  set_args.Append(kGeolocation);
+  set_args.Append(
+      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
+  set_args.Append(false);  // Incognito.
+  handler()->HandleSetCategoryPermissionForPattern(set_args);
+
+  // Verify that 'last_visited` is not recorded when the feature is off.
+  content_settings::SettingInfo info;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->GetWebsiteSetting(primary_url, secondary_url,
+                         ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
 
 }  // namespace settings
