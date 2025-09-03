@@ -60,18 +60,6 @@ class PasswordFormMetricsRecorder
   PasswordFormMetricsRecorder& operator=(const PasswordFormMetricsRecorder&) =
       delete;
 
-  // ManagerAction - What does the PasswordFormManager do with this form? Either
-  // it fills it, or it doesn't. If it doesn't fill it, that's either
-  // because it has no match or it is disabled via the AUTOCOMPLETE=off
-  // attribute. Note that if we don't have an exact match, we still provide
-  // candidates that the user may end up choosing.
-  enum ManagerAction {
-    kManagerActionNone = 0,
-    kManagerActionAutofilled,
-    kManagerActionBlocklisted_Obsolete,
-    kManagerActionMax
-  };
-
   // Result - What happens to the form?
   //
   // These values are persisted to logs. Entries should not be renumbered and
@@ -131,16 +119,14 @@ class PasswordFormMetricsRecorder
   // This enum is a designed to be able to collect all kinds of potentially
   // interesting user interactions with sites and password manager UI in
   // relation to a given form. In contrast to UserAction, it is intended to be
-  // extensible.
+  // extensible. Each value maps to a different `User.Action.*` UKM.
   enum class DetailedUserAction {
     // Interactions with password bubble.
-    kEditedUsernameInBubble = 100,
-    kSelectedDifferentPasswordInBubble = 101,
-    kTriggeredManualFallbackForSaving = 102,
-    kObsoleteTriggeredManualFallbackForUpdating = 103,  // unused
+    kEditedUsernameInBubble,
+    kSelectedDifferentPasswordInBubble,
+    kTriggeredManualFallbackForSaving,
 
-    // Interactions with form.
-    kCorrectedUsernameInForm = 200,
+    kCorrectedUsernameInForm,
   };
 
   // Indicator whether the user has seen a password generation popup and why.
@@ -166,8 +152,8 @@ class PasswordFormMetricsRecorder
     // The generated password was deleted by the user from the field
     // in which it was filled after being accepted.
     kPasswordDeleted = 2,
-    kPasswordRejectedInDialogObsolete = 3,  // obsolete
-    kMaxValue = kPasswordRejectedInDialogObsolete
+    // Deprecated: kPasswordRejectedInDialog = 3,
+    kMaxValue = kPasswordDeleted
   };
 
   // Represents form differences.
@@ -204,10 +190,10 @@ class PasswordFormMetricsRecorder
     kFormNotGoodForFilling = 3,
     // User is on a site with an insecure main frame origin.
     kInsecureOrigin = 4,
-    // kTouchToFill = 5, Obsolete
+    // Deprecated: kTouchToFill = 5,
     // Show suggestion on account selection feature is enabled.
     kFoasFeature = 6,
-    // kReauthRequired = 7, Obsolete
+    // Deprecated: kReauthRequired = 7,
     // Password is already filled
     kPasswordPrefilled = 8,
     // A credential exists for affiliated website.
@@ -255,7 +241,7 @@ class PasswordFormMetricsRecorder
     kAffiliatedWebsites = 3,
     // A credential exists for another entity, which is grouped with the current
     // domain by the AffiliationService through a grouping affiliation.
-    kGrouped_Obsolete = 4,
+    // Deprecated: kGrouped = 4,
     // A credential exists for an Android application, which is grouped with the
     // current domain by the AffiliationService through the grouping
     // affiliations.
@@ -408,10 +394,6 @@ class PasswordFormMetricsRecorder
 
   // Stores the user action associated with a generated password.
   void SetGeneratedPasswordStatus(GeneratedPasswordStatus status);
-
-  // Stores the password manager action. During destruction the last
-  // set value will be logged.
-  void SetManagerAction(ManagerAction manager_action);
 
   // Call these if/when we know the form submission worked or failed.
   // These routines are used to update internal statistics ("ActionsTaken").
@@ -620,10 +602,6 @@ class PasswordFormMetricsRecorder
   PasswordGenerationPopupShown password_generation_popup_shown_ =
       PasswordGenerationPopupShown::kNotShown;
 
-  // These three fields record the "ActionsTaken" by the browser and
-  // the user with this form, and the result. They are combined and
-  // recorded in UMA when the PasswordFormMetricsRecorder is destroyed.
-  ManagerAction manager_action_ = kManagerActionNone;
   SubmitResult submit_result_ = SubmitResult::kNotSubmitted;
 
   // Presumed form type of the form that the PasswordFormManager is managing.

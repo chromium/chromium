@@ -276,13 +276,9 @@ LikelyFormFilling SendFillInformationToRenderer(
 #endif  // !BUILDFLAG(IS_IOS) && !defined(ANDROID)
 
   if (wait_for_username) {
-    metrics_recorder->SetManagerAction(
-        PasswordFormMetricsRecorder::kManagerActionNone);
     metrics_recorder->RecordFillEvent(
         PasswordFormMetricsRecorder::kManagerFillEventBlockedOnInteraction);
   } else {
-    metrics_recorder->SetManagerAction(
-        PasswordFormMetricsRecorder::kManagerActionAutofilled);
     metrics_recorder->RecordFillEvent(
         PasswordFormMetricsRecorder::kManagerFillEventAutofilled);
     base::RecordAction(base::UserMetricsAction("PasswordManager_Autofilled"));
