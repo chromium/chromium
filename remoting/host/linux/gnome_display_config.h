@@ -140,6 +140,9 @@ struct GnomeDisplayConfig {
   // 3. Call Relayout() with the layout info from step #1.
   void Relayout(const LayoutInfo& layout_info);
 
+  // Remove all monitors that do not have a current mode.
+  void RemoveInvalidMonitors();
+
   LayoutInfo GetLayoutInfo() const;
 
   // The serial number returned by GNOME. When applying a new monitor config,

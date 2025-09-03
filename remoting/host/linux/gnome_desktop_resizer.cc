@@ -222,6 +222,15 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
   MaybeDelayClearPreferredConfig();
   // Remove pipewire streams that are no longer in the video layout.
   for (const auto& screen_id : unseen_screen_ids) {
+    // Trying to apply monitor config for a monitor that is being removed will
+    // crash Mutter, so we remove it from the current display config to prevent
+    // that.
+    auto it = current_display_config_.FindMonitor(screen_id);
+    if (it != current_display_config_.monitors.end()) {
+      current_display_config_.monitors.erase(it);
+    } else {
+      LOG(ERROR) << "Cannot find monitor with screen ID: " << screen_id;
+    }
     stream_manager_->RemoveStream(screen_id);
   }
 }
@@ -299,6 +308,10 @@ void GnomeDesktopResizer::OnGnomeDisplayConfigReceived(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   current_display_config_ = config;
+  // Remove monitors that do not have a current mode, which may exist when they
+  // are being created or destroyed. It is safe to ignore them since a new
+  // display config will be received if they later gain a current mode.
+  current_display_config_.RemoveInvalidMonitors();
   // Switch to the physical layout mode, since otherwise monitor offsets would
   // need to be recalculated whenever a monitor scale is changed.
   current_display_config_.SwitchLayoutMode(
@@ -407,15 +420,12 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
           }
         }
 
-        // Write the new offsets back to the preferred config.
+        // Write the new offsets back to the preferred config, if it exists.
         auto it = preferred_monitors_config_.find(
             GnomeDisplayConfig::GetScreenId(monitor_name));
-        if (it == preferred_monitors_config_.end()) {
-          LOG(ERROR) << "Cannot find preferred monitor config for monitor "
-                     << monitor_name;
-          continue;
+        if (it != preferred_monitors_config_.end()) {
+          it->second.position.set(monitor.x, monitor.y);
         }
-        it->second.position.set(monitor.x, monitor.y);
       }
     }
 
