@@ -211,21 +211,6 @@
             ]
         }
     ],
-    "AccessibilityManifestV3BrailleIme": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3BrailleIme"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityManifestV3EnhancedNetworkTts": [
         {
             "platforms": [
@@ -266,36 +251,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AccessibilityManifestV3GoogleTts"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AccessibilityManifestV3SelectToSpeak": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3SelectToSpeak"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AccessibilityManifestV3SwitchAccess": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3SwitchAccess"
                     ]
                 }
             ]

@@ -369,7 +369,7 @@ bool IsAccessibilityManifestV3EnabledForAccessibilityCommon() {
 
 BASE_FEATURE(kAccessibilityManifestV3SelectToSpeak,
              "AccessibilityManifestV3SelectToSpeak",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityManifestV3EnabledForSelectToSpeak() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityManifestV3SelectToSpeak);
@@ -377,7 +377,7 @@ bool IsAccessibilityManifestV3EnabledForSelectToSpeak() {
 
 BASE_FEATURE(kAccessibilityManifestV3SwitchAccess,
              "AccessibilityManifestV3SwitchAccess",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityManifestV3EnabledForSwitchAccess() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityManifestV3SwitchAccess);
