@@ -340,7 +340,9 @@ const base::Feature* const kAllFeatures[] = {
 #if !BUILDFLAG(IS_ANDROID)
     &kIPHiOSPasswordPromoDesktopFeature,
     &kIPHiOSAddressPromoDesktopFeature,
-    &kIPHiOSPaymentPromoDesktopFeature
+    &kIPHiOSPaymentPromoDesktopFeature,
+    &kIPHiOSLensPromoDesktopFeature,
+    &kIPHiOSEnhancedBrowsingDesktopFeature
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 }  // namespace

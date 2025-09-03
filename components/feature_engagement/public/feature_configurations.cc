@@ -672,6 +672,49 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                  Comparator(ANY, 0), 0, 0);
     return config;
   }
+
+  if (kIPHiOSLensPromoDesktopFeature.name == feature->name) {
+    // Config for allowing other IPH's to explicitly block the iOS lens
+    // promo bubble on desktop if needed. Blocked and blocking by default, so
+    // won't appear at the same time as other IPH, but without any session rate
+    // impact.
+
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.blocked_by.type = BlockedBy::Type::ALL;
+    config.blocking.type = Blocking::Type::ALL;
+    config.used =
+        EventConfig("ios_lens_promo_bubble_on_desktop_interacted_with",
+                    Comparator(ANY, 0), 0, 0);
+    config.trigger = EventConfig("ios_lens_promo_bubble_on_desktop_shown",
+                                 Comparator(ANY, 0), 0, 0);
+    return config;
+  }
+
+  if (kIPHiOSEnhancedBrowsingDesktopFeature.name == feature->name) {
+    // Config for allowing other IPH's to explicitly block the iOS enhanced
+    // browsing promo bubble on desktop if needed. Blocked and blocking by
+    // default, so won't appear at the same time as other IPH, but without any
+    // session rate impact.
+
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.blocked_by.type = BlockedBy::Type::ALL;
+    config.blocking.type = Blocking::Type::ALL;
+    config.used = EventConfig(
+        "ios_enhanced_browsing_promo_bubble_on_desktop_interacted_with",
+        Comparator(ANY, 0), 0, 0);
+    config.trigger =
+        EventConfig("ios_enhanced_browsing_promo_bubble_on_desktop_shown",
+                    Comparator(ANY, 0), 0, 0);
+    return config;
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

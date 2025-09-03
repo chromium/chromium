@@ -593,6 +593,10 @@ DEFINE_VARIATION_PARAM(kIPHiOSAddressPromoDesktopFeature,
                        "IPH_iOSAddressPromoDesktop");
 DEFINE_VARIATION_PARAM(kIPHiOSPaymentPromoDesktopFeature,
                        "IPH_iOSPaymentPromoDesktop");
+DEFINE_VARIATION_PARAM(kIPHiOSLensPromoDesktopFeature,
+                       "IPH_iOSLensPromoDesktop");
+DEFINE_VARIATION_PARAM(kIPHiOSEnhancedBrowsingDesktopFeature,
+                       "IPH_iOSEnhancedBrowsingDesktop");
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Defines the array of which features should be listed in the chrome://flags
@@ -896,6 +900,8 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPasswordPromoDesktopFeature),
         VARIATION_ENTRY(kIPHiOSAddressPromoDesktopFeature),
         VARIATION_ENTRY(kIPHiOSPaymentPromoDesktopFeature),
+        VARIATION_ENTRY(kIPHiOSLensPromoDesktopFeature),
+        VARIATION_ENTRY(kIPHiOSEnhancedBrowsingDesktopFeature),
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 
