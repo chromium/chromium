@@ -5,36 +5,11 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SANDBOXED_FILE_H_
 #define COMPONENTS_PERSISTENT_CACHE_SQLITE_VFS_SANDBOXED_FILE_H_
 
-#include <cstdint>
-
 #include "base/component_export.h"
 #include "base/files/file.h"
-#include "base/memory/shared_memory_safety_checker.h"
-#include "base/memory/unsafe_shared_memory_region.h"
 #include "sql/sandboxed_vfs_file.h"
 
 namespace persistent_cache {
-
-// The lock shared state is encoded over 32-bits:
-//    [ pending ][ reserved ][ readers ]
-//
-// Readers   : Number of clients holding a shared lock.
-//
-// Reserved  : Whether a client holds a reserved lock. Clients may acquire a
-//             shared lock while a client holds a reserved lock. Only one client
-//             can hold a reserved lock.
-//
-// Pending   : Whether a client holds a pending lock. No new client may acquire
-//             a shared lock when a client holds a pending lock (but clients
-//             that had a shared lock before may not have released it yet when a
-//             client acquires the pending lock). The client may also hold the
-//             reserved lock, but that's not always the case.
-//
-// Exclusive : A client is considered to have "exclusive" locking when it holds
-//             the pending lock and it is the only one holding a shared lock.
-struct SharedMemoryLocks {
-  base::subtle::SharedAtomic<uint32_t> shared_state;
-};
 
 // Represents a file to be exposed to sql::Database via
 // SqliteSandboxedVfsDelegate.
@@ -47,10 +22,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
  public:
   enum class AccessRights { kReadWrite, kReadOnly };
 
-  SandboxedFile(base::File file,
-                AccessRights access_rights,
-                base::WritableSharedMemoryMapping mapped_shared_lock =
-                    base::WritableSharedMemoryMapping());
+  SandboxedFile(base::File file, AccessRights access_rights);
   SandboxedFile(SandboxedFile& other) = delete;
   SandboxedFile& operator=(const SandboxedFile& other) = delete;
   SandboxedFile(SandboxedFile&& other) = delete;
@@ -104,24 +76,13 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
   int Fetch(sqlite3_int64 offset, int size, void** result) override;
   int Unfetch(sqlite3_int64 offset, void* fetch_result) override;
 
-  int LockModeForTesting() const { return sqlite_lock_mode_; }
-
  private:
-  // Returns a pointer to the SharedMemoryLocks struct, which is shared across
-  // other instances of SandboxedFile via shared memory
-  SharedMemoryLocks* GetSharedLock();
-
   base::File underlying_file_;
   base::File opened_file_;
   AccessRights access_rights_;
 
-  // One of the SQLite locking mode constants which represent the current lock
-  // state of this connection (see: https://www.sqlite.org/lockingv3.html).
+  // One of the SQLite locking mode constants.
   int sqlite_lock_mode_;
-
-  // The actual shared locks across processes to implement the SQLite algorithm
-  // and from which `sqlite_lock_mode_` is coming from.
-  base::WritableSharedMemoryMapping mapped_shared_lock_;
 };
 
 }  // namespace persistent_cache
