@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -2332,14 +2333,23 @@ GLenum WebGLRenderingContextBase::drawingBufferFormat() const {
   return isContextLost() ? 0 : GetDrawingBuffer()->StorageFormat();
 }
 
-V8PredefinedColorSpace WebGLRenderingContextBase::drawingBufferColorSpace()
-    const {
+V8PredefinedColorSpace WebGLRenderingContextBase::drawingBufferColorSpace(
+    ScriptState* script_state) const {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  UseCounter::CountWebDXFeature(
+      context, IsWebGL2() ? WebDXFeature::kWebgl2ColorManagement
+                          : WebDXFeature::kWebglColorManagement);
   return PredefinedColorSpaceToV8(drawing_buffer_color_space_);
 }
 
 void WebGLRenderingContextBase::setDrawingBufferColorSpace(
+    ScriptState* script_state,
     const V8PredefinedColorSpace& v8_color_space,
     ExceptionState& exception_state) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  UseCounter::CountWebDXFeature(
+      context, IsWebGL2() ? WebDXFeature::kWebgl2ColorManagement
+                          : WebDXFeature::kWebglColorManagement);
   // Some values for PredefinedColorSpace are supposed to be guarded behind
   // runtime flags. Use `ValidateAndConvertColorSpace` to throw an exception if
   // `v8_color_space` should not be exposed.
@@ -2355,19 +2365,28 @@ void WebGLRenderingContextBase::setDrawingBufferColorSpace(
     GetDrawingBuffer()->SetColorSpace(drawing_buffer_color_space_);
 }
 
-V8PredefinedColorSpace WebGLRenderingContextBase::unpackColorSpace() const {
+V8PredefinedColorSpace WebGLRenderingContextBase::unpackColorSpace(
+    ScriptState* script_state) const {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  UseCounter::CountWebDXFeature(
+      context, IsWebGL2() ? WebDXFeature::kWebgl2ColorManagement
+                          : WebDXFeature::kWebglColorManagement);
   return PredefinedColorSpaceToV8(unpack_color_space_);
 }
 
 void WebGLRenderingContextBase::setUnpackColorSpace(
+    ScriptState* script_state,
     const V8PredefinedColorSpace& v8_color_space,
     ExceptionState& exception_state) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  UseCounter::CountWebDXFeature(
+      context, IsWebGL2() ? WebDXFeature::kWebgl2ColorManagement
+                          : WebDXFeature::kWebglColorManagement);
   PredefinedColorSpace color_space = PredefinedColorSpace::kSRGB;
   if (!ValidateAndConvertColorSpace(v8_color_space, color_space,
                                     exception_state)) {
     return;
   }
-  NOTIMPLEMENTED();
   unpack_color_space_ = color_space;
 }
 

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -109,7 +110,8 @@ void CanvasRenderingContext2DAPITest::CreateContext(OpacityMode opacity_mode) {
   String canvas_type("2d");
   CanvasContextCreationAttributesCore attributes;
   attributes.alpha = opacity_mode == kNonOpaque;
-  canvas_element_->GetCanvasRenderingContext(canvas_type, attributes);
+  canvas_element_->GetCanvasRenderingContext(
+      ExecutionContext::From(GetScriptState()), canvas_type, attributes);
   Context2D();  // Calling this for the checks
 }
 
@@ -576,7 +578,8 @@ void ResetCanvasForAccessibilityRectTest(Document& document) {
   String canvas_type("2d");
   CanvasContextCreationAttributesCore attributes;
   attributes.alpha = true;
-  canvas->GetCanvasRenderingContext(canvas_type, attributes);
+  canvas->GetCanvasRenderingContext(document.GetExecutionContext(), canvas_type,
+                                    attributes);
 
   EXPECT_NE(nullptr, canvas->RenderingContext());
   EXPECT_TRUE(canvas->RenderingContext()->IsRenderingContext2D());

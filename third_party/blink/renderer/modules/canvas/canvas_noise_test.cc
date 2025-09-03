@@ -59,8 +59,8 @@ class CanvasNoiseTest : public PageTestBase {
     attributes.premultiplied_alpha = false;
     attributes.will_read_frequently =
         CanvasContextCreationAttributesCore::WillReadFrequently::kFalse;
-    canvas_element_->GetCanvasRenderingContext(/*canvas_type=*/"2d",
-                                               attributes);
+    canvas_element_->GetCanvasRenderingContext(
+        GetDocument().GetExecutionContext(), /*canvas_type=*/"2d", attributes);
     static_cast<CanvasRenderingContext2D*>(CanvasElement().RenderingContext())
         ->GetOrCreateCanvas2DResourceProvider();
     GetDocument().GetExecutionContext()->SetCanvasNoiseToken(
@@ -502,8 +502,9 @@ TEST_F(CanvasNoiseTest, NoiseDiffersPerSite) {
   attributes.will_read_frequently =
       CanvasContextCreationAttributesCore::WillReadFrequently::kFalse;
   auto* diff_context = static_cast<CanvasRenderingContext2D*>(
-      diff_canvas_element->GetCanvasRenderingContext(/*canvas_type=*/"2d",
-                                                     attributes));
+      diff_canvas_element->GetCanvasRenderingContext(
+          GetDocument().GetExecutionContext(),
+          /*canvas_type=*/"2d", attributes));
 
   diff_context->fillText("CanvasNoiseTest", 20, 20);
   // We're taking 2 canvases with different noise applied to them, so the max
@@ -548,10 +549,12 @@ TEST_F(CanvasNoiseTest, NoisedAfterPattern) {
 
   CanvasContextCreationAttributesCore attributes;
   auto* context_1 = static_cast<CanvasRenderingContext2D*>(
-      canvas_1->GetCanvasRenderingContext("2d", attributes));
+      canvas_1->GetCanvasRenderingContext(GetDocument().GetExecutionContext(),
+                                          "2d", attributes));
   ASSERT_NE(context_1, nullptr);
   auto* context_2 = static_cast<CanvasRenderingContext2D*>(
-      canvas_2->GetCanvasRenderingContext("2d", attributes));
+      canvas_2->GetCanvasRenderingContext(GetDocument().GetExecutionContext(),
+                                          "2d", attributes));
   ASSERT_NE(context_2, nullptr);
 
   CanvasPattern* empty_pattern =

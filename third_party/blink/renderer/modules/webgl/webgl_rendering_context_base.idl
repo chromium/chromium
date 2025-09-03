@@ -468,8 +468,8 @@ interface mixin WebGLRenderingContextBase {
     readonly attribute GLsizei drawingBufferWidth;
     readonly attribute GLsizei drawingBufferHeight;
     [RuntimeEnabled=WebGLDrawingBufferStorage] readonly attribute GLenum drawingBufferFormat;
-    [RaisesException=Setter] attribute PredefinedColorSpace drawingBufferColorSpace;
-    [RaisesException=Setter] attribute PredefinedColorSpace unpackColorSpace;
+    [CallWith=ScriptState, RaisesException=Setter] attribute PredefinedColorSpace drawingBufferColorSpace;
+    [CallWith=ScriptState, RaisesException=Setter] attribute PredefinedColorSpace unpackColorSpace;
 
     void activeTexture(GLenum texture);
     void attachShader(WebGLProgram program, WebGLShader shader);

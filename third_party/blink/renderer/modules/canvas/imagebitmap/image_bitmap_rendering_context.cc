@@ -273,6 +273,7 @@ ImageBitmap* ImageBitmapRenderingContext::TransferToImageBitmap(
 }
 
 CanvasRenderingContext* ImageBitmapRenderingContext::Factory::Create(
+    ExecutionContext*,
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs) {
   CanvasRenderingContext* rendering_context =

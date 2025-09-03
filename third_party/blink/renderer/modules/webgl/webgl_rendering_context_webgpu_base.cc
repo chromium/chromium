@@ -512,25 +512,27 @@ GLenum WebGLRenderingContextWebGPUBase::drawingBufferFormat() const {
   return GL_RGBA8;
 }
 
-V8PredefinedColorSpace
-WebGLRenderingContextWebGPUBase::drawingBufferColorSpace() const {
+V8PredefinedColorSpace WebGLRenderingContextWebGPUBase::drawingBufferColorSpace(
+    ScriptState*) const {
   NOTIMPLEMENTED();
   return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kSRGB);
 }
 
 void WebGLRenderingContextWebGPUBase::setDrawingBufferColorSpace(
+    ScriptState*,
     const V8PredefinedColorSpace& color_space,
     ExceptionState&) {
   NOTIMPLEMENTED();
 }
 
-V8PredefinedColorSpace WebGLRenderingContextWebGPUBase::unpackColorSpace()
-    const {
+V8PredefinedColorSpace WebGLRenderingContextWebGPUBase::unpackColorSpace(
+    ScriptState*) const {
   NOTIMPLEMENTED();
   return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kSRGB);
 }
 
 void WebGLRenderingContextWebGPUBase::setUnpackColorSpace(
+    ScriptState*,
     const V8PredefinedColorSpace& color_space,
     ExceptionState&) {
   NOTIMPLEMENTED();

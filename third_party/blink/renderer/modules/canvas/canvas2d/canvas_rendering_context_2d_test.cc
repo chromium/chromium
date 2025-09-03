@@ -435,7 +435,8 @@ void CanvasRenderingContext2DTestBase::CreateContext(
   if (!canvas) {
     canvas = canvas_element_;
   }
-  canvas->GetCanvasRenderingContext(canvas_type, attributes);
+  canvas->GetCanvasRenderingContext(GetExecutionContext(), canvas_type,
+                                    attributes);
 }
 
 void CanvasRenderingContext2DTestBase::SetUp() {
@@ -1477,8 +1478,9 @@ TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {
     ASSERT_TRUE(image_bitmap_derived);
   }
   CanvasContextCreationAttributesCore attributes;
-  CanvasRenderingContext2D* context = static_cast<CanvasRenderingContext2D*>(
-      canvas->GetCanvasRenderingContext("2d", attributes));
+  CanvasRenderingContext2D* context =
+      static_cast<CanvasRenderingContext2D*>(canvas->GetCanvasRenderingContext(
+          GetExecutionContext(), "2d", attributes));
   DummyExceptionStateForTesting exception_state;
   auto* image_source =
       MakeGarbageCollected<V8CanvasImageSource>(image_bitmap_derived);
@@ -1512,7 +1514,8 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   auto* anotherCanvas =
       To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("d")));
   CanvasContextCreationAttributesCore attributes;
-  anotherCanvas->GetCanvasRenderingContext("2d", attributes);
+  anotherCanvas->GetCanvasRenderingContext(GetExecutionContext(), "2d",
+                                           attributes);
   gfx::Size size2(10, 5);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider2 =
       std::make_unique<FakeCanvasResourceProvider>(

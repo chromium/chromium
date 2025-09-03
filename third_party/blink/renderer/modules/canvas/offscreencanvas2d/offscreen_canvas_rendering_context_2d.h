@@ -24,6 +24,7 @@ namespace blink {
 
 class CanvasResourceProvider;
 class ExceptionState;
+class ExecutionContext;
 class MemoryManagedPaintCanvas;
 
 class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
@@ -38,6 +39,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     ~Factory() override = default;
 
     CanvasRenderingContext* Create(
+        ExecutionContext*,
         CanvasRenderingContextHost* host,
         const CanvasContextCreationAttributesCore& attrs) override;
 

@@ -21,6 +21,7 @@ class Layer;
 namespace blink {
 
 class ExceptionState;
+class ExecutionContext;
 class ImageBitmap;
 class ImageLayerBridge;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
@@ -41,6 +42,7 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
     ~Factory() override = default;
 
     CanvasRenderingContext* Create(
+        ExecutionContext*,
         CanvasRenderingContextHost*,
         const CanvasContextCreationAttributesCore&) override;
     CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI()

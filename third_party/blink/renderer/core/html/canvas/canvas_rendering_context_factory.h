@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class ExecutionContext;
 class HTMLCanvasElement;
 class OffscreenCanvas;
 
@@ -28,6 +29,7 @@ class CORE_EXPORT CanvasRenderingContextFactory {
   virtual ~CanvasRenderingContextFactory() = default;
 
   virtual CanvasRenderingContext* Create(
+      ExecutionContext*,
       CanvasRenderingContextHost*,
       const CanvasContextCreationAttributesCore&) = 0;
 

@@ -229,7 +229,8 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   attrs.alpha = context_alpha;
   attrs.desynchronized = true;
   EXPECT_CALL(mock_embedded_frame_sink_provider, CreateCompositorFrameSink_(_));
-  context_ = canvas_element().GetCanvasRenderingContext(String("2d"), attrs);
+  context_ = canvas_element().GetCanvasRenderingContext(
+      GetDocument().GetExecutionContext(), String("2d"), attrs);
   EXPECT_EQ(context_->CreationAttributes().alpha, attrs.alpha);
   EXPECT_TRUE(context_->CreationAttributes().desynchronized);
   EXPECT_TRUE(canvas_element().LowLatencyEnabled());

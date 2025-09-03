@@ -19,6 +19,7 @@
 namespace blink {
 
 class ExceptionState;
+class ExecutionContext;
 class GPUDevice;
 class GPUCanvasConfiguration;
 class GPUSwapChain;
@@ -44,6 +45,7 @@ class GPUCanvasContext : public ScriptWrappable,
     ~Factory() override;
 
     CanvasRenderingContext* Create(
+        ExecutionContext*,
         CanvasRenderingContextHost*,
         const CanvasContextCreationAttributesCore&) override;
     CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI() const override;

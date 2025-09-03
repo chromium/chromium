@@ -426,7 +426,7 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
           CanvasContextCreationAttributesCore::PowerPreference::kLowPower;
     }
 
-    context_ = factory->Create(this, recomputed_attributes);
+    context_ = factory->Create(execution_context, this, recomputed_attributes);
     if (context_) {
       context_->RecordUKMCanvasRenderingAPI();
       context_->RecordUMACanvasRenderingAPI();

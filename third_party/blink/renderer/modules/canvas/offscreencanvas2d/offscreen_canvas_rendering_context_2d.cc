@@ -85,6 +85,7 @@ OffscreenFontCache& GetOffscreenFontCache() {
 }  // namespace
 
 CanvasRenderingContext* OffscreenCanvasRenderingContext2D::Factory::Create(
+    ExecutionContext*,
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs) {
   DCHECK(host->IsOffscreenCanvas());

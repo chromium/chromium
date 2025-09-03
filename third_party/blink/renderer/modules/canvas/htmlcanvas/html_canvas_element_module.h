@@ -25,6 +25,7 @@ class MODULES_EXPORT HTMLCanvasElementModule {
 
  public:
   static V8RenderingContext* getContext(
+      ScriptState* script_state,
       HTMLCanvasElement& canvas,
       const String& context_id,
       const CanvasContextCreationAttributesModule* attributes,

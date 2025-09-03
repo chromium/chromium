@@ -25,14 +25,18 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_compressed_texture_pvrtc.h"
 
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 WebGLCompressedTexturePVRTC::WebGLCompressedTexturePVRTC(
     WebGLRenderingContextBase* context,
-    ExecutionContext*)
+    ExecutionContext* execution_context)
     : WebGLExtension(context) {
+  UseCounter::CountWebDXFeature(execution_context,
+                                WebDXFeature::kWebglCompressedTexturePvrtc);
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_IMG_texture_compression_pvrtc");
 
