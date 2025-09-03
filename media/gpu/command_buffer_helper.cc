@@ -82,6 +82,7 @@ class CommandBufferHelperImpl
   gpu::MemoryTypeTracker* GetMemoryTypeTracker() override {
     return &memory_type_tracker_;
   }
+#endif
 
   gpu::SharedImageManager* GetSharedImageManager() override {
     if (!stub_) {
@@ -89,9 +90,6 @@ class CommandBufferHelperImpl
     }
     return stub_->channel()->gpu_channel_manager()->shared_image_manager();
   }
-
- public:
-#endif
 
  private:
   ~CommandBufferHelperImpl() override {

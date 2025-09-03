@@ -46,11 +46,10 @@ gpu::SharedImageStub* FakeCommandBufferHelper::GetSharedImageStub() {
 gpu::MemoryTypeTracker* FakeCommandBufferHelper::GetMemoryTypeTracker() {
   return nullptr;
 }
+#endif
 
 gpu::SharedImageManager* FakeCommandBufferHelper::GetSharedImageManager() {
   return nullptr;
 }
-
-#endif
 
 }  // namespace media
