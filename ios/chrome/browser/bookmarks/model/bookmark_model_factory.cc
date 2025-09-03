@@ -75,7 +75,7 @@ BookmarkModelFactory::BookmarkModelFactory()
 
 BookmarkModelFactory::~BookmarkModelFactory() = default;
 
-void BookmarkModelFactory::RegisterBrowserStatePrefs(
+void BookmarkModelFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   bookmarks::RegisterProfilePrefs(registry);
 }
