@@ -201,9 +201,6 @@ export class ReadAloudHighlighter {
   }
 
   private highlightCurrentWordOrPhrase_(highlightPhrases: boolean): void {
-    if (this.currentGranularity_) {
-      this.currentGranularity_.onWillHighlightWordOrPhrase();
-    }
     const {
       speechUtteranceStartIndex,
       previouslySpokenIndex,
@@ -214,6 +211,9 @@ export class ReadAloudHighlighter {
         this.readAloudModel_.getHighlightForCurrentSegmentIndex(
             index, highlightPhrases);
 
+    if (this.currentGranularity_) {
+      this.currentGranularity_.onWillHighlightWordOrPhrase(highlightSegments);
+    }
     const highlight = highlightPhrases ?
         new PhraseHighlight(highlightSegments) :
         new WordHighlight(highlightSegments, speechUtteranceLength);

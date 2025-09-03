@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {AxReadAloudNode, currentReadHighlightClass, MovementGranularity, NodeStore, PhraseHighlight, previousReadHighlightClass, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {currentReadHighlightClass, MovementGranularity, NodeStore, PhraseHighlight, previousReadHighlightClass, ReadAloudNode, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -48,7 +48,7 @@ suite('Movement', () => {
       const p = document.createElement('p');
       p.innerText = 'I\'m gonna make a change';
       nodeStore.setDomNode(p, id);
-      const segments = [{node: new AxReadAloudNode(id), start: 0, length: 5}];
+      const segments = [{node: ReadAloudNode.create(p)!, start: 0, length: 5}];
 
       const granularity = new MovementGranularity();
       granularity.addHighlight(new SentenceHighlight(segments));
@@ -62,7 +62,7 @@ suite('Movement', () => {
       p1.innerText = 'For once in my life.';
       nodeStore.setDomNode(p1, id1);
       const segments1 = [{
-        node: new AxReadAloudNode(id1),
+        node: ReadAloudNode.create(p1)!,
         start: 0,
         length: p1.innerText.length,
       }];
@@ -71,7 +71,7 @@ suite('Movement', () => {
       p2.innerText = 'It\'s gonna feel real good, ';
       nodeStore.setDomNode(p2, id2);
       const segments2 = [{
-        node: new AxReadAloudNode(id2),
+        node: ReadAloudNode.create(p2)!,
         start: 0,
         length: p2.innerText.length,
       }];
@@ -97,7 +97,7 @@ suite('Movement', () => {
       p1.innerText = 'For once in my life.';
       nodeStore.setDomNode(p1, id1);
       const segments1 = [{
-        node: new AxReadAloudNode(id1),
+        node: ReadAloudNode.create(p1)!,
         start: 0,
         length: p1.innerText.length,
       }];
@@ -106,7 +106,7 @@ suite('Movement', () => {
       p2.innerText = 'It\'s gonna feel real good, ';
       nodeStore.setDomNode(p2, id2);
       const segments2 = [{
-        node: new AxReadAloudNode(id2),
+        node: ReadAloudNode.create(p2)!,
         start: 0,
         length: p2.innerText.length,
       }];
@@ -140,7 +140,7 @@ suite('Movement', () => {
       nodeStore.setDomNode(targetP, TARGET_NODE_ID);
       // Highlight the off-screen element
       const segments = [{
-        node: new AxReadAloudNode(TARGET_NODE_ID),
+        node: ReadAloudNode.create(targetP)!,
         start: 0,
         length: targetP.innerText.length,
       }];
@@ -195,7 +195,7 @@ suite('Movement', () => {
       nodeStore.setDomNode(targetP, TARGET_NODE_ID);
       // Highlight the off-screen element
       const segments = [{
-        node: new AxReadAloudNode(TARGET_NODE_ID),
+        node: ReadAloudNode.create(targetP)!,
         start: 0,
         length: targetP.innerText.length,
       }];
@@ -223,6 +223,146 @@ suite('Movement', () => {
       assertGT(bounds.top, 0);
       assertLT(bounds.bottom, container.scrollTop + window.innerHeight);
     });
+
+    suite('onWillHighlightWordOrPhrase', () => {
+      test('sets previous highlight if not switching from sentence', () => {
+        // Create a granularity with a word highlight already in it.
+        const id = 1;
+        const p = document.createElement('p');
+        p.innerText = 'Keep';
+        nodeStore.setDomNode(p, id);
+        const granularity = new MovementGranularity();
+        const wordSegments =
+            [{node: ReadAloudNode.create(p)!, start: 0, length: 4}];
+        granularity.addHighlight(new WordHighlight(wordSegments, 4));
+        assertHtmlContains(currentReadHighlightClass, id);
+
+        granularity.onWillHighlightWordOrPhrase([]);
+
+        assertHtmlExcludes(currentReadHighlightClass, id);
+        assertHtmlContains(previousReadHighlightClass, id);
+      });
+
+      test(
+          'clears sentence highlight when new segment is in first node', () => {
+            // A sentence highlight across two nodes.
+            const id1 = 1;
+            const p1 = document.createElement('p');
+            p1.innerText = 'Keep on with the force, ';
+            nodeStore.setDomNode(p1, id1);
+            const id2 = 2;
+            const p2 = document.createElement('p');
+            p2.innerText = 'don\'t stop. ';
+            nodeStore.setDomNode(p2, id2);
+
+            const granularity = new MovementGranularity();
+            const sentenceSegments = [
+              {
+                node: ReadAloudNode.create(p1)!,
+                start: 0,
+                length: p1.innerText.length,
+              },
+              {
+                node: ReadAloudNode.create(p2)!,
+                start: 0,
+                length: p2.innerText.length,
+              },
+            ];
+            granularity.addHighlight(new SentenceHighlight(sentenceSegments));
+            assertHtmlContains(currentReadHighlightClass, id1);
+            assertHtmlContains(currentReadHighlightClass, id2);
+            // After highlighting the sentence, highlight the first word.
+            const upcomingWordSegments =
+                [{node: ReadAloudNode.create(p1)!, start: 0, length: 4}];
+
+            granularity.onWillHighlightWordOrPhrase(upcomingWordSegments);
+
+            // Both nodes should be cleared of highlights.
+            assertHtmlExcludes(currentReadHighlightClass, id1);
+            assertHtmlExcludes(previousReadHighlightClass, id1);
+            assertHtmlExcludes(currentReadHighlightClass, id2);
+            assertHtmlExcludes(previousReadHighlightClass, id2);
+          });
+
+      test(
+          'highlights previous segments when new segment is in a later node',
+          () => {
+            // A sentence across 3 nodes.
+            const id1 = 1;
+            const id2 = 2;
+            const id3 = 3;
+            const p1 = document.createElement('p');
+            p1.innerText = 'Don\'t stop ';
+            nodeStore.setDomNode(p1, id1);
+            const p2 = document.createElement('p');
+            p2.innerText = 'til you ';
+            nodeStore.setDomNode(p2, id2);
+            const p3 = document.createElement('p');
+            p3.innerText = 'get enough.';
+            nodeStore.setDomNode(p3, id3);
+
+            const granularity = new MovementGranularity();
+            const p3Node = ReadAloudNode.create(p3)!;
+            const sentenceSegments = [
+              {
+                node: ReadAloudNode.create(p1)!,
+                start: 0,
+                length: p1.innerText.length,
+              },
+              {
+                node: ReadAloudNode.create(p2)!,
+                start: 0,
+                length: p2.innerText.length,
+              },
+              {
+                node: p3Node,
+                start: 0,
+                length: p3.innerText.length,
+              },
+            ];
+            granularity.addHighlight(new SentenceHighlight(sentenceSegments));
+            assertHtmlContains(currentReadHighlightClass, id1);
+            assertHtmlContains(currentReadHighlightClass, id2);
+            assertHtmlContains(currentReadHighlightClass, id3);
+            // After highlighting the sentence, highlight the last word.
+            const upcomingWordSegments = [{node: p3Node, start: 4, length: 7}];
+
+            granularity.onWillHighlightWordOrPhrase(upcomingWordSegments);
+
+            // The first two nodes should be marked as "previous" and the third
+            // node should be cleared.
+            assertHtmlContains(previousReadHighlightClass, id1);
+            assertHtmlExcludes(currentReadHighlightClass, id1);
+            assertHtmlContains(previousReadHighlightClass, id2);
+            assertHtmlExcludes(currentReadHighlightClass, id2);
+            assertHtmlExcludes(previousReadHighlightClass, id3);
+            assertHtmlExcludes(currentReadHighlightClass, id3);
+          });
+
+      test('clears formatting if upcoming segment list is empty', () => {
+        const id = 1;
+        const p = document.createElement('p');
+        p.innerText = 'I\'m melting';
+        nodeStore.setDomNode(p, id);
+        const granularity = new MovementGranularity();
+        const sentenceSegments = [
+          {
+            node: ReadAloudNode.create(p)!,
+            start: 0,
+            length: p.innerText.length,
+          },
+        ];
+        granularity.addHighlight(new SentenceHighlight(sentenceSegments));
+        assertHtmlContains(currentReadHighlightClass, id);
+
+        granularity.onWillHighlightWordOrPhrase([]);
+
+        // The highlight should be gone.
+        assertHtmlExcludes(currentReadHighlightClass, id);
+        assertHtmlExcludes(previousReadHighlightClass, id);
+        assertTrue(granularity.isEmpty());
+      });
+    });
   });
 
   suite('SentenceHighlight', () => {
@@ -233,7 +373,7 @@ suite('Movement', () => {
       p.innerText = text;
       nodeStore.setDomNode(p, id);
       const segments =
-          [{node: new AxReadAloudNode(id), start: 0, length: text.length}];
+          [{node: ReadAloudNode.create(p)!, start: 0, length: text.length}];
 
       const highlight = new SentenceHighlight(segments);
 
@@ -255,12 +395,12 @@ suite('Movement', () => {
       nodeStore.setDomNode(a, id2);
       const segments = [
         {
-          node: new AxReadAloudNode(id1),
+          node: ReadAloudNode.create(p)!,
           start: 0,
           length: text1.length,
         },
         {
-          node: new AxReadAloudNode(id2),
+          node: ReadAloudNode.create(a)!,
           start: 0,
           length: text2.length,
         },
@@ -289,8 +429,8 @@ suite('Movement', () => {
           nodeStore.setDomNode(p1, id1);
           nodeStore.setDomNode(p2, id2);
           const segments = [
-            {node: new AxReadAloudNode(id1), start: 0, length: text1.length},
-            {node: new AxReadAloudNode(id2), start: 0, length: text2.length},
+            {node: ReadAloudNode.create(p1)!, start: 0, length: text1.length},
+            {node: ReadAloudNode.create(p2)!, start: 0, length: text2.length},
           ];
 
           new SentenceHighlight(segments);
@@ -312,7 +452,7 @@ suite('Movement', () => {
       nodeStore.setDomNode(p, id);
       // The segment covers the whole text, but the TTS length is just the word.
       const segments = [{
-        node: new AxReadAloudNode(id),
+        node: ReadAloudNode.create(p)!,
         start: 0,
         length: p.innerText.length,
       }];
@@ -334,7 +474,7 @@ suite('Movement', () => {
       nodeStore.setDomNode(p, id);
       // The segment covers the whole text, but the TTS length is just the word.
       const segments =
-          [{node: new AxReadAloudNode(id), start: 0, length: word.length}];
+          [{node: ReadAloudNode.create(p)!, start: 0, length: word.length}];
 
       new WordHighlight(segments, 0);
 
@@ -355,12 +495,12 @@ suite('Movement', () => {
       nodeStore.setDomNode(p, id);
       const segments = [
         {
-          node: new AxReadAloudNode(id),
+          node: ReadAloudNode.create(p)!,
           start: text1.length,
           length: word.length,
         },
         {
-          node: new AxReadAloudNode(id),
+          node: ReadAloudNode.create(p)!,
           start: text1.length + word.length,
           length: text2.length,
         },
@@ -382,7 +522,7 @@ suite('Movement', () => {
       p.innerText = text;
       nodeStore.setDomNode(p, id);
       const segments =
-          [{node: new AxReadAloudNode(id), start: 0, length: text.length}];
+          [{node: ReadAloudNode.create(p)!, start: 0, length: text.length}];
 
       const highlight = new PhraseHighlight(segments);
 
@@ -404,12 +544,12 @@ suite('Movement', () => {
       nodeStore.setDomNode(a, id2);
       const segments = [
         {
-          node: new AxReadAloudNode(id1),
+          node: ReadAloudNode.create(p)!,
           start: 0,
           length: text1.length,
         },
         {
-          node: new AxReadAloudNode(id2),
+          node: ReadAloudNode.create(a)!,
           start: 0,
           length: text2.length,
         },
@@ -435,12 +575,12 @@ suite('Movement', () => {
       nodeStore.setDomNode(p, id);
       const segments = [
         {
-          node: new AxReadAloudNode(id),
+          node: ReadAloudNode.create(p)!,
           start: text1.length,
           length: word.length,
         },
         {
-          node: new AxReadAloudNode(id),
+          node: ReadAloudNode.create(p)!,
           start: text1.length + word.length,
           length: text2.length,
         },
@@ -460,7 +600,7 @@ suite('Movement', () => {
     p.innerText = text;
     nodeStore.setDomNode(p, id);
     const segments =
-        [{node: new AxReadAloudNode(id), start: 0, length: text.length}];
+        [{node: ReadAloudNode.create(p)!, start: 0, length: text.length}];
 
     const highlight = new SentenceHighlight(segments);
     assertHtmlContains(currentReadHighlightClass, id);
@@ -479,7 +619,7 @@ suite('Movement', () => {
     p.innerText = text;
     nodeStore.setDomNode(p, id);
     const segments =
-        [{node: new AxReadAloudNode(id), start: 0, length: text.length}];
+        [{node: ReadAloudNode.create(p)!, start: 0, length: text.length}];
 
     const highlight = new SentenceHighlight(segments);
     assertHtmlContains(currentReadHighlightClass, id);
@@ -496,7 +636,7 @@ suite('Movement', () => {
     p.innerText = sentence1 + sentence2;
     nodeStore.setDomNode(p, id);
     const segments =
-        [{node: new AxReadAloudNode(id), start: 0, length: sentence1.length}];
+        [{node: ReadAloudNode.create(p)!, start: 0, length: sentence1.length}];
 
     const highlight = new SentenceHighlight(segments);
     const offsets = highlight.getOffsets();

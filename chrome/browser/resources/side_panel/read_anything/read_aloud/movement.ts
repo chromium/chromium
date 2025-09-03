@@ -27,15 +27,30 @@ export class MovementGranularity {
         this.highlights_.every(highlight => highlight.isEmpty());
   }
 
-  onWillHighlightWordOrPhrase() {
-    // Before word boundaries are received, the default is to use sentence
-    // highlight. So if a word boundary is received after highlighting the
-    // current sentence, clear that sentence highlight, and from now on the
-    // highlight will go by word.
+  onWillHighlightWordOrPhrase(segmentsToHighlight: Segment[]) {
+    // When switching from sentence highlight to word or phrase highlight, clear
+    // that sentence highlight. This can happen when the user switches highlight
+    // granularities or when the granularity is only now determined after
+    // already highlighting a sentence.
     if (this.highlights_.length === 1 &&
         this.highlights_[0] instanceof SentenceHighlight) {
+      const highlight = this.highlights_[0];
       this.clearFormatting();
       this.highlights_.pop();
+      if (!segmentsToHighlight.length) {
+        return;
+      }
+      // If the removed sentence highlight had multiple segments, and the next
+      // node to be highlighted is not in the first segment, highlight the
+      // segments leading up to that node.
+      const segmentIndex =
+          highlight.getSegmentIndexWithSameNode(segmentsToHighlight[0]);
+      if (segmentIndex > 0) {
+        const newSegments = highlight.getSegments().slice(0, segmentIndex);
+        const newHighlight = new SentenceHighlight(newSegments);
+        newHighlight.setPrevious();
+        this.addHighlight(newHighlight);
+      }
     } else {
       this.setPrevious();
     }
@@ -110,6 +125,8 @@ export abstract class Highlight {
   // The spans that are actually colored for current or previous highlighting.
   protected readonly highlightSpans_: HTMLElement[] = [];
 
+  private readonly segments_: Segment[];
+
   // Key: a DOM node that's already been read aloud
   // Value: the index offset at which this node's text begins within its parent
   // text. For reading aloud we sometimes split up nodes so the speech sounds
@@ -118,6 +135,10 @@ export abstract class Highlight {
   protected readonly offsets_: Map<Node, number> = new Map();
 
   protected nodeStore_: NodeStore = NodeStore.getInstance();
+
+  constructor(segments: Segment[]) {
+    this.segments_ = segments;
+  }
 
   // Highlights the text in the given node from the start index to the end
   // index. If skipNonWords is true, this will not highlight text that is only
@@ -200,6 +221,16 @@ export abstract class Highlight {
     return parentOfHighlight;
   }
 
+  getSegmentIndexWithSameNode(segmentToGet?: Segment) {
+    if (!segmentToGet) {
+      return -1;
+    }
+    const segment =
+        this.segments_.filter(segment => segment.node.equals(segmentToGet.node))
+            .at(0);
+    return segment ? this.segments_.indexOf(segment) : -1;
+  }
+
   setPrevious() {
     this.highlightSpans_.forEach(element => {
       element.classList.remove(currentReadHighlightClass);
@@ -225,11 +256,15 @@ export abstract class Highlight {
   getOffsets(): Map<Node, number> {
     return this.offsets_;
   }
+
+  getSegments(): Segment[] {
+    return this.segments_;
+  }
 }
 
 export class SentenceHighlight extends Highlight {
   constructor(segments: Segment[]) {
-    super();
+    super(segments);
 
     for (const {node, start, length} of segments) {
       this.highlightNode_(node, start, length, /*skipNonWords=*/ false);
@@ -239,7 +274,7 @@ export class SentenceHighlight extends Highlight {
 
 export class WordHighlight extends Highlight {
   constructor(segments: Segment[], ttsWordLength: number) {
-    super();
+    super(segments);
 
     let accumulatedHighlightLength = 0;
     for (const {node, start, length: segmentLength} of segments) {
@@ -262,7 +297,7 @@ export class WordHighlight extends Highlight {
 
 export class PhraseHighlight extends Highlight {
   constructor(segments: Segment[]) {
-    super();
+    super(segments);
 
     for (const {node, start, length} of segments) {
       this.highlightNode_(node, start, length, /*skipNonWords=*/ true);
