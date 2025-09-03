@@ -109,12 +109,15 @@ public class PowerMonitor {
                 },
                 powerConnectedFilter);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            PowerManager powerManager =
-                    (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-            if (powerManager != null) {
-                PowerMonitorForQ.addThermalStatusListener(powerManager);
-            }
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        if (powerManager != null) {
+            powerManager.addThermalStatusListener(
+                    new PowerManager.OnThermalStatusChangedListener() {
+                        @Override
+                        public void onThermalStatusChanged(int status) {
+                            PowerMonitorJni.get().onThermalStatusChanged(status);
+                        }
+                    });
         }
 
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -287,9 +290,6 @@ public class PowerMonitor {
 
     @CalledByNative
     private static int getCurrentThermalStatus() {
-        // Return invalid code that will get mapped to unknown in the native library.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return -1;
-
         // Creation of the PowerMonitor can be deferred based on the browser startup path.  If the
         // battery power is requested prior to the browser triggering the creation, force it to be
         // created now.
