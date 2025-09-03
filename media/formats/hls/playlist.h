@@ -60,9 +60,6 @@ class MEDIA_EXPORT Playlist : public base::RefCounted<Playlist> {
   // Segment in every Media Playlist referenced by this playlist.
   bool AreSegmentsIndependent() const { return independent_segments_; }
 
-  // Returns the kind of playlist this instance is.
-  virtual Kind GetKind() const = 0;
-
  protected:
   Playlist(GURL uri, types::DecimalInteger version, bool independent_segments);
 

@@ -39,14 +39,6 @@ TagItem GetTagItem(SourceString tag) {
 
 }  // namespace
 
-std::string_view TagItem::GetNameStr() {
-  if (!name_.has_value()) {
-    return content_or_name_->Str();
-  }
-
-  return TagNameToString(*name_);
-}
-
 ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
     SourceLineIterator* src) {
   while (true) {

@@ -13,7 +13,6 @@
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/playlist.h"
-#include "media/formats/hls/tag_recorder.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variable_dictionary.h"
 #include "url/gurl.h"
@@ -43,20 +42,14 @@ class MEDIA_EXPORT MultivariantPlaylist final : public Playlist {
     return variable_dictionary_;
   }
 
-  // `Playlist` implementation
-  Kind GetKind() const override;
-
   // Attempts to parse the multivariant playlist represented by `source`. `uri`
   // must be a valid, non-empty GURL referring to the URI of this playlist.
   // `version` is the HLS version expected to be given by an `EXT-X-VERSION` tag
   // in this playlist (or `Playlist::kDefaultVersion` if none), which may be
   // determined via `Playlist::IdentifyPlaylist`. If the playlist source is
   // invalid, returns an error.
-  static ParseStatus::Or<scoped_refptr<MultivariantPlaylist>> Parse(
-      std::string_view source,
-      GURL uri,
-      types::DecimalInteger version,
-      TagRecorder* tag_recorder = nullptr);
+  static ParseStatus::Or<scoped_refptr<MultivariantPlaylist>>
+  Parse(std::string_view source, GURL uri, types::DecimalInteger version);
 
  private:
   ~MultivariantPlaylist() override;
