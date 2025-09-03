@@ -4,27 +4,15 @@
 
 #include "ui/native_theme/native_theme_utils.h"
 
-#include <string_view>
+#include "build/build_config.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/native_theme/native_theme.h"
+#else
 #include "ui/native_theme/features/native_theme_features.h"
+#endif
 
 namespace ui {
-
-std::string_view NativeThemeColorSchemeName(
-    NativeTheme::ColorScheme color_scheme) {
-  switch (color_scheme) {
-    case NativeTheme::ColorScheme::kDefault:
-      return "kDefault";
-    case NativeTheme::ColorScheme::kLight:
-      return "kLight";
-    case NativeTheme::ColorScheme::kDark:
-      return "kDark";
-    case NativeTheme::ColorScheme::kPlatformHighContrast:
-      return "kPlatformHighContrast";
-    default:
-      NOTREACHED() << "Invalid NativeTheme::ColorScheme";
-  }
-}
 
 bool IsOverlayScrollbarEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)

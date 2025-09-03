@@ -24,6 +24,10 @@ namespace ui {
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
     : public NativeThemeBase {
  public:
+  // LINT.IfChange(FluentScrollbarThickness)
+  static constexpr int kScrollbarThickness = 15;
+  // LINT.ThenChange(//third_party/blink/web_tests/resources/scrollbar-util.js:FluentScrollbarThickness)
+
   explicit NativeThemeFluent(bool should_only_use_dark_colors);
 
   NativeThemeFluent(const NativeThemeFluent&) = delete;

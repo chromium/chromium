@@ -7,7 +7,6 @@
 
 namespace ui {
 
-constexpr int kFluentScrollbarThickness = 15;
 constexpr int kFluentScrollbarThumbThickness = 9;
 
 // A sufficiently large value ensures the most round curve for the corners of

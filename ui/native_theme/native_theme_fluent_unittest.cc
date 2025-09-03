@@ -93,8 +93,8 @@ class NativeThemeFluentTest : public ::testing::Test,
   gfx::RectF ButtonRect(NativeTheme::Part part) const {
     const int button_length =
         base::ClampFloor(kFluentScrollbarButtonSideLength * ScaleFromDIP());
-    const int track_thickness =
-        base::ClampFloor(kFluentScrollbarThickness * ScaleFromDIP());
+    const int track_thickness = base::ClampFloor(
+        NativeThemeFluent::kScrollbarThickness * ScaleFromDIP());
 
     if (part == NativeTheme::kScrollbarUpArrow ||
         part == NativeTheme::kScrollbarDownArrow) {

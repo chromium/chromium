@@ -32,9 +32,8 @@ BASE_FEATURE(kScrollbarAnimations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Fluent scrollbars aim to modernize the Chromium scrollbars (both overlay and
-// non-overlay) to fit the Fluent design language. For now, the feature will
-// only support the Windows and Linux platforms. The feature is currently in
-// development and disabled by default.
+// non-overlay) to fit the Fluent design language. Currently only supported on
+// Windows and Linux.
 BASE_FEATURE(kFluentScrollbar,
              "FluentScrollbar",
              base::FEATURE_ENABLED_BY_DEFAULT);

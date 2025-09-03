@@ -1,11 +1,6 @@
 // Contains helpers for calculating the dimensions for the various
 // scrollbar parts.
 
-// Should be the same value as `kFluentScrollbarThickness` in
-// ui\native_theme\native_theme_constants_fluent.h
-// Used to provide overlay scrollbars track width, as the current calculation
-// method would return 0.
-const FLUENT_TRACK_WIDTH = 15;
 function fluentOverlayScrollbarsEnabled() {
   return internals.runtimeFlags.fluentOverlayScrollbarsEnabled;
 }
@@ -14,7 +9,9 @@ function fluentOverlayScrollbarsEnabled() {
 // scrollbars.
 function calculateScrollbarThickness() {
     if (fluentOverlayScrollbarsEnabled()) {
-      return FLUENT_TRACK_WIDTH;
+      // LINT.IfChange(FluentScrollbarThickness)
+      return 15;
+      // LINT.ThenChange(//ui/native_theme/native_theme_fluent.h:FluentScrollbarThickness)
     }
 
     var container = document.createElement("div");
