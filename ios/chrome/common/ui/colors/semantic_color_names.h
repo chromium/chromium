@@ -93,10 +93,6 @@ extern NSString* const kWhiteBlackAlpha50Color;
 extern NSString* const kLensOverlayConsentDialogDescriptionColor;
 extern NSString* const kLensOverlayConsentDialogAnimationPlayerButtonColor;
 
-// The starting color for the gradient on the Home customization image framing
-// view.
-extern NSString* const kHomeCustomizationImageFramingViewGradientStartColor;
-
 // ***************
 // Standard Colors
 // ***************

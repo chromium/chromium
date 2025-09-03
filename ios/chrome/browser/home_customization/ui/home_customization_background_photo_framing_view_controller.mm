@@ -314,9 +314,8 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
 
 // Configures the gradient view behind the bottom part of the screen.
 - (void)setupGradientView {
-  UIColor* startColor =
-      [UIColor colorNamed:kHomeCustomizationImageFramingViewGradientStartColor];
-  UIColor* endColor = [UIColor colorNamed:kDarkerScrimBackgroundColor];
+  UIColor* startColor = [UIColor.blackColor colorWithAlphaComponent:0];
+  UIColor* endColor = [UIColor.blackColor colorWithAlphaComponent:0.6];
   UIView* gradientView = [[GradientView alloc]
       initWithStartColor:startColor
                 endColor:endColor
