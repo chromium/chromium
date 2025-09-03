@@ -50,7 +50,7 @@ class Pkcs12MigratorFactory : public ProfileKeyedServiceFactory {
   Pkcs12MigratorFactory();
   ~Pkcs12MigratorFactory() override = default;
 
-  // Implements BrowserStateKeyedServiceFactory.
+  // Implements BrowserContextKeyedServiceFactory.
   bool ServiceIsCreatedWithBrowserContext() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
