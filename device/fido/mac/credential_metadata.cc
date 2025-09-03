@@ -50,7 +50,6 @@ class Cryptor {
 
   enum Algorithm : uint8_t {
     kAes256Gcm = 0,
-    kHmacSha256 = 1,
     kAes256GcmSiv = 2,
   };
 
@@ -65,8 +64,6 @@ class Cryptor {
       base::span<const uint8_t> ciphertext,
       base::span<const uint8_t> authenticated_data) const;
 
-  std::string HmacForStorage(std::string_view data) const;
-
  private:
   static std::optional<crypto::Aead::AeadAlgorithm> ToAeadAlgorithm(
       Algorithm alg);
@@ -78,9 +75,9 @@ class Cryptor {
   Cryptor(const Cryptor&) = delete;
   Cryptor& operator=(const Cryptor&) = delete;
 
-  // Used to derive keys for the HMAC and AEAD operations. Chrome picks
-  // different secrets for each user profile. This ensures that credentials are
-  // logically tied to the Chrome user profile under which they were created.
+  // Used to derive keys for the AEAD operations. Chrome picks different secrets
+  // for each user profile. This ensures that credentials are logically tied to
+  // the Chrome user profile under which they were created.
   std::string secret_;
 };
 
@@ -106,19 +103,6 @@ std::optional<std::vector<uint8_t>> Cryptor::Unseal(
   return aead.Open(ciphertext, nonce, authenticated_data);
 }
 
-std::string Cryptor::HmacForStorage(std::string_view data) const {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  const std::string key = DeriveKey(Algorithm::kHmacSha256);
-  std::vector<uint8_t> digest(hmac.DigestLength());
-  CHECK(hmac.Init(key));
-  CHECK(hmac.Sign(data, digest.data(), hmac.DigestLength()));
-
-  // The keychain fields that store RP ID and User ID seem to only accept
-  // NSString (not NSData), so we HexEncode to ensure the result to be
-  // UTF-8-decodable.
-  return base::HexEncode(digest);
-}
-
 // static
 std::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
     Algorithm alg) {
@@ -127,8 +111,6 @@ std::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
       return crypto::Aead::AES_256_GCM;
     case Algorithm::kAes256GcmSiv:
       return crypto::Aead::AES_256_GCM_SIV;
-    case Algorithm::kHmacSha256:
-      NOTREACHED() << "invalid AEAD";
   }
 }
 
@@ -436,16 +418,6 @@ std::optional<CredentialMetadata> UnsealMetadataFromApplicationTag(
     }
   }
   return std::nullopt;
-}
-
-std::string EncodeRpIdAndUserIdDeprecated(const std::string& secret,
-                                          const std::string& rp_id,
-                                          base::span<const uint8_t> user_id) {
-  // Encoding RP ID along with the user ID hides whether the same user ID was
-  // reused on different RPs.
-  const auto* user_id_data = reinterpret_cast<const char*>(user_id.data());
-  return Cryptor(secret).HmacForStorage(
-      rp_id + "/" + std::string(user_id_data, user_id_data + user_id.size()));
 }
 
 std::string EncodeRpId(const std::string& secret, const std::string& rp_id) {

@@ -318,6 +318,10 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
         objc_storage_->authentication_context;
   }
 
+  // Legacy credentials used to set kSecAttrApplicationTag to a CFStringRef
+  // encoding the RP ID and user ID, but MacOS Sequoia returns an internal error
+  // when setting an application tag of type CFStringRef. Skip the field in that
+  // case, as application tags are ignored for legacy credentials anyway.
   NSDictionary* params = @{
     CFToNSPtrCast(kSecAttrAccessGroup) :
         base::SysUTF8ToNSString(config_.keychain_access_group),
@@ -329,8 +333,6 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
         CFToNSPtrCast(kSecAttrTokenIDSecureEnclave),
     CFToNSPtrCast(kSecAttrLabel) :
         base::SysUTF8ToNSString(EncodeRpId(config_.metadata_secret, rp_id)),
-    CFToNSPtrCast(kSecAttrApplicationTag) : base::SysUTF8ToNSString(
-        EncodeRpIdAndUserIdDeprecated(config_.metadata_secret, rp_id, user.id)),
     CFToNSPtrCast(kSecAttrApplicationLabel) :
         [NSData dataWithBytes:credential_id.data() length:credential_id.size()],
     CFToNSPtrCast(kSecPrivateKeyAttrs) : private_key_params,
