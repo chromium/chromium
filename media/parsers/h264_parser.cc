@@ -545,7 +545,7 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
   DVLOG(4) << "NALU found: size=" << nalu_size_with_start_code;
 
   // Initialize bit reader at the start of found NALU.
-  if (!br_.Initialize(nalu->data.data(), nalu->data.size())) {
+  if (!br_.Initialize(nalu->data)) {
     stream_ = {};
     return kEOStream;
   }

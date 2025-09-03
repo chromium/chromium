@@ -9,7 +9,7 @@
 // Common bit reader macros shared by H.26x parsers.
 #define READ_BITS_OR_RETURN(num_bits, out)                                 \
   do {                                                                     \
-    int _out;                                                              \
+    uint32_t _out;                                                         \
     if (!br_.ReadBits(num_bits, &_out)) {                                  \
       DVLOG(1)                                                             \
           << "Error in stream: unexpected EOS while trying to read " #out; \
@@ -21,7 +21,7 @@
 #define READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(num_bits, out,             \
                                                 num_bits_remain)           \
   do {                                                                     \
-    int _out;                                                              \
+    uint32_t _out;                                                         \
     if (!br_.ReadBits(num_bits, &_out)) {                                  \
       DVLOG(1)                                                             \
           << "Error in stream: unexpected EOS while trying to read " #out; \
@@ -34,7 +34,7 @@
 #define SKIP_BITS_OR_RETURN(num_bits)                                       \
   do {                                                                      \
     int bits_left = num_bits;                                               \
-    int discard;                                                            \
+    uint32_t discard;                                                       \
     while (bits_left > 0) {                                                 \
       if (!br_.ReadBits(bits_left > 16 ? 16 : bits_left, &discard)) {       \
         DVLOG(1) << "Error in stream: unexpected EOS while trying to skip"; \
@@ -46,7 +46,7 @@
 
 #define READ_BOOL_OR_RETURN(out)                                           \
   do {                                                                     \
-    int _out;                                                              \
+    uint32_t _out;                                                         \
     if (!br_.ReadBits(1, &_out)) {                                         \
       DVLOG(1)                                                             \
           << "Error in stream: unexpected EOS while trying to read " #out; \
@@ -57,7 +57,7 @@
 
 #define READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(out, num_bits_remain)      \
   do {                                                                     \
-    int _out;                                                              \
+    uint32_t _out;                                                         \
     if (!br_.ReadBits(1, &_out)) {                                         \
       DVLOG(1)                                                             \
           << "Error in stream: unexpected EOS while trying to read " #out; \
@@ -72,7 +72,7 @@
 // with total bits read return in |*bits_read|.
 #define READ_UE_WITH_BITS_READ_OR_RETURN(out, bits_read)                    \
   do {                                                                      \
-    int _bit = 0;                                                           \
+    uint32_t _bit = 0;                                                      \
     int _num_bits_processed = -1;                                           \
     do {                                                                    \
       READ_BITS_OR_RETURN(1, &_bit);                                        \
@@ -83,7 +83,7 @@
     }                                                                       \
     *out = (1u << _num_bits_processed) - 1u;                                \
     *bits_read = 1 + _num_bits_processed * 2;                               \
-    int _rest;                                                              \
+    uint32_t _rest;                                                         \
     if (_num_bits_processed == 31) {                                        \
       READ_BITS_OR_RETURN(_num_bits_processed, &_rest);                     \
       if (_rest == 0) {                                                     \
@@ -102,13 +102,13 @@
 
 #define READ_UE_OR_RETURN(out)                          \
   do {                                                  \
-    int _bits_read = -1;                                \
+    uint32_t _bits_read = 0;                            \
     READ_UE_WITH_BITS_READ_OR_RETURN(out, &_bits_read); \
   } while (0)
 
 #define READ_UE_AND_MINUS_BITS_READ_OR_RETURN(out, num_bits_remain) \
   do {                                                              \
-    int num_bits_read = -1;                                         \
+    uint32_t num_bits_read = 0;                                     \
     READ_UE_WITH_BITS_READ_OR_RETURN(out, &num_bits_read);          \
     *num_bits_remain -= num_bits_read;                              \
   } while (0)
@@ -116,7 +116,7 @@
 // Read one signed exp-Golomb code from the stream and return in |*out|.
 #define READ_SE_OR_RETURN(out)                          \
   do {                                                  \
-    int _bits_read = -1;                                \
+    uint32_t _bits_read = 0;                            \
     int ue = 0;                                         \
     READ_UE_WITH_BITS_READ_OR_RETURN(&ue, &_bits_read); \
     if (ue % 2 == 0) {                                  \
@@ -177,12 +177,12 @@
     }                                                                 \
   } while (0)
 
-#define BYTE_ALIGNMENT()                            \
-  do {                                              \
-    int bits_left_to_align = br_.NumBitsLeft() % 8; \
-    if (bits_left_to_align) {                       \
-      SKIP_BITS_OR_RETURN(bits_left_to_align);      \
-    }                                               \
+#define BYTE_ALIGNMENT()                               \
+  do {                                                 \
+    size_t bits_left_to_align = br_.NumBitsLeft() % 8; \
+    if (bits_left_to_align) {                          \
+      SKIP_BITS_OR_RETURN(bits_left_to_align);         \
+    }                                                  \
   } while (0)
 
 #endif  // MEDIA_PARSERS_BIT_READER_MACROS_H_

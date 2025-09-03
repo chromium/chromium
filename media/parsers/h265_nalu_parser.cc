@@ -18,7 +18,7 @@ namespace media {
 
 #define READ_BITS_OR_RETURN(num_bits, out)                                 \
   do {                                                                     \
-    int _out;                                                              \
+    uint32_t _out;                                                         \
     if (!br_.ReadBits(num_bits, &_out)) {                                  \
       DVLOG(1)                                                             \
           << "Error in stream: unexpected EOS while trying to read " #out; \
@@ -128,7 +128,7 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
   DVLOG(4) << "NALU found: size=" << nalu_size_with_start_code;
 
   // Initialize bit reader at the start of found NALU.
-  if (!br_.Initialize(nalu->data.data(), nalu->data.size())) {
+  if (!br_.Initialize(nalu->data)) {
     return kEOStream;
   }
 
@@ -139,7 +139,7 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
   stream_ = stream_.subspan(nalu_size_with_start_code);
 
   // Read NALU header, skip the forbidden_zero_bit, but check for it.
-  int data;
+  uint32_t data;
   READ_BITS_OR_RETURN(1, &data);
   TRUE_OR_RETURN(data == 0);
 
