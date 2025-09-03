@@ -640,6 +640,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
     install_observer.BeginListening({kAppId2});
 
     SetPolicyWithTwoApps();
+    CreateInitialDiscoveryUpdateWaiters({kAppId2});
     install_observer.Wait();
 
     EXPECT_EQ(provider().registrar_unsafe().GetInstallState(kAppId1),
