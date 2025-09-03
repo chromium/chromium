@@ -1817,23 +1817,6 @@ void Element::DefaultEventHandler(Event& event) {
       // unit test.
       ShowInterestNow();
     }
-
-    if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-        keyboard_event && event.type() == event_type_names::kKeydown &&
-        GetInterestState() != InterestState::kNoInterest) {
-      // Handle `interestfor` "activation" hotkey, and ESC key to lose
-      // interest.
-      const int modifiers =
-          keyboard_event->GetModifiers() & blink::WebInputEvent::kKeyModifiers;
-      auto* target = GetInvokerData()->ActiveInterestTarget();
-      DCHECK_EQ(InterestForElement(), target);
-      if (keyboard_event->key() == keywords::kEscape && !modifiers) {
-        if (InterestLost(target)) {
-          event.SetDefaultHandled();
-          return;
-        }
-      }
-    }
   }
   ContainerNode::DefaultEventHandler(event);
 }
@@ -7877,6 +7860,24 @@ void Element::LoseInterestNow(InterestLostCancelable cancelable,
   InterestLost(target, cancelable, behavior);
 }
 
+// static
+void Element::LoseInterestInAllElements(Document& document) {
+  // Make a copy, in case events change the list.
+  HeapLinkedHashSet<Member<Element>> elements = document.ElementsWithInterest();
+  // For each element source in document's active interest sources set, in
+  // reverse order:
+  for (auto& element : base::Reversed(elements)) {
+    if (auto* target = element->InterestForElement()) {
+      // 1. Lose interest in source given source's active interest target.
+      element->InterestLost(target, InterestLostCancelable::kNotCancelable);
+      // 2. If document is not fully active, then return.
+      if (!document.IsActive()) {
+        return;
+      }
+    }
+  }
+}
+
 bool Element::IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const {
   FocusableState focusable_state = Element::IsFocusableState(update_behavior);
   if (focusable_state == FocusableState::kNotFocusable) {
@@ -11358,7 +11359,10 @@ void Element::ChangeInterestState(Element* target, InterestState new_state) {
     return;
   }
   InvokerData* invoker_data = &EnsureElementRareData().EnsureInvokerData();
+  auto& document = GetDocument();
   if (new_state == InterestState::kNoInterest) {
+    DCHECK(document.ElementsWithInterest().Contains(this));
+    document.ElementsWithInterest().erase(this);
     invoker_data->SetInterestState(InterestState::kNoInterest);
     invoker_data->SetActiveInterestTarget(nullptr);
     if (target) {
@@ -11368,6 +11372,8 @@ void Element::ChangeInterestState(Element* target, InterestState new_state) {
     invoker_data->CancelInterestLostTask();
     invoker_data->CancelInterestGainedTask();
   } else {
+    DCHECK(!document.ElementsWithInterest().Contains(this));
+    document.ElementsWithInterest().insert(this);
     invoker_data->SetInterestState(new_state);
     invoker_data->SetActiveInterestTarget(target);
   }

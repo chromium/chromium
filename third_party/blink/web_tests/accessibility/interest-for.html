@@ -83,7 +83,7 @@ const kEscape = '\uE00C';
 async function render() {
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 }
-async function loseInterest(element) {
+async function loseInterest() {
   await new test_driver.Actions()
     .keyDown(kEscape)
     .keyUp(kEscape)
@@ -111,9 +111,7 @@ async function runTest() {
     assert_true(!!invoker && !!popover,'Unable to find elements');
     assert_true(popover === document.getElementById(invoker.getAttribute('interestfor')),'invoker doesn\'t point to popover');
     assert_false(popover.matches(':popover-open'),'popover should be closed to start');
-    if (i>0) {
-      await loseInterest(examples[i-1].querySelector('[interestfor]'));
-    }
+    await loseInterest();
     assert_false(popover.matches(':popover-open'),'popover should still be closed after losing interest');
     await showInterest(invoker);
     assert_true(popover.matches(':popover-open'),'popover should be open after interest');

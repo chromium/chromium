@@ -604,6 +604,8 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
     page->GetSpatialNavigationController().HandleEscapeKeyboardEvent(event);
   }
 
+  Element::LoseInterestInAllElements(document);
+
   frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event);
 }
 

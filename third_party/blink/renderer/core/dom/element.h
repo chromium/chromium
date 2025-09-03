@@ -1228,6 +1228,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // is a popover, the popover will be hidden.
   void LoseInterestNow(InterestLostCancelable, InterestLostPopoverBehavior);
 
+  // Lose interest immediately in all elements that currently have interest.
+  static void LoseInterestInAllElements(Document&);
+
   // Returns true if any of its (non-inclusive) flat tree descendants is
   // keyboard focusable. Note that this is quite slow, since it traverses the
   // entire subtree, and calls `IsKeyboardFocusableSlow()` on each element.
