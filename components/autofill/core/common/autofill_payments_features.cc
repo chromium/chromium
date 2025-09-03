@@ -189,7 +189,7 @@ BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
 // payment data syncing instead of credit card form parsing.
 BASE_FEATURE(kAutofillEnableLoadBnplAllowlistAfterSyncing,
              "AutofillEnableLoadBnplAllowlistAfterSyncing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, virtual card downstream enrollment will support multiple
 // requests at a time.
