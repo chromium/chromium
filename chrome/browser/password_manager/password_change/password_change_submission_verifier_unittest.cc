@@ -71,7 +71,8 @@ class PasswordChangeSubmissionVerifierTest
     OptimizationGuideKeyedServiceFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&CreateOptimizationService));
-    logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(web_contents());
+    logs_uploader_ =
+        std::make_unique<ModelQualityLogsUploader>(web_contents(), GURL());
   }
 
   void TearDown() override {
