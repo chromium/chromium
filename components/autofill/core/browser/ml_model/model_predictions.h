@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/is_required.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -29,11 +30,13 @@ class ModelPredictions {
   ModelPredictions& operator=(ModelPredictions&&);
   ~ModelPredictions();
 
+  HeuristicSource source() const { return source_; }
+
   // Sets the heuristic types of `fields` according to `this`.
   void ApplyTo(base::span<const std::unique_ptr<AutofillField>> fields) const;
 
  private:
-  HeuristicSource source_ = HeuristicSource::kAutofillMachineLearning;
+  HeuristicSource source_ = internal::IsRequired();
   FieldTypeSet supported_types_;
   base::flat_map<FieldGlobalId, FieldType> predictions_;
 };

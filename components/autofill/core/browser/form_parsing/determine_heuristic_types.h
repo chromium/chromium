@@ -38,7 +38,7 @@ class HeuristicPredictions {
   void ApplyTo(base::span<const std::unique_ptr<AutofillField>> fields) const;
 
  private:
-  HeuristicSource source_ = HeuristicSource::kAutofillMachineLearning;
+  HeuristicSource source_ = internal::IsRequired();
   base::flat_map<FieldGlobalId, FieldType> predictions_;
 };
 

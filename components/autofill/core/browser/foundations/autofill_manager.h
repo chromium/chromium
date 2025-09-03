@@ -358,9 +358,7 @@ class AutofillManager
   // After subscribing, FieldClassificationModelHandler::OnModelUpdated() will
   // trigger ReparseKnownForms(). There may be a handler for Autofill and/or
   // Password Manager.
-  void SubscribeToMlModelChanges(
-      FieldClassificationModelHandler& handler,
-      optimization_guide::proto::OptimizationTarget optimization_target);
+  void SubscribeToMlModelChanges(FieldClassificationModelHandler& handler);
 
  protected:
   explicit AutofillManager(AutofillDriver* driver);
@@ -432,6 +430,24 @@ class AutofillManager
       std::vector<raw_ptr<FormStructure, VectorExperimental>>* form_structures)
       const;
 
+  // Returns true only if the previewed form should be cleared.
+  virtual bool ShouldClearPreviewedForm() = 0;
+
+  std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
+  mutable_form_structures() {
+    return &form_structures_;
+  }
+
+  // Logs the field types of `form` to chrome://autofill-internals and the
+  // autofill-information attribute (if
+  // `features::test::kAutofillShowTypePredictions` is enabled).
+  void LogCurrentFieldTypes(const FormStructure& form);
+
+ private:
+  friend class AutofillManagerTestApi;
+
+  struct AsyncContext;
+
   // Parses multiple forms in one go. The function proceeds in four stages:
   //
   // 1. Turn (almost) every FormData into a FormStructure.
@@ -466,21 +482,9 @@ class AutofillManager
       std::vector<std::unique_ptr<FormStructure>> form_structures,
       base::OnceCallback<void(AutofillManager&)> callback);
 
-  // Returns true only if the previewed form should be cleared.
-  virtual bool ShouldClearPreviewedForm() = 0;
-
-  std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
-  mutable_form_structures() {
-    return &form_structures_;
-  }
-
-  // Logs the field types of `form` to chrome://autofill-internals and the
-  // autofill-information attribute (if
-  // `features::test::kAutofillShowTypePredictions` is enabled).
-  void LogCurrentFieldTypes(const FormStructure& form);
-
- private:
-  friend class AutofillManagerTestApi;
+  // Step 2 described above ParseFormsAsync().
+  void RunMlModels(AsyncContext context,
+                   base::OnceCallback<void(AsyncContext)> done_callback);
 
   // Invoked by `AutofillCrowdsourcingManager`.
   void OnLoadedServerPredictions(

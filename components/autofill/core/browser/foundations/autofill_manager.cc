@@ -128,63 +128,28 @@ bool IsCreditCardFormForSignaturePurposes(const FormStructure& form_structure) {
          DenseSet<FormType>{FormType::kCreditCardForm};
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-// Applies a field classification ML model to `forms`.
-// The model execution is performed on a background thread. Upon completion, the
-// `callback` is invoked with the `forms`. The `optimization_target` selects
-// either the Autofill or Password Manager model. Since this function can be
-// called asynchronously (triggering a second classifier after a first one
-// completes), it takes a `WeakPtr<AutofillManager>` to handle cases where the
-// manager might be destroyed before execution.
-void ApplyMlModel(
-    base::WeakPtr<AutofillManager> manager,
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
-        callback,
-    std::vector<std::unique_ptr<FormStructure>> form_structures) {
-  if (!manager) {
-    return;
-  }
-  AutofillClient& client = manager->client();
-  FieldClassificationModelHandler* ml_handler = nullptr;
-  switch (optimization_target) {
-    case optimization_guide::proto::
-        OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION:
-      ml_handler = client.GetAutofillFieldClassificationModelHandler();
-      break;
-    case optimization_guide::proto::
-        OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION:
-      ml_handler = client.GetPasswordManagerFieldClassificationModelHandler();
-      break;
-    default:
-      NOTREACHED();
-  }
-  if (ml_handler) {
-    manager->SubscribeToMlModelChanges(*ml_handler, optimization_target);
-    std::vector<FormData> form_datas = base::ToVector(
-        form_structures,
-        [](auto& form_structure) { return form_structure->ToFormData(); });
-    ml_handler->GetModelPredictionsForForms(
-        std::move(form_datas),
-        manager->client().GetVariationConfigCountryCode(),
-        base::BindOnce(
-            [](std::vector<std::unique_ptr<FormStructure>> form_structures,
-               std::vector<ModelPredictions> all_predictions) {
-              for (const auto [form_structure, predictions] :
-                   base::zip(form_structures, all_predictions)) {
-                predictions.ApplyTo(form_structure->fields());
-              }
-              return form_structures;
-            },
-            std::move(form_structures))
-            .Then(std::move(callback)));
-  } else {
-    std::move(callback).Run(std::move(form_structures));
-  }
-}
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
 }  // namespace
+
+// Form parsing happens asynchronously. This struct holds the necessary context.
+// The AsyncContext can be passed to any sequence and its members can be
+// accessed on that sequence.
+struct AutofillManager::AsyncContext {
+  AsyncContext(AutofillManager& manager,
+               std::vector<std::unique_ptr<FormStructure>> form_structures)
+      : form_structures(std::move(form_structures)),
+        country_code(manager.client().GetVariationConfigCountryCode()),
+        current_page_language(manager.GetCurrentPageLanguage()),
+        log_manager(IsLoggingActive(manager.log_manager())
+                        ? LogManager::CreateBuffering()
+                        : nullptr) {}
+
+  std::vector<std::unique_ptr<FormStructure>> form_structures;
+  std::vector<HeuristicPredictions> heuristic_predictions;
+  // TODO(crbug.com/427787155): Add members for heuristic and model predictions.
+  GeoIpCountryCode country_code;
+  LanguageCode current_page_language;
+  std::unique_ptr<BufferingLogManager> log_manager;
+};
 
 AutofillManager::AutofillManager(AutofillDriver* driver)
     : driver_(CHECK_DEREF(driver)) {
@@ -734,24 +699,6 @@ void AutofillManager::ParseFormAsync(
 void AutofillManager::ParseFormsAsyncCommon(
     std::vector<std::unique_ptr<FormStructure>> form_structures,
     base::OnceCallback<void(AutofillManager&)> callback) {
-  struct AsyncContext {
-    AsyncContext(std::vector<std::unique_ptr<FormStructure>> form_structures,
-                 GeoIpCountryCode country_code,
-                 LanguageCode current_page_language,
-                 LogManager* log_manager)
-        : form_structures(std::move(form_structures)),
-          country_code(std::move(country_code)),
-          current_page_language(std::move(current_page_language)),
-          log_manager(IsLoggingActive(log_manager)
-                          ? LogManager::CreateBuffering()
-                          : nullptr) {}
-    std::vector<std::unique_ptr<FormStructure>> form_structures;
-    std::vector<HeuristicPredictions> heuristic_predictions;
-    GeoIpCountryCode country_code;
-    LanguageCode current_page_language;
-    std::unique_ptr<BufferingLogManager> log_manager;
-  };
-
   // To be run on a different task (must not access global or member
   // variables).
   auto run_heuristics = [](AsyncContext context) {
@@ -804,18 +751,12 @@ void AutofillManager::ParseFormsAsyncCommon(
       [](base::WeakPtr<AutofillManager> self,
          AsyncContext (*run_heuristics)(AsyncContext),
          base::OnceCallback<void(AsyncContext)> update_cache,
-         std::vector<std::unique_ptr<FormStructure>> forms) {
+         AsyncContext context) {
         if (!self) {
           return;
         }
         self->parsing_task_runner_->PostTaskAndReplyWithResult(
-            FROM_HERE,
-            base::BindOnce(
-                run_heuristics,
-                AsyncContext(std::move(forms),
-                             self->client().GetVariationConfigCountryCode(),
-                             self->GetCurrentPageLanguage(),
-                             self->log_manager())),
+            FROM_HERE, base::BindOnce(run_heuristics, std::move(context)),
             std::move(update_cache));
       },
       parsing_weak_ptr_factory_.GetWeakPtr(), run_heuristics,
@@ -823,29 +764,92 @@ void AutofillManager::ParseFormsAsyncCommon(
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Parsing happens in the following order:
-  // (1) Running ML Models (first Autofill, then Password Manager).
+  // (1) Running ML models (Autofill and Password Manager).
   // (2) Running heuristics (this ensures that rationalization and sectioning
-  // are done for the active Autofill predictions).
+  //     are done for the active Autofill predictions).
   // (3) Updating the form cache.
-
-  // Chain running heuristics and updating cache after running the Password
-  // Manager model.
-  auto run_password_manager_model_if_needed = base::BindOnce(
-      &ApplyMlModel, GetWeakPtr(),
-      optimization_guide::proto::
-          OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION,
-      std::move(run_heuristics_and_update_cache));
-
-  // Chain running the Password Manager model after running the Autofill model.
-  ApplyMlModel(GetWeakPtr(),
-               optimization_guide::proto::
-                   OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-               std::move(run_password_manager_model_if_needed),
-               std::move(form_structures));
+  RunMlModels(AsyncContext(*this, std::move(form_structures)),
+              std::move(run_heuristics_and_update_cache));
 #else
   std::move(run_heuristics_and_update_cache).Run(std::move(form_structures));
 #endif
 }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+// Applies the Autofill and Password Manager ML models for field classification
+// to `forms`. The model is executed on a background sequence.
+// Calls `done_callback` upon completion on the UI sequence.
+void AutofillManager::RunMlModels(
+    AsyncContext context,
+    base::OnceCallback<void(AsyncContext)> done_callback) {
+  // Runs the specified model and calls `response` with the results.
+  // Otherwise runs `response` with the empty vector.
+  // Called on the UI thread.
+  auto run_model = [](HeuristicSource source,
+                      base::WeakPtr<AutofillManager> manager,
+                      base::OnceCallback<void(AsyncContext context,
+                                              std::vector<ModelPredictions>)>
+                          receive_predictions,
+                      AsyncContext context) {
+    if (!manager) {
+      return;
+    }
+    auto* ml_handler = [&]() -> FieldClassificationModelHandler* {
+      AutofillClient& client = manager->client();
+      switch (source) {
+        case HeuristicSource::kAutofillMachineLearning:
+          return client.GetAutofillFieldClassificationModelHandler();
+        case HeuristicSource::kPasswordManagerMachineLearning:
+          return client.GetPasswordManagerFieldClassificationModelHandler();
+        case HeuristicSource::kRegexes:
+          break;
+      }
+      NOTREACHED();
+    }();
+    if (!ml_handler) {
+      std::move(receive_predictions).Run(std::move(context), {});
+      return;
+    }
+    manager->SubscribeToMlModelChanges(*ml_handler);
+    std::vector<FormData> form_datas = base::ToVector(
+        context.form_structures,
+        [](auto& form_structure) { return form_structure->ToFormData(); });
+    GeoIpCountryCode country_code = context.country_code;
+    ml_handler->GetModelPredictionsForForms(
+        std::move(form_datas), country_code,
+        base::BindOnce(std::move(receive_predictions), std::move(context)));
+  };
+
+  // Stores the computed predictions.
+  // Called on the UI thread.
+  auto receive_predictions =
+      [](AsyncContext context,
+         std::vector<ModelPredictions> model_predictions) {
+        // TODO(crbug.com/427787155): Store the `model_predictions` in
+        // `context`.
+        for (const auto [form_structure, predictions] :
+             base::zip(context.form_structures, model_predictions)) {
+          predictions.ApplyTo(form_structure->fields());
+        }
+        return context;
+      };
+
+  // First run the Autofill model.
+  run_model(
+      HeuristicSource::kAutofillMachineLearning, GetWeakPtr(),
+      base::BindOnce(receive_predictions)
+          .Then(
+              // Next run the Password Manager model.
+              base::BindOnce(run_model,
+                             HeuristicSource::kPasswordManagerMachineLearning,
+                             GetWeakPtr(),
+                             base::BindOnce(receive_predictions)
+                                 .Then(
+                                     // Then finish.
+                                     std::move(done_callback)))),
+      std::move(context));
+}
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 void AutofillManager::OnLoadedServerPredictions(
     std::optional<AutofillCrowdsourcingManager::QueryResponse> response) {
@@ -918,9 +922,8 @@ void AutofillManager::LogCurrentFieldTypes(const FormStructure& form) {
 }
 
 void AutofillManager::SubscribeToMlModelChanges(
-    FieldClassificationModelHandler& handler,
-    optimization_guide::proto::OptimizationTarget optimization_target) {
-  switch (optimization_target) {
+    FieldClassificationModelHandler& handler) {
+  switch (handler.optimization_target()) {
     case optimization_guide::proto::OptimizationTarget::
         OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION:
       if (!autofill_model_change_subscription_) {

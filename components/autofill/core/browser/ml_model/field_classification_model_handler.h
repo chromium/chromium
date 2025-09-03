@@ -89,6 +89,10 @@ class FieldClassificationModelHandler
   [[nodiscard]] base::CallbackListSubscription RegisterModelChangeCallback(
       ModelChangeCallbackList::CallbackType callback);
 
+  optimization_guide::proto::OptimizationTarget optimization_target() const {
+    return optimization_target_;
+  }
+
 #if defined(UNIT_TEST)
   const FieldTypeSet& get_supported_types() const { return supported_types_; }
 #endif
