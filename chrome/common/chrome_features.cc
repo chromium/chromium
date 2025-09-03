@@ -96,9 +96,6 @@ const base::FeatureParam<std::string> kBoardingPassDetectorUrlParam(
 #if BUILDFLAG(IS_CHROMEOS)
 // Enable Borealis on Chrome OS.
 BASE_FEATURE(Borealis, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable Borealis MOTD on Chrome OS.
-BASE_FEATURE(ShowBorealisMotd, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

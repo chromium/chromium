@@ -8,7 +8,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
-#include "chrome/common/chrome_features.h"
+#include "chromeos/ash/experiences/guest_os/borealis/borealis_features.h"
 #include "chromeos/ash/grit/borealis_motd_resources.h"
 #include "chromeos/ash/grit/borealis_motd_resources_map.h"
 #include "components/version_info/version_info.h"
