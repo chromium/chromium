@@ -351,9 +351,7 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
   bool ignore_fractional_scales = new_config.monitors.size() > 1;
   bool all_resolution_changes_reflected = true;
   bool config_changed = false;
-  for (auto preferred_monitor_config_it = preferred_monitors_config_.begin();
-       preferred_monitor_config_it != preferred_monitors_config_.end();) {
-    auto [screen_id, preferred_config] = *preferred_monitor_config_it;
+  for (auto [screen_id, preferred_config] : preferred_monitors_config_) {
     auto monitor_it = new_config.FindMonitor(screen_id);
     if (monitor_it == new_config.monitors.end()) {
       // This may happen for newly added monitors that may not be reflected in
@@ -399,7 +397,6 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
         }
       }
     }
-    preferred_monitor_config_it++;
   }
 
   if (all_resolution_changes_reflected) {
