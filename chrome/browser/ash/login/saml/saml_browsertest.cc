@@ -143,7 +143,6 @@ namespace {
 namespace em = ::enterprise_management;
 
 using ::base::test::RunOnceCallback;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::WithArgs;
 
@@ -2337,7 +2336,7 @@ void SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture() {
   SamlTestBase::SetUpInProcessBrowserTestFixture();
 
   ON_CALL(mock_attestation_flow_, GetCertificate)
-      .WillByDefault(WithArgs<7>(Invoke(FakeGetCertificateCallbackTrue)));
+      .WillByDefault(WithArgs<7>(FakeGetCertificateCallbackTrue));
 
   // By default make it reply that the certificate is already uploaded.
   ON_CALL(mock_cert_uploader_, WaitForUploadComplete)

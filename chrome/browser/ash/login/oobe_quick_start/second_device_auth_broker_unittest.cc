@@ -57,7 +57,6 @@ using ::testing::Eq;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
 using ::testing::Gt;
-using ::testing::Invoke;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::Optional;
@@ -376,14 +375,14 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
             /*force_new_key=*/_, /*key_crypto_type=*/_,
             /*key_name=*/attestation::kDeviceSetupKey,
             /*profile_specific_data=*/_, /*callback=*/_))
-        .WillOnce(WithArg<7>(Invoke(
+        .WillOnce(WithArg<7>(
             [](attestation::AttestationFlow::CertificateCallback callback)
                 -> void {
               std::move(callback).Run(
                   /*status=*/ash::attestation::AttestationStatus::
                       ATTESTATION_SERVER_BAD_REQUEST_FAILURE,
                   /*pem_certificate_chain=*/std::string());
-            })));
+            }));
   }
 
   // Set an `EXPECT`ation that expects a remote attestation request, and
@@ -398,14 +397,14 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
             /*force_new_key=*/_, /*key_crypto_type=*/_,
             /*key_name=*/attestation::kDeviceSetupKey,
             /*profile_specific_data=*/_, /*callback=*/_))
-        .WillOnce(WithArg<7>(Invoke(
+        .WillOnce(WithArg<7>(
             [](attestation::AttestationFlow::CertificateCallback callback)
                 -> void {
               std::move(callback).Run(
                   /*status=*/ash::attestation::AttestationStatus::
                       ATTESTATION_UNSPECIFIED_FAILURE,
                   /*pem_certificate_chain=*/std::string());
-            })));
+            }));
   }
 
   // Set an `EXPECT`ation that expects a remote attestation request, and
@@ -424,14 +423,14 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
                      ::attestation::DeviceSetupCertificateRequestMetadata>(
                 ProtoBufContentBindingEq(fido_credential_id()))),
             /*callback*/ _))
-        .WillOnce(WithArg<7>(Invoke(
+        .WillOnce(WithArg<7>(
             [this](attestation::AttestationFlow::CertificateCallback callback)
                 -> void {
               std::move(callback).Run(
                   /*status=*/ash::attestation::AttestationStatus::
                       ATTESTATION_SUCCESS,
                   /*pem_certificate_chain=*/*GetCertificate());
-            })));
+            }));
   }
 
   // Same as above, except that it expects a particular attestation key type.
@@ -450,14 +449,14 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
                      ::attestation::DeviceSetupCertificateRequestMetadata>(
                 ProtoBufContentBindingEq(fido_credential_id()))),
             /*callback*/ _))
-        .WillOnce(WithArg<7>(Invoke(
+        .WillOnce(WithArg<7>(
             [this](attestation::AttestationFlow::CertificateCallback callback)
                 -> void {
               std::move(callback).Run(
                   /*status=*/ash::attestation::AttestationStatus::
                       ATTESTATION_SUCCESS,
                   /*pem_certificate_chain=*/*GetCertificate());
-            })));
+            }));
   }
 
   void MakeAttestationUnavailable() {

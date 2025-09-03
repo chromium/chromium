@@ -227,7 +227,7 @@ class DemoLoginControllerTest : public testing::Test {
     base::RunLoop loop;
     EXPECT_CALL(login_display_host(), CompleteLogin)
         .Times(1)
-        .WillOnce(testing::Invoke([&](const UserContext& user_context) {
+        .WillOnce([&](const UserContext& user_context) {
           const auto device_id = user_context.GetDeviceId();
           EXPECT_FALSE(device_id.empty());
           EXPECT_EQ(g_browser_process->local_state()->GetString(
@@ -238,7 +238,7 @@ class DemoLoginControllerTest : public testing::Test {
                     gaia_id);
 
           loop.Quit();
-        }));
+        });
     loop.Run();
 
     EXPECT_TRUE(CrosSettings::Get()->IsUserAllowlisted(
@@ -314,7 +314,7 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
   base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin)
       .Times(1)
-      .WillOnce(testing::Invoke([&](const UserContext& user_context) {
+      .WillOnce([&](const UserContext& user_context) {
         const auto device_id = user_context.GetDeviceId();
         EXPECT_FALSE(device_id.empty());
         EXPECT_EQ(g_browser_process->local_state()->GetString(
@@ -327,7 +327,7 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
             DemoSessionMetricsRecorder::GetCurrentSessionTypeForTesting(),
             DemoSessionMetricsRecorder::SessionType::kSignedInDemoSession);
         loop.Quit();
-      }));
+      });
 
   // Verify demo account login gets triggered by `ExistingUserController`.
   ConfigureAutoLoginSetting();

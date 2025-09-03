@@ -42,7 +42,7 @@ void SetupDemoModeOnlineEnrollment(MockEnrollmentLauncher* mock,
   EXPECT_CALL(*mock, Setup(ConfigIsAttestation(), _));
 
   EXPECT_CALL(*mock, EnrollUsingAttestation())
-      .WillRepeatedly(testing::Invoke([mock, result]() {
+      .WillRepeatedly([mock, result]() {
         switch (result) {
           case DemoModeSetupResult::SUCCESS:
             mock->status_consumer()->OnDeviceEnrolled();
@@ -61,7 +61,7 @@ void SetupDemoModeOnlineEnrollment(MockEnrollmentLauncher* mock,
           default:
             NOTREACHED();
         }
-      }));
+      });
 }
 
 bool SetupDummyOfflinePolicyDir(const std::string& account_id,
