@@ -383,7 +383,7 @@ BASE_FEATURE(kPreconnectNonSearchOmniboxSuggestions,
 // "invisible focus".
 BASE_FEATURE(kOmniboxRestoreInvisibleFocusOnly,
              "OmniboxRestoreInvisibleFocusOnly",
-             DISABLED);
+             ENABLED);
 
 // Enabls adding an aim shortcut in the typed state.
 BASE_FEATURE(kOmniboxAimShortcutTypedState,
