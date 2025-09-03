@@ -1579,7 +1579,7 @@ bool CanvasResourceProvider::CanvasImageProvider::IsHardwareDecodeCache()
 }
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(UseCRPSIForLowLatencyOnWindows, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(UseCRPSIForLowLatencyOnWindows, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(Canvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
