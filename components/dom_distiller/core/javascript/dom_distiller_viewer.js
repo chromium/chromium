@@ -536,7 +536,7 @@ class Pincher {
 
   useBaseFontSize(size) {
     this.baseSize = size;
-    reset();
+    this.reset();
   }
 }
 
