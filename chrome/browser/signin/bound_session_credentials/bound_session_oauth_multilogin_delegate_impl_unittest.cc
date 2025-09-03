@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_oauth_multilogin_delegate_impl.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_key.h"
@@ -110,6 +111,8 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
 
 TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
        BeforeSetCookiesNoBindingKeyToReuse) {
+  base::HistogramTester histogram_tester;
+
   Signin(/*wrapped_key=*/{});
   const std::string raw_data =
       R"()]}'
@@ -157,10 +160,17 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
       .Times(0);
 
   delegate().BeforeSetCookies(result);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.BindingKeyMissing",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
        BeforeSetCookiesStopsCookiesRotation) {
+  base::HistogramTester histogram_tester;
+
   Signin(/*wrapped_key=*/{1, 2, 3});
 
   const std::string raw_data =
@@ -245,6 +255,17 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
               StopCookieRotation(expected_key_2));
 
   delegate().BeforeSetCookies(result);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.InvalidParams",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.BindingKeyMissing",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.RegisteredSessions",
+      /*expected_count=*/0);
 }
 
 TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
@@ -307,6 +328,8 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
 
 TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
        BeforeSetCookiesSkipsSessionsWithInvalidParams) {
+  base::HistogramTester histogram_tester;
+
   Signin(/*wrapped_key=*/{1, 2, 3});
 
   // Second session has invalid params because of the invalid credential scope
@@ -388,10 +411,17 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
               StopCookieRotation(expected_key));
 
   delegate().BeforeSetCookies(result);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.InvalidParams",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
        OnCookiesSetNoSessionsToRegister) {
+  base::HistogramTester histogram_tester;
+
   Signin(/*wrapped_key=*/{1, 2, 3});
 
   const std::string raw_data =
@@ -432,6 +462,11 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
       .Times(0);
 
   delegate().OnCookiesSet();
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.RegisteredSessions",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
 }
 
 // Matcher to match `bound_session_credentials::BoundSessionParams` ignoring the
@@ -448,6 +483,8 @@ MATCHER_P(BoundSessionParamsEquals, expected, "") {
 
 TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
        OnCookiesSetRegistersSessions) {
+  base::HistogramTester histogram_tester;
+
   Signin(/*wrapped_key=*/{1, 2, 3});
 
   const std::string raw_data =
@@ -561,6 +598,11 @@ TEST_F(BoundSessionOAuthMultiLoginDelegateImplTest,
       mock_bound_session_cookie_refresh_service(),
       RegisterNewBoundSession(BoundSessionParamsEquals(expected_params_2)));
   delegate().OnCookiesSet();
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.RegisteredSessions",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

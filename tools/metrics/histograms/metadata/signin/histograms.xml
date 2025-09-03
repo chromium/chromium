@@ -1022,6 +1022,45 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram
+    name="Signin.BoundSessionCredentials.OAuthMultilogin.BindingKeyMissing"
+    enum="Boolean" expires_after="2026-06-01">
+  <owner>ernn@google.com</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded every time OAuthMultilogin response contains new bound session(s)
+    to register but the binding key is missing. This should never happen given
+    that the server responds with bound session(s) data only if the client
+    proved the possession of the binding key.
+  </summary>
+</histogram>
+
+<histogram name="Signin.BoundSessionCredentials.OAuthMultilogin.InvalidParams"
+    units="params" expires_after="2026-06-01">
+  <owner>ernn@google.com</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the number of invalid bound session params in successful
+    OAuthMultilogin response. Recorded every time successful OAuthMultilogin
+    response contains new bound session(s) to register.
+  </summary>
+</histogram>
+
+<histogram
+    name="Signin.BoundSessionCredentials.OAuthMultilogin.RegisteredSessions"
+    units="sessions" expires_after="2026-06-01">
+  <owner>ernn@google.com</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the number of bound sessions registered by OAuthMultilogin. Recorded
+    after cookies from a successful OAuthMultilogin response are set. Only
+    recorded for Chrome instances that support OAuthMultilogin cookies binding.
+  </summary>
+</histogram>
+
 <histogram name="Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"
     enum="ResumeBlockedRequestsTrigger" expires_after="2026-02-22">
   <owner>alexilin@chromium.org</owner>

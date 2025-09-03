@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_oauth_multilogin_delegate_impl.h"
 
 #include "base/check_deref.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -22,7 +23,9 @@ GURL ConvertDeviceBoundSessionDomainToUrl(
     case kYoutube:
       return GURL("https://youtube.com");
     case kUnknown:
-      return GURL();
+      // This shouldn't happen as unknown domains should be filtered out before
+      // (at server response parsing).
+      NOTREACHED();
   }
 }
 
@@ -86,6 +89,9 @@ void BoundSessionOAuthMultiLoginDelegateImpl::OnCookiesSet() {
   for (const auto& params : *bound_sessions_params_) {
     bound_session_cookie_refresh_service_->RegisterNewBoundSession(params);
   }
+  base::UmaHistogramCounts100(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.RegisteredSessions",
+      bound_sessions_params_->size());
   bound_sessions_params_.reset();
 }
 
@@ -103,34 +109,33 @@ BoundSessionOAuthMultiLoginDelegateImpl::CreateBoundSessionsParams(
   if (wrapped_binding_key.empty()) {
     // This should not happen as OAuthMultilogin should return bound cookies
     // only if the client exchanged bound LST.
-    // TODO(crbug.com/312719798): Add a histogram to track this.
+    base::UmaHistogramBoolean(
+        "Signin.BoundSessionCredentials.OAuthMultilogin.BindingKeyMissing",
+        true);
     return {};
   }
   const std::string wrapped_binding_key_str(wrapped_binding_key.begin(),
                                             wrapped_binding_key.end());
+  int invalid_params_count = 0;
   std::vector<bound_session_credentials::BoundSessionParams>
       bound_sessions_params;
   for (const auto* device_bound_session : sessions_to_register) {
-    const GURL site =
-        ConvertDeviceBoundSessionDomainToUrl(device_bound_session->domain);
-    if (!site.is_valid()) {
-      // This can happen if the client is not aware of the new domain (e.g.
-      // outdated version).
-      //
-      // TODO(crbug.com/312719798): Add a histogram to track this.
-      continue;
-    }
     bound_session_credentials::BoundSessionParams params =
         bound_session_credentials::
             CreateBoundSessionsParamsFromRegistrationPayload(
                 *device_bound_session->register_session_payload,
-                GaiaUrls::GetInstance()->oauth_multilogin_url(), site,
+                GaiaUrls::GetInstance()->oauth_multilogin_url(),
+                ConvertDeviceBoundSessionDomainToUrl(
+                    device_bound_session->domain),
                 wrapped_binding_key_str);
     if (!bound_session_credentials::AreParamsValid(params)) {
-      // TODO(crbug.com/312719798): Add a histogram to track this.
+      ++invalid_params_count;
       continue;
     }
     bound_sessions_params.push_back(std::move(params));
   }
+  base::UmaHistogramCounts100(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.InvalidParams",
+      invalid_params_count);
   return bound_sessions_params;
 }
