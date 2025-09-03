@@ -17,6 +17,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -24,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_oauth2_token_response.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_response.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -158,10 +160,32 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnInternalServerError500) {
   EXPECT_TRUE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
 }
 
-// Verify that SyncServiceImpl continues trying to fetch access tokens
-// when the access token fetcher has encountered more than a fixed number of
-// HTTP_FORBIDDEN (403) errors.
-IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnHttpForbidden403) {
+class SyncAuthTokenFetcherDependentTest
+    : public SyncAuthTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SyncAuthTokenFetcherDependentTest() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    scoped_feature_list_.InitWithFeatureState(
+        switches::kUseIssueTokenToFetchAccessTokens, IsIssueTokenEnabled());
+#else
+    CHECK(!IsIssueTokenEnabled());
+#endif
+  }
+
+  bool IsIssueTokenEnabled() const { return GetParam(); }
+
+ private:
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
+};
+
+// Verifies the behavior when the access token fetcher encounters an
+// HTTP_FORBIDDEN (403) error. With IssueToken this should result in a PAUSED
+// state with SERVICE_ERROR auth error, whereas with GetToken it should keep
+// retrying.
+IN_PROC_BROWSER_TEST_P(SyncAuthTokenFetcherDependentTest, HttpForbidden403) {
   ASSERT_TRUE(SetupSync());
   ASSERT_FALSE(AttemptToTriggerAuthError());
   GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
@@ -170,9 +194,52 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnHttpForbidden403) {
       OAuth2Response::kErrorUnexpectedFormat, net::HTTP_FORBIDDEN));
   ASSERT_TRUE(AttemptToTriggerAuthError());
   EXPECT_EQ(GetSyncService(0)->GetTransportState(),
-            syncer::SyncService::TransportState::ACTIVE);
-  EXPECT_TRUE(GetSyncService(0)->IsRetryingAccessTokenFetchForTest());
+            IsIssueTokenEnabled()
+                ? syncer::SyncService::TransportState::PAUSED
+                : syncer::SyncService::TransportState::ACTIVE);
+  EXPECT_EQ(GetSyncService(0)->GetAuthError().state(),
+            IsIssueTokenEnabled() ? GoogleServiceAuthError::SERVICE_ERROR
+                                  : GoogleServiceAuthError::NONE);
+  EXPECT_EQ(GetSyncService(0)->IsRetryingAccessTokenFetchForTest(),
+            !IsIssueTokenEnabled());
 }
+
+// Verifies the behavior when the access token fetcher receives a malformed
+// token. With IssueToken this should result in a PAUSED state with
+// UNEXPECTED_SERVICE_RESPONSE auth error, whereas with GetToken it should keep
+// retrying.
+IN_PROC_BROWSER_TEST_P(SyncAuthTokenFetcherDependentTest, MalformedToken) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_FALSE(AttemptToTriggerAuthError());
+  GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
+  DisableTokenFetchRetries();
+  SetOAuth2TokenResponse(gaia::FakeOAuth2TokenResponse::OAuth2Error(
+      OAuth2Response::kOkUnexpectedFormat));
+  ASSERT_TRUE(AttemptToTriggerAuthError());
+  EXPECT_EQ(GetSyncService(0)->GetTransportState(),
+            IsIssueTokenEnabled()
+                ? syncer::SyncService::TransportState::PAUSED
+                : syncer::SyncService::TransportState::ACTIVE);
+  EXPECT_EQ(GetSyncService(0)->GetAuthError().state(),
+            IsIssueTokenEnabled()
+                ? GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE
+                : GoogleServiceAuthError::NONE);
+  EXPECT_EQ(GetSyncService(0)->IsRetryingAccessTokenFetchForTest(),
+            !IsIssueTokenEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SyncAuthTokenFetcherDependentTest,
+                         testing::Values(false
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+                                         ,
+                                         true
+#endif
+                                         ),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WithIssueToken"
+                                             : "WithGetToken";
+                         });
 
 // Verify that SyncServiceImpl continues trying to fetch access tokens
 // when the access token fetcher has encountered a URLRequestStatus of FAILED.
@@ -190,14 +257,15 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnRequestFailed) {
 }
 
 // Verify that SyncServiceImpl continues trying to fetch access tokens
-// when the access token fetcher receives a malformed token.
-IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnMalformedToken) {
+// when the access token fetcher has encountered more than a fixed number of
+// rate limit exceeded errors.
+IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryOnRateLimitExceeded) {
   ASSERT_TRUE(SetupSync());
   ASSERT_FALSE(AttemptToTriggerAuthError());
   GetFakeServer()->SetHttpError(net::HTTP_UNAUTHORIZED);
   DisableTokenFetchRetries();
   SetOAuth2TokenResponse(gaia::FakeOAuth2TokenResponse::OAuth2Error(
-      OAuth2Response::kOkUnexpectedFormat));
+      OAuth2Response::kRateLimitExceeded));
   ASSERT_TRUE(AttemptToTriggerAuthError());
   EXPECT_EQ(GetSyncService(0)->GetTransportState(),
             syncer::SyncService::TransportState::ACTIVE);

@@ -197,6 +197,8 @@ class PolicyUIManagedStatusTest : public PlatformBrowserTest,
     command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
     command_line->AppendSwitchASCII(switches::kLsoUrl, base_url.spec());
     command_line->AppendSwitchASCII(switches::kGoogleApisUrl, base_url.spec());
+    command_line->AppendSwitchASCII(switches::kOAuthAccountManagerUrl,
+                                    base_url.spec());
     policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
     fake_gaia_.Initialize();
     // Configure Sync server
