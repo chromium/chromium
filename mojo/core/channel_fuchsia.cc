@@ -206,8 +206,7 @@ class ChannelFuchsia : public Channel,
                               size_t num_handles,
                               const void* extra_header,
                               size_t extra_header_size,
-                              std::vector<PlatformHandle>* handles,
-                              bool* deferred) override {
+                              std::vector<PlatformHandle>* handles) override {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     if (num_handles > std::numeric_limits<uint16_t>::max())
       return false;

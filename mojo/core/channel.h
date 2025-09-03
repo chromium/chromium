@@ -483,17 +483,12 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   // insufficient number of handles to be available when this call is made, but
   // this is not necessarily an error condition. In such cases this returns
   // |true| but |*handles| will also be reset to null.
-  //
-  // If the implementation sets |*deferred| to |true|, it assumes responsibility
-  // for dispatching the message eventually. It must copy |payload| to retain
-  // it for later transmission.
   virtual bool GetReadPlatformHandles(const void* payload,
                                       size_t payload_size,
                                       size_t num_handles,
                                       const void* extra_header,
                                       size_t extra_header_size,
-                                      std::vector<PlatformHandle>* handles,
-                                      bool* deferred) = 0;
+                                      std::vector<PlatformHandle>* handles) = 0;
 
   // Consumes exactly `num_handles` received handles and appends them to
   // `handles` before returning true. If the Channel doesn't have enough

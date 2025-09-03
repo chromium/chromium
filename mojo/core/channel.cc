@@ -1098,7 +1098,6 @@ Channel::DispatchResult Channel::TryDispatchMessage(
   const uint16_t num_handles =
       header ? header->num_handles : legacy_header->num_handles;
   std::vector<PlatformHandle> handles;
-  bool deferred = false;
   if (num_handles > 0) {
     if (handle_policy_ == HandlePolicy::kRejectHandles) {
       return DispatchResult::kError;
@@ -1108,7 +1107,7 @@ Channel::DispatchResult Channel::TryDispatchMessage(
       handles = std::move(*received_handles);
     } else if (!GetReadPlatformHandles(payload, payload_size, num_handles,
                                        extra_header, extra_header_size,
-                                       &handles, &deferred)) {
+                                       &handles)) {
       return DispatchResult::kError;
     }
 
@@ -1121,12 +1120,11 @@ Channel::DispatchResult Channel::TryDispatchMessage(
   // We've got a complete message! Dispatch it and try another.
   if (legacy_header->message_type != Message::MessageType::NORMAL_LEGACY &&
       legacy_header->message_type != Message::MessageType::NORMAL) {
-    DCHECK(!deferred);
     if (!OnControlMessage(legacy_header->message_type, payload, payload_size,
                           std::move(handles))) {
       return DispatchResult::kError;
     }
-  } else if (!deferred && delegate_) {
+  } else if (delegate_) {
     delegate_->OnChannelMessage(payload, payload_size, std::move(handles),
                                 std::move(envelope));
   }

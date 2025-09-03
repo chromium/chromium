@@ -48,19 +48,20 @@ class TestChannel : public Channel {
     return OnReadComplete(bytes_read, next_read_size_hint);
   }
 
-  MOCK_METHOD7(GetReadPlatformHandles,
-               bool(const void* payload,
-                    size_t payload_size,
-                    size_t num_handles,
-                    const void* extra_header,
-                    size_t extra_header_size,
-                    std::vector<PlatformHandle>* handles,
-                    bool* deferred));
-  MOCK_METHOD2(GetReadPlatformHandlesForIpcz,
-               bool(size_t, std::vector<PlatformHandle>&));
-  MOCK_METHOD0(Start, void());
-  MOCK_METHOD0(ShutDownImpl, void());
-  MOCK_METHOD0(LeakHandle, void());
+  MOCK_METHOD(bool,
+              GetReadPlatformHandles,
+              (const void* payload,
+               size_t payload_size,
+               size_t num_handles,
+               const void* extra_header,
+               size_t extra_header_size,
+               std::vector<PlatformHandle>* handles));
+  MOCK_METHOD(bool,
+              GetReadPlatformHandlesForIpcz,
+              (size_t, std::vector<PlatformHandle>&));
+  MOCK_METHOD(void, Start, ());
+  MOCK_METHOD(void, ShutDownImpl, ());
+  MOCK_METHOD(void, LeakHandle, ());
 
   void Write(MessagePtr message) override {}
 
