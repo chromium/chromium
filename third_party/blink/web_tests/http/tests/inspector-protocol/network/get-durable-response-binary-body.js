@@ -10,7 +10,7 @@
   dp.Runtime.evaluate({expression: `fetch('${url}').then(r => r.text())`});
 
   const requestWillBeSent = (await dp.Network.onceRequestWillBeSent()).params;
-  await dp.Network.onceResponseReceived();
+  await dp.Network.onceLoadingFinished();
   const {result} = await dp.Network.getResponseBody({requestId: requestWillBeSent.requestId});
 
   testRunner.log(`Body is base64 encoded: ${result.base64Encoded}`);
