@@ -127,6 +127,10 @@ void SyncErrorBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser, browser_);
   [profile_state_observer_ disconnect];
   profile_state_observer_ = nil;
+  for (int i = 0; i < browser->GetWebStateList()->count(); ++i) {
+    RemovePasswordFormManagerObserver(
+        browser->GetWebStateList()->GetWebStateAt(i));
+  }
   browser->GetWebStateList()->RemoveObserver(this);
   browser->RemoveObserver(this);
 }
@@ -187,6 +191,8 @@ void SyncErrorBrowserAgent::WebStateListDidChange(
   }
 }
 
+#pragma mark - web::WebStateObserver
+
 void SyncErrorBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
   web_state_observations_.RemoveObservation(web_state);
   RemovePasswordFormManagerObserver(web_state);
@@ -196,6 +202,8 @@ void SyncErrorBrowserAgent::WebStateRealized(web::WebState* web_state) {
   web_state_observations_.RemoveObservation(web_state);
   CreateReSignInInfoBarDelegate(web_state);
 }
+
+#pragma mark - password_manager::PasswordFormManagerObserver
 
 void SyncErrorBrowserAgent::OnPasswordFormParsed(
     password_manager::PasswordFormManager* form_manager) {
