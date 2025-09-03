@@ -15,6 +15,9 @@
 // Informs the delegate that the CVC storage switch has changed value.
 - (void)viewController:(AutofillCvcStorageViewController*)controller
     didChangeCvcStorageSwitchTo:(BOOL)isOn;
+// Informs the delegate that the user wants to delete all saved CVCs.
+- (void)deleteAllSavedCvcsForViewController:
+    (AutofillCvcStorageViewController*)controller;
 @end
 
 // This class is responsible for displaying CVC storage settings.
