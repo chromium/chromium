@@ -22411,21 +22411,6 @@
             ]
         }
     ],
-    "ScannerDogfood": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "ScannerDogfood"
-                    ]
-                }
-            ]
-        }
-    ],
     "SchedQoS": [
         {
             "platforms": [
@@ -24378,28 +24363,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SubframePriorityContribution"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SunfishFeature": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Launch",
-                    "enable_features": [
-                        "ScannerUpdate",
-                        "SunfishFeature"
-                    ]
-                },
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "SunfishFeature"
                     ]
                 }
             ]
