@@ -286,6 +286,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/shared_image_pool_service.h",
     "shared_image/shared_image_representation.cc",
     "shared_image/shared_image_representation.h",
+    "shared_image/shared_memory_copy_strategy.cc",
+    "shared_image/shared_memory_copy_strategy.h",
     "shared_image/shared_memory_image_backing.cc",
     "shared_image/shared_memory_image_backing.h",
     "shared_image/shared_memory_image_backing_factory.cc",
