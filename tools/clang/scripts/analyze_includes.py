@@ -41,7 +41,6 @@ import sys
 import unittest
 from collections import defaultdict
 from datetime import datetime, timezone
-from itertools import batched
 
 
 def parse_build(build_log, root_filter=None):
@@ -423,6 +422,16 @@ class TestComputeDoms(unittest.TestCase):
 def log(*args, **kwargs):
   """Log output to stderr."""
   print(*args, file=sys.stderr, **kwargs)
+
+
+# TODO: Use itertools.batched after updating the Python version on bots to 3.12.
+def batched(iterable, n):
+  # batched('ABCDEFG', 2) → AB CD EF G
+  if n < 1:
+    raise ValueError('n must be at least one')
+  iterator = iter(iterable)
+  while batch := tuple(islice(iterator, n)):
+    yield batch
 
 
 def analyze(target, revision, build_log_file, json_file, root_filter, processes=1):
