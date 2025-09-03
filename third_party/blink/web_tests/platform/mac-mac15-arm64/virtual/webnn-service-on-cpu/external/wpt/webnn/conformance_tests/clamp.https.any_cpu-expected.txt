@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [required] minValue as Infinity
   promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
 [FAIL] [required] maxValue as -Infinity

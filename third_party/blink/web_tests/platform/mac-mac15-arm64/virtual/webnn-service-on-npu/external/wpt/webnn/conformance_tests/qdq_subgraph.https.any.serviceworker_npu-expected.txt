@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] [required] quantized convTranspose2d
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear dequantizeLinear dequantizeLinear convTranspose2d quantizeLinear dequantizeLinear float32 actual 0.03529411926865578 should be close enough to expected 0.03921568766236305 by ULP distance: expected a number less than or equal to 8n but got 1052688n
+Harness: the test ran to completion.
+

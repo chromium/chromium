@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] [required] batchNormalization options.axis=0 + gelu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': batchNormalization argument mean must be constant."
+[FAIL] [required] batchNormalization options.axis=0 + softplus
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': batchNormalization argument mean must be constant."
+[FAIL] [required] batchNormalization options.axis=0  + softmax
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': batchNormalization argument mean must be constant."
+Harness: the test ran to completion.
+
