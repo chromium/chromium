@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -602,14 +603,55 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
 PhysicalRect AnchorEvaluatorImpl::GetAnchorRect(
     const PhysicalAnchorReference& anchor_reference,
     const ScopedCSSName* position_anchor) const {
+  PhysicalRect result;
   if (anchor_reference.GetLayoutObject() == DefaultAnchor(position_anchor) &&
       RuntimeEnabledFeatures::CSSAnchorWithTransformsEnabled()) {
-    return anchor_reference.TransformedBoundingRect();
+    result = anchor_reference.TransformedBoundingRect();
+  } else {
+    // TODO(crbug.com/382294252): Do we even need this (with
+    // CSSAnchorWithTransforms)? If the above is safe to do for the default
+    // anchor, it should really be safe for any anchor.
+    result = anchor_reference.RectWithoutTransforms();
   }
-  // TODO(crbug.com/382294252): Do we even need this (with
-  // CSSAnchorWithTransforms)? If the above is safe to do for the default
-  // anchor, it should really be safe for any anchor.
-  return anchor_reference.RectWithoutTransforms();
+
+  if (!RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+    return result;
+  }
+
+  // Update the anchor rect based on remembered (or current) scroll offsets.
+  PhysicalOffset scroll_offset = [&]() {
+    if (remembered_scroll_offsets_) {
+      if (auto offset = remembered_scroll_offsets_->GetOffsetForAnchor(
+              anchor_reference.element)) {
+        return *offset;
+      }
+    }
+
+    if (used_scroll_offsets_) {
+      if (auto offset = used_scroll_offsets_->GetOffsetForAnchor(
+              anchor_reference.element)) {
+        return *offset;
+      }
+    }
+
+    Element* anchored_element = To<Element>(query_box_->GetNode());
+    LayoutObject* anchor_object = anchor_reference.element->GetLayoutObject();
+    CHECK(anchored_element && anchor_object);
+
+    return AnchorPositionScrollData::ComputeAdjustmentContainersData(
+               anchored_element, *anchor_object)
+        .accumulated_adjustment;
+  }();
+
+  result.Move(-scroll_offset);
+
+  if (!used_scroll_offsets_) {
+    used_scroll_offsets_ =
+        MakeGarbageCollected<OutOfFlowData::RememberedScrollOffsets>();
+  }
+  used_scroll_offsets_->SetOffsetForAnchor(anchor_reference.element,
+                                           scroll_offset);
+  return result;
 }
 
 void AnchorEvaluatorImpl::UpdateAccessibilityAnchor(

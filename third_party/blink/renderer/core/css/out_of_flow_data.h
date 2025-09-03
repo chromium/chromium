@@ -12,12 +12,14 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/style/position_try_fallbacks.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
 class CSSPropertyValueSet;
+class Element;
 class LayoutBox;
 class LayoutObject;
 
@@ -25,6 +27,31 @@ class CORE_EXPORT OutOfFlowData final
     : public GarbageCollected<OutOfFlowData>,
       public ElementRareDataField {
  public:
+  class RememberedScrollOffsets
+      : public GarbageCollected<RememberedScrollOffsets> {
+   public:
+    RememberedScrollOffsets() = default;
+
+    std::optional<PhysicalOffset> GetOffsetForAnchor(
+        const Element* anchor) const {
+      return offsets_.Contains(anchor)
+                 ? std::optional<PhysicalOffset>{offsets_.at(anchor)}
+                 : std::nullopt;
+    }
+    void SetOffsetForAnchor(const Element* anchor, PhysicalOffset offset) {
+      offsets_.Set(anchor, offset);
+    }
+
+    bool operator==(const RememberedScrollOffsets& other) const {
+      return offsets_ == other.offsets_;
+    }
+
+    void Trace(Visitor* visitor) const { visitor->Trace(offsets_); }
+
+   private:
+    HeapHashMap<WeakMember<const Element>, PhysicalOffset> offsets_;
+  };
+
   // For each layout of an OOF that ever had a successful try fallback, register
   // the current fallback. When ApplyPendingSuccessfulPositionFallback() is
   // called, update the last successful one.
@@ -93,6 +120,10 @@ class CORE_EXPORT OutOfFlowData final
   // `position-try-fallbacks` has changed).
   bool HasStaleFallbackData(const LayoutBox&) const;
 
+  const RememberedScrollOffsets* GetRememberedScrollOffsets() const;
+  const RememberedScrollOffsets* GetSpeculativeRememberedScrollOffsets() const;
+  bool SetPendingRememberedScrollOffsets(const RememberedScrollOffsets*);
+
   void Trace(Visitor*) const override;
 
  private:
@@ -105,6 +136,9 @@ class CORE_EXPORT OutOfFlowData final
   SuccessfulPositionFallback new_successful_position_fallback_;
 
   PhysicalOffset default_anchor_scroll_shift_;
+
+  Member<const RememberedScrollOffsets> remembered_scroll_offsets_;
+  Member<const RememberedScrollOffsets> pending_remembered_scroll_offsets_;
 };
 
 }  // namespace blink

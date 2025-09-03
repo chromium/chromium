@@ -606,6 +606,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void MarkForDefaultAnchorScrollShift(Element& element) {
     anchored_element_dirty_set_.insert(&element);
   }
+  void MarkAnchorRememberedOffsetsChanged(Element& element) {
+    anchored_element_dirty_set_.insert(&element);
+  }
 
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);

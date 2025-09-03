@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 
+#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
@@ -67,13 +68,33 @@ PhysicalOffset AnchorPositionScrollData::TotalOffset(
     return default_anchor_adjustment_data_.TotalOffset();
   }
 
-  return ComputeAdjustmentContainersData(*anchor_object).TotalOffset();
+  return ComputeAdjustmentContainersData(anchored_element_, *anchor_object)
+      .TotalOffset();
 }
 
+PhysicalOffset
+AnchorPositionScrollData::SpeculativeDefaultAnchorRememberedOffset() const {
+  OutOfFlowData* out_of_flow_data = anchored_element_->GetOutOfFlowData();
+
+  const OutOfFlowData::RememberedScrollOffsets* offsets =
+      out_of_flow_data
+          ? out_of_flow_data->GetSpeculativeRememberedScrollOffsets()
+          : nullptr;
+
+  if (offsets) {
+    return offsets
+        ->GetOffsetForAnchor(default_anchor_adjustment_data_.anchor_element)
+        .value_or(PhysicalOffset());
+  }
+  return PhysicalOffset();
+}
+
+// static
 AnchorPositionScrollData::AdjustmentData
 AnchorPositionScrollData::ComputeAdjustmentContainersData(
-    const LayoutObject& anchor) const {
-  CHECK(anchored_element_->GetLayoutObject());
+    const Element* anchored_element,
+    const LayoutObject& anchor) {
+  CHECK(anchored_element->GetLayoutObject());
   AnchorPositionScrollData::AdjustmentData result;
 
   auto container_ignore_layout_view_for_fixed_pos =
@@ -106,7 +127,7 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
   CHECK(anchor_element);
   result.anchor_element = anchor_element;
   const auto* bounding_container = container_ignore_layout_view_for_fixed_pos(
-      *anchored_element_->GetLayoutObject());
+      *anchored_element->GetLayoutObject());
 
   if (bounding_container && bounding_container->IsScrollContainer()) {
     const ScrollableArea* scrollable_area =
@@ -178,7 +199,8 @@ AnchorPositionScrollData::ComputeDefaultAnchorAdjustmentData() const {
     return AdjustmentData();
   }
 
-  auto result = ComputeAdjustmentContainersData(*anchor_default_object);
+  auto result = ComputeAdjustmentContainersData(anchored_element_,
+                                                *anchor_default_object);
   if (result.adjustment_container_ids.empty()) {
     needs_scroll_adjustment_in_x = false;
     needs_scroll_adjustment_in_y = false;

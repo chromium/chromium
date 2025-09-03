@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include <algorithm>
+#include <optional>
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -142,11 +143,15 @@ class OOFCandidateStyleIterator {
   explicit OOFCandidateStyleIterator(
       const LayoutObject& object,
       AnchorEvaluatorImpl& anchor_evaluator,
-      WritingDirectionMode container_writing_direction)
+      WritingDirectionMode container_writing_direction,
+      std::optional<wtf_size_t> last_successful_index,
+      const OutOfFlowData::RememberedScrollOffsets* remembered_scroll_offsets)
       : element_(DynamicTo<Element>(object.GetNode())),
         original_style_(object.StyleRef()),
         anchor_evaluator_(anchor_evaluator),
-        container_writing_direction_(container_writing_direction) {
+        container_writing_direction_(container_writing_direction),
+        last_successful_index_(last_successful_index),
+        remembered_scroll_offsets_(remembered_scroll_offsets) {
     Initialize();
   }
 
@@ -171,6 +176,12 @@ class OOFCandidateStyleIterator {
   }
 
   const ComputedStyle& ActivateBaseStyleForTryAttempt() {
+    // If we're activating a base style and we didn't have a last successful
+    // size, that means we can potentially use remembered offsets. on the first
+    // layout, these offsets won't be set anyway, but on subsequent layouts we
+    // need to use them unless there's an anchor recalculation point.
+    UpdateEvaluatorWithScrollOffsets(!last_successful_index_);
+
     if (!HasPositionTryFallbacks()) {
       return GetStyle();
     }
@@ -268,6 +279,11 @@ class OOFCandidateStyleIterator {
     Initialize();
   }
 
+  const OutOfFlowData::RememberedScrollOffsets* GetCurrentUsedScrollOffsets()
+      const {
+    return anchor_evaluator_.LastUsedScrollOffsets();
+  }
+
  private:
   void Initialize() {
     style_ = &original_style_;
@@ -310,6 +326,14 @@ class OOFCandidateStyleIterator {
     return false;
   }
 
+  void UpdateEvaluatorWithScrollOffsets(bool use_remembered) {
+    if (use_remembered) {
+      anchor_evaluator_.SetRememberedScrollOffsets(remembered_scroll_offsets_);
+    } else {
+      anchor_evaluator_.ClearRememberedScrollOffsets();
+    }
+  }
+
   // Update the style using the specified index into `position_try_fallbacks_`
   // (which must exist), and return that updated style. Returns nullptr if
   // the fallback references a @position-try rule which doesn't exist.
@@ -323,9 +347,17 @@ class OOFCandidateStyleIterator {
     try_fallback_index_ = try_fallback_index;
     style_ = nullptr;
 
+    // If we're updating for the last successful index, we have to use the
+    // remembered offsets if they exist.
+    UpdateEvaluatorWithScrollOffsets(last_successful_index_ ==
+                                     try_fallback_index_);
+
     // Previously evaluated anchor is not relevant if another position fallback
     // is applied.
     anchor_evaluator_.ClearAccessibilityAnchor();
+
+    // Clear last used scroll offsets since we're going to compute new ones.
+    anchor_evaluator_.ClearLastUsedScrollOffsets();
 
     const PositionTryFallback* fallback = nullptr;
 
@@ -377,6 +409,16 @@ class OOFCandidateStyleIterator {
   // UpdateStyleAndLayoutTreeForOutOfFlow() in order to resolve logical values
   // for anchored(fallback) container queries.
   WritingDirectionMode container_writing_direction_;
+
+  // Refers to the last successful `position-try-fallbacks` index. If not set,
+  // then potentially last successful attempt was with base styles.
+  std::optional<wtf_size_t> last_successful_index_;
+
+  // Refers to the scroll offsets that were remembered from the last successful
+  // layout (the same as `last_successful_index_`). If not set, then there were
+  // no remembered offsets (e.g. anchor recalculation point has occurred).
+  const OutOfFlowData::RememberedScrollOffsets* remembered_scroll_offsets_ =
+      nullptr;
 };
 
 const Element* GetPositionAnchorElement(
@@ -2218,9 +2260,6 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
       CreateAnchorEvaluator(node_info.base_container_info, node_info.node,
                             is_inside_fragmentation_context, anchor_queries);
 
-  OOFCandidateStyleIterator iter(
-      *node_info.node.GetLayoutBox(), anchor_evaluator,
-      node_info.base_container_info.writing_direction);
   const ComputedStyle& current_style = node_info.node.Style();
   bool has_try_fallbacks = !!current_style.GetPositionTryFallbacks();
   EPositionTryOrder position_try_order = current_style.PositionTryOrder();
@@ -2237,7 +2276,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   HeapVector<NonOverflowingCandidate, kMaxTryAttempts>
       non_overflowing_candidates;
 
-  const Element* element = To<Element>(node_info.node.GetDOMNode());
+  Element* element = To<Element>(node_info.node.GetDOMNode());
   const OutOfFlowData* oof_data =
       element ? element->GetOutOfFlowData() : nullptr;
   std::optional<wtf_size_t> last_successful_index;
@@ -2281,6 +2320,10 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   // easily switch back to the previous (initial) option. And so on, causing
   // flickering between options at each scroll step.
   HeapVector<std::optional<wtf_size_t>, kMaxTryAttempts> overflowing_options;
+  OOFCandidateStyleIterator iter(
+      *node_info.node.GetLayoutBox(), anchor_evaluator,
+      node_info.base_container_info.writing_direction, last_successful_index,
+      oof_data ? oof_data->GetRememberedScrollOffsets() : nullptr);
 
   do {
     unsigned attempts_left = kMaxTryAttempts;
@@ -2393,6 +2436,14 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
         /*try_fit_available_space*/ false, default_anchor_scroll_shift,
         &non_overflowing_range_unused);
     offset_info->overflows_containing_block = overflows_containing_block;
+  }
+  if (RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+    if (element->EnsureOutOfFlowData().SetPendingRememberedScrollOffsets(
+            iter.GetCurrentUsedScrollOffsets())) {
+      element->GetDocument()
+          .GetStyleEngine()
+          .MarkAnchorRememberedOffsetsChanged(*element);
+    }
   }
   CHECK(offset_info);
 

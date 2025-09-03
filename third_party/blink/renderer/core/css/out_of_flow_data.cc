@@ -15,6 +15,8 @@ void OutOfFlowData::Trace(Visitor* visitor) const {
   ElementRareDataField::Trace(visitor);
   visitor->Trace(last_successful_position_fallback_);
   visitor->Trace(new_successful_position_fallback_);
+  visitor->Trace(remembered_scroll_offsets_);
+  visitor->Trace(pending_remembered_scroll_offsets_);
 }
 
 bool OutOfFlowData::SetPendingSuccessfulPositionFallback(
@@ -40,6 +42,15 @@ bool OutOfFlowData::ApplyPendingSuccessfulPositionFallbackAndAnchorScrollShift(
     return false;
   }
 
+  if (pending_remembered_scroll_offsets_) {
+    // TODO(vmpstr): Pending offsets were calculated at layout time. There may
+    // have been adjustments made since (e.g. clamping). Should we check whether
+    // the pending offsets match the current offsets for the same anchors and if
+    // so, invalidate?
+    remembered_scroll_offsets_ = pending_remembered_scroll_offsets_;
+    pending_remembered_scroll_offsets_ = nullptr;
+  }
+
   if (!new_successful_position_fallback_.IsEmpty()) {
     // This is an anchor recalculation point, either because the box just got
     // displayed, or because we switched to a different position option.
@@ -60,6 +71,7 @@ bool OutOfFlowData::ApplyPendingSuccessfulPositionFallbackAndAnchorScrollShift(
 
     last_successful_position_fallback_ = new_successful_position_fallback_;
     new_successful_position_fallback_.Clear();
+
     // Last attempt resulted in new successful fallback, which means the
     // anchored element already has the correct layout.
     return false;
@@ -81,6 +93,8 @@ void OutOfFlowData::ResetAnchorData() {
   last_successful_position_fallback_.Clear();
   new_successful_position_fallback_.Clear();
   default_anchor_scroll_shift_ = PhysicalOffset();
+  remembered_scroll_offsets_ = nullptr;
+  pending_remembered_scroll_offsets_ = nullptr;
 }
 
 bool OutOfFlowData::InvalidatePositionTryNames(
@@ -109,6 +123,35 @@ bool OutOfFlowData::HasStaleFallbackData(const LayoutBox& box) const {
          !base::ValuesEquivalent(
              last_successful_position_fallback_.position_try_fallbacks_.Get(),
              box.StyleRef().GetPositionTryFallbacks().Get());
+}
+
+const OutOfFlowData::RememberedScrollOffsets*
+OutOfFlowData::GetRememberedScrollOffsets() const {
+  return remembered_scroll_offsets_;
+}
+
+const OutOfFlowData::RememberedScrollOffsets*
+OutOfFlowData::GetSpeculativeRememberedScrollOffsets() const {
+  return pending_remembered_scroll_offsets_ ? pending_remembered_scroll_offsets_
+                                            : remembered_scroll_offsets_;
+}
+
+bool OutOfFlowData::SetPendingRememberedScrollOffsets(
+    const RememberedScrollOffsets* offsets) {
+  // TODO(vmpstr): Investigate the cases when offsets are nullptr.
+  if (!offsets) {
+    pending_remembered_scroll_offsets_ = nullptr;
+    // If the current remembered offsets are not null, then we need an update.
+    return !remembered_scroll_offsets_;
+  }
+
+  // If the offsets are already the remembered ones, then we don't need to do
+  // anything.
+  if (remembered_scroll_offsets_ && *remembered_scroll_offsets_ == *offsets) {
+    return false;
+  }
+  pending_remembered_scroll_offsets_ = offsets;
+  return true;
 }
 
 }  // namespace blink

@@ -82,6 +82,7 @@ class AnchorPositionScrollData
   PhysicalOffset AccumulatedAdjustment() const {
     return default_anchor_adjustment_data_.accumulated_adjustment;
   }
+  PhysicalOffset SpeculativeDefaultAnchorRememberedOffset() const;
   gfx::Vector2d AccumulatedAdjustmentScrollOrigin() const {
     return default_anchor_adjustment_data_.accumulated_adjustment_scroll_origin;
   }
@@ -101,7 +102,8 @@ class AnchorPositionScrollData
   // Physical/LogicalOffset, which only represents the location of a box within
   // a container, to represent a scroll offset. Stop using this function.
   PhysicalOffset TranslationAsPhysicalOffset() const {
-    return -AccumulatedAdjustment();
+    return -AccumulatedAdjustment() +
+           SpeculativeDefaultAnchorRememberedOffset();
   }
 
   // Returns whether `anchored_element_` is still an anchor-positioned element
@@ -127,9 +129,6 @@ class AnchorPositionScrollData
   }
 
   void Trace(Visitor*) const override;
-
- private:
-  enum class SnapshotDiff { kNone, kScrollersOrFallbackPosition, kOffsetOnly };
 
   struct AdjustmentData {
     DISALLOW_NEW();
@@ -177,8 +176,13 @@ class AnchorPositionScrollData
     }
   };
 
-  AdjustmentData ComputeAdjustmentContainersData(
-      const LayoutObject& anchor) const;
+  static AdjustmentData ComputeAdjustmentContainersData(
+      const Element* anchored_element,
+      const LayoutObject& anchor);
+
+ private:
+  enum class SnapshotDiff { kNone, kScrollersOrFallbackPosition, kOffsetOnly };
+
   AdjustmentData ComputeDefaultAnchorAdjustmentData() const;
   // Takes an up-to-date snapshot, and compares it with the existing one.
   // If `update` is true, also rewrites the existing snapshot.
