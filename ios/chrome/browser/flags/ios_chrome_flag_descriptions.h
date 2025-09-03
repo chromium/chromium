@@ -137,9 +137,6 @@ extern const char kAutofillLocalSaveCardBottomSheetDescription[];
 extern const char kAutofillPruneSuggestionsName[];
 extern const char kAutofillPruneSuggestionsDescription[];
 
-extern const char kAutofillRequireCvcForPossibleCardUpdateName[];
-extern const char kAutofillRequireCvcForPossibleCardUpdateDescription[];
-
 extern const char kAutofillSaveCardBottomSheetName[];
 extern const char kAutofillSaveCardBottomSheetDescription[];
 

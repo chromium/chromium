@@ -439,9 +439,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
                !server_card->HasSameExpirationDateAs(upload_request_.card);
       });
   if (found_server_card_with_same_last_four_but_different_expiration &&
-      upload_request_.cvc.empty() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillRequireCvcForPossibleCardUpdate)) {
+      upload_request_.cvc.empty()) {
     LogPromptOfferMetricForCreditCardSave(
         SaveCardPromptOffer::kCvcMissingForPotentialUpdate,
         /*is_upload_save=*/true,

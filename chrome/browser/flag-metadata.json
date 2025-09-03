@@ -1005,11 +1005,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "autofill-require-cvc-for-possible-card-update",
-    "owners": [ "osaul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "autofill-save-card-bottomsheet",
     "owners": [ "kavitasoni@google.com", "chrome-payments-eng@google.com"],
     "expiry_milestone": 145
