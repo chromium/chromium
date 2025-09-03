@@ -3420,9 +3420,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DozeMode.RealPower.DurationPercentage" units="%"
-    expires_after="2025-09-10">
-  <owner>yichenz@google.com</owner>
+    expires_after="2026-09-10">
   <owner>xiyuan@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     The percentage of RealPower status duration over the total duration.
     Recorded daily.
@@ -3431,8 +3431,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.DozeMode.{PowerStatus}.Duration" units="ms"
     expires_after="2026-01-11">
-  <owner>yichenz@google.com</owner>
   <owner>xiyuan@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     The accumulated duration in ms of doze mode power scheduler has sent
     {PowerStatus} to arcvm. Recorded daily.
