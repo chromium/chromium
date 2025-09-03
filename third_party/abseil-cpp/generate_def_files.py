@@ -56,8 +56,7 @@ def _DebugOrRelease(is_debug):
   return 'dbg' if is_debug else 'rel'
 
 
-def _GenerateDefFile(cpu, is_debug, extra_gn_args=[], suffix=None):
-  """Generates a .def file for the absl component build on the specified CPU."""
+def _GenerateDefFileBuild(cpu, is_debug, extra_gn_args, suffix, out_dir, cwd):
   if extra_gn_args:
     assert suffix != None, 'suffix is needed when extra_gn_args is used'
 
@@ -85,88 +84,94 @@ def _GenerateDefFile(cpu, is_debug, extra_gn_args=[], suffix=None):
     if not shutil.which('dumpbin'):
       logging.error('dumpbin not found. Run tools\\win\\setenv.bat.')
       exit(1)
+
+  logging.info('[%s - %s] Creating tmp out dir in %s', cpu, flavor, out_dir)
+  subprocess.check_call([gn, 'gen', out_dir, '--args=' + ' '.join(gn_args)],
+                        cwd=cwd)
+  logging.info('[%s - %s] gn gen completed', cpu, flavor)
+  subprocess.check_call(
+      [autoninja, '-C', out_dir, 'third_party/abseil-cpp:absl_component_deps'],
+      cwd=os.getcwd())
+  logging.info('[%s - %s] autoninja completed', cpu, flavor)
+
+  obj_files = []
+  for root, _dirnames, filenames in os.walk(
+      os.path.join(out_dir, 'obj', 'third_party', 'abseil-cpp')):
+    matched_files = fnmatch.filter(filenames, '*.obj')
+    obj_files.extend((os.path.join(root, f) for f in matched_files))
+
+  logging.info('[%s - %s] Found %d object files.', cpu, flavor, len(obj_files))
+
+  absl_symbols = set()
+  dll_exports = set()
+  if sys.platform == 'win32':
+    for f in obj_files:
+      # Track all of the functions exported with __declspec(dllexport) and
+      # don't list them in the .def file - double-exports are not allowed. The
+      # error is "lld-link: error: duplicate /export option".
+      exports_out = subprocess.check_output(['dumpbin', '/directives', f], cwd=os.getcwd())
+      for line in exports_out.splitlines():
+        line = line.decode('utf-8')
+        match = re.match(ABSL_EXPORTED_RE, line)
+        if match:
+          dll_exports.add(match.groups()[0])
+  for f in obj_files:
+    stdout = subprocess.check_output(symbol_dumper + [f], cwd=os.getcwd())
+    for line in stdout.splitlines():
+      try:
+        line = line.decode('utf-8')
+      except UnicodeDecodeError:
+        # Due to a dumpbin bug there are sometimes invalid utf-8 characters in
+        # the output. This only happens on an unimportant line so it can
+        # safely and silently be skipped.
+        # https://developercommunity.visualstudio.com/content/problem/1091330/dumpbin-symbols-produces-randomly-wrong-output-on.html
+        continue
+      match = re.match(ABSL_SYM_RE, line)
+      if match:
+        symbol = match.group('symbol')
+        assert symbol.count(' ') == 0, ('Regex matched too much, probably got '
+                                        'undecorated name as well')
+        # Avoid getting names exported with dllexport, to avoid
+        # "lld-link: error: duplicate /export option" on symbols such as:
+        # ?kHexChar@numbers_internal@absl@@3QBDB
+        if symbol in dll_exports:
+          continue
+        # Avoid to export deleting dtors since they trigger
+        # "lld-link: error: export of deleting dtor" linker errors, see
+        # crbug.com/1201277.
+        if symbol.startswith('??_G'):
+          continue
+        # Strip any leading underscore for C names (as in __cdecl). It's only
+        # there on x86, but the x86 toolchain falls over when you include it!
+        if cpu == 'x86' and symbol.startswith('_'):
+          symbol = symbol[1:]
+        absl_symbols.add(symbol)
+
+  logging.info('[%s - %s] Found %d absl symbols.', cpu, flavor, len(absl_symbols))
+
+  if extra_gn_args:
+    def_file = os.path.join('third_party', 'abseil-cpp',
+                            'symbols_{}_{}_{}.def'.format(cpu, flavor, suffix))
+  else:
+    def_file = os.path.join('third_party', 'abseil-cpp',
+                           'symbols_{}_{}.def'.format(cpu, flavor))
+
+  with open(def_file, 'w', newline='') as f:
+    f.write('EXPORTS\n')
+    for s in sorted(absl_symbols):
+      f.write('    {}\n'.format(s))
+
+  logging.info('[%s - %s] .def file successfully generated.', cpu, flavor)
+
+
+def _GenerateDefFile(cpu, is_debug, extra_gn_args=[], suffix=None):
+  """Generates a .def file for the absl component build on the specified CPU."""
   cwd = os.getcwd()
   with tempfile.TemporaryDirectory(dir=os.path.join(cwd, 'out')) as out_dir:
-    logging.info('[%s - %s] Creating tmp out dir in %s', cpu, flavor, out_dir)
-    subprocess.check_call([gn, 'gen', out_dir, '--args=' + ' '.join(gn_args)],
-                          cwd=cwd)
-    logging.info('[%s - %s] gn gen completed', cpu, flavor)
-    subprocess.check_call(
-        [autoninja, '-C', out_dir, 'third_party/abseil-cpp:absl_component_deps'],
-        cwd=os.getcwd())
-    logging.info('[%s - %s] autoninja completed', cpu, flavor)
-
-    obj_files = []
-    for root, _dirnames, filenames in os.walk(
-        os.path.join(out_dir, 'obj', 'third_party', 'abseil-cpp')):
-      matched_files = fnmatch.filter(filenames, '*.obj')
-      obj_files.extend((os.path.join(root, f) for f in matched_files))
-
-    logging.info('[%s - %s] Found %d object files.', cpu, flavor, len(obj_files))
-
-    absl_symbols = set()
-    dll_exports = set()
-    if sys.platform == 'win32':
-      for f in obj_files:
-        # Track all of the functions exported with __declspec(dllexport) and
-        # don't list them in the .def file - double-exports are not allowed. The
-        # error is "lld-link: error: duplicate /export option".
-        exports_out = subprocess.check_output(['dumpbin', '/directives', f], cwd=os.getcwd())
-        for line in exports_out.splitlines():
-          line = line.decode('utf-8')
-          match = re.match(ABSL_EXPORTED_RE, line)
-          if match:
-            dll_exports.add(match.groups()[0])
-    for f in obj_files:
-      stdout = subprocess.check_output(symbol_dumper + [f], cwd=os.getcwd())
-      for line in stdout.splitlines():
-        try:
-          line = line.decode('utf-8')
-        except UnicodeDecodeError:
-          # Due to a dumpbin bug there are sometimes invalid utf-8 characters in
-          # the output. This only happens on an unimportant line so it can
-          # safely and silently be skipped.
-          # https://developercommunity.visualstudio.com/content/problem/1091330/dumpbin-symbols-produces-randomly-wrong-output-on.html
-          continue
-        match = re.match(ABSL_SYM_RE, line)
-        if match:
-          symbol = match.group('symbol')
-          assert symbol.count(' ') == 0, ('Regex matched too much, probably got '
-                                          'undecorated name as well')
-          # Avoid getting names exported with dllexport, to avoid
-          # "lld-link: error: duplicate /export option" on symbols such as:
-          # ?kHexChar@numbers_internal@absl@@3QBDB
-          if symbol in dll_exports:
-            continue
-          # Avoid to export deleting dtors since they trigger
-          # "lld-link: error: export of deleting dtor" linker errors, see
-          # crbug.com/1201277.
-          if symbol.startswith('??_G'):
-            continue
-          # Strip any leading underscore for C names (as in __cdecl). It's only
-          # there on x86, but the x86 toolchain falls over when you include it!
-          if cpu == 'x86' and symbol.startswith('_'):
-            symbol = symbol[1:]
-          absl_symbols.add(symbol)
-
-    logging.info('[%s - %s] Found %d absl symbols.', cpu, flavor, len(absl_symbols))
-
-    if extra_gn_args:
-      def_file = os.path.join('third_party', 'abseil-cpp',
-                              'symbols_{}_{}_{}.def'.format(cpu, flavor, suffix))
-    else:
-      def_file = os.path.join('third_party', 'abseil-cpp',
-                             'symbols_{}_{}.def'.format(cpu, flavor))
-
-    with open(def_file, 'w', newline='') as f:
-      f.write('EXPORTS\n')
-      for s in sorted(absl_symbols):
-        f.write('    {}\n'.format(s))
+    _GenerateDefFileBuild(cpu, is_debug, extra_gn_args, suffix, out_dir, cwd)
 
     # Hack, it looks like there is a race in the directory cleanup.
     time.sleep(10)
-
-  logging.info('[%s - %s] .def file successfully generated.', cpu, flavor)
 
 
 if __name__ == '__main__':
