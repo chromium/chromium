@@ -5,66 +5,73 @@
 #include "chrome/browser/web_applications/web_app.h"
 
 #include <array>
-#include <bitset>
+#include <cstdint>
 #include <optional>
 #include <ostream>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/containers/flat_tree.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/to_value_list.h"
+#include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/numerics/clamped_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
-#include "base/types/optional_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-data-view.h"
 #include "chrome/browser/web_applications/proto/web_app.equal.h"
 #include "chrome/browser/web_applications/proto/web_app.ostream.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app.to_value.h"
-#include "chrome/browser/web_applications/proto/web_app_install_state.ostream.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.to_value.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.equal.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.to_value.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/tabbed_mode_scope_matcher.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
-#include "components/sync/base/time.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/services/app_service/public/cpp/protocol_handler_info.h"
+#include "components/services/app_service/public/cpp/share_target.h"
+#include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/web_app_specifics.equal.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/sync/protocol/web_app_specifics.to_value.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
-#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
+#include "third_party/blink/public/mojom/manifest/capture_links.mojom-data-view.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/pattern.h"
-#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
@@ -175,16 +182,10 @@ base::Value OptTabStripToDebugValue(
       icons_json.Append(ImageResourceDebugDict(icon));
     }
 
-    base::Value::List scope_patterns_json;
-    const std::vector<blink::SafeUrlPattern>& scope_patterns =
-        home_tab_params.scope_patterns;
-
-    for (const auto& scope_pattern : scope_patterns) {
-      scope_patterns_json.Append(UrlPatternDebugValue(scope_pattern));
-    }
-
     home_tab_json.Set("icons", std::move(icons_json));
-    home_tab_json.Set("scope_patterns", std::move(scope_patterns_json));
+    home_tab_json.Set("scope_patterns",
+                      base::ToValueList(home_tab_params.scope_patterns,
+                                        UrlPatternDebugValue));
     result.Set("home_tab", std::move(home_tab_json));
   }
   return base::Value(std::move(result));
@@ -481,6 +482,11 @@ void WebApp::SetUserDisplayMode(mojom::UserDisplayMode user_display_mode) {
 void WebApp::SetDisplayModeOverride(
     std::vector<DisplayMode> display_mode_override) {
   display_mode_override_ = std::move(display_mode_override);
+}
+
+void WebApp::SetBorderlessUrlPatterns(
+    std::vector<blink::SafeUrlPattern> borderless_url_patterns) {
+  borderless_url_patterns_ = std::move(borderless_url_patterns);
 }
 
 void WebApp::SetWebAppChromeOsData(
@@ -804,8 +810,9 @@ void WebApp::AddExternalSourceInformation(WebAppManagement::Type type,
 
 bool WebApp::RemoveInstallUrlForSource(WebAppManagement::Type type,
                                        const GURL& install_url) {
-  if (!management_to_external_config_map_.count(type))
+  if (!management_to_external_config_map_.count(type)) {
     return false;
+  }
 
   bool removed =
       management_to_external_config_map_[type].install_urls.erase(install_url);
@@ -944,6 +951,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.dark_mode_background_color_,
         app.display_mode_,
         app.display_mode_override_,
+        app.borderless_url_patterns_,
         app.chromeos_data_,
         app.install_state_,
         app.is_from_sync_and_pending_installation_,
@@ -1013,15 +1021,17 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   auto ConvertList = [](const auto& list) {
     base::Value::List list_json;
-    for (const auto& item : list)
+    for (const auto& item : list) {
       list_json.Append(item);
+    }
     return list_json;
   };
 
   auto ConvertDebugValueList = [](const auto& list) {
     base::Value::List list_json;
-    for (const auto& item : list)
+    for (const auto& item : list) {
       list_json.Append(item.AsDebugValue());
+    }
     return list_json;
   };
 
@@ -1062,8 +1072,9 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("display_mode", blink::DisplayModeToString(display_mode_));
 
   base::Value::List display_override;
-  for (const DisplayMode& mode : display_mode_override_)
+  for (const DisplayMode& mode : display_mode_override_) {
     display_override.Append(blink::DisplayModeToString(mode));
+  }
   root.Set("display_override", std::move(display_override));
 
   base::Value::Dict downloaded_icon_sizes_json;
@@ -1234,6 +1245,9 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   }
   root.Set("stored_trusted_icon_sizes",
            std::move(stored_trusted_icon_sizes_json));
+
+  root.Set("borderless_url_patterns",
+           base::ToValueList(borderless_url_patterns_, UrlPatternDebugValue));
 
   return base::Value(std::move(root));
 }

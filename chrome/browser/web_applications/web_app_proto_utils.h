@@ -6,15 +6,19 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PROTO_UTILS_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_tab_strip.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
-#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 namespace apps {
 struct IconInfo;
@@ -29,6 +33,9 @@ using RepeatedIconInfosProto =
 
 using RepeatedImageResourceProto =
     const ::google::protobuf::RepeatedPtrField<content::proto::ImageResource>;
+
+using RepeatedUrlPatternProto =
+    ::google::protobuf::RepeatedPtrField<proto::UrlPattern>;
 
 std::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
     const char* container_name_for_logging,
@@ -52,6 +59,9 @@ proto::WebApp::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
 
 std::optional<blink::SafeUrlPattern> ToUrlPattern(
     const proto::UrlPattern& proto_url_pattern);
+
+std::optional<std::vector<blink::SafeUrlPattern>> ToUrlPatterns(
+    const RepeatedUrlPatternProto& proto_url_patterns);
 
 proto::UrlPattern ToUrlPatternProto(const blink::SafeUrlPattern& url_pattern);
 

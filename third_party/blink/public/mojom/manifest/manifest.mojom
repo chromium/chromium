@@ -61,6 +61,8 @@ struct Manifest {
 
   array<DisplayMode> display_override;
 
+  array<SafeUrlPattern> borderless_url_patterns;
+
   device.mojom.ScreenOrientationLockType orientation;
 
   array<ManifestImageResource> icons;

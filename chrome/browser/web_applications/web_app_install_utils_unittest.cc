@@ -6,49 +6,43 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
 #include <set>
 #include <string>
-#include <type_traits>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
-#include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
+#include "components/webapps/common/web_app_id.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/liburlpattern/part.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
@@ -267,8 +261,9 @@ TEST(WebAppInstallUtils, PopulateProductIcons_IsGeneratedIcon) {
     EXPECT_FALSE(web_app_info.is_generated_icon);
 
     EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info.icon_bitmaps.any));
-    for (const auto& bitmap_any : web_app_info.icon_bitmaps.any)
+    for (const auto& bitmap_any : web_app_info.icon_bitmaps.any) {
       EXPECT_EQ(SK_ColorCYAN, bitmap_any.second.getColor(0, 0));
+    }
   }
   {
     auto web_app_info = CreateWebAppInstallInfo();
@@ -284,8 +279,9 @@ TEST(WebAppInstallUtils, PopulateProductIcons_IsGeneratedIcon) {
     EXPECT_FALSE(web_app_info.is_generated_icon);
 
     EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info.icon_bitmaps.any));
-    for (const auto& bitmap_any : web_app_info.icon_bitmaps.any)
+    for (const auto& bitmap_any : web_app_info.icon_bitmaps.any) {
       EXPECT_EQ(SK_ColorMAGENTA, bitmap_any.second.getColor(0, 0));
+    }
   }
 }
 
@@ -418,8 +414,9 @@ TEST_P(FileHandlersFromManifestTest, Basic) {
 }
 
 TEST_P(FileHandlersFromManifestTest, PopulateFileHandlerIcons) {
-  if (!WebAppFileHandlerManager::IconsEnabled())
+  if (!WebAppFileHandlerManager::IconsEnabled()) {
     return;
+  }
 
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
       CreateManifestFileHandlers(1);
@@ -741,6 +738,27 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_ShareTarget) {
   web_app_info.share_target = std::nullopt;
   SetWebAppManifestFields(web_app_info, *web_app);
   EXPECT_FALSE(web_app->share_target().has_value());
+}
+
+TEST(WebAppInstallUtils, SetWebAppManifestFields_BorderlessUrlPatterns) {
+  auto web_app_info = CreateWebAppInstallInfoFromStartUrl(StartUrl());
+  web_app_info.title = u"App Name";
+
+  const webapps::AppId app_id = GenerateAppId(/*manifest_id_path=*/std::nullopt,
+                                              web_app_info.start_url());
+  auto web_app = std::make_unique<WebApp>(app_id);
+
+  blink::SafeUrlPattern foo_pattern;
+  foo_pattern.hostname = {
+      liburlpattern::Part(liburlpattern::PartType::kFixed,
+                          /*value=*/"foo.com", liburlpattern::Modifier::kNone),
+  };
+  web_app_info.borderless_url_patterns.push_back(foo_pattern);
+
+  SetWebAppManifestFields(web_app_info, *web_app);
+
+  EXPECT_THAT(web_app->borderless_url_patterns(),
+              testing::ElementsAre(foo_pattern));
 }
 
 }  // namespace web_app

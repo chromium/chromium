@@ -4,21 +4,33 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/base_paths.h"
+#include "base/check.h"
+#include "base/containers/extend.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/to_value_list.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
-#include "base/functional/function_ref.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -26,7 +38,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/types/optional_ref.h"
+#include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -37,32 +49,45 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
+#include "components/web_package/test_support/signed_web_bundles/key_pair.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
+#include "net/http/http_version.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-data-view.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/liburlpattern/part.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace web_app {
+
 namespace {
 
 constexpr char kInstallPagePath[] = "/.well-known/_generated_install_page.html";
@@ -183,6 +208,49 @@ web_package::SignedWebBundleId CreateSignedWebBundleIdFromKeyPair(
       key_pair);
 }
 
+std::string UrlPatternPartsToString(
+    const std::vector<liburlpattern::Part>& parts) {
+  std::stringstream ss;
+  for (const auto& part : parts) {
+    switch (part.type) {
+      case liburlpattern::PartType::kFullWildcard:
+        ss << part.prefix << "*";
+        break;
+      case liburlpattern::PartType::kSegmentWildcard:
+        ss << part.prefix << ":" << part.name;
+        break;
+      case liburlpattern::PartType::kRegex:
+      case liburlpattern::PartType::kFixed:
+        ss << part.value;
+        break;
+    }
+  }
+  return ss.str();
+}
+
+base::Value::Dict UrlPatternToValue(const blink::SafeUrlPattern& pattern) {
+  static constexpr auto kFields =
+      base::MakeFixedFlatMap<std::string_view, std::vector<liburlpattern::Part>
+                                                   blink::SafeUrlPattern::*>({
+          {"protocol", &blink::SafeUrlPattern::protocol},
+          {"username", &blink::SafeUrlPattern::username},
+          {"password", &blink::SafeUrlPattern::password},
+          {"hostname", &blink::SafeUrlPattern::hostname},
+          {"port", &blink::SafeUrlPattern::port},
+          {"pathname", &blink::SafeUrlPattern::pathname},
+          {"search", &blink::SafeUrlPattern::search},
+          {"hash", &blink::SafeUrlPattern::hash},
+      });
+
+  base::Value::Dict result;
+  for (const auto& [field, getter] : kFields) {
+    if (!(pattern.*getter).empty()) {
+      result.Set(field, UrlPatternPartsToString(pattern.*getter));
+    }
+  }
+  return result;
+}
+
 }  // namespace
 
 ManifestBuilder::PermissionsPolicy::PermissionsPolicy(
@@ -283,6 +351,12 @@ ManifestBuilder& ManifestBuilder::AddFileHandler(
   return *this;
 }
 
+ManifestBuilder& ManifestBuilder::AddBorderlessUrlPattern(
+    blink::SafeUrlPattern pattern) {
+  borderless_url_patterns_.emplace_back(std::move(pattern));
+  return *this;
+}
+
 const std::string& ManifestBuilder::start_url() const {
   return start_url_;
 }
@@ -378,6 +452,11 @@ std::string ManifestBuilder::ToJson() const {
     json.Set("file_handlers", std::move(file_handlers));
   }
 
+  if (!borderless_url_patterns_.empty()) {
+    json.Set("borderless_url_patterns",
+             base::ToValueList(borderless_url_patterns_, &UrlPatternToValue));
+  }
+
   return base::WriteJsonWithOptions(json, base::OPTIONS_PRETTY_PRINT).value();
 }
 
@@ -444,6 +523,8 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
     handler->accept = accept;
     manifest->file_handlers.push_back(std::move(handler));
   }
+
+  base::Extend(manifest->borderless_url_patterns, borderless_url_patterns_);
 
   return manifest;
 }
@@ -713,7 +794,7 @@ std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
     while (headers->EnumerateHeaderLines(&iterator, &name, &value)) {
       // Web Bundle header names must be lowercase.
       // See section 8.1.2 of [RFC7540].
-      bundle_headers.push_back({base::ToLowerASCII(name), value});
+      bundle_headers.emplace_back(base::ToLowerASCII(name), value);
     }
 
     builder.AddExchange(url, bundle_headers, resource.body());

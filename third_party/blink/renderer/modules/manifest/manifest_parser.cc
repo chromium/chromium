@@ -376,6 +376,12 @@ bool ManifestParser::Parse() {
       UseCounter::Count(execution_context_, WebFeature::kWebAppTabbed);
     }
   }
+
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)) {
+    manifest_->borderless_url_patterns =
+        ParseUrlPatterns(root_object.get(), "borderless_url_patterns");
+  }
+
   manifest_->orientation = ParseOrientation(root_object.get());
   manifest_->icons = ParseIcons(root_object.get());
   if (!manifest_->icons.empty()) {

@@ -4,30 +4,45 @@
 
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 
+#include <map>
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/containers/contains.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
+#include "build/buildflag.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/icon_info.h"
+#include "components/services/app_service/public/cpp/share_target.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-data-view.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-data-view.h"
+#include "third_party/liburlpattern/part.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -53,6 +68,16 @@ IconPurpose IconInfoPurposeToManifestPurpose(
     case apps::IconInfo::Purpose::kMaskable:
       return IconPurpose::MASKABLE;
   }
+}
+
+// Returns a simple `SafeUrlPattern` for the "foo.com" hostname.
+blink::SafeUrlPattern FooUrlPattern() {
+  blink::SafeUrlPattern pattern;
+  pattern.hostname = {
+      liburlpattern::Part(liburlpattern::PartType::kFixed,
+                          /*value=*/"foo.com", liburlpattern::Modifier::kNone),
+  };
+  return pattern;
 }
 
 class ManifestToWebAppInstallInfoJobTest : public WebAppTest {
@@ -146,6 +171,9 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
 
   manifest->display_override.push_back(DisplayMode::kMinimalUi);
   manifest->display_override.push_back(DisplayMode::kStandalone);
+
+  manifest->borderless_url_patterns = {FooUrlPattern()};
+
   {
     auto handler = blink::mojom::ManifestFileHandler::New();
     handler->action = GURL("http://example.com/open-files");
@@ -273,6 +301,10 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   EXPECT_EQ(u"platform", related_app.platform);
   EXPECT_EQ(GURL("http://www.example.com"), related_app.url);
   EXPECT_EQ(u"id", related_app.id);
+
+  // Check borderless URL patterns were set.
+  EXPECT_THAT(web_app_info->borderless_url_patterns,
+              testing::ElementsAre(FooUrlPattern()));
 }
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, EmptyNameUsesShortName) {
