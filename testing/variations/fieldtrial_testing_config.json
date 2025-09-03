@@ -25721,7 +25721,6 @@
     "UpdateStateBeforeUnbinding": [
         {
             "platforms": [
-                "android",
                 "android_webview"
             ],
             "experiments": [
