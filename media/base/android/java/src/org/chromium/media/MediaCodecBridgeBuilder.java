@@ -37,6 +37,7 @@ class MediaCodecBridgeBuilder {
             boolean allowAdaptivePlayback,
             boolean useAsyncApi,
             boolean useBlockModel,
+            boolean useLowLatencyMode,
             String decoderName,
             int profile) {
         CodecCreationInfo info = new CodecCreationInfo();
@@ -68,6 +69,7 @@ class MediaCodecBridgeBuilder {
                             info.supportsAdaptivePlayback && allowAdaptivePlayback,
                             profile);
             assert format != null;
+            format.setInteger(MediaFormat.KEY_LOW_LATENCY, useLowLatencyMode ? 1 : 0);
 
             if (!bridge.configureVideo(
                     format,

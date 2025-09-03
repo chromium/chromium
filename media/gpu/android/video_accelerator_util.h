@@ -31,12 +31,22 @@ enum class SecureCodecCapability {
   kEncrypted,  // Decoder only supports secure playback.
 };
 
+enum class LowLatencyCapability {
+  kNone,      // Decoder doesn't support low latency playback.
+  kAny,       // Decoder supports both low latency and normal playback.
+  kRequired,  // Decoder only supports low latency playback.
+};
+
 struct MediaCodecDecoderInfo {
+  MediaCodecDecoderInfo();
+  MediaCodecDecoderInfo(const MediaCodecDecoderInfo& other);
+  ~MediaCodecDecoderInfo();
   VideoCodecProfile profile;
   VideoCodecLevel level;
   gfx::Size coded_size_min;
   gfx::Size coded_size_max;
   bool is_software_codec;
+  LowLatencyCapability low_latency_capability;
   SecureCodecCapability secure_codec_capability;
   std::string name;
 };

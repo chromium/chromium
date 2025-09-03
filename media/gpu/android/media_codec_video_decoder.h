@@ -270,6 +270,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   OutputCB output_cb_;
   WaitingCB waiting_cb_;
   VideoDecoderConfig decoder_config_;
+  bool low_delay_ = false;
 
   // Codec specific data (SPS and PPS for H264). Some MediaCodecs initialize
   // more reliably if we explicitly pass these (http://crbug.com/649185).

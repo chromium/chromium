@@ -71,6 +71,9 @@ class MEDIA_EXPORT VideoCodecConfig {
   // Enables Block Model (LinearBlock).
   bool use_block_model = false;
 
+  // Sets the low latency mode flag on the codec.
+  bool use_low_latency_mode = false;
+
   // The profile of decoder.
   VideoCodecProfile profile;
 };

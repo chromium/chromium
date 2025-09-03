@@ -5235,6 +5235,11 @@ const char kSegmentationPlatformEphemeralCardRankerDescription[] =
     "Enable the Ephemeral Card ranker for the segmentation platform service "
     "to rank home modules on Android.";
 
+const char kMediaCodecLowDelayModeName[] = "MediaCodec low delay mode";
+const char kMediaCodecLowDelayModeDescription[] =
+    "Allows selection of low latency MediaCodec instances for video "
+    "decoding when low delay is requested by the underlying stream.";
+
 const char kMediaPickerAdoptionStudyName[] = "Android Media Picker Adoption";
 const char kMediaPickerAdoptionStudyDescription[] =
     "Controls how to launch the Android Media Picker (note: This flag is "

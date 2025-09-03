@@ -61,6 +61,12 @@ std::vector<SupportedVideoDecoderConfig> GenerateSupportedConfigs(
     bool allow_media_codec_sw_decoder) {
   std::vector<SupportedVideoDecoderConfig> supported_configs;
   for (const auto& info : GetDecoderInfoCache()) {
+    // Drop duplicate low_latency codecs from this path since
+    // SupportedVideoDecoderConfig doesn't differentiate based on low latency.
+    if (base::EndsWith(info.name, ".low_latency",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+      continue;
+    }
     const auto codec = VideoCodecProfileToVideoCodec(info.profile);
     // Some DRM key system doesn't require a secure decoder to decrypt the
     // stream (e.g. Widevine L3). When this function is called, we have no idea
@@ -118,8 +124,9 @@ std::vector<SupportedVideoDecoderConfig> GenerateSupportedConfigs(
 }
 
 // Return the name of the decoder that will be used to create MediaCodec.
-void SelectMediaCodec(const VideoDecoderConfig& config,
+bool SelectMediaCodec(const VideoDecoderConfig& config,
                       bool requires_secure_codec,
+                      bool requires_low_latency_codec,
                       std::string* out_codec_name) {
   *out_codec_name = "";
 
@@ -151,9 +158,17 @@ void SelectMediaCodec(const VideoDecoderConfig& config,
         info.secure_codec_capability == SecureCodecCapability::kEncrypted) {
       continue;
     }
-
     if (requires_secure_codec &&
         info.secure_codec_capability == SecureCodecCapability::kClear) {
+      continue;
+    }
+
+    if (!requires_low_latency_codec &&
+        info.low_latency_capability == LowLatencyCapability::kRequired) {
+      continue;
+    }
+    if (requires_low_latency_codec &&
+        info.low_latency_capability == LowLatencyCapability::kNone) {
       continue;
     }
 
@@ -167,7 +182,7 @@ void SelectMediaCodec(const VideoDecoderConfig& config,
     }
 
     *out_codec_name = info.name;
-    return;
+    return true;
   }
 
   // Allow software decoder if either:
@@ -189,10 +204,11 @@ void SelectMediaCodec(const VideoDecoderConfig& config,
         config.profile() == VP9PROFILE_PROFILE3)) {
     DVLOG(2) << "Can't find proper video decoder from decoder info cache, "
                 "fallback to the default decoder selection path.";
-    return;
+    return false;
   }
 
   *out_codec_name = software_decoder;
+  return true;
 }
 
 }  // namespace
@@ -375,6 +391,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
   const auto old_size = decoder_config_.coded_size();
   decoder_config_ = config;
+  low_delay_ = low_delay;
 
   surface_chooser_helper_.SetVideoRotation(
       decoder_config_.video_transformation().rotation);
@@ -715,7 +732,25 @@ void MediaCodecVideoDecoder::CreateCodec() {
   config->hdr_metadata = decoder_config_.hdr_metadata();
   config->use_block_model = use_block_model_;
   config->profile = decoder_config_.profile();
-  SelectMediaCodec(decoder_config_, requires_secure_codec_, &config->name);
+
+  bool found_codec = false;
+  if (base::FeatureList::IsEnabled(kMediaCodecLowDelayMode) && low_delay_) {
+    // Try to select the low latency codec first if possible.
+    found_codec = SelectMediaCodec(decoder_config_, requires_secure_codec_,
+                                   low_delay_, &config->name);
+    if (found_codec) {
+      config->use_low_latency_mode = low_delay_;
+    } else {
+      // Set to false here so we can elide config changes below.
+      low_delay_ = false;
+    }
+  }
+  // If we're not in low latency mode, or we couldn't find a low latency codec
+  // go ahead and try to select a codec without low latency.
+  if (!found_codec) {
+    SelectMediaCodec(decoder_config_, requires_secure_codec_,
+                     /*requires_low_latency_codec=*/false, &config->name);
+  }
 
   config->on_buffers_available_cb =
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
@@ -784,7 +819,8 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   MEDIA_LOG(INFO, media_log_)
       << "Created MediaCodec " << codec_name_
       << ", is_software_codec=" << codec->IsSoftwareCodec()
-      << ", use_block_model_=" << use_block_model_;
+      << ", use_block_model_=" << use_block_model_ << ", low_delay_="
+      << (base::FeatureList::IsEnabled(kMediaCodecLowDelayMode) && low_delay_);
 
   // Since we can't get the coded size w/o rendering the frame, we try to guess
   // in cases where we are unable to render the frame (resolution changes). If
@@ -985,7 +1021,8 @@ bool MediaCodecVideoDecoder::QueueInput() {
     // the end of stream flush.
     const bool can_reuse_codec = [&]() {
       std::string codec_name;
-      SelectMediaCodec(new_config, requires_secure_codec_, &codec_name);
+      SelectMediaCodec(new_config, requires_secure_codec_, low_delay_,
+                       &codec_name);
       return !codec_name_.empty() && codec_name == codec_name_ &&
              !CodecNeedsReallocation(new_config.coded_size().width());
     }();

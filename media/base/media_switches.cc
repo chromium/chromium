@@ -975,6 +975,9 @@ BASE_FEATURE(MediaCodecCodedSizeGuessing, base::FEATURE_ENABLED_BY_DEFAULT);
 // Allow EOS buffers to be elided by MediaCodecVideoDecoder.
 BASE_FEATURE(MediaCodecElideEOS, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allow selection of low latency decoders in low delay mode.
+BASE_FEATURE(MediaCodecLowDelayMode, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable a gesture to make the media controls expanded into the display cutout.
 // TODO(beccahughes): Remove this.
 BASE_FEATURE(MediaControlsExpandGesture, base::FEATURE_ENABLED_BY_DEFAULT);

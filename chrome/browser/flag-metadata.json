@@ -6734,6 +6734,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "media-codec-low-delay-mode",
+    "owners": [ "dalecurtis@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "media-indicators-android",
     "owners": ["polardz@google.com", "ckitagawa@chromium.org", "clank-tab-dev@google.com"],
     "expiry_milestone": 145

@@ -3033,6 +3033,9 @@ extern const char kSegmentationPlatformAndroidHomeModuleRankerV2Description[];
 extern const char kSegmentationPlatformEphemeralCardRankerName[];
 extern const char kSegmentationPlatformEphemeralCardRankerDescription[];
 
+extern const char kMediaCodecLowDelayModeName[];
+extern const char kMediaCodecLowDelayModeDescription[];
+
 extern const char kMediaPickerAdoptionStudyName[];
 extern const char kMediaPickerAdoptionStudyDescription[];
 
