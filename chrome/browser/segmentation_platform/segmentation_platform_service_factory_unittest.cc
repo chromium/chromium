@@ -635,7 +635,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
   // Each card's feature flag should be enabled by test framework for this
   // integration test.
 #if BUILDFLAG(IS_ANDROID)
-  ASSERT_EQ(1u, registry->get_all_cards_by_priority().size());
+  ASSERT_EQ(6u, registry->get_all_cards_by_priority().size());
 #else
   EXPECT_TRUE(registry->get_all_cards_by_priority().empty());
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -647,6 +647,23 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
 #if BUILDFLAG(IS_ANDROID)
   input_context->metadata_args.emplace(
       "auxiliary_search_available", processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      "is_user_signed_in", processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      "should_show_non_role_manager_default_browser_promo",
+      processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      "has_default_browser_promo_shown_in_other_surface",
+      processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      "tab_group_exists", processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      "number_of_tabs", processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      "synced_tab_group_exists", processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      "is_eligible_to_history_opt_in",
+      processing::ProcessedValue::FromFloat(0));
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // No cards are added, the model fetches no results and fails.

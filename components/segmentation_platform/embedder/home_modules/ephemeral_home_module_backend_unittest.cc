@@ -101,8 +101,8 @@ TEST_F(EphemeralHomeModuleBackendTest, ExecuteModelWithInput) {
                            {kNotShownResultValue, kNotShownResultValue});
 #elif BUILDFLAG(IS_ANDROID)
   ExpectExecutionWithInput(
-      {0}, /*expected_error=*/false,
-      /*expected_result=*/{kNotShownResultValue, kNotShownResultValue});
+      std::vector<float>(20, 0), /*expected_error=*/false,
+      /*expected_result=*/std::vector<float>(7, kNotShownResultValue));
 #else
   ExpectExecutionWithInput(/*inputs=*/{}, /*expected_error=*/false,
                            /*expected_result=*/{kNotShownResultValue});

@@ -9561,67 +9561,6 @@
             ]
         }
     ],
-    "EducationalTipModule": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithEducationalTipPerDay",
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithOnlyQuickDeletePromo",
-                    "params": {
-                        "names_of_ephemeral_cards_to_show": "QuickDeletePromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithOnlyHistorySyncPromo",
-                    "params": {
-                        "names_of_ephemeral_cards_to_show": "HistorySyncPromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithEducationalTipPerThreeDays",
-                    "params": {
-                        "days_to_show_ephemeral_card_once": "3"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithEducationalTipPerThreeDaysExceptHistorySyncPromo",
-                    "params": {
-                        "days_to_show_ephemeral_card_once": "3",
-                        "names_of_ephemeral_cards_to_show": "TabGroupPromo,TabGroupSyncPromo,QuickDeletePromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                },
-                {
-                    "name": "EnabledWithEducationalTipPerDayExceptHistorySyncPromo",
-                    "params": {
-                        "names_of_ephemeral_cards_to_show": "TabGroupPromo,TabGroupSyncPromo,QuickDeletePromo"
-                    },
-                    "enable_features": [
-                        "EducationalTipModule"
-                    ]
-                }
-            ]
-        }
-    ],
     "En840AndFstDecoderParamsUpdate": [
         {
             "platforms": [

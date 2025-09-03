@@ -222,7 +222,7 @@ constexpr base::FeatureParam<bool> kSegmentationSurveyInternalsPage{
 
 BASE_FEATURE(kEducationalTipModule,
              "EducationalTipModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kMaxDefaultBrowserCardImpressions{
     &kEducationalTipModule, "max_default_browser_card_impressions",
     /*default_value=*/3};
@@ -241,7 +241,7 @@ constexpr base::FeatureParam<int> kMaxHistorySyncCardImpressions{
 
 constexpr base::FeatureParam<int> KDaysToShowEphemeralCardOnce{
     &kEducationalTipModule, "days_to_show_ephemeral_card_once",
-    /*default_value=*/1};
+    /*default_value=*/3};
 
 constexpr base::FeatureParam<int> KDaysToShowEachEphemeralCardOnce{
     &kEducationalTipModule, "days_to_show_each_ephemeral_card_once",
