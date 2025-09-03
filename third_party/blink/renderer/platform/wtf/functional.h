@@ -464,18 +464,4 @@ struct BindUnwrapTraits<blink::CrossThreadUnretainedWrapper<T>> {
 
 }  // namespace base
 
-// TODO(crbug.com/422768753): Remove these `using` directives.
-namespace WTF {
-using blink::BindOnce;
-using blink::BindRepeating;
-using blink::CrossThreadFunction;
-using blink::CrossThreadOnceClosure;
-using blink::CrossThreadOnceFunction;
-using blink::CrossThreadRepeatingFunction;
-using blink::CrossThreadUnretained;
-using blink::RetainedRef;
-using blink::Unretained;
-using blink::UnretainedWrapper;
-}  // namespace WTF
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_FUNCTIONAL_H_

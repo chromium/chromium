@@ -55,12 +55,4 @@ class Vector;
 
 }  // namespace blink
 
-namespace WTF {
-
-// TODO(crbug.com/422768753): Remove these `using` directives.
-using blink::String;
-using blink::Vector;
-
-}  // namespace WTF
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_FORWARD_H_

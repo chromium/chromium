@@ -32,8 +32,8 @@ MediaIntegrityTokenProvider::MediaIntegrityTokenProvider(
   provider_remote_.Bind(std::move(provider_pending_remote),
                         context->GetTaskRunner(TaskType::kInternalDefault));
   provider_remote_.set_disconnect_handler(
-      WTF::BindOnce(&MediaIntegrityTokenProvider::OnProviderConnectionError,
-                    WrapWeakPersistent(this)));
+      blink::BindOnce(&MediaIntegrityTokenProvider::OnProviderConnectionError,
+                      WrapWeakPersistent(this)));
 }
 
 void MediaIntegrityTokenProvider::OnProviderConnectionError() {
@@ -78,9 +78,9 @@ ScriptPromise<IDLString> MediaIntegrityTokenProvider::requestToken(
   token_resolvers_.insert(resolver);
   provider_remote_->RequestToken(
       opt_content_binding,
-      WTF::BindOnce(&MediaIntegrityTokenProvider::OnRequestTokenResponse,
-                    WrapPersistent(this), WrapPersistent(script_state),
-                    WrapPersistent(resolver)));
+      blink::BindOnce(&MediaIntegrityTokenProvider::OnRequestTokenResponse,
+                      WrapPersistent(this), WrapPersistent(script_state),
+                      WrapPersistent(resolver)));
   return promise;
 }
 

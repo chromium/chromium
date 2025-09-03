@@ -592,8 +592,4 @@ inline void swap(HashMap<T, U, V, W, X>& a, HashMap<T, U, V, W, X>& b) {
 
 }  // namespace blink
 
-namespace WTF {
-using blink::HashMap;
-}  // namespace WTF
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_MAP_H_

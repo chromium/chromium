@@ -54,7 +54,7 @@ void WebViewAndroid::EnsureServiceConnection(
       execution_context->GetTaskRunner(TaskType::kInternalDefault);
   execution_context->GetBrowserInterfaceBroker().GetInterface(
       media_integrity_service_remote_.BindNewPipeAndPassReceiver(task_runner));
-  media_integrity_service_remote_.set_disconnect_handler(WTF::BindOnce(
+  media_integrity_service_remote_.set_disconnect_handler(blink::BindOnce(
       &WebViewAndroid::OnServiceConnectionError, WrapWeakPersistent(this)));
 }
 
@@ -134,10 +134,10 @@ WebViewAndroid::getExperimentalMediaIntegrityTokenProvider(
   provider_resolvers_.insert(resolver);
   media_integrity_service_remote_->GetIntegrityProvider(
       std::move(provider_pending_receiver), cloud_project_number,
-      WTF::BindOnce(&WebViewAndroid::OnGetIntegrityProviderResponse,
-                    WrapPersistent(this), WrapPersistent(script_state),
-                    std::move(provider_pending_remote), cloud_project_number,
-                    WrapPersistent(resolver)));
+      blink::BindOnce(&WebViewAndroid::OnGetIntegrityProviderResponse,
+                      WrapPersistent(this), WrapPersistent(script_state),
+                      std::move(provider_pending_remote), cloud_project_number,
+                      WrapPersistent(resolver)));
 
   return promise;
 }

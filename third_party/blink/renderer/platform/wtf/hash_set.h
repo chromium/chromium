@@ -380,9 +380,4 @@ inline auto HashSet<T, U, V>::TakeAny() -> ValueType {
 
 }  // namespace blink
 
-// TODO(crbug.com/422768753): Remove this `using` directive.
-namespace WTF {
-using blink::HashSet;
-}  // namespace WTF
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_SET_H_
