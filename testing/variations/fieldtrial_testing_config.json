@@ -15977,7 +15977,7 @@
             ]
         }
     ],
-    "NewContentForCheckerboardedScrolls": [
+    "NewContentForCheckerboardedScrollsPerFrame": [
         {
             "platforms": [
                 "android_webview",
@@ -15990,12 +15990,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "enable_features": [
-                        "NewContentForCheckerboardedScrolls"
-                    ]
-                },
-                {
-                    "name": "per_frame",
                     "params": {
                         "mode": "per_frame"
                     },
