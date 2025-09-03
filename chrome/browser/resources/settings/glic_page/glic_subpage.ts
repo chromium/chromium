@@ -308,6 +308,10 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         'Glic.Settings.TabContext' + (enabled ? '.Enabled' : '.Disabled'));
   }
 
+  private onTabAccessExpand_() {
+    this.tabAccessToggleExpanded_ = !this.tabAccessToggleExpanded_;
+  }
+
   private onActivityRowClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         this.i18n('glicActivityButtonUrl'));
