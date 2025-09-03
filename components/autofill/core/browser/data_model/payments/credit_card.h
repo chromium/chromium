@@ -303,14 +303,14 @@ class CreditCard : public FormGroup {
     issuer_id_ = std::string(issuer_id);
   }
 
-  // If the card numbers for |this| and |imported_card| match, and merging the
+  // If the card numbers for `this` and `imported_card` match, and merging the
   // two wouldn't result in unverified data overwriting verified data,
-  // overwrites |this| card's data with the data in |imported_card|. Returns
+  // overwrites `this` card's data with the data in `imported_card`. Returns
   // true if the card numbers match, false otherwise.
   [[nodiscard]] bool UpdateFromImportedCard(const CreditCard& imported_card,
                                             const std::string& app_locale);
 
-  // Comparison for Sync.  Returns 0 if the card is the same as |this|, or < 0,
+  // Comparison for Sync.  Returns 0 if the card is the same as `this`, or < 0,
   // or > 0 if it is different.  The implied ordering can be used for culling
   // duplicates.  The ordering is based on collation order of the textual
   // contents of the fields.
@@ -384,14 +384,14 @@ class CreditCard : public FormGroup {
 
   // Returns the card number.
   const std::u16string& number() const { return number_; }
-  // Sets |number_| to |number| and computes the appropriate card issuer
-  // |network_|.
+  // Sets `number_` to `number` and computes the appropriate card issuer
+  // `network_`.
   void SetNumber(const std::u16string& number);
 
   // Logs the number of days since the card was last used and records its use.
   void RecordAndLogUse();
 
-  // Returns whether the card is expired based on |current_time|.
+  // Returns whether the card is expired based on `current_time`.
   bool IsExpired(base::Time current_time) const;
 
   // Returns whether the card is a masked card. Such cards will only have
@@ -410,20 +410,20 @@ class CreditCard : public FormGroup {
     billing_address_id_ = id;
   }
 
-  // Sets |expiration_month_| to the integer conversion of |text| and returns
+  // Sets `expiration_month_` to the integer conversion of `text` and returns
   // whether the operation was successful.
-  bool SetExpirationMonthFromString(const std::u16string& text,
-                                    const std::string& app_locale);
+  bool SetExpirationMonthFromString(std::u16string_view text,
+                                    std::string_view app_locale);
 
-  // Sets |expiration_year_| to the integer conversion of |text|. Will handle
+  // Sets `expiration_year_` to the integer conversion of `text`. Will handle
   // 4-digit year or 2-digit year (eventually converted to 4-digit year).
   // Returns whether the operation was successful.
-  bool SetExpirationYearFromString(const std::u16string& text);
+  bool SetExpirationYearFromString(std::u16string_view text);
 
-  // Sets |expiration_year_| and |expiration_month_| to the integer conversion
-  // of |text|. Will handle mmyy, mmyyyy, mm-yyyy and mm-yy as well as single
+  // Sets `expiration_year_` and `expiration_month_` to the integer conversion
+  // of `text`. Will handle mmyy, mmyyyy, mm-yyyy and mm-yy as well as single
   // digit months, with various separators.
-  void SetExpirationDateFromString(const std::u16string& text);
+  void SetExpirationDateFromString(std::u16string_view text);
 
   // Various display functions.
 
@@ -460,7 +460,7 @@ class CreditCard : public FormGroup {
   // digits of the card.
   std::u16string NetworkAndLastFourDigits(int obfuscation_length = 4) const;
   // A label for this card formatted as 'CardName ****2345', where the name is
-  // that returned by |CardNameForAutofillDisplay|. If the last four digits are
+  // that returned by `CardNameForAutofillDisplay`. If the last four digits are
   // unavailable returns just the card name, and vice-versa.
   std::u16string CardNameAndLastFourDigits(
       std::u16string customized_nickname = std::u16string(),
@@ -509,7 +509,7 @@ class CreditCard : public FormGroup {
   bool HasNameOnCard() const;
 
   // Returns whether the card has a non-empty nickname that also
-  // passes |IsNicknameValid| checks.
+  // passes `IsNicknameValid` checks.
   bool HasNonEmptyValidNickname() const;
 
   // Should be used ONLY by tests.
@@ -689,7 +689,7 @@ class CreditCard : public FormGroup {
   std::string issuer_id_;
 
   // For masked server cards, this is the ID assigned by the server to uniquely
-  // identify this card. |server_id_| is the legacy version of this.
+  // identify this card. `server_id_` is the legacy version of this.
   // TODO(crbug.com/40146355): remove server_id_ after full deprecation
   int64_t instrument_id_;
 

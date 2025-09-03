@@ -573,7 +573,7 @@ void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
       break;
 
     case CREDIT_CARD_EXP_MONTH:
-      SetExpirationMonthFromString(value, std::string());
+      SetExpirationMonthFromString(value, {});
       break;
 
     case CREDIT_CARD_EXP_2_DIGIT_YEAR:
@@ -954,8 +954,8 @@ bool CreditCard::HasValidExpirationDate() const {
                                          AutofillClock::Now());
 }
 
-bool CreditCard::SetExpirationMonthFromString(const std::u16string& text,
-                                              const std::string& app_locale) {
+bool CreditCard::SetExpirationMonthFromString(std::u16string_view text,
+                                              std::string_view app_locale) {
   if (std::optional<int> parsed_month =
           data_util::ParseMonthFromString(text, app_locale)) {
     expiration_month_ = *parsed_month;
@@ -964,7 +964,7 @@ bool CreditCard::SetExpirationMonthFromString(const std::u16string& text,
   return false;
 }
 
-bool CreditCard::SetExpirationYearFromString(const std::u16string& text) {
+bool CreditCard::SetExpirationYearFromString(std::u16string_view text) {
   if (std::optional<int> parsed_year = data_util::ParseYearFromString(text)) {
     expiration_year_ = *parsed_year;
     return true;
@@ -972,7 +972,7 @@ bool CreditCard::SetExpirationYearFromString(const std::u16string& text) {
   return false;
 }
 
-void CreditCard::SetExpirationDateFromString(const std::u16string& text) {
+void CreditCard::SetExpirationDateFromString(std::u16string_view text) {
   static constexpr char16_t kDateRegex[] =
       uR"(^\s*[0-9]{1,2}\s*[-/|]?\s*[0-9]{2,4}\s*$)";
   // Check that |text| fits the supported patterns: mmyy, mmyyyy, m-yy,
