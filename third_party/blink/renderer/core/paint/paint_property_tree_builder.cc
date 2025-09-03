@@ -560,10 +560,10 @@ static bool NeedsPaintOffsetTranslation(
   }
 
   // TODO(crbug.com/349835587): Should Element or LayoutObject have a public
-  // IsCanvasPlacedElement() funciton?
+  // IsCanvasDrawHTMLElement() function?
   if (object.Parent() && object.Parent()->IsCanvas()) {
-    // The object is being drawn by placeElement and should ignore the ignore
-    // the paint offset.
+    // The object may be drawn with drawHTMLElement and should ignore the paint
+    // offset.
     return true;
   }
 

@@ -44,7 +44,6 @@ extern const char kMediaQuery[];
 extern const char kNodeInserted[];
 extern const char kPictureSourceChanged[];
 extern const char kPlatformColorChange[];
-extern const char kPlaceElement[];
 extern const char kPluginChanged[];
 extern const char kPopoverVisibilityChange[];
 extern const char kPositionTryChange[];
