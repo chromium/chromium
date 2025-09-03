@@ -1672,7 +1672,7 @@ targets.binaries.console_test_launcher(
     label = "//chrome/android:monochrome_public_bundle_smoke_test",
     # All references have been moved to starlark
     skip_usage_check = True,
-    module_scheme = "gtest",
+    module_scheme = "junit",
 )
 
 targets.binaries.script(
@@ -2355,7 +2355,7 @@ targets.binaries.console_test_launcher(
     label = "//chrome/android:trichrome_chrome_bundle_smoke_test",
     # All references have been moved to starlark
     skip_usage_check = True,
-    module_scheme = "gtest",
+    module_scheme = "junit",
 )
 
 targets.binaries.console_test_launcher(
