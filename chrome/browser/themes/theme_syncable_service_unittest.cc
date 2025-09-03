@@ -212,6 +212,9 @@ class FakeThemeService : public ThemeService {
     return ThemeService::BrowserColorScheme::kSystem;
   }
 
+  void SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme color_scheme) override {}
+
   const extensions::Extension* theme_extension() const {
     return theme_extension_.get();
   }
@@ -3377,6 +3380,38 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
   }
   EXPECT_FALSE(theme_service()->UsingExtensionTheme());
   EXPECT_TRUE(theme_service()->UsingDefaultTheme());
+  histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
+                                      false, 1);
+}
+
+TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
+       LoadsDefaultBrowserColorSchemeUponSyncStopIfNoLocalThemeExistedInPref) {
+  // Set remote browser color scheme.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_browser_color_scheme(
+      sync_pb::ThemeSpecifics_BrowserColorScheme_LIGHT);
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::unique_ptr<syncer::SyncChangeProcessor>(
+              new syncer::SyncChangeProcessorWrapperForTest(
+                  fake_change_processor())));
+  ASSERT_FALSE(error.has_value()) << error->ToString();
+
+  ASSERT_EQ(theme_service()->GetBrowserColorScheme(),
+            ThemeService::BrowserColorScheme::kLight);
+
+  base::HistogramTester histogram_tester;
+  // No local theme pref is set.
+  ASSERT_FALSE(
+      profile()->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme));
+  // Stop syncing.
+  theme_sync_service()->StopSyncing(syncer::THEMES);
+  // Browser color scheme is reset to default.
+  EXPECT_EQ(theme_service()->GetBrowserColorScheme(),
+            ThemeService::BrowserColorScheme::kSystem);
   histogram_tester.ExpectUniqueSample("Theme.RestoredLocalThemeUponSignout",
                                       false, 1);
 }
