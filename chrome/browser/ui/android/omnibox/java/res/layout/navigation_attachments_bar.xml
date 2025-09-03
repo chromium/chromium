@@ -72,7 +72,7 @@ found in the LICENSE file.
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/location_bar_navigation_type"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/min_touch_target_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
