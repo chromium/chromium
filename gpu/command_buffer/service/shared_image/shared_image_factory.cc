@@ -23,13 +23,16 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/cpu_readback_upload_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/egl_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/raw_draw_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_copy_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_memory_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -170,6 +173,10 @@ SharedImageFactory::SharedImageFactory(
       texture_target_for_io_surfaces_(GetTextureTargetForIOSurfaces()),
 #endif
       workarounds_(workarounds) {
+  copy_manager_ = base::MakeRefCounted<SharedImageCopyManager>();
+  copy_manager_->AddStrategy(std::make_unique<SharedMemoryCopyStrategy>());
+  copy_manager_->AddStrategy(std::make_unique<CPUReadbackUploadCopyStrategy>());
+
   auto shared_memory_backing_factory =
       std::make_unique<SharedMemoryImageBackingFactory>();
   factories_.push_back(std::move(shared_memory_backing_factory));
@@ -470,8 +477,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
       if (use_compound) {
         backing = CompoundImageBacking::CreateSharedMemory(
-            factory, mailbox, format, size, color_space, surface_origin,
-            alpha_type, usage, debug_label, buffer_usage);
+            factory, copy_manager(), mailbox, format, size, color_space,
+            surface_origin, alpha_type, usage, debug_label, buffer_usage);
       } else {
         backing = factory->CreateSharedImage(
             mailbox, format, surface_handle, size, color_space, surface_origin,
@@ -563,8 +570,9 @@ bool SharedImageFactory::CreateSharedImage(
   std::unique_ptr<SharedImageBacking> backing;
   if (use_compound) {
     backing = CompoundImageBacking::CreateSharedMemory(
-        factory, mailbox, std::move(buffer_handle), format, size, color_space,
-        surface_origin, alpha_type, usage, std::move(debug_label));
+        factory, copy_manager(), mailbox, std::move(buffer_handle), format,
+        size, color_space, surface_origin, alpha_type, usage,
+        std::move(debug_label));
   } else {
     backing = factory->CreateSharedImage(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
@@ -988,6 +996,11 @@ SharedImageRepresentationFactoryRef* SharedImageFactory::GetFactoryRef(
     const gpu::Mailbox& mailbox) const {
   auto it = shared_images_.find(mailbox);
   return it != shared_images_.end() ? it->second.get() : nullptr;
+}
+
+const scoped_refptr<SharedImageCopyManager>&
+SharedImageFactory::copy_manager() {
+  return copy_manager_;
 }
 
 SharedImageRepresentationFactory::SharedImageRepresentationFactory(

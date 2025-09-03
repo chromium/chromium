@@ -25,6 +25,7 @@
 namespace gpu {
 
 class SharedImageBackingFactory;
+class SharedImageCopyManager;
 
 // TODO(kylechar): Merge with OzoneImageBacking::AccessStream enum.
 enum class SharedImageAccessStream {
@@ -60,6 +61,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   // provided by `gpu_backing_factory`.
   static std::unique_ptr<SharedImageBacking> CreateSharedMemory(
       SharedImageBackingFactory* gpu_backing_factory,
+      scoped_refptr<SharedImageCopyManager> copy_manager,
       const Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle handle,
       viz::SharedImageFormat format,
@@ -79,6 +81,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   // BufferUsage.
   static std::unique_ptr<SharedImageBacking> CreateSharedMemory(
       SharedImageBackingFactory* gpu_backing_factory,
+      scoped_refptr<SharedImageCopyManager> copy_manager,
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
       const gfx::Size& size,
@@ -174,6 +177,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
       std::string debug_label,
       std::unique_ptr<SharedImageBacking> shm_backing,
       base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
+      scoped_refptr<SharedImageCopyManager> copy_manager,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
   base::trace_event::MemoryAllocatorDump* OnMemoryDump(
@@ -225,6 +229,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   std::vector<ElementHolder> elements_;
 
   base::OnceCallback<void(bool)> pending_copy_to_gmb_callback_;
+
+  scoped_refptr<SharedImageCopyManager> copy_manager_;
 };
 
 }  // namespace gpu

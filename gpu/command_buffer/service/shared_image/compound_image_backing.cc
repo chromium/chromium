@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_copy_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -410,6 +411,7 @@ SharedImageUsageSet CompoundImageBacking::GetGpuSharedImageUsage(
 // static
 std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     SharedImageBackingFactory* gpu_backing_factory,
+    scoped_refptr<SharedImageCopyManager> copy_manager,
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
     viz::SharedImageFormat format,
@@ -433,12 +435,13 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
   return base::WrapUnique(new CompoundImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(shm_backing),
-      gpu_backing_factory->GetWeakPtr()));
+      gpu_backing_factory->GetWeakPtr(), std::move(copy_manager)));
 }
 
 // static
 std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     SharedImageBackingFactory* gpu_backing_factory,
+    scoped_refptr<SharedImageCopyManager> copy_manager,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
     const gfx::Size& size,
@@ -462,7 +465,8 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
   return base::WrapUnique(new CompoundImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(shm_backing),
-      gpu_backing_factory->GetWeakPtr(), std::move(buffer_usage)));
+      gpu_backing_factory->GetWeakPtr(), std::move(copy_manager),
+      std::move(buffer_usage)));
 }
 
 CompoundImageBacking::CompoundImageBacking(
@@ -476,6 +480,7 @@ CompoundImageBacking::CompoundImageBacking(
     std::string debug_label,
     std::unique_ptr<SharedImageBacking> shm_backing,
     base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
+    scoped_refptr<SharedImageCopyManager> copy_manager,
     std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
@@ -487,7 +492,8 @@ CompoundImageBacking::CompoundImageBacking(
                          debug_label,
                          shm_backing->GetEstimatedSize(),
                          /*is_thread_safe=*/false,
-                         std::move(buffer_usage)) {
+                         std::move(buffer_usage)),
+      copy_manager_(std::move(copy_manager)) {
   DCHECK(shm_backing);
   DCHECK_EQ(size, shm_backing->size());
 
@@ -544,7 +550,7 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageAccessStream stream,
 
     auto* gpu_backing = access_element.GetBacking();
     if (gpu_backing &&
-        gpu_backing->UploadFromMemory(GetSharedMemoryPixmaps())) {
+        copy_manager_->CopyImage(shm_element.GetBacking(), gpu_backing)) {
       updated_backing = true;
     } else {
       DLOG(ERROR) << "Failed to upload from shared memory to GPU backing";
@@ -576,8 +582,8 @@ bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
   }
 
   auto* gpu_backing = GetGpuBacking();
-  const std::vector<SkPixmap>& pixmaps = GetSharedMemoryPixmaps();
-  if (!gpu_backing || !gpu_backing->ReadbackToMemory(pixmaps)) {
+  if (!gpu_backing ||
+      !copy_manager_->CopyImage(gpu_backing, shm_element.GetBacking())) {
     DLOG(ERROR) << "Failed to copy from GPU backing to shared memory";
     return false;
   }

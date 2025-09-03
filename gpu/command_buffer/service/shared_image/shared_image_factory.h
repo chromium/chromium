@@ -34,6 +34,7 @@ namespace gpu {
 class MemoryTracker;
 class SharedContextState;
 class SharedImageBackingFactory;
+class SharedImageCopyManager;
 class D3DImageBackingFactory;
 struct GpuFeatureInfo;
 struct GpuPreferences;
@@ -154,6 +155,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   bool HasSharedImage(const Mailbox& mailbox) const;
 
   SharedContextState* shared_context_state() { return context_state_.get(); }
+  const scoped_refptr<SharedImageCopyManager>& copy_manager();
 
  private:
   bool IsSharedBetweenThreads(gpu::SharedImageUsageSet usage);
@@ -181,6 +183,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   raw_ptr<SharedImageManager> shared_image_manager_;
   const scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
+  scoped_refptr<SharedImageCopyManager> copy_manager_;
 
   // This is used if the factory is created on display compositor to check for
   // sharing between threads.
