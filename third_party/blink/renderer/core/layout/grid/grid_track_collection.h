@@ -230,6 +230,8 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
   bool IsDependentOnAvailableSize() const;
 
  protected:
+  friend class MasonryLayoutAlgorithmTest;
+
   struct Baselines {
     Vector<LayoutUnit, 16> major;
     Vector<LayoutUnit, 16> minor;

@@ -43,6 +43,15 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   void SetAlignmentFallback(GridTrackSizingDirection track_direction,
                             bool has_synthesized_baseline);
 
+  // This method updates the current item's span to be the given `span` in the
+  // given `track_direction`, translates the item as needed by the
+  // `start_offset`, and recalculates the item's set indices based on its new
+  // span location.
+  void UpdateSpan(const GridSpan& span,
+                  GridTrackSizingDirection track_direction,
+                  wtf_size_t start_offset,
+                  const GridLayoutTrackCollection& track_collection);
+
   AxisEdge Alignment(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns)
                ? column_fallback_alignment.value_or(column_alignment)

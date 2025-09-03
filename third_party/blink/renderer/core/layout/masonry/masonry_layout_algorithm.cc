@@ -83,9 +83,10 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
       }
 
       MasonryRunningPositions running_positions(
-          track_collection.EndLineOfImplicitGrid(), LayoutUnit(),
+          track_collection, style,
           ResolveItemToleranceForMasonry(style, masonry_available_size_),
           collapsed_track_indexes);
+
       PlaceMasonryItems(track_collection, masonry_items, start_offset,
                         running_positions, sizing_constraint);
       // `stacking_axis_gap` represents the space between each of the items
@@ -144,10 +145,10 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
 
   if (!masonry_items.IsEmpty()) {
     MasonryRunningPositions running_positions(
-        /*track_count=*/track_collection.EndLineOfImplicitGrid(),
-        /*initial_running_position=*/LayoutUnit(),
+        track_collection, Style(),
         ResolveItemToleranceForMasonry(Style(), masonry_available_size_),
         collapsed_track_indexes);
+
     PlaceMasonryItems(track_collection, masonry_items, start_offset,
                       running_positions, SizingConstraint::kLayout);
   }
@@ -255,6 +256,21 @@ LayoutUnit AlignContentOffset(
 
 }  // namespace
 
+LayoutUnit MasonryLayoutAlgorithm::CalculateItemInlineContribution(
+    const GridItemData& masonry_item,
+    SizingConstraint sizing_constraint) {
+  CHECK_NE(sizing_constraint, SizingConstraint::kLayout);
+  // We need to compute the available space for the item if we are using it
+  // to compute min/max content sizes.
+  const ConstraintSpace space_for_measure =
+      CreateConstraintSpaceForMeasure(masonry_item);
+  const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
+                                masonry_item.node, space_for_measure)
+                                .sizes;
+  return (sizing_constraint == SizingConstraint::kMinContent) ? sizes.min_size
+                                                              : sizes.max_size;
+}
+
 // TODO(almaher): Item margins aren't being taken into account for placement.
 void MasonryLayoutAlgorithm::PlaceMasonryItems(
     const GridLayoutTrackCollection& track_collection,
@@ -279,57 +295,28 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
   GridBaselineAccumulator baseline_accumulator(style.GetFontBaseline());
 
   for (auto& masonry_item : masonry_items) {
-    // Find the definite span that the masonry items should be placed in.
-    LayoutUnit max_position;
-    GridSpan item_span =
-        masonry_item.MaybeTranslateSpan(start_offset, grid_axis_direction);
+    // Get the starting offset of where we want the item placed in the stacking
+    // axis.
+    LayoutUnit start_offset_in_stacking_axis =
+        running_positions.FinalizeItemSpanAndGetMaxPosition(
+            start_offset, masonry_item, track_collection);
 
-    // Determine final placement for remaining indefinite spans.
-    if (item_span.IsIndefinite()) {
-      item_span = running_positions.GetFirstEligibleLine(
-          item_span.IndefiniteSpanSize(), max_position);
-      masonry_item.resolved_position.SetSpan(item_span, grid_axis_direction);
-    } else {
-      max_position = running_positions.GetMaxPositionForSpan(item_span);
-    }
-
-    masonry_item.ComputeSetIndices(track_collection);
-    running_positions.UpdateAutoPlacementCursor(item_span.EndLine());
-
+    // TODO(celestepan): Rename `containing_rect` to `item_rect` or something
+    // that better represents the fact that it only contains the current masonry
+    // item we are working with.
+    //
     // This item is ultimately placed below the maximum running position among
     // its spanned tracks. Account for border, scrollbar, and padding in the
     // offset of the item.
     LogicalRect containing_rect;
-    is_for_columns ? containing_rect.offset.block_offset =
-                         max_position + border_scrollbar_padding.block_start
-                   : containing_rect.offset.inline_offset =
-                         max_position + border_scrollbar_padding.inline_start;
-
-    std::optional<LayoutUnit> fixed_inline_size = ([&]() {
-      if (is_for_layout) {
-        return std::optional<LayoutUnit>(std::nullopt);
-      }
-
-      // We need to compute the available space for the item if we are using it
-      // to compute min/max content sizes.
-      const ConstraintSpace space_for_measure =
-          CreateConstraintSpaceForMeasure(masonry_item);
-      const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
-                                    masonry_item.node, space_for_measure)
-                                    .sizes;
-
-      return std::optional<LayoutUnit>(
-          (sizing_constraint == SizingConstraint::kMinContent)
-              ? sizes.min_size
-              : sizes.max_size);
-    })();
 
     const ConstraintSpace space =
         is_for_layout ? CreateConstraintSpaceForLayout(
                             masonry_item, track_collection, &containing_rect)
                       : CreateConstraintSpaceForMeasure(
-                            masonry_item, /*needs_intrinsic_track_size=*/false,
-                            fixed_inline_size,
+                            masonry_item, /*needs_auto_track_size=*/false,
+                            CalculateItemInlineContribution(masonry_item,
+                                                            *sizing_constraint),
                             /*is_for_min_max_sizing=*/true);
 
     const auto& item_node = masonry_item.node;
@@ -343,6 +330,55 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     const LogicalBoxFragment fragment(container_writing_direction,
                                       physical_fragment);
+    const auto margins = ComputeMarginsFor(space, item_style, container_space);
+    const LayoutUnit fragment_size =
+        is_for_columns ? fragment.BlockSize() + margins.BlockSum()
+                       : fragment.InlineSize() + margins.InlineSum();
+
+    // If dense packing is set, we need to figure out if the item can possibly
+    // fit into any previous track openings. If it can, then we need to adjust
+    // `item_span` as well as the offset of `containing_rect`, which is sized
+    // based on the items within the masonry container. Margins need to be added
+    // to the item's size in the stacking axis.
+    const bool is_dense_packing = style.IsGridAutoFlowAlgorithmDense();
+    bool item_moved_to_earlier_opening = false;
+    if (is_dense_packing) {
+      LayoutUnit updated_item_start_offset =
+          running_positions.GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
+              start_offset, masonry_item, fragment_size, track_collection);
+
+      // If we have a valid offset for the item in the stacking axis, it means
+      // we found an earlier track opening for the item.
+      if (updated_item_start_offset != LayoutUnit::Max()) {
+        // Because it's possible that we switched the item to a different span,
+        // update the offset of where the item should be placed in the grid
+        // axis.
+        const LayoutUnit masonry_item_start_offset =
+            track_collection.GetSetOffset(
+                masonry_item.SetIndices(track_collection.Direction()).begin);
+        is_for_columns
+            ? containing_rect.offset.inline_offset = masonry_item_start_offset
+            : containing_rect.offset.block_offset = masonry_item_start_offset;
+
+        item_moved_to_earlier_opening = true;
+        start_offset_in_stacking_axis = updated_item_start_offset;
+      }
+    }
+
+    // Update auto-placement cursor after we have determined the item's final
+    // placement.
+    running_positions.UpdateAutoPlacementCursor(
+        masonry_item.resolved_position.EndLine(grid_axis_direction));
+
+    // `start_offset_in_stacking_axis` specifies where in the stacking axis the
+    // item should be placed, so we need to adjust the `containing_rect` in the
+    // stacking axis to accommodate the newly placed item.
+    is_for_columns ? containing_rect.offset.block_offset =
+                         start_offset_in_stacking_axis +
+                         border_scrollbar_padding.block_start
+                   : containing_rect.offset.inline_offset =
+                         start_offset_in_stacking_axis +
+                         border_scrollbar_padding.inline_start;
 
     // TODO(celestepan): Account for extra margins from sub-masonry items.
     //
@@ -351,7 +387,7 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     //
     // TODO(celestepan): Update alignment logic if needed once we resolve on
     // https://github.com/w3c/csswg-drafts/issues/10275.
-    const auto margins = ComputeMarginsFor(space, item_style, container_space);
+
     const auto inline_alignment =
         is_for_columns ? masonry_item.Alignment(kForColumns) : AxisEdge::kStart;
     const auto block_alignment =
@@ -366,15 +402,25 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
                         /*baseline_offset=*/LayoutUnit(), block_alignment,
                         masonry_item.IsOverflowSafe(kForRows)));
 
-    // Update `running_positions` of the tracks that the items spans to include
-    // the size of the item, the size of the gap in the stacking axis, and the
+    // If the item was not placed in an earlier track opening, update
+    // `running_positions` of the tracks that the items spans to include the
+    // size of the item, the size of the opening in the stacking axis, and the
     // margin.
-    auto new_running_position =
-        max_position + stacking_axis_gap +
-        (is_for_columns ? fragment.BlockSize() + margins.BlockSum()
-                        : fragment.InlineSize() + margins.InlineSum());
-    running_positions.UpdateRunningPositionsForSpan(item_span,
-                                                    new_running_position);
+    if (!item_moved_to_earlier_opening) {
+      auto new_running_position =
+          start_offset_in_stacking_axis + stacking_axis_gap + fragment_size;
+
+      // If dense packing is enabled, we need to input the maximum running
+      // position of the tracks our items span so that we can account for any
+      // new openings that may form.
+      running_positions.UpdateRunningPositionsForSpan(
+          masonry_item.resolved_position.Span(grid_axis_direction),
+          new_running_position,
+          is_dense_packing
+              ? std::make_optional(
+                    /*max_running_position=*/start_offset_in_stacking_axis)
+              : std::nullopt);
+    }
 
     container_builder_.AddResult(*result, containing_rect.offset, margins);
     baseline_accumulator.Accumulate(masonry_item, fragment,

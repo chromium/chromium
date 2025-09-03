@@ -127,6 +127,12 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       const std::optional<LogicalSize>& opt_percentage_resolution_size =
           std::nullopt) const;
 
+  // Return the inline contribution of `masonry_item` calculated to either the
+  // min-width or the max-width based on `sizing_constraint`.
+  LayoutUnit CalculateItemInlineContribution(
+      const GridItemData& masonry_item,
+      SizingConstraint sizing_constraint);
+
   // If `containing_rect` is provided, it will store the available size for the
   // item and its offset within the container. These values will be used to
   // adjust the item's final position using its alignment properties.

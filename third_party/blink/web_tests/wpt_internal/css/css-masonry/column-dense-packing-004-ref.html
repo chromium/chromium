@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<link rel="help" href="https://drafts.csswg.org/css-grid-3">
+<style>
+.grid {
+    display: grid;
+    background: gray;
+    position: relative;
+    grid-template-columns: repeat(3, 50px);
+    width: 170px;
+    grid-auto-flow: dense;
+}
+</style>
+<body>
+  <p>Ensure that dense-packing does not affect the layout when all items are single-spanning.</p>
+  <div class="grid">
+    <div>
+      <div style="background: lightskyblue; height: 20px;" >
+        1
+      </div>
+      <div style="background: brown; height: 15px;">
+        4
+      </div>
+      <div style="background: red; height: 40px;">
+        5
+      </div>
+  </div>
+  <div>
+      <div style="background: lightcoral; height: 60px;" >
+        2
+      </div>
+      <div style="background: pink; height: 40px;">
+        6
+      </div>
+  </div>
+  <div>
+      <div style="background: lightgreen; height: 60px;">
+        3
+      </div>
+      <div style="background: yellow; height: 40px;">
+        7
+      </div>
+  </div>
+  </div>
+</body>
+</html>

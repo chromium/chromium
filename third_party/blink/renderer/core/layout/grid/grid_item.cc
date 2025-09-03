@@ -317,6 +317,17 @@ void GridItemData::SetAlignmentFallback(
   }
 }
 
+void GridItemData::UpdateSpan(
+    const GridSpan& span,
+    GridTrackSizingDirection track_direction,
+    wtf_size_t start_offset,
+    const GridLayoutTrackCollection& track_collection) {
+  resolved_position.SetSpan(span, track_direction);
+  MaybeTranslateSpan(start_offset, track_direction);
+  ResetPlacementIndices();
+  ComputeSetIndices(track_collection);
+}
+
 void GridItemData::ComputeSetIndices(
     const GridLayoutTrackCollection& track_collection) {
   DCHECK(!IsOutOfFlow());
