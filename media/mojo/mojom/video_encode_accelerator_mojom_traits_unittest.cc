@@ -5,6 +5,7 @@
 #include "media/mojo/mojom/video_encode_accelerator_mojom_traits.h"
 
 #include "media/base/video_bitrate_allocation.h"
+#include "media/base/video_types.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/mojom/video_encoder_info_mojom_traits.h"
 #include "media/video/video_encode_accelerator.h"
@@ -63,6 +64,11 @@ TEST(VideoEncoderInfoStructTraitTest, RoundTrip) {
   input.has_trusted_rate_controller = true;
   input.is_hardware_accelerated = true;
   input.supports_simulcast = true;
+  input.supports_gpu_shared_images = true;
+  input.gpu_supported_pixel_formats.push_back(
+      ::media::VideoPixelFormat::PIXEL_FORMAT_NV12);
+  input.gpu_supported_pixel_formats.push_back(
+      ::media::VideoPixelFormat::PIXEL_FORMAT_BGRA);
 
   ::media::VideoEncoderInfo output = input;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::VideoEncoderInfo>(

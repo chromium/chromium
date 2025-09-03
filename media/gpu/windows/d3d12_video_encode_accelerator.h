@@ -94,7 +94,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   size_t GetSharedHandleCacheSizeForTesting() const;
 
  private:
-  void InitializeTask(const Config& config);
+  void InitializeTask(const Config& config, const SupportedProfiles& profile);
 
   void UseOutputBitstreamBufferTask(BitstreamBuffer buffer);
 

@@ -108,6 +108,8 @@ class MockVideoEncoderDelegateFactory
                                                      kSupportedSize, 30, 1);
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
     profile.gpu_supported_pixel_formats.push_back(PIXEL_FORMAT_NV12);
+    profile.gpu_supported_pixel_formats.push_back(PIXEL_FORMAT_BGRA);
+    profile.supports_gpu_shared_images = true;
     return {profile};
   }
 };
@@ -251,7 +253,14 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, SupportedProfilesCanBeInitialized) {
       EXPECT_TRUE(d3d12_video_encode_accelerator
                       ->Initialize(config, client_.get(), media_log_->Clone())
                       .is_ok());
-      EXPECT_CALL(*client_, NotifyEncoderInfoChange(_)).Times(1);
+      EXPECT_CALL(*client_, NotifyEncoderInfoChange(_))
+          .WillOnce([&profile](const VideoEncoderInfo& info) {
+            // Verify that GPU-related info from the profile is properly copied
+            EXPECT_EQ(info.supports_gpu_shared_images,
+                      profile.supports_gpu_shared_images);
+            EXPECT_EQ(info.gpu_supported_pixel_formats,
+                      profile.gpu_supported_pixel_formats);
+          });
       EXPECT_CALL(*client_, NotifyErrorStatus(_)).Times(0);
       WaitForEncoderTasksToComplete();
       Mock::VerifyAndClearExpectations(&client_);

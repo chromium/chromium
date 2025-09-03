@@ -4,6 +4,7 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/media_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // The following mojom classes are the corresponding classes in webrtc project.
@@ -48,4 +49,9 @@ struct VideoEncoderInfo {
   // This array size is equal to media::VideoEncoderInfo::kMaxSpatialLayers.
   array<array<uint8>, 5> fps_allocation;
   array<ResolutionRateLimit> resolution_rate_limits;
+
+  // Pixel formats supported by encoder on the GPU without readback.
+  array<VideoPixelFormat> gpu_supported_pixel_formats;
+  // True if encoder can handle shared image without readback.
+  bool supports_gpu_shared_images;
 };

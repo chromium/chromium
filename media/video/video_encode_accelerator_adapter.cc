@@ -935,12 +935,11 @@ void VideoEncodeAcceleratorAdapter::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   supports_frame_size_change_ = info.supports_frame_size_change;
+  supports_gpu_shared_images_ = info.supports_gpu_shared_images;
+  gpu_supported_pixel_formats_ = info.gpu_supported_pixel_formats;
 
-  VideoEncoderInfo adjusted_info = info;
-  adjusted_info.supports_gpu_shared_images = supports_gpu_shared_images_;
-  adjusted_info.gpu_supported_pixel_formats = gpu_supported_pixel_formats_;
   if (info_cb_) {
-    info_cb_.Run(adjusted_info);
+    info_cb_.Run(info);
   }
 }
 

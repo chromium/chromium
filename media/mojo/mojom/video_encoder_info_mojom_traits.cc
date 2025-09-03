@@ -59,6 +59,14 @@ bool StructTraits<
     return false;
   }
 
+  std::vector<media::VideoPixelFormat> gpu_supported_pixel_formats;
+  if (!data.ReadGpuSupportedPixelFormats(&gpu_supported_pixel_formats)) {
+    return false;
+  }
+  out->gpu_supported_pixel_formats = std::move(gpu_supported_pixel_formats);
+
+  out->supports_gpu_shared_images = data.supports_gpu_shared_images();
+
   return true;
 }
 }  // namespace mojo
