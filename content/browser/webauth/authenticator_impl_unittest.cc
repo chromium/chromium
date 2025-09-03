@@ -6168,7 +6168,8 @@ TEST_F(InternalUVAuthenticatorImplTest,
   config.bio_enrollment_support = true;
   config.override_response_map
       [device::CtapRequestCommand::kAuthenticatorBioEnrollment] =
-      device::CtapDeviceResponseCode::kCtap2ErrUserActionTimeout;
+      std::make_pair(device::CtapDeviceResponseCode::kCtap2ErrUserActionTimeout,
+                     std::nullopt);
   virtual_device_factory_->mutable_state()->pin = kTestPIN;
   virtual_device_factory_->mutable_state()->pin_retries =
       device::kMaxPinRetries;

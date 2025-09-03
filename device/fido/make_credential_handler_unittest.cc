@@ -845,7 +845,8 @@ TEST_F(FidoMakeCredentialHandlerTest, PinUvAuthTokenPreTouchFailure) {
   config.pin_uv_auth_token_support = true;
   config.internal_uv_support = true;
   config.override_response_map[CtapRequestCommand::kAuthenticatorClientPin] =
-      CtapDeviceResponseCode::kCtap2ErrOther;
+      std::make_pair(device::CtapDeviceResponseCode::kCtap2ErrOther,
+                     std::nullopt);
   auto state = base::MakeRefCounted<VirtualFidoDevice::State>();
   state->fingerprints_enrolled = true;
 

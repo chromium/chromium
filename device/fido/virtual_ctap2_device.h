@@ -230,8 +230,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     bool internal_account_chooser = false;
 
     // override_response_map allows overriding the response for a given command
-    // with a given code. The actual command won't be executed.
-    base::flat_map<CtapRequestCommand, CtapDeviceResponseCode>
+    // with a given code and optional value. The actual command won't be
+    // executed.
+    base::flat_map<
+        CtapRequestCommand,
+        std::pair<CtapDeviceResponseCode, std::optional<std::vector<uint8_t>>>>
         override_response_map;
 
     // allow_non_resident_credential_creation_without_uv corresponds to the

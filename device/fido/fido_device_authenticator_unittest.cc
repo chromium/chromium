@@ -335,7 +335,8 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobCtapError) {
   config.pin_uv_auth_token_support = true;
   config.ctap2_versions = {Ctap2Version::kCtap2_1};
   config.override_response_map[CtapRequestCommand::kAuthenticatorLargeBlobs] =
-      CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
+      std::make_pair(device::CtapDeviceResponseCode::kCtap1ErrInvalidParameter,
+                     std::nullopt);
   SetUpAuthenticator(std::move(config));
 
   AuthenticatorGetAssertionResponse write = GetAssertionForWrite(kSmallBlob1);

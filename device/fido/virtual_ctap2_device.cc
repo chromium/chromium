@@ -788,9 +788,11 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
 
   const CtapRequestCommand ctap_command =
       static_cast<CtapRequestCommand>(cmd_type);
-  if (config_.override_response_map.contains(ctap_command)) {
-    ReturnCtap2Response(std::move(cb),
-                        config_.override_response_map.at(ctap_command), {});
+  const auto override_response_it =
+      config_.override_response_map.find(ctap_command);
+  if (override_response_it != config_.override_response_map.end()) {
+    ReturnCtap2Response(std::move(cb), override_response_it->second.first,
+                        override_response_it->second.second);
     return 0;
   }
 

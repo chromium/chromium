@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/cbor/writer.h"
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -174,6 +175,25 @@ TEST_F(BioEnrollmentHandlerTest, Enroll) {
   auto [status, template_id] = EnrollTemplate(handler.get());
   EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);
   EXPECT_FALSE(template_id.empty());
+}
+
+// Regression test for https://crbug.com/435417121.
+// Tests that a malformed bio enrollment response doesn't crash or hang the
+// request.
+TEST_F(BioEnrollmentHandlerTest, EnrollBadResponse) {
+  VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.bio_enrollment_preview_support = true;
+  config.override_response_map
+      [CtapRequestCommand::kAuthenticatorBioEnrollmentPreview] =
+      std::make_pair(CtapDeviceResponseCode::kSuccess,
+                     cbor::Writer::Write(cbor::Value("not a valid response")));
+  virtual_device_factory_.SetCtap2Config(config);
+
+  auto handler = MakeHandler();
+  EXPECT_TRUE(error_future_.Wait());
+  EXPECT_EQ(error_future_.Get(),
+            BioEnrollmentHandler::Error::kAuthenticatorResponseInvalid);
 }
 
 // Tests enrolling multiple fingerprints.
