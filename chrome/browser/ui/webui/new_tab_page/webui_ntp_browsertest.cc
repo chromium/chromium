@@ -274,8 +274,9 @@ class WebUiNtpEnterpriseShortcutsBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/442038064): Re-enable once flakiness is addressed.
 IN_PROC_BROWSER_TEST_P(WebUiNtpEnterpriseShortcutsBrowserTest,
-                       EnterpriseShortcuts) {
+                       DISABLED_EnterpriseShortcuts) {
   // 1. Set the user preference to use enterprise shortcuts.
   browser()->profile()->GetPrefs()->SetInteger(
       ntp_prefs::kNtpShortcutsType,
