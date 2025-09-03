@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -18,6 +19,7 @@
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -29,6 +31,11 @@
 using ::testing::_;
 
 namespace content_settings {
+
+namespace {
+constexpr char kGeolocationMigrateDefaultValue[] =
+    "profile.default_content_setting_values.migrate_geolocation";
+}
 
 class ContentSettingsDefaultProviderTest : public testing::Test {
  public:
@@ -90,7 +97,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DefaultPermissionSettings) {
 
   base::Value block_setting = PermissionSettingToValue(
       info,
-      GeolocationSetting{PermissionOption::kAsk, PermissionOption::kDenied});
+      GeolocationSetting{PermissionOption::kDenied, PermissionOption::kDenied});
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::GEOLOCATION_WITH_OPTIONS, block_setting.Clone(),
@@ -290,6 +297,51 @@ TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
 
   otr_provider.ShutdownOnUIThread();
   otr_provider2.ShutdownOnUIThread();
+}
+
+TEST_F(ContentSettingsDefaultProviderTest,
+       MigrateGeolocationDisabledToEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kApproximateGeolocationPermission);
+  auto* prefs = profile_.GetPrefs();
+  prefs->SetBoolean(kGeolocationMigrateDefaultValue, false);
+  prefs->SetInteger("profile.default_content_setting_values.geolocation",
+                    CONTENT_SETTING_BLOCK);
+
+  DefaultProvider provider(prefs, false, false);
+
+  GeolocationSetting expected_setting{PermissionOption::kDenied,
+                                      PermissionOption::kDenied};
+  EXPECT_EQ(PermissionSetting{expected_setting},
+            *TestUtils::GetPermissionSetting(
+                &provider, GURL(), GURL(),
+                ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false));
+  EXPECT_TRUE(prefs->GetBoolean(kGeolocationMigrateDefaultValue));
+}
+
+TEST_F(ContentSettingsDefaultProviderTest,
+       MigrateGeolocationEnabledToDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kApproximateGeolocationPermission);
+  auto* prefs = profile_.GetPrefs();
+  prefs->SetBoolean(kGeolocationMigrateDefaultValue, true);
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  base::Value geolocation_with_options_value = PermissionSettingToValue(
+      info,
+      GeolocationSetting{PermissionOption::kDenied, PermissionOption::kDenied});
+  prefs->Set("profile.default_content_setting_values.geolocation_with_options",
+             geolocation_with_options_value);
+
+  DefaultProvider provider(prefs, false, false);
+
+  EXPECT_EQ(
+      CONTENT_SETTING_BLOCK,
+      TestUtils::GetContentSetting(&provider, GURL(), GURL(),
+                                   ContentSettingsType::GEOLOCATION, false));
+  EXPECT_FALSE(prefs->GetBoolean(kGeolocationMigrateDefaultValue));
 }
 
 }  // namespace content_settings

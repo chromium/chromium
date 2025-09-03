@@ -31,6 +31,8 @@ class PermissionSettingsInfo {
 
     // Return whether the setting is valid.
     virtual bool IsValid(const PermissionSetting& setting) const = 0;
+    virtual bool IsDefaultSettingValid(
+        const PermissionSetting& setting) const = 0;
 
     // Returns a setting to inherit to incognito mode.
     virtual PermissionSetting InheritInIncognito(

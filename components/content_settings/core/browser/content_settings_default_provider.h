@@ -87,6 +87,9 @@ class DefaultProvider : public ObservableProvider {
   // Clean up the obsolete preferences from the user's profile.
   void DiscardOrMigrateObsoletePreferences();
 
+  // Migrate between GEOLOCATION and GEOLOCATION_WITH_OPTIONS.
+  void MigrateGeolocationDefaultValue();
+
   // Record Histograms Metrics.
   void RecordHistogramMetrics();
 

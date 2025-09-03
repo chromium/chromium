@@ -34,6 +34,17 @@ bool GeolocationSettingDelegate::IsValid(
   return true;
 }
 
+bool GeolocationSettingDelegate::IsDefaultSettingValid(
+    const PermissionSetting& setting) const {
+  DCHECK(std::holds_alternative<GeolocationSetting>(setting)) << setting;
+  auto permission_setting = std::get<GeolocationSetting>(setting);
+  if (permission_setting.approximate != permission_setting.precise) {
+    // The UI only supports default settings with approximate == precise.
+    return false;
+  }
+  return IsValid(permission_setting);
+}
+
 // Returns a setting to inherit to incognito mode. Return nullopt if the setting
 // should not be inherited.
 PermissionSetting GeolocationSettingDelegate::InheritInIncognito(

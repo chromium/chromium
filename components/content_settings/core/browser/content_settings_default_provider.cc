@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -26,7 +27,9 @@
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -67,6 +70,9 @@ constexpr char kObsoleteFederatedIdentityDefaultPref[] =
 
 constexpr char kObsoletePrivateNetworkGuardDefaultPref[] =
     "profile.default_content_setting_values.private_network_guard";
+
+constexpr char kGeolocationMigrateDefaultValue[] =
+    "profile.default_content_setting_values.migrate_geolocation";
 
 #if !BUILDFLAG(IS_IOS)
 // This setting was accidentally bound to a UI surface intended for a different
@@ -116,6 +122,8 @@ void DefaultProvider::RegisterProfilePrefs(
     }
   }
 
+  registry->RegisterBooleanPref(kGeolocationMigrateDefaultValue, false);
+
   // Obsolete prefs -------------------------------------------------------
 
   // These prefs have been deprecated, but need to be registered so they can
@@ -157,6 +165,8 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
 
   // Read global defaults.
   ReadDefaultSettings();
+
+  MigrateGeolocationDefaultValue();
 
   if (should_record_metrics)
     RecordHistogramMetrics();
@@ -294,10 +304,11 @@ bool DefaultProvider::IsValueEmptyOrDefault(ContentSettingsType content_type,
 
 void DefaultProvider::ChangeSetting(ContentSettingsType content_type,
                                     base::Value value) {
-  const ContentSettingsInfo* info =
-      ContentSettingsRegistry::GetInstance()->Get(content_type);
+  const PermissionSettingsInfo* info =
+      PermissionSettingsRegistry::GetInstance()->Get(content_type);
   DCHECK(!info || value.is_none() ||
-         info->IsDefaultSettingValid(ValueToContentSetting(value)))
+         info->delegate().IsDefaultSettingValid(
+             *info->delegate().FromValue(value)))
       << "type: " << content_type << " value: " << value.DebugString();
   if (value.is_none()) {
     value = GetDefaultValue(content_type);
@@ -399,6 +410,42 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   // TODO(https://crbug.com/367181093): clean this up.
   prefs_->ClearPref(kBug364820109AlreadyWorkedAroundPref);
 #endif  // !BUILDFLAG(IS_IOS)
+}
+
+void DefaultProvider::MigrateGeolocationDefaultValue() {
+  if (is_off_the_record_) {
+    return;
+  }
+
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  // Migrate when the feature gets enabled the first time.
+  if (base::FeatureList::IsEnabled(
+          features::kApproximateGeolocationPermission) &&
+      !prefs_->GetBoolean(kGeolocationMigrateDefaultValue)) {
+    auto content_setting = ValueToContentSetting(
+        default_settings_.at(ContentSettingsType::GEOLOCATION));
+    auto geolocation_setting =
+        GeolocationSetting{ToPermissionOption(content_setting),
+                           ToPermissionOption(content_setting)};
+    ChangeSetting(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+                  info->delegate().ToValue(geolocation_setting));
+    prefs_->SetBoolean(kGeolocationMigrateDefaultValue, true);
+  }
+
+  // Migrate back when the feature is disabled the first time.
+  if (!base::FeatureList::IsEnabled(
+          features::kApproximateGeolocationPermission) &&
+      prefs_->GetBoolean(kGeolocationMigrateDefaultValue)) {
+    auto geolocation_setting =
+        std::get<GeolocationSetting>(ValueToPermissionSetting(
+            info, default_settings_.at(
+                      ContentSettingsType::GEOLOCATION_WITH_OPTIONS)));
+    ChangeSetting(
+        ContentSettingsType::GEOLOCATION,
+        ContentSettingToValue(ToContentSetting(geolocation_setting.precise)));
+    prefs_->SetBoolean(kGeolocationMigrateDefaultValue, false);
+  }
 }
 
 void DefaultProvider::RecordHistogramMetrics() {

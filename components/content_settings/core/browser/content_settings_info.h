@@ -40,6 +40,7 @@ class ContentSettingsInfo {
   class Delegate : public PermissionSettingsInfo::Delegate {
    public:
     bool IsValid(const PermissionSetting& setting) const override;
+    bool IsDefaultSettingValid(const PermissionSetting& setting) const override;
     PermissionSetting InheritInIncognito(
         const PermissionSetting& setting) const override;
     bool ShouldCoalesceEphemeralState() const override;
