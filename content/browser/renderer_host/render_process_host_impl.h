@@ -854,11 +854,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver,
       GlobalRenderFrameHostId render_frame_host_id);
 
-  using IpcSendWatcher = base::RepeatingCallback<void(const IPC::Message& msg)>;
-  void SetIpcSendWatcherForTesting(IpcSendWatcher watcher) {
-    ipc_send_watcher_for_testing_ = std::move(watcher);
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   // Notifies the renderer process of memory pressure level.
   void NotifyMemoryPressureToRenderer(
@@ -1558,8 +1553,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // If the RenderProcessHost is being shutdown via Shutdown(), this records the
   // exit code.
   int shutdown_exit_code_ = -1;
-
-  IpcSendWatcher ipc_send_watcher_for_testing_;
 
   // Keeps this process registered with the tracing subsystem.
   std::unique_ptr<TracingServiceController::ClientRegistration>

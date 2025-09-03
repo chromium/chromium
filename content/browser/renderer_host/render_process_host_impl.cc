@@ -3883,11 +3883,6 @@ bool RenderProcessHostImpl::Send(IPC::Message* msg) {
     return false;
 
   DCHECK(!message->is_sync());
-
-  // Allow tests to watch IPCs sent to the renderer.
-  if (ipc_send_watcher_for_testing_)
-    ipc_send_watcher_for_testing_.Run(*message);
-
   return channel_->Send(message.release());
 }
 
