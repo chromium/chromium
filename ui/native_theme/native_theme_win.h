@@ -14,13 +14,14 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/win/registry.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
+#include "ui/gfx/win/singleton_hwnd.h"
 #include "ui/native_theme/native_theme.h"
 
 class SkCanvas;
@@ -101,7 +102,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   bool IsUsingHighContrastThemeInternal() const;
   void CloseHandlesInternal();
 
-  // Called by `singleton_hwnd_observer_`.
+  // Called by `hwnd_subscription_`.
   void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
   // Update the locally cached set of system colors.
@@ -226,8 +227,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
   mutable HANDLE theme_handles_[LAST];
 
   // Color/high contrast mode change observer.
-  gfx::SingletonHwndObserver singleton_hwnd_observer_{
-      base::BindRepeating(&NativeThemeWin::OnWndProc, base::Unretained(this))};
+  base::CallbackListSubscription hwnd_subscription_ =
+      gfx::SingletonHwnd::GetInstance()->RegisterCallback(
+          base::BindRepeating(&NativeThemeWin::OnWndProc,
+                              base::Unretained(this)));
 
   // Used to notify the web native theme of changes to dark mode, high
   // contrast, preferred color scheme, and preferred contrast.

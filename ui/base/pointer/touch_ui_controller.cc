@@ -17,9 +17,11 @@
 #include "ui/base/ui_base_switches.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/callback_list.h"
 #include "base/win/win_util.h"
 #include "ui/gfx/win/singleton_hwnd.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
 #endif
 
 namespace ui {
@@ -204,7 +206,7 @@ TouchUiController::TouchUiController(TouchUiState touch_ui_state)
 #endif  // BUILDFLAG(USE_BLINK)
 
 #if BUILDFLAG(IS_WIN)
-    singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
+    hwnd_subscription_ = gfx::SingletonHwnd::GetInstance()->RegisterCallback(
         base::BindRepeating(&OnWndProc));
     base::win::IsDeviceInTabletMode(
         gfx::SingletonHwnd::GetInstance()->hwnd(),

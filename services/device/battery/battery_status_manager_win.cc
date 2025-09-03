@@ -7,10 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "services/device/battery/battery_status_manager.h"
 #include "ui/gfx/win/singleton_hwnd.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace device {
 
@@ -32,21 +32,16 @@ class BatteryStatusObserver {
   ~BatteryStatusObserver() {}
 
   void Start() {
-    if (CreateSingletonObserver()) {
-      BatteryChanged();
-      // RegisterPowerSettingNotification function work from Windows Vista
-      // onwards. However even without them we will receive notifications,
-      // e.g. when a power source is connected.
-      // TODO(timvolodine) : consider polling for battery changes on windows
-      // versions prior to Vista, see crbug.com/402466.
-      power_handle_ = RegisterNotification(&GUID_ACDC_POWER_SOURCE);
-      battery_change_handle_ =
-          RegisterNotification(&GUID_BATTERY_PERCENTAGE_REMAINING);
-    } else {
-      // Could not use singleton hwnd, execute callback with the default
-      // values.
-      callback_.Run(mojom::BatteryStatus());
-    }
+    hwnd_subscription_ =
+        gfx::SingletonHwnd::GetInstance()->RegisterCallback(base::BindRepeating(
+            &BatteryStatusObserver::OnWndProc, base::Unretained(this)));
+    BatteryChanged();
+    // RegisterPowerSettingNotification function work from Windows Vista
+    // onwards. However even without them we will receive notifications, e.g.
+    // when a power source is connected.
+    power_handle_ = RegisterNotification(&GUID_ACDC_POWER_SOURCE);
+    battery_change_handle_ =
+        RegisterNotification(&GUID_BATTERY_PERCENTAGE_REMAINING);
   }
 
   void Stop() {
@@ -88,24 +83,10 @@ class BatteryStatusObserver {
     return UnregisterPowerSettingNotification(handle);
   }
 
-  bool CreateSingletonObserver() {
-    // base:Unretained() is safe because the observer handles the correct
-    // cleanup if either the SingletonHwnd or forwarded object is destroyed
-    // first.
-    singleton_hwnd_observer_ =
-        std::make_unique<gfx::SingletonHwndObserver>(base::BindRepeating(
-            &BatteryStatusObserver::OnWndProc, base::Unretained(this)));
-    if (!singleton_hwnd_observer_) {
-      LOG(ERROR) << "Failed to use SingletonHwndObserver";
-      return false;
-    }
-    return true;
-  }
-
   HPOWERNOTIFY power_handle_;
   HPOWERNOTIFY battery_change_handle_;
   BatteryCallback callback_;
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+  base::CallbackListSubscription hwnd_subscription_;
 };
 
 class BatteryStatusManagerWin : public BatteryStatusManager {

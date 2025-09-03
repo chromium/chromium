@@ -19,9 +19,7 @@
 #endif  // BUILDFLAG(USE_BLINK)
 
 #if BUILDFLAG(IS_WIN)
-namespace gfx {
-class SingletonHwndObserver;
-}
+#include "base/callback_list.h"
 #endif
 
 namespace ui {
@@ -138,7 +136,7 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
 #endif  // BUILDFLAG(USE_BLINK)
 
 #if BUILDFLAG(IS_WIN)
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+  base::CallbackListSubscription hwnd_subscription_;
   TabletModeCallbackList tablet_mode_callback_list_;
 #endif
 

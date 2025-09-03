@@ -9,11 +9,11 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "media/base/media_export.h"
+#include "ui/gfx/win/singleton_hwnd.h"
 
-namespace gfx {
-class SingletonHwndObserver;
-}
 namespace media {
 
 class MEDIA_EXPORT SystemMessageWindowWin {
@@ -32,7 +32,10 @@ class MEDIA_EXPORT SystemMessageWindowWin {
 
   class DeviceNotifications;
   std::unique_ptr<DeviceNotifications> device_notifications_;
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+  base::CallbackListSubscription hwnd_subscription_ =
+      gfx::SingletonHwnd::GetInstance()->RegisterCallback(
+          base::BindRepeating(&SystemMessageWindowWin::WndProc,
+                              base::Unretained(this)));
 };
 
 }  // namespace media

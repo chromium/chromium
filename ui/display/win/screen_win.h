@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/scoped_observation.h"
 #include "ui/display/display_change_notifier.h"
 #include "ui/display/display_export.h"
@@ -24,7 +25,7 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
+#include "ui/gfx/win/singleton_hwnd.h"
 
 namespace display::win {
 
@@ -320,7 +321,7 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Helper implementing the DisplayObserver handling.
   DisplayChangeNotifier change_notifier_;
 
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+  base::CallbackListSubscription hwnd_subscription_;
 
   // Current list of ScreenWinDisplays.
   std::vector<ScreenWinDisplay> screen_win_displays_;

@@ -11,11 +11,13 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -28,7 +30,7 @@
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/gfx/animation/animation.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
+#include "ui/gfx/win/singleton_hwnd.h"
 
 namespace content {
 
@@ -330,7 +332,7 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   void OnDiscoveredAssistiveTech(
       const std::vector<AssistiveTechInfo>& discovered_ats);
 
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+  base::CallbackListSubscription hwnd_subscription_;
 
   // A ScopedAccessibilityMode that holds AXMode::kScreenReader when
   // an active screen reader has been detected.
@@ -343,7 +345,7 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
 
 BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
-    singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
+    hwnd_subscription_ = gfx::SingletonHwnd::GetInstance()->RegisterCallback(
         base::BindRepeating(&OnWndProc));
   }
 }

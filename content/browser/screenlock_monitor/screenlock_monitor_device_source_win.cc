@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "ui/gfx/win/singleton_hwnd.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace content {
 namespace {
@@ -59,15 +58,6 @@ void ScreenlockMonitorDeviceSource::SessionMessageWindow::
 }
 
 ScreenlockMonitorDeviceSource::SessionMessageWindow::SessionMessageWindow() {
-  // Create a singleton observer for receiving session change notifications.
-  // base:Unretained() is safe because the observer handles the correct
-  // cleanup if either the SingletonHwnd or forwarded object is destroyed
-  // first.
-  singleton_hwnd_observer_ =
-      std::make_unique<gfx::SingletonHwndObserver>(base::BindRepeating(
-          &ScreenlockMonitorDeviceSource::SessionMessageWindow::OnWndProc,
-          base::Unretained(this)));
-
   // Use NOTIFY_FOR_THIS_SESSION so we only receive events from the current
   // session, and not from other users connected to the same session host.
   bool registered = register_session_notification_function_(

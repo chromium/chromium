@@ -4,9 +4,12 @@
 
 #include "ui/gfx/win/singleton_hwnd.h"
 
+#include <utility>
+
+#include "base/callback_list.h"
 #include "base/no_destructor.h"
 #include "base/task/current_thread.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
+#include "base/win/windows_types.h"
 
 namespace gfx {
 
@@ -29,10 +32,14 @@ BOOL SingletonHwnd::ProcessWindowMessage(HWND window,
   // It is unsafe to forward these messages as observers may depend on the
   // existence of a MessageLoop to proceed.
   if (base::CurrentUIThread::IsSet()) {
-    observer_list_.Notify(&SingletonHwndObserver::OnWndProc, window, message,
-                          wparam, lparam);
+    callback_list_.Notify(window, message, wparam, lparam);
   }
   return false;
+}
+
+base::CallbackListSubscription SingletonHwnd::RegisterCallback(
+    CallbackList::CallbackType callback) {
+  return callback_list_.Add(std::move(callback));
 }
 
 SingletonHwnd::SingletonHwnd() {
@@ -45,14 +52,6 @@ SingletonHwnd::SingletonHwnd() {
 
 SingletonHwnd::~SingletonHwnd() {
   NOTREACHED();  // Never destroyed.
-}
-
-void SingletonHwnd::AddObserver(SingletonHwndObserver* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void SingletonHwnd::RemoveObserver(SingletonHwndObserver* observer) {
-  observer_list_.RemoveObserver(observer);
 }
 
 }  // namespace gfx

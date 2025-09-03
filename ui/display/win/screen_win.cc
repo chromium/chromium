@@ -12,6 +12,7 @@
 #include <optional>
 #include <sstream>
 
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
@@ -45,6 +46,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/icc_profile.h"
+#include "ui/gfx/win/singleton_hwnd.h"
 
 namespace display::win {
 
@@ -1023,7 +1025,7 @@ void ScreenWin::UpdateFromDisplayInfos(
 
 void ScreenWin::Initialize() {
   color_profile_reader_->UpdateIfNeeded();
-  singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
+  hwnd_subscription_ = gfx::SingletonHwnd::GetInstance()->RegisterCallback(
       base::BindRepeating(&ScreenWin::OnWndProc, base::Unretained(this)));
   UpdateFromDisplayInfos(GetDisplayInfosFromSystem());
 

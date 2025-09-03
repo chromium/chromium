@@ -24,9 +24,9 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-namespace gfx {
-class SingletonHwndObserver;
-}  // namespace gfx
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "ui/gfx/win/singleton_hwnd.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
@@ -81,7 +81,10 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
         register_session_notification_function_;
     static WTSUnRegisterSessionNotificationFunction
         unregister_session_notification_function_;
-    std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+    base::CallbackListSubscription hwnd_subscription_ =
+        gfx::SingletonHwnd::GetInstance()->RegisterCallback(
+            base::BindRepeating(&SessionMessageWindow::OnWndProc,
+                                base::Unretained(this)));
   };
 
   SessionMessageWindow session_message_window_;
