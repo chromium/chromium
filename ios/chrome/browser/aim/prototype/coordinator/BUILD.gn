@@ -31,4 +31,5 @@ source_set("coordinator") {
     "//ios/web/public",
     "//ui/base",
   ]
+  frameworks = [ "PDFKit.framework" ]
 }

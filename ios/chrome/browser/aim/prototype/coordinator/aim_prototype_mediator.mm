@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_mediator.h"
 
+#import <PDFKit/PDFKit.h>
+
 #import <memory>
 
 #import "base/files/file_path.h"
@@ -11,7 +13,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/sequenced_task_runner.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
 #import "components/lens/contextual_input.h"
@@ -23,9 +26,52 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
+
+namespace {
+
+// Reads data from a file URL. Runs on a background thread.
+NSData* ReadDataFromURL(GURL url) {
+  NSURL* ns_url = net::NSURLWithGURL(url);
+  BOOL accessing = [ns_url startAccessingSecurityScopedResource];
+
+  NSData* data = nil;
+  @try {
+    // Always attempt to read the data. This will work for non-scoped URLs,
+    // and for scoped URLs if `accessing` is true. It will fail if `accessing`
+    // is false for a scoped URL, which is the correct behavior.
+    data = [NSData dataWithContentsOfURL:ns_url];
+  } @finally {
+    // Only stop accessing if we were successfully granted access.
+    if (accessing) {
+      [ns_url stopAccessingSecurityScopedResource];
+    }
+  }
+  return data;
+}
+
+// Generates a UIImage preview for the given PDF data.
+UIImage* GeneratePDFPreview(NSData* pdf_data) {
+  if (!pdf_data) {
+    return nil;
+  }
+  PDFDocument* doc = [[PDFDocument alloc] initWithData:pdf_data];
+  if (!doc) {
+    return nil;
+  }
+  PDFPage* page = [doc pageAtIndex:0];
+  if (!page) {
+    return nil;
+  }
+  // TODO(crbug.com/40280872): Determine the correct size for the thumbnail.
+  return [page thumbnailOfSize:CGSizeMake(200, 200)
+                        forBox:kPDFDisplayBoxCropBox];
+}
+
+}  // namespace
 
 @implementation AIMPrototypeMediator {
   // The ordered list of items for display.
@@ -94,6 +140,28 @@
                               forItemWithToken:token];
                   });
                 }];
+}
+
+- (void)processPDFFileURL:(GURL)PDFFileURL {
+  AIMInputItem* item = [[AIMInputItem alloc] init];
+  [_items addObject:item];
+  [self.consumer setItems:_items];
+  const base::UnguessableToken& token = item.fileToken;
+
+  // Read the data in the background then call `onDataReadForItem`.
+  __weak __typeof(self) weakSelf = self;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ReadDataFromURL, PDFFileURL),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(^(NSData* data) {
+        AIMPrototypeMediator* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [strongSelf onDataReadForItemWithToken:token
+                                       fromURL:PDFFileURL
+                                      withData:data];
+      })));
 }
 
 #pragma mark - AIMPrototypeMutator
@@ -264,6 +332,54 @@
     }
   }
   return nil;
+}
+
+// Handles the read `data` from the given `url` for the item with the given
+// `token`. This is the callback for the asynchronous file read.
+- (void)onDataReadForItemWithToken:(const base::UnguessableToken&)token
+                           fromURL:(GURL)url
+                          withData:(NSData*)data {
+  AIMInputItem* item = [self itemForToken:token];
+  if (!item) {
+    return;
+  }
+
+  if (!data) {
+    item.state = AIMInputItemState::kError;
+    [self.consumer updateState:item.state forItemWithToken:item.fileToken];
+    return;
+  }
+
+  // Start the file upload immediately.
+  item.state = AIMInputItemState::kUploading;
+  [self.consumer updateState:item.state forItemWithToken:item.fileToken];
+
+  std::unique_ptr<lens::ContextualInputData> inputData =
+      std::make_unique<lens::ContextualInputData>();
+  inputData->context_input = std::vector<lens::ContextualInput>();
+  inputData->primary_content_type = lens::MimeType::kPdf;
+  inputData->page_url = url;
+  inputData->page_title = url.ExtractFileName();
+
+  std::vector<uint8_t> vectorData([data length]);
+  [data getBytes:vectorData.data() length:[data length]];
+  inputData->context_input->push_back(
+      lens::ContextualInput(std::move(vectorData), lens::MimeType::kPdf));
+  _composeboxQueryController->StartFileUploadFlow(
+      item.fileToken, std::move(inputData), std::nullopt);
+
+  // Concurrently, generate a preview for the UI.
+  __weak __typeof(self) weakSelf = self;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&GeneratePDFPreview, data),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(^(UIImage* preview) {
+        AIMPrototypeMediator* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [strongSelf didLoadPreviewImage:preview forItemWithToken:token];
+      })));
 }
 
 @end

@@ -17,6 +17,7 @@
 class ComposeboxQueryControllerIOS;
 @class AIMPrototypeMediator;
 class UrlLoadingBrowserAgent;
+class GURL;
 
 // Delegate for the AIM prototype mediator.
 @protocol AIMPrototypeMediatorDelegate
@@ -41,6 +42,9 @@ class UrlLoadingBrowserAgent;
 
 // Processes the given `itemProvider` for an image.
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider;
+
+// Processes the given `PDFFileURL` for a file.
+- (void)processPDFFileURL:(GURL)PDFFileURL;
 
 @end
 

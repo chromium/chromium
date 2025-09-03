@@ -24,9 +24,15 @@
 #import "ios/chrome/common/channel_info.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/apple/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 @interface AIMPrototypeCoordinator () <AIMPrototypeMediatorDelegate,
+                                       AIMPrototypeViewControllerDelegate,
+                                       PHPickerViewControllerDelegate,
+                                       UIDocumentPickerDelegate,
+                                       UIImagePickerControllerDelegate,
+                                       UINavigationControllerDelegate,
                                        UIViewControllerTransitioningDelegate>
 @end
 
@@ -160,6 +166,16 @@
   _picker.delegate = self;
 }
 
+- (void)aimPrototypeViewControllerDidTapFileButton:
+    (AIMPrototypeViewController*)viewController {
+  UIDocumentPickerViewController* picker =
+      [[UIDocumentPickerViewController alloc]
+          initForOpeningContentTypes:@[ UTTypePDF ]];
+  picker.allowsMultipleSelection = NO;
+  picker.delegate = self;
+  [_viewController presentViewController:picker animated:YES completion:nil];
+}
+
 #pragma mark - PHPickerViewControllerDelegate
 
 - (void)picker:(PHPickerViewController*)picker
@@ -172,6 +188,16 @@
 
   NSItemProvider* provider = results.firstObject.itemProvider;
   [_mediator processImageItemProvider:provider];
+}
+
+#pragma mark - UIDocumentPickerDelegate
+
+- (void)documentPicker:(UIDocumentPickerViewController*)controller
+    didPickDocumentsAtURLs:(NSArray<NSURL*>*)urls {
+  if (urls.count == 0) {
+    return;
+  }
+  [_mediator processPDFFileURL:net::GURLWithNSURL(urls.firstObject)];
 }
 
 #pragma mark - UIImagePickerControllerDelegate

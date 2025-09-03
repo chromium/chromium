@@ -304,8 +304,22 @@ const CGFloat kGlowEffectWidth = 4.0f;
                     aimPrototypeViewControllerDidTapCameraButton:weakSelf];
               }];
 
+  UIAction* fileAction = [UIAction
+      // TODO(crbug.com/40280872): Localize this string.
+      actionWithTitle:@"File"
+                image:DefaultSymbolWithPointSize(@"doc", kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.delegate
+                    aimPrototypeViewControllerDidTapFileButton:weakSelf];
+              }];
+
   plusButton.menu = [UIMenu menuWithTitle:@""
-                                 children:@[ cameraAction, galleryAction ]];
+                                 children:@[
+                                   fileAction,
+                                   galleryAction,
+                                   cameraAction,
+                                 ]];
 
   _aimButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _aimButton.translatesAutoresizingMaskIntoConstraints = NO;

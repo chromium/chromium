@@ -24,6 +24,8 @@
     (AIMPrototypeViewController*)viewController;
 - (void)aimPrototypeViewControllerMayShowGalleryPicker:
     (AIMPrototypeViewController*)viewController;
+- (void)aimPrototypeViewControllerDidTapFileButton:
+    (AIMPrototypeViewController*)viewController;
 @end
 
 // View controller for the AIM prototype.
