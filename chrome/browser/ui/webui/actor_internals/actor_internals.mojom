@@ -23,6 +23,9 @@ struct JournalEntry {
 
   // Timestamp the event occurred at.
   mojo_base.mojom.JSTime timestamp;
+
+  // The task id of the event.
+  int32 task_id;
 };
 
 // Interface for browser-to-page events

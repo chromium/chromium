@@ -14,9 +14,13 @@
   <div class="commands">
     <button id="start-logging">Start Trace Logging</button>
     <button id="stop-logging">Stop Trace Logging</button>
+    <input type="text" id="task-id-filter" placeholder="Enter Task ID">
+    <button id="filter-by-task-id">Filter by Task ID</button>
+    <button id="clear-filter">Clear Filter</button>
   </div>
   <table id="actor-events-table">
     <thead>
+      <th>TaskId</th>
       <th>URL</th>
       <th>Event</th>
       <th>Type</th>
@@ -25,7 +29,8 @@
     </thead>
   </table>
   <template id="actor-events-row">
-    <tr data-timestamp>
+    <tr data-timestamp data-task-id>
+      <td></td>
       <td></td>
       <td></td>
       <td></td>

@@ -60,7 +60,7 @@ void ActorInternalsUIHandler::WillAddJournalEntry(
     const actor::AggregatedJournal::Entry& entry) {
   remote_->JournalEntryAdded(actor_internals::mojom::JournalEntry::New(
       entry.url, entry.data->event, ToString(entry.data->type),
-      entry.data->details, entry.data->timestamp));
+      entry.data->details, entry.data->timestamp, entry.data->task_id));
 }
 
 void ActorInternalsUIHandler::StartLogging() {

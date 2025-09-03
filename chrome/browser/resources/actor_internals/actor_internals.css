@@ -8,10 +8,18 @@ thead {
 
 th {
   background-color: #C0C0C0;
+  border: 1px solid #ccc;
 }
 
 td {
   background-color: #F0F0F0;
+  border: 1px solid #ccc;
+}
+
+th,
+td {
+  max-width: 300px;
+  word-wrap: break-word;
 }
 
 #stop-logging {
