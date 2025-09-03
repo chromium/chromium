@@ -10,7 +10,6 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 
@@ -71,7 +70,7 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
      * @param filter The file filter to apply to the list.
      * @param contentResolver The ContentResolver to use to retrieve image metadata from disk.
      */
-    public FileEnumWorkerTask(
+    FileEnumWorkerTask(
             WindowAndroid windowAndroid,
             FilesEnumeratedCallback callback,
             MimeTypeFilter filter,
@@ -111,11 +110,7 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
 
         List<PickerBitmap> pickerBitmaps = new ArrayList<>();
 
-        // The DATA column is deprecated in the Android Q SDK. Replaced by relative_path.
-        String directoryColumnName =
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                        ? "relative_path"
-                        : MediaStore.Files.FileColumns.DATA;
+        final String directoryColumnName = "relative_path";
         final String[] selectColumns = {
             MediaStore.Files.FileColumns._ID,
             MediaStore.Files.FileColumns.DATE_ADDED,
@@ -162,15 +157,6 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
         // On some devices, such as Samsung and Redmi, the Screenshots folder is located under
         // DCIM/Screenshots, as opposed to DCIM/Pictures/Screenshots.
         String screenshotsDir = Environment.DIRECTORY_DCIM + "/Screenshots";
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            cameraDir = Environment.getExternalStoragePublicDirectory(cameraDir).toString();
-            picturesDir = Environment.getExternalStoragePublicDirectory(picturesDir).toString();
-            moviesDir = Environment.getExternalStoragePublicDirectory(moviesDir).toString();
-            downloadsDir = Environment.getExternalStoragePublicDirectory(downloadsDir).toString();
-            restoredDir = Environment.getExternalStoragePublicDirectory(restoredDir).toString();
-            screenshotsDir =
-                    Environment.getExternalStoragePublicDirectory(screenshotsDir).toString();
-        }
 
         String[] whereArgs =
                 new String[] {
