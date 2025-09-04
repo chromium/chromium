@@ -5816,9 +5816,7 @@ crbug.com/1041993 http/tests/origin_trials/sample-api-script-added-after-css-dec
 # Ref_Tests which fail when SkiaRenderer is enable, and which cannot be
 # rebaselined. TODO(jonross): triage these into any existing bugs or file more
 # specific bugs.
-crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1043675 [ Linux ] svg/custom/svg-root-with-opacity.html [ Failure ]
-crbug.com/1043675 [ Win ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1043675 [ Win ] svg/custom/svg-root-with-opacity.html [ Failure ]
 
 # Sheriff 2020-01-23
@@ -6161,10 +6159,8 @@ crbug.com/1205012 external/wpt/html/cross-origin-opener-policy/reporting/access-
 # Some plzServiceWorker and plzDedicatedWorker singled out from generic sheriff rounds above
 
 # For SkiaRenderer on MacOS
-crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
-crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 
 # Sheriff 2021-05-17
 crbug.com/40767025 http/tests/devtools/elements/elements-panel-restore-selection-when-node-comes-later.js [ Failure Pass ]
