@@ -694,6 +694,7 @@ export class SearchboxElement extends SearchboxElementBase {
           this.$.input.focus();
         }
       } else if (
+          this.isThumbnailDeletable_ &&
           this.$.input.selectionStart === 0 &&
           this.$.input.selectionEnd === 0 &&
           this.$.input === this.shadowRoot!.activeElement &&
