@@ -557,6 +557,13 @@ std::vector<FramerateAndResolution> GetMaxFramerateAndResolutionsFromMFT(
   if (codec == VideoCodec::kH264) {
     max_framerate_and_resolutions.push_back(kLegacy2KMaxFramerateAndResolution);
     max_framerate_and_resolutions.push_back(kLegacy4KMaxFramerateAndResolution);
+  } else if (codec == VideoCodec::kVP9) {
+    max_framerate_and_resolutions.push_back(
+        kVP9Modern2KMaxFramerateAndResolution);
+    max_framerate_and_resolutions.push_back(
+        kVP9Modern4KMaxFramerateAndResolution);
+    max_framerate_and_resolutions.push_back(
+        kVP9Modern8KMaxFramerateAndResolution);
   } else {
     max_framerate_and_resolutions.push_back(kModern2KMaxFramerateAndResolution);
     max_framerate_and_resolutions.push_back(kModern4KMaxFramerateAndResolution);
