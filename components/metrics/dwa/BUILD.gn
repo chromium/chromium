@@ -90,16 +90,16 @@ source_set("unit_tests") {
   ]
 }
 
-action("gen_dwa_builders") {
-  script = "//tools/metrics/dwa/gen_builders.py"
+action("gen_private_metrics_builders") {
+  script = "//tools/metrics/private_metrics/gen_builders.py"
 
   # Re-generate the outputs if the codegen code changes:
   inputs = [
-    "//tools/metrics/dwa/builders_template.py",
-    "//tools/metrics/dwa/decode_template.py",
-    "//tools/metrics/dwa/codegen.py",
+    "//tools/metrics/private_metrics/builders_template.py",
+    "//tools/metrics/private_metrics/decode_template.py",
+    "//tools/metrics/private_metrics/codegen.py",
   ]
-  sources = [ "//tools/metrics/dwa/dwa.xml" ]
+  sources = [ "//tools/metrics/private_metrics/dwa.xml" ]
 
   outdir = "$target_gen_dir"
 
@@ -119,11 +119,11 @@ action("gen_dwa_builders") {
 }
 
 static_library("dwa_builders") {
-  sources = get_target_outputs(":gen_dwa_builders")
+  sources = get_target_outputs(":gen_private_metrics_builders")
 
   deps = [
     ":dwa",
-    ":gen_dwa_builders",
+    ":gen_private_metrics_builders",
     "//base",
   ]
 }

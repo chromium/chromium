@@ -13,7 +13,7 @@ import path_util
 
 from xml.dom import minidom
 
-_DWA_XML = path_util.GetInputFile('tools/metrics/dwa/dwa.xml')
+_DWA_XML = path_util.GetInputFile('tools/metrics/private_metrics/dwa.xml')
 
 
 def main():

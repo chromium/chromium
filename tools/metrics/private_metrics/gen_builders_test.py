@@ -359,5 +359,6 @@ std::map<uint64_t, EntryDecoder> CreateDecodeMap() {
 }  // namespace dwa
 """)
 
+
 if __name__ == '__main__':
   unittest.main()
