@@ -14,7 +14,6 @@
 #include "codelabs/mojo_examples/process_bootstrapper.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_channel_proxy.h"
-#include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -110,9 +109,9 @@ class RendererIPCListener : public IPC::Listener {
     // comments here.
 
     // 1.) Create a new IPC::ChannelProxy.
-    channel_proxy_ = IPC::SyncChannel::Create(
-        this, io_task_runner, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        &shutdown_event_);
+    channel_proxy_ = std::make_unique<IPC::ChannelProxy>(
+        this, io_task_runner,
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     // 2.) Accept the mojo invitation.
     mojo::IncomingInvitation invitation = mojo::IncomingInvitation::Accept(
@@ -149,7 +148,7 @@ class RendererIPCListener : public IPC::Listener {
     }
   }
 
-  std::unique_ptr<IPC::SyncChannel> channel_proxy_;
+  std::unique_ptr<IPC::ChannelProxy> channel_proxy_;
   scoped_refptr<base::SingleThreadTaskRunner> initially_frozen_tq_;
   base::WaitableEvent shutdown_event_{
       base::WaitableEvent::ResetPolicy::MANUAL,

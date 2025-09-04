@@ -66,9 +66,9 @@ class RendererIPCListener : public IPC::Listener {
     //       bidirectional IPC channel between browser <=> renderer.
 
     // 1.) Create a new IPC::ChannelProxy.
-    channel_proxy_ = IPC::SyncChannel::Create(
-        this, io_task_runner, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        &shutdown_event_);
+    channel_proxy_ = std::make_unique<IPC::ChannelProxy>(
+        this, io_task_runner,
+        base::SingleThreadTaskRunner::GetCurrentDefault());
 
     // 2.) Accept the mojo invitation.
     mojo::IncomingInvitation invitation = mojo::IncomingInvitation::Accept(
@@ -113,7 +113,7 @@ class RendererIPCListener : public IPC::Listener {
     }
   }
 
-  std::unique_ptr<IPC::SyncChannel> channel_proxy_;
+  std::unique_ptr<IPC::ChannelProxy> channel_proxy_;
   scoped_refptr<base::SingleThreadTaskRunner> initially_frozen_tq_;
   base::WaitableEvent shutdown_event_{
       base::WaitableEvent::ResetPolicy::MANUAL,
