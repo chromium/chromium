@@ -58,6 +58,10 @@ const AudioObjectPropertyAddress kDefaultOutputDevicePropertyAddress = {
     kAudioHardwarePropertyDefaultOutputDevice, kAudioObjectPropertyScopeGlobal,
     kAudioObjectPropertyElementMain};
 
+const AudioObjectPropertyAddress kSampleRateAddress = {
+    kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
+    kAudioObjectPropertyElementMain};
+
 bool operator==(const AudioObjectPropertyAddress& x,
                 const AudioObjectPropertyAddress& y) {
   return x.mSelector == y.mSelector && x.mScope == y.mScope &&
@@ -274,7 +278,8 @@ class CatapAudioInputStreamTest : public testing::Test {
                                  dispatch_queue_t in_dispatch_queue,
                                  AudioObjectPropertyListenerBlock in_listener) {
             EXPECT_TRUE(*in_address == kDeviceIsAliveAddress ||
-                        *in_address == kDefaultOutputDevicePropertyAddress);
+                        *in_address == kDefaultOutputDevicePropertyAddress ||
+                        *in_address == kSampleRateAddress);
             property_listener_block_ = in_listener;
             ++property_listener_block_count_;
             return noErr;
@@ -727,7 +732,8 @@ TEST_F(CatapAudioInputStreamTest, PropertyListenerRemovedOnClose) {
                                dispatch_queue_t in_dispatch_queue,
                                AudioObjectPropertyListenerBlock in_listener) {
           EXPECT_TRUE(*in_address == kDeviceIsAliveAddress ||
-                      *in_address == kDefaultOutputDevicePropertyAddress);
+                      *in_address == kDefaultOutputDevicePropertyAddress ||
+                      *in_address == kSampleRateAddress);
           --property_listener_block_count_;
 
           if (property_listener_block_count_ == 0) {

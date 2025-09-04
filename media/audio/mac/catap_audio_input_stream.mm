@@ -44,6 +44,10 @@ const AudioObjectPropertyAddress kDefaultOutputDevicePropertyAddress = {
     kAudioHardwarePropertyDefaultOutputDevice, kAudioObjectPropertyScopeGlobal,
     kAudioObjectPropertyElementMain};
 
+const AudioObjectPropertyAddress kSampleRateAddress = {
+    kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
+    kAudioObjectPropertyElementMain};
+
 const char kHistogramPartsSeparator[] = ".";
 const char kHistogramStatusPrefix[] = "Status";
 const char kHistogramOperationDurationPrefix[] = "OperationDuration";
@@ -267,6 +271,10 @@ class PropertyListenerHelper {
           kAudioObjectSystemObject, &kDefaultOutputDevicePropertyAddress,
           dispatch_get_main_queue(), property_listener_block_);
     }
+
+    catap_api_->AudioObjectAddPropertyListenerBlock(
+        aggregate_device_id_, &kSampleRateAddress, dispatch_get_main_queue(),
+        property_listener_block_);
   }
 
   void RemovePropertyListener() {
@@ -275,7 +283,7 @@ class PropertyListenerHelper {
 
     // Use the stored block reference to remove the listener.
     catap_api_->AudioObjectRemovePropertyListenerBlock(
-        aggregate_device_id_, &kDeviceIsAliveAddress, dispatch_get_main_queue(),
+        aggregate_device_id_, &kSampleRateAddress, dispatch_get_main_queue(),
         property_listener_block_);
 
     if (capture_default_device_) {
@@ -283,6 +291,11 @@ class PropertyListenerHelper {
           kAudioObjectSystemObject, &kDefaultOutputDevicePropertyAddress,
           dispatch_get_main_queue(), property_listener_block_);
     }
+
+    catap_api_->AudioObjectRemovePropertyListenerBlock(
+        aggregate_device_id_, &kDeviceIsAliveAddress, dispatch_get_main_queue(),
+        property_listener_block_);
+
     property_listener_block_ = nil;
   }
 
@@ -808,11 +821,11 @@ bool CatapAudioInputStream::ProbeAudioTapPermissions() {
 void CatapAudioInputStream::ProcessPropertyChange(
     base::span<const AudioObjectPropertyAddress> property_addresses) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT0("audio", "CatapAudioInputStream::ProcessPropertyChange");
-
   for (const AudioObjectPropertyAddress& property_address :
        property_addresses) {
     if (property_address == kDeviceIsAliveAddress) {
+      TRACE_EVENT1("audio", "CatapAudioInputStream::ProcessPropertyChange",
+                   "property", "DeviceIsAlive");
       // Read IsAlive property.
       UInt32 property_size = sizeof(UInt32);
       UInt32 is_alive = false;
@@ -834,8 +847,18 @@ void CatapAudioInputStream::ProcessPropertyChange(
         OnError();
       }
     } else if (property_address == kDefaultOutputDevicePropertyAddress) {
+      TRACE_EVENT1("audio", "CatapAudioInputStream::ProcessPropertyChange",
+                   "property", "DefaultOutputDevice");
       // Just log this for debuggability for now.
       SendLogMessage("%s => Default output device changed.", __func__);
+    } else if (property_address == kSampleRateAddress) {
+      TRACE_EVENT1("audio", "CatapAudioInputStream::ProcessPropertyChange",
+                   "property", "SampleRate");
+      // The current code can't recover from a sample rate change, and will
+      // result in distorted audio. A better solution might exist, but this is
+      // a rare case so we simply report an error for now.
+      SendLogMessage("%s => Sample rate changed.", __func__);
+      OnError();
     }
   }
 }
