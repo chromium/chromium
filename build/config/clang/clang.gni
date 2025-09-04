@@ -17,9 +17,10 @@ default_clang_base_path = "//third_party/llvm-build/Release+Asserts"
 # Platforms not in this list *may* work with clang modules, but we don't
 # guarantee it, and we don't test them on CI/CQ with modules, so breakages may
 # occur.
-clang_modules_platform_supported = (is_linux && current_cpu == "x64") ||
-                                   (is_android && current_cpu == "x64") ||
-                                   (is_android && current_cpu == "arm64")
+clang_modules_platform_supported =
+    (is_linux && current_cpu == "x64") ||
+    (is_android && current_cpu == "x64") ||
+    (is_android && current_cpu == "arm64") || is_mac
 
 declare_args() {
   # Indicates if the build should use the Chrome-specific plugins for enforcing
@@ -62,7 +63,6 @@ declare_args() {
   # (https://crbug.com/40440396).
   # For details on the current state of modules in Chromium see
   # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
-  # Currently we enables this only when building for linux x64.
   #
   # TODO(https://crbug.com/440260716): Enable for Cronet in AOSP once gn2bp
   # supports copy targets.
