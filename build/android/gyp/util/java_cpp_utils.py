@@ -112,6 +112,10 @@ class CppConstantParser:
       """
       raise NotImplementedError()
 
+    def RequiresMultilineValueParsing(self):
+      """Whether the parser should look for values across multiple lines."""
+      return False
+
   def __init__(self, delegate, lines):
     self._delegate = delegate
     self._lines = lines
@@ -142,7 +146,7 @@ class CppConstantParser:
     if current_value is not None:
       self._current_value = current_value
       self._AppendConstant()
-    else:
+    elif not self._delegate.RequiresMultilineValueParsing():
       self._Reset()
 
   def _ParseComment(self, line):
