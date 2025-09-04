@@ -43,6 +43,9 @@
         <structure type="lottie" name="IDR_AUTOFILL_SAVE_CARD_SECURE_LOTTIE" file="resources/autofill/autofill_save_card_secure.json" compress="brotli"/>
         <structure type="lottie" name="IDR_AUTOFILL_SAVE_CARD_LOCAL_LOTTIE" file="resources/autofill/autofill_save_card_local.json" compress="brotli"/>
         <structure type="lottie" name="IDR_AUTOFILL_SAVE_SECURITY_CODE_LOTTIE" file="resources/autofill/autofill_save_security_code.json" compress="brotli"/>
+
+        <!-- Shopping resources -->
+        <structure type="lottie" name="IDR_SHOPPING_DISCOUNTS_AVAILABLE_LOTTIE" file="resources/shopping/discounts_available.json" compress="brotli"/>
       </if>
     </structures>
     <includes>
