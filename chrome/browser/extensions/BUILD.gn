@@ -287,6 +287,8 @@ source_set("extensions") {
     "extension_assets_manager.h",
     "extension_commands_global_registry.cc",
     "extension_commands_global_registry.h",
+    "extension_context_menu_model.cc",
+    "extension_context_menu_model.h",
     "extension_disabled_ui.h",
     "extension_error_controller.cc",
     "extension_error_controller.h",
@@ -545,6 +547,7 @@ source_set("extensions") {
     "//chrome/browser/signin",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/extensions",
@@ -590,6 +593,7 @@ source_set("extensions") {
     "//components/update_client",
     "//components/update_client:common_impl",
     "//components/user_prefs",
+    "//components/vector_icons",
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/browser/api/storage:settings_namespace",
@@ -795,8 +799,6 @@ source_set("extensions") {
       "device_permissions_dialog_controller.h",
       "extension_browser_window_helper.cc",
       "extension_browser_window_helper.h",
-      "extension_context_menu_model.cc",
-      "extension_context_menu_model.h",
       "extension_disabled_ui_desktop.cc",
       "extension_error_ui_desktop.cc",
       "extension_error_ui_desktop.h",
@@ -930,7 +932,6 @@ source_set("extensions") {
       "//chrome/browser/sessions",
       "//chrome/browser/sync",
       "//chrome/browser/themes",
-      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/extensions",
@@ -1051,7 +1052,6 @@ source_set("extensions") {
       "//components/unified_consent",
       "//components/url_formatter",
       "//components/url_matcher",
-      "//components/vector_icons",
       "//components/web_modal",
       "//components/zoom",
       "//content/public/common",
@@ -1576,10 +1576,8 @@ source_set("extensions") {
   }
 }
 
-if (enable_extensions_core) {
-  proto_library("cws_item_service_proto") {
-    sources = [ "cws_item_service.proto" ]
-  }
+proto_library("cws_item_service_proto") {
+  sources = [ "cws_item_service.proto" ]
 }
 
 static_library("test_support") {

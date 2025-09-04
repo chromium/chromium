@@ -10,11 +10,17 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/origin.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+#if !BUILDFLAG(IS_ANDROID)
 class Browser;
+#endif
+
 class Profile;
 
 namespace content {
@@ -25,7 +31,10 @@ namespace extensions {
 class ContextMenuMatcher;
 class Extension;
 class ExtensionAction;
+
+#if !BUILDFLAG(IS_ANDROID)
 class SidePanelService;
+#endif
 
 // The context menu model for extension icons.
 class ExtensionContextMenuModel : public ui::SimpleMenuModel,
@@ -109,12 +118,21 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // prefs::kExtensionsUIDeveloperMode is enabled then a menu item
   // will be shown for "Inspect Popup" which, when selected, will cause
   // ShowPopupForDevToolsWindow() to be called on `delegate`.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionContextMenuModel(const Extension* extension,
                             Browser* browser,
                             bool is_pinned,
                             PopupDelegate* delegate,
                             bool can_show_icon_in_toolbar,
                             ContextMenuSource source);
+#else
+  ExtensionContextMenuModel(const Extension* extension,
+                            Profile* profile,
+                            content::WebContents* web_contents,
+                            bool is_pinned,
+                            bool can_show_icon_in_toolbar,
+                            ContextMenuSource source);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   ExtensionContextMenuModel(const ExtensionContextMenuModel&) = delete;
   ExtensionContextMenuModel& operator=(const ExtensionContextMenuModel&) =
@@ -135,6 +153,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   }
 
  private:
+  void Init(const Extension* extension, bool can_show_icon_in_toolbar);
+
   void InitMenu(const Extension* extension, bool can_show_icon_in_toolbar);
 
   // Constructs the menu when `kExtensionsMenuAccessControl` is enabled.
@@ -154,14 +174,18 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   content::WebContents* GetActiveWebContents() const;
 
   // Returns the side panel service for the current profile.
+#if !BUILDFLAG(IS_ANDROID)
   SidePanelService* GetSidePanelService() const;
+#endif
 
   // Appends the extension's context menu items.
   void AppendExtensionItems();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Appends the side panel menu item to the context menu if `extension` has one
   // it can open.
   void AddSidePanelEntryIfPresent(const Extension& extension);
+#endif
 
   // A copy of the extension's id.
   ExtensionId extension_id_;
@@ -173,7 +197,11 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // it has one, otherwise NULL).
   raw_ptr<ExtensionAction, DanglingUntriaged> extension_action_;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   const raw_ptr<Browser> browser_;
+#else
+  raw_ptr<content::WebContents> web_contents_;
+#endif
 
   raw_ptr<Profile> profile_;
 
