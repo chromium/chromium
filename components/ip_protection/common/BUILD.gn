@@ -432,6 +432,7 @@ source_set("ip_protection_token_fetcher_helper") {
   ]
   public_deps = [
     ":ip_protection_data_types",
+    ":ip_protection_performance_hooks",
     "//base",
     "//net",
     "//net/third_party/quiche:blind_sign_auth",
@@ -445,7 +446,6 @@ source_set("ip_protection_performance_hooks") {
     "ip_protection_performance_hooks.h",
   ]
   public_deps = [ "//net/third_party/quiche:blind_sign_auth" ]
-  deps = [ "//base" ]
 }
 
 source_set("ip_protection_performance_hooks_unittest") {

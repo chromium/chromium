@@ -12,12 +12,10 @@ namespace ip_protection {
 
 // An implementation of `BlindSignTracingHooks` that emits Perfetto trace
 // events.
-class IpProtectionPerformanceHooks
-    : public quiche::BlindSignTracingHooks {
+class IpProtectionPerformanceHooks : public quiche::BlindSignTracingHooks {
  public:
   explicit IpProtectionPerformanceHooks(perfetto::Track track)
       : track_(track) {}
-  ~IpProtectionPerformanceHooks() override = default;
 
   // `BlindSignTracingHooks` implementation.
   void OnGetInitialDataStart() override;

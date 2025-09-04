@@ -12,13 +12,16 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/test_trace_processor.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher_helper.h"
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
 #include "net/base/features.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,6 +58,10 @@ struct MockIpProtectionTokenDirectFetcherDelegate
 
 class IpProtectionTokenDirectFetcherTest : public testing::Test {
  protected:
+  using TryGetAuthTokensFuture = base::test::TestFuture<
+      const std::optional<std::vector<BlindSignedAuthToken>>,
+      std::optional<base::Time>>;
+
   IpProtectionTokenDirectFetcherTest()
       : expiration_time_(base::Time::Now() + base::Hours(1)),
         geo_hint_({.country_code = "US",
@@ -102,12 +109,12 @@ class IpProtectionTokenDirectFetcherTest : public testing::Test {
     tokens_future_.Clear();
   }
 
- protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::TestFuture<const std::optional<std::vector<BlindSignedAuthToken>>,
-                         std::optional<base::Time>>
-      tokens_future_;
+
+  TryGetAuthTokensFuture tokens_future_;
+
+  base::test::TracingEnvironment tracing_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
@@ -436,6 +443,69 @@ TEST_F(IpProtectionTokenDirectFetcherTest, CalculateBackoff) {
   check(kFailedBSA400, base::TimeDelta::Max(), false);
   fetcher_->AccountStatusChanged(true);
   check(kFailedBSA400, default_bug_backoff_, true);
+}
+
+TEST_F(IpProtectionTokenDirectFetcherTest, PerfettoEvents) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("ip_protection");
+
+  bsa_->set_tokens(
+      {IpProtectionTokenFetcherHelper::CreateBlindSignTokenForTesting(
+          "single-use-1", expiration_time_, geo_hint_)});
+  TryGetAuthTokens(1, ProxyLayer::kProxyA);
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  auto query_result = ttp.RunQuery(
+      "SELECT name FROM slice WHERE category = 'ip_protection' ORDER BY ts");
+  ASSERT_TRUE(query_result.has_value());
+  EXPECT_THAT(
+      query_result.value(),
+      ::testing::ElementsAre(std::vector<std::string>{"name"},
+                             std::vector<std::string>{"TryGetAuthTokens"},
+                             std::vector<std::string>{"RequestOAuthToken"}));
+}
+
+TEST_F(IpProtectionTokenDirectFetcherTest, ConcurrentPerfettoEvents) {
+  // This test uses the real BlindSignAuth implementation to exercise the
+  // performance hooks.
+  bsa_ = nullptr;
+  fetcher_ = std::make_unique<IpProtectionTokenDirectFetcher>(
+      &delegate_, test_url_loader_factory_.GetSafeWeakWrapper()->Clone(),
+      /*blind_sign_auth_for_testing=*/nullptr);
+
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("ip_protection");
+
+  // Issue two concurrent calls to TryGetAuthTokens.
+  TryGetAuthTokensFuture future1;
+  fetcher_->TryGetAuthTokens(1, ProxyLayer::kProxyA, future1.GetCallback());
+  TryGetAuthTokensFuture future2;
+  fetcher_->TryGetAuthTokens(1, ProxyLayer::kProxyB, future2.GetCallback());
+
+  // Wait for both SequenceBoundFetch calls to reach the network layer, then
+  // simulate an error response for each one.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.NumPending() == 2; }));
+  GURL get_initial_data_url(base::StrCat(
+      {net::features::kIpPrivacyTokenServer.Get(),
+       net::features::kIpPrivacyTokenServerGetInitialDataPath.Get()}));
+  for (int i = 0; i < 2; ++i) {
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        get_initial_data_url.spec(), "", net::HTTP_INTERNAL_SERVER_ERROR);
+  }
+  ASSERT_TRUE(future1.Wait());
+  ASSERT_TRUE(future2.Wait());
+
+  // There should be no unterminated events: each TRACE_EVENT_BEGIN should have
+  // a corresponding TRACE_EVENT_END.
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  auto query_result = ttp.RunQuery(
+      "SELECT name FROM slice WHERE category = 'ip_protection' AND dur = -1");
+  EXPECT_TRUE(query_result.has_value());
+  EXPECT_THAT(query_result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"name"}));
 }
 
 }  // namespace ip_protection

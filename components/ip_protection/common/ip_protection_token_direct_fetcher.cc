@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/notreached.h"
@@ -21,6 +22,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "components/ip_protection/common/ip_protection_config_http.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -64,11 +68,12 @@ void IpProtectionTokenDirectFetcher::SequenceBoundFetch::
         std::optional<std::string> access_token,
         uint32_t batch_size,
         quiche::ProxyLayer proxy_layer,
+        perfetto::Track track,
         IpProtectionTokenFetcherHelper::FetchBlindSignedTokenCallback
             callback) {
   fetcher_helper_.GetTokensFromBlindSignAuth(
       blind_sign_auth_.get(), service_type, std::move(access_token), batch_size,
-      proxy_layer, std::move(callback));
+      proxy_layer, track, std::move(callback));
 }
 
 IpProtectionTokenDirectFetcher::IpProtectionTokenDirectFetcher(
@@ -91,11 +96,24 @@ void IpProtectionTokenDirectFetcher::TryGetAuthTokens(
     ProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  perfetto::NamedTrack parent("IpProtection");
+  // Because the track doesn't get any events of its own it must manually emit
+  // the track descriptor. SetTrackDescriptor may crash in unit tests where
+  // tracing isn't initialized.
+  if (perfetto::Tracing::IsInitialized()) {
+    base::TrackEvent::SetTrackDescriptor(parent, parent.Serialize());
+  } else {
+    CHECK_IS_TEST();
+  }
+  perfetto::Track track(base::trace_event::GetNextGlobalTraceId(), parent);
+  base::trace_event::EmitNamedTrigger("ipp-token-fetch-start");
+  TRACE_EVENT_BEGIN("ip_protection", "TryGetAuthTokens", track);
   // If IP Protection is disabled via user settings then don't attempt to fetch
   // tokens.
   if (!delegate_->IsTokenFetchEnabled()) {
     TryGetAuthTokensComplete(std::nullopt, std::move(callback),
-                             TryGetAuthTokensResult::kFailedDisabledByUser);
+                             TryGetAuthTokensResult::kFailedDisabledByUser,
+                             track);
     return;
   }
 
@@ -104,7 +122,7 @@ void IpProtectionTokenDirectFetcher::TryGetAuthTokens(
   if (last_try_get_auth_tokens_backoff_ &&
       *last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
     TryGetAuthTokensComplete(std::nullopt, std::move(callback),
-                             TryGetAuthTokensResult::kFailedNoAccount);
+                             TryGetAuthTokensResult::kFailedNoAccount, track);
     return;
   }
 
@@ -116,8 +134,9 @@ void IpProtectionTokenDirectFetcher::TryGetAuthTokens(
       &IpProtectionTokenDirectFetcher::
           OnRequestOAuthTokenCompletedForTryGetAuthTokens,
       weak_ptr_factory_.GetWeakPtr(), batch_size, quiche_proxy_layer,
-      std::move(callback), oauth_token_fetch_start_time);
+      std::move(callback), oauth_token_fetch_start_time, track);
 
+  TRACE_EVENT_BEGIN("ip_protection", "RequestOAuthToken", track);
   delegate_->RequestOAuthToken(std::move(request_token_callback));
 }
 
@@ -127,14 +146,16 @@ void IpProtectionTokenDirectFetcher::
         quiche::ProxyLayer quiche_proxy_layer,
         TryGetAuthTokensCallback callback,
         base::TimeTicks oauth_token_fetch_start_time,
+        perfetto::Track track,
         TryGetAuthTokensResult result,
         std::optional<std::string> access_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT_END("ip_protection", track);
   // If we fail to get an OAuth token don't attempt to fetch from Phosphor as
   // the request is guaranteed to fail.
   if (!access_token) {
     CHECK(result != TryGetAuthTokensResult::kSuccess);
-    TryGetAuthTokensComplete(std::nullopt, std::move(callback), result);
+    TryGetAuthTokensComplete(std::nullopt, std::move(callback), result, track);
     return;
   }
 
@@ -149,16 +170,17 @@ void IpProtectionTokenDirectFetcher::
                      GetTokensFromBlindSignAuth)
       .WithArgs(
           quiche::BlindSignAuthServiceType::kChromeIpBlinding,
-          std::move(access_token), batch_size, quiche_proxy_layer,
+          std::move(access_token), batch_size, quiche_proxy_layer, track,
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &IpProtectionTokenDirectFetcher::OnFetchBlindSignedTokenCompleted,
               weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,
-              std::move(callback))));
+              std::move(callback), track)));
 }
 
 void IpProtectionTokenDirectFetcher::OnFetchBlindSignedTokenCompleted(
     base::TimeTicks bsa_get_tokens_start_time,
     TryGetAuthTokensCallback callback,
+    perfetto::Track track,
     absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   using enum TryGetAuthTokensResult;
@@ -181,13 +203,13 @@ void IpProtectionTokenDirectFetcher::OnFetchBlindSignedTokenCompleted(
     }
     ip_protection::Telemetry().TryGetAuthTokensError(
         base::PersistentHash(tokens.status().ToString()));
-    TryGetAuthTokensComplete(std::nullopt, std::move(callback), result);
+    TryGetAuthTokensComplete(std::nullopt, std::move(callback), result, track);
     return;
   }
 
   if (tokens.value().size() == 0) {
-    TryGetAuthTokensComplete(std::nullopt, std::move(callback),
-                             kFailedBSAOther);
+    TryGetAuthTokensComplete(std::nullopt, std::move(callback), kFailedBSAOther,
+                             track);
     return;
   }
 
@@ -195,22 +217,24 @@ void IpProtectionTokenDirectFetcher::OnFetchBlindSignedTokenCompleted(
       IpProtectionTokenFetcherHelper::QuicheTokensToIpProtectionAuthTokens(
           tokens.value());
   if (!bsa_tokens) {
-    TryGetAuthTokensComplete(std::nullopt, std::move(callback),
-                             kFailedBSAOther);
+    TryGetAuthTokensComplete(std::nullopt, std::move(callback), kFailedBSAOther,
+                             track);
     return;
   }
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
   TryGetAuthTokensComplete(std::move(bsa_tokens), std::move(callback), kSuccess,
-                           current_time - bsa_get_tokens_start_time);
+                           track, current_time - bsa_get_tokens_start_time);
 }
 
 void IpProtectionTokenDirectFetcher::TryGetAuthTokensComplete(
     std::optional<std::vector<BlindSignedAuthToken>> bsa_tokens,
     TryGetAuthTokensCallback callback,
     TryGetAuthTokensResult result,
+    perfetto::Track track,
     std::optional<base::TimeDelta> duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT_END("ip_protection", track);
   ip_protection::Telemetry().TokenBatchFetchComplete(result, duration);
 
   std::optional<base::TimeDelta> backoff = CalculateBackoff(result);

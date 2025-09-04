@@ -17,6 +17,10 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 
+namespace perfetto {
+struct Track;
+}  // namespace perfetto
+
 namespace quiche {
 class BlindSignAuthInterface;
 enum class ProxyLayer;
@@ -48,6 +52,7 @@ class IpProtectionTokenFetcherHelper {
       std::optional<std::string> access_token,
       uint32_t batch_size,
       quiche::ProxyLayer proxy_layer,
+      std::optional<perfetto::Track> track,
       FetchBlindSignedTokenCallback callback);
 
   // Converts a batch of `quiche::BlindSignToken` into

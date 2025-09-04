@@ -23,6 +23,7 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace ip_protection {
 
@@ -73,7 +74,7 @@ void IpProtectionTokenIpcFetcher::TryGetAuthTokens(
       .WithArgs(
           blind_sign_auth_.get(),
           quiche::BlindSignAuthServiceType::kChromeIpBlinding, std::nullopt,
-          batch_size, quiche_proxy_layer,
+          batch_size, quiche_proxy_layer, /*track=*/std::nullopt,
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &IpProtectionTokenIpcFetcher::OnFetchBlindSignedTokenCompleted,
               weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,

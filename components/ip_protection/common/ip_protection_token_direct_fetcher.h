@@ -88,6 +88,7 @@ class IpProtectionTokenDirectFetcher : public IpProtectionTokenFetcher {
         std::optional<std::string> access_token,
         uint32_t batch_size,
         quiche::ProxyLayer proxy_layer,
+        perfetto::Track track,
         IpProtectionTokenFetcherHelper::FetchBlindSignedTokenCallback callback);
 
    private:
@@ -109,12 +110,14 @@ class IpProtectionTokenDirectFetcher : public IpProtectionTokenFetcher {
       quiche::ProxyLayer quiche_proxy_layer,
       TryGetAuthTokensCallback callback,
       base::TimeTicks oauth_token_fetch_start_time,
+      perfetto::Track track,
       TryGetAuthTokensResult result,
       std::optional<std::string> access_token);
 
   void OnFetchBlindSignedTokenCompleted(
       base::TimeTicks bsa_get_tokens_start_time,
       TryGetAuthTokensCallback callback,
+      perfetto::Track track,
       absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens);
 
   // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
@@ -123,6 +126,7 @@ class IpProtectionTokenDirectFetcher : public IpProtectionTokenFetcher {
       std::optional<std::vector<BlindSignedAuthToken>> bsa_tokens,
       TryGetAuthTokensCallback callback,
       TryGetAuthTokensResult result,
+      perfetto::Track track,
       std::optional<base::TimeDelta> duration = std::nullopt);
 
   // Calculates the backoff time for the given result, based on

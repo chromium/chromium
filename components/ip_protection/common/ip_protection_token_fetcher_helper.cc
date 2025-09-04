@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_performance_hooks.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
@@ -35,6 +36,7 @@ void IpProtectionTokenFetcherHelper::GetTokensFromBlindSignAuth(
     std::optional<std::string> access_token,
     uint32_t batch_size,
     quiche::ProxyLayer proxy_layer,
+    std::optional<perfetto::Track> track,
     FetchBlindSignedTokenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   blind_sign_auth->GetTokens(
@@ -47,7 +49,8 @@ void IpProtectionTokenFetcherHelper::GetTokensFromBlindSignAuth(
         } else {
           std::move(callback).Run(tokens.status());
         }
-      });
+      },
+      track ? std::make_unique<IpProtectionPerformanceHooks>(*track) : nullptr);
 }
 
 // static
