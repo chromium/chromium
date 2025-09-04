@@ -850,21 +850,27 @@
   },
   {
     "name": "autofill-enable-cvc-storage-and-filling",
-    "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 140
+    "owners": [
+      "koulvipul@google.com", "yiwenqian@google.com",
+      "payments-autofill-team@google.com"
+    ],
+    "expiry_milestone": 150
   },
   {
     "name": "autofill-enable-cvc-storage-and-filling-enhancement",
-    "owners": [ "jialihuang@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 135
+    "owners": [
+      "jialihuang@google.com", "yiwenqian@google.com",
+      "payments-autofill-team@google.com"
+    ],
+    "expiry_milestone": 150
   },
   {
     "name": "autofill-enable-cvc-storage-and-filling-standalone-form-enhancement",
     "owners": [
-      "jialihuang@google.com",
+      "jialihuang@google.com","yiwenqian@google.com",
       "payments-autofill-team@google.com"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 150
   },
   {
     "name": "autofill-enable-downstream-card-awareness-iph",
@@ -9512,8 +9518,11 @@
   },
   {
     "name": "sync-autofill-wallet-credential-data",
-    "owners": [ "koulvipul@google.com", "treib@chromium.org", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 140
+    "owners": [
+      "koulvipul@google.com", "treib@chromium.org",
+      "yiwenqian@google.com", "payments-autofill-team@google.com"
+    ],
+    "expiry_milestone": 150
   },
   {
     "name": "sync-enable-bookmarks-in-transport-mode",
