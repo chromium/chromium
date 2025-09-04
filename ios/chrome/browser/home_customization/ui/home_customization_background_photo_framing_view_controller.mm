@@ -455,7 +455,8 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
   [self.delegate imageFramingViewControllerDidSucceed:self];
 }
 
-// Calculates the center point of the visible area in content coordinates.
+// Calculates the framing coordinates for the visible area in content
+// coordinates.
 - (HomeCustomizationFramingCoordinates*)calculateFramingCoordinates {
   // Get the visible area in scroll view content coordinates.
   CGRect visibleContentRect =
@@ -463,22 +464,24 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
                  _scrollView.bounds.size.width, _scrollView.bounds.size.height);
 
   // Convert from scroll view content coordinates to original image coordinates.
-  CGFloat scaleX = _originalImage.size.width / _imageView.frame.size.width;
-  CGFloat scaleY = _originalImage.size.height / _imageView.frame.size.height;
+  CGFloat scale = _originalImage.size.width / _imageView.frame.size.width;
 
-  CGRect visibleRectInOriginal =
-      CGRectMake(visibleContentRect.origin.x * scaleX,
-                 visibleContentRect.origin.y * scaleY,
-                 visibleContentRect.size.width * scaleX,
-                 visibleContentRect.size.height * scaleY);
+  CGRect visibleRectInOriginal = CGRectMake(
+      visibleContentRect.origin.x * scale, visibleContentRect.origin.y * scale,
+      visibleContentRect.size.width * scale,
+      visibleContentRect.size.height * scale);
 
-  // Clamp the rectangle to image bounds.
-  CGRect imageBounds =
-      CGRectMake(0, 0, _originalImage.size.width, _originalImage.size.height);
-  CGRect clampedRect = CGRectIntersection(visibleRectInOriginal, imageBounds);
+  // Translate the rect, keeping the same size, to make sure it's inside the
+  // bounds of the original image.
+  visibleRectInOriginal.origin.x = std::clamp<CGFloat>(
+      visibleRectInOriginal.origin.x, 0,
+      _originalImage.size.width - visibleRectInOriginal.size.width);
+  visibleRectInOriginal.origin.y = std::clamp<CGFloat>(
+      visibleRectInOriginal.origin.y, 0,
+      _originalImage.size.height - visibleRectInOriginal.size.height);
 
   return [[HomeCustomizationFramingCoordinates alloc]
-      initWithVisibleRect:clampedRect];
+      initWithVisibleRect:visibleRectInOriginal];
 }
 
 @end
