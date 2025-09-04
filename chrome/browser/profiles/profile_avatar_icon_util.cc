@@ -465,13 +465,6 @@ constexpr size_t kDefaultAvatarIconsCount = 56;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-// The first 8 icons are generic.
-constexpr size_t kGenericAvatarIconsCount = 8;
-#else
-constexpr size_t kGenericAvatarIconsCount = 0;
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
 // The avatar used as a placeholder.
 constexpr size_t kPlaceholderAvatarIndex = 26;
 #else
@@ -625,10 +618,6 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
 // Helper methods for accessing, transforming and drawing avatar icons.
 size_t GetDefaultAvatarIconCount() {
   return kDefaultAvatarIconsCount;
-}
-
-size_t GetGenericAvatarIconCount() {
-  return kGenericAvatarIconsCount;
 }
 
 size_t GetPlaceholderAvatarIndex() {
