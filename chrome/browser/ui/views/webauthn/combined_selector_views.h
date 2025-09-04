@@ -31,7 +31,6 @@ class CombinedSelectorRadioButton : public views::RadioButton {
 
   View* GetSelectedViewForGroup(int group) override;
   void SetChecked(bool checked) override;
-  bool IsGroupFocusTraversable() const override;
 
  private:
   void GetRadioButtonsInList(int group, Views* views);
