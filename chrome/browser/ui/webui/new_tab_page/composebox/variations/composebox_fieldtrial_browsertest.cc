@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 
 #include <optional>
 #include <tuple>
@@ -46,7 +46,6 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
     return server_eligibility_enabled_;
   }
   bool IsAimEligible() const override {
-    // Mimics the same logic as the base class.
     if (!IsAimLocallyEligible()) {
       return false;
     }
@@ -62,35 +61,24 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
   bool server_eligibility_enabled_;
 };
 
-class NtpComposeboxFieldTrialEntrypointBrowserTest
+class NtpComposeboxFieldTrialBrowserTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<
-          std::tuple<std::string, std::string, bool, bool, bool, bool, bool>> {
+          std::tuple<std::string, std::string, bool, bool, bool, bool>> {
  public:
-  NtpComposeboxFieldTrialEntrypointBrowserTest() = default;
-  ~NtpComposeboxFieldTrialEntrypointBrowserTest() override = default;
+  NtpComposeboxFieldTrialBrowserTest() = default;
+  ~NtpComposeboxFieldTrialBrowserTest() override = default;
 
  protected:
   void SetUp() override {
-    auto entrypoint_feature = std::get<5>(GetParam());
-    auto entrypoint_english_us_feature = std::get<6>(GetParam());
+    auto composebox_feature = std::get<5>(GetParam());
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (entrypoint_feature) {
-      enabled_features.push_back(
-          ntp_composebox::kNtpSearchboxComposeEntrypoint);
+    if (composebox_feature) {
+      enabled_features.push_back(ntp_composebox::kNtpComposebox);
     } else {
-      disabled_features.push_back(
-          ntp_composebox::kNtpSearchboxComposeEntrypoint);
-    }
-
-    if (entrypoint_english_us_feature) {
-      enabled_features.push_back(
-          ntp_composebox::kNtpSearchboxComposeEntrypointEnglishUs);
-    } else {
-      disabled_features.push_back(
-          ntp_composebox::kNtpSearchboxComposeEntrypointEnglishUs);
+      disabled_features.push_back(ntp_composebox::kNtpComposebox);
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -134,7 +122,7 @@ class NtpComposeboxFieldTrialEntrypointBrowserTest
 };
 
 INSTANTIATE_TEST_SUITE_P(,
-                         NtpComposeboxFieldTrialEntrypointBrowserTest,
+                         NtpComposeboxFieldTrialBrowserTest,
                          ::testing::Combine(
                              // Values for the locale.
                              ::testing::Values("en-US", "es-MX"),
@@ -146,21 +134,18 @@ INSTANTIATE_TEST_SUITE_P(,
                              ::testing::Values(true, false),
                              // Values for server eligibility enabled.
                              ::testing::Values(true, false),
-                             // Values for the generic entrypoint feature.
-                             ::testing::Values(true, false),
-                             // Values for the English US entrypoint feature.
+                             // Values for the generic composebox feature.
                              ::testing::Values(true, false)));
 
-IN_PROC_BROWSER_TEST_P(NtpComposeboxFieldTrialEntrypointBrowserTest, Test) {
+IN_PROC_BROWSER_TEST_P(NtpComposeboxFieldTrialBrowserTest, Test) {
   auto [locale, country, is_locally_eligible, is_server_eligible,
-        server_eligibility_enabled, entrypoint_feature,
-        entrypoint_english_us_feature] = GetParam();
+        server_eligibility_enabled, composebox_feature] = GetParam();
 
   bool expected_enabled = false;
 
-  // Implementation logic mirrors IsNtpSearchboxComposeEntrypointEnabled:
-  // 1. If generic entrypoint feature is overridden to false, return false.
-  if (!entrypoint_feature) {
+  // Implementation logic mirrors IsNtpComposeboxEnabled:
+  // 1. If generic composebox feature is overridden to false, return false.
+  if (!composebox_feature) {
     expected_enabled = false;
   } else {
     // Get the service to check server eligibility (this is now handled by the
@@ -176,18 +161,11 @@ IN_PROC_BROWSER_TEST_P(NtpComposeboxFieldTrialEntrypointBrowserTest, Test) {
       if (!is_locally_eligible) {
         expected_enabled = false;
       } else {
-        // 4. For English locales in the US, check the EnglishUS feature.
-        if (locale == "en-US" && country == "us") {
-          expected_enabled = entrypoint_english_us_feature;
-        } else {
-          // 5. Otherwise, check the generic entrypoint feature.
-          expected_enabled = entrypoint_feature;
-        }
+        expected_enabled = composebox_feature;
       }
     }
   }
 
-  EXPECT_EQ(ntp_composebox::IsNtpSearchboxComposeEntrypointEnabled(
-                browser()->profile()),
+  EXPECT_EQ(ntp_composebox::IsNtpComposeboxEnabled(browser()->profile()),
             expected_enabled);
 }

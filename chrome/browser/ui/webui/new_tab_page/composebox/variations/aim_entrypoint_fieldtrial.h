@@ -12,7 +12,7 @@ class Profile;
 namespace ntp_composebox {
 
 // If overridden to false, disables the feature (kill switch). If true, enables
-// the feature beyond English in the US (subject toeligibility checks).
+// the feature beyond English in the US (subject to eligibility checks).
 BASE_DECLARE_FEATURE(kNtpSearchboxComposeEntrypoint);
 
 // Enables or disables the NTP searchbox entrypoint for English in the US.

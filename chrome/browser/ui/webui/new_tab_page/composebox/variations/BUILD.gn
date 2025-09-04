@@ -14,6 +14,8 @@ source_set("variations") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
     "//components/omnibox/browser",
     "//components/omnibox/common",
     "//components/variations/service",
@@ -28,6 +30,7 @@ source_set("unit_tests") {
   deps = [
     ":variations",
     "//base/test:test_support",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
   ]
@@ -36,7 +39,10 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "aim_entrypoint_fieldtrial_browsertest.cc" ]
+  sources = [
+    "aim_entrypoint_fieldtrial_browsertest.cc",
+    "composebox_fieldtrial_browsertest.cc",
+  ]
   deps = [
     ":variations",
     "//chrome/browser:browser_process",
