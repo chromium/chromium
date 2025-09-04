@@ -135,7 +135,10 @@ public class WebContentsDelegateAndroid {
 
     @CalledByNative
     public void fullscreenStateChangedForTab(
-            boolean prefersNavigationBar, boolean prefersStatusBar, long displayId) {}
+            long requestingFrame,
+            boolean prefersNavigationBar,
+            boolean prefersStatusBar,
+            long displayId) {}
 
     @CalledByNative
     public void exitFullscreenModeForTab() {}

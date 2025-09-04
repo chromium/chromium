@@ -637,12 +637,25 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void fullscreenStateChangedForTab(
-            boolean prefersNavigationBar, boolean prefersStatusBar, long displayId) {
-        // State-only changes are useful for recursive fullscreen activation. Early out if
-        // fullscreen mode is not on.
-        if (mFullscreenManager == null || !mFullscreenManager.getPersistentFullscreenMode()) return;
-        mFullscreenManager.onEnterFullscreen(
-                mTab, new FullscreenOptions(prefersNavigationBar, prefersStatusBar, displayId));
+            long requestingFrame,
+            boolean prefersNavigationBar,
+            boolean prefersStatusBar,
+            long displayId) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+            if (mExclusiveAccessManager != null) {
+                mExclusiveAccessManager.enterFullscreenModeForTab(
+                        requestingFrame,
+                        new FullscreenOptions(prefersNavigationBar, prefersStatusBar, displayId));
+            }
+        } else {
+            // State-only changes are useful for recursive fullscreen activation. Early out if
+            // fullscreen mode is not on.
+            if (mFullscreenManager == null || !mFullscreenManager.getPersistentFullscreenMode()) {
+                return;
+            }
+            mFullscreenManager.onEnterFullscreen(
+                    mTab, new FullscreenOptions(prefersNavigationBar, prefersStatusBar, displayId));
+        }
     }
 
     @Override

@@ -397,7 +397,8 @@ void WebContentsDelegateAndroid::FullscreenStateChangedForTab(
   if (obj.is_null())
     return;
   Java_WebContentsDelegateAndroid_fullscreenStateChangedForTab(
-      env, obj, options.prefers_navigation_bar, options.prefers_status_bar,
+      env, obj, reinterpret_cast<jlong>(requesting_frame),
+      options.prefers_navigation_bar, options.prefers_status_bar,
       options.display_id);
 }
 
