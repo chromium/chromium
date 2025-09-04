@@ -236,7 +236,7 @@ TEST_F(ScrollIntoViewTest, SmoothScroll) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
+  ASSERT_NEAR(Window().scrollY(), 736, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -272,9 +272,9 @@ TEST_F(ScrollIntoViewTest, NestedContainer) {
   // Scrolling the outer container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
-  ASSERT_NEAR(container->scrollTop(), 299, 1);
+  Compositor().BeginFrame(0.1);
+  ASSERT_NEAR(Window().scrollY(), 171, 1);
+  ASSERT_NEAR(container->scrollTop(), 171, 1);
 
   // Finish scrolling the outer container
   Compositor().BeginFrame(1);
@@ -320,16 +320,16 @@ TEST_F(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   content1->scrollIntoViewForTesting(arg);
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
-  ASSERT_NEAR(container1->scrollTop(), 299, 1);
+  Compositor().BeginFrame(0.1);
+  ASSERT_NEAR(Window().scrollY(), 171, 1);
+  ASSERT_NEAR(container1->scrollTop(), 171, 1);
 
   content2->scrollIntoViewForTesting(arg);
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 61, 1);
-  ASSERT_GT(container1->scrollTop(), 299);
+  Compositor().BeginFrame(0.1);
+  ASSERT_NEAR(Window().scrollY(), 35, 1);
+  ASSERT_GT(container1->scrollTop(), 171);
 
   Compositor().BeginFrame(1);
   ASSERT_EQ(Window().scrollY(), container2->OffsetTop());
@@ -378,8 +378,8 @@ TEST_F(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 241, 1);
-  ASSERT_NEAR(container->scrollTop(), 299, 1);
+  ASSERT_NEAR(Window().scrollY(), 288, 1);
+  ASSERT_NEAR(container->scrollTop(), 732, 1);
 
   // Since visibleElement is already on screen, this call should be a no-op.
   {
@@ -395,8 +395,8 @@ TEST_F(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
   // The window animation should continue running but the container shouldn't
   // yet have started unless MultiSmoothScrollIntoView support is enabled.
   Compositor().BeginFrame();
-  ASSERT_NEAR(Window().scrollY(), 260, 1);
-  ASSERT_GT(container->scrollTop(), 299);
+  ASSERT_NEAR(Window().scrollY(), 292, 1);
+  ASSERT_GT(container->scrollTop(), 732);
 
   // Finish the animation to make sure the animation to content finishes
   // without interruption.
@@ -436,9 +436,9 @@ TEST_F(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   // Scrolling the outer container
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
-  Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
-  ASSERT_NEAR(container->scrollTop(), 299, 1);
+  Compositor().BeginFrame(0.15);
+  ASSERT_NEAR(Window().scrollY(), 531, 1);
+  ASSERT_NEAR(container->scrollTop(), 531, 1);
 
   ScrollToOptions* window_option = ScrollToOptions::Create();
   window_option->setLeft(0);
@@ -448,7 +448,7 @@ TEST_F(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 58, 1);
+  ASSERT_NEAR(Window().scrollY(), 65, 1);
 
   Compositor().BeginFrame(1);
   ASSERT_EQ(Window().scrollY(), 0);
@@ -559,7 +559,7 @@ TEST_F(ScrollIntoViewTest, SmoothAndInstantInChain) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container->scrollTop(), 299, 1);
+  ASSERT_NEAR(container->scrollTop(), 732, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -593,7 +593,7 @@ TEST_F(ScrollIntoViewTest, SmoothScrollAnchor) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(container->scrollTop(), 299, 1);
+  ASSERT_NEAR(container->scrollTop(), 732, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -648,7 +648,7 @@ TEST_F(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
+  ASSERT_NEAR(Window().scrollY(), 736, 1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(1);
@@ -840,7 +840,7 @@ TEST_F(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 299, 1);
+  ASSERT_NEAR(Window().scrollY(), 736, 1);
 
   // ProgrammaticScroll that could interrupt the current smooth scroll.
   Window().scrollToForTesting(0, 0);
@@ -876,10 +876,10 @@ TEST_F(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(), 16971, 1);
+  ASSERT_NEAR(Window().scrollY(), 6064, 1);
 
   // Finish scrolling the container
-  Compositor().BeginFrame(0.5);
+  Compositor().BeginFrame(1.5);
   ASSERT_EQ(Window().scrollY(), target->OffsetTop());
 }
 

@@ -214,12 +214,11 @@ BASE_FEATURE(kProgrammaticScrollAnimationOverride,
              "ProgrammaticScrollAnimationOverride",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Default to `gfx::CubicBezierTimingFunction::EaseType::EASE_IN_OUT`.
 BASE_FEATURE_PARAM(double,
                    kCubicBezierX1,
                    &kProgrammaticScrollAnimationOverride,
                    "cubic_bezier_x1",
-                   0.42);
+                   0.4);
 BASE_FEATURE_PARAM(double,
                    kCubicBezierY1,
                    &kProgrammaticScrollAnimationOverride,
@@ -229,7 +228,7 @@ BASE_FEATURE_PARAM(double,
                    kCubicBezierX2,
                    &kProgrammaticScrollAnimationOverride,
                    "cubic_bezier_x2",
-                   0.58);
+                   0.0);
 BASE_FEATURE_PARAM(double,
                    kCubicBezierY2,
                    &kProgrammaticScrollAnimationOverride,
@@ -237,10 +236,10 @@ BASE_FEATURE_PARAM(double,
                    1.0);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
-                   kMaxAnimtionDuration,
+                   kMaxAnimationDuration,
                    &kProgrammaticScrollAnimationOverride,
                    "max_animation_duration",
-                   base::Milliseconds(700));
+                   base::Milliseconds(1500));
 
 BASE_FEATURE(kSlimDirectReceiverIpc,
              "SlimDirectReceiverIpc",

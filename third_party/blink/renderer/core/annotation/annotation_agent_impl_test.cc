@@ -1753,12 +1753,13 @@ TEST_F(AnnotationAgentImplTest, GlicScrollConsidersDeviceScaleFactor) {
   Compositor().BeginFrame();
   EXPECT_TRUE(ExpectNotInViewport(*element_foo));
 
-  // Start and complete the animation (which should happen within 700 ms based
-  // on kDeltaBasedMaxDuration in scroll_offset_animation_curve.cc).
+  // Start and complete the animation (which should happen within 1500 ms based
+  // on kProgrammaticScrollAnimationOverride's kMaxAnimationDuration in
+  // cc/base/features.cc).
   task_environment().FastForwardBy(base::Milliseconds(16));
   Compositor().BeginFrame();
   task_environment().FastForwardBy(base::Milliseconds(700));
-  Compositor().BeginFrame(/*time_delta_in_seconds*/ 0.7);
+  Compositor().BeginFrame(/*time_delta_in_seconds=*/1.5);
 
   // The text should now be in the viewport.
   EXPECT_TRUE(ExpectInViewport(*element_foo));
@@ -2194,8 +2195,8 @@ TEST_F(AnnotationAgentImplTest,
 
   EXPECT_TRUE(GlicAnimationNotStarted());
 
-  // Smooth scrolling is guaranteed to finish within 750ms.
-  task_environment().FastForwardBy(base::Seconds(1));
+  // Smooth scrolling is guaranteed to finish within 1500ms.
+  task_environment().FastForwardBy(base::Seconds(2));
   Compositor().BeginFrame(1.0);
   EXPECT_TRUE(ExpectInViewport(*element_foo));
   // Since the text node is in the viewport, we must have queued the first
@@ -2318,8 +2319,8 @@ TEST_F(AnnotationAgentImplTest,
   Compositor().BeginFrame();
   EXPECT_TRUE(GlicAnimationNotStarted());
 
-  // Max smooth scrolling is capped at 750ms.
-  task_environment().FastForwardBy(base::Seconds(1));
+  // Max smooth scrolling is capped at 1500ms.
+  task_environment().FastForwardBy(base::Seconds(2));
   Compositor().BeginFrame(1.0);
   EXPECT_TRUE(ExpectInViewport(*element_foo));
   // Since the text node is in the viewport, we must have queued the first
