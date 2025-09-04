@@ -2596,9 +2596,9 @@ def main():
   if HOST_EXTRA_PARAMS_ENV_VAR in os.environ:
       extra_start_host_args = \
           re.split(r"\s+", os.environ[HOST_EXTRA_PARAMS_ENV_VAR].strip())
-  if USE_WAYLAND_ENV_VAR in os.environ:
-      extra_start_host_args.append('--enable-wayland')
-  is_wayland = '--enable-wayland' in extra_start_host_args
+  is_wayland = (
+      USE_WAYLAND_ENV_VAR in os.environ or
+      '--enable-wayland' in extra_start_host_args)
   if is_wayland:
     desktop = WaylandDesktop(sizes, host_config)
   else:
