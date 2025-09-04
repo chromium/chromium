@@ -344,22 +344,11 @@ NativeTheme::ColorSchemeNativeThemeObserver::~ColorSchemeNativeThemeObserver() =
 
 void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
-  const bool should_use_dark_colors = observed_theme->ShouldUseDarkColors();
-  const PreferredColorScheme preferred_color_scheme =
-      observed_theme->GetPreferredColorScheme();
   const bool inverted_colors = observed_theme->GetInvertedColors();
   const base::TimeDelta caret_blink_interval =
       observed_theme->GetCaretBlinkInterval();
   bool notify_observers = false;
 
-  if (theme_to_update_->ShouldUseDarkColors() != should_use_dark_colors) {
-    theme_to_update_->set_use_dark_colors(should_use_dark_colors);
-    notify_observers = true;
-  }
-  if (theme_to_update_->GetPreferredColorScheme() != preferred_color_scheme) {
-    theme_to_update_->set_preferred_color_scheme(preferred_color_scheme);
-    notify_observers = true;
-  }
   if (theme_to_update_->GetInvertedColors() != inverted_colors) {
     theme_to_update_->set_inverted_colors(inverted_colors);
     notify_observers = true;
@@ -381,9 +370,12 @@ bool NativeTheme::UpdateContrastRelatedStates(
     const NativeTheme& observed_theme) {
   bool forced_colors = observed_theme.InForcedColorsMode();
   PageColors page_colors = observed_theme.GetPageColors();
+  PreferredContrast preferred_contrast = observed_theme.GetPreferredContrast();
+  bool should_use_dark_colors = observed_theme.ShouldUseDarkColors();
+  PreferredColorScheme preferred_color_scheme =
+      observed_theme.GetPreferredColorScheme();
   bool prefers_reduced_transparency =
       observed_theme.GetPrefersReducedTransparency();
-  PreferredContrast preferred_contrast = observed_theme.GetPreferredContrast();
   bool states_updated = false;
 
   const auto default_page_colors =
@@ -410,18 +402,24 @@ bool NativeTheme::UpdateContrastRelatedStates(
   }
   if (GetPageColors() != page_colors) {
     set_page_colors(page_colors);
-    // Only update the color scheme if page colors is a selected theme.
-    if (page_colors != PageColors::kOff &&
-        page_colors != PageColors::kHighContrast) {
-      bool is_dark_color = page_colors == PageColors::kNightSky ||
-                           page_colors == PageColors::kDusk ||
-                           page_colors == PageColors::kAquatic;
-      PreferredColorScheme page_colors_theme_scheme =
-          is_dark_color ? PreferredColorScheme::kDark
-                        : PreferredColorScheme::kLight;
-      set_use_dark_colors(is_dark_color);
-      set_preferred_color_scheme(page_colors_theme_scheme);
-    }
+    states_updated = true;
+  }
+  // Only update the color scheme if page colors is a selected theme.
+  if (page_colors != PageColors::kOff &&
+      page_colors != PageColors::kHighContrast) {
+    should_use_dark_colors = page_colors == PageColors::kNightSky ||
+                             page_colors == PageColors::kDusk ||
+                             page_colors == PageColors::kAquatic;
+    preferred_color_scheme = should_use_dark_colors
+                                 ? PreferredColorScheme::kDark
+                                 : PreferredColorScheme::kLight;
+  }
+  if (ShouldUseDarkColors() != should_use_dark_colors) {
+    set_use_dark_colors(should_use_dark_colors);
+    states_updated = true;
+  }
+  if (GetPreferredColorScheme() != preferred_color_scheme) {
+    set_preferred_color_scheme(preferred_color_scheme);
     states_updated = true;
   }
   if (GetPreferredContrast() != preferred_contrast) {

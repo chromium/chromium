@@ -10,7 +10,16 @@
 #include "content/public/test/browser_test.h"
 #include "ui/native_theme/native_theme.h"
 
-using PageColorsControllerBrowserTest = InProcessBrowserTest;
+class PageColorsControllerBrowserTest : public InProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+    native_theme->set_use_dark_colors(false);
+    native_theme->set_preferred_color_scheme(
+        native_theme->CalculatePreferredColorScheme());
+    native_theme->NotifyOnNativeThemeUpdated();
+  }
+};
 
 // Changing the kPageColors pref should affect the state of Page Colors in the
 // NativeTheme.
@@ -144,56 +153,75 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
   // dark colors to be false and preferred contrast to be kNoPreference.
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
-  native_theme_web->set_forced_colors(false);
-  native_theme_web->set_use_dark_colors(false);
-  native_theme_web->SetPreferredContrast(
-      ui::NativeTheme::PreferredContrast::kNoPreference);
   EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kOff);
+  EXPECT_FALSE(native_theme_web->InForcedColorsMode());
+  EXPECT_EQ(native_theme_web->GetPreferredColorScheme(),
+            ui::NativeTheme::PreferredColorScheme::kLight);
+  EXPECT_EQ(native_theme_web->GetPreferredContrast(),
+            ui::NativeTheme::PreferredContrast::kNoPreference);
 
   // Setting Page colors to 'kHighContrast' while forced colors is false should
   // not affect any state.
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kPageColors, ui::NativeTheme::PageColors::kHighContrast);
   EXPECT_FALSE(native_theme_web->InForcedColorsMode());
+  EXPECT_EQ(native_theme_web->GetPreferredColorScheme(),
+            ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_EQ(native_theme_web->GetPreferredContrast(),
             ui::NativeTheme::PreferredContrast::kNoPreference);
 
-  // Changing Page colors to a dark theme (e.g. 'Dusk') should make forced
-  // colors to be true, uses dark colors to be true, contrast preference to be
-  // 'kMore' for the native theme web instance.
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kPageColors, ui::NativeTheme::PageColors::kDusk);
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kDusk);
-  EXPECT_TRUE(native_theme_web->InForcedColorsMode());
-  EXPECT_TRUE(native_theme_web->ShouldUseDarkColors());
-  EXPECT_EQ(native_theme_web->GetPreferredContrast(),
-            ui::NativeTheme::PreferredContrast::kMore);
-
   // Changing Page colors to be a light theme (e.g. 'White') should make forced
-  // colors to be true, uses dark colors to be false, contrast preference to be
-  // 'kMore' for the native theme web instance.
+  // colors to be true, preferred color scheme to be light, contrast preference
+  // to be 'kMore' for the native theme web instance.
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kPageColors, ui::NativeTheme::PageColors::kWhite);
   EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kWhite);
   EXPECT_TRUE(native_theme_web->InForcedColorsMode());
-  EXPECT_FALSE(native_theme_web->ShouldUseDarkColors());
+  EXPECT_EQ(native_theme_web->GetPreferredColorScheme(),
+            ui::NativeTheme::PreferredColorScheme::kLight);
+  EXPECT_EQ(native_theme_web->GetPreferredContrast(),
+            ui::NativeTheme::PreferredContrast::kMore);
+
+  // Changing Page colors to a dark theme (e.g. 'Dusk') should make forced
+  // colors to be true, preferred color scheme to be dark, contrast preference
+  // to be 'kMore' for the native theme web instance.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kPageColors, ui::NativeTheme::PageColors::kDusk);
+  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kDusk);
+  EXPECT_TRUE(native_theme_web->InForcedColorsMode());
+  EXPECT_EQ(native_theme_web->GetPreferredColorScheme(),
+            ui::NativeTheme::PreferredColorScheme::kDark);
+  EXPECT_EQ(native_theme_web->GetPreferredContrast(),
+            ui::NativeTheme::PreferredContrast::kMore);
+
+  // Changing the UI theme to high contrast should not overwrite the web theme
+  // page colors.
+  native_theme->SetPreferredContrast(ui::NativeTheme::PreferredContrast::kMore);
+  // TODO(pkasting): Unconditionally calling `set_forced_colors(true)` here
+  // masks a bug that, without forced colors on, explicitly changing the page
+  // colors to `kOff` below won't properly reduce contrast. This should be fixed
+  // by moving contrast adjustment to the PageColorsController, which can
+  // distinguish between "off" and "no preference".
+  native_theme->set_forced_colors(true);
+  native_theme->NotifyOnNativeThemeUpdated();
+  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kDusk);
+  EXPECT_EQ(native_theme_web->GetPreferredColorScheme(),
+            ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(native_theme_web->GetPreferredContrast(),
             ui::NativeTheme::PreferredContrast::kMore);
 
   // Setting Page colors to 'Off' while in an increased contrast state should
   // make the native theme instance for web's forced colors to be false,
-  // contrast preference to be 'kNone', and uses dark colors to be same with the
-  // native theme instance for ui.
-  native_theme->set_forced_colors(true);
-  native_theme->SetPreferredContrast(ui::NativeTheme::PreferredContrast::kMore);
+  // contrast preference to be 'kNone', and preferred color scheme to be same
+  // with the native theme instance for ui (i.e. light).
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kPageColors, ui::NativeTheme::PageColors::kOff);
   EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kOff);
   EXPECT_FALSE(native_theme_web->InForcedColorsMode());
+  EXPECT_EQ(native_theme_web->GetPreferredColorScheme(),
+            ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_EQ(native_theme_web->GetPreferredContrast(),
             ui::NativeTheme::PreferredContrast::kNoPreference);
-  EXPECT_EQ(native_theme_web->ShouldUseDarkColors(),
-            native_theme->ShouldUseDarkColors());
 
   // Changing the color scheme for native theme ui while Page colors is 'Off'
   // and increased contrast is on should be respected and reflected in the
