@@ -111,10 +111,9 @@ void BaseProvider::RequestInternal(
     std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcherForDemoMode(
         url, annotation_tag, serialized_request, timeout);
     EndpointFetcher* const fetcher_ptr = fetcher.get();
-    fetcher_ptr->PerformRequest(
-        base::BindOnce(&OnEndpointFetcherComplete, std::move(done_callback),
-                       start_time, metric_type, std::move(fetcher)),
-        nullptr);
+    fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,
+                                      std::move(done_callback), start_time,
+                                      metric_type, std::move(fetcher)));
   } else {
     std::unique_ptr<EndpointFetcher> fetcher = CreateEndpointFetcher(
         url, oauth_consumer_name, annotation_tag, serialized_request, timeout);
