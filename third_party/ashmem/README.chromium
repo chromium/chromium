@@ -29,3 +29,5 @@ Patches:
   0007-Do-not-rely-on-ASharedMemory-when-using-memfds.patch:
      Avoid using readlink() via ASharedMemory by using memfd related
      syscalls when necessary.
+  0008-Allow-ashmem_get_-size-prot-_region-to-support-both-.patch
+     Support both ashmem and memfds for querying size/protection information about them.
