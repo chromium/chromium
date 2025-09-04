@@ -8,7 +8,6 @@
 #include <optional>
 #include <type_traits>
 
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
@@ -259,20 +258,6 @@ void V8SetReturnValue(const CallbackInfo& info,
 
 template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
 void V8SetReturnValue(const CallbackInfo& info,
-                      const WebString& string,
-                      v8::Isolate* isolate,
-                      V8ReturnValue::NonNullable) {
-  if (string.IsEmpty()) {
-    info.GetReturnValue().SetEmptyString();
-    return;
-  }
-  DCHECK(!string.IsNull());  // Null strings are empty.
-  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
-      info.GetReturnValue(), static_cast<String>(string).Impl());
-}
-
-template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
                       const AtomicString& string,
                       v8::Isolate* isolate,
                       V8ReturnValue::Nullable) {
@@ -301,22 +286,6 @@ void V8SetReturnValue(const CallbackInfo& info,
   }
   V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
       info.GetReturnValue(), string.Impl());
-}
-
-template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const WebString& string,
-                      v8::Isolate* isolate,
-                      V8ReturnValue::Nullable) {
-  if (string.IsNull()) {
-    info.GetReturnValue().SetNull();
-    return;
-  } else if (string.IsEmpty()) {
-    info.GetReturnValue().SetEmptyString();
-    return;
-  }
-  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
-      info.GetReturnValue(), static_cast<String>(string).Impl());
 }
 
 // ScriptWrappable
