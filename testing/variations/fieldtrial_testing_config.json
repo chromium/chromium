@@ -11296,8 +11296,7 @@
         {
             "platforms": [
                 "mac",
-                "windows",
-                "linux"
+                "windows"
             ],
             "experiments": [
                 {
