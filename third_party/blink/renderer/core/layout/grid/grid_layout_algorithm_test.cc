@@ -601,7 +601,7 @@ TEST_F(GridLayoutAlgorithmTest, GapGeomoetryWithSpanningItemsMC) {
   // Check column gap 0: should have one range [0,1] from item1.
   auto col_gap_0_it = column_gaps_to_blocked_row_ranges.find(0);
   ASSERT_NE(col_gap_0_it, column_gaps_to_blocked_row_ranges.end());
-  const Vector<TrackRange>& col_gap_0_ranges = *col_gap_0_it->value;
+  const Vector<TrackRange>& col_gap_0_ranges = col_gap_0_it->value;
   ASSERT_EQ(col_gap_0_ranges.size(), 1u);
   EXPECT_EQ(col_gap_0_ranges[0].start, 0u);
   EXPECT_EQ(col_gap_0_ranges[0].end, 1u);
@@ -609,7 +609,7 @@ TEST_F(GridLayoutAlgorithmTest, GapGeomoetryWithSpanningItemsMC) {
   // Check column gap 1: should have one range [2,3] from item8.
   auto col_gap_1_it = column_gaps_to_blocked_row_ranges.find(1);
   ASSERT_NE(col_gap_1_it, column_gaps_to_blocked_row_ranges.end());
-  const Vector<TrackRange>& col_gap_1_ranges = *col_gap_1_it->value;
+  const Vector<TrackRange>& col_gap_1_ranges = col_gap_1_it->value;
   ASSERT_EQ(col_gap_1_ranges.size(), 1u);
   EXPECT_EQ(col_gap_1_ranges[0].start, 2u);
   EXPECT_EQ(col_gap_1_ranges[0].end, 3u);
@@ -622,7 +622,7 @@ TEST_F(GridLayoutAlgorithmTest, GapGeomoetryWithSpanningItemsMC) {
   // Check row gap 0: should have one range [2,3] from item3.
   auto row_gap_0_it = row_gaps_to_blocked_column_ranges.find(0);
   ASSERT_NE(row_gap_0_it, row_gaps_to_blocked_column_ranges.end());
-  const Vector<TrackRange>& row_gap_0_ranges = *row_gap_0_it->value;
+  const Vector<TrackRange>& row_gap_0_ranges = row_gap_0_it->value;
   ASSERT_EQ(row_gap_0_ranges.size(), 1u);
   EXPECT_EQ(row_gap_0_ranges[0].start, 2u);
   EXPECT_EQ(row_gap_0_ranges[0].end, 3u);

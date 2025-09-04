@@ -68,7 +68,7 @@ struct TrackRange {
   wtf_size_t end;
 };
 
-using TrackRanges = std::unique_ptr<Vector<TrackRange>>;
+using TrackRanges = Vector<TrackRange>;
 
 // Represents a mapping from gap indices to the ranges of tracks blocked within
 // those gaps. For example, a gap with index 0 might map to a list of track

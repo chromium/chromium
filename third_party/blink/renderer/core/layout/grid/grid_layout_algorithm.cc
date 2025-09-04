@@ -2058,11 +2058,10 @@ class GapAccumulator {
             if (it == gap_to_blocked_track.end()) {
               // First spanning item for this gap: create new entry.
               gap_to_blocked_track.insert(
-                  gap_index,
-                  std::make_unique<Vector<TrackRange>>(1, cross_track_range));
+                  gap_index, Vector<TrackRange>(1, cross_track_range));
             } else {
               // Additional spanning item for this gap: append to existing list.
-              it->value->push_back(cross_track_range);
+              it->value.push_back(cross_track_range);
             }
           }
         };
@@ -2093,8 +2092,8 @@ class GapAccumulator {
                 return a.start < b.start;
               });
 
-    TrackRanges merged_ranges = std::make_unique<Vector<TrackRange>>();
-    merged_ranges->reserve(ranges.size());
+    TrackRanges merged_ranges;
+    merged_ranges.reserve(ranges.size());
 
     TrackRange current_range = ranges[0];
     for (wtf_size_t i = 1; i < ranges.size(); ++i) {
@@ -2102,13 +2101,13 @@ class GapAccumulator {
       if (ranges[i].start <= current_range.end) {
         current_range.end = std::max(current_range.end, ranges[i].end);
       } else {
-        merged_ranges->push_back(current_range);
+        merged_ranges.push_back(current_range);
         current_range = ranges[i];
       }
     }
-    merged_ranges->push_back(current_range);
+    merged_ranges.push_back(current_range);
 
-    ranges = std::move(*merged_ranges);
+    ranges = std::move(merged_ranges);
   }
 
   void BuildGapIntersectionPoints(const GridLayoutData& layout_data) {
@@ -2285,10 +2284,10 @@ class GapAccumulator {
       // 2. Eliminates redundant overlapping ranges from multiple spanning items
       // 3. Merges adjacent ranges that can be treated as a single larger range
       for (auto& [gap_index, ranges] : col_gaps_to_blocked_row_ranges_) {
-        SortAndMergeTrackRanges(*ranges);
+        SortAndMergeTrackRanges(ranges);
       }
       for (auto& [gap_index, ranges] : row_gaps_to_blocked_column_ranges_) {
-        SortAndMergeTrackRanges(*ranges);
+        SortAndMergeTrackRanges(ranges);
       }
 
       gap_geometry->SetRowGapsToBlockedColumnRanges(
