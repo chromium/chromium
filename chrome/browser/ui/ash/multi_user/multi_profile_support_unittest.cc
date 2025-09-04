@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -1654,13 +1655,13 @@ TEST_F(MultiProfileSupportTest, FindBrowserWithActiveWindow) {
   browser->window()->Activate();
   // Manually set last active browser in BrowserList for testing.
   BrowserList::GetInstance()->SetLastActive(browser.get());
-  EXPECT_EQ(browser.get(), BrowserList::GetInstance()->GetLastActive());
+  EXPECT_EQ(browser.get(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   EXPECT_TRUE(browser->window()->IsActive());
   EXPECT_EQ(browser.get(), chrome::FindBrowserWithActiveWindow());
 
   // Switch to another user's desktop with no active window.
   SwitchActiveUser(kAccountIdB);
-  EXPECT_EQ(browser.get(), BrowserList::GetInstance()->GetLastActive());
+  EXPECT_EQ(browser.get(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   EXPECT_FALSE(browser->window()->IsActive());
   EXPECT_EQ(nullptr, chrome::FindBrowserWithActiveWindow());
 }

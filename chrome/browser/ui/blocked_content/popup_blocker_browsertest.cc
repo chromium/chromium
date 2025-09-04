@@ -19,6 +19,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -213,14 +215,15 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
         nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     popup_blocker_helper->ShowBlockedPopup(iter->first, disposition);
 
-    Browser* new_browser;
+    BrowserWindowInterface* new_browser;
     if (what_to_expect == kExpectPopup || what_to_expect == kExpectNewWindow) {
       ui_test_utils::WaitForBrowserSetLastActive(popup_observer.Wait());
-      new_browser = BrowserList::GetInstance()->GetLastActive();
+      new_browser = GetLastActiveBrowserWindowInterfaceWithAnyProfile();
       EXPECT_NE(browser, new_browser);
-      web_contents = new_browser->tab_strip_model()->GetActiveWebContents();
+      web_contents = new_browser->GetTabStripModel()->GetActiveWebContents();
       if (what_to_expect == kExpectNewWindow) {
-        EXPECT_TRUE(new_browser->is_type_normal());
+        EXPECT_EQ(new_browser->GetType(),
+                  BrowserWindowInterface::Type::TYPE_NORMAL);
       }
     } else {
       tab_add.Wait();

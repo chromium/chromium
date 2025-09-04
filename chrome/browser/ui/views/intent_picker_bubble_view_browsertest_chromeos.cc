@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/metrics/histogram_base.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -25,9 +25,9 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -305,7 +305,7 @@ class IntentPickerBubbleViewBrowserTestChromeOSBase
   void CheckStayInChrome() {
     ASSERT_TRUE(intent_picker_bubble());
     intent_picker_bubble()->CancelDialog();
-    EXPECT_EQ(BrowserList::GetInstance()->GetLastActive(), browser());
+    EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(), browser());
     EXPECT_EQ(launched_arc_apps().size(), 0U);
   }
 
@@ -318,7 +318,8 @@ class IntentPickerBubbleViewBrowserTestChromeOSBase
 
   bool VerifyPWALaunched(const std::string& app_id) {
     WaitForAppService();
-    Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+    BrowserWindowInterface* const app_browser =
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile();
     return web_app::AppBrowserController::IsForWebApp(app_browser, app_id);
   }
 

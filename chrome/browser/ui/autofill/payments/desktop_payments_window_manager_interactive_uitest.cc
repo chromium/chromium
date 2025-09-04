@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_window_user_consent_dialog_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -811,9 +813,8 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       BrowserList::GetInstance()->get(1));
   BrowserList::GetInstance()->get(0)->window()->Activate();
   waiter.WaitForActivation();
-  EXPECT_TRUE(BrowserList::GetInstance()
-                  ->GetLastActive()
-                  ->tab_strip_model()
+  EXPECT_TRUE(GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                  ->GetTabStripModel()
                   ->GetActiveWebContents() == GetPopupWebContents());
 }
 #endif  // #if BUILDFLAG(IS_LINUX)

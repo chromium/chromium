@@ -12,7 +12,7 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login/test",
   "+chrome/browser/chrome_content_browser_client.h",
-  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/webui/ash/settings",
   "+chrome/grit",
   "+chrome/test",

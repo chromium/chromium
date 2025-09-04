@@ -53,6 +53,7 @@
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/content/ssl_error_navigation_throttle.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
@@ -201,8 +202,10 @@ void HandleSSLErrorWrapper(
 // Returns whether `web_contents` is within a hosted app.
 bool IsInHostedApp(content::WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  return web_app::AppBrowserController::IsWebApp(browser);
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  return tab && web_app::AppBrowserController::IsWebApp(
+                    tab->GetBrowserWindowInterface());
 #else
   return false;
 #endif

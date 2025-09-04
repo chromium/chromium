@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
@@ -206,19 +207,19 @@ TEST_F(BrowserViewTest, MAYBE_UpdateActiveBrowser) {
   ScopedBrowser scoped_browser(profile());
   Browser* browser2 = scoped_browser.browser();
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
-  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+  EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   browser2->window()->Show();
-  EXPECT_EQ(browser2, BrowserList::GetInstance()->GetLastActive());
+  EXPECT_EQ(browser2, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   browser()->window()->Show();
-  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+  EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   browser2->window()->Activate();
-  EXPECT_EQ(browser2, BrowserList::GetInstance()->GetLastActive());
+  EXPECT_EQ(browser2, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   browser()->window()->Activate();
-  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+  EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   browser2 = nullptr;
 }

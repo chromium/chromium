@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 
+class Browser;
 class ExtensionsToolbarContainer;
 
 class ExtensionsToolbarContainerViewController final

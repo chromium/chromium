@@ -30,9 +30,10 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -211,15 +212,17 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, RotatedSnapGroup) {
   ash::test::InstallSystemAppsForTesting(profile);
 
   ash::test::CreateSystemWebApp(profile, ash::SystemWebAppType::FILE_MANAGER);
-  aura::Window* w1 =
-      BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
+  aura::Window* w1 = GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                         ->GetWindow()
+                         ->GetNativeWindow();
   ash::display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
   auto* root2 = ash::Shell::GetAllRootWindows()[1].get();
   ASSERT_EQ(root2, w1->GetRootWindow());
 
   ash::test::CreateSystemWebApp(profile, ash::SystemWebAppType::SETTINGS);
-  aura::Window* w2 =
-      BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
+  aura::Window* w2 = GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                         ->GetWindow()
+                         ->GetNativeWindow();
   ash::display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
   ASSERT_EQ(root2, w1->GetRootWindow());
 

@@ -225,7 +225,8 @@ bool ToolbarActionsModel::HasAction(const ActionId& action_id) const {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-bool ToolbarActionsModel::CanShowActionsInToolbar(const Browser& browser) {
+bool ToolbarActionsModel::CanShowActionsInToolbar(
+    const BrowserWindowInterface& browser) {
   // Pinning extensions is not available in PWAs.
   return !web_app::AppBrowserController::IsWebApp(&browser);
 }

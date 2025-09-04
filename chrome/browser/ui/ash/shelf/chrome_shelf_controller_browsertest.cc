@@ -79,6 +79,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -1126,11 +1128,12 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchAppFromDisplayWithoutFocus1) {
   apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
       shortcut_id.app_id);
   SelectItem(shortcut_id, ui::EventType::kMousePressed, displays[1].id());
-  Browser* browser1 = browser_list->GetLastActive();
+  BrowserWindowInterface* browser1 =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_EQ(browser_list->size(), 2U);
   EXPECT_NE(browser1, browser0);
-  EXPECT_EQ(browser0->tab_strip_model()->count(), 1);
-  EXPECT_EQ(browser1->tab_strip_model()->count(), 1);
+  EXPECT_EQ(browser0->GetTabStripModel()->count(), 1);
+  EXPECT_EQ(browser1->GetTabStripModel()->count(), 1);
 }
 
 // Launch the app first and then create the shortcut.
@@ -2176,16 +2179,17 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, CloseSystemAppByShelfContextMenu) {
   tray_test_api->ClickBubbleView(ash::VIEW_ID_QS_SETTINGS_BUTTON);
   browser_opened.Wait();
 
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_EQ(ash::kOsSettingsAppId,
             ash::ShelfID::Deserialize(
-                app_browser->window()->GetNativeWindow()->GetProperty(
+                app_browser->GetWindow()->GetNativeWindow()->GetProperty(
                     ash::kShelfIDKey))
                 .app_id);
 
   // Wait until the web contents finish loading.
   EXPECT_TRUE(
-      WaitForLoadStop(app_browser->tab_strip_model()->GetActiveWebContents()));
+      WaitForLoadStop(app_browser->GetTabStripModel()->GetActiveWebContents()));
 
   // Wait until the shelf app icon addition animation finishes.
   ash::ShelfViewTestAPI shelf_test_api(shelf_view);

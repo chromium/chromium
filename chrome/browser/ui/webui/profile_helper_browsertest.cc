@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -122,7 +124,8 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
   // Opening existing browser profile shouldn't open additional browser windows.
   webui::OpenNewWindowForProfile(original_profile);
   EXPECT_EQ(1u, browser_list->size());
-  EXPECT_EQ(original_browser, browser_list->GetLastActive());
+  EXPECT_EQ(original_browser,
+            GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   // Opening additional browser will add new window and activate it.
   Profile* additional_profile = CreateProfile();
@@ -131,8 +134,9 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
   webui::OpenNewWindowForProfile(additional_profile);
   EXPECT_EQ(2u, browser_list->size());
   activation_observer->Wait();
-  Browser* additional_browser = browser_list->GetLastActive();
-  EXPECT_EQ(additional_profile, additional_browser->profile());
+  BrowserWindowInterface* const additional_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_EQ(additional_profile, additional_browser->GetProfile());
 
 // On Macs OpenNewWindowForProfile does not activate existing browser
 // while non of the browser windows have focus. BrowserWindowCocoa::Show() got
@@ -146,7 +150,8 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
   webui::OpenNewWindowForProfile(original_profile);
   EXPECT_EQ(2u, browser_list->size());
   activation_observer->Wait();
-  EXPECT_EQ(original_profile, browser_list->GetLastActive()->profile());
+  EXPECT_EQ(original_profile,
+            GetLastActiveBrowserWindowInterfaceWithAnyProfile()->GetProfile());
 #endif
 }
 

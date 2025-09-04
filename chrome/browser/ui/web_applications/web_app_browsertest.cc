@@ -51,6 +51,9 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -2116,9 +2119,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_IN_PWA_WINDOW));
   ui_test_utils::WaitForBrowserSetLastActive(new_app_browser_observer.Wait());
 
-  Browser* const app_browser = BrowserList::GetInstance()->GetLastActive();
-  ASSERT_EQ(app_browser->app_controller()->app_id(), app_id);
-  EXPECT_TRUE(app_browser->app_controller()->HasMinimalUiButtons());
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  ASSERT_EQ(app_browser->GetFeatures().app_browser_controller()->app_id(),
+            app_id);
+  EXPECT_TRUE(app_browser->GetFeatures()
+                  .app_browser_controller()
+                  ->HasMinimalUiButtons());
 
   auto* provider = WebAppProvider::GetForTest(profile());
   EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(app_id),
@@ -2323,7 +2330,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLED_NewAppWindow) {
   EXPECT_TRUE(chrome::ExecuteCommand(app_browser, IDC_NEW_WINDOW));
   Browser* const new_browser = browser_change_observer.Wait();
 
-  EXPECT_EQ(new_browser, browser_list->GetLastActive());
+  EXPECT_EQ(new_browser, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   EXPECT_EQ(browser_list->size(), 3U);
   EXPECT_NE(new_browser, browser());
   EXPECT_NE(new_browser, app_browser);
@@ -2341,7 +2348,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLED_NewAppWindow) {
   content::WebContents* new_tab = tab_waiter.Wait();
 
   ASSERT_TRUE(new_tab);
-  EXPECT_EQ(browser_list->GetLastActive(), browser());
+  EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(), browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
   EXPECT_EQ(new_tab, browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_EQ(new_tab->GetVisibleURL(), app_url);

@@ -10,6 +10,8 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
@@ -87,11 +89,12 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
   web_app::CloseAndWait(browser());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-  BrowserWaiter waiter(app_browser);
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  BrowserWaiter waiter(app_browser->GetBrowserForMigrationOnly());
   // Uninstalling should close the |app_browser|, but keep the browser
   // object alive long enough to complete the uninstall.
-  test::UninstallWebApp(app_browser->profile(), foo_app_id);
+  test::UninstallWebApp(app_browser->GetProfile(), foo_app_id);
   waiter.AwaitRemoved();
 
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());

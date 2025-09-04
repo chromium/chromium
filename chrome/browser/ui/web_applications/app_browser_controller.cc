@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
@@ -98,14 +100,15 @@ void SetWebContentsCanAcceptLoadDrops(content::WebContents* contents,
 namespace web_app {
 
 // static
-bool AppBrowserController::IsWebApp(const Browser* browser) {
-  return browser && browser->app_controller();
+bool AppBrowserController::IsWebApp(const BrowserWindowInterface* browser) {
+  return browser && browser->GetFeatures().app_browser_controller();
 }
 
 // static
-bool AppBrowserController::IsForWebApp(const Browser* browser,
+bool AppBrowserController::IsForWebApp(const BrowserWindowInterface* browser,
                                        const webapps::AppId& app_id) {
-  return IsWebApp(browser) && browser->app_controller()->app_id() == app_id;
+  return IsWebApp(browser) &&
+         browser->GetFeatures().app_browser_controller()->app_id() == app_id;
 }
 
 // static

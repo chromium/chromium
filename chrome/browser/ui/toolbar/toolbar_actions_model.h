@@ -30,7 +30,7 @@ class Profile;
 class ExtensionsContainer;
 
 #if !BUILDFLAG(IS_ANDROID)
-class Browser;
+class BrowserWindowInterface;
 #endif
 
 namespace extensions {
@@ -98,7 +98,7 @@ class ToolbarActionsModel
 
 #if !BUILDFLAG(IS_ANDROID)
   // Returns whether actions can be shown in the toolbar for `browser`.
-  static bool CanShowActionsInToolbar(const Browser& browser);
+  static bool CanShowActionsInToolbar(const BrowserWindowInterface& browser);
 #endif
 
   // Adds or removes an observer.

@@ -23,6 +23,7 @@ include_rules = [
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/browser_dialogs.h",
   "+chrome/browser/ui/browser_finder.h",
+  "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_list_observer.h",

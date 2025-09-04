@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -474,7 +475,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   chrome::NewEmptyWindow(profile);
   SessionRestoreTestHelper().Wait();
 
-  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+  const BrowserWindowInterface* const new_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
   // Check that a layout occurs.
   BrowserView* browser_view =

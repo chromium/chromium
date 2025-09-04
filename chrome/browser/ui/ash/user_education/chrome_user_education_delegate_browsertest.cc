@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -68,7 +68,8 @@ IN_PROC_BROWSER_TEST_F(ChromeUserEducationDelegateBrowserTest,
 
   // Expect Explore app to launch asynchronously.
   EXPECT_TRUE(base::test::RunUntil([]() {
-    auto* const browser = BrowserList::GetInstance()->GetLastActive();
+    BrowserWindowInterface* const browser =
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile();
     return browser &&
            web_app::AppBrowserController::IsForWebApp(browser, ash::kHelpAppId);
   }));

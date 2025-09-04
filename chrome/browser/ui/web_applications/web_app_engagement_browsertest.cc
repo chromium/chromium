@@ -18,6 +18,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -617,8 +620,9 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
   app_loaded_observer.Wait();
 
-  Browser* const app_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_TRUE(app_browser->is_type_app());
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
 #if BUILDFLAG(IS_WIN)
   {
@@ -635,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
 
   EXPECT_EQ(expected_browsers, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_EQ(expected_tabs, browser()->tab_strip_model()->count());
-  EXPECT_EQ(expected_tabs, app_browser->tab_strip_model()->count());
+  EXPECT_EQ(expected_tabs, app_browser->GetTabStripModel()->count());
 }
 
 // TODO(crbug.com/40877225): Flaky on Mac.
@@ -675,9 +679,10 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
   app_loaded_observer.Wait();
 
-  Browser* const app_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_EQ(app_browser->type(), Browser::TYPE_APP);
-  EXPECT_TRUE(app_browser->app_controller());
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+  EXPECT_TRUE(app_browser->GetFeatures().app_browser_controller());
   EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
 
 #if BUILDFLAG(IS_WIN)
@@ -695,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
 
   EXPECT_EQ(expected_browsers, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_EQ(expected_tabs, browser()->tab_strip_model()->count());
-  EXPECT_EQ(expected_tabs, app_browser->tab_strip_model()->count());
+  EXPECT_EQ(expected_tabs, app_browser->GetTabStripModel()->count());
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -29,6 +29,7 @@
 #include "url/gurl.h"
 
 class Browser;
+class BrowserWindowInterface;
 class BrowserThemePack;
 class CustomThemeSupplier;
 class TabMenuModelFactory;
@@ -68,9 +69,10 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   ~AppBrowserController() override;
 
   // Returns whether |browser| is a web app window/pop-up.
-  static bool IsWebApp(const Browser* browser);
+  static bool IsWebApp(const BrowserWindowInterface* browser);
   // Returns whether |browser| is a web app window/pop-up for |app_id|.
-  static bool IsForWebApp(const Browser* browser, const webapps::AppId& app_id);
+  static bool IsForWebApp(const BrowserWindowInterface* browser,
+                          const webapps::AppId& app_id);
   // Returns a Browser* that is for |app_id| and |profile| if any, searches in
   // order of last browser activation. Ignores pop-up Browsers.
   static Browser* FindForWebApp(const Profile& profile,
