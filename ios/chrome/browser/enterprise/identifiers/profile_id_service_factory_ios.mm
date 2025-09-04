@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_delegate_ios_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"

@@ -13,7 +13,6 @@ source_set("personal_collaboration_data") {
     "//components/data_sharing/public:features",
     "//components/data_sharing/public:personal_collaboration_data",
     "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/sync/base",
     "//components/sync/model",
     "//ios/chrome/browser/shared/model/profile",

@@ -9,7 +9,6 @@ include_rules = [
   "+components/sessions/core",
   "+components/sync_preferences",
   "+components/keyed_service/core",
-  "+components/keyed_service/ios",
   "+components/unified_consent",
   "+ios/components/cookie_util",
   "+ios/components/ui_util",

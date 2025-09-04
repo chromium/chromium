@@ -64,7 +64,6 @@ source_set("model") {
   deps = [
     "//base",
     "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/strings",

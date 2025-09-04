@@ -11,7 +11,6 @@ source_set("model") {
   ]
   deps = [
     "//components/fingerprinting_protection_filter/common:features",
-    "//components/keyed_service/ios",
     "//components/privacy_sandbox:tracking_protection_settings",
     "//ios/web/public/content_manager",
     "//ios/web/public/thread",
@@ -32,7 +31,6 @@ source_set("factory") {
   deps = [
     ":model",
     "//components/fingerprinting_protection_filter/common:features",
-    "//components/keyed_service/ios",
     "//components/privacy_sandbox:tracking_protection_settings",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/privacy_sandbox",

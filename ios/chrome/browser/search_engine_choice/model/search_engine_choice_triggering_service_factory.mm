@@ -6,7 +6,6 @@
 
 #import "base/check_deref.h"
 #import "components/keyed_service/core/keyed_service.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
