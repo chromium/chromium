@@ -16,6 +16,7 @@
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_mediator.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_view_controller.h"
@@ -153,13 +154,18 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
         search_engine_choice_mediator_class_mock;
     OCMExpect([search_engine_choice_mediator_class_mock alloc])
         .andReturn(search_engine_choice_mediator_mock_);
-    TemplateURLService* templateURLService =
+    TemplateURLService* template_url_service =
         ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
-    search_engines::SearchEngineChoiceService* searchEngineChoiceService =
+    search_engines::SearchEngineChoiceService* search_engine_choice_service =
         ios::SearchEngineChoiceServiceFactory::GetForProfile(profile_.get());
+    regional_capabilities::RegionalCapabilitiesService*
+        regional_capabilities_service =
+            ios::RegionalCapabilitiesServiceFactory::GetForProfile(
+                profile_.get());
     OCMExpect([search_engine_choice_mediator_mock_
-                  initWithTemplateURLService:templateURLService
-                   searchEngineChoiceService:searchEngineChoiceService])
+                   initWithTemplateURLService:template_url_service
+                    searchEngineChoiceService:search_engine_choice_service
+                  regionalCapabilitiesService:regional_capabilities_service])
         .andReturn(search_engine_choice_mediator_mock_);
   }
 

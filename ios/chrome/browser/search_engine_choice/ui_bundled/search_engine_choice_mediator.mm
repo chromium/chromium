@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/search_engines/choice_made_location.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -48,9 +49,10 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 }  // namespace
 
 @implementation SearchEngineChoiceMediator {
-  raw_ptr<search_engines::SearchEngineChoiceService>
-      _searchEngineChoiceService;                   // weak
-  raw_ptr<TemplateURLService> _templateURLService;  // weak
+  raw_ptr<search_engines::SearchEngineChoiceService> _searchEngineChoiceService;
+  raw_ptr<TemplateURLService> _templateURLService;
+  regional_capabilities::RegionalCapabilitiesService::ChoiceScreenDesign
+      _choiceScreenDesign;
   // The template URLs to be shown on the choice screen and some associated
   // data.
   std::unique_ptr<search_engines::ChoiceScreenData> _choiceScreenData;
@@ -58,14 +60,25 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 }
 
 - (instancetype)
-    initWithTemplateURLService:(TemplateURLService*)templateURLService
-     searchEngineChoiceService:
-         (search_engines::SearchEngineChoiceService*)searchEngineChoiceService {
+     initWithTemplateURLService:(TemplateURLService*)templateURLService
+      searchEngineChoiceService:
+          (search_engines::SearchEngineChoiceService*)searchEngineChoiceService
+    regionalCapabilitiesService:
+        (regional_capabilities::RegionalCapabilitiesService*)
+            regionalCapabilitiesService {
   self = [super init];
   if (self) {
     _templateURLService = templateURLService;
     _searchEngineChoiceService = searchEngineChoiceService;
     _templateURLService->Load();
+    // The caller should ensure that GetChoiceScreenDesign() returns an optional
+    // that is set.
+    std::optional<
+        regional_capabilities::RegionalCapabilitiesService::ChoiceScreenDesign>
+        choiceScreenDesign =
+            regionalCapabilitiesService->GetChoiceScreenDesign();
+    CHECK(choiceScreenDesign.has_value());
+    _choiceScreenDesign = std::move(choiceScreenDesign.value());
   }
   return self;
 }
@@ -102,6 +115,16 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 - (void)setConsumer:(id<SearchEngineChoiceConsumer>)consumer {
   _consumer = consumer;
   if (_consumer) {
+    _consumer.titleStringID = _choiceScreenDesign.title_string_id;
+    _consumer.subtitle1StringID = _choiceScreenDesign.subtitle_1_string_id;
+    _consumer.subtitle1LearnMoreSuffixStringID =
+        _choiceScreenDesign.subtitle_1_learn_more_suffix_string_id;
+    _consumer.subtitle1LearnMoreA11yStringID =
+        _choiceScreenDesign.subtitle_1_learn_more_a11y_string_id;
+    if (_choiceScreenDesign.subtitle_2_string_id.has_value()) {
+      _consumer.subtitle2StringID =
+          _choiceScreenDesign.subtitle_2_string_id.value();
+    }
     [self loadSearchEngines];
   }
 }

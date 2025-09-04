@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_learn_more/search_engine_choice_learn_more_coordinator.h"
@@ -100,9 +102,19 @@ using search_engines::SearchEngineChoiceScreenEvents;
       ios::TemplateURLServiceFactory::GetForProfile(profile);
   search_engines::SearchEngineChoiceService* searchEngineChoiceService =
       ios::SearchEngineChoiceServiceFactory::GetForProfile(profile);
+  regional_capabilities::RegionalCapabilitiesService*
+      regionalCapabilitiesService =
+          ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
+  std::optional<
+      regional_capabilities::RegionalCapabilitiesService::ChoiceScreenDesign>
+      choiceScreenDesign = regionalCapabilitiesService->GetChoiceScreenDesign();
+  // ShouldDisplaySearchEngineChoiceScreen() should return false if there is
+  // no value from RegionalCapabilitiesService::GetChoiceScreenDesign().
+  CHECK(choiceScreenDesign.has_value());
   _mediator = [[SearchEngineChoiceMediator alloc]
-      initWithTemplateURLService:templateURLService
-       searchEngineChoiceService:searchEngineChoiceService];
+       initWithTemplateURLService:templateURLService
+        searchEngineChoiceService:searchEngineChoiceService
+      regionalCapabilitiesService:regionalCapabilitiesService];
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
   _viewController.modalInPresentation = YES;

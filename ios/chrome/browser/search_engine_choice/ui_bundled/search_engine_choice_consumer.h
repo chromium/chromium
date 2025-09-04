@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 @class SnippetSearchEngineElement;
 
 // Handles search engine choice UI updates.
@@ -15,6 +17,14 @@
 // The list of search engines to offer in the choice screen.
 @property(nonatomic, strong)
     NSArray<SnippetSearchEngineElement*>* searchEngines;
+
+// Title, subtitle 1, learn more for subtitle 1 with its accessibility, and the
+// subtitle 2 (optional), for the search engine screen.
+@property(nonatomic, assign) int titleStringID;
+@property(nonatomic, assign) int subtitle1StringID;
+@property(nonatomic, assign) int subtitle1LearnMoreSuffixStringID;
+@property(nonatomic, assign) int subtitle1LearnMoreA11yStringID;
+@property(nonatomic, assign) std::optional<int> subtitle2StringID;
 
 @end
 

@@ -203,6 +203,12 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
 }
 
 @synthesize searchEngines = _searchEngines;
+@synthesize titleStringID = _titleStringID;
+@synthesize subtitle1StringID = _subtitle1StringID;
+@synthesize subtitle1LearnMoreSuffixStringID =
+    _subtitle1LearnMoreSuffixStringID;
+@synthesize subtitle1LearnMoreA11yStringID = subtitle1LearnMoreA11yStringID;
+@synthesize subtitle2StringID = _subtitle2StringID;
 
 - (instancetype)initWithFirstRunMode:(BOOL)isForFRE {
   self = [super initWithNibName:nil bundle:nil];
@@ -245,14 +251,14 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
   logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
 
   // Add view title.
+  CHECK_NE(self.titleStringID, 0);
   _titleLabel = [[UILabel alloc] init];
   // Add semantic group, so the user can skip all the search engine stack view,
   // and jump to the SetAsDefault button, using VoiceOver.
   _titleLabel.accessibilityContainerType =
       UIAccessibilityContainerTypeSemanticGroup;
   [scrollContentView addSubview:_titleLabel];
-  [_titleLabel
-      setText:l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE)];
+  [_titleLabel setText:l10n_util::GetNSString(self.titleStringID)];
   [_titleLabel setTextColor:[UIColor colorNamed:kSolidBlackColor]];
   UIFontTextStyle textStyle = GetTitleLabelFontTextStyle(self);
   _titleLabel.font = GetFRETitleFont(textStyle);
@@ -265,10 +271,12 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
   // Add view subtitle.
+  CHECK_NE(self.subtitle1StringID, 0);
+  CHECK_NE(self.subtitle1LearnMoreSuffixStringID, 0);
+  CHECK_NE(self.subtitle1LearnMoreA11yStringID, 0);
   UIFont* subtitleFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   NSMutableAttributedString* subtitleText = [[NSMutableAttributedString alloc]
-      initWithString:[l10n_util::GetNSString(
-                         IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE)
+      initWithString:[l10n_util::GetNSString(self.subtitle1StringID)
                          stringByAppendingString:@" "]
           attributes:@{
             NSForegroundColorAttributeName : [UIColor colorNamed:kGrey800Color],
@@ -283,15 +291,15 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
   NSAttributedString* learnMoreAttributedString =
       [[NSMutableAttributedString alloc]
           initWithString:l10n_util::GetNSString(
-                             IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK)
+                             self.subtitle1LearnMoreSuffixStringID)
               attributes:@{
                 NSForegroundColorAttributeName :
                     [UIColor colorNamed:kBlueColor],
                 NSLinkAttributeName : net::NSURLWithGURL(GURL(kLearnMoreURL)),
                 NSFontAttributeName : boldSubtitleFont,
               }];
-  learnMoreAttributedString.accessibilityLabel = l10n_util::GetNSString(
-      IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL);
+  learnMoreAttributedString.accessibilityLabel =
+      l10n_util::GetNSString(self.subtitle1LearnMoreA11yStringID);
   [subtitleText appendAttributedString:learnMoreAttributedString];
   UITextView* subtitleTextView = [[UITextView alloc] init];
   [scrollContentView addSubview:subtitleTextView];
@@ -307,6 +315,8 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
   subtitleTextView.showsHorizontalScrollIndicator = NO;
   subtitleTextView.editable = NO;
   subtitleTextView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  // TODO(crbug.com/433501136): Need to add subtitle 2 if needed.
 
   // Add stack view for the search engine buttons.
   _searchEngineStackView = [[UIStackView alloc] init];

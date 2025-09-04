@@ -12,6 +12,9 @@
 class TemplateURLService;
 @protocol SearchEngineChoiceConsumer;
 
+namespace regional_capabilities {
+class RegionalCapabilitiesService;
+}  // namespace regional_capabilities
 namespace search_engines {
 class SearchEngineChoiceService;
 }  // namespace search_engines
@@ -23,10 +26,12 @@ class SearchEngineChoiceService;
 @property(nonatomic, weak) id<SearchEngineChoiceConsumer> consumer;
 
 - (instancetype)
-    initWithTemplateURLService:(TemplateURLService*)templateURLService
-     searchEngineChoiceService:
-         (search_engines::SearchEngineChoiceService*)searchEngineChoiceService
-    NS_DESIGNATED_INITIALIZER;
+     initWithTemplateURLService:(TemplateURLService*)templateURLService
+      searchEngineChoiceService:
+          (search_engines::SearchEngineChoiceService*)searchEngineChoiceService
+    regionalCapabilitiesService:
+        (regional_capabilities::RegionalCapabilitiesService*)
+            regionalCapabilitiesService NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Save the selected search engine as default.
