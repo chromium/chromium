@@ -182,12 +182,22 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         // If savedInstanceState is non-null, then the activity is being
         // recreated and super.onCreate() has already recreated the fragment.
         if (savedInstanceState == null) {
-            Fragment fragment = instantiateMainFragment(getIntent());
+            if (ChromeFeatureList.sSettingsMultiColumn.isEnabled()) {
+                // Do NOT set MAIN_FRAGMENT_TAG in this case, so page-title updating,
+                // setting the padding depending on window size, and metrics are temporarily
+                // disabled for development.
+                // TODO(crbug.com/404074032): Implement them back.
+                var transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.content, new MultiColumnSettings());
+                transaction.commit();
+            } else {
+                Fragment fragment = instantiateMainFragment(getIntent());
 
-            var transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.content, fragment, MAIN_FRAGMENT_TAG);
-            setFragmentAnimation(transaction, fragment);
-            transaction.commit();
+                var transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.content, fragment, MAIN_FRAGMENT_TAG);
+                setFragmentAnimation(transaction, fragment);
+                transaction.commit();
+            }
         }
 
         setStatusBarColor();
