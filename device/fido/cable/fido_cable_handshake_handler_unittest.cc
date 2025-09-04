@@ -26,9 +26,9 @@
 #include "base/test/test_future.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
+#include "crypto/hash.h"
 #include "crypto/hkdf.h"
 #include "crypto/hmac.h"
-#include "crypto/sha2.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/cable/fido_ble_frames.h"
@@ -132,7 +132,7 @@ std::array<uint8_t, 32> GetExpectedEncryptionKey(
   fido_parsing_utils::Append(&nonce_message, client_random_nonce);
   fido_parsing_utils::Append(&nonce_message, kAuthenticatorSessionRandom);
   return crypto::HkdfSha256<32>(kTestSessionPreKey,
-                                crypto::SHA256Hash(nonce_message),
+                                crypto::hash::Sha256(nonce_message),
                                 kCableDeviceEncryptionKeyInfo);
 }
 

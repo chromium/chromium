@@ -21,10 +21,10 @@
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/aead.h"
+#include "crypto/hash.h"
 #include "crypto/hkdf.h"
 #include "crypto/hmac.h"
 #include "crypto/random.h"
-#include "crypto/sha2.h"
 #include "device/fido/cable/fido_cable_device.h"
 #include "device/fido/cable/noise.h"
 #include "device/fido/cable/v2_handshake.h"
@@ -178,7 +178,7 @@ FidoCableV1HandshakeHandler::GetEncryptionKeyAfterSuccessfulHandshake(
   fido_parsing_utils::Append(&nonce_message, client_session_random_);
   fido_parsing_utils::Append(&nonce_message, authenticator_random_nonce);
   return crypto::HkdfSha256<32>(session_pre_key_,
-                                crypto::SHA256Hash(nonce_message),
+                                crypto::hash::Sha256(nonce_message),
                                 kCableDeviceEncryptionKeyInfo);
 }
 
