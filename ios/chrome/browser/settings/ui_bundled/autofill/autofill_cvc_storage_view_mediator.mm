@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
@@ -60,6 +61,14 @@
   _cvcStorageEnabled.value = isOn;
 }
 
+- (void)deleteAllSavedCvcsForViewController:
+    (AutofillCvcStorageViewController*)controller {
+  CHECK(_personalDataManager);
+  _personalDataManager->payments_data_manager().ClearLocalCvcs();
+  _personalDataManager->payments_data_manager().ClearServerCvcs();
+  self.consumer.hasSavedCvcs = NO;
+}
+
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(PrefBackedBoolean*)boolean {
@@ -71,8 +80,11 @@
 
 - (BOOL)hasSavedCvcs {
   CHECK(_personalDataManager);
-  // TODO(crbug.com/40266992): This should check if there are any saved CVCs.
-  return true;
+  const std::vector<const autofill::CreditCard*> cards =
+      _personalDataManager->payments_data_manager().GetCreditCards();
+  return std::ranges::any_of(cards, [&](const autofill::CreditCard* card) {
+    return !card->cvc().empty();
+  });
 }
 
 @end
