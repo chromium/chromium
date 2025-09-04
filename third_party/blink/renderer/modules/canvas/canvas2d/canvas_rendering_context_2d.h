@@ -179,6 +179,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
 
   // CanvasRenderingContext implementation
+  void Reset() override;
   bool IsComposited() const override;
   scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
       SourceDrawingBuffer source_buffer,

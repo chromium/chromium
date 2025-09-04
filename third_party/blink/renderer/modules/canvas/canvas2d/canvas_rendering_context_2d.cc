@@ -219,6 +219,16 @@ V8RenderingContext* CanvasRenderingContext2D::AsV8RenderingContext() {
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D() = default;
 
+void CanvasRenderingContext2D::Reset() {
+  if (IsHibernating()) {
+    CanvasHibernationHandler::ReportHibernationEvent(
+        CanvasHibernationHandler::HibernationEvent::kHibernationEndedNormally);
+    GetHibernationHandler()->Clear();
+  }
+
+  BaseRenderingContext2D::Reset();
+}
+
 bool CanvasRenderingContext2D::IsComposited() const {
   // The following case is necessary for handling the special case of canvases
   // in the dev tools overlay.
