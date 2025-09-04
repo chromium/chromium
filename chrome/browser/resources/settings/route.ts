@@ -169,6 +169,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS =
       r.SITE_SETTINGS_FILE_SYSTEM_WRITE.createChild('siteDetails');
   r.SITE_SETTINGS_LOCAL_FONTS = r.SITE_SETTINGS.createChild('localFonts');
+  r.SITE_SETTINGS_LOCAL_FONTS.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_STORAGE_ACCESS = r.SITE_SETTINGS.createChild('storageAccess');
   r.SITE_SETTINGS_STORAGE_ACCESS.hasMigratedToPlugin = true;
   r.SITE_SETTINGS_AUTOMATIC_FULLSCREEN =
