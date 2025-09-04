@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Shared utilities for orderfile generation."""
 
+from typing import Optional
+import android_profile_tool
 import cluster
 import process_profiles
 
@@ -46,12 +48,12 @@ def ProcessProfiles(profile_files, lib_chrome_so_path):
   return ordered_symbols, symbols_size
 
 
-def CollectProfiles(profiler,
-                    profile_webview,
-                    arch,
-                    apk_path_or_browser_name,
-                    out_dir_str=None,
-                    webview_installer_path=None):
+def CollectProfiles(profiler: android_profile_tool.AndroidProfileTool,
+                    profile_webview: bool,
+                    arch: str,
+                    apk_path_or_browser_name: str,
+                    out_dir_str: Optional[str] = None,
+                    webview_installer_path: Optional[str] = None):
   """Collects profiles from the device."""
   if profile_webview:
     if not webview_installer_path:
