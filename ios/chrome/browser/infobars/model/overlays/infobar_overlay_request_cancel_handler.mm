@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_cancel_handler.h"
 
 #import "base/check.h"
@@ -17,7 +15,7 @@
 using infobars::InfoBar;
 using infobars::InfoBarManager;
 
-BASE_FEATURE(InfobarRemoveCheck, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kInfobarRemoveCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #pragma mark - InfobarOverlayRequestCancelHandler
 

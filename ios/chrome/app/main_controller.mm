@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/chrome/app/main_controller.h"
 
 #import <memory>
@@ -179,7 +177,7 @@ namespace {
 
 #if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 // Skip chromeMain.reset() on shutdown, see crbug.com/1328891 for details.
-BASE_FEATURE(FastApplicationWillTerminate, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFastApplicationWillTerminate, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 
 // Constants for deferring memory debugging tools startup.

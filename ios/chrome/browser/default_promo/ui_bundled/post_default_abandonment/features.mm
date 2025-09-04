@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
 
 #import "ios/chrome/browser/default_browser/model/utils.h"
 
-BASE_FEATURE(PostDefaultAbandonmentPromo, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPostDefaultAbandonmentPromo, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kPostDefaultAbandonmentIntervalStart{
     &kPostDefaultAbandonmentPromo,
