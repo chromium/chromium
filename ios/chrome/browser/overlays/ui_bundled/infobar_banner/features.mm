@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/features.h"
 
 #import "ios/chrome/browser/infobars/ui_bundled/infobar_constants.h"

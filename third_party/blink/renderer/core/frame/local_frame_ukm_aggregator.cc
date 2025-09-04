@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 
 #include <memory>

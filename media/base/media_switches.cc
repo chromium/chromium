@@ -6,6 +6,8 @@
 // expiry condition. The expiry condition is freeform and could be a date,
 // experiment, bug, the deletion of a file, etc.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #include "media/base/media_switches.h"
 
 #include "base/command_line.h"
@@ -422,11 +424,11 @@ BASE_FEATURE(ContextMenuCopyVideoFrame,
 );
 
 // Enables the "Save Video Frame As" context menu item.
-BASE_FEATURE_2(kContextMenuSaveVideoFrameAs,
+BASE_FEATURE(ContextMenuSaveVideoFrameAs,
 #if BUILDFLAG(IS_ANDROID)
-               base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #else
-               base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
 

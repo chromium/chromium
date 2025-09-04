@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #include "gpu/command_buffer/service/image_reader_gl_owner.h"
 
 #include <android/native_window_jni.h>

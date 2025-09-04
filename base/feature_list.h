@@ -75,7 +75,7 @@ enum FeatureState {
 //    from its name. This form is preferred, as it avoids repeating the feature
 //    name and helps prevent typos.
 //
-//      BASE_FEATURE(MyFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+//      BASE_FEATURE(kMyFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 //
 //    This is equivalent to:
 //
@@ -96,20 +96,17 @@ enum FeatureState {
   constinit const base::Feature feature(                           \
       name, default_state, base::internal::FeatureMacroHandshake::kSecret)
 
+// TODO(crbug.com/436274260): This TODO define is used for the migration from
+// the old 2-param `BASE_FEATURE(MyFeature, ...)` to the new 2-param
+// `BASE_FEATURE(kMyFeature, ...)`, and will be removed after the migration.
+#ifdef TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+// DO NOT USE. This is the old macro that will be removed.
+//    BASE_FEATURE(MyFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 #define BASE_FEATURE_INTERNAL_2_ARGS(name, default_state) \
   BASE_FEATURE_INTERNAL_3_ARGS(k##name, #name, default_state)
-
-// DO NOT USE. This is a temporary macro to test code search.
-//
-// TODO(crbug.com/436274260): Rename BASE_FEATURE_2 back to BASE_FEATURE
-// conditionally as part of the migration.
-//
-// Same as BASE_FEATURE_INTERNAL_2_ARGS, but allows
+#else
 //    BASE_FEATURE_2(kMyFeature, base::FEATURE_ENABLED_BY_DEFAULT);
-// instead of
-//    BASE_FEATURE(MyFeature, base::FEATURE_ENABLED_BY_DEFAULT);
-// to solve the code search issue.
-#define BASE_FEATURE_2(feature, default_state)                            \
+#define BASE_FEATURE_INTERNAL_2_ARGS(feature, default_state)              \
   namespace base_feature_internal {                                       \
   static_assert(#feature[0] == 'k');                                      \
   static constexpr base::internal::StringStorage feature##Name(#feature); \
@@ -117,6 +114,7 @@ enum FeatureState {
   constinit const base::Feature feature(                                  \
       base_feature_internal::feature##Name.storage.data(), default_state, \
       base::internal::FeatureMacroHandshake::kSecret)
+#endif  // TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
 
 #define GET_BASE_FEATURE_MACRO(_1, _2, _3, NAME, ...) NAME
 #define BASE_FEATURE(...)                                            \

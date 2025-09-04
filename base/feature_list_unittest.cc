@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #include "base/feature_list.h"
 
 #include <stddef.h>
@@ -46,10 +48,6 @@ BASE_FEATURE(kFeatureOffByDefault,
 BASE_FEATURE(Feature2ArgsOn, FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(Feature2ArgsOff, FEATURE_DISABLED_BY_DEFAULT);
 
-// For testing the BASE_FEATURE_2 macro.
-BASE_FEATURE_2(kFeature2TestOn, FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_2(kFeature2TestOff, FEATURE_DISABLED_BY_DEFAULT);
-
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<std::string_view> features =
       FeatureList::SplitFeatureListString(feature_list);
@@ -84,14 +82,6 @@ TEST_F(FeatureListTest, TwoArgMacro) {
   EXPECT_FALSE(FeatureList::IsEnabled(kFeature2ArgsOff));
   EXPECT_STREQ("Feature2ArgsOn", kFeature2ArgsOn.name);
   EXPECT_STREQ("Feature2ArgsOff", kFeature2ArgsOff.name);
-}
-
-// Testing the BASE_FEATURE_2 macro.
-TEST_F(FeatureListTest, TwoArgMacroWithK) {
-  EXPECT_TRUE(FeatureList::IsEnabled(kFeature2TestOn));
-  EXPECT_FALSE(FeatureList::IsEnabled(kFeature2TestOff));
-  EXPECT_STREQ("Feature2TestOn", kFeature2TestOn.name);
-  EXPECT_STREQ("Feature2TestOff", kFeature2TestOff.name);
 }
 
 TEST_F(FeatureListTest, InitFromCommandLine) {

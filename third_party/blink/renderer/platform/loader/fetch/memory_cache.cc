@@ -20,6 +20,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
 #include <iterator>

@@ -5,6 +5,8 @@
 // This file can be empty. Its purpose is to contain the relatively short lived
 // definitions required for experimental flags.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
 #import <Foundation/Foundation.h>
