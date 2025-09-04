@@ -116,8 +116,14 @@ ParentCodeValidationResult ParentAccessService::ValidateParentAccessCode(
   return result;
 }
 
-void ParentAccessService::LoadConfigForUser(const user_manager::User* user) {
-  config_source_.LoadConfigForUser(user);
+void ParentAccessService::UpdateConfigForUser(
+    const AccountId& account_id,
+    std::optional<base::Value::Dict> config) {
+  if (config) {
+    config_source_.UpdateConfigForUser(account_id, std::move(config.value()));
+  } else {
+    config_source_.RemoveConfigForUser(account_id);
+  }
 }
 
 void ParentAccessService::AddObserver(Observer* observer) {

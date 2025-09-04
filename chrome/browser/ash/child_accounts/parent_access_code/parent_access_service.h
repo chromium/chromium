@@ -65,8 +65,10 @@ class ParentAccessService {
       const std::string& access_code,
       base::Time validation_time);
 
-  // Reloads config for the provided user.
-  void LoadConfigForUser(const user_manager::User* user);
+  // Updates and reloads config for the provided user. If `config` is null, the
+  // config will be removed.
+  void UpdateConfigForUser(const AccountId& account_id,
+                           std::optional<base::Value::Dict> config);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

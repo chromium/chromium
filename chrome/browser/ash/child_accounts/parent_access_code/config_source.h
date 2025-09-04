@@ -9,17 +9,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/values.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/authenticator.h"
 
 class AccountId;
-
-namespace base {
-class Value;
-}  // namespace base
-
-namespace user_manager {
-class User;
-}  // namespace user_manager
 
 namespace ash {
 namespace parent_access {
@@ -41,14 +34,22 @@ class ConfigSource {
 
   const AuthenticatorsMap& config_map() const { return config_map_; }
 
-  // Reloads the Parent Access Code config for that particular user.
-  void LoadConfigForUser(const user_manager::User* user);
+  // Updates the persisted config for that particular user.
+  void UpdateConfigForUser(const AccountId& account_id,
+                           base::Value::Dict config);
+
+  // Removes the persisted config for that particular user.
+  void RemoveConfigForUser(const AccountId& account_id);
 
  private:
+  // Reloads the Parent Access Code config for that particular user.
+  void LoadConfigForUser(const AccountId& account_id,
+                         const base::Value::Dict& dictionary);
+
   // Creates and adds an authenticator to the |config_map_|. |dict| corresponds
   // to an AccessCodeConfig in its serialized format.
   void AddAuthenticator(const base::Value::Dict& dict,
-                        const user_manager::User* user);
+                        const AccountId& account_id);
 
   // Holds the Parent Access Code Authenticators for all children signed in this
   // device.

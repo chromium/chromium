@@ -1326,13 +1326,12 @@ void Preferences::ApplyPreferences(ApplyReason reason,
         user_->IsChild()) {
       const base::Value::Dict& value =
           prefs_->GetDict(::prefs::kParentAccessCodeConfig);
-      known_user.SetPath(user_->GetAccountId(),
-                         ::prefs::kKnownUserParentAccessCodeConfig,
-                         base::Value(value.Clone()));
-      parent_access::ParentAccessService::Get().LoadConfigForUser(user_);
+      parent_access::ParentAccessService::Get().UpdateConfigForUser(
+          user_->GetAccountId(), value.Clone());
     } else {
-      known_user.RemovePref(user_->GetAccountId(),
-                            ::prefs::kKnownUserParentAccessCodeConfig);
+      // Remove the config.
+      parent_access::ParentAccessService::Get().UpdateConfigForUser(
+          user_->GetAccountId(), std::nullopt);
     }
   }
 
