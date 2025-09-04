@@ -84,17 +84,6 @@ class AttributeTypeAssignment {
   base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>> map_;
 };
 
-struct SuggestionWithMetadata {
-  // A suggestion whose payload is of type `Suggestion::AutofillAiPayload`.
-  Suggestion suggestion;
-
-  // The entity used to build `suggestion`.
-  raw_ref<const EntityInstance> entity;
-
-  // The attribute (of `entity`) of the trigger field.
-  AttributeType trigger_attribute_type;
-};
-
 base::optional_ref<const AutofillFieldWithAttributeType> FindField(
     base::span<const AutofillFieldWithAttributeType> haystack LIFETIME_BOUND,
     const FieldGlobalId& needle) {
@@ -119,93 +108,6 @@ DenseSet<AttributeType> FindAttributesForField(
     }
   }
   return attributes;
-}
-
-std::vector<Suggestion> AssignLabelsToSuggestions(
-    base::span<const EntityLabel> labels,
-    std::vector<Suggestion> suggestions) {
-  DCHECK_EQ(labels.size(), suggestions.size());
-  for (auto [suggestion, label] : base::zip(suggestions, labels)) {
-    DCHECK(suggestion.labels.empty());
-    suggestion.labels.push_back(
-        {Suggestion::Text(base::JoinString(label, kLabelSeparator))});
-  }
-  return suggestions;
-}
-
-// Returns a vector of EntityLabels, with one entry for each
-// SuggestionWithMetadata in `suggestions`.
-//
-// That is, the `i`th element of the returned vector corresponds to
-// `suggestions[i]`. The individual EntityLabels may be empty, but the strings
-// they contain are non-empty.
-//
-// Labels are supposed to be shown by the UI in the second line of each
-// suggestion (not the main text).
-//
-// Labels consist of the AttributeInstance values. Ideally, every suggestion is
-// uniquely identifiable by its label.
-//
-// More precisely, two kinds of EntityInstances are taken into account:
-// - `SuggestionWithMetadata::entity` for `suggestions`
-// - `other_entities_that_can_fill_section`
-// That is, a suggestion's label ideally not only uniquely identifies the
-// suggestion's entity among the other suggestions' entities, but also among
-// those entities that may be autofilled from some other field in the same
-// section.
-//
-// In reality, labels may not uniquely identify the underlying entity: for one
-// thing, the maximum length of the label is limited; for another, different
-// entities may agree on the values of the disambiguating attributes.
-std::vector<EntityLabel> GetLabelsForSuggestions(
-    base::span<const SuggestionWithMetadata> suggestions,
-    base::span<const EntityInstance*> other_entities_that_can_fill_section,
-    DenseSet<AttributeType> trigger_field_attributes,
-    const std::string& app_locale) {
-  std::vector<const EntityInstance*> entities = base::ToVector(
-      suggestions, [](const SuggestionWithMetadata& suggestions) {
-        return &suggestions.entity.get();
-      });
-  entities.insert(entities.end(), other_entities_that_can_fill_section.begin(),
-                  other_entities_that_can_fill_section.end());
-
-  std::vector<EntityLabel> labels = GetLabelsForEntities(
-      entities, trigger_field_attributes,
-      /*prioritize_disambiguating_types=*/true, app_locale);
-  if (labels.size() > suggestions.size()) {
-    // Drop the labels for the `other_entities_that_can_fill_section`.
-    labels.resize(suggestions.size());
-  }
-  return labels;
-}
-
-// Populates `Suggestion::labels` of the given `suggestions` and returns the
-// result.
-//
-// The size of the returned vector is that of `suggestions`.
-//
-// See GetLabelsForSuggestions() for details on the label generation.
-std::vector<Suggestion> GenerateFillingSuggestionWithLabels(
-    std::vector<SuggestionWithMetadata> suggestions,
-    base::span<const EntityInstance*> other_entities_that_can_fill_section,
-    DenseSet<AttributeType> trigger_field_attributes,
-    const std::string& app_locale) {
-  std::vector<EntityLabel> labels =
-      GetLabelsForSuggestions(suggestions, other_entities_that_can_fill_section,
-                              trigger_field_attributes, app_locale);
-  DCHECK_EQ(suggestions.size(), labels.size());
-
-  // Prepend the entity type's name to each label.
-  for (auto [suggestion, label] : base::zip(suggestions, labels)) {
-    const EntityInstance& entity = *suggestion.entity;
-    label.insert(label.begin(), std::u16string(entity.type().GetNameForI18n()));
-  }
-
-  return AssignLabelsToSuggestions(
-      labels,
-      base::ToVector(std::move(suggestions), [](SuggestionWithMetadata& s) {
-        return std::move(s).suggestion;
-      }));
 }
 
 // Returns a suggestion to manage AutofillAi data.
@@ -238,6 +140,53 @@ std::vector<Suggestion> GetFooterSuggestions(
   }
   suggestions.emplace_back(CreateManageSuggestion());
   return suggestions;
+}
+
+// Given `entities_to_suggest`, returns, for each entity, a string label to be
+// used for generating a `Suggestion` object from that entity.
+//
+// Labels are supposed to be shown by the UI in the second line of each
+// suggestion (not the main text).
+//
+// Labels consist of the following values, separated by `kLabelSeparator`:
+// - The entity name of the corresponding `EntityInstance` in
+//   `entities_to_suggest`.
+// - Values of some of the entity's attributes.
+//
+// Ideally, every suggestion is uniquely identifiable by its label. In reality,
+// labels may not uniquely identify the underlying entity: for one thing, the
+// maximum length of the label is limited; for another, different entities may
+// agree on the values of the limited disambiguating attributes.
+std::vector<std::u16string> GetLabelsForSuggestions(
+    base::span<const EntityInstance> entities_to_suggest,
+    base::span<const EntityInstance*> other_entities_that_can_fill_section,
+    DenseSet<AttributeType> trigger_field_attributes,
+    const std::string& app_locale) {
+  std::vector<const EntityInstance*> entities =
+      base::ToVector(entities_to_suggest,
+                     [](const EntityInstance& entity) { return &entity; });
+  entities.insert(entities.end(), other_entities_that_can_fill_section.begin(),
+                  other_entities_that_can_fill_section.end());
+
+  std::vector<EntityLabel> labels = GetLabelsForEntities(
+      entities, trigger_field_attributes,
+      /*prioritize_disambiguating_types=*/true, app_locale);
+
+  // Drop the labels for the `other_entities_that_can_fill_section`.
+  if (labels.size() > entities_to_suggest.size()) {
+    labels.resize(entities_to_suggest.size());
+  }
+
+  // Prepend the entity type's name to each label.
+  for (auto [entity, label] : base::zip(entities, labels)) {
+    label.insert(label.begin(),
+                 std::u16string(entity->type().GetNameForI18n()));
+  }
+
+  // Join the label pieces into a single label with the appropriate separator.
+  return base::ToVector(labels, [](const std::vector<std::u16string>& label) {
+    return base::JoinString(label, kLabelSeparator);
+  });
 }
 
 // Returns entities whose set of fields and values to be filled are not subsets
@@ -368,24 +317,25 @@ bool CanFillSomeField(const EntityInstance& entity,
       });
 }
 
-SuggestionWithMetadata GetSuggestionForEntity(
+Suggestion GetSuggestionForEntity(
     const EntityInstance& entity,
     base::span<const AutofillFieldWithAttributeType> fields,
     const AutofillFieldWithAttributeType& trigger_field,
+    std::u16string label,
     const std::string& app_locale) {
   // The dereference is guaranteed by EntityShouldProduceSuggestion().
   const AttributeInstance& trigger_attribute =
       *entity.attribute(trigger_field.type);
+  std::u16string main_text = trigger_attribute.GetInfo(
+      trigger_field.field->Type().GetAutofillAiType(
+          trigger_attribute.type().entity_type()),
+      app_locale, trigger_field.field->format_string());
   Suggestion suggestion =
-      Suggestion(trigger_attribute.GetInfo(
-                     trigger_field.field->Type().GetAutofillAiType(
-                         trigger_attribute.type().entity_type()),
-                     app_locale, trigger_field.field->format_string()),
-                 SuggestionType::kFillAutofillAi);
+      Suggestion(std::move(main_text), SuggestionType::kFillAutofillAi);
+  suggestion.labels = {{Suggestion::Text(std::move(label))}};
   suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
   suggestion.icon = GetSuggestionIcon(entity.type());
-  return SuggestionWithMetadata(suggestion, raw_ref(entity),
-                                trigger_field.type);
+  return suggestion;
 }
 
 // The desired ordering criteria are the following:
@@ -457,17 +407,6 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
   const AutofillField& trigger_field =
       CHECK_DEREF(form.GetFieldById(trigger_field_data.global_id()));
 
-  std::vector<SuggestionWithMetadata> suggestions_with_metadata;
-  for (const EntityInstance& entity : entities_to_suggest) {
-    base::span<const AutofillFieldWithAttributeType> fields_with_types =
-        assignment.Find(entity.type());
-    base::optional_ref<const AutofillFieldWithAttributeType>
-        trigger_field_with_type =
-            FindField(fields_with_types, trigger_field.global_id());
-    suggestions_with_metadata.push_back(GetSuggestionForEntity(
-        entity, fields_with_types, *trigger_field_with_type, app_locale));
-  }
-
   auto entities_to_suggest_ids = base::MakeFlatSet<EntityInstance::EntityId>(
       entities_to_suggest, {}, &EntityInstance::guid);
 
@@ -484,11 +423,24 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     }
   }
 
-  std::vector<Suggestion> suggestions = GenerateFillingSuggestionWithLabels(
-      std::move(suggestions_with_metadata),
-      other_entities_that_can_fill_section,
+  std::vector<std::u16string> labels = GetLabelsForSuggestions(
+      entities_to_suggest, other_entities_that_can_fill_section,
       FindAttributesForField(assignment, trigger_field.global_id()),
       app_locale);
+
+  std::vector<Suggestion> suggestions;
+  suggestions.reserve(entities_to_suggest.size());
+  CHECK_EQ(entities_to_suggest.size(), labels.size());
+  for (auto [entity, label] : base::zip(entities_to_suggest, labels)) {
+    base::span<const AutofillFieldWithAttributeType> fields_with_types =
+        assignment.Find(entity.type());
+    base::optional_ref<const AutofillFieldWithAttributeType>
+        trigger_field_with_type =
+            FindField(fields_with_types, trigger_field.global_id());
+    suggestions.push_back(GetSuggestionForEntity(entity, fields_with_types,
+                                                 *trigger_field_with_type,
+                                                 std::move(label), app_locale));
+  }
 
   base::Extend(suggestions, GetFooterSuggestions(trigger_field_data));
   return suggestions;

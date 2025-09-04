@@ -137,8 +137,7 @@ void AddLabelsRound(base::span<const EntityInstance*> entities,
                     bool only_add_to_empty_labels,
                     const std::string& app_locale) {
   if (only_add_to_empty_labels &&
-      std::ranges::all_of(labels,
-                          std::not_fn(&std::vector<std::u16string>::empty))) {
+      std::ranges::all_of(labels, std::not_fn(&EntityLabel::empty))) {
     return;
   }
   for (AttributeType type : ordered_attributes) {
