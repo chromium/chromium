@@ -26,16 +26,20 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> BUTTON_ADD_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Callback for when the Use AI Mode switch is toggled. */
+    public static final WritableObjectPropertyKey<Callback<Boolean>> ON_USE_AI_MODE_CHANGED =
+            new WritableObjectPropertyKey<>();
+
     /** Action to perform when the user clicks the Camera button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_CAMERA_CLICKED =
             new WritableObjectPropertyKey<>();
 
-    /** Action to perform when the user clicks the File button in the popup. */
-    public static final WritableObjectPropertyKey<Runnable> POPUP_FILE_CLICKED =
+    /** Action to perform when the user clicks the Clipboard button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_CLIPBOARD_CLICKED =
             new WritableObjectPropertyKey<>();
 
-    /** Callback for when the Use AI Mode switch is toggled. */
-    public static final WritableObjectPropertyKey<Callback<Boolean>> ON_USE_AI_MODE_CHANGED =
+    /** Action to perform when the user clicks the File button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_FILE_CLICKED =
             new WritableObjectPropertyKey<>();
 
     /** Action to perform when the user clicks the Gallery button in the popup. */
@@ -52,6 +56,7 @@ class NavigationAttachmentsProperties {
         BUTTON_ADD_CLICKED,
         ON_USE_AI_MODE_CHANGED,
         POPUP_CAMERA_CLICKED,
+        POPUP_CLIPBOARD_CLICKED,
         POPUP_FILE_CLICKED,
         POPUP_GALLERY_CLICKED,
         TOOLBAR_VISIBLE

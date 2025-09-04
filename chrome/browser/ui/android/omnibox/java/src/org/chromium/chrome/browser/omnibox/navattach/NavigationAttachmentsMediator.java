@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.navattach.AttachmentDetailsFetcher.AttachmentDetails;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -76,6 +78,8 @@ class NavigationAttachmentsMediator {
         mModel.set(
                 NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED, this::onImagePickerClicked);
         mModel.set(NavigationAttachmentsProperties.POPUP_FILE_CLICKED, this::onFilePickerClicked);
+        mModel.set(
+                NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED, this::onClipboardClicked);
         mModel.set(
                 NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED, this::onUseAiModeChanged);
         new OneShotCallback<>(profileObservableSupplier, this::initializeBridge);
@@ -223,6 +227,35 @@ class NavigationAttachmentsMediator {
                     }
                 },
                 /* errorId= */ android.R.string.cancel);
+    }
+
+    @VisibleForTesting
+    void onClipboardClicked() {
+        mPopup.dismiss();
+        new AsyncTask<byte[]>() {
+            @Override
+            protected byte[] doInBackground() {
+                byte[] png = Clipboard.getInstance().getPng();
+                return png == null ? new byte[0] : png;
+            }
+
+            @Override
+            protected void onPostExecute(byte[] pngBytes) {
+                if (pngBytes == null || pngBytes.length == 0) return;
+
+                Bitmap bitmap = BitmapFactory.decodeByteArray(pngBytes, 0, pngBytes.length);
+                if (bitmap == null) return;
+
+                AttachmentDetails attachmentDetails =
+                        new AttachmentDetails(
+                                NavigationAttachmentItemType.ATTACHMENT_IMAGE,
+                                new BitmapDrawable(mContext.getResources(), bitmap),
+                                "",
+                                "image/png",
+                                pngBytes);
+                addAttachment(attachmentDetails);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @VisibleForTesting
