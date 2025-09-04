@@ -108,9 +108,13 @@ void OffscreenCanvasPlaceholderTest::CreateDispatcher() {
 }
 
 void OffscreenCanvasPlaceholderTest::DrawSomething() {
-  // 'needs_will_draw=true' is required to ensure the CanvasResourceProvider
-  // does not retain a reference on the previous frame.
-  resource_provider_->Canvas(/*needs_will_draw=*/true).clear(SkColors::kWhite);
+  // ExternalCanvasDrawHelper() guarantees that `resource_provider_` will invoke
+  // WillDrawIfNeeded() which ensures the CanvasResourceProvider does not retain
+  // a reference on the previous frame.
+  resource_provider_->ExternalCanvasDrawHelper(
+      [&](MemoryManagedPaintCanvas& canvas) {
+        canvas.clear(SkColors::kWhite);
+      });
 }
 
 CanvasResource* OffscreenCanvasPlaceholderTest::DispatchOneFrame() {

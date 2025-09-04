@@ -226,7 +226,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // WebGraphicsContext3DProvider::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
-  MemoryManagedPaintCanvas& Canvas(bool needs_will_draw = false);
+  MemoryManagedPaintCanvas& Canvas();
   // FlushCanvas and preserve recording only if IsPrinting or
   // FlushReason indicates printing in progress.
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason);
@@ -370,6 +370,15 @@ class PLATFORM_EXPORT CanvasResourceProvider
       const gpu::SyncToken& ready_sync_token,
       gpu::SyncToken& completion_sync_token) {
     return false;
+  }
+
+  // ExternalCanvasDrawHelper() is used by clients that require the invocation
+  // of WillDrawIfNeeded() before obtaining a canvas and drawing on it. All
+  // meaningful ExternalCanvasDrawHelper() implementations should call
+  // WillDrawIfNeeded() first, and then invoke `draw_ballback`.
+  virtual void ExternalCanvasDrawHelper(
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback) {
+    NOTREACHED();
   }
 
   virtual bool HasUnusedResourcesForTesting() const { return false; }

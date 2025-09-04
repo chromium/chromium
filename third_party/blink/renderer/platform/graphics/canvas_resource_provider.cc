@@ -157,6 +157,12 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
   bool IsAccelerated() const final { return false; }
   bool SupportsDirectCompositing() const override { return false; }
   bool IsSingleBuffered() const override { return false; }
+  void ExternalCanvasDrawHelper(
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
+      override {
+    WillDrawIfNeeded();
+    draw_callback(Canvas());
+  }
 
  private:
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
@@ -465,6 +471,16 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
         gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
     resource()->GetSyncToken();
     return true;
+  }
+
+  void ExternalCanvasDrawHelper(
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
+      override {
+    // TODO(crbug.com/40183122): Video frames don't work without
+    // WillDrawIfNeeded(), but we are getting memory leak on CreatePattern
+    // with it. There should be a better way to solve this.
+    WillDrawIfNeeded();
+    draw_callback(Canvas());
   }
 
  protected:
@@ -1775,13 +1791,7 @@ void CanvasResourceProvider::RecordingCleared() {
   last_flush_reason_ = FlushReason::kNone;
 }
 
-MemoryManagedPaintCanvas& CanvasResourceProvider::Canvas(bool needs_will_draw) {
-  // TODO(https://crbug.com/1211912): Video frames don't work without
-  // WillDrawIfNeeded(), but we are getting memory leak on CreatePattern
-  // with it. There should be a better way to solve this.
-  if (needs_will_draw)
-    WillDrawIfNeeded();
-
+MemoryManagedPaintCanvas& CanvasResourceProvider::Canvas() {
   return recorder_->getRecordingCanvas();
 }
 

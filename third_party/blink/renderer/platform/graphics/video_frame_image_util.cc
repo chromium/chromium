@@ -295,9 +295,11 @@ bool DrawVideoFrameIntoResourceProvider(
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation);
   params.reinterpret_as_srgb = reinterpret_video_as_srgb;
-  video_renderer->Paint(frame.get(),
-                        &resource_provider->Canvas(/*needs_will_draw*/ true),
-                        media_flags, params, raster_context_provider);
+  resource_provider->ExternalCanvasDrawHelper(
+      [&](MemoryManagedPaintCanvas& canvas) {
+        video_renderer->Paint(frame.get(), &canvas, media_flags, params,
+                              raster_context_provider);
+      });
   return true;
 }
 
