@@ -324,7 +324,7 @@ BASE_FEATURE(kOmniboxMobileParityUpdate, "OmniboxMobileParityUpdate", ENABLED);
 // Android and iOS, V2.
 BASE_FEATURE(kOmniboxMobileParityUpdateV2,
              "OmniboxMobileParityUpdateV2",
-             DISABLED);
+             enable_if(IS_IOS));
 
 #if BUILDFLAG(IS_IOS)
 // Updates the search engine logo on NTP. iOS only.
