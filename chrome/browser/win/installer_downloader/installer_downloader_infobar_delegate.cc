@@ -27,12 +27,6 @@
 
 namespace installer_downloader {
 
-namespace {
-constexpr infobars::InfoBarDelegate::InfoBarIdentifier
-    kInstallerDownloaderInfoBarDelegateIdentifier = infobars::InfoBarDelegate::
-        InfoBarIdentifier::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE;
-}  // namespace
-
 // static
 infobars::InfoBar* InstallerDownloaderInfoBarDelegate::Show(
     infobars::ContentInfoBarManager* infobar_manager,
@@ -55,7 +49,8 @@ InstallerDownloaderInfoBarDelegate::~InstallerDownloaderInfoBarDelegate() =
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 InstallerDownloaderInfoBarDelegate::GetIdentifier() const {
-  return kInstallerDownloaderInfoBarDelegateIdentifier;
+  return infobars::InfoBarDelegate::InfoBarIdentifier::
+      INSTALLER_DOWNLOADER_INFOBAR_DELEGATE;
 }
 
 const gfx::VectorIcon& InstallerDownloaderInfoBarDelegate::GetVectorIcon()
