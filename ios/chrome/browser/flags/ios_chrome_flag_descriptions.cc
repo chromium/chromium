@@ -1033,6 +1033,11 @@ extern const char kLensQRCodeParsingFixName[] =
 extern const char kLensQRCodeParsingFixDescription[] =
     "When enabled, properly parses QR codes.";
 
+extern const char kLensSearchHeadersCheckEnabledName[] =
+    "Lens search headers check";
+extern const char kLensSearchHeadersCheckEnabledDescription[] =
+    "When enabled, ensures headers are attached to Lens search requests.";
+
 extern const char kLensSingleTapTextSelectionDisabledName[] =
     "Disable Lens single tap text selection";
 extern const char kLensSingleTapTextSelectionDisabledDescription[] =

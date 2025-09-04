@@ -595,6 +595,9 @@ extern const char kLensPrewarmHardStickinessInQueryFormulationDescription[];
 extern const char kLensQRCodeParsingFixName[];
 extern const char kLensQRCodeParsingFixDescription[];
 
+extern const char kLensSearchHeadersCheckEnabledName[];
+extern const char kLensSearchHeadersCheckEnabledDescription[];
+
 extern const char kLensSingleTapTextSelectionDisabledName[];
 extern const char kLensSingleTapTextSelectionDisabledDescription[];
 

@@ -230,6 +230,10 @@ BASE_FEATURE(kLensOverlayNavigationHistory,
              "LensOverlayNavigationHistory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensSearchHeadersCheckEnabled,
+             "LensSearchHeadersCheckEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Variations of MIA NTP entrypoint.
 const char kNTPMIAEntrypointParam[] = "kNTPMIAEntrypointParam";
 const char kNTPMIAEntrypointParamOmniboxContainedSingleButton[] =

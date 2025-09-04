@@ -6467,6 +6467,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "lens-search-headers-check-enabled",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "lens-search-side-panel-default-width-change",
     "owners": [ "juanmojica@google.com", "lens-chrome-eng@google.com" ],
     "expiry_milestone": 140
