@@ -36,18 +36,21 @@ class BubbleControllerBase;
 //    - Show B immediately.
 //
 // 2. If a bubble (A) is already showing:
-//    - The manager checks if B should preempt A. Preemption happens if:
-//      a) the request is a force show request
-//      b) priority(B) > priority(A)
-//      c) Both A and B are password bubbles.
+//    - The manager determines if the new bubble's controller (B)
+//      should preempt the active bubble (A).  If the request is to force
+//      show, the active bubble is preempted irrespective of the priorities of
+//      the bubbles and hovering state. The default preemption policy is based
+//      on priority (i.e., priority(B) > priority(A)), but custom rules can be
+//      defined in ShouldAlwaysPreemptSameType(e.g., to always preempt another
+//      bubble of the same type).
 //    - HOWEVER, preemption is blocked if the user is currently hovering their
-//      mouse over bubble A provided that it's not a force show request.
+//      mouse over bubble A.
 //
 //    - If B preempts A:
 //      - Hide A and add it to the pending queue.
 //      - Show B.
 //
-//    - If B does not preempt A (lower/equal priority, or A is hovered):
+//    - If B does not preempt A (due to its policy or A being hovered):
 //      - Add B to the pending queue. A remains visible.
 //
 // === Queue and Hiding Logic ===
@@ -62,8 +65,9 @@ class BubbleControllerBase;
 //   - Only one bubble of a specific type (e.g., kSaveUpdateCard) can be in
 //     the queue at any time.
 //   - If a request comes in for a bubble type that's already queued:
-//     - The new bubble replaces the old one if it's a password bubble OR if
-//       the old one has been in the queue for longer than a timeout
+//     - The new bubble replaces the old one if they have the same type and
+//     ShouldAlwaysPreemptSameType returns true, OR if the
+//       old one has been in the queue for longer than a timeout
 //       (kPendingRequestTimeout).
 //     - Otherwise, the new request is discarded.
 class BubbleManager {

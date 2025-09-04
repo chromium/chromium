@@ -195,14 +195,15 @@ TEST_F(BubbleManagerImplTest, RequestShow_LowerPriority_QueuesRequest) {
   EXPECT_FALSE(address_controller->IsShowingBubble());
 }
 
-// Test the special case where a new password bubble replaces an existing one.
-TEST_F(BubbleManagerImplTest, RequestShow_PasswordReplacesPassword) {
+// Test that a bubble with a preempt-same-type policy replaces an existing one.
+TEST_F(BubbleManagerImplTest,
+       RequestShow_SameTypeWithPreemptPolicy_PreemptsActive) {
   std::unique_ptr<MockBubbleController> password_controller_1 =
       CreateController(BubbleType::kPassword);
   std::unique_ptr<MockBubbleController> password_controller_2 =
       CreateController(BubbleType::kPassword);
 
-  // Show password bubble and then replace it.
+  // Show first password bubble and then replace it.
   EXPECT_CALL(*password_controller_1, ShowBubble());
   bubble_manager_.RequestShowController(*password_controller_1,
                                         /*force_show=*/false);
@@ -221,7 +222,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_PasswordReplacesPassword) {
 }
 
 // Test that a pending request is ignored if a request of the same type
-// exists and the timeout has not been reached for non-password bubbles.
+// exists and the timeout has not been reached for bubbles without the preempt
+// policy.
 TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_IgnoredBeforeTimeout) {
   std::unique_ptr<MockBubbleController> password_controller =
       CreateController(BubbleType::kPassword);
@@ -250,7 +252,7 @@ TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_IgnoredBeforeTimeout) {
 }
 
 // Test that a pending request replaces an older one of the same type after
-// timeout for non-password types.
+// timeout for bubbles without the preempt policy.
 TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_ReplacedAfterTimeout) {
   std::unique_ptr<MockBubbleController> password_controller =
       CreateController(BubbleType::kPassword);
@@ -281,9 +283,9 @@ TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_ReplacedAfterTimeout) {
   EXPECT_FALSE(address_controller_1->IsShowingBubble());
 }
 
-// Test that a new password bubble always replaces a pending password bubble.
+// Test that a new bubble with a preempt policy always replaces a pending one.
 TEST_F(BubbleManagerImplTest,
-       AddToQueue_DuplicatePassword_ReplacesImmediately) {
+       AddToQueue_DuplicateTypeWithPreemptPolicy_ReplacesImmediately) {
   std::unique_ptr<MockBubbleController> password_controller_1 =
       CreateController(BubbleType::kPassword);
   std::unique_ptr<MockBubbleController> password_controller_2 =
