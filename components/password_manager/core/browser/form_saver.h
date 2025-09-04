@@ -59,6 +59,12 @@ class FormSaver {
           matches,
       const std::u16string& old_password) = 0;
 
+  // Updates the saved credential in the password store sharing the same key as
+  // the |pending| form. This method will not perform the same post-processing
+  // steps as |Save()| and |Update()| because it is intended to be called before
+  // form submission.
+  virtual void UpdateWithoutPostProcessing(PasswordForm pending) = 0;
+
   // If any of the unique key fields (signon_realm, origin, username_element,
   // username_value, password_element) are updated, then the this version of
   // the Update method must be used, which takes |old_unique_key|, i.e., the

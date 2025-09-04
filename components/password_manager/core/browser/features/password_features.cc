@@ -118,6 +118,8 @@ BASE_FEATURE(kIOSFillRecoveryPassword,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
+BASE_FEATURE(kPasswordDateLastFilled, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPasswordFormGroupedAffiliations,
              "PasswordFormGroupedAffiliations",
              base::FEATURE_DISABLED_BY_DEFAULT);

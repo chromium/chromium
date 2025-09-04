@@ -120,6 +120,9 @@ BASE_DECLARE_FEATURE(kIOSFillRecoveryPassword);
 
 #endif  // BUILDFLAG(IS_IOS)
 
+// Populate the `date_last_filled` timestamp for passwords.
+BASE_DECLARE_FEATURE(kPasswordDateLastFilled);
+
 // Enables running the clientside form classifier to parse password forms.
 BASE_DECLARE_FEATURE(kPasswordFormClientsideClassifier);
 

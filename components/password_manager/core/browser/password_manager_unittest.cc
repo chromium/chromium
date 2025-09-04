@@ -149,6 +149,14 @@ MATCHER_P(HasUsernameValue, expected_username, "") {
   return arg.username_value == expected_username;
 }
 
+MATCHER_P(HasDateLastFilled, expected, "") {
+  return arg.date_last_filled == expected;
+}
+
+MATCHER_P(HasDateLastUsed, expected, "") {
+  return arg.date_last_used == expected;
+}
+
 class FakeNetworkContext : public network::TestNetworkContext {
  public:
   FakeNetworkContext() = default;
@@ -6746,6 +6754,59 @@ TEST_P(PasswordManagerTest,
 
   // Check that a form manager was not created.
   ASSERT_TRUE(manager()->form_managers().empty());
+}
+
+TEST_P(PasswordManagerTest, DateLastFilledIsUpdated) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kPasswordDateLastFilled};
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  // Simulate a user-triggered fill for a stored login. This should update the
+  // `date_last_filled` timestamp on the saved form prior to form submission.
+  const PasswordForm saved_match(MakeSavedForm());
+  store_->AddLogin(saved_match);
+
+  const PasswordForm form(MakeSimpleForm());
+  FormData observed = form.form_data;
+  manager()->OnPasswordFormsParsed(&driver_, {observed});
+  manager()->OnPasswordFormsRendered(&driver_, {observed});
+  task_environment_.RunUntilIdle();
+
+  // Advance the clock to make the expected timestamp different from epoch.
+  task_environment_.AdvanceClock(base::Days(1));
+  auto expected_last_filled = base::Time::Now();
+
+  // Simulate user-triggered password filling.
+  test_api(observed).field(1).set_properties_mask(
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  manager()->OnInformAboutUserInput(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  PasswordForm expected_form = form;
+  EXPECT_THAT(store_->stored_passwords(),
+              ElementsAre(Pair(expected_form.signon_realm,
+                               ElementsAre(AllOf(
+                                   FormMatches(expected_form),
+                                   HasDateLastFilled(expected_last_filled))))));
+
+  // Simulate form submission and wait for navigation to complete. We expect
+  // `date_last_used` to be updated now, and `date_last_filled` to remain the
+  // same.
+  task_environment_.AdvanceClock(base::Seconds(1));
+  auto expected_date_last_used = base::Time::Now();
+
+  OnPasswordFormSubmitted(observed);
+  manager()->DidNavigateMainFrame(true);
+  manager()->OnPasswordFormsParsed(&driver_, {});
+  manager()->OnPasswordFormsRendered(&driver_, {});
+  task_environment_.RunUntilIdle();
+
+  EXPECT_THAT(store_->stored_passwords(),
+              ElementsAre(Pair(expected_form.signon_realm,
+                               ElementsAre(AllOf(
+                                   FormMatches(expected_form),
+                                   HasDateLastUsed(expected_date_last_used),
+                                   HasDateLastFilled(expected_last_filled))))));
 }
 
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, ::testing::Bool());

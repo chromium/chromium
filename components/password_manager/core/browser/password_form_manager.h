@@ -88,6 +88,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // form.
   static constexpr int kMaxTimesAutofill = 5;
 
+  // Inform of a manual filling event in order to update the password's
+  // |date_last_filled| timestamp.
+  void OnPasswordFilledManually();
+
   // Returns whether the form identified by |form_renderer_id| and |driver|
   // is managed by this password form manager.
   bool DoesManage(autofill::FormRendererId form_renderer_id,

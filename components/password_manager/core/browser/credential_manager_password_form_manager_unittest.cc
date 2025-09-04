@@ -54,6 +54,7 @@ class MockFormSaver : public StubFormSaver {
            const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
                matches,
            const std::u16string& old_password));
+  MOCK_METHOD1(UpdateWithoutPostProcessing, void(PasswordForm pending));
 
   // Convenience downcasting method.
   static MockFormSaver& Get(PasswordFormManager* form_manager) {

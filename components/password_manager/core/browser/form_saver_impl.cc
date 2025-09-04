@@ -140,6 +140,11 @@ void FormSaverImpl::Update(
   PostProcessMatches(pending, matches, old_password, store_);
 }
 
+void FormSaverImpl::UpdateWithoutPostProcessing(PasswordForm pending) {
+  SanitizeFormData(&pending.form_data);
+  store_->UpdateLogin(pending);
+}
+
 void FormSaverImpl::UpdateReplace(
     PasswordForm pending,
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,

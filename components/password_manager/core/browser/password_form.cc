@@ -164,6 +164,8 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
              AlternativeElementVectorToString(form.all_alternative_passwords));
   target.Set("blocked_by_user", form.blocked_by_user);
   target.Set("date_last_used", form.date_last_used.InSecondsFSinceUnixEpoch());
+  target.Set("date_last_filled",
+             form.date_last_filled.InSecondsFSinceUnixEpoch());
   target.Set("date_password_modified",
              form.date_password_modified.InSecondsFSinceUnixEpoch());
   target.Set("date_created", form.date_created.InSecondsFSinceUnixEpoch());

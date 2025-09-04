@@ -608,6 +608,11 @@ bool PasswordSaveManagerImpl::IsPasswordUpdate() const {
   return pending_credentials_state_ == PendingCredentialsState::UPDATE;
 }
 
+bool PasswordSaveManagerImpl::IsEqualToSavedMatch() const {
+  return pending_credentials_state_ ==
+         PendingCredentialsState::EQUAL_TO_SAVED_MATCH;
+}
+
 bool PasswordSaveManagerImpl::HasGeneratedPassword() const {
   return generation_manager_ && generation_manager_->HasGeneratedPassword();
 }
@@ -1001,6 +1006,38 @@ PasswordForm::Store PasswordSaveManagerImpl::GetPasswordStoreForSavingImpl(
     }
   }
   return result;
+}
+
+void PasswordSaveManagerImpl::UpdateDateLastFilled(
+    const PasswordForm& parsed_form) {
+  pending_credentials_.date_last_filled = base::Time::Now();
+
+  PendingCredentialsStates states = ComputePendingCredentialsStates(
+      parsed_form, form_fetcher_->GetAllRelevantMatches(),
+      username_updated_in_bubble_, generation_manager_.get());
+  PasswordForm::Store store_to_save = GetPasswordStoreForSavingImpl(states);
+  if ((store_to_save & PasswordForm::Store::kProfileStore) ==
+          PasswordForm::Store::kProfileStore &&
+      states.profile_store_state ==
+          PendingCredentialsState::EQUAL_TO_SAVED_MATCH) {
+    UpdateDateLastFilledImpl(*states.similar_saved_form_from_profile_store,
+                             profile_store_form_saver_.get());
+  }
+  if ((store_to_save & PasswordForm::Store::kAccountStore) ==
+          PasswordForm::Store::kAccountStore &&
+      states.account_store_state ==
+          PendingCredentialsState::EQUAL_TO_SAVED_MATCH) {
+    UpdateDateLastFilledImpl(*states.similar_saved_form_from_account_store,
+                             account_store_form_saver_.get());
+  }
+}
+
+void PasswordSaveManagerImpl::UpdateDateLastFilledImpl(
+    const PasswordForm& similar_saved_form,
+    FormSaver* form_saver) {
+  PasswordForm form_to_update = UpdateFormPreservingDifferentFieldsAcrossStores(
+      similar_saved_form, pending_credentials_);
+  form_saver->UpdateWithoutPostProcessing(form_to_update);
 }
 
 void PasswordSaveManagerImpl::UsernameUpdatedInBubble() {

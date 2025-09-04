@@ -106,6 +106,7 @@ class PasswordSaveManager {
 
   virtual bool IsNewLogin() const = 0;
   virtual bool IsPasswordUpdate() const = 0;
+  virtual bool IsEqualToSavedMatch() const = 0;
   virtual bool HasGeneratedPassword() const = 0;
 
   // Signals that the user updated the username value in the bubble prompt.
@@ -117,6 +118,8 @@ class PasswordSaveManager {
   // the profile store bits).
   virtual PasswordForm::Store GetPasswordStoreForSaving(
       const PasswordForm& password_form) const = 0;
+
+  virtual void UpdateDateLastFilled(const PasswordForm& parsed_form) = 0;
 
   virtual std::unique_ptr<PasswordSaveManager> Clone() = 0;
 };

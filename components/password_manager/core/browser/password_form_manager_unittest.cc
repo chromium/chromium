@@ -4866,6 +4866,7 @@ class MockPasswordSaveManager : public PasswordSaveManager {
                void(autofill::mojom::SubmissionIndicatorEvent));
   MOCK_CONST_METHOD0(IsNewLogin, bool());
   MOCK_CONST_METHOD0(IsPasswordUpdate, bool());
+  MOCK_CONST_METHOD0(IsEqualToSavedMatch, bool());
   MOCK_CONST_METHOD0(HasGeneratedPassword, bool());
   MOCK_METHOD0(UsernameUpdatedInBubble, void());
   std::unique_ptr<PasswordSaveManager> Clone() override {
@@ -4878,6 +4879,10 @@ class MockPasswordSaveManager : public PasswordSaveManager {
               GetPasswordStoreForSaving,
               (const PasswordForm& password_form),
               (const override));
+  MOCK_METHOD(void,
+              UpdateDateLastFilled,
+              (const PasswordForm& password_form),
+              (override));
 };
 
 class PasswordFormManagerTestWithMockedSaver : public PasswordFormManagerTest {

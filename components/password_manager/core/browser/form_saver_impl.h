@@ -38,6 +38,7 @@ class FormSaverImpl : public FormSaver {
       const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
           matches,
       const std::u16string& old_password) override;
+  void UpdateWithoutPostProcessing(PasswordForm pending) override;
   void UpdateReplace(
       PasswordForm pending,
       const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&

@@ -98,12 +98,15 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   bool IsNewLogin() const override;
   bool IsPasswordUpdate() const override;
+  bool IsEqualToSavedMatch() const override;
   bool HasGeneratedPassword() const override;
 
   void UsernameUpdatedInBubble() override;
 
   PasswordForm::Store GetPasswordStoreForSaving(
       const PasswordForm& password_form) const override;
+
+  void UpdateDateLastFilled(const PasswordForm& parsed_form) override;
 
   std::unique_ptr<PasswordSaveManager> Clone() override;
 
@@ -127,6 +130,9 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
                               const PasswordForm* similar_saved_form,
                               FormSaver* form_saver,
                               PasswordForm::Store store_to_save);
+
+  void UpdateDateLastFilledImpl(const PasswordForm& similar_saved_form,
+                                FormSaver* form_saver);
 
   std::u16string GetOldPassword(
       const PasswordForm& parsed_submitted_form) const;

@@ -481,6 +481,16 @@ void HandleFailedLoginDetectionForPasswordChange(
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
+bool HasManuallyFilledPassword(const PasswordForm& form) {
+  return std::ranges::any_of(
+      form.form_data.fields(),
+      [&](const autofill::FormFieldData& field_data) -> bool {
+        return field_data.IsPasswordInputElement() &&
+               (field_data.properties_mask() &
+                (autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger));
+      });
+}
+
 }  // namespace
 
 // static
@@ -941,6 +951,13 @@ void PasswordManager::OnUserModifiedNonPasswordField(
 void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,
                                              const FormData& form_data) {
   PasswordFormManager* manager = ProvisionallySaveForm(form_data, driver, true);
+
+  if (manager) {
+    if (const PasswordForm* form = manager->GetSubmittedForm();
+        form && HasManuallyFilledPassword(*form)) {
+      manager->OnPasswordFilledManually();
+    }
+  }
 
   auto availability =
       manager ? PasswordManagerMetricsRecorder::FormManagerAvailable::kSuccess

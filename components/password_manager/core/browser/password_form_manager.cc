@@ -350,6 +350,18 @@ PasswordFormManager::~PasswordFormManager() {
   form_fetcher_->RemoveConsumer(this);
 }
 
+void PasswordFormManager::OnPasswordFilledManually() {
+  if (!base::FeatureList::IsEnabled(features::kPasswordDateLastFilled) ||
+      !parsed_submitted_form_ ||
+      !password_save_manager_->IsEqualToSavedMatch()) {
+    return;
+  }
+  password_save_manager_->UpdateDateLastFilled(*parsed_submitted_form_);
+  // Refresh data in the form fetcher so it has the updated date_last_filled
+  // when the password is saved after form submission.
+  form_fetcher_->Fetch();
+}
+
 bool PasswordFormManager::DoesManage(
     autofill::FormRendererId form_renderer_id,
     const PasswordManagerDriver* driver) const {
