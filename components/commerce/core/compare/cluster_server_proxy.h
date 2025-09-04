@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -54,9 +53,6 @@ class ClusterServerProxy {
       GetComparableProductsCallback callback,
       std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
-
-  void OnResponseJsonParsed(GetComparableProductsCallback callback,
-                            data_decoder::DataDecoder::ValueOrError result);
 
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
