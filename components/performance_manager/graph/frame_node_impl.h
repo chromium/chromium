@@ -119,10 +119,12 @@ class FrameNodeImpl
   ViewportIntersection GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
   bool IsIntersectingLargeArea() const override;
+  bool IsRendered() const override;
   bool IsImportant() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
   base::ByteCount GetResidentSetEstimate() const override;
   base::ByteCount GetPrivateFootprintEstimate() const override;
+  void CrossProcessSubframeRenderProcessGone() override;
 
   // Getters for const properties.
   FrameNodeImpl* parent_frame_node() const;
@@ -153,6 +155,7 @@ class FrameNodeImpl
   void SetViewportIntersection(ViewportIntersection viewport_intersection);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
+  void SetIsRendered(bool is_rendered);
   void SetIsIntersectingLargeArea(bool is_intersecting_large_area);
   void SetIsImportant(bool is_important);
   void SetResidentSetEstimate(base::ByteCount rss_estimate);
@@ -430,6 +433,9 @@ class FrameNodeImpl
       &FrameNodeObserver::OnFrameVisibilityChanged,
       TracedWrapper<Visibility>>
       visibility_;
+
+  // Indicates if this frame is rendered.
+  bool is_rendered_ = false;
 
   // Indicates if this frame intersects with a large area of the viewport.
   // Defaults to true when its value is unknown.

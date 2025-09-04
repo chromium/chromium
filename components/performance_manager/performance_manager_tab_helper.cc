@@ -392,6 +392,9 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
   }
   CHECK(render_frame_host->IsRenderFrameLive());
 
+  frame_node->SetIsRendered(visibility !=
+                            blink::mojom::FrameVisibility::kNotRendered);
+
   ViewportIntersection viewport_intersection = [&]() {
     switch (visibility) {
       case blink::mojom::FrameVisibility::kNotRendered:

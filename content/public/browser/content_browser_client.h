@@ -650,6 +650,10 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::Referrer* referrer,
       std::optional<url::Origin>* initiator_origin) {}
 
+  // Called when the process of a cross-process subframe has gone.
+  virtual void CrossProcessSubframeRenderProcessGone(
+      RenderFrameHost* render_frame_host) {}
+
   // Returns true if the given URL is in any of the NavigationEntries. This is
   // used to determine if a URL is already in the navigation history of any of
   // the tabs in a given browser context.

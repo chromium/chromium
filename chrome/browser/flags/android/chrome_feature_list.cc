@@ -957,6 +957,10 @@ BASE_FEATURE(kCleanupLegacyTabState,
              "CleanupLegacyTabState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDiscardPageWithCrashedSubframePolicy,
+             "DiscardPageWithCrashedSubframePolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDontAutoHideBrowserControls,
              "DontAutoHideBrowserControls",
              base::FEATURE_DISABLED_BY_DEFAULT);

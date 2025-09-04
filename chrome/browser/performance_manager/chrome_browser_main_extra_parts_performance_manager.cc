@@ -74,6 +74,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/performance_manager/policies/discard_page_with_crashed_subframe_policy.h"
 #include "chrome/browser/performance_manager/policies/process_rank_policy_android.h"
 #else
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
@@ -271,6 +272,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     graph->PassToGraph(
         std::make_unique<
             performance_manager::policies::ProcessRankPolicyAndroid>());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kDiscardPageWithCrashedSubframePolicy)) {
+    graph->PassToGraph(
+        std::make_unique<performance_manager::policies::
+                             DiscardPageWithCrashedSubframePolicy>());
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 

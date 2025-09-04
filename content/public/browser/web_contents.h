@@ -774,8 +774,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // processed in the renderer and acknowledged by the Browser, or if the
   // discarded WebContents' renderer was proactively terminated.
   // Discard can fail if attempted on a WebContents with a speculative RFH that
-  // has a navigation waiting to commit.
-  // TODO(crbug.com/433627400): Consider updating `on_discarded_cb` to return a
+  // has a navigation waiting to commit or it is already discarded.
+  // TODO(crbug.com/441841249): Consider updating `on_discarded_cb` to return a
   // bool to indicate whether the operation completed successfully.
   virtual void Discard(base::OnceClosure on_discarded_cb) = 0;
 

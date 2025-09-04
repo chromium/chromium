@@ -191,6 +191,13 @@ void FrameNodeImpl::OnFirstContentfulPaint(
   }
 }
 
+void FrameNodeImpl::CrossProcessSubframeRenderProcessGone() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& observer : GetObservers()) {
+    observer.OnCrossProcessSubframeRenderProcessGone(this);
+  }
+}
+
 void FrameNodeImpl::OnWebMemoryMeasurementRequested(
     mojom::WebMemoryMeasurement::Mode mode,
     OnWebMemoryMeasurementRequestedCallback callback) {
@@ -339,6 +346,11 @@ bool FrameNodeImpl::IsIntersectingLargeArea() const {
     return false;
   }
   return is_intersecting_large_area_;
+}
+
+bool FrameNodeImpl::IsRendered() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_rendered_;
 }
 
 bool FrameNodeImpl::IsImportant() const {
@@ -538,6 +550,11 @@ void FrameNodeImpl::SetInitialVisibility(Visibility visibility) {
 void FrameNodeImpl::SetVisibility(Visibility visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   visibility_.SetAndMaybeNotify(this, visibility);
+}
+
+void FrameNodeImpl::SetIsRendered(bool is_rendered) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_rendered_ = is_rendered;
 }
 
 void FrameNodeImpl::SetIsIntersectingLargeArea(

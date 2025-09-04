@@ -141,6 +141,14 @@ void CrossProcessFrameConnector::RenderProcessGone() {
 
   frame_proxy_in_parent_renderer_->ChildProcessGone();
 
+  // The following call might discard the WebContents by
+  // DiscardPageWithCrashedSubframePolicy, which in turn calls
+  // NavigationController::SetNeedsReload(). It is safe to potentially call
+  // SetNeedsReload() again below, as it is a lightweight operation that just
+  // overwrites the type of the reload needed, which only affects metrics.
+  GetContentClient()->browser()->CrossProcessSubframeRenderProcessGone(
+      current_child_rfh);
+
   if (current_child_rfh->delegate()) {
     // If a subframe crashed on a hidden tab, mark the tab for reload to avoid
     // showing a sad frame to the user if they ever switch back to that tab. Do

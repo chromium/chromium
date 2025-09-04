@@ -262,6 +262,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool* is_renderer_initiated,
       content::Referrer* referrer,
       std::optional<url::Origin>* initiator_origin) override;
+  void CrossProcessSubframeRenderProcessGone(
+      content::RenderFrameHost* render_frame_host) override;
   bool ShouldStayInParentProcessForNTP(const GURL& url,
                                        const GURL& parent_site_url) override;
   bool IsSuitableHost(content::RenderProcessHost* process_host,

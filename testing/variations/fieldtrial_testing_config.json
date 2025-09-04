@@ -9113,6 +9113,22 @@
             ]
         }
     ],
+    "DiscardPageWithCrashedSubframePolicy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DiscardPageWithCrashedSubframePolicy",
+                        "WebContentsDiscard"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiscountAutoPopup": [
         {
             "platforms": [

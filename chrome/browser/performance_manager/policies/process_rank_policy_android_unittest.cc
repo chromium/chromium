@@ -27,11 +27,15 @@
 
 namespace performance_manager::policies {
 
+namespace {
+
 struct MockPageGraph {
   TestNodeWrapper<ProcessNodeImpl> process;
   TestNodeWrapper<PageNodeImpl> page;
   TestNodeWrapper<FrameNodeImpl> frame;
 };
+
+}  // namespace
 
 class ProcessRankPolicyAndroidTest : public ChromeRenderViewHostTestHarness {
  public:
