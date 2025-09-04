@@ -1758,11 +1758,6 @@ interface NetworkContext {
   // Check if there is a preloaded shared dictionary info.
   HasPreloadedSharedDictionaryInfoForTesting() => (bool value);
 
-  // Called when visibility of ResourceSchedulerClient has changed.
-  // `client_token` identifies which client has changed its visibility.
-  ResourceSchedulerClientVisibilityChanged(
-      mojo_base.mojom.UnguessableToken client_token, bool visible);
-
   // Will flush cached client certificate for `host` if `certificate`
   // doesn't match the corresponding cached certificate.
   FlushCachedClientCertIfNeeded(

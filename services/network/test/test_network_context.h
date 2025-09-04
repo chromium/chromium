@@ -365,9 +365,6 @@ class TestNetworkContext : public mojom::NetworkContext {
           preload_handle) override {}
   void HasPreloadedSharedDictionaryInfoForTesting(
       HasPreloadedSharedDictionaryInfoForTestingCallback callback) override {}
-  void ResourceSchedulerClientVisibilityChanged(
-      const base::UnguessableToken& client_token,
-      bool visible) override {}
   void FlushCachedClientCertIfNeeded(
       const net::HostPortPair& host,
       const scoped_refptr<net::X509Certificate>& certificate) override {}
