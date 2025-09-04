@@ -32,6 +32,15 @@ BASE_FEATURE(AAudioInputLowLatencyModeByDefault,
 
 namespace media {
 
+namespace {
+
+constexpr char kAAudioBufferSizeInFramesMetricsPrefix[] =
+    "Media.Audio.Android.AAudioBufferSizeInFrames.";
+constexpr char kAAudioFramesPerDataCallbackMetricsPrefix[] =
+    "Media.Audio.Android.AAudioFramesPerDataCallback.";
+
+}  // namespace
+
 // Used to circumvent issues where the AAudio thread callbacks continue
 // after AAudioStream_requestStop() completes. See crbug.com/1183255.
 class LOCKABLE AAudioDestructionHelper {
@@ -324,6 +333,28 @@ bool AAudioStreamWrapper::Open() {
   TRACE_EVENT2("audio", "AAudioStreamWrapper::Open", "params",
                params_.AsHumanReadableString(), "requested buffer size",
                size_requested);
+
+  const int32_t buffer_size =
+      AAudioStream_getBufferSizeInFrames(aaudio_stream_);
+  const std::string audio_direction =
+      stream_type_ == StreamType::kInput ? "Input" : "Output";
+  base::UmaHistogramSparse(
+      base::StrCat({kAAudioBufferSizeInFramesMetricsPrefix, audio_direction}),
+      buffer_size);
+  base::UmaHistogramSparse(
+      base::StrCat({kAAudioBufferSizeInFramesMetricsPrefix, audio_direction,
+                    ".", media::AudioLatency::ToString(params_.latency_tag())}),
+      buffer_size);
+  const int32_t frames_per_data_callback =
+      AAudioStream_getFramesPerDataCallback(aaudio_stream_);
+  base::UmaHistogramSparse(
+      base::StrCat(
+          {kAAudioFramesPerDataCallbackMetricsPrefix, audio_direction}),
+      frames_per_data_callback);
+  base::UmaHistogramSparse(
+      base::StrCat({kAAudioFramesPerDataCallbackMetricsPrefix, audio_direction,
+                    ".", media::AudioLatency::ToString(params_.latency_tag())}),
+      frames_per_data_callback);
 
   return true;
 }

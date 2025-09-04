@@ -27,13 +27,18 @@ chromium-metrics-reviews@google.com.
   <variant name=".Short" summary="Streams shorter than 1000 callbacks"/>
 </variants>
 
+<variants name="AudioDirection">
+  <variant name="Input" summary="for input streams"/>
+  <variant name="Output" summary="for output streams"/>
+</variants>
+
 <variants name="AudioLatencyTag">
-  <variant name="" summary="All latencies combined"/>
-  <variant name=".LatencyExactMs"/>
-  <variant name=".LatencyInteractive"/>
-  <variant name=".LatencyPlayback"/>
-  <variant name=".LatencyRtc"/>
-  <variant name=".LatencyUnknown"/>
+  <variant name="" summary="All latency tags are combined"/>
+  <variant name=".LatencyExactMs" summary="Latency tag is ExactMS"/>
+  <variant name=".LatencyInteractive" summary="Latency tag is Interactive"/>
+  <variant name=".LatencyPlayback" summary="Latency tag is Playback"/>
+  <variant name=".LatencyRtc" summary="Latency tag is RTC"/>
+  <variant name=".LatencyUnknown" summary="Latency tag is Unknown"/>
 </variants>
 
 <variants name="CastStreamingSender">
@@ -556,6 +561,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.Audio.Android.AAudioBufferSizeInFrames.{Direction}{AudioLatencyTag}"
+    units="frames" expires_after="2026-01-18">
+  <owner>kawasin@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    The buffer size in frames of an AAudio {Direction} stream got by
+    `AAudioStream_getBufferSizeInFrames()` and {AudioLatencyTag}. Logged when an
+    AAudio stream is opened.
+  </summary>
+  <token key="Direction" variants="AudioDirection"/>
+  <token key="AudioLatencyTag" variants="AudioLatencyTag"/>
+</histogram>
+
+<histogram
+    name="Media.Audio.Android.AAudioFramesPerDataCallback.{Direction}{AudioLatencyTag}"
+    units="frames" expires_after="2026-01-18">
+  <owner>kawasin@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    The number of frames per data callback for an AAudio stream got by
+    `AAudioStream_getFramesPerDataCallback()` and {AudioLatencyTag}. Logged when
+    an AAudio stream is opened. The requested value by the client is logged as
+    `Media.Audio.Android.RequestedInputFramesPerBuffer` or
+    `Media.Audio.Android.RequestedOutputFramesPerBuffer`. Note that
+    `Media.Audio.Android.AAudioFramesPerDataCallback` can be different from the
+    actual buffer size used by the stream on Android which is logged as
+    `Media.Audio.Android.AAudioBufferSizeInFrames`.
+  </summary>
+  <token key="Direction" variants="AudioDirection"/>
+  <token key="AudioLatencyTag" variants="AudioLatencyTag"/>
+</histogram>
+
 <histogram name="Media.Audio.Android.AAudioSetDeviceId.{Direction}.{Result}"
     enum="AndroidAudioDeviceType" expires_after="2026-01-11">
   <owner>mjel@google.com</owner>
@@ -589,6 +627,66 @@ chromium-metrics-reviews@google.com.
     interpret these numbers as AudioFormat.channelMasks, see:
     https://developer.android.com/reference/android/media/AudioFormat#channelMask
   </summary>
+</histogram>
+
+<histogram
+    name="Media.Audio.Android.PreferredOutputFramesPerBuffer{AudioLatencyTagWithInvalidInputParams}"
+    units="frames" expires_after="2026-01-18">
+  <owner>kawasin@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    The preferred output buffer size in frames for an audio output stream
+    calculated from OS provided buffer size on Android. This is for audio output
+    streams that {AudioLatencyTagWithInvalidInputParams}. Logged when
+    GetPreferredOutputStreamParameters() is called. This value is usally used by
+    the client to calculate the buffer size in frames for an audio output stream
+    which is logged as `Media.Audio.Android.RequestedOutputFramesPerBuffer`.
+  </summary>
+  <token key="AudioLatencyTagWithInvalidInputParams">
+    <variant name="" summary="All latency tags are combined"/>
+    <variant name=".InvalidInputParams"
+        summary="The input parameters are invalid to calculate the buffer
+                 size from"/>
+    <variant name=".LatencyExactMs" summary="Latency tag is ExactMS"/>
+    <variant name=".LatencyInteractive" summary="Latency tag is Interactive"/>
+    <variant name=".LatencyPlayback" summary="Latency tag is Playback"/>
+    <variant name=".LatencyRtc" summary="Latency tag is RTC"/>
+    <variant name=".LatencyUnknown" summary="Latency tag is Unknown"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.Audio.Android.RequestedInputFramesPerBuffer{AudioLatencyTag}"
+    units="frames" expires_after="2026-01-18">
+  <owner>kawasin@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@chromium.org</owner>
+  <summary>
+    The number of frames per data callback for an audio input stream requested
+    by the client and {AudioLatencyTag}. Logged on stream creation.
+    `Media.Audio.Android.AAudioFramesPerDataCallback.Input` logs the actual
+    values used in an AAudio input stream.
+  </summary>
+  <token key="AudioLatencyTag" variants="AudioLatencyTag"/>
+</histogram>
+
+<histogram
+    name="Media.Audio.Android.RequestedOutputFramesPerBuffer{AudioLatencyTag}"
+    units="frames" expires_after="2026-01-18">
+  <owner>kawasin@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@chromium.org</owner>
+  <summary>
+    The number of frames per data callback for an audio output stream requested
+    by the client and {AudioLatencyTag}. Logged on stream creation.
+    `Media.Audio.Android.AAudioFramesPerDataCallback.Output` logs the actual
+    values used in an AAudio output stream.
+  </summary>
+  <token key="AudioLatencyTag" variants="AudioLatencyTag"/>
 </histogram>
 
 <histogram name="Media.Audio.Android.SupportedChannelMask" units="sparse"
