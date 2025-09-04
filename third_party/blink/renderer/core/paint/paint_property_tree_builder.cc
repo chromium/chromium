@@ -917,8 +917,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       const auto& box = To<LayoutBox>(object_);
       const AnchorPositionScrollData& anchor_position_scroll_data =
           *box.GetAnchorPositionScrollData();
+      PhysicalOffset remembered_offset =
+          anchor_position_scroll_data
+              .SpeculativeDefaultAnchorRememberedOffset();
+
       gfx::Vector2dF translation_offset(
-          -anchor_position_scroll_data.AccumulatedAdjustment());
+          -anchor_position_scroll_data.AccumulatedAdjustment() +
+          remembered_offset);
       TransformPaintPropertyNode::State state{
           {gfx::Transform::MakeTranslation(translation_offset)}};
 
@@ -941,10 +946,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       state.rendering_context_id = context_.rendering_context_id;
       state.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
-
-      PhysicalOffset remembered_offset =
-          anchor_position_scroll_data
-              .SpeculativeDefaultAnchorRememberedOffset();
 
       state.anchor_position_scroll_data =
           std::make_unique<cc::AnchorPositionScrollData>();
