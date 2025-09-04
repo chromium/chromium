@@ -949,11 +949,11 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
   gfx::Size old_size = Size();
   gfx::Size new_size(w, h);
 
-  // If the size of an existing buffer matches, we can reuse that buffer.
-  // This optimization is only done for 2D canvases for now.
-  if (IsRenderingContext2D() &&
-      RenderingContext()->GetResourceProviderForCanvas2D() != nullptr &&
-      old_size == new_size) {
+  // For Canvas2D, reuse any existing backing buffer rather than dropping and
+  // recreating it. Doing this optimization for WebGL and WebGPU would require
+  // investigation to make sure that it's spec-compliant (including adding any
+  // operations as necessary to get it compliant).
+  if (IsRenderingContext2D() && old_size == new_size) {
     return;
   }
 
