@@ -22,6 +22,8 @@ typedef NS_ENUM(NSInteger, BWGInputType) {
   BWGInputTypeFindRelatedSites = 4,
   // Ask about page input type.
   BWGInputTypeAskAboutPage = 5,
+  // Create FAQ input type.
+  BWGInputTypeCreateFaq = 6,
 };
 
 // Delegate for BWG session events. Keep up to date with GCR's SessionDelegate.

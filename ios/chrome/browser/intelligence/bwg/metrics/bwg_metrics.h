@@ -84,7 +84,8 @@ enum class IOSGeminiFirstPromptSubmissionMethod {
   kCheckThisSite = 2,
   kFindRelatedSites = 3,
   kAskAboutPage = 4,
-  kUnknown = 5,
+  kCreateFaq = 5,
+  kUnknown = 6,
   kMaxValue = kUnknown,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFirstPromptSubmissionMethod)
