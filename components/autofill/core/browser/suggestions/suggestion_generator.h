@@ -28,7 +28,7 @@ namespace autofill {
 // implementation of the `SuggestionGenerator` interface.
 //
 // Generating suggestions consists of two phases:
-// 1. All generators are called to fetch the data that is gonna be used for
+// 1. All generators are called to fetch the data that is going to be used for
 //    creating the suggestions. No assumptions should be made about the order
 //    of those calls and some of those calls will be asynchronous.
 // 2. Every generator is called again with the data that was fetched for all
