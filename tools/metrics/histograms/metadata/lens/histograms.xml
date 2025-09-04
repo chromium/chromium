@@ -860,6 +860,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.SidePanel.IframeLoadStatus"
+    enum="LensSidePanelIframeLoadStatus" expires_after="2026-09-01">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded after a navigation in the side panel iframe or one of its
+    subframes. Records whether the iframe loaded successfully, or the reason for
+    the error if it failed.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

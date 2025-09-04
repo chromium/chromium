@@ -221,6 +221,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_permission_user_action.h:LensPermissionUserAction) -->
 
+<!-- LINT.IfChange(LensSidePanelIframeLoadStatus) -->
+
+<enum name="LensSidePanelIframeLoadStatus">
+  <summary>The load status of the results iframe in the Lens Overlay.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed (Connection Refused)"/>
+  <int value="2" label="Failed (Connection Reset)"/>
+  <int value="3" label="Failed (Connection Timed Out)"/>
+  <int value="4" label="Failed (Timed Out)"/>
+  <int value="5" label="Failed (Name Not Resolved)"/>
+  <int value="6" label="Failed (Other)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_iframe_load_status.h:LensSidePanelIframeLoadStatus) -->
+
 <!-- LINT.IfChange(LensOverlayMimeType) -->
 
 <!-- The MimeType enum used for UKM metrics. -->

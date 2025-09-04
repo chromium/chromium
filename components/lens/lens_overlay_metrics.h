@@ -18,6 +18,7 @@
 #include "components/lens/lens_overlay_side_panel_menu_option.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/lens_permission_user_action.h"
+#include "net/base/net_errors.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace lens {
@@ -211,6 +212,9 @@ void RecordSidePanelMenuOptionSelected(
 // Records the result of handling a text directive in the Lens Overlay.
 void RecordHandleTextDirectiveResult(
     lens::LensOverlayTextDirectiveResult result);
+
+// Records the load status of the side panel iframe.
+void RecordIframeLoadStatus(bool is_error_page, net::Error net_error_code);
 
 }  // namespace lens
 
