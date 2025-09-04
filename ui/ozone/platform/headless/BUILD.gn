@@ -34,6 +34,7 @@ source_set("headless") {
     "//ui/base",
     "//ui/base/cursor",
     "//ui/base/ime",
+    "//ui/display",
     "//ui/events",
     "//ui/events/ozone/layout",
     "//ui/events/platform",

@@ -362,6 +362,9 @@ static_library("devtools") {
       "//components/webapps/browser",
       "//third_party/blink/public/common:headers",
       "//third_party/inspector_protocol:crdtp",
+      "//ui/display/",
+      "//ui/display/util",
+      "//ui/gfx/geometry",
     ]
     sources += [
       "protocol/autofill_handler.cc",

@@ -40,6 +40,8 @@ component("display") {
     "display_transform.h",
     "display_util.cc",
     "display_util.h",
+    "headless/headless_screen_manager.cc",
+    "headless/headless_screen_manager.h",
     "scoped_display_for_new_windows.cc",
     "scoped_display_for_new_windows.h",
     "screen.cc",
