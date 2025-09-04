@@ -8,10 +8,14 @@
 #include <string>
 #include <type_traits>
 
-#include "base/component_export.h"
 #include "base/base64.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
+
+namespace absl {
+class Cord;
+}  // namespace absl
 
 namespace google::protobuf {
 class MessageLite;
@@ -49,6 +53,9 @@ template <typename T>
 std::string ToNumericTypeForValue(T value) {
   return base::NumberToString(value);
 }
+
+// Convert an absl::Cord of bytes into a string.
+std::string Base64EncodeCord(const absl::Cord& cord);
 
 }  // namespace proto_extras
 

@@ -51,4 +51,6 @@ message TestMessage {
   map<int32, string> primitive_map_field = 14;
   map<string, DependencyMessage> message_map_field = 15;
   EmptyEmbeddedMessage empty_embedded_message = 16;
+
+  bytes cord_bytes_field = 17 [ctype = CORD];
 }

@@ -26,6 +26,7 @@ if (current_toolchain == host_toolchain) {
 
 source_set("proto_extras_lib") {
   public = [ "proto_extras_lib.h" ]
+  sources = [ "proto_extras_lib.cc" ]
   public_deps = [
     "//base",
     "//third_party/protobuf:protobuf_lite",

@@ -214,6 +214,18 @@ TEST(ProtoExtrasToValueTest, EmptyEmbeddedMessage) {
   })!"));
 }
 
+TEST(ProtoExtrasToValueTest, CordBytesField) {
+  TestMessage message;
+  message.set_cord_bytes_field("123");
+  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+    "cord_bytes_field": "MTIz",
+    "double_field": 0.0,
+    "enum_field": "UNKNOWN",
+    "int32_field": 0,
+    "uint64_field": "0",
+  })!"));
+}
+
 TEST(ProtoExtrasProto2ToValueTest, Basic) {
   TestMessageProto2 message;
   const std::string expected_empty_message_str = R"({})";

@@ -96,6 +96,7 @@ void FieldToMapKeyFunction(const FieldDescriptor* field, Printer* printer) {
 
 void FieldToValueFunction(const FieldDescriptor* field, Printer* printer) {
   using enum FieldDescriptor::Type;
+  using enum FieldDescriptor::CppStringType;
   auto conversion_function = [&]() -> std::string {
     switch (field->type()) {
       case TYPE_DOUBLE:
@@ -117,7 +118,13 @@ void FieldToValueFunction(const FieldDescriptor* field, Printer* printer) {
       case TYPE_STRING:
         return "static_cast<std::string>";
       case TYPE_BYTES:
-        return "base::Base64Encode";
+        switch (field->cpp_string_type()) {
+          case kView:
+          case kString:
+            return "base::Base64Encode";
+          case kCord:
+            return "::proto_extras::Base64EncodeCord";
+        }
       case TYPE_ENUM:
         return base::StrCat({QualifiedClassName(field->enum_type()), "_Name"});
       case TYPE_MESSAGE:
