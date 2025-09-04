@@ -167,6 +167,10 @@ void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
                                 ->GetFeatures()
                                 .side_panel_coordinator();
   CHECK(side_panel_coordinator_);
+
+  // Focus the web contents when created, so that hotkey presses (i.e. escape)
+  // are handled.
+  GetSidePanelWebContents()->Focus();
 }
 
 void LensOverlaySidePanelCoordinator::RecordAndShowSidePanelErrorPage() {
@@ -761,9 +765,6 @@ void LensOverlaySidePanelCoordinator::DidOpenRequestedURL(
 
 void LensOverlaySidePanelCoordinator::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Focus the web contents immediately, so that hotkey presses (i.e. escape)
-  // are handled.
-  GetSidePanelWebContents()->Focus();
   SetSidePanelIsOffline(net::NetworkChangeNotifier::IsOffline());
 
   const GURL& nav_url = navigation_handle->GetURL();
