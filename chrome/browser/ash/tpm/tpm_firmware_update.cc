@@ -22,8 +22,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -222,9 +220,7 @@ void GetAvailableUpdateModes(
   }
 
   std::set<Mode> modes;
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsDeviceEnterpriseManaged()) {
+  if (InstallAttributes::Get()->IsEnterpriseManaged()) {
     // Split |completion| in two. This is necessary because of the
     // PrepareTrustedValues API, which for some return values invokes the
     // callback passed to it, and for others requires the code here to do so.
