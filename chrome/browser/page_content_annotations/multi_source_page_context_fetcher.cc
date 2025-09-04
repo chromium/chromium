@@ -312,6 +312,7 @@ class PageContextFetcher : public content::WebContentsObserver {
               .clip_y_coord_override =
                   paint_preview::mojom::ClipCoordOverride::kScrollOffset,
               .redaction_params = std::move(redaction_params),
+              .max_per_capture_bytes = kScreenshotMaxPerCaptureBytes.Get(),
           },
           base::BindOnce(
               EmitTimingHistogram<const SkBitmap*, std::string>,
@@ -590,6 +591,10 @@ const base::FeatureParam<ScreenshotIframeRedactionScope>
                                "screenshot_iframe_redaction",
                                ScreenshotIframeRedactionScope::kCrossSite,
                                &kScreenshotIframeRedactionOptions};
+
+const base::FeatureParam<size_t> kScreenshotMaxPerCaptureBytes{
+    &kGlicTabScreenshotPaintPreviewBackend, "screenshot_max_per_capture_bytes",
+    0};
 
 BASE_FEATURE(kGlicPageContextEligibility,
              "GlicPageContextEligibility",

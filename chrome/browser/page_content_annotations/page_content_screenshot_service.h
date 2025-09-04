@@ -43,6 +43,8 @@ class PageContentScreenshotService
     paint_preview::mojom::ClipCoordOverride clip_y_coord_override =
         paint_preview::mojom::ClipCoordOverride::kNone;
     paint_preview::RedactionParams redaction_params;
+    // Maximum number of bytes for a single frame capture. 0 means "no limit".
+    size_t max_per_capture_bytes;
   };
 
   void RequestScreenshot(content::WebContents* web_contents,
