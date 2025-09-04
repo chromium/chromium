@@ -1,6 +1,6 @@
 {
   "name": "landmines",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "contextFileName": "GEMINI.md",
   "excludeTools": [
     "glob",
@@ -10,6 +10,8 @@
     "run_shell_command(grep -r)",
     "run_shell_command(grep -R)",
     "run_shell_command(git grep)",
+    "run_shell_command(git commit --amend)",
+    "run_shell_command(git commit -a --amend)",
     "run_shell_command(gn ls)",
     "run_shell_command(gn clean)",
     "run_shell_command(brew)",

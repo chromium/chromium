@@ -28,6 +28,9 @@ Other disables:
 - `git grep`
   - This runs plenty fast, but skips submodules by default. Better to just use
     other search tools.
+- `git commit --amend`
+  - Better to squash commits afterwards than to have gemini overwrite your
+    commits.
 - `gn ls`
   - Produces too much output and hangs the agent.
 - `gn clean`
