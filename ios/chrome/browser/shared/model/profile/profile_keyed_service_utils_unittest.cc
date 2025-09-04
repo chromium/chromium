@@ -31,8 +31,8 @@ class ProfileKeyedServiceUtilsTest : public PlatformTest {
 // profile according to the context and the ProfileSelection.
 TEST_F(ProfileKeyedServiceUtilsTest, GetContextToUseForKeyedServiceFactory) {
   struct TestCase {
-    raw_ptr<web::BrowserState> context;
-    raw_ptr<web::BrowserState> expects;
+    raw_ptr<ProfileIOS> context;
+    raw_ptr<ProfileIOS> expects;
     ProfileSelection profile_selection;
   };
 
@@ -92,7 +92,7 @@ TEST_F(ProfileKeyedServiceUtilsTest, GetContextToUseForKeyedServiceFactory) {
   };
 
   for (const TestCase& test_case : kTestCases) {
-    web::BrowserState* const result = GetContextToUseForKeyedServiceFactory(
+    ProfileIOS* const result = GetContextToUseForKeyedServiceFactory(
         test_case.context, test_case.profile_selection);
 
     EXPECT_EQ(result, test_case.expects);

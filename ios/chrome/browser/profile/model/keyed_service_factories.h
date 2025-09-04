@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_PROFILE_MODEL_KEYED_SERVICE_FACTORIES_H_
 
 // Instantiates all KeyedService factories ensuring they are registered with
-// BrowserStateDependencyManager before the the ProfileIOS is created (as
+// the ProfileDependencyManagerIOS before the the ProfileIOS is created (as
 // required by the KeyedService infrastructure).
 void EnsureProfileKeyedServiceFactoriesBuilt();
 

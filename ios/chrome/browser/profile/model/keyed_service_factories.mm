@@ -204,12 +204,11 @@
 #import "ios/chrome/browser/screen_time/model/screen_time_history_deleter_factory.h"
 #endif
 
-// This method gets the instance of each ServiceFactory. We do this so that
+// This method gets the instance of each ServiceFactory. This is done so that
 // each ServiceFactory initializes itself and registers its dependencies with
-// the global BrowserStateDependencyManager. We need to have a complete
-// dependency graph when we create a profile so we can dispatch the profile
-// creation message to the services that want to create their services at
-// profile creation time.
+// the global ProfileDependencyManagerIOS. A complete dependency graph is
+// required to create services that uses ServiceCreation::kCreateWithProfile
+// can be created with the profile.
 void EnsureProfileKeyedServiceFactoriesBuilt() {
   // Keep this list alphabetized -- namespaced factories first, followed by
   // non-namespaced factories.

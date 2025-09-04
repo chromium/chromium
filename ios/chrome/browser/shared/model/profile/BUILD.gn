@@ -68,7 +68,6 @@ source_set("profile_keyed_service_factory") {
   deps = [
     ":profile",
     "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//ios/web/public",
   ]
 }

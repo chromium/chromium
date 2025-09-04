@@ -50,7 +50,6 @@ include_rules = [
   "+components/infobars/core",
   "+components/invalidation",
   "+components/keyed_service/core",
-  "+components/keyed_service/ios",
   "+components/language",
   "+components/language_detection/core",
   "+components/lens",

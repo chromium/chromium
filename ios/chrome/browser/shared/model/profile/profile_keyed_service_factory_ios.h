@@ -5,12 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_KEYED_SERVICE_FACTORY_IOS_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_KEYED_SERVICE_FACTORY_IOS_H_
 
+#include <memory>
+
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/traits_bag.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "components/keyed_service/core/keyed_service_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
 
 class ProfileIOS;
+namespace web {
+class BrowserState;
+}  // namespace web
 
 // ProfileKeyedServiceFactoryIOS provides a ProfileIOS-specific interface for
 // KeyedServiceFactory under //ios/chrome/browser.
@@ -44,7 +50,7 @@ class ProfileIOS;
 //
 // Any change to this class should also be reflected on
 // RefcountedProfileKeyedServiceFactoryIOS.
-class ProfileKeyedServiceFactoryIOS : public BrowserStateKeyedServiceFactory {
+class ProfileKeyedServiceFactoryIOS : public KeyedServiceFactory {
  public:
   // List of traits that are valid for the constructor.
   struct ValidTraits {
@@ -52,6 +58,17 @@ class ProfileKeyedServiceFactoryIOS : public BrowserStateKeyedServiceFactory {
     ValidTraits(ServiceCreation);
     ValidTraits(TestingCreation);
   };
+
+  // A callback that returns the instance of a KeyedService for a given
+  // ProfileIOS instance. This is used for testing where the test wants
+  // to create a specific test double for a service.
+  using ProfileTestingFactory =
+      base::OnceCallback<std::unique_ptr<KeyedService>(ProfileIOS* profile)>;
+
+  using LegacyTestingFactory =
+      base::OnceCallback<std::unique_ptr<KeyedService>(web::BrowserState*)>;
+
+  using TestingFactory = LegacyTestingFactory;
 
   // Constructor accepts zero or more traits.
   template <typename... Traits>
@@ -67,6 +84,17 @@ class ProfileKeyedServiceFactoryIOS : public BrowserStateKeyedServiceFactory {
                                          TestingCreation::kDefault>(traits...),
             base::trait_helpers::NotATraitTag()) {}
 
+  // Associates `testing_factory` with `profile` so that `testing_factory` is
+  // used to create the KeyedService when requested.  `testing_factory` can be
+  // empty to signal that KeyedService should be null. Multiple calls to
+  // SetTestingFactory() are allowed; previous services will be shut down.
+  void SetTestingFactory(ProfileIOS* profile,
+                         ProfileTestingFactory testing_factory);
+
+  // Overload of SetTestingFactory(...) that accepts legacy factories.
+  void SetTestingFactory(ProfileIOS* profile,
+                         LegacyTestingFactory testing_factory);
+
  protected:
   // Helper that casts the value returned by GetKeyedServiceForProfile() to the
   // sub-class T of KeyedService.
@@ -76,17 +104,27 @@ class ProfileKeyedServiceFactoryIOS : public BrowserStateKeyedServiceFactory {
     return static_cast<T*>(GetServiceForProfile(profile, create));
   }
 
- private:
-  // Final implementation of BrowserStateKeyedServiceFactory:
-  web::BrowserState* GetBrowserStateToUse(web::BrowserState* ctx) const final;
-  bool ServiceIsCreatedWithBrowserState() const final;
-  bool ServiceIsNULLWhileTesting() const final;
-  void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry) final;
-
   // Registers any user preferences on this service. This should be overridden
   // by any service that wants to register profile-specific preferences.
   virtual void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Creates a new instance of the service for `profile`.
+  virtual std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      ProfileIOS* profile) const;
+
+  // Creates a new instance of the service for `context`.
+  // Deprecated, override `BuildServiceInstanceFor(ProfileIOS*)` instead.
+  virtual std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      web::BrowserState* context) const;
+
+ private:
+  // KeyedServiceFactory implementation:
+  void* GetContextToUse(void* context) const final;
+  bool ServiceIsCreatedWithContext() const final;
+  bool ServiceIsNULLWhileTesting() const final;
+  void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry) final;
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      void* context) const final;
 
   // Common implementation that maps `profile` to some service object. Deals
   // with incognito and testing profiles according to constructor traits. If

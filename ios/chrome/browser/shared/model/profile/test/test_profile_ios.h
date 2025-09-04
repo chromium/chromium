@@ -38,10 +38,19 @@ class TestProfileIOS final : public ProfileIOS {
   struct TestingFactory {
     TestingFactory(
         ProfileKeyedServiceFactoryIOS* service_factory,
-        ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory);
+        ProfileKeyedServiceFactoryIOS::ProfileTestingFactory testing_factory);
+
+    TestingFactory(
+        ProfileKeyedServiceFactoryIOS* service_factory,
+        ProfileKeyedServiceFactoryIOS::LegacyTestingFactory testing_factory);
+
+    TestingFactory(
+        RefcountedProfileKeyedServiceFactoryIOS* service_factory,
+        RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+            testing_factory);
 
     TestingFactory(RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-                   RefcountedProfileKeyedServiceFactoryIOS::TestingFactory
+                   RefcountedProfileKeyedServiceFactoryIOS::LegacyTestingFactory
                        testing_factory);
 
     TestingFactory(TestingFactory&&);
@@ -51,14 +60,20 @@ class TestProfileIOS final : public ProfileIOS {
 
     std::variant<
         std::pair<ProfileKeyedServiceFactoryIOS*,
-                  ProfileKeyedServiceFactoryIOS::TestingFactory>,
-        std::pair<RefcountedProfileKeyedServiceFactoryIOS*,
-                  RefcountedProfileKeyedServiceFactoryIOS::TestingFactory>>
+                  ProfileKeyedServiceFactoryIOS::ProfileTestingFactory>,
+        std::pair<ProfileKeyedServiceFactoryIOS*,
+                  ProfileKeyedServiceFactoryIOS::LegacyTestingFactory>,
+        std::pair<
+            RefcountedProfileKeyedServiceFactoryIOS*,
+            RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory>,
+        std::pair<
+            RefcountedProfileKeyedServiceFactoryIOS*,
+            RefcountedProfileKeyedServiceFactoryIOS::LegacyTestingFactory>>
         service_factory_and_testing_factory;
   };
 
   // Wrapper around std::vector to simplify the migration to OnceCallback
-  // for *ProfileKeyedServiceFactoryIOS::TestingFactory.
+  // for *ProfileKeyedServiceFactoryIOS::*TestingFactory.
   class TestingFactories {
    public:
     TestingFactories();
@@ -158,10 +173,17 @@ class TestProfileIOS final : public ProfileIOS {
     // are installed before the Profile's KeyedServices are created.
     Builder& AddTestingFactory(
         ProfileKeyedServiceFactoryIOS* service_factory,
-        ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory);
+        ProfileKeyedServiceFactoryIOS::ProfileTestingFactory testing_factory);
+    Builder& AddTestingFactory(
+        ProfileKeyedServiceFactoryIOS* service_factory,
+        ProfileKeyedServiceFactoryIOS::LegacyTestingFactory testing_factory);
     Builder& AddTestingFactory(
         RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-        RefcountedProfileKeyedServiceFactoryIOS::TestingFactory
+        RefcountedProfileKeyedServiceFactoryIOS::ProfileTestingFactory
+            testing_factory);
+    Builder& AddTestingFactory(
+        RefcountedProfileKeyedServiceFactoryIOS* service_factory,
+        RefcountedProfileKeyedServiceFactoryIOS::LegacyTestingFactory
             testing_factory);
 
     // Adds multiple testing factories to TestProfileIOS. These testing
