@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "device/bluetooth/chromeos_platform_features.h"
 
 namespace chromeos::bluetooth::features {
 
-BASE_FEATURE(BluetoothFlossTelephony, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBluetoothFlossTelephony, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(BluetoothBtsnoopInternals, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBluetoothBtsnoopInternals, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace chromeos::bluetooth::features

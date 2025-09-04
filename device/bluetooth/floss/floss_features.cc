@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "device/bluetooth/floss/floss_features.h"
 
 #include "base/system/sys_info.h"
@@ -14,7 +12,7 @@ namespace features {
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables Floss client if supported by platform
 BASE_FEATURE(kFlossEnabled, "Floss", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(LLPrivacyIsAvailable, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLLPrivacyIsAvailable, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 const char* kNotLaunchedBoards[] = {

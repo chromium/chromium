@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "device/gamepad/public/cpp/gamepad_features.h"
 
 #include <algorithm>
@@ -21,11 +19,11 @@ namespace features {
 // Note: This feature is used by the "never expire" flag
 // chrome://flags/#enable-windows-gaming-input-data-fetcher and should not be
 // removed. See crbug.com/40287784.
-BASE_FEATURE(EnableWindowsGamingInputDataFetcher,
+BASE_FEATURE(kEnableWindowsGamingInputDataFetcher,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables gamepad multitouch
-BASE_FEATURE(EnableGamepadMultitouch, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableGamepadMultitouch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGamepadMultitouchEnabled() {
   if (base::FeatureList::IsEnabled(kEnableGamepadMultitouch)) {
