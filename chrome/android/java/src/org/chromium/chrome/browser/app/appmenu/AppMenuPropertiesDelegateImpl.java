@@ -72,6 +72,7 @@ import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionType;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.sync.UserActionableError;
@@ -486,7 +487,9 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public boolean shouldShowReaderModePrefs(@Nullable Tab currentTab) {
-        return currentTab != null && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl());
+        return currentTab != null
+                && DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl())
+                && !DomDistillerFeatures.sReaderModeDistillInApp.isEnabled();
     }
 
     /** Construct the reader mode preferences menu item. */
