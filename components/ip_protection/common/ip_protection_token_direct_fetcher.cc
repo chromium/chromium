@@ -121,8 +121,9 @@ void IpProtectionTokenDirectFetcher::TryGetAuthTokens(
   // try to request tokens.
   if (last_try_get_auth_tokens_backoff_ &&
       *last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
-    TryGetAuthTokensComplete(std::nullopt, std::move(callback),
-                             TryGetAuthTokensResult::kFailedNoAccount, track);
+    TryGetAuthTokensComplete(
+        std::nullopt, std::move(callback),
+        TryGetAuthTokensResult::kFailedOAuthTokenPersistent, track);
     return;
   }
 

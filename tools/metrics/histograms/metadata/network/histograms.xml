@@ -5598,7 +5598,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.IpProtection.TryGetAuthTokensResult"
+<histogram name="NetworkService.IpProtection.TryGetAuthTokensResult2"
     enum="IpProtectionTokenBatchRequestResult" expires_after="2026-01-07">
   <owner>awillia@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>

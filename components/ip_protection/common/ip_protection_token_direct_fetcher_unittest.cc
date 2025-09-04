@@ -31,7 +31,7 @@
 namespace ip_protection {
 
 constexpr char kTryGetAuthTokensResultHistogram[] =
-    "NetworkService.IpProtection.TryGetAuthTokensResult";
+    "NetworkService.IpProtection.TryGetAuthTokensResult2";
 constexpr char kOAuthTokenFetchHistogram[] =
     "NetworkService.IpProtection.OAuthTokenFetchTime";
 constexpr char kTryGetAuthTokensErrorHistogram[] =

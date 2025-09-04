@@ -63,7 +63,7 @@ using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 constexpr char kTryGetAuthTokensResultHistogram[] =
-    "NetworkService.IpProtection.TryGetAuthTokensResult";
+    "NetworkService.IpProtection.TryGetAuthTokensResult2";
 constexpr char kOAuthTokenFetchHistogram[] =
     "NetworkService.IpProtection.OAuthTokenFetchTime";
 constexpr char kTryGetAuthTokensErrorHistogram[] =

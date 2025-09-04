@@ -88,7 +88,7 @@ void IpProtectionTelemetryUma::TokenBatchFetchComplete(
     TryGetAuthTokensResult result,
     std::optional<base::TimeDelta> duration) {
   base::UmaHistogramEnumeration(
-      "NetworkService.IpProtection.TryGetAuthTokensResult", result);
+      "NetworkService.IpProtection.TryGetAuthTokensResult2", result);
   if (duration.has_value()) {
     base::UmaHistogramTimes("NetworkService.IpProtection.TokenBatchRequestTime",
                             *duration);
