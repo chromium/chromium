@@ -778,15 +778,16 @@ void ChromeAutofillClient::ShowAutofillSettings(
 void ChromeAutofillClient::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    SaveAddressBubbleType save_address_bubble_type,
     AddressProfileSavePromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   save_update_address_profile_flow_manager_->OfferSave(
-      web_contents(), profile, original_profile, is_migration_to_account,
+      web_contents(), profile, original_profile,
+      save_address_bubble_type == SaveAddressBubbleType::kMigrateToAccount,
       std::move(callback));
 #else
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
-      web_contents(), profile, original_profile, is_migration_to_account,
+      web_contents(), profile, original_profile, save_address_bubble_type,
       !GetPersonalDataManager().address_data_manager().GetProfiles().empty(),
       std::move(callback));
 #endif

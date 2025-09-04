@@ -27,10 +27,12 @@ using ::testing::Property;
 class MockSaveAddressBubbleController : public SaveAddressBubbleController {
  public:
   MockSaveAddressBubbleController()
-      : SaveAddressBubbleController(/*delegate=*/nullptr,
-                                    /*web_contents=*/nullptr,
-                                    /*address_profile=*/test::GetFullProfile(),
-                                    /*is_migration_to_account=*/false) {}
+      : SaveAddressBubbleController(
+            /*delegate=*/nullptr,
+            /*web_contents=*/nullptr,
+            /*address_profile=*/test::GetFullProfile(),
+            /*save_address_bubble_type=*/
+            AutofillClient::SaveAddressBubbleType::kSave) {}
   MockSaveAddressBubbleController(const MockSaveAddressBubbleController&) =
       delete;
   MockSaveAddressBubbleController& operator=(

@@ -75,10 +75,10 @@ class SaveAddressBubbleControllerTest : public ::testing::Test {
 
   std::unique_ptr<SaveAddressBubbleController> CreateController(
       const AutofillProfile& profile,
-      bool is_migration_to_account) {
+      AutofillClient::SaveAddressBubbleType save_address_bubble_type) {
     return std::make_unique<SaveAddressBubbleController>(
         delegate_.GetWeakPtr(), web_contents(), profile,
-        is_migration_to_account);
+        save_address_bubble_type);
   }
 
  protected:
@@ -102,7 +102,7 @@ class SaveAddressBubbleControllerTest : public ::testing::Test {
 TEST_F(SaveAddressBubbleControllerTest, SavingNonAccountAddress) {
   AutofillProfile profile = test::GetFullProfile();
   auto controller =
-      CreateController(profile, /*is_migration_to_account=*/false);
+      CreateController(profile, AutofillClient::SaveAddressBubbleType::kSave);
 
   EXPECT_EQ(controller->GetWindowTitle(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE));
@@ -129,7 +129,7 @@ TEST_F(SaveAddressBubbleControllerTest, SavingAccountAddress) {
   AutofillProfile profile = test::GetFullProfile();
   test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   auto controller =
-      CreateController(profile, /*is_migration_to_account=*/false);
+      CreateController(profile, AutofillClient::SaveAddressBubbleType::kSave);
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())
@@ -161,7 +161,8 @@ TEST_F(SaveAddressBubbleControllerTest, SavingAccountAddress) {
 
 TEST_F(SaveAddressBubbleControllerTest, MigrateIntoAccountAddress) {
   AutofillProfile profile = test::GetFullProfile();
-  auto controller = CreateController(profile, /*is_migration_to_account=*/true);
+  auto controller = CreateController(
+      profile, AutofillClient::SaveAddressBubbleType::kMigrateToAccount);
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())

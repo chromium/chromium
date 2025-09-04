@@ -194,7 +194,7 @@ void AndroidAutofillClient::ShowAutofillSettings(
 void AndroidAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    SaveAddressBubbleType save_address_bubble_type,
     AddressProfileSavePromptCallback callback) {
   NOTIMPLEMENTED();
 }

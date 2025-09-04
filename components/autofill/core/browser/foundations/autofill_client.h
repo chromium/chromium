@@ -247,6 +247,13 @@ class AutofillClient {
     kUpdate,
   };
 
+  // Specifies the type of the address save prompt.
+  enum class SaveAddressBubbleType {
+    kSave = 0,
+    kMigrateToAccount = 1,
+    kMaxValue = kMigrateToAccount
+  };
+
   // Callback to run when the user makes a decision on whether to save the
   // profile. If the user edits the Autofill profile and then accepts edits, the
   // edited version of the profile should be passed as the second parameter. No
@@ -482,12 +489,12 @@ class AutofillClient {
   // renders an update prompt where `original_profile` is the address profile
   // that will be updated if the user accepts the update prompt. Runs `callback`
   // once the user makes a decision with respect to the offer-to-save prompt.
-  // `is_migration_to_account` differentiates saving `profile` in browser or
+  // `save_address_bubble_type` differentiates saving `profile` in browser or
   // in user's Google account.
   virtual void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      SaveAddressBubbleType save_address_bubble_type,
       AddressProfileSavePromptCallback callback) = 0;
 
   // A unique identifier for suggestions UI (i.e. the keyboard accessory on

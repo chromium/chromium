@@ -160,7 +160,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      SaveAddressBubbleType save_address_bubble_type,
       AddressProfileSavePromptCallback callback) final;
   // Not called during construction -- safe to override in tests.
   SuggestionUiSessionId ShowAutofillSuggestions(

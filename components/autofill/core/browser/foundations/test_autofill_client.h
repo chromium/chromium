@@ -308,7 +308,7 @@ class TestAutofillClientTemplate : public T {
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      AutofillClient::SaveAddressBubbleType save_address_bubble_type,
       AutofillClient::AddressProfileSavePromptCallback callback) override {}
 
   AutofillClient::SuggestionUiSessionId ShowAutofillSuggestions(

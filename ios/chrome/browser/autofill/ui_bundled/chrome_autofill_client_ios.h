@@ -118,7 +118,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      AutofillClient::SaveAddressBubbleType save_address_bubble_type,
       AddressProfileSavePromptCallback callback) override;
   SuggestionUiSessionId ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,

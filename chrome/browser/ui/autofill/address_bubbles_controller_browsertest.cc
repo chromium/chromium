@@ -74,8 +74,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
-      callback.Get());
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/{}, callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kAccepted,
@@ -100,8 +100,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       side_panel_web_contents, profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
-      callback.Get());
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/{}, callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kAccepted,
@@ -117,8 +117,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
-      callback.Get());
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/{}, callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kDeclined,
@@ -137,8 +137,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), empty_profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/false, /*user_has_any_profile_saved=*/false,
-      callback.Get());
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/{}, callback.Get());
 
   EXPECT_CALL(
       *mock_hats_service,
@@ -160,8 +160,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), test::GetFullProfile(), /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/false, /*user_has_any_profile_saved=*/true,
-      callback.Get());
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/true, callback.Get());
 
   EXPECT_CALL(
       *mock_hats_service,
@@ -183,8 +183,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), empty_profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/false, /*user_has_any_profile_saved=*/false,
-      callback.Get());
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/{}, callback.Get());
 
   EXPECT_CALL(
       *mock_hats_service,
@@ -208,8 +208,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
-      callback.Get());
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/{}, callback.Get());
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   CHECK_EQ(1, tab_strip_model->count());
@@ -240,7 +240,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
   AutofillProfile profile = test::GetFullProfile();
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/{},
       /*callback=*/base::DoNothing());
 
   // Bubble is visible and active
@@ -257,7 +258,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/{},
       /*callback=*/base::DoNothing());
 
   // Second prompt should be auto declined.
@@ -267,8 +269,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
                   Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
-      callback.Get());
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/{}, callback.Get());
 }
 
 // This is testing that when a second prompt comes while another prompt is in
@@ -281,8 +283,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
-      callback.Get());
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/{}, callback.Get());
   tab_controller()->OnBubbleClosed();
 
   // When second prompt comes, the first one will be ignored.
@@ -290,7 +292,8 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
                             Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       tab_web_contents(), profile, /*original_profile=*/nullptr,
-      /*is_migration_to_account=*/{}, /*user_has_any_profile_saved=*/{},
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/{},
       /*callback=*/base::DoNothing());
 }
 

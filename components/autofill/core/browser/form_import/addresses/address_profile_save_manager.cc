@@ -40,6 +40,31 @@ void AddMultiStepComplementCandidate(FormDataImporter* form_data_importer,
                                                   /*is_imported=*/true);
 }
 
+AutofillClient::SaveAddressBubbleType AutofillProfileImportTypeToBubbleType(
+    AutofillProfileImportType type) {
+  switch (type) {
+    case AutofillProfileImportType::kNewProfile:
+    case AutofillProfileImportType::kConfirmableMerge:
+    case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
+    case AutofillProfileImportType::kNameEmailSuperset:
+    case AutofillProfileImportType::kHomeAndWorkSuperset:
+    case AutofillProfileImportType::kHomeWorkNameEmailMerge:
+      return AutofillClient::SaveAddressBubbleType::kSave;
+    case AutofillProfileImportType::kProfileMigration:
+    case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
+      return AutofillClient::SaveAddressBubbleType::kMigrateToAccount;
+    // Those import types do not cause save/update/migrate/merge bubble to be
+    // displayed.
+    case AutofillProfileImportType::kDuplicateImport:
+    case AutofillProfileImportType::kSilentUpdate:
+    case AutofillProfileImportType::kSuppressedNewProfile:
+    case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
+    case AutofillProfileImportType::kSuppressedConfirmableMerge:
+    case AutofillProfileImportType::kImportTypeUnspecified:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 using UserDecision = AutofillClient::AddressPromptUserDecision;
@@ -113,7 +138,7 @@ void AddressProfileSaveManager::OfferSavePrompt(
   client_->ConfirmSaveAddressProfile(
       process_ptr->import_candidate().value(),
       base::OptionalToPtr(process_ptr->merge_candidate()),
-      process_ptr->is_migration(),
+      AutofillProfileImportTypeToBubbleType(process_ptr->import_type()),
       base::BindOnce(&AddressProfileSaveManager::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(import_process)));

@@ -115,7 +115,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void ConfirmSaveAddressProfile(
       const autofill::AutofillProfile& profile,
       const autofill::AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      SaveAddressBubbleType save_address_bubble_type,
       AddressProfileSavePromptCallback callback) final;
   SuggestionUiSessionId ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,

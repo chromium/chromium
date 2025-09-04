@@ -209,7 +209,8 @@ void BubbleSignInPromoInteractiveUITest::SaveAddress(
 void BubbleSignInPromoInteractiveUITest::TriggerSaveAddressBubble(
     const AutofillProfile& address) {
   client().ConfirmSaveAddressProfile(
-      address, nullptr, false,
+      address, nullptr, /*save_address_bubble_type=*/
+      autofill::AutofillClient::SaveAddressBubbleType::kSave,
       base::BindOnce(&BubbleSignInPromoInteractiveUITest::SaveAddress,
                      base::Unretained(this)));
 }

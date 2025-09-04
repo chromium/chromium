@@ -41,14 +41,13 @@ class AddressBubblesController
   // Sets up the controller and offers to save or the `profile`. If
   // `original_profile` is not nullptr, it will be updated if the user accepts
   // the offer. `callback` will be invoked once the user makes a decision with
-  // respect to the prompt. `is_migration_to_account` is relevant for the save
-  // case only and makes the bubble open in a special mode for saving `profile`
-  // in user's Google account.
+  // respect to the prompt. `save_address_bubble_type` differentiates saving
+  // the `profile` in browser or in user's Google account.
   static void SetUpAndShowSaveOrUpdateAddressBubble(
       content::WebContents* web_contents,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      AutofillClient::SaveAddressBubbleType save_address_bubble_type,
       bool user_has_any_profile_saved,
       AutofillClient::AddressProfileSavePromptCallback callback);
 

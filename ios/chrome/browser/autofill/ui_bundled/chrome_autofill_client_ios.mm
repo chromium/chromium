@@ -295,7 +295,7 @@ void ChromeAutofillClientIOS::ShowAutofillSettings(
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    SaveAddressBubbleType save_address_bubble_type,
     AddressProfileSavePromptCallback callback) {
   for (infobars::InfoBar* infobar : infobar_manager_->infobars()) {
     AutofillSaveUpdateAddressProfileDelegateIOS* existing_delegate =
@@ -325,7 +325,8 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
 
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
       profile, original_profile, GetUserEmail(), GetAppLocale(),
-      is_migration_to_account, std::move(callback));
+      save_address_bubble_type == SaveAddressBubbleType::kMigrateToAccount,
+      std::move(callback));
 
   infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,

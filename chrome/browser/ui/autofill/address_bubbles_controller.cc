@@ -37,6 +37,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -50,12 +51,12 @@ namespace {
 
 AutofillBubbleBase* ShowSaveBubble(
     const AutofillProfile& profile,
-    bool is_migration_to_account,
+    AutofillClient::SaveAddressBubbleType save_address_bubble_type,
     content::WebContents* web_contents,
     bool shown_by_user_gesture,
     base::WeakPtr<AddressBubbleControllerDelegate> delegate) {
   auto controller = std::make_unique<SaveAddressBubbleController>(
-      delegate, web_contents, profile, is_migration_to_account);
+      delegate, web_contents, profile, save_address_bubble_type);
 
   return BrowserWindow::FindBrowserWindowWithWebContents(web_contents)
       ->GetAutofillBubbleHandler()
@@ -112,17 +113,20 @@ void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    AutofillClient::SaveAddressBubbleType save_address_bubble_type,
     bool user_has_any_profile_saved,
     AutofillClient::AddressProfileSavePromptCallback callback) {
   AddressBubblesController::CreateForWebContents(web_contents);
   auto* controller = AddressBubblesController::FromWebContents(web_contents);
   bool is_save_bubble = !original_profile;
+  const bool is_migration_to_account =
+      save_address_bubble_type ==
+      AutofillClient::SaveAddressBubbleType::kMigrateToAccount;
   auto show_bubble_view_impl =
       is_save_bubble
           // Save address bubble.
           ? base::BindRepeating(ShowSaveBubble, profile,
-                                is_migration_to_account)
+                                save_address_bubble_type)
           // Update address bubble.
           : base::BindRepeating(ShowUpdateBubble, profile, *original_profile);
   std::u16string page_action_icon_tootip = l10n_util::GetStringUTF16(

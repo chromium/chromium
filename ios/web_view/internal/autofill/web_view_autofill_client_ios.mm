@@ -223,7 +223,7 @@ void WebViewAutofillClientIOS::ShowAutofillSettings(
 void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    SaveAddressBubbleType save_address_bubble_type,
     AddressProfileSavePromptCallback callback) {
   [bridge_ confirmSaveAddressProfile:profile
                      originalProfile:original_profile
