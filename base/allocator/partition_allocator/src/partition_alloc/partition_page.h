@@ -110,7 +110,25 @@ struct SlotSpanMetadata {
 
  public:
   // Checks if it is feasible to store raw_size.
-  PA_ALWAYS_INLINE bool CanStoreRawSize() const { return can_store_raw_size_; }
+  PA_ALWAYS_INLINE bool CanStoreRawSize() const {
+#if defined(THREAD_SANITIZER)
+    // `can_store_raw_size_` is a cache of the value in the bucket, stored there
+    // to avoid touching `bucket`. It causes issues with TSAN, since it is part
+    // of a bitfield along with non-constant values.
+    //
+    // The warning is correct, though it is extremely unlikely to cause issues
+    // in practice, as the element in the bitfield is constant, so the only case
+    // where it would cause issue is when a non-atomic read to a variable can
+    // give garbage results, where the bits are neither from the old nor the new
+    // value.
+    //
+    // TODO(crbug.com/437026570): Fix that properly, rather than relying on
+    // effectively a suppression.
+    return bucket->CanStoreRawSize();
+#else
+    return can_store_raw_size_;
+#endif
+  }
 
   // Returns the total size of the slots that are currently provisioned.
   PA_ALWAYS_INLINE size_t GetProvisionedSize() const {
