@@ -11,7 +11,7 @@
 
 :host {
   --input-bottom-spacing: 16px;
-  --text-input-top-spacing: 24px;
+  --text-input-top-spacing: 16px;
   --text-input-right-spacing: 80px;
   --input-left-spacing: 24px;
   --brand-gradient: conic-gradient(
@@ -220,7 +220,7 @@
   max-height: calc-size(fit-content, min(size - 24px, 190px));
   min-height: 72px;
   outline: none;
-  padding: 16px 0 0;
+  padding: var(--text-input-top-spacing) 0 0;
   position: relative;
   resize: none;
   scrollbar-width: none;
@@ -229,7 +229,7 @@
 }
 
 :host([expanded_]) #input {
-  padding: 24px 0 0;
+  --text-input-top-spacing: 24px;
 }
 
 @keyframes color-change {
