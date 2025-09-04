@@ -16,6 +16,116 @@
 
 namespace blink {
 
+namespace {
+// Determines if the `end_index` should advance when determining pairs for gap
+// decorations.
+//
+// https://drafts.csswg.org/css-gaps-1/#determine-pairs-of-gap-decoration-endpoints
+bool ShouldMoveIntersectionEndForward(GridTrackSizingDirection track_direction,
+                                      wtf_size_t gap_index,
+                                      wtf_size_t end_index,
+                                      RuleBreak rule_break,
+                                      const GapGeometry& gap_geometry) {
+  BlockedStatus blocked_status = gap_geometry.GetIntersectionBlockedStatus(
+      track_direction, gap_index, end_index);
+
+  // For `kSpanningItem` rule break, decorations break only at "T"
+  // intersections, so we simply check that the intersection isn't blocked
+  // after.
+  //
+  // https://drafts.csswg.org/css-gaps-1/#determine-pairs-of-gap-decoration-endpoints
+  if (rule_break == RuleBreak::kSpanningItem) {
+    // Move forward only if the intersection is NOT blocked after.
+    return !blocked_status.HasBlockedStatus(BlockedStatus::kBlockedAfter);
+  }
+
+  // For `kIntersection` rule break, decorations break at both "T" and
+  // "cross" intersections, so we also need to check that the corresponding
+  // intersection in the cross direction is flanked by spanning items.
+  //
+  // https://drafts.csswg.org/css-gaps-1/#determine-pairs-of-gap-decoration-endpoints
+  DCHECK_EQ(rule_break, RuleBreak::kIntersection);
+
+  if (gap_geometry.GetContainerType() == GapGeometry::ContainerType::kFlex) {
+    // For flex, intersections will never be blocked before or after by
+    // other items, due to the absence of spanners. Therefore, we can
+    // break at each intersection point.
+    return false;
+  }
+
+  // If it's blocked after, don't move forward.
+  if (blocked_status.HasBlockedStatus(BlockedStatus::kBlockedAfter)) {
+    return false;
+  }
+
+  const GridTrackSizingDirection cross_direction =
+      track_direction == kForColumns ? kForRows : kForColumns;
+
+  // The following logic is only valid for grid containers.
+  if (gap_geometry.GetContainerType() != GapGeometry::ContainerType::kGrid) {
+    return false;
+  }
+  // Get the matching intersection in the cross direction by
+  // swapping the indices. This transpose allows us determine if the
+  // intersection is flanked by spanning items on opposing sides.
+  // `end_index` should move forward if there are adjacent spanners in
+  // the cross direction since that intersection won't form a T or cross
+  // intersection.
+  const BlockedStatus cross_gaps_blocked_status =
+      gap_geometry.GetIntersectionBlockedStatus(cross_direction, end_index - 1,
+                                                gap_index + 1);
+  // Move forward if the cross intersection is flanked by spanners on both
+  // sides.
+  return cross_gaps_blocked_status.HasBlockedStatus(
+             BlockedStatus::kBlockedAfter) &&
+         cross_gaps_blocked_status.HasBlockedStatus(
+             BlockedStatus::kBlockedBefore);
+}
+
+// Adjusts the (start, end) intersection pair to ensure that the gap
+// decorations are painted correctly based on `rule_break`.
+void AdjustIntersectionIndexPair(GridTrackSizingDirection track_direction,
+                                 wtf_size_t& start,
+                                 wtf_size_t& end,
+                                 wtf_size_t intersection_count,
+                                 wtf_size_t gap_index,
+                                 RuleBreak rule_break,
+                                 const GapGeometry& gap_geometry) {
+  // If rule_break is `kNone`, cover the entire intersection range.
+  const wtf_size_t last_intersection_index = intersection_count - 1;
+  if (rule_break == RuleBreak::kNone) {
+    start = 0;
+    end = last_intersection_index;
+    return;
+  }
+
+  // `start` should be the first intersection point that is not blocked
+  // after.
+  while (start < intersection_count &&
+         (gap_geometry
+              .GetIntersectionBlockedStatus(track_direction, gap_index, start)
+              .HasBlockedStatus(BlockedStatus::kBlockedAfter))) {
+    ++start;
+  }
+
+  // If `start` is the last intersection point, there are no gaps to
+  // paint.
+  if (start == last_intersection_index) {
+    return;
+  }
+
+  end = start + 1;
+
+  // Advance `end` based on the rule_break type.
+  while (end < last_intersection_index &&
+         ShouldMoveIntersectionEndForward(track_direction, gap_index, end,
+                                          rule_break, gap_geometry)) {
+    ++end;
+  }
+}
+
+}  // namespace
+
 // TODO(samomekarajr): Consider refactoring the Paint method to improve
 // modularity by ensuring each method handles a single responsibility.
 void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
@@ -33,6 +143,8 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       is_column_gap ? style.ColumnRuleWidth() : style.RowRuleWidth();
   Length rule_outset =
       is_column_gap ? style.ColumnRuleOutset() : style.RowRuleOutset();
+  RuleBreak rule_break =
+      is_column_gap ? style.ColumnRuleBreak() : style.RowRuleBreak();
 
   WritingModeConverter converter(style.GetWritingDirection(),
                                  box_fragment_.Size());
@@ -72,10 +184,9 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     wtf_size_t start = 0;
     while (start < last_intersection_index) {
       wtf_size_t end = start;
-
-      // TODO(samomekarajr): Instead of taking the last intersection, we want
-      // to move end progressively and check blocked status.
-      end = last_intersection_index;
+      AdjustIntersectionIndexPair(track_direction, start, end,
+                                  intersections.size(), gap_index, rule_break,
+                                  gap_geometry);
       if (start >= end) {
         // Break because there's no gap segment to paint.
         break;

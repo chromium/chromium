@@ -204,9 +204,14 @@ Vector<LayoutUnit> GapGeometry::GenerateMainIntersectionList(
         }
       }
 
+      // TODO(samomekarajr): Consider having a util method for
+      // GridTrackSizingDirection that swaps direction since it's a common
+      // scenario.
+      GridTrackSizingDirection cross_direction =
+          direction == kForRows ? kForColumns : kForRows;
       std::sort(cross_gaps.begin(), cross_gaps.end(),
-                [direction](const CrossGap& a, const CrossGap& b) {
-                  return direction == kForColumns
+                [cross_direction](const CrossGap& a, const CrossGap& b) {
+                  return cross_direction == kForColumns
                              ? a.GetGapOffset().inline_offset <
                                    b.GetGapOffset().inline_offset
                              : a.GetGapOffset().block_offset <
@@ -216,7 +221,7 @@ Vector<LayoutUnit> GapGeometry::GenerateMainIntersectionList(
       // Copy merged and sorted values into `intersections`.
       for (const auto& cross_gap : cross_gaps) {
         LogicalOffset cross_gap_start = cross_gap.GetGapOffset();
-        LayoutUnit offset = direction == kForColumns
+        LayoutUnit offset = cross_direction == kForColumns
                                 ? cross_gap_start.inline_offset
                                 : cross_gap_start.block_offset;
         intersections.push_back(offset);
@@ -360,6 +365,47 @@ bool GapGeometry::IsEdgeIntersection(wtf_size_t gap_index,
   }
 
   return false;
+}
+
+bool GapGeometry::IsTrackCovered(GridTrackSizingDirection track_direction,
+                                 wtf_size_t main_index,
+                                 wtf_size_t cross_index) const {
+  const GapToTrackRangesMap& spanners =
+      track_direction == kForRows ? row_gaps_to_blocked_column_ranges_
+                                  : column_gaps_to_blocked_row_ranges_;
+  auto it = spanners.find(main_index);
+  // If no spanners are found for the main index, the track is not covered.
+  if (it == spanners.end()) {
+    return false;
+  }
+  const TrackRanges& ranges = it->value;
+
+  // TODO: Can use std::binary_search since `ranges` is sorted.
+  for (const TrackRange& range : ranges) {
+    // If the cross index is within the range, the track is covered.
+    if (cross_index >= range.start && cross_index < range.end) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+BlockedStatus GapGeometry::GetIntersectionBlockedStatus(
+    GridTrackSizingDirection track_direction,
+    wtf_size_t primary_index,
+    wtf_size_t secondary_index) const {
+  BlockedStatus status;
+  if (secondary_index > 0 &&
+      IsTrackCovered(track_direction, primary_index, secondary_index - 1)) {
+    status.SetBlockedStatus(BlockedStatus::kBlockedBefore);
+  }
+
+  if (IsTrackCovered(track_direction, primary_index, secondary_index)) {
+    status.SetBlockedStatus(BlockedStatus::kBlockedAfter);
+  }
+
+  return status;
 }
 
 }  // namespace blink

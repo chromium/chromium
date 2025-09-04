@@ -26,6 +26,38 @@ enum class BlockedGapDirection {
   kAfter,
 };
 
+// This bitmask indicates whether an intersection is blocked due to the presence
+// of a spanning item in one or both directions. When considering column gaps,
+// `kBlockedBefore` means the intersection is blocked by a spanning item
+// upwards and `kBlockedAfter` means it is blocked downwards. When
+// considering row gaps, `kBlockedBefore` means the intersection is blocked by a
+// spanning item to the left and `kBlockedAfter` means it is blocked to the
+// right.
+class CORE_EXPORT BlockedStatus {
+ public:
+  enum BlockStatusId : unsigned {
+    kNone = 0,
+    kBlockedBefore = 1 << 0,
+    kBlockedAfter = 1 << 1,
+  };
+
+  inline bool HasBlockedStatus(BlockStatusId status) const {
+    return (status_ & status) != 0;
+  }
+  inline void SetBlockedStatus(BlockStatusId status) { status_ |= status; }
+
+  inline bool operator&(BlockStatusId status) const {
+    return HasBlockedStatus(status);
+  }
+  inline BlockedStatus& operator|=(BlockStatusId status) {
+    SetBlockedStatus(status);
+    return *this;
+  }
+
+ private:
+  wtf_size_t status_{kNone};
+};
+
 // GapIntersection points are used to paint gap decorations. An intersection
 // point occurs:
 // 1. At the center of an intersection between a gap and the container edge.
@@ -202,6 +234,24 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                           wtf_size_t intersection_index,
                           wtf_size_t intersection_count,
                           bool is_main_gap) const;
+
+  // Determines if a given track at `cross_index` is covered for gap at
+  // `main_index`. For the given `track_direction`, this function looks up any
+  // spanners associated with the gap at `main_index`. If no spanners exist, the
+  // track is uncovered. Otherwise, it determines if `cross_index` falls within
+  // any of the gap spanner ranges, indicating that the track is covered by a
+  // spanning item.
+  bool IsTrackCovered(GridTrackSizingDirection track_direction,
+                      wtf_size_t main_index,
+                      wtf_size_t cross_index) const;
+
+  // Determines the blocked status of a specific intersection within a grid.
+  // `primary_index` represents the gap index along the track direction and
+  // `secondary_index` identifies the specific intersection within that gap.
+  BlockedStatus GetIntersectionBlockedStatus(
+      GridTrackSizingDirection track_direction,
+      wtf_size_t primary_index,
+      wtf_size_t secondary_index) const;
 
   blink::String ToString(bool verbose = false) const;
 
