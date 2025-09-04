@@ -72,6 +72,9 @@ promise_test(async () => {
   const tokenLength = await session.measureInputUsage(options.initialPrompts);
   assert_greater_than(tokenLength, 0);
   assert_equals(session.inputUsage, tokenLength);
+  assert_regexp_match(
+      await session.prompt([{role: 'system', content: ''}]),
+      /<image>/);
 }, 'Test Image initialPrompt');
 
 promise_test(async () => {
@@ -263,6 +266,9 @@ promise_test(async () => {
   const tokenLength = await session.measureInputUsage(options.initialPrompts);
   assert_greater_than(tokenLength, 0);
   assert_equals(session.inputUsage, tokenLength);
+  assert_regexp_match(
+      await session.prompt([{role: 'system', content: ''}]),
+      /<audio>/);
 }, 'Test Audio initialPrompt');
 
 promise_test(async () => {

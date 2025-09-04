@@ -31,10 +31,12 @@ constexpr char kResponsePrefix[] =
 EchoAILanguageModel::EchoAILanguageModel(
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
     base::flat_set<blink::mojom::AILanguageModelPromptType> input_types,
+    std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
     uint32_t initial_tokens_size)
     : current_tokens_(initial_tokens_size),
       sampling_params_(std::move(sampling_params)),
-      input_types_(input_types) {}
+      input_types_(input_types),
+      initial_prompts_(std::move(initial_prompts)) {}
 
 EchoAILanguageModel::~EchoAILanguageModel() = default;
 
@@ -78,32 +80,26 @@ void EchoAILanguageModel::Prompt(
         /*quota_error_info=*/nullptr);
     return;
   }
-
   std::string response = "";
-  for (const auto& prompt : prompts) {
-    for (auto& content : prompt->content) {
-      if (content->is_text()) {
-        response += content->get_text();
-      } else if (content->is_bitmap()) {
-        if (!input_types_.contains(
-                blink::mojom::AILanguageModelPromptType::kImage)) {
-          mojo::ReportBadMessage("Image input is not supported.");
-          return;
-        }
-        response += "<image>";
-      } else if (content->is_audio()) {
-        if (!input_types_.contains(
-                blink::mojom::AILanguageModelPromptType::kAudio)) {
-          mojo::ReportBadMessage("Audio input is not supported.");
-          return;
-        }
 
-        response += "<audio>";
-      } else {
-        NOTIMPLEMENTED_LOG_ONCE();
-      }
+  if (!did_echo_initial_prompts_) {
+    auto initial_string = PromptsToText(initial_prompts_);
+    if (!initial_string.has_value()) {
+      return;
     }
+    response.append(*initial_string);
+    did_echo_initial_prompts_ = true;
   }
+
+  auto prompts_as_string = PromptsToText(prompts);
+  if (!prompts_as_string.has_value()) {
+    return;
+  }
+  response.append(*prompts_as_string);
+  for (const auto& prompt : prompts) {
+    prompt_history_.push_back(prompt.Clone());
+  }
+
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
   // Simulate the time taken by model execution.
@@ -118,6 +114,9 @@ void EchoAILanguageModel::Append(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
+  for (const auto& prompt : prompts) {
+    prompt_history_.push_back(prompt.Clone());
+  }
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
       std::move(pending_responder));
   responder->OnCompletion(
@@ -131,10 +130,19 @@ void EchoAILanguageModel::Fork(
       std::move(client));
   mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
 
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<EchoAILanguageModel>(sampling_params_.Clone(),
-                                            input_types_, current_tokens_),
-      language_model.InitWithNewPipeAndPassReceiver());
+  // This sessions initial prompts + history is copied into the
+  // forked session as initial prompts.
+  std::vector<blink::mojom::AILanguageModelPromptPtr> prompts_copy;
+  for (const auto& prompt : initial_prompts_) {
+    prompts_copy.push_back(prompt.Clone());
+  }
+  for (const auto& prompt : prompt_history_) {
+    prompts_copy.push_back(prompt.Clone());
+  }
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAILanguageModel>(
+                                  sampling_params_.Clone(), input_types_,
+                                  std::move(prompts_copy), current_tokens_),
+                              language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),
       blink::mojom::AILanguageModelInstanceInfo::New(
@@ -167,6 +175,36 @@ void EchoAILanguageModel::MeasureInputUsage(
     }
   }
   std::move(callback).Run(total);
+}
+
+std::optional<std::string> EchoAILanguageModel::PromptsToText(
+    const std::vector<blink::mojom::AILanguageModelPromptPtr>& prompts) {
+  std::string response = "";
+  for (const auto& prompt : prompts) {
+    for (auto& content : prompt->content) {
+      if (content->is_text()) {
+        response += content->get_text();
+      } else if (content->is_bitmap()) {
+        if (!input_types_.contains(
+                blink::mojom::AILanguageModelPromptType::kImage)) {
+          mojo::ReportBadMessage("Image input is not supported.");
+          return std::nullopt;
+        }
+        response += "<image>";
+      } else if (content->is_audio()) {
+        if (!input_types_.contains(
+                blink::mojom::AILanguageModelPromptType::kAudio)) {
+          mojo::ReportBadMessage("Audio input is not supported.");
+          return std::nullopt;
+        }
+
+        response += "<audio>";
+      } else {
+        NOTIMPLEMENTED_LOG_ONCE();
+      }
+    }
+  }
+  return response;
 }
 
 }  // namespace content

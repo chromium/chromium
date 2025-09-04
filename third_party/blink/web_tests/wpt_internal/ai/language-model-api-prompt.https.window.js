@@ -32,11 +32,14 @@ promise_test(async (t) => {
 promise_test(async () => {
   const options = {
     initialPrompts:
-        [{role: 'user', content: [{type: 'text', value: 'message'}]}]
+        [{role: 'user', content: [{type: 'text', value: 'The word of the day is regurgitation.'}]}]
   };
   await ensureLanguageModel(options);
   const session = await LanguageModel.create(options);
   const tokenLength = await session.measureInputUsage(options.initialPrompts);
   assert_greater_than(tokenLength, 0);
   assert_equals(session.inputUsage, tokenLength);
+  assert_regexp_match(
+      await session.prompt([{role: 'system', content: ''}]),
+      /regurgitation/);
 }, 'Test that initialPrompt counts towards session inputUsage');
