@@ -28,6 +28,7 @@
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/audio_processor_handler.h"
+#include "services/audio/loopback_signal_provider.h"
 #include "services/audio/processing_audio_fifo.h"
 #include "services/audio/reference_output.h"
 #include "services/audio/reference_signal_provider.h"
@@ -121,6 +122,75 @@ class MockAudioInputStream : public media::AudioInputStream {
   std::optional<AudioInputCallback*> captured_callback_;
 };
 
+class FakeLoopbackSignalProvider : public LoopbackSignalProviderInterface {
+ public:
+  FakeLoopbackSignalProvider(const media::AudioParameters& params,
+                             LoopbackSignalProviderInterface* callback_receiver)
+      : params_(params), callback_receiver_(callback_receiver) {}
+
+  ~FakeLoopbackSignalProvider() override = default;
+
+  void Start() override { callback_receiver_->Start(); }
+
+  base::TimeTicks PullLoopbackData(media::AudioBus* audio_bus,
+                                   base::TimeTicks capture_time,
+                                   double volume) override {
+    EXPECT_EQ(audio_bus->frames(), params_.frames_per_buffer());
+    EXPECT_EQ(audio_bus->channels(), params_.channels());
+    return callback_receiver_->PullLoopbackData(audio_bus, capture_time,
+                                                volume);
+  }
+
+ private:
+  const media::AudioParameters params_;
+  raw_ptr<LoopbackSignalProviderInterface> const callback_receiver_;
+};
+
+class LoopbackMixinVerifier : public LoopbackSignalProviderInterface {
+ public:
+  LoopbackMixinVerifier() = default;
+  ~LoopbackMixinVerifier() override = default;
+
+  // LoopbackSignalProviderInterface
+  MOCK_METHOD(void, Start, (), (override));
+  MOCK_METHOD(base::TimeTicks,
+              PullLoopbackData,
+              (media::AudioBus * audio_bus,
+               base::TimeTicks capture_time,
+               double volume),
+              (override));
+
+  MOCK_METHOD(void, MaybeCreateMixinCalled, (std::string_view device_id));
+
+  std::unique_ptr<LoopbackMixin> MaybeCreateMixin(
+      std::string_view device_id,
+      const media::AudioParameters& params,
+      LoopbackMixin::OnDataCallback on_data_callback) {
+    MaybeCreateMixinCalled(device_id);
+
+    if (device_id != media::AudioDeviceDescription::kLoopbackWithoutChromeId) {
+      return nullptr;
+    }
+
+    return std::make_unique<LoopbackMixinUnderTest>(
+        std::make_unique<FakeLoopbackSignalProvider>(params, this), params,
+        std::move(on_data_callback));
+  }
+
+ private:
+  // Test class to access the protected constructor of LoopbackMixin.
+  class LoopbackMixinUnderTest : public LoopbackMixin {
+   public:
+    LoopbackMixinUnderTest(
+        std::unique_ptr<LoopbackSignalProviderInterface> signal_provider,
+        const media::AudioParameters& params,
+        OnDataCallback on_data_callback)
+        : LoopbackMixin(std::move(signal_provider),
+                        params,
+                        std::move(on_data_callback)) {}
+  };
+};
+
 enum class AudioManagerType { MOCK, FAKE };
 
 template <base::test::TaskEnvironment::TimeSource TimeSource =
@@ -155,6 +225,18 @@ class TimeSourceInputControllerTest : public ::testing::Test {
   }
 
  protected:
+  void CreateAudioControllerWithMixin(const std::string& device_id) {
+    EXPECT_CALL(mixin_verifier_, MaybeCreateMixinCalled(device_id));
+    controller_ = InputController::Create(
+        audio_manager_.get(), &event_handler_, &sync_writer_,
+        /*device_output_listener =*/nullptr, &aecdump_recording_manager_,
+        /*processing_config =*/nullptr,
+        // base::Unretained is safe: `mixin_verifier_` outlives `controller_`
+        base::BindOnce(&LoopbackMixinVerifier::MaybeCreateMixin,
+                       base::Unretained(&mixin_verifier_)),
+        params_, device_id, false);
+  }
+
   virtual void CreateAudioController() {
     controller_ = InputController::Create(
         audio_manager_.get(), &event_handler_, &sync_writer_,
@@ -166,6 +248,7 @@ class TimeSourceInputControllerTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
+  StrictMock<LoopbackMixinVerifier> mixin_verifier_;
   std::unique_ptr<media::AudioManager> audio_manager_;
   media::AecdumpRecordingManager aecdump_recording_manager_;
   std::unique_ptr<InputController> controller_;
@@ -225,6 +308,37 @@ TEST_F(SystemTimeInputControllerTest, CreateRecordAndClose) {
       "Media.Audio.InputController.Delay.NoAudioServiceAEC", 10);
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(InputControllerTestWithMockAudioManager, LoopbackMixinIsEngaged) {
+  MockAudioInputStream mock_stream;
+  static_cast<media::MockAudioManager*>(audio_manager_.get())
+      ->SetMakeInputStreamCB(base::BindRepeating(
+          [](media::AudioInputStream* stream,
+             const media::AudioParameters& params,
+             const std::string& device_id) { return stream; },
+          &mock_stream));
+  auto audio_bus = media::AudioBus::Create(params_);
+
+  CreateAudioControllerWithMixin(
+      media::AudioDeviceDescription::kLoopbackWithoutChromeId);
+  ASSERT_TRUE(controller_.get());
+
+  EXPECT_CALL(mixin_verifier_, Start());
+  controller_->Record();
+
+  ASSERT_TRUE(mock_stream.captured_callback_);
+  media::AudioInputStream::AudioInputCallback* callback =
+      *mock_stream.captured_callback_;
+
+  // Loopbackmixin::OnData() is called.
+  EXPECT_CALL(mixin_verifier_, PullLoopbackData(_, _, _));
+  // Loopback passed data back to InputController.
+  EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _));
+  callback->OnData(audio_bus.get(), base::TimeTicks(), 1, {});
+
+  EXPECT_CALL(sync_writer_, Close());
+  controller_->Close();
 }
 
 TEST_F(InputControllerTestWithMockAudioManager, PropagatesGlitchInfo) {
