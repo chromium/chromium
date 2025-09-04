@@ -146,13 +146,18 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableSummarizeSuggestionHint",
       lens::features::ShouldEnableSummarizeHintForContextualSuggest());
-  html_source->AddBoolean("enableFloatingGForHeader",
-                          lens::features::GetEnableFloatingGForHeader());
-  html_source->AddBoolean("enableClientSideAimHeader",
-                          lens::features::GetEnableClientSideHeader());
-  html_source->AddBoolean("enableAimSearchbox",
-                          lens::IsAimM3Enabled(Profile::FromWebUI(web_ui)) &&
-                              lens::features::GetAimSearchboxEnabled());
+
+  // Aim M3 flags
+  const bool aim_enabled = lens::IsAimM3Enabled(Profile::FromWebUI(web_ui));
+  html_source->AddBoolean(
+      "enableFloatingGForHeader",
+      aim_enabled && lens::features::GetEnableFloatingGForHeader());
+  html_source->AddBoolean(
+      "enableClientSideAimHeader",
+      aim_enabled && lens::features::GetEnableClientSideHeader());
+  html_source->AddBoolean(
+      "enableAimSearchbox",
+      aim_enabled && lens::features::GetAimSearchboxEnabled());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =
