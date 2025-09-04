@@ -453,6 +453,8 @@ class CONTENT_EXPORT Metrics {
 
   // Records whether a nonce was included in the FedCM call.
   void RecordHasNonce(const std::set<GURL>& idps_with_nonce);
+  void RecordHasNonceOutsideParamsOnly(
+      const std::set<GURL>& idps_with_nonce_outside_params_only);
 
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(const GURL& provider,

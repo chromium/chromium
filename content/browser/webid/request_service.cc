@@ -364,14 +364,32 @@ void RequestService::RequestToken(
     fedcm_metrics_ = CreateFedCmMetrics();
   }
   std::set<GURL> idps_with_nonce;
+  std::set<GURL> idps_with_nonce_outside_params_only;
   for (const auto& idp_get_params_ptr : idp_get_params_ptrs) {
     for (const auto& idp_ptr : idp_get_params_ptr->providers) {
       if (!idp_ptr->nonce.empty()) {
         idps_with_nonce.insert(idp_ptr->config->config_url);
+
+        bool has_nonce_in_params = false;
+        if (idp_ptr->params_json) {
+          std::optional<base::Value> params =
+              base::JSONReader::Read(*idp_ptr->params_json);
+          if (params && params->is_dict()) {
+            if (params->GetDict().contains("nonce")) {
+              has_nonce_in_params = true;
+            }
+          }
+        }
+        if (!has_nonce_in_params) {
+          idps_with_nonce_outside_params_only.insert(
+              idp_ptr->config->config_url);
+        }
       }
     }
   }
   fedcm_metrics_->RecordHasNonce(idps_with_nonce);
+  fedcm_metrics_->RecordHasNonceOutsideParamsOnly(
+      idps_with_nonce_outside_params_only);
 
   // TODO(crbug.com/40218857): handle active mode with multiple IdP.
   if (idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kActive) {

@@ -8320,6 +8320,45 @@ TEST_F(RequestServiceTest, RecordsNoncePresence) {
   RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
   ExpectUkmValue("HasNonce", true);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.HasNonce", true, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.HasNonceOutsideParamsOnly",
+                                       true, 1);
+}
+
+// Test that Blink.FedCm.HasNonceOutsideParamsOnly is not recorded when a nonce
+// is present in params.
+TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_ParamsWithNonce) {
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].params_json = "{\"nonce\":\"abc\"}";
+  RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.HasNonce", true, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.HasNonceOutsideParamsOnly",
+                                     0);
+  ExpectUkmValue("HasNonce", true);
+}
+
+// Test that Blink.FedCm.HasNonceOutsideParamsOnly is not recorded when a nonce
+// is not present.
+TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_NoNonce) {
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].nonce = "";
+  RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.HasNonce", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.HasNonceOutsideParamsOnly",
+                                     0);
+  ExpectNoUKMPresence("HasNonce");
+}
+
+// Test that Blink.FedCm.HasNonceOutsideParamsOnly is not recorded when a nonce
+// is only present in params.
+TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_NonceOnlyInParams) {
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].nonce = "";
+  parameters.identity_providers[0].params_json = "{\"nonce\":\"abc\"}";
+  RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.HasNonce", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.HasNonceOutsideParamsOnly",
+                                     0);
+  ExpectNoUKMPresence("HasNonce");
 }
 
 TEST_F(RequestServiceTest, NonceAbsenceNoRecord) {
