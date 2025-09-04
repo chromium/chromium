@@ -7,7 +7,6 @@ xnn_defines = [
   "XNN_ENABLE_CPUINFO=1",
   "XNN_ENABLE_MEMOPT=1",
   "XNN_ENABLE_SPARSE=1",
-  "XNN_ENABLE_ASSEMBLY=1",
   "XNN_ENABLE_ARM_FP16_SCALAR=0",
   "XNN_ENABLE_ARM_FP16_VECTOR=0",
   "XNN_ENABLE_ARM_BF16=0",
@@ -17,11 +16,13 @@ if (current_cpu == "arm64") {
   xnn_defines += [
     "XNN_ENABLE_ARM_DOTPROD=1",
     "XNN_ENABLE_ARM_I8MM=1",
+    "XNN_ENABLE_ASSEMBLY=1",
   ]
 } else {
   xnn_defines += [
     "XNN_ENABLE_ARM_DOTPROD=0",
     "XNN_ENABLE_ARM_I8MM=0",
+    "XNN_ENABLE_ASSEMBLY=0",
   ]
 }
 

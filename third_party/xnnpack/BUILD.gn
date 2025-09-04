@@ -336,6 +336,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":qs8-packw_x64",
     ":qs8-qc4w-gemm_avx-no-avx2-no-f16c-no-fma",
     ":qs8-qc4w-gemm_f16c-fma-avx2",
+    ":qs8-qc4w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
     ":qs8-qc4w-gemm_ssse3-no-sse4.1",
     ":qs8-qc4w-gemm_x64",
     ":qs8-qc8w-dwconv_avx-no-avx2-no-f16c-no-fma",
@@ -841,6 +842,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":qs8-packw_x64_standalone",
       ":qs8-qc4w-gemm_avx-no-avx2-no-f16c-no-fma_standalone",
       ":qs8-qc4w-gemm_f16c-fma-avx2_standalone",
+      ":qs8-qc4w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
       ":qs8-qc4w-gemm_ssse3-no-sse4.1_standalone",
       ":qs8-qc4w-gemm_x64_standalone",
       ":qs8-qc8w-dwconv_avx-no-avx2-no-f16c-no-fma_standalone",
@@ -2730,7 +2732,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-avx512skx-c64.c",
+      "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-avx512skx-u64.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -2764,7 +2766,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-avx512skx-c64.c",
+        "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-avx512skx-u64.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -2796,7 +2798,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-f16c-c32.c",
+      "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-f16c-u32.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -2825,7 +2827,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-f16c-c32.c",
+        "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-f16c-u32.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -2989,7 +2991,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f16-ibilinear/gen/f16-ibilinear-fma3-c8.c",
+      "src/src/f16-ibilinear/gen/f16-ibilinear-fma3-u8.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -3018,7 +3020,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-ibilinear/gen/f16-ibilinear-fma3-c8.c",
+        "src/src/f16-ibilinear/gen/f16-ibilinear-fma3-u8.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -3333,8 +3335,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-c2.c",
-      "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-c2.c",
+      "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-u2.c",
+      "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -3359,8 +3361,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-c2.c",
-        "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-c2.c",
+        "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-u2.c",
+        "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -6726,7 +6728,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-ibilinear/gen/f32-ibilinear-sse-c8.c",
+      "src/src/f32-ibilinear/gen/f32-ibilinear-sse-u8.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -6754,7 +6756,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-ibilinear/gen/f32-ibilinear-sse-c8.c",
+        "src/src/f32-ibilinear/gen/f32-ibilinear-sse-u8.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -6782,7 +6784,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-c2.c",
+      "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -6807,7 +6809,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-c2.c",
+        "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -8950,8 +8952,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-avx-c32.c",
-      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-avx-c32.c",
+      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-avx-u32.c",
+      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-avx-u32.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -8981,8 +8983,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-avx-c32.c",
-        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-avx-c32.c",
+        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-avx-u32.c",
+        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-avx-u32.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9010,8 +9012,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-avx512f-c32.c",
-      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-avx512f-c32.c",
+      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-avx512f-u32.c",
+      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-avx512f-u32.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9036,8 +9038,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-avx512f-c32.c",
-        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-avx512f-c32.c",
+        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-avx512f-u32.c",
+        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-avx512f-u32.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9068,8 +9070,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-sse2-c32.c",
-      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-sse2-c32.c",
+      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-sse2-u32.c",
+      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-sse2-u32.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9097,8 +9099,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-sse2-c32.c",
-        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-sse2-c32.c",
+        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-sse2-u32.c",
+        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-sse2-u32.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9126,8 +9128,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-c2.c",
-      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-c2.c",
+      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-u2.c",
+      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9152,8 +9154,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-c2.c",
-        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-c2.c",
+        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-u2.c",
+        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9186,7 +9188,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-avx-c32.c",
+      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-avx-u32.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9216,7 +9218,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-avx-c32.c",
+        "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-avx-u32.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9244,7 +9246,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-avx512f-c64.c",
+      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-avx512f-u64.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9269,7 +9271,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-avx512f-c64.c",
+        "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-avx512f-u64.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9300,7 +9302,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-sse2-c16.c",
+      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-sse2-u16.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -9328,7 +9330,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-sse2-c16.c",
+        "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-sse2-u16.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -20007,6 +20009,79 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
+  source_set(
+      "qs8-qc4w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
+    cflags = [
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mf16c",
+      "-mfma",
+    ]
+
+    sources = [
+      "src/include/xnnpack.h",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x8c8-minmax-fp32-avx256skx-madd-prfm.c",
+      "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-7x8c8-minmax-fp32-avx256skx-madd-prfm.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_public_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set(
+        "qs8-qc4w-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone") {
+      cflags = [
+        "-mavx512bw",
+        "-mavx512cd",
+        "-mavx512dq",
+        "-mavx512f",
+        "-mavx512vl",
+        "-mf16c",
+        "-mfma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-1x8c8-minmax-fp32-avx256skx-madd-prfm.c",
+        "src/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-7x8c8-minmax-fp32-avx256skx-madd-prfm.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
   source_set("qs8-qc4w-gemm_ssse3-no-sse4.1") {
     cflags = [
       "-mno-sse4.1",
@@ -22051,7 +22126,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-avx2-c64.c",
+      "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-avx2-u64.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -22080,7 +22155,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-avx2-c64.c",
+        "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-avx2-u64.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -22116,7 +22191,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-avx512skx-c64.c",
+      "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-avx512skx-u64.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -22150,7 +22225,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-avx512skx-c64.c",
+        "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-avx512skx-u64.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -22181,7 +22256,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-sse41-c64.c",
+      "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-sse41-u64.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -22209,7 +22284,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-sse41-c64.c",
+        "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-sse41-u64.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -26428,7 +26503,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qu8-rdsum/gen/qu8-rdsum-7p7x-ssse3-c64.c",
+      "src/src/qu8-rdsum/gen/qu8-rdsum-7p7x-ssse3-u64.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -26456,7 +26531,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qu8-rdsum/gen/qu8-rdsum-7p7x-ssse3-c64.c",
+        "src/src/qu8-rdsum/gen/qu8-rdsum-7p7x-ssse3-u64.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -29022,7 +29097,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/s8-ibilinear/gen/s8-ibilinear-sse2-c8.c",
+      "src/src/s8-ibilinear/gen/s8-ibilinear-sse2-u8.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -29050,7 +29125,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/s8-ibilinear/gen/s8-ibilinear-sse2-c8.c",
+        "src/src/s8-ibilinear/gen/s8-ibilinear-sse2-u8.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -29081,7 +29156,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/s8-ibilinear/gen/s8-ibilinear-sse41-c16.c",
+      "src/src/s8-ibilinear/gen/s8-ibilinear-sse41-u16.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -29109,7 +29184,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/s8-ibilinear/gen/s8-ibilinear-sse41-c16.c",
+        "src/src/s8-ibilinear/gen/s8-ibilinear-sse41-u16.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -29137,7 +29212,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-c1.c",
+      "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-u1.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -29162,7 +29237,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-c1.c",
+        "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-u1.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -29305,8 +29380,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-sse41-c32.c",
-      "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-sse41-c32.c",
+      "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-sse41-u32.c",
+      "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-sse41-u32.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -29334,8 +29409,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-sse41-c32.c",
-        "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-sse41-c32.c",
+        "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-sse41-u32.c",
+        "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-sse41-u32.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -29363,8 +29438,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-c2.c",
-      "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-c2.c",
+      "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-u2.c",
+      "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -29389,8 +29464,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-c2.c",
-        "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-c2.c",
+        "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-u2.c",
+        "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -30021,7 +30096,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-ibilinear/gen/u8-ibilinear-sse2-c8.c",
+      "src/src/u8-ibilinear/gen/u8-ibilinear-sse2-u8.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -30049,7 +30124,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/u8-ibilinear/gen/u8-ibilinear-sse2-c8.c",
+        "src/src/u8-ibilinear/gen/u8-ibilinear-sse2-u8.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -30080,7 +30155,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-ibilinear/gen/u8-ibilinear-sse41-c16.c",
+      "src/src/u8-ibilinear/gen/u8-ibilinear-sse41-u16.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -30108,7 +30183,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/u8-ibilinear/gen/u8-ibilinear-sse41-c16.c",
+        "src/src/u8-ibilinear/gen/u8-ibilinear-sse41-u16.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -30136,7 +30211,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-c1.c",
+      "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-u1.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -30161,7 +30236,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-c1.c",
+        "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-u1.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -30357,8 +30432,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-sse2-c32.c",
-      "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-sse2-c32.c",
+      "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-sse2-u32.c",
+      "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-sse2-u32.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -30386,8 +30461,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-sse2-c32.c",
-        "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-sse2-c32.c",
+        "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-sse2-u32.c",
+        "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-sse2-u32.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -30415,8 +30490,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-c2.c",
-      "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-c2.c",
+      "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-u2.c",
+      "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -30441,8 +30516,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-c2.c",
-        "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-c2.c",
+        "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-u2.c",
+        "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -31309,6 +31384,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/x32-packw/gen/x32-packw-x16-gemm-goi-avx512f-u4-prfm.c",
       "src/src/x32-packw/gen/x32-packw-x32-gemm-gio-avx512f-u8.c",
       "src/src/x32-packw/gen/x32-packw-x32-gemm-goi-avx512f-u4-prfm.c",
+      "src/src/x32-packw/gen/x32-packw-x32c2-gemm-goi-avx512f-u4-prfm.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -31337,6 +31413,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
         "src/src/x32-packw/gen/x32-packw-x16-gemm-goi-avx512f-u4-prfm.c",
         "src/src/x32-packw/gen/x32-packw-x32-gemm-gio-avx512f-u8.c",
         "src/src/x32-packw/gen/x32-packw-x32-gemm-goi-avx512f-u4-prfm.c",
+        "src/src/x32-packw/gen/x32-packw-x32c2-gemm-goi-avx512f-u4-prfm.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -33330,7 +33407,7 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-minmax-neonfp16arith-c16.c",
+      "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-minmax-neonfp16arith-u16.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -33355,7 +33432,7 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-minmax-neonfp16arith-c16.c",
+        "src/src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-minmax-neonfp16arith-u16.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -33615,7 +33692,7 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f16-ibilinear/gen/f16-ibilinear-neonfp16arith-c8.c",
+      "src/src/f16-ibilinear/gen/f16-ibilinear-neonfp16arith-u8.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -33640,7 +33717,7 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-ibilinear/gen/f16-ibilinear-neonfp16arith-c8.c",
+        "src/src/f16-ibilinear/gen/f16-ibilinear-neonfp16arith-u8.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -34059,8 +34136,8 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-neonfp16arith-c32.c",
-      "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-neonfp16arith-c32.c",
+      "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-neonfp16arith-u32.c",
+      "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-neonfp16arith-u32.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -34085,8 +34162,8 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-neonfp16arith-c32.c",
-        "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-neonfp16arith-c32.c",
+        "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-neonfp16arith-u32.c",
+        "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-neonfp16arith-u32.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -34114,8 +34191,8 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-c2.c",
-      "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-c2.c",
+      "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-u2.c",
+      "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -34140,8 +34217,8 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-c2.c",
-        "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-c2.c",
+        "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-u2.c",
+        "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -36070,7 +36147,7 @@ if (current_cpu == "arm64") {
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-cortex-a53.S",
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-cortex-a75-prfm.S",
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-cortex-a75.S",
-      "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-ld128-acc2.S",
+      "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-ld128-2.S",
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-ld128-acc4.S",
       "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-asm-aarch64-neonfma-ld128.S",
       "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-cortex-a53-prfm.S",
@@ -36078,13 +36155,15 @@ if (current_cpu == "arm64") {
       "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-cortex-a55.S",
       "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-cortex-a75-prfm.S",
       "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-cortex-a75.S",
-      "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-ld128.S",
+      "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-ld128-2.S",
       "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-cortex-a53-prfm.S",
       "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-cortex-a53.S",
       "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-cortex-a55.S",
       "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-cortex-a73.S",
       "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-cortex-a75-prfm.S",
       "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-ld128.S",
+      "src/src/f32-gemm/gen/f32-gemm-7x8-minmax-asm-aarch64-neonfma-ld128-2.S",
+      "src/src/f32-gemm/gen/f32-gemm-8x8-minmax-asm-aarch64-neonfma-ld128-2.S",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -36115,7 +36194,7 @@ if (current_cpu == "arm64") {
         "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-cortex-a53.S",
         "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-cortex-a75-prfm.S",
         "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-cortex-a75.S",
-        "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-ld128-acc2.S",
+        "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-ld128-2.S",
         "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-asm-aarch64-neonfma-ld128-acc4.S",
         "src/src/f32-gemm/gen/f32-gemm-4x2-minmax-asm-aarch64-neonfma-ld128.S",
         "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-cortex-a53-prfm.S",
@@ -36123,13 +36202,15 @@ if (current_cpu == "arm64") {
         "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-cortex-a55.S",
         "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-cortex-a75-prfm.S",
         "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-cortex-a75.S",
-        "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-ld128.S",
+        "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-asm-aarch64-neonfma-ld128-2.S",
         "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-cortex-a53-prfm.S",
         "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-cortex-a53.S",
         "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-cortex-a55.S",
         "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-cortex-a73.S",
         "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-cortex-a75-prfm.S",
         "src/src/f32-gemm/gen/f32-gemm-6x8-minmax-asm-aarch64-neonfma-ld128.S",
+        "src/src/f32-gemm/gen/f32-gemm-7x8-minmax-asm-aarch64-neonfma-ld128-2.S",
+        "src/src/f32-gemm/gen/f32-gemm-8x8-minmax-asm-aarch64-neonfma-ld128-2.S",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -36303,9 +36384,9 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-ibilinear/gen/f32-ibilinear-neon-c8.c",
-      "src/src/f32-ibilinear/gen/f32-ibilinear-neonfma-c8.c",
-      "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-c2.c",
+      "src/src/f32-ibilinear/gen/f32-ibilinear-neon-u8.c",
+      "src/src/f32-ibilinear/gen/f32-ibilinear-neonfma-u8.c",
+      "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -36330,9 +36411,9 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-ibilinear/gen/f32-ibilinear-neon-c8.c",
-        "src/src/f32-ibilinear/gen/f32-ibilinear-neonfma-c8.c",
-        "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-c2.c",
+        "src/src/f32-ibilinear/gen/f32-ibilinear-neon-u8.c",
+        "src/src/f32-ibilinear/gen/f32-ibilinear-neonfma-u8.c",
+        "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -36957,10 +37038,10 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-neon-c32.c",
-      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-c2.c",
-      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-neon-c32.c",
-      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-c2.c",
+      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-neon-u32.c",
+      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-u2.c",
+      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-neon-u32.c",
+      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -36985,10 +37066,10 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-neon-c32.c",
-        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-c2.c",
-        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-neon-c32.c",
-        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-c2.c",
+        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-neon-u32.c",
+        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-u2.c",
+        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-neon-u32.c",
+        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -37016,7 +37097,7 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-neon-c16.c",
+      "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-neon-u16.c",
       "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-scalar.c",
     ]
 
@@ -37042,7 +37123,7 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-neon-c16.c",
+        "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-neon-u16.c",
         "src/src/f32-rdsum/gen/f32-rdsum-7p7x-minmax-scalar.c",
       ]
 
@@ -38620,7 +38701,9 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/pf32-gemm/pf32-gemm-1x32-minmax-neonsme.c",
       "src/src/pf32-gemm/pf32-gemm-1x32-minmax-neonsme2.c",
+      "src/src/pf32-gemm/pf32-gemm-32x32-minmax-neonsme.c",
       "src/src/pf32-gemm/pf32-gemm-32x32-minmax-neonsme2.c",
     ]
 
@@ -38646,7 +38729,9 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
+        "src/src/pf32-gemm/pf32-gemm-1x32-minmax-neonsme.c",
         "src/src/pf32-gemm/pf32-gemm-1x32-minmax-neonsme2.c",
+        "src/src/pf32-gemm/pf32-gemm-32x32-minmax-neonsme.c",
         "src/src/pf32-gemm/pf32-gemm-32x32-minmax-neonsme2.c",
       ]
 
@@ -40135,10 +40220,12 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x16-minmax-neon-mlal-lane-prfm.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x4-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x8c2s4-minmax-neon-mlal.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-2x8c2s4-minmax-neon-mlal.c",
+      "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-4x16-minmax-neon-mlal-lane-prfm.c",
       "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-4x4-minmax-scalar.c",
     ]
 
@@ -40164,10 +40251,12 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
+        "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x16-minmax-neon-mlal-lane-prfm.c",
         "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x2-minmax-scalar.c",
         "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x4-minmax-scalar.c",
         "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-1x8c2s4-minmax-neon-mlal.c",
         "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-2x8c2s4-minmax-neon-mlal.c",
+        "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-4x16-minmax-neon-mlal-lane-prfm.c",
         "src/src/qd8-f32-qc8w-gemm/gen/qd8-f32-qc8w-gemm-4x4-minmax-scalar.c",
       ]
 
@@ -40369,11 +40458,13 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x16-minmax-neon-mlal-lane-prfm.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x2-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x4-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x8-minmax-neon-mlal-lane.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x8c2s4-minmax-neon-mlal.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-2x8c2s4-minmax-neon-mlal.c",
+      "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x16-minmax-neon-mlal-lane-prfm.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x4-minmax-scalar.c",
       "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x8-minmax-neon-mlal-lane.c",
     ]
@@ -40400,11 +40491,13 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
+        "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x16-minmax-neon-mlal-lane-prfm.c",
         "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x2-minmax-scalar.c",
         "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x4-minmax-scalar.c",
         "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x8-minmax-neon-mlal-lane.c",
         "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-1x8c2s4-minmax-neon-mlal.c",
         "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-2x8c2s4-minmax-neon-mlal.c",
+        "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x16-minmax-neon-mlal-lane-prfm.c",
         "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x4-minmax-scalar.c",
         "src/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-4x8-minmax-neon-mlal-lane.c",
       ]
@@ -41858,7 +41951,7 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-neon-c32.c",
+      "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-neon-u32.c",
       "src/src/qs8-rdsum/gen/qs8-rdsum-minmax-fp32-scalar-u1-acc1.c",
     ]
 
@@ -41884,7 +41977,7 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-neon-c32.c",
+        "src/src/qs8-rdsum/gen/qs8-rdsum-7p7x-minmax-fp32-neon-u32.c",
         "src/src/qs8-rdsum/gen/qs8-rdsum-minmax-fp32-scalar-u1-acc1.c",
       ]
 
@@ -43558,9 +43651,9 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/s8-ibilinear/gen/s8-ibilinear-neon-c16.c",
-      "src/src/s8-ibilinear/gen/s8-ibilinear-neon-c8.c",
-      "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-c1.c",
+      "src/src/s8-ibilinear/gen/s8-ibilinear-neon-u16.c",
+      "src/src/s8-ibilinear/gen/s8-ibilinear-neon-u8.c",
+      "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-u1.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -43585,9 +43678,9 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/s8-ibilinear/gen/s8-ibilinear-neon-c16.c",
-        "src/src/s8-ibilinear/gen/s8-ibilinear-neon-c8.c",
-        "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-c1.c",
+        "src/src/s8-ibilinear/gen/s8-ibilinear-neon-u16.c",
+        "src/src/s8-ibilinear/gen/s8-ibilinear-neon-u8.c",
+        "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-u1.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -43670,10 +43763,10 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-neon-c32.c",
-      "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-c2.c",
-      "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-neon-c32.c",
-      "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-c2.c",
+      "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-neon-u32.c",
+      "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-u2.c",
+      "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-neon-u32.c",
+      "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -43698,10 +43791,10 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-neon-c32.c",
-        "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-c2.c",
-        "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-neon-c32.c",
-        "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-c2.c",
+        "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-neon-u32.c",
+        "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-u2.c",
+        "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-neon-u32.c",
+        "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -44025,9 +44118,9 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-ibilinear/gen/u8-ibilinear-neon-c16.c",
-      "src/src/u8-ibilinear/gen/u8-ibilinear-neon-c8.c",
-      "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-c1.c",
+      "src/src/u8-ibilinear/gen/u8-ibilinear-neon-u16.c",
+      "src/src/u8-ibilinear/gen/u8-ibilinear-neon-u8.c",
+      "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-u1.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -44052,9 +44145,9 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/u8-ibilinear/gen/u8-ibilinear-neon-c16.c",
-        "src/src/u8-ibilinear/gen/u8-ibilinear-neon-c8.c",
-        "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-c1.c",
+        "src/src/u8-ibilinear/gen/u8-ibilinear-neon-u16.c",
+        "src/src/u8-ibilinear/gen/u8-ibilinear-neon-u8.c",
+        "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-u1.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -44190,10 +44283,10 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-neon-c32.c",
-      "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-c2.c",
-      "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-neon-c32.c",
-      "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-c2.c",
+      "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-neon-u32.c",
+      "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-u2.c",
+      "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-neon-u32.c",
+      "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -44218,10 +44311,10 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-neon-c32.c",
-        "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-c2.c",
-        "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-neon-c32.c",
-        "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-c2.c",
+        "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-neon-u32.c",
+        "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-u2.c",
+        "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-neon-u32.c",
+        "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -44642,7 +44735,7 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/x32-pack-lh/x32-packlh-neonsme2.c",
+      "src/src/x32-pack-lh/x32-packlh-neonsme.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -44667,7 +44760,7 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/x32-pack-lh/x32-packlh-neonsme2.c",
+        "src/src/x32-pack-lh/x32-packlh-neonsme.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -45753,8 +45846,8 @@ if (current_cpu == "riscv64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-c2.c",
-      "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-c2.c",
+      "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-u2.c",
+      "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -45779,8 +45872,8 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-c2.c",
-        "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-c2.c",
+        "src/src/f16-rdminmax/gen/f16-rdmax-2p2x-scalar-u2.c",
+        "src/src/f16-rdminmax/gen/f16-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -46913,7 +47006,7 @@ if (current_cpu == "riscv64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-c2.c",
+      "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -46938,7 +47031,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-c2.c",
+        "src/src/f32-ibilinear/gen/f32-ibilinear-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -47656,8 +47749,8 @@ if (current_cpu == "riscv64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-c2.c",
-      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-c2.c",
+      "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-u2.c",
+      "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -47682,8 +47775,8 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-c2.c",
-        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-c2.c",
+        "src/src/f32-rdminmax/gen/f32-rdmax-2p2x-scalar-u2.c",
+        "src/src/f32-rdminmax/gen/f32-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53272,7 +53365,7 @@ if (current_cpu == "riscv64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-c1.c",
+      "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-u1.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53297,7 +53390,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-c1.c",
+        "src/src/s8-ibilinear/gen/s8-ibilinear-scalar-u1.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53378,8 +53471,8 @@ if (current_cpu == "riscv64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-c2.c",
-      "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-c2.c",
+      "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-u2.c",
+      "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53404,8 +53497,8 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-c2.c",
-        "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-c2.c",
+        "src/src/s8-rdminmax/gen/s8-rdmax-2p2x-scalar-u2.c",
+        "src/src/s8-rdminmax/gen/s8-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53780,7 +53873,7 @@ if (current_cpu == "riscv64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-c1.c",
+      "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-u1.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53805,7 +53898,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-c1.c",
+        "src/src/u8-ibilinear/gen/u8-ibilinear-scalar-u1.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53939,8 +54032,8 @@ if (current_cpu == "riscv64") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-c2.c",
-      "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-c2.c",
+      "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-u2.c",
+      "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-u2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53965,8 +54058,8 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-c2.c",
-        "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-c2.c",
+        "src/src/u8-rdminmax/gen/u8-rdmax-2p2x-scalar-u2.c",
+        "src/src/u8-rdminmax/gen/u8-rdmin-2p2x-scalar-u2.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]

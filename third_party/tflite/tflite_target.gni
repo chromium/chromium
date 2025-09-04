@@ -85,7 +85,8 @@ template("tflite_target_gen") {
       if (defined(invoker.conditional_deps)) {
         _adjusted_deps = []
         foreach(dep, invoker.conditional_deps) {
-          _adjusted_name = dep + type
+          _adjusted_name = get_label_info(dep, "dir") + ":" +
+                           get_label_info(dep, "name") + type
           _adjusted_deps += [ _adjusted_name ]
         }
         if (defined(deps)) {
@@ -97,7 +98,8 @@ template("tflite_target_gen") {
       if (defined(invoker.conditional_public_deps)) {
         _adjusted_deps = []
         foreach(dep, invoker.conditional_public_deps) {
-          _adjusted_name = dep + type
+          _adjusted_name = get_label_info(dep, "dir") + ":" +
+                           get_label_info(dep, "name") + type
           _adjusted_deps += [ _adjusted_name ]
         }
         if (defined(public_deps)) {
