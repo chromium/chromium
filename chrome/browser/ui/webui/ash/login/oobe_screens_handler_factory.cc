@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
+#include "chrome/browser/ash/login/screens/fjord_station_setup_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 #include "chrome/browser/ash/login/screens/gemini_intro_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_station_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
@@ -86,6 +88,15 @@ void OobeScreensHandlerFactory::EstablishDrivePinningScreenPipe(
           .GetScreen<DrivePinningScreen>();
   drive_pinning->BindPageHandlerReceiver(std::move(receiver));
   drive_pinning->PassPagePendingReceiverWithCallback(std::move(callback));
+}
+
+void OobeScreensHandlerFactory::EstablishFjordStationSetupScreenPipe(
+    mojo::PendingReceiver<screens_common::mojom::FjordStationSetupPageHandler>
+        receiver) {
+  FjordStationSetupScreen* station_setup =
+      CHECK_DEREF(WizardController::default_controller())
+          .GetScreen<FjordStationSetupScreen>();
+  station_setup->BindPageHandlerReceiver(std::move(receiver));
 }
 
 void OobeScreensHandlerFactory::EstablishGaiaInfoScreenPipe(

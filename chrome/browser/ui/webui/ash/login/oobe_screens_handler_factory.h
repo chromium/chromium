@@ -47,6 +47,10 @@ class OobeScreensHandlerFactory
           receiver,
       EstablishDrivePinningScreenPipeCallback callback) override;
 
+  void EstablishFjordStationSetupScreenPipe(
+      mojo::PendingReceiver<screens_common::mojom::FjordStationSetupPageHandler>
+          receiver) override;
+
   void EstablishGaiaInfoScreenPipe(
       mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
           receiver,

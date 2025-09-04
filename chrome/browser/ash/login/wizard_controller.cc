@@ -1031,7 +1031,9 @@ WizardController::CreateScreens() {
     append(std::make_unique<FjordTouchControllerScreen>(
         oobe_ui->GetView<FjordTouchControllerScreenHandler>()->AsWeakPtr()));
     append(std::make_unique<FjordStationSetupScreen>(
-        oobe_ui->GetView<FjordStationSetupScreenHandler>()->AsWeakPtr()));
+        oobe_ui->GetView<FjordStationSetupScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnFjordStationSetupScreenExit,
+                            weak_factory_.GetWeakPtr())));
   }
 
   return result;
@@ -2881,6 +2883,17 @@ void WizardController::OnAppLaunchSplashScreenExit() {
   NOTIMPLEMENTED();
 }
 
+void WizardController::OnFjordStationSetupScreenExit() {
+  OnScreenExit(FjordStationSetupScreenView::kScreenId, kDefaultExitReason);
+  auto app = KioskController::Get().GetAutoLaunchApp();
+  if (app.has_value()) {
+    AutoLaunchKioskApp(app.value());
+    return;
+  }
+
+  NOTREACHED() << "Expected a kiosk app to be available";
+}
+
 void WizardController::OnOobeFlowFinished() {
   if (GetLoginDisplayHost()
           ->GetWizardContext()
@@ -3311,7 +3324,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == ThemeSelectionScreenView::kScreenId ||
              screen_id == SamlConfirmPasswordView::kScreenId ||
              screen_id == LocalStateErrorScreenView::kScreenId ||
-             screen_id == QuickStartView::kScreenId) {
+             screen_id == QuickStartView::kScreenId ||
+             screen_id == FjordStationSetupScreenView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();
