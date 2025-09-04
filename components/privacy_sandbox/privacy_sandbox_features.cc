@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 #include "base/feature_list.h"
@@ -11,7 +9,7 @@
 namespace privacy_sandbox {
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(PrivacySandboxAdsNoticeCCT, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacySandboxAdsNoticeCCT, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPrivacySandboxAdsNoticeCCTAppIdName[] = "app-id";
 const char kAndroidGoogleSearchAppIdName[] =
@@ -22,7 +20,7 @@ const base::FeatureParam<std::string> kPrivacySandboxAdsNoticeCCTAppId{
     kAndroidGoogleSearchAppIdName};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(PrivacySandboxSettings4, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacySandboxSettings4, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPrivacySandboxSettings4ConsentRequiredName[] = "consent-required";
 const char kPrivacySandboxSettings4NoticeRequiredName[] = "notice-required";
@@ -73,76 +71,77 @@ const base::FeatureParam<bool>
         &kPrivacySandboxSettings4, "suppress-dialog-for-external-app-launches",
         true};
 
-BASE_FEATURE(OverridePrivacySandboxSettingsLocalTesting,
+BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(DisablePrivacySandboxPrompts, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisablePrivacySandboxPrompts, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(EnforcePrivacySandboxAttestations,
+BASE_FEATURE(kEnforcePrivacySandboxAttestations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(DefaultAllowPrivacySandboxAttestations,
+BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-BASE_FEATURE(DefaultAllowPrivacySandboxAttestations,
+BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 const char kPrivacySandboxEnrollmentOverrides[] =
     "privacy-sandbox-enrollment-overrides";
 
-BASE_FEATURE(AttributionDebugReportingCookieDeprecationTesting,
+BASE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(PrivacySandboxAttestationsLoadFromAPKAsset,
+BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(PrivateAggregationDebugReportingCookieDeprecationTesting,
+BASE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(PrivateAggregationDebugReportingIgnoreSiteExceptions,
+BASE_FEATURE(kPrivateAggregationDebugReportingIgnoreSiteExceptions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(PrivacySandboxInternalsDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacySandboxInternalsDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(RelatedWebsiteSetsDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRelatedWebsiteSetsDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(FingerprintingProtectionUx, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFingerprintingProtectionUx, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(IpProtectionUx, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIpProtectionUx, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(ActUserBypassUx, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kActUserBypassUx, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(TrackingProtectionContentSettingIn3pcUx,
+BASE_FEATURE(kTrackingProtectionContentSettingIn3pcUx,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(TrackingProtectionContentSettingFor3pcb,
+BASE_FEATURE(kTrackingProtectionContentSettingFor3pcb,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(RelatedWebsiteSetsUi, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRelatedWebsiteSetsUi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(TrackingProtectionUserBypassPwa,
+BASE_FEATURE(kTrackingProtectionUserBypassPwa,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(TrackingProtectionUserBypassPwaTrigger,
+BASE_FEATURE(kTrackingProtectionUserBypassPwaTrigger,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(DisplayWildcardInContentSettings,
+BASE_FEATURE(kDisplayWildcardInContentSettings,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(PsDualWritePrefsToNoticeStorage, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(PrivateStateTokensDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivateStateTokensDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(PrivacySandboxGetPromptFromNoticeService,
+BASE_FEATURE(kPrivacySandboxGetPromptFromNoticeService,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(PrivacySandboxActivityTypeStorage,
+BASE_FEATURE(kPrivacySandboxActivityTypeStorage,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPrivacySandboxActivityTypeStorageLastNLaunchesName[] =
@@ -167,24 +166,24 @@ const base::FeatureParam<bool>
         &kPrivacySandboxActivityTypeStorage,
         kPrivacySandboxActivityTypeStorageSkipPreFirstTabName, false};
 
-BASE_FEATURE(PrivacySandboxAdTopicsContentParity,
+BASE_FEATURE(kPrivacySandboxAdTopicsContentParity,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(PrivacySandboxNoticeQueue, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacySandboxNoticeQueue, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(PrivacySandboxSentimentSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacySandboxSentimentSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPrivacySandboxSentimentSurveyTriggerId{
     &kPrivacySandboxSentimentSurvey, "sentiment-survey-trigger-id", ""};
 
-BASE_FEATURE(PrivacySandboxAdsApiUxEnhancements,
+BASE_FEATURE(kPrivacySandboxAdsApiUxEnhancements,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(PrivacySandboxAllowPromptForBlocked3PCookies,
+BASE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(PrivacySandboxMigratePrefsToSchemaV2,
+BASE_FEATURE(kPrivacySandboxMigratePrefsToSchemaV2,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(PrivacySandboxNoticeFramework, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacySandboxNoticeFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace privacy_sandbox

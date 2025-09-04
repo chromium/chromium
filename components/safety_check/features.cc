@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "components/safety_check/features.h"
 
 #include "base/feature_list.h"
 
 namespace safety_check::features {
 
-BASE_FEATURE(SafetyHub, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSafetyHub, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Time between automated runs of the password check.
 const base::FeatureParam<base::TimeDelta> kBackgroundPasswordCheckInterval{
