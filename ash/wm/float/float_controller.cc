@@ -472,6 +472,9 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver,
       last_maximum_size_ = widget->GetMaximumSize();
     }
   }
+  void OnWidgetDestroyed(views::Widget* widget) override {
+    floated_widget_observation_.Reset();
+  }
 
  private:
   // Called when the floated window's resizability or size constraints changed.
