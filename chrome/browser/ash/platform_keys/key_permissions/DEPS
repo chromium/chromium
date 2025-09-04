@@ -20,10 +20,15 @@ include_rules = [
   "+chrome/browser/ash/platform_keys",
   "+chrome/browser/ash/profiles",
   "+chrome/test/base/ash/scoped_test_system_nss_key_slot_mixin.h",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "key_permissions_manager_browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ]
+}

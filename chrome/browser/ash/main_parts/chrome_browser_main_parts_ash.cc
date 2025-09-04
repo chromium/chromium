@@ -788,7 +788,8 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
       std::make_unique<SystemTokenCertDBInitializer>();
 
   system_token_key_permissions_manager_ = platform_keys::
-      KeyPermissionsManagerImpl::CreateSystemTokenKeyPermissionsManager();
+      KeyPermissionsManagerImpl::CreateSystemTokenKeyPermissionsManager(
+          g_browser_process->local_state());
 
   mojo::PendingRemote<media_session::mojom::MediaControllerManager>
       media_controller_manager;

@@ -113,8 +113,10 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
 
   // Used by `ChromeBrowserMainPartsAsh` to create a system-wide key
   // permissions manager instance.
+  // `local_state` must be non-null, and must be valid until
+  // `KeyPermissionsManager::Shutdown` is called.
   static std::unique_ptr<KeyPermissionsManager>
-  CreateSystemTokenKeyPermissionsManager();
+  CreateSystemTokenKeyPermissionsManager(PrefService* local_state);
 
   // Registers system-wide prefs.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
