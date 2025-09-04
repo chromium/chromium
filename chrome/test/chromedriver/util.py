@@ -315,6 +315,20 @@ def WriteResultToJSONFile(test_suites, results, json_path):
 
 
 def TryUploadingResultToResultSink(results):
+  def _create_test_id_struct_dict(test_id):
+    struct_test_dict = {
+        'coarseName': None,
+        'fineName': None,
+        'caseNameComponents': None,
+    }
+
+    test_split = test_id.rsplit('.', 2)
+    if len(test_split) == 3:
+      struct_test_dict['coarseName'] =  test_split[0]
+      struct_test_dict['fineName'] =  test_split[1]
+      struct_test_dict['caseNameComponents'] = [test_split[2]]
+
+    return struct_test_dict
 
   def parse(result):
     test_results = []
@@ -323,6 +337,7 @@ def TryUploadingResultToResultSink(results):
           'testId': test_case.id(),
           'expected': True,
           'status': 'PASS',
+          'testIdStructured': _create_test_id_struct_dict(test_case.id()),
       })
 
     for (test_case, stack_trace) in result.failures + result.errors:
@@ -333,6 +348,7 @@ def TryUploadingResultToResultSink(results):
           # Uses <text-artifact> tag to embed the artifact content
           # in summaryHtml.
           'summaryHtml': '<p><text-artifact artifact-id="stack_trace"></p>',
+          'testIdStructured': _create_test_id_struct_dict(test_case.id()),
           # A map of artifacts. The keys are artifact ids which uniquely
           # identify an artifact within the test result.
           'artifacts': {
