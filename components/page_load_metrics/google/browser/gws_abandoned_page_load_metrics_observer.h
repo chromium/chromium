@@ -16,8 +16,8 @@ extern const char kSuffixWasNonSRP[];
 
 extern const char kGwsAFTStartMarkName[];
 extern const char kGwsAFTEndMarkName[];
-extern const char kGwsHeaderChunkStartMarkName[];
-extern const char kGwsHeaderChunkEndMarkName[];
+extern const char kGwsHeadChunkStartMarkName[];
+extern const char kGwsHeadChunkEndMarkName[];
 extern const char kGwsBodyChunkStartMarkName[];
 extern const char kGwsBodyChunkEndMarkName[];
 }  // namespace internal

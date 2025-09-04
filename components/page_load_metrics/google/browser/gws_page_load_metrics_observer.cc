@@ -82,9 +82,9 @@ const char kHistogramGWSConnectTimingFinalRequestSslDelay[] =
 
 const char kHistogramGWSAFTEnd[] = HISTOGRAM_PREFIX "PaintTiming.AFTEnd2";
 const char kHistogramGWSAFTStart[] = HISTOGRAM_PREFIX "PaintTiming.AFTStart2";
-const char kHistogramGWSHeaderChunkStart[] =
+const char kHistogramGWSHeadChunkStart[] =
     HISTOGRAM_PREFIX "PaintTiming.HeaderChunkStart2";
-const char kHistogramGWSHeaderChunkEnd[] =
+const char kHistogramGWSHeadChunkEnd[] =
     HISTOGRAM_PREFIX "PaintTiming.HeaderChunkEnd2";
 const char kHistogramGWSBodyChunkStart[] =
     HISTOGRAM_PREFIX "PaintTiming.BodyChunkStart2";
@@ -505,12 +505,12 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
     } else if (mark->mark_name == internal::kGwsAFTEndMarkName) {
       record_histogram(internal::kHistogramGWSAFTEnd, timing);
       aft_end_time_ = mark->start_time;
-    } else if (mark->mark_name == internal::kGwsHeaderChunkStartMarkName) {
-      record_histogram(internal::kHistogramGWSHeaderChunkStart, timing);
-      header_chunk_start_time_ = mark->start_time;
-    } else if (mark->mark_name == internal::kGwsHeaderChunkEndMarkName) {
-      record_histogram(internal::kHistogramGWSHeaderChunkEnd, timing);
-      header_chunk_end_time_ = mark->start_time;
+    } else if (mark->mark_name == internal::kGwsHeadChunkStartMarkName) {
+      record_histogram(internal::kHistogramGWSHeadChunkStart, timing);
+      head_chunk_start_time_ = mark->start_time;
+    } else if (mark->mark_name == internal::kGwsHeadChunkEndMarkName) {
+      record_histogram(internal::kHistogramGWSHeadChunkEnd, timing);
+      head_chunk_end_time_ = mark->start_time;
     } else if (mark->mark_name == internal::kGwsBodyChunkStartMarkName) {
       record_histogram(internal::kHistogramGWSBodyChunkStart, timing);
       body_chunk_start_time_ = mark->start_time;
@@ -817,27 +817,27 @@ void GWSPageLoadMetricsObserver::RecordLatencyHistograms(
                body_chunk_start_time_.value() - response_start_time;
     PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSSCT, sct_time.value());
   }
-  if (header_chunk_end_time_.has_value()) {
+  if (head_chunk_end_time_.has_value()) {
     TRACE_EVENT_BEGIN("navigation", "GWSLatency:HCT", track,
                       response_start_time);
     TRACE_EVENT_END(
         "navigation", /* GWSLatency:HCT */
         track,
-        GetDelegate().GetNavigationStart() + header_chunk_end_time_.value());
+        GetDelegate().GetNavigationStart() + head_chunk_end_time_.value());
     hct_time = GetDelegate().GetNavigationStart() +
-               header_chunk_end_time_.value() - response_start_time;
+               head_chunk_end_time_.value() - response_start_time;
     PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHCT, hct_time.value());
   }
-  if (header_chunk_start_time_.has_value()) {
+  if (head_chunk_start_time_.has_value()) {
     TRACE_EVENT_BEGIN("navigation", "GWSLatency:HST", track,
                       response_start_time);
     TRACE_EVENT_END(
         "navigation", /* GWSLatency:HST */
         track,
-        GetDelegate().GetNavigationStart() + header_chunk_start_time_.value());
+        GetDelegate().GetNavigationStart() + head_chunk_start_time_.value());
     PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHST,
                         GetDelegate().GetNavigationStart() +
-                            header_chunk_start_time_.value() -
+                            head_chunk_start_time_.value() -
                             response_start_time);
   }
   if (sct_time.has_value() && hct_time.has_value()) {
