@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/suggestions/autofill_ai/autofill_ai_suggestion_generator.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <string>
@@ -111,11 +112,19 @@ DenseSet<AttributeType> FindAttributesForField(
 }
 
 // Returns a suggestion to manage AutofillAi data.
-Suggestion CreateManageSuggestion() {
+Suggestion CreateManageSuggestion(
+    base::span<const EntityInstance> entities_to_suggest) {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT),
       SuggestionType::kManageAutofillAi);
   suggestion.icon = Suggestion::Icon::kSettings;
+  if (std::ranges::any_of(entities_to_suggest,
+                          [](const EntityInstance& entity) {
+                            return entity.record_type() ==
+                                   EntityInstance::RecordType::kServerWallet;
+                          })) {
+    suggestion.trailing_icon = Suggestion::Icon::kGoogleWallet;
+  }
   return suggestion;
 }
 
@@ -130,6 +139,7 @@ Suggestion CreateUndoSuggestion() {
 }
 
 std::vector<Suggestion> GetFooterSuggestions(
+    base::span<const EntityInstance> entities_to_suggest,
     const FormFieldData& trigger_field) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(3);
@@ -138,7 +148,7 @@ std::vector<Suggestion> GetFooterSuggestions(
   if (trigger_field.is_autofilled()) {
     suggestions.emplace_back(CreateUndoSuggestion());
   }
-  suggestions.emplace_back(CreateManageSuggestion());
+  suggestions.emplace_back(CreateManageSuggestion(entities_to_suggest));
   return suggestions;
 }
 
@@ -442,7 +452,8 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
                                                  std::move(label), app_locale));
   }
 
-  base::Extend(suggestions, GetFooterSuggestions(trigger_field_data));
+  base::Extend(suggestions,
+               GetFooterSuggestions(entities_to_suggest, trigger_field_data));
   return suggestions;
 }
 
