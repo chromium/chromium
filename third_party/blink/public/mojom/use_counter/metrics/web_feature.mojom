@@ -4966,8 +4966,8 @@ enum WebFeature {
   kAbsposPositionTryFallbacksChange = 5655,
   kMulticastControllerJoinGroupFunction = 5656,
   kMulticastControllerLeaveGroupFunction = 5657,
-  kMulticastControllerJoinedGroupsAttribute = 5658
-
+  kMulticastControllerJoinedGroupsAttribute = 5658,
+  kContainerNameQueryFailedTreeScope = 5659,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

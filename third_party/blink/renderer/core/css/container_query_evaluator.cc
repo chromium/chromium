@@ -66,6 +66,13 @@ bool NameMatches(const ComputedStyle& style,
             return true;
           }
         }
+        // Keeping the TreeScope matching above to be able to count when this
+        // is a behavioral change.
+        selector_tree_scope->GetDocument().CountUse(
+            WebFeature::kContainerNameQueryFailedTreeScope);
+        if (RuntimeEnabledFeatures::CSSContainerNameNotTreeScopedEnabled()) {
+          return true;
+        }
       }
     }
   }
