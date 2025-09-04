@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -674,7 +676,42 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
 
     // Bookmark leaves are web pages and not folders. They do not have any children (sub menu
     // items).
+    @SuppressLint("ClickableViewAccessibility")
     private ListItem createListItemForBookmarkLeaf(BookmarkItem bookmarkItem) {
+        // Handles all pointer-based input (mouse clicks, touch taps) to support both
+        // simple clicks and Ctrl+clicks in one place. Because this listener handles the
+        // action directly, a separate OnClickListener is not needed.
+        // We return true to consume the event, which prevents any other listeners from
+        // firing and allows us to suppress the "performClick" lint warning.
+        View.OnTouchListener touchListener =
+                (v, event) -> {
+                    // We only act when the user lifts their finger/mouse button.
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        boolean isCtrlPressed = (event.getMetaState() & KeyEvent.META_CTRL_ON) != 0;
+
+                        if (isCtrlPressed) {
+                            // Open in new tab.
+                            mBookmarkOpener.openBookmarksInNewTabs(
+                                    List.of(bookmarkItem.getId()),
+                                    mProfileSupplier.get().isOffTheRecord(),
+                                    Optional.of(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+                        } else {
+                            // Default behavior (open in current tab).
+                            mBookmarkOpener.openBookmarkInCurrentTab(
+                                    bookmarkItem.getId(), mProfileSupplier.get().isOffTheRecord());
+                        }
+
+                        // Dismiss the popup after any click.
+                        if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
+                        // It is critical that this listener returns true to consume the event. This
+                        // prevents the BasicListMenu's generic click handler from firing, which
+                        // would cause a crash because this item's model no longer has a
+                        // CLICK_LISTENER.
+                        return true;
+                    }
+                    return false;
+                };
+
         PropertyModel model =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
@@ -682,14 +719,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         .with(ListMenuItemProperties.IS_SUBTITLE_ELLIPSIZED_AT_END, true)
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuItemProperties.ENABLED, true)
-                        .with(
-                                ListMenuItemProperties.CLICK_LISTENER,
-                                (v) -> {
-                                    // Open url.
-                                    mBookmarkOpener.openBookmarkInCurrentTab(
-                                            bookmarkItem.getId(),
-                                            mProfileSupplier.get().isOffTheRecord());
-                                })
+                        .with(ListMenuItemProperties.TOUCH_LISTENER, touchListener)
                         .build();
         if (mImageFetcher != null) {
             mImageFetcher.fetchFaviconForBookmark(
@@ -768,16 +798,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
 
             if (bookmarkItem == null) return false;
 
-            // Specify isCtrlPressed because if it's just Enter we want to open in the current tab.
-            if (event.isCtrlPressed() && !bookmarkItem.isFolder()) {
-                // Open bookmark in new tab.
-                mBookmarkOpener.openBookmarksInNewTabs(
-                        List.of(bookmarkItem.getId()),
-                        mProfileSupplier.get().isOffTheRecord(),
-                        Optional.of(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
-                if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
-                return true;
-            } else if (bookmarkItem.isFolder()) {
+            if (bookmarkItem.isFolder()) {
                 // Get the pre-made "open submenu" click listener from the model.
                 View.OnClickListener clickListener =
                         model.get(ListMenuItemProperties.CLICK_LISTENER);
@@ -785,11 +806,24 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                     // Calls ListMenuUtils#onItemWithSubmenuClicked.
                     clickListener.onClick(view);
                 }
-                return true;
+            } else if (event.isCtrlPressed()) {
+                // Not a folder and ctrl pressed. Open bookmark in new tab.
+                mBookmarkOpener.openBookmarksInNewTabs(
+                        List.of(bookmarkItem.getId()),
+                        mProfileSupplier.get().isOffTheRecord(),
+                        Optional.of(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+                // Dismiss only when opening a bookmark (webpage) and not a folder.
+                if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
+            } else {
+                // Not a folder and ctrl not pressed. This is a plain enter key press. Open bookmark
+                // in current tab,
+                mBookmarkOpener.openBookmarkInCurrentTab(
+                        bookmarkItem.getId(), mProfileSupplier.get().isOffTheRecord());
+                // Dismiss only when opening a bookmark (webpage) and not a folder.
+                if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
             }
-            // Plain Enter key press when bookmarkItem is not a folder. Default behavior (open
-            // webpage in current tab) takes over.
-            return false;
+            // Always consume the event to prevent fallback.
+            return true;
         };
     }
 

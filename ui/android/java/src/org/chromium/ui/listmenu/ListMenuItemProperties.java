@@ -81,6 +81,9 @@ public class ListMenuItemProperties {
     public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<View.OnTouchListener> TOUCH_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS = {
         TITLE_ID,
         TITLE,
@@ -101,6 +104,7 @@ public class ListMenuItemProperties {
         TEXT_APPEARANCE_ID,
         IS_TEXT_ELLIPSIZED_AT_END,
         KEEP_START_ICON_SPACING_WHEN_HIDDEN,
-        KEY_LISTENER
+        KEY_LISTENER,
+        TOUCH_LISTENER
     };
 }

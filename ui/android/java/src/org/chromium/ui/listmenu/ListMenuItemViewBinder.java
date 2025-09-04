@@ -149,6 +149,8 @@ public class ListMenuItemViewBinder {
             }
         } else if (propertyKey == ListMenuItemProperties.KEY_LISTENER) {
             view.setOnKeyListener(model.get(ListMenuItemProperties.KEY_LISTENER));
+        } else if (propertyKey == ListMenuItemProperties.TOUCH_LISTENER) {
+            view.setOnTouchListener(model.get(ListMenuItemProperties.TOUCH_LISTENER));
         } else {
             assert false : "Supplied propertyKey not implemented in ListMenuItemProperties.";
         }
