@@ -680,6 +680,10 @@ void SqlBackendImpl::HandleOnExternalCacheHitOperation(
           .Then(DoNothingWithBoundHandle(std::move(handle))));
 }
 
+void SqlBackendImpl::OnBrowserIdle() {
+  store_->MaybeRunCheckpoint(base::DoNothing());
+}
+
 void SqlBackendImpl::OnOptionalEntryOperationFinished(
     const CacheEntryKey& key,
     EntryResultCallback callback,

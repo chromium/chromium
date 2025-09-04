@@ -1387,6 +1387,19 @@ void NetworkContext::ComputeHttpCacheSize(
                      base::Unretained(this), std::move(callback))));
 }
 
+void NetworkContext::NotifyBrowserIdle() {
+  net::HttpCache* htp_cache =
+      url_request_context_->http_transaction_factory()->GetCache();
+  if (!htp_cache) {
+    return;
+  }
+  disk_cache::Backend* backend = htp_cache->GetCurrentBackend();
+  if (!backend) {
+    return;
+  }
+  backend->OnBrowserIdle();
+}
+
 void NetworkContext::ClearCorsPreflightCache(
     mojom::ClearDataFilterPtr filter,
     ClearCorsPreflightCacheCallback callback) {
