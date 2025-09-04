@@ -53,6 +53,7 @@ static_library("scalable_iph") {
     "//chrome/browser/feature_engagement",
     "//chrome/browser/signin",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/scalable_iph:buildflags",
     "//chromeos/ash/resources",
     "//chromeos/ash/resources:resources_grit",
