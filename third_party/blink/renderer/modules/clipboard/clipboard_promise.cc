@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_unsanitized_formats.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_read_options.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
@@ -107,7 +107,7 @@ class ClipboardPromise::ClipboardItemDataPromiseReject final
 ScriptPromise<IDLSequence<ClipboardItem>> ClipboardPromise::CreateForRead(
     ExecutionContext* context,
     ScriptState* script_state,
-    ClipboardUnsanitizedFormats* formats,
+    ClipboardReadOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     return ScriptPromise<IDLSequence<ClipboardItem>>();
@@ -118,7 +118,7 @@ ScriptPromise<IDLSequence<ClipboardItem>> ClipboardPromise::CreateForRead(
   auto promise = resolver->Promise();
   ClipboardPromise* clipboard_promise = MakeGarbageCollected<ClipboardPromise>(
       context, resolver, exception_state);
-  clipboard_promise->HandleRead(formats);
+  clipboard_promise->HandleRead(options);
   return promise;
 }
 
@@ -242,11 +242,12 @@ void ClipboardPromise::RejectFromReadOrDecodeFailure() {
               "."}));
 }
 
-void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
+void ClipboardPromise::HandleRead(ClipboardReadOptions* options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (formats && formats->hasUnsanitized() && !formats->unsanitized().empty()) {
-    Vector<String> unsanitized_formats = formats->unsanitized();
+  if (options && options->hasUnsanitized() &&
+      !options->unsanitized()->empty()) {
+    Vector<String> unsanitized_formats = *options->unsanitized();
     if (unsanitized_formats.size() > 1) {
       script_promise_resolver_->RejectWithDOMException(
           DOMExceptionCode::kNotAllowedError,

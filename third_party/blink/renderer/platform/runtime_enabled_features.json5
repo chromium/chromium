@@ -4388,6 +4388,11 @@
       status: "stable",
     },
     {
+      // See https://chromestatus.com/feature/5203433409871872
+      name: "SelectiveClipboardFormatRead",
+      status: "test",
+    },
+    {
       // See https://chromestatus.com/feature/4811835974615040
       name: "SelectivePermissionsIntervention",
       status: "experimental",

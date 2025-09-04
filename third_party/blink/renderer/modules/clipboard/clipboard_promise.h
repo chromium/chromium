@@ -31,7 +31,7 @@ class ClipboardWriter;
 class LocalFrame;
 class ExceptionState;
 class ExecutionContext;
-class ClipboardUnsanitizedFormats;
+class ClipboardReadOptions;
 
 // Represents a promise to execute Async Clipboard API functions off the main
 // thread. It handles read and write operations on the clipboard, including
@@ -51,7 +51,7 @@ class MODULES_EXPORT ClipboardPromise final
   static ScriptPromise<IDLSequence<ClipboardItem>> CreateForRead(
       ExecutionContext* execution_context,
       ScriptState* script_state,
-      ClipboardUnsanitizedFormats* formats,
+      ClipboardReadOptions* options,
       ExceptionState& exception_state);
 
   // Creates a promise for reading plain text from the clipboard.
@@ -120,7 +120,7 @@ class MODULES_EXPORT ClipboardPromise final
   void WriteNextRepresentation();
 
   // Checks Read/Write permission (interacting with `PermissionService`).
-  void HandleRead(ClipboardUnsanitizedFormats* formats);
+  void HandleRead(ClipboardReadOptions* options);
   void HandleReadText();
   void HandleWrite(const HeapVector<Member<ClipboardItem>>& items);
   void HandleWriteText(const String& text);

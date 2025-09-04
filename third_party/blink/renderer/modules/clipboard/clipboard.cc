@@ -37,7 +37,7 @@ Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
 ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
     ScriptState* script_state,
-    ClipboardUnsanitizedFormats* formats,
+    ClipboardReadOptions* options,
     ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
   LocalFrame* local_frame = window ? window->GetFrame() : nullptr;
@@ -47,7 +47,7 @@ ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
   }
 
   return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state,
-                                         formats, exception_state);
+                                         options, exception_state);
 }
 
 ScriptPromise<IDLString> Clipboard::readText(ScriptState* script_state,
