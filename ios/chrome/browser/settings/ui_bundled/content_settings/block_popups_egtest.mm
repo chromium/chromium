@@ -81,15 +81,7 @@ class ScopedBlockPopupsException {
 
 // Opens the block popups settings page and verifies that accessibility is set
 // up properly.
-// TODO(crbug.com/438657821): Flaky on device.
-#if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR
-#define MAYBE_testAccessibilityOfBlockPopupSettings \
-  FLAKY_testAccessibilityOfBlockPopupSettings
-#else
-#define MAYBE_testAccessibilityOfBlockPopupSettings \
-  testAccessibilityOfBlockPopupSettings
-#endif
-- (void)MAYBE_testAccessibilityOfBlockPopupSettings {
+- (void)testAccessibilityOfBlockPopupSettings {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:ContentSettingsButton()];
   [[EarlGrey selectElementWithMatcher:BlockPopupsSettingsButton()]
@@ -100,12 +92,14 @@ class ScopedBlockPopupsException {
       assertWithMatcher:grey_notNil()];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
-  // Disable EarlGrey synchronization to avoid infinite spinner loop.
-  ScopedSynchronizationDisabler disabler;
+  {
+    // Disable EarlGrey synchronization to avoid infinite spinner loop.
+    ScopedSynchronizationDisabler disabler;
 
-  // Close the settings menu.
-  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
-      performAction:grey_tap()];
+    // Close the settings menu.
+    [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
+        performAction:grey_tap()];
+  }
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
