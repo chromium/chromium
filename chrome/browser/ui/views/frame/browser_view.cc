@@ -2020,14 +2020,14 @@ void BrowserView::ZoomChangedForActiveTab(bool can_show_bubble) {
 
 gfx::Rect BrowserView::GetRestoredBounds() const {
   gfx::Rect bounds;
-  ui::mojom::WindowShowState state;
+  ui::mojom::WindowShowState state = ui::mojom::WindowShowState::kDefault;
   frame_->GetWindowPlacement(&bounds, &state);
   return bounds;
 }
 
 ui::mojom::WindowShowState BrowserView::GetRestoredState() const {
   gfx::Rect bounds;
-  ui::mojom::WindowShowState state;
+  ui::mojom::WindowShowState state = ui::mojom::WindowShowState::kDefault;
   frame_->GetWindowPlacement(&bounds, &state);
   return state;
 }
