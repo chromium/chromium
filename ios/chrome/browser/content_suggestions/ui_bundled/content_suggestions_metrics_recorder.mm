@@ -105,8 +105,10 @@ const float kMaxModuleEngagementIndex = 50;
           kMaxModuleEngagementIndex);
       break;
     case ContentSuggestionsModuleType::kAppBundlePromo:
-      // TODO(crbug.com/441721282): Add metrics collection for the app bundle
-      // promo.
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementAppBundlePromoIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kInvalid:
       break;

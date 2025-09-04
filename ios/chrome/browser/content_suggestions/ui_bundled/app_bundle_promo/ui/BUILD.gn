@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "app_bundle_promo_audience.h",
+    "app_bundle_promo_config.h",
+    "app_bundle_promo_config.mm",
+    "app_bundle_promo_view.h",
+    "app_bundle_promo_view.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/ui/resources",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
