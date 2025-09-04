@@ -1428,6 +1428,46 @@ public class TabArchiverTest {
         callbackHelper.waitForNext();
     }
 
+    @Test
+    @MediumTest
+    public void testPinnedTabsAreNotArchived() {
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    // Set the tab to expire after 1 hour to simplify testing.
+                    mTabArchiveSettings.setArchiveTimeDeltaHours(1);
+                });
+
+        // Set the clock to 1 hour after 0.
+        doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
+
+        // Get the tab and pin it.
+        Tab tab = runOnUiThreadBlocking(() -> mRegularTabModel.getTabAt(0));
+        runOnUiThreadBlocking(() -> tab.setIsPinned(true));
+
+        // Set the timestamp for the tab at 0, it should be archived.
+        runOnUiThreadBlocking(
+                () -> {
+                    ((TabImpl) tab).setTimestampMillisForTesting(0);
+                });
+
+        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
+
+        // The pinned tab should be skipped.
+        runOnUiThreadBlocking(
+                () ->
+                        mTabArchiver.doArchivePass(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelectorSupplier()
+                                        .get()));
+        CriteriaHelper.pollUiThread(() -> 2 == getTabCountOnUiThread(mRegularTabModel));
+        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
+    }
+
     private void addRegularTabInBackgroundForArchive(String path) {
         Tab tab =
                 mActivityTestRule.loadUrlInNewTab(

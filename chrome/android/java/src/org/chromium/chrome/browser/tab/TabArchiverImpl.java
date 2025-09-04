@@ -190,6 +190,11 @@ public class TabArchiverImpl implements TabArchiver {
                 continue;
             }
 
+            // Pinned tabs are never archived.
+            if (tab.getIsPinned()) {
+                continue;
+            }
+
             // Handle regular tabs and tab groups separately.
             if (tab.getTabGroupId() == null
                     && isTabEligibleForArchive(tabUrlToLastActiveTimestampMap, tab)) {
