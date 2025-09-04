@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -106,8 +107,14 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_EXTENSION& in) {
-  return out << "{" << Quoted(in.pwszExtensionIdentifier) << kSep
-             << base::HexEncode(in.pvExtension, in.cbExtension) << "}";
+  constexpr const wchar_t* kRedactedExtensions[] = {L"largeBlob", L"prf"};
+  out << "{" << Quoted(in.pwszExtensionIdentifier) << kSep;
+  if (base::Contains(kRedactedExtensions, in.pwszExtensionIdentifier)) {
+    out << "[redacted]";
+  } else {
+    out << base::HexEncode(in.pvExtension, in.cbExtension);
+  }
+  return out << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_EXTENSIONS& in) {
@@ -175,7 +182,7 @@ std::ostream& operator<<(
   }
   out << kSep << in.dwCredLargeBlobOperation << "(";
   if (in.cbCredLargeBlob) {
-    out << base::HexEncode(in.pbCredLargeBlob, in.cbCredLargeBlob) << ")";
+    out << "[redacted large blob]" << ")";
   } else {
     out << "null)";
   }
@@ -243,15 +250,15 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_ASSERTION& in) {
   out << "{" << in.dwVersion << kSep
       << base::HexEncode(in.pbAuthenticatorData, in.cbAuthenticatorData) << kSep
-      << base::HexEncode(in.pbSignature, in.cbSignature) << kSep
-      << in.Credential << kSep << base::HexEncode(in.pbUserId, in.cbUserId);
+      << "[redacted signature]" << kSep << in.Credential << kSep
+      << base::HexEncode(in.pbUserId, in.cbUserId);
   if (in.dwVersion < WEBAUTHN_ASSERTION_VERSION_2) {
     return out << "}";
   }
   out << in.Extensions;
   out << kSep << in.dwCredLargeBlobStatus << " (";
   if (in.pbCredLargeBlob) {
-    out << base::HexEncode(in.pbCredLargeBlob, in.cbCredLargeBlob) << ")";
+    out << "[redacted large blob]" << ")";
   } else {
     out << "null)";
   }
