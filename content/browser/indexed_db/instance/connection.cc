@@ -22,7 +22,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -65,22 +64,6 @@ static int32_t g_next_indexed_db_connection_id;
 
 const char kBadTransactionMode[] = "Bad transaction mode";
 const char kTransactionAlreadyExists[] = "Transaction already exists";
-
-std::string_view DisallowInactiveClientReasonToString(
-    storage::mojom::DisallowInactiveClientReason reason) {
-  using enum storage::mojom::DisallowInactiveClientReason;
-  switch (reason) {
-    case kVersionChangeEvent:
-      return "VersionChangeEvent";
-    case kTransactionIsAcquiringLocks:
-      return "TransactionIsAcquiringLocks";
-    case kTransactionIsStartingWhileBlockingOthers:
-      return "TransactionIsStartingWhileBlockingOthers";
-    case kTransactionIsOngoingAndBlockingOthers:
-      return "TransactionIsOngoingAndBlockingOthers";
-  }
-  NOTREACHED();
-}
 
 }  // namespace
 
@@ -178,11 +161,6 @@ void Connection::DisallowInactiveClient(
       "IndexedDB.ClientKeepActiveRemotesCount";
   size_t remotes_count = 0u;
   for (const auto& remote : client_keep_active_remotes_) {
-    base::UmaHistogramCounts1M(
-        base::JoinString({kClientKeepActiveRemotesCount,
-                          DisallowInactiveClientReasonToString(reason)},
-                         "."),
-        remote.is_bound() ? 1u : 0u);
     remotes_count += remote.is_bound() ? 1u : 0u;
   }
   base::UmaHistogramCounts1M(kClientKeepActiveRemotesCount, remotes_count);
