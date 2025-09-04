@@ -49,7 +49,7 @@ void MandatoryReauthBubbleControllerImpl::SetupAndShowBubble(
     base::OnceClosure accept_mandatory_reauth_callback,
     base::OnceClosure cancel_mandatory_reauth_callback,
     base::RepeatingClosure close_mandatory_reauth_callback) {
-  if (bubble_view()) {
+  if (bubble_view() || !MaySetUpBubble()) {
     return;
   }
 
@@ -59,7 +59,8 @@ void MandatoryReauthBubbleControllerImpl::SetupAndShowBubble(
   autofill_metrics::LogMandatoryReauthOptInBubbleOffer(
       autofill_metrics::MandatoryReauthOptInBubbleOffer::kShown,
       /*is_reshow=*/false);
-  ShowBubble();
+
+  QueueOrShowBubble();
 }
 
 void MandatoryReauthBubbleControllerImpl::SetupBubble(
@@ -99,7 +100,7 @@ void MandatoryReauthBubbleControllerImpl::ReshowBubble() {
         autofill_metrics::MandatoryReauthOptInConfirmationBubbleMetric::kShown);
   }
 
-  ShowBubble();
+  QueueOrShowBubble(/*force_show=*/true);
 }
 
 std::u16string MandatoryReauthBubbleControllerImpl::GetWindowTitle() const {
