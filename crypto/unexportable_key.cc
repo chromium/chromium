@@ -29,8 +29,10 @@ GetMicrosoftSoftwareUnexportableKeyProviderWin();
 std::unique_ptr<VirtualUnexportableKeyProvider>
 GetVirtualUnexportableKeyProviderWin();
 #elif BUILDFLAG(IS_MAC)
+namespace apple {
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
     UnexportableKeyProvider::Config config);
+}  // namespace apple
 #endif
 
 // Implemented in unexportable_key_software_unsecure.cc.
@@ -46,7 +48,7 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider(
 #if BUILDFLAG(IS_WIN)
   return GetUnexportableKeyProviderWin();
 #elif BUILDFLAG(IS_MAC)
-  return GetUnexportableKeyProviderMac(std::move(config));
+  return apple::GetUnexportableKeyProviderMac(std::move(config));
 #else
   return nullptr;
 #endif

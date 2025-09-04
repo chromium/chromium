@@ -9,7 +9,7 @@
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace crypto {
+namespace crypto::apple {
 
 namespace {
 
@@ -63,4 +63,4 @@ TEST_F(UnexportableKeyMacTest, GetSecKeyRef) {
 
 }  // namespace
 
-}  // namespace crypto
+}  // namespace crypto::apple

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CRYPTO_UNEXPORTABLE_KEY_MAC_H_
-#define CRYPTO_UNEXPORTABLE_KEY_MAC_H_
+#ifndef CRYPTO_APPLE_UNEXPORTABLE_KEY_MAC_H_
+#define CRYPTO_APPLE_UNEXPORTABLE_KEY_MAC_H_
 
 #include <memory>
 
@@ -13,7 +13,7 @@
 
 #include "crypto/unexportable_key.h"
 
-namespace crypto {
+namespace crypto::apple {
 
 // UserVerifyingKeyProviderMac is an implementation of the
 // UserVerifyingKeyProvider interface on top of Apple's Secure Enclave. Callers
@@ -67,6 +67,6 @@ class UnexportableKeyProviderMac : public UnexportableKeyProvider {
 std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
     UnexportableKeyProvider::Config config);
 
-}  // namespace crypto
+}  // namespace crypto::apple
 
-#endif  // CRYPTO_UNEXPORTABLE_KEY_MAC_H_
+#endif  // CRYPTO_APPLE_UNEXPORTABLE_KEY_MAC_H_

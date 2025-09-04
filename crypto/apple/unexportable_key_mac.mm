@@ -36,8 +36,8 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "crypto/apple/keychain_util.h"
 #include "crypto/apple/keychain_v2.h"
+#include "crypto/apple/unexportable_key_mac.h"
 #include "crypto/signature_verifier.h"
-#include "crypto/unexportable_key_mac.h"
 #include "crypto/unexportable_key_metrics.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -49,7 +49,7 @@
 using base::apple::CFToNSPtrCast;
 using base::apple::NSToCFPtrCast;
 
-namespace crypto {
+namespace crypto::apple {
 
 namespace {
 
@@ -385,4 +385,4 @@ std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
   return std::make_unique<UnexportableKeyProviderMac>(std::move(config));
 }
 
-}  // namespace crypto
+}  // namespace crypto::apple

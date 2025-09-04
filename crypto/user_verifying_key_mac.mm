@@ -22,8 +22,8 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/types/expected.h"
 #include "crypto/apple/keychain_v2.h"
+#include "crypto/apple/unexportable_key_mac.h"
 #include "crypto/unexportable_key.h"
-#include "crypto/unexportable_key_mac.h"
 
 namespace crypto {
 
@@ -112,8 +112,8 @@ DoGenerateKey(base::span<const SignatureVerifier::SignatureAlgorithm>
                   acceptable_algorithms,
               UnexportableKeyProvider::Config config,
               LAContext* lacontext) {
-  std::unique_ptr<UnexportableKeyProviderMac> key_provider =
-      GetUnexportableKeyProviderMac(std::move(config));
+  std::unique_ptr<apple::UnexportableKeyProviderMac> key_provider =
+      apple::GetUnexportableKeyProviderMac(std::move(config));
   if (!key_provider) {
     return base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError);
   }
@@ -131,8 +131,8 @@ base::expected<std::unique_ptr<UserVerifyingSigningKey>,
 DoGetKey(std::vector<uint8_t> wrapped_key,
          UnexportableKeyProvider::Config config,
          LAContext* lacontext) {
-  std::unique_ptr<UnexportableKeyProviderMac> key_provider =
-      GetUnexportableKeyProviderMac(std::move(config));
+  std::unique_ptr<apple::UnexportableKeyProviderMac> key_provider =
+      apple::GetUnexportableKeyProviderMac(std::move(config));
   if (!key_provider) {
     return base::unexpected(UserVerifyingKeyCreationError::kPlatformApiError);
   }
