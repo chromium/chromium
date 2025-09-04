@@ -45,6 +45,10 @@ enum class RequestIdUpdateMode {
   // i.e. just creating a new analytics id, but not storing it for future
   // updates.
   kOpenInNewTab = 6,
+  // Indicates that the request id should be modified for a page content
+  // request with a viewport screenshot, i.e. incrementing the sequence id,
+  // image sequence id, long context id, and creating a new analytics id.
+  kPageContentWithViewportRequest = 7,
 };
 
 // Manages creating lens overlay request IDs. Owned by a single Lens overlay

@@ -104,6 +104,27 @@ class ComposeboxQueryController {
     ~FileUploadStatusObserver() override = default;
   };
 
+  // Struct containing information about an individual network request.
+  // TODO(crbug.com/441351005): Make this struct private and rename it.
+  struct UploadRequest {
+   public:
+    UploadRequest();
+    ~UploadRequest();
+
+    // The time the request was sent.
+    base::Time start_time;
+    // The time the response was received.
+    base::Time response_time;
+    // The response code of the request. 0 if the response has not been
+    // received.
+    int response_code = 0;
+    // The request body to be sent to the server. Will be set asynchronously
+    // after StartFileUploadFlow() is called.
+    std::unique_ptr<lens::LensOverlayServerRequest> request_body;
+    // The endpoint fetcher used for the request.
+    std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher_;
+  };
+
   // Struct containing file information for a file upload.
   // TODO(crbug.com/441351005): Make this struct private and rename it.
   struct FileInfo {
@@ -135,9 +156,6 @@ class ComposeboxQueryController {
       return upload_error_type_;
     }
 
-    // Gets the server response code.
-    int GetResponseCode() const { return response_code_; }
-
     // Gets a pointer to the request ID for this request for testing.
     lens::LensOverlayRequestId* GetRequestIdForTesting() {
       return request_id_.get();
@@ -157,19 +175,6 @@ class ComposeboxQueryController {
     // The request ID for this request. Set by StartFileUploadFlow().
     std::unique_ptr<lens::LensOverlayRequestId> request_id_;
 
-    // When browser started the network request for the file upload.
-    base::Time upload_network_request_start_time_;
-
-    // When Lens server response was received.
-    base::Time server_response_time_;
-
-    // The network response code.
-    int response_code_ = 0;
-
-    // The request to be sent to the server. Will be set asynchronously after
-    // StartFileUploadFlow() is called.
-    std::unique_ptr<lens::LensOverlayServerRequest> file_upload_request_body_;
-
     // The headers to attach to the request. Will be set asynchronously after
     // StartFileUploadFlow() is called.
     std::unique_ptr<std::vector<std::string>> request_headers_;
@@ -179,9 +184,13 @@ class ComposeboxQueryController {
     std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
         file_upload_access_token_fetcher_;
 
-    // The endpoint fetcher used for the file upload request.
-    std::unique_ptr<endpoint_fetcher::EndpointFetcher>
-        file_upload_endpoint_fetcher_;
+    // The upload requests.
+    std::vector<std::unique_ptr<UploadRequest>> upload_requests_;
+
+    // The number of outstanding network requests. This is set in
+    // StartFileUploadFlow() and decremented when successful network responses
+    // are received.
+    size_t num_outstanding_network_requests_ = 0;
   };
 
   ComposeboxQueryController(
@@ -333,41 +342,43 @@ class ComposeboxQueryController {
       const SkBitmap& bitmap);
 #endif  // !BUILDFLAG(IS_IOS)
 
-  // Creates the request body proto and calls the callback with the request.
-  void CreateFileUploadRequestBodyAndContinue(
+  // Creates the request body protos for the file and viewport upload requests
+  // and calls the callbacks with the request.
+  void CreateUploadRequestBodiesAndContinue(
       const base::UnguessableToken& file_token,
       std::unique_ptr<lens::ContextualInputData> contextual_input_data,
-      std::optional<composebox::ImageEncodingOptions> options,
-      RequestBodyProtoCreatedCallback callback);
+      std::optional<composebox::ImageEncodingOptions> options);
 
-  // Asynchronous handler for when the file upload request body is ready.
-  void OnUploadFileRequestBodyReady(
-      const base::UnguessableToken& file_token,
-      lens::LensOverlayServerRequest request,
-      std::optional<FileUploadErrorType> error_type);
+  // Asynchronous handler for when an upload request body is ready.
+  void OnUploadRequestBodyReady(const base::UnguessableToken& file_token,
+                                size_t request_index,
+                                lens::LensOverlayServerRequest request,
+                                std::optional<FileUploadErrorType> error_type);
 
   // Asynchronous handler for when the request headers for uploading file and
   // viewport data are ready.
   void OnUploadRequestHeadersReady(const base::UnguessableToken& file_token,
                                    std::vector<std::string> headers);
 
-  // Sends the file upload request if the request body, headers, and cluster
+  // Sends the upload request if the request body, headers, and cluster
   // info are ready.
-  void MaybeSendFileUploadNetworkRequest(
-      const base::UnguessableToken& file_token);
+  void MaybeSendUploadNetworkRequest(const base::UnguessableToken& file_token,
+                                     size_t request_index);
 
-  // Creates the endpoint fetcher and sends the file upload network request.
-  void SendFileUploadNetworkRequest(FileInfo* file_infon);
+  // Creates the endpoint fetcher and sends the upload network request.
+  void SendUploadNetworkRequest(FileInfo* file_info, size_t request_index);
 
-  // Callback for when the file upload endpoint fetcher is created, storing it
+  // Callback for when an upload endpoint fetcher is created, storing it
   // updating the file info state.
-  void OnFileUploadEndpointFetcherCreated(
+  void OnUploadEndpointFetcherCreated(
       const base::UnguessableToken& file_token,
+      size_t request_index,
       std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher);
 
-  // Handles the response from the file upload request.
-  void HandleFileUploadResponse(
+  // Handles the response from an upload request.
+  void HandleUploadResponse(
       const base::UnguessableToken& file_token,
+      size_t request_index,
       std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Performs the fetch request.

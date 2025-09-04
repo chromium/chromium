@@ -215,7 +215,7 @@ class ComposeboxQueryControllerTest
       // be sent.
       EXPECT_EQ(controller().num_file_upload_requests_sent(), 0);
     } else {
-      EXPECT_EQ(controller().num_file_upload_requests_sent(), 1);
+      EXPECT_GT(controller().num_file_upload_requests_sent(), 0);
       EXPECT_THAT(GetGsessionIdFromUrl(controller().last_sent_fetch_url()),
                   testing::Optional(std::string(kTestServerSessionId)));
       // The file upload request should have the cors variations header.
@@ -743,6 +743,155 @@ TEST_F(ComposeboxQueryControllerTest, UploadPageContextPdfFileRequestSuccess) {
                 .server_address(),
             kTestServerAddress);
 }
+
+#if !BUILDFLAG(IS_IOS)
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPageContextPdfFileWithViewportRequestSuccess) {
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow with multiple context inputs and page
+  // context params.
+  GURL page_url = GURL("https://www.test.com");
+  std::string page_title = "Test Page";
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->page_url = page_url;
+  input_data->page_title = page_title;
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorRED);  // Fill with a solid color
+  input_data->viewport_screenshot = bitmap;
+  composebox::ImageEncodingOptions image_options{.max_size = 1000000,
+                                                 .max_height = 1000,
+                                                 .max_width = 1000,
+                                                 .compression_quality = 30};
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Get the file and viewport upload requests.
+  std::optional<lens::LensOverlayServerRequest> file_upload_request;
+  std::optional<lens::LensOverlayServerRequest> viewport_upload_request;
+  if (controller()
+          .recent_sent_upload_request(0)
+          ->objects_request()
+          .has_image_data()) {
+    EXPECT_FALSE(controller()
+                     .recent_sent_upload_request(1)
+                     ->objects_request()
+                     .has_image_data());
+    viewport_upload_request = controller().recent_sent_upload_request(0);
+    file_upload_request = controller().recent_sent_upload_request(1);
+  } else {
+    EXPECT_TRUE(controller()
+                    .recent_sent_upload_request(1)
+                    ->objects_request()
+                    .has_image_data());
+    file_upload_request = controller().recent_sent_upload_request(0);
+    viewport_upload_request = controller().recent_sent_upload_request(1);
+  }
+
+  // Validate the file upload request payload.
+  EXPECT_EQ(file_upload_request->objects_request()
+                .payload()
+                .content()
+                .content_data(0)
+                .content_type(),
+            lens::ContentData::CONTENT_TYPE_PDF);
+  EXPECT_EQ(file_upload_request->objects_request()
+                .payload()
+                .content()
+                .content_data(0)
+                .compression_type(),
+            kExpectedPdfCompressionType);
+  EXPECT_EQ(file_upload_request->objects_request()
+                .payload()
+                .content()
+                .webpage_title(),
+            page_title);
+  EXPECT_EQ(
+      file_upload_request->objects_request().payload().content().webpage_url(),
+      page_url.spec());
+  // Validate the viewport upload request payload.
+  EXPECT_EQ(viewport_upload_request->objects_request()
+                .image_data()
+                .image_metadata()
+                .width(),
+            100);
+  EXPECT_EQ(viewport_upload_request->objects_request()
+                .image_data()
+                .image_metadata()
+                .height(),
+            100);
+  // Check that the vsrid matches that for a pdf upload with viewport.
+  EXPECT_EQ(controller()
+                .GetFileInfo(file_token)
+                ->GetRequestIdForTesting()
+                ->sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .GetFileInfo(file_token)
+                ->GetRequestIdForTesting()
+                ->image_sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .GetFileInfo(file_token)
+                ->GetRequestIdForTesting()
+                ->long_context_id(),
+            1);
+  EXPECT_EQ(file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .sequence_id(),
+            1);
+  EXPECT_EQ(file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .image_sequence_id(),
+            1);
+  EXPECT_EQ(file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .long_context_id(),
+            1);
+  EXPECT_EQ(file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+  EXPECT_EQ(viewport_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .sequence_id(),
+            1);
+  EXPECT_EQ(viewport_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .image_sequence_id(),
+            1);
+  EXPECT_EQ(viewport_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .long_context_id(),
+            1);
+  EXPECT_EQ(viewport_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(ComposeboxQueryControllerTest, UploadInvalidMimeTypeFileRequestFailure) {
   // Act: Start the session.
