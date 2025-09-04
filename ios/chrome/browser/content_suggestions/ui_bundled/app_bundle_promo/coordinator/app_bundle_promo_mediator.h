@@ -42,6 +42,9 @@ class AppStoreBundleService;
 // Disconnects this mediator.
 - (void)disconnect;
 
+// Called when the promo is selected by the user.
+- (void)didSelectAppBundlePromo;
+
 // Removes the module from the Magic Stack on the current homepage without
 // disabling the underlying feature. This prevents the module from being shown
 // on the current homepage but does not affect its functionality elsewhere.

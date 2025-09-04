@@ -17,3 +17,17 @@ source_set("coordinator") {
 
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_bundle_promo_mediator_unittest.mm" ]
+
+  deps = [
+    ":coordinator",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/test/providers/app_store_bundle",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
