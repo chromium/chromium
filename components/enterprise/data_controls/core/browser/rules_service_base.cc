@@ -48,6 +48,17 @@ Verdict RulesServiceBase::GetCopyToOSClipboardVerdict(
                     });
 }
 
+Verdict RulesServiceBase::GetDownloadVerdict(const GURL& download_url) const {
+  return GetVerdict(Rule::Restriction::kFileDownload,
+                    {
+                        .source =
+                            {
+                                .url = download_url,
+                                .incognito = incognito_profile(),
+                            },
+                    });
+}
+
 Verdict RulesServiceBase::GetVerdict(Rule::Restriction restriction,
                                      const ActionContext& context) const {
   Rule::Level max_level = Rule::Level::kNotSet;

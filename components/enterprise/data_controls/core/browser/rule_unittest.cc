@@ -301,11 +301,9 @@ TEST(DataControlsRuleTest, InvalidConditions_Clipboard) {
       kTemplate, "", R"("or": {"sources": {"urls": ["or.is.not.a.dict"]}},)")));
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
 TEST(DataControlsRuleTest, InvalidConditions_FileDownload) {
   base::test::ScopedFeatureList scoped_feature_list{
-      kEnableDownloadDataControlsDesktop};
+      kEnableDownloadDataControls};
 
   // First parameter should be "sources", second one should be "destinations".
   constexpr char kTemplate[] = R"({
@@ -352,8 +350,6 @@ TEST(DataControlsRuleTest, InvalidConditions_FileDownload) {
   ASSERT_FALSE(MakeRule(base::StringPrintf(
       kTemplate, R"("or": {"sources": {"urls": ["or.is.not.a.dict"]}},)")));
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
 
 TEST(DataControlsRuleTest, ValidSourcesInvalidDestinationsConditions) {
   // Rules with a valid sources but invalid destinations should be created for
@@ -464,11 +460,9 @@ TEST(DataControlsRuleTest, Restrictions) {
             Rule::Level::kNotSet);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
 TEST(DataControlsRuleTest, FileDownloadRestriction) {
   base::test::ScopedFeatureList scoped_feature_list{
-      kEnableDownloadDataControlsDesktop};
+      kEnableDownloadDataControls};
 
   auto rule = MakeRule(R"({
     "name": "Block file downloads",
@@ -501,8 +495,6 @@ TEST(DataControlsRuleTest, FileDownloadRestriction) {
   ASSERT_EQ(rule->GetLevel(Rule::Restriction::kFileDownload, context),
             Rule::Level::kBlock);
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
 
 TEST(DataControlsRuleTest, Accessors) {
   auto rule = MakeRule(R"({
@@ -541,11 +533,9 @@ TEST(DataControlsRuleTest, ClipboardSourceUrls) {
             Rule::Level::kNotSet);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
 TEST(DataControlsRuleTest, FileDownloadSourceUrls) {
   base::test::ScopedFeatureList scoped_feature_list{
-      kEnableDownloadDataControlsDesktop};
+      kEnableDownloadDataControls};
 
   auto rule = MakeRule(R"({
     "name": "Block file downloads",
@@ -565,8 +555,6 @@ TEST(DataControlsRuleTest, FileDownloadSourceUrls) {
                            {.source = {.url = GURL("https://chrome.com")}}),
             Rule::Level::kNotSet);
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
 
 TEST(DataControlsRuleTest, DestinationUrls) {
   auto rule = MakeRule(R"({

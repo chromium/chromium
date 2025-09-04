@@ -104,15 +104,8 @@ policy::PolicyErrorPath CreateErrorPath(
 // the currently enabled features. If you have a Finch flag controlling whether
 // a type of restriction should be applied or not, check it here.
 bool IgnoreRestriction(Rule::Restriction restriction) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  if (restriction == Rule::Restriction::kFileDownload) {
-    return !base::FeatureList::IsEnabled(kEnableDownloadDataControlsDesktop);
-  }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
-
-  return false;
+  return restriction == Rule::Restriction::kFileDownload &&
+      !base::FeatureList::IsEnabled(kEnableDownloadDataControls);
 }
 
 }  // namespace

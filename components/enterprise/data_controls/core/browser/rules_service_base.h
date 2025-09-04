@@ -35,6 +35,9 @@ class RulesServiceBase : public KeyedService {
   // verdicts should trigger a dialog.
   Verdict GetCopyToOSClipboardVerdict(const GURL& source) const;
 
+  // Returns a verdict to be applied to a specific file download.
+  Verdict GetDownloadVerdict(const GURL& download_url) const;
+
  protected:
   // Returns a `Verdict` corresponding to all triggered Data Control rules given
   // the provided context.
