@@ -293,7 +293,7 @@ MediaKeySession* MediaKeys::createSession(
   //    implementation value does not support sessionType, throw a new
   //    DOMException whose name is NotSupportedError.
   WebEncryptedMediaSessionType session_type =
-      EncryptedMediaUtils::ConvertToSessionType(v8_session_type.AsString());
+      EncryptedMediaUtils::ConvertToSessionType(v8_session_type.AsStringView());
   if (!SessionTypeSupported(session_type)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Unsupported session type.");

@@ -324,7 +324,7 @@ void ScriptProcessorHandler::SetChannelCountMode(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         StrCat({"channelCountMode cannot be changed from 'explicit' to '",
-                V8ChannelCountMode(mode).AsString(), "'"}));
+                V8ChannelCountMode(mode).AsStringView(), "'"}));
   }
 }
 

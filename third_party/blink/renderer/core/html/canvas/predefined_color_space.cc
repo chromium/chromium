@@ -52,7 +52,7 @@ bool ValidateAndConvertColorSpace(const V8PredefinedColorSpace& v8_color_space,
   }
   if (!supported) {
     exception_state.ThrowTypeError(StrCat(
-        {"The provided value '", v8_color_space.AsString(),
+        {"The provided value '", v8_color_space.AsStringView(),
          "' is not a valid enum value of the type PredefinedColorSpace."}));
     return false;
   }

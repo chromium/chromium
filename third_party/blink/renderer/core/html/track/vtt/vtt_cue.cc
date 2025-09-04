@@ -66,7 +66,7 @@ bool ScanRun(VTTScanner& scanner, StringView str) {
 }
 
 bool ScanRun(VTTScanner& scanner, AlignSetting align) {
-  return ScanRun(scanner, V8AlignSetting(align).AsString());
+  return ScanRun(scanner, V8AlignSetting(align).AsStringView());
 }
 
 constexpr auto kDisplayWritingModeMap = std::to_array<CSSValueID>(

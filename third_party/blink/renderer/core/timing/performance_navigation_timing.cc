@@ -355,7 +355,7 @@ void PerformanceNavigationTiming::BuildJSONValue(
   builder.AddNumber("domComplete", domComplete());
   builder.AddNumber("loadEventStart", loadEventStart());
   builder.AddNumber("loadEventEnd", loadEventEnd());
-  builder.AddString("type", type().AsString());
+  builder.AddString("type", type().AsStringView());
   builder.AddNumber("redirectCount", redirectCount());
   builder.AddNumber(
       "activationStart",
@@ -377,7 +377,7 @@ void PerformanceNavigationTiming::BuildJSONValue(
   if (RuntimeEnabledFeatures::PerformanceNavigateSystemEntropyEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
     builder.AddString("systemEntropy",
-                      V8NavigationEntropy(GetSystemEntropy()).AsString());
+                      V8NavigationEntropy(GetSystemEntropy()).AsStringView());
   }
 
   if (RuntimeEnabledFeatures::PerformanceNavigationTimingConfidenceEnabled(

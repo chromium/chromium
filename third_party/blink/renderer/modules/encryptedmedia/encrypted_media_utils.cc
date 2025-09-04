@@ -58,7 +58,7 @@ String EncryptedMediaUtils::ConvertFromInitDataType(
 
 // static
 WebEncryptedMediaSessionType EncryptedMediaUtils::ConvertToSessionType(
-    const String& session_type) {
+    StringView session_type) {
   if (session_type == kTemporary)
     return WebEncryptedMediaSessionType::kTemporary;
   if (session_type == kPersistentLicense)

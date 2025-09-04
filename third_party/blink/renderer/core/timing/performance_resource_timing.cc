@@ -520,7 +520,7 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddString("nextHopProtocol", nextHopProtocol());
   if (RuntimeEnabledFeatures::RenderBlockingStatusEnabled()) {
     builder.AddString("renderBlockingStatus",
-                      renderBlockingStatus().AsString());
+                      renderBlockingStatus().AsStringView());
   }
   if (RuntimeEnabledFeatures::ResourceTimingContentTypeEnabled()) {
     builder.AddString("contentType", contentType());

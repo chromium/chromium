@@ -160,7 +160,7 @@ void AudioParam::setAutomationRate(const V8AutomationRate& rate,
         DOMExceptionCode::kInvalidStateError,
         StrCat({Handler().GetParamName(),
                 ".automationRate is fixed and cannot be changed to \"",
-                rate.AsString(), "\""}));
+                rate.AsStringView(), "\""}));
     return;
   }
 

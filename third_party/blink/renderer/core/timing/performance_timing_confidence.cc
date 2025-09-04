@@ -18,7 +18,7 @@ ScriptObject PerformanceTimingConfidence::toJSON(
   V8ObjectBuilder builder(script_state);
 
   builder.AddNumber("randomizedTriggerRate", randomizedTriggerRate());
-  builder.AddStringOrNull("value", value_.AsString());
+  builder.AddStringOrNull("value", value_.AsStringView());
   return builder.ToScriptObject();
 }
 

@@ -76,7 +76,7 @@ mojom::blink::MediaDeviceType MediaDeviceInfo::DeviceType() const {
 ScriptObject MediaDeviceInfo::toJSONForBinding(ScriptState* script_state) {
   V8ObjectBuilder result(script_state);
   result.AddString("deviceId", deviceId());
-  result.AddString("kind", kind().AsString());
+  result.AddString("kind", kind().AsStringView());
   result.AddString("label", label());
   result.AddString("groupId", groupId());
   return result.ToScriptObject();

@@ -174,7 +174,7 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         StrCat({"cannot startRendering when an OfflineAudioContext is ",
-                state().AsString()}));
+                state().AsStringView()}));
     return EmptyPromise();
   }
 

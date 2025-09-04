@@ -188,8 +188,8 @@ PerformanceEntryType PerformanceScriptTiming::EntryTypeEnum() const {
 void PerformanceScriptTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddString("invoker", invoker());
-  builder.AddString("invokerType", invokerType().AsString());
-  builder.AddString("windowAttribution", windowAttribution().AsString());
+  builder.AddString("invokerType", invokerType().AsStringView());
+  builder.AddString("windowAttribution", windowAttribution().AsStringView());
   builder.AddNumber("executionStart", executionStart());
   builder.AddNumber("forcedStyleAndLayoutDuration",
                     forcedStyleAndLayoutDuration());
