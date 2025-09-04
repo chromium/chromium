@@ -353,6 +353,11 @@ packager_builder(
                 "sdk_package_name": "system-images;android-36;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36/google_apis/x86_64.yaml",
             },
+            {
+                "sdk_package_name": "system-images;android-36.0-CANARY;google_apis;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36.0-CANARY/google_apis/x86_64.yaml",
+                "sdk_channel": "CANARY",
+            },
         ],
     },
 )
