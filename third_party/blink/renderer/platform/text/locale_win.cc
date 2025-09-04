@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"

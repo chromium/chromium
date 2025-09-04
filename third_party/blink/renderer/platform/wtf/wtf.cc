@@ -32,7 +32,6 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"

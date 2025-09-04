@@ -60,7 +60,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
