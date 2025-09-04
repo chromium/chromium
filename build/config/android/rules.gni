@@ -3212,7 +3212,7 @@ if (!is_robolectric && enable_java_templates) {
             _static_library_apk_path,
           ]
         }
-        data = []
+        data = [ _generated_script ]
         data_deps = [
           "//build/android:apk_operations_py",
           "//build/android:stack_tools",
