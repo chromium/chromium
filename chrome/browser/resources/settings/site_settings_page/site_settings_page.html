@@ -8,7 +8,8 @@
     }
   </style>
   <settings-subpage page-title="$i18n{siteSettings}"
-      learn-more-url="$i18n{exceptionsLearnMoreURL}">
+      learn-more-url="$i18n{exceptionsLearnMoreURL}"
+      route-path$="[[routePath]]">
     <template is="dom-if" if="[[showUnusedSitePermissions_]]">
       <div class="cr-row first">
         <h2>$i18n{safetyHub}</h2>

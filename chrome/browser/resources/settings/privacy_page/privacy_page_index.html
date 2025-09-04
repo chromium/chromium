@@ -33,7 +33,8 @@
         routes_.SAFETY_HUB, currentRoute, inSearchMode)]]">
       <!-- TODO(crbug.com/40267370): Make the page searchable.-->
       <settings-safety-hub-page slot="view" id="safetyHub" no-search
-          data-parent-view-id="safetyHubEntryPoint" prefs="{{prefs}}">
+          data-parent-view-id="safetyHubEntryPoint" prefs="{{prefs}}"
+          route-path$="[[routes_.SAFETY_HUB.path]]">
       </settings-safety-hub-page>
     </template>
   </template>
@@ -50,7 +51,8 @@
     <template is="dom-if" if="[[renderView_(
         routes_.PRIVACY_SANDBOX, currentRoute, inSearchMode)]]">
       <settings-privacy-sandbox-page slot="view" id="privacySandbox"
-          data-parent-view-id="old" prefs="{{prefs}}">
+          data-parent-view-id="old" prefs="{{prefs}}"
+          route-path$="[[routes_.PRIVACY_SANDBOX.path]]">
       </settings-privacy-sandbox-page>
     </template>
 
@@ -58,7 +60,8 @@
         routes_.PRIVACY_SANDBOX_AD_MEASUREMENT, currentRoute, inSearchMode)]]">
       <settings-privacy-sandbox-ad-measurement-subpage slot="view"
           id="privacySandboxAdMeasurement" data-parent-view-id="old"
-          prefs="{{prefs}}">
+          prefs="{{prefs}}"
+          route-path$="[[routes_.PRIVACY_SANDBOX_AD_MEASUREMENT.path]]">
       </settings-privacy-sandbox-ad-measurement-subpage>
     </template>
   </template>
@@ -67,14 +70,16 @@
     <template is="dom-if" if="[[renderView_(
         routes_.PRIVACY_SANDBOX_FLEDGE, currentRoute, inSearchMode)]]">
       <settings-privacy-sandbox-fledge-subpage slot="view"
-          id="privacySandboxFledge" data-parent-view-id="old" prefs="{{prefs}}">
+          id="privacySandboxFledge" data-parent-view-id="old" prefs="{{prefs}}"
+          route-path$="[[routes_.PRIVACY_SANDBOX_FLEDGE.path]]">
       </settings-privacy-sandbox-fledge-subpage>
     </template>
 
     <template is="dom-if" if="[[renderView_(
           routes_.PRIVACY_SANDBOX_TOPICS, currentRoute, inSearchMode)]]">
       <settings-privacy-sandbox-topics-subpage slot="view"
-          id="privacySandboxTopics" data-parent-view-id="old" prefs="{{prefs}}">
+          id="privacySandboxTopics" data-parent-view-id="old" prefs="{{prefs}}"
+          route-path$="[[routes_.PRIVACY_SANDBOX_TOPICS.path]]">
       </settings-privacy-sandbox-topics-subpage>
     </template>
 
@@ -82,7 +87,8 @@
           routes_.PRIVACY_SANDBOX_MANAGE_TOPICS, currentRoute, inSearchMode)]]">
       <settings-privacy-sandbox-manage-topics-subpage slot="view"
           id="privacySandboxManageTopics" data-parent-view-id="old"
-          prefs="{{prefs}}">
+          prefs="{{prefs}}"
+          route-path$="[[routes_.PRIVACY_SANDBOX_MANAGE_TOPICS.path]]">
       </settings-privacy-sandbox-manage-topics-subpage>
     </template>
   </template>
@@ -92,7 +98,7 @@
   <template is="dom-if" if="[[renderView_(
       routes_.COOKIES, currentRoute, inSearchMode)]]">
     <settings-cookies-page slot="view" id="cookies" data-parent-view-id="old"
-        prefs="{{prefs}}">
+        prefs="{{prefs}}" route-path$="[[routes_.COOKIES.path]]">
     </settings-cookies-page>
   </template>
 
@@ -101,7 +107,8 @@
         routes_.INCOGNITO_TRACKING_PROTECTIONS, currentRoute, inSearchMode)]]">
       <incognito-tracking-protections-page slot="view"
           id="incognitoTrackingProtections" data-parent-view-id="old"
-          prefs="{{prefs}}">
+          prefs="{{prefs}}"
+          route-path$="[[routes_.INCOGNITO_TRACKING_PROTECTIONS.path]]">
       </incognito-tracking-protections-page>
     </template>
   </template>
@@ -110,7 +117,8 @@
     <template is="dom-if" if="[[renderView_(
         routes_.SECURITY_KEYS, currentRoute, inSearchMode)]]">
       <settings-subpage slot="view" id="securityKeys"
-          data-parent-view-id="old" page-title="$i18n{securityKeysTitle}">
+          data-parent-view-id="old" page-title="$i18n{securityKeysTitle}"
+          route-path$="[[routes_.SECURITY_KEYS.path]]">
         <security-keys-subpage></security-keys-subpage>
       </settings-subpage>
     </template>
@@ -119,13 +127,15 @@
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS, currentRoute, inSearchMode)]]">
     <settings-site-settings-page slot="view" id="siteSettings"
-        data-parent-view-id="old" prefs="{{prefs}}">
+        data-parent-view-id="old" prefs="{{prefs}}"
+        route-path$="[[routes_.SITE_SETTINGS.path]]">
     </settings-site-settings-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_AR, currentRoute, inSearchMode)]]">
-    <settings-ar-page slot="view" id="siteSettingsAr" data-parent-view-id="old">
+    <settings-ar-page slot="view" id="siteSettingsAr" data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_AR.path]]">
     </settings-ar-page>
   </template>
 
@@ -133,7 +143,8 @@
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE, currentRoute, inSearchMode)]]">
       <settings-auto-picture-in-picture-page slot="view"
-          id="siteSettingsAutoPictureInPicture" data-parent-view-id="old">
+          id="siteSettingsAutoPictureInPicture" data-parent-view-id="old"
+          route-path$="[[routes_.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE.path]]">
       </settings-auto-picture-in-picture-page>
     </template>
   </template>
@@ -143,7 +154,7 @@
       inSearchMode)]]">
     <settings-automatic-full-screen-page slot="view"
         id="siteSettingsAutomaticFullscreen" data-parent-view-id="old"
-        search-term="[[searchFilter_]]">
+        route-path$="[[routes_.SITE_SETTINGS_AUTOMATIC_FULLSCREEN.path]]">
     </settings-automatic-full-screen-page>
   </template>
 
@@ -151,7 +162,8 @@
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_BLUETOOTH_SCANNING, currentRoute, inSearchMode)]]">
       <settings-bluetooth-scanning-page slot="view"
-          id="siteSettingsBluetoothScanning" data-parent-view-id="old">
+          id="siteSettingsBluetoothScanning" data-parent-view-id="old"
+          route-path$="[[routes_.SITE_SETTINGS_BLUETOOTH_SCANNING.path]]">
       </settings-bluetooth-scanning-page>
     </template>
   </template>
@@ -160,7 +172,8 @@
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL, currentRoute, inSearchMode)]]">
       <settings-captured-surface-control-page slot="view"
-          id="siteSettingsCapturedSurfaceControl" data-parent-view-id="old">
+          id="siteSettingsCapturedSurfaceControl" data-parent-view-id="old"
+          route-path$="[[routes_.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL.path]]">
       </settings-captured-surface-control-page>
     </template>
   </template>
@@ -169,6 +182,7 @@
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_HAND_TRACKING, currentRoute, inSearchMode)]]">
       <settings-hand-tracking-page slot="view" id="siteSettingsHandTracking"
+          route-path$="[[routes_.SITE_SETTINGS_HAND_TRACKING.path]]"
           data-parent-view-id="old">
       </settings-hand-tracking-page>
     </template>
@@ -178,6 +192,7 @@
       routes_.SITE_SETTINGS_HANDLERS, currentRoute, inSearchMode)]]">
     <protocol-handlers slot="view" id="siteSettingsHandlers"
         data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_HANDLERS.path]]"
         toggle-off-label="$i18n{siteSettingsHandlersBlocked}"
         toggle-on-label="$i18n{siteSettingsHandlersAskRecommended}">
     </protocol-handlers>
@@ -186,6 +201,7 @@
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_IDLE_DETECTION, currentRoute, inSearchMode)]]">
     <settings-idle-detection-page slot="view" id="siteSettingsIdleDetection"
+        route-path$="[[routes_.SITE_SETTINGS_IDLE_DETECTION.path]]"
         data-parent-view-id="old">
     </settings-idle-detection-page>
   </template>
@@ -194,7 +210,8 @@
     <template is="dom-if" if="[[renderView_(
         routes_.SITE_SETTINGS_KEYBOARD_LOCK, currentRoute, inSearchMode)]]">
       <settings-keyboard-lock-page slot="view" id="siteSettingsKeyboardLock"
-          data-parent-view-id="old" search-term="[[searchFilter_]]">
+          data-parent-view-id="old"
+          route-path$="[[routes_.SITE_SETTINGS_KEYBOARD_LOCK.path]]">
       </settings-keyboard-lock-page>
     </template>
   </template>
@@ -205,7 +222,7 @@
         inSearchMode)]]">
       <settings-local-network-access-page slot="view"
           id="siteSettingsLocalNetworkAccess" data-parent-view-id="old"
-          search-term="[[searchFilter_]]">
+          route-path$="[[routes_.SITE_SETTINGS_LOCAL_NETWORK_ACCESS.path]]">
       </settings-local-network-access-page>
     </template>
   </template>
@@ -213,20 +230,23 @@
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_LOCAL_FONTS, currentRoute, inSearchMode)]]">
     <settings-local-fonts-page slot="view" id="siteSettingsLocalFonts"
-        data-parent-view-id="old">
+        data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_LOCAL_FONTS.path]]">
     </settings-local-fonts-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_LOCATION, currentRoute, inSearchMode)]]">
     <settings-geolocation-page slot="view" id="siteSettingsLocation"
-        data-parent-view-id="old" prefs="{{prefs}}">
+        data-parent-view-id="old" prefs="{{prefs}}"
+        route-path$="[[routes_.SITE_SETTINGS_LOCATION.path]]">
     </settings-location-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_NOTIFICATIONS, currentRoute, inSearchMode)]]">
     <settings-notifications-page slot="view" id="siteSettingsNotifications"
+        route-path$="[[routes_.SITE_SETTINGS_NOTIFICATIONS.path]]"
         data-parent-view-id="old" prefs="{{prefs}}">
     </settings-notifications-page>
   </template>
@@ -234,27 +254,31 @@
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_PDF_DOCUMENTS, currentRoute, inSearchMode)]]">
     <settings-pdf-documents-page slot="view" id="siteSettingsPdfDocuments"
-        data-parent-view-id="old" prefs="{{prefs}}">
+        data-parent-view-id="old" prefs="{{prefs}}"
+        route-path$="[[routes_.SITE_SETTINGS_PDF_DOCUMENTS.path]]">
     </settings-pdf-documents-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_SITE_DATA, currentRoute, inSearchMode)]]">
     <settings-site-data slot="view" id="siteSettingsSiteData"
-        data-parent-view-id="old" prefs="{{prefs}}">
+        data-parent-view-id="old" prefs="{{prefs}}"
+        route-path$="[[routes_.SITE_SETTINGS_SITE_DATA.path]]">
     </settings-site-data>
   </template>
 
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_STORAGE_ACCESS, currentRoute, inSearchMode)]]">
     <settings-storage-access-page slot="view" id="siteSettingsStorageAccess"
-        data-parent-view-id="old">
+        data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_STORAGE_ACCESS.path]]">
     </settings-storage-access-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_VR, currentRoute, inSearchMode)]]">
-    <settings-vr-page slot="view" id="siteSettingsVr" data-parent-view-id="old">
+    <settings-vr-page slot="view" id="siteSettingsVr" data-parent-view-id="old"
+      route-path$="[[routes_.SITE_SETTINGS_VR.path]]">
     </settings-vr-page>
   </template>
 
@@ -264,7 +288,7 @@
         inSearchMode)]]">
       <settings-web-applications-page slot="view"
           id="siteSettingsWebAppInstallation" data-parent-view-id="old"
-          search-term="[[searchFilter_]]">
+          route-path$="[[routes_.SITE_SETTINGS_WEB_APP_INSTALLATION.path]]">
       </settings-web-applications-page>
     </template>
   </template>
@@ -272,14 +296,16 @@
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_WINDOW_MANAGEMENT, currentRoute, inSearchMode)]]">
     <settings-window-management-page slot="view"
-        id="siteSettingsWindowManagement" data-parent-view-id="old">
+        id="siteSettingsWindowManagement" data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_WINDOW_MANAGEMENT.path]]">
     </settings-window-management-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_ZOOM_LEVELS, currentRoute, inSearchMode)]]">
     <zoom-levels slot="view" id="siteSettingsZoomLevels"
-        data-parent-view-id="old">
+        data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_ZOOM_LEVELS.path]]">
     </zoom-levels>
   </template>
 

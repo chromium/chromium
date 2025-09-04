@@ -1,6 +1,7 @@
 <style include="cr-shared-style"></style>
 <settings-subpage page-title="$i18n{adPrivacyPageTitle}"
-    learn-more-url="$i18n{adPrivacyLearnMoreURL}">
+    learn-more-url="$i18n{adPrivacyLearnMoreURL}"
+    route-path$="[[routePath]]">
   <template is="dom-if" if="[[!isPrivacySandboxRestricted_]]">
     <cr-link-row
         id="privacySandboxTopicsLinkRow"

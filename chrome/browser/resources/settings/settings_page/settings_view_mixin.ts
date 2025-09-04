@@ -39,6 +39,14 @@ export const SettingsViewMixin = dedupingMixin(
         private focusConfig_: FocusConfig|null = null;
         private previousRoute_: Route|null = null;
 
+        static get properties() {
+          return {
+            routePath: String,
+          };
+        }
+
+        declare routePath: string;
+
         override ready() {
           super.ready();
 

@@ -64,8 +64,10 @@ suite('PrivacyPageIndex', function() {
           `Failed for route '${route.path}'`);
 
       if (parentViewId) {
-        assertTrue(!!index.$.viewManager.querySelector(
-            `#${id}[slot=view][data-parent-view-id=${parentViewId}]`));
+        const view = index.$.viewManager.querySelector(
+            `#${id}[slot=view][data-parent-view-id=${parentViewId}]`);
+        assertTrue(!!view);
+        assertEquals(route.path, view.getAttribute('route-path'));
       } else {
         assertTrue(!!index.$.viewManager.querySelector(
             `#${id}[slot=view]:not([data-parent-view-id])`));
