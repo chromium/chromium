@@ -1233,7 +1233,7 @@
   {
     "name": "bluetooth-btsnoop-internals",
     "owners": ["apusaka@chromium.org", "chromeos-bt-team@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "bluetooth-floss-telephony",
