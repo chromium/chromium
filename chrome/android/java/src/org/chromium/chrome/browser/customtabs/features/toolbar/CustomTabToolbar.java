@@ -496,7 +496,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private void addFallbackMenuItem(@AdaptiveToolbarButtonVariant int buttonVariant) {
         mVariantForFallbackMenu = buttonVariant;
         var menuInfo = getHighlightMenuInfo(buttonVariant);
-        assert menuInfo != null : "Menu item for the optional toolbar action should be found";
+        if (menuInfo == null) return; // PriceTracking might not be enabled for showing.
+
         int menuId = menuInfo.first;
 
         mAppMenuHandler.get().setMenuHighlight(menuId, false);
