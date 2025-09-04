@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
-#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -18,29 +17,14 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::ButtonWithAccessibilityLabel;
-using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::PaymentMethodsButton;
-using chrome_test_util::TextFieldForCellWithLabelId;
 
 namespace {
-
-NSString* kCardIdentifier = @"Test User";
 
 // Matcher for the CVC storage button on the Payment Methods screen.
 id<GREYMatcher> CvcStorageButton() {
   return grey_text(l10n_util::GetNSString(
       IDS_PAYMENTS_AUTOFILL_ENABLE_SAVE_SECURITY_CODES_LABEL));
-}
-
-// Matcher for the delete button in the confirmation dialog.
-id<GREYMatcher> DeleteConfirmationButton() {
-  id<GREYMatcher> baseMatcher = grey_allOf(
-      grey_accessibilityLabel(
-          l10n_util::GetNSString(IDS_IOS_DELETE_SAVED_SECURITY_CODE)),
-      grey_accessibilityTrait(UIAccessibilityTraitButton),
-      grey_userInteractionEnabled(), nil);
-  return grey_allOf(baseMatcher, grey_not(grey_descendant(baseMatcher)), nil);
 }
 
 }  // namespace
@@ -127,67 +111,12 @@ id<GREYMatcher> DeleteConfirmationButton() {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests that the delete CVCs button is not visible when no CVCs are saved.
-- (void)testDeleteButtonIsNotVisible {
-  [self openCvcStorageSettings];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAutofillDeleteSecurityCodesButtonId)]
-      assertWithMatcher:grey_notVisible()];
-}
-
-// Tests that the delete CVCs button is visible when CVCs are saved.
+// Tests that the delete CVCs button is visible.
 - (void)testDeleteButtonIsVisible {
-  // Create & save local credit card.
-  [AutofillAppInterface saveLocalCreditCardWithCvc];
   [self openCvcStorageSettings];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kAutofillDeleteSecurityCodesButtonId)]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that tapping the delete button and confirming deletes the CVCs.
-- (void)testDeleteButtonDeletesCvcs {
-  // Create & save local credit card with CVC.
-  [AutofillAppInterface saveLocalCreditCardWithCvc];
-  [self openCvcStorageSettings];
-  // Verify delete button is visible.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAutofillDeleteSecurityCodesButtonId)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap delete button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAutofillDeleteSecurityCodesButtonId)]
-      performAction:grey_tap()];
-
-  // Tap confirmation button.
-  id<GREYMatcher> confirmationButton = DeleteConfirmationButton();
-  [[EarlGrey selectElementWithMatcher:confirmationButton]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:confirmationButton];
-
-  // Verify delete button is not visible anymore.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAutofillDeleteSecurityCodesButtonId)]
-      assertWithMatcher:grey_notVisible()];
-
-  // Go back to the payment methods screen.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton(
-                                          0)] performAction:grey_tap()];
-
-  // Verify that the card still exists but CVC indicator is gone.
-  id<GREYMatcher> cardCellMatcher =
-      grey_allOf(grey_accessibilityID(kCardIdentifier),
-                 grey_accessibilityTrait(UIAccessibilityTraitButton),
-                 grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:cardCellMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  NSString* cvcIndicator = l10n_util::GetNSString(
-      IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY);
-
-  [[EarlGrey selectElementWithMatcher:cardCellMatcher]
-      assertWithMatcher:grey_not(grey_descendant(grey_text(cvcIndicator)))];
 }
 
 @end

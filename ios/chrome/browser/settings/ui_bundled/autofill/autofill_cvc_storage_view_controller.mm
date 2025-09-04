@@ -8,6 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
+#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -35,7 +36,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @implementation AutofillCvcStorageViewController {
   // Coordinator for displaying an action sheet.
-  UIAlertController* _alertController;
+  ActionSheetCoordinator* _actionSheetCoordinator;
 }
 
 @synthesize cvcStorageSwitchIsOn = _cvcStorageSwitchIsOn;
@@ -195,42 +196,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Private
 
 - (void)showDeleteConfirmation {
-  UIAlertController* alertController = [UIAlertController
-      alertControllerWithTitle:
-          l10n_util::GetNSString(
-              IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_TITLE)
-                       message:
-                           l10n_util::GetNSString(
-                               IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_DESCRIPTION)
-                preferredStyle:UIAlertControllerStyleActionSheet];
-
-  __weak __typeof(self) weakSelf = self;
-  UIAlertAction* deleteAction = [UIAlertAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_SAVED_SECURITY_CODE)
-                style:UIAlertActionStyleDestructive
-              handler:^(UIAlertAction* action) {
-                [weakSelf.delegate
-                    deleteAllSavedCvcsForViewController:weakSelf];
-                [weakSelf userDismissedAlert];
-              }];
-
-  UIAlertAction* cancelAction = [UIAlertAction
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_DELETE_SAVED_SECURITY_CODE_CANCEL)
-                style:UIAlertActionStyleCancel
-              handler:^(UIAlertAction* action) {
-                [weakSelf userDismissedAlert];
-              }];
-
-  [alertController addAction:deleteAction];
-  [alertController addAction:cancelAction];
-
-  _alertController = alertController;
-  [self presentViewController:alertController animated:YES completion:nil];
+  // TODO(crbug.com/437908820): Add delete confirmation dialog
 }
 
-- (void)userDismissedAlert {
-  _alertController = nil;
+- (void)dismissActionSheetCoordinator {
+  [_actionSheetCoordinator stop];
+  _actionSheetCoordinator = nil;
 }
 
 @end

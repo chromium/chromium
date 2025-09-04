@@ -1961,12 +1961,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DELETE_PASSWORD_TITLE_FOR_SINGLE_URL" desc="Title of the confirmation alert when the user tapped delete password button. [iOS only]" meaning="Explaining to the user that deleting password locally won't delete account on a website.">
           Delete password for <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>?
       </message>
-      <message name="IDS_IOS_DELETE_SAVED_SECURITY_CODE" desc="Title of the delete button that allows the user to delete all saved CVCs. [iOS only]">
-        Delete
-      </message>
-      <message name="IDS_IOS_DELETE_SAVED_SECURITY_CODE_CANCEL" desc="Title of the cancel button that allows user to cancel the deletion of all saved CVCs. [iOS only]">
-        Cancel
-      </message>
       <message name="IDS_IOS_DETECT_ADDRESSES_SETTING_DESCRIPTION" desc="Description of the setting to enable address detection in web pages [iOS only]">
         Get directions and local info from Google Maps
       </message>
