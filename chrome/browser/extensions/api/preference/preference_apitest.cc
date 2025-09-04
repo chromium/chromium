@@ -57,10 +57,7 @@ class ExtensionPreferenceApiTest
       delete;
 
  protected:
-  ExtensionPreferenceApiTest() : ExtensionApiTest(GetParam()) {
-    feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kAlwaysBlock3pcsIncognito);
-  }
+  ExtensionPreferenceApiTest() : ExtensionApiTest(GetParam()) {}
   ~ExtensionPreferenceApiTest() override = default;
 
   void SetCookieControlsMode(PrefService* prefs, CookieControlsMode mode) {
@@ -666,36 +663,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
       /* expected_controlled */ false);
 }
 
-class AlwaysBlock3pcsIncognitoExtensionApiTest
-    : public extensions::ExtensionApiTest,
-      public testing::WithParamInterface<bool> {
- public:
-  AlwaysBlock3pcsIncognitoExtensionApiTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          privacy_sandbox::kAlwaysBlock3pcsIncognito);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          privacy_sandbox::kAlwaysBlock3pcsIncognito);
-    }
-  }
+using Block3pcsIncognitoExtensionApiTest = extensions::ExtensionApiTest;
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(AlwaysBlock3pcsIncognitoExtensionApiTest,
+IN_PROC_BROWSER_TEST_F(Block3pcsIncognitoExtensionApiTest,
                        Blocks3pcsWhenInIncognitoWithCookieControlsModeOff) {
-  bool feature_enabled = GetParam();
-  EXPECT_EQ(extensions::CookieControlsModeTransformer()
-                .BrowserToExtensionPref(
-                    base::Value(static_cast<int>(
-                        content_settings::CookieControlsMode::kOff)),
-                    /*is_incognito_profile=*/true)
-                ->GetBool(),
-            !feature_enabled);
+  EXPECT_FALSE(extensions::CookieControlsModeTransformer()
+                   .BrowserToExtensionPref(
+                       base::Value(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)),
+                       /*is_incognito_profile=*/true)
+                   ->GetBool());
 }
-
-INSTANTIATE_TEST_SUITE_P(TestAlwaysBlock3pcsIncognito,
-                         AlwaysBlock3pcsIncognitoExtensionApiTest,
-                         testing::Bool());
