@@ -6149,9 +6149,6 @@ crbug.com/1191990 http/tests/serviceworker/clients-openwindow.html [ Failure Pas
 
 # Sheriff 2021-04-23
 
-# Image pixels are sometimes different on Fuchsia.
-crbug.com/1201123 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Failure Pass ]
-
 # Appears to be timing out even when marked as Slow.
 crbug.com/1205184 [ Mac12 ] external/wpt/IndexedDB/interleaved-cursors-large.any.html [ Pass Timeout ]
 
