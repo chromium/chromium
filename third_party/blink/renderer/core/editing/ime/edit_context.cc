@@ -159,32 +159,40 @@ void EditContext::DispatchTextFormatEvent(
 
     String underline_thickness;
     String underline_style;
+    // Use values defined in spec [1] for `TextFormat::underlineStyle` &
+    // `TextFormat::underlineThickness`
+    // TODO(crbug.com/354497121): Remove this change and update the TextFormat
+    // attribute type as per the spec [1] when the feature is enabled by
+    // default.
+    // [1]: https://w3c.github.io/edit-context/#textformatupdateevent
+    bool use_spec_values = RuntimeEnabledFeatures::
+        UseSpecValuesInTextFormatUpdateEventStylesEnabled();
     switch (ime_text_span.thickness) {
       case ui::ImeTextSpan::Thickness::kNone:
-        underline_thickness = "None";
+        underline_thickness = use_spec_values ? "none" : "None";
         break;
       case ui::ImeTextSpan::Thickness::kThin:
-        underline_thickness = "Thin";
+        underline_thickness = use_spec_values ? "thin" : "Thin";
         break;
       case ui::ImeTextSpan::Thickness::kThick:
-        underline_thickness = "Thick";
+        underline_thickness = use_spec_values ? "thick" : "Thick";
         break;
     }
     switch (ime_text_span.underline_style) {
       case ui::ImeTextSpan::UnderlineStyle::kNone:
-        underline_style = "None";
+        underline_style = use_spec_values ? "none" : "None";
         break;
       case ui::ImeTextSpan::UnderlineStyle::kSolid:
-        underline_style = "Solid";
+        underline_style = use_spec_values ? "solid" : "Solid";
         break;
       case ui::ImeTextSpan::UnderlineStyle::kDot:
-        underline_style = "Dotted";
+        underline_style = use_spec_values ? "dotted" : "Dotted";
         break;
       case ui::ImeTextSpan::UnderlineStyle::kDash:
-        underline_style = "Dashed";
+        underline_style = use_spec_values ? "dashed" : "Dashed";
         break;
       case ui::ImeTextSpan::UnderlineStyle::kSquiggle:
-        underline_style = "Squiggle";
+        underline_style = use_spec_values ? "wavy" : "Squiggle";
         break;
     }
 
@@ -192,7 +200,8 @@ void EditContext::DispatchTextFormatEvent(
         range_start, range_end,
         underline_style, underline_thickness));
 
-    if (underline_style != "None" || underline_thickness != "None") {
+    String none_value = use_spec_values ? "none" : "None";
+    if (underline_style != none_value || underline_thickness != none_value) {
       is_text_format_underline_style_or_thickness_not_none = true;
     }
   }

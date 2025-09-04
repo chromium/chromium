@@ -255,8 +255,8 @@ test(function() {
   assert_equals(textFormats.length, 1);
   assert_equals(textFormats[0].rangeStart, 0);
   assert_equals(textFormats[0].rangeEnd, 3);
-  assert_equals(textFormats[0].underlineStyle, "Solid");
-  assert_equals(textFormats[0].underlineThickness, "Thin");
+  assert_equals(textFormats[0].underlineStyle, "solid");
+  assert_equals(textFormats[0].underlineThickness, "thin");
 
   textInputController.setComposition("");
   assert_equals(textFormats.length, 0);
@@ -752,8 +752,8 @@ test(function(){
   assert_false(internals.isUseCounted(document, kEditContextTextFormatUnderlineThickness));
 
   assert_equals(textFormats.length, 1);
-  assert_equals(textFormats[0].underlineStyle, "Solid");
-  assert_equals(textFormats[0].underlineThickness, "Thin");
+  assert_equals(textFormats[0].underlineStyle, "solid");
+  assert_equals(textFormats[0].underlineThickness, "thin");
   assert_true(internals.isUseCounted(document, kEditContextTextFormatUnderlineStyle));
   assert_true(internals.isUseCounted(document, kEditContextTextFormatUnderlineThickness));
 
