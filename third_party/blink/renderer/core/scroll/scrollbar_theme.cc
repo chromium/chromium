@@ -98,8 +98,9 @@ void ScrollbarTheme::PaintScrollCorner(
     const ScrollableArea& scrollable_area,
     const DisplayItemClient& display_item_client,
     const gfx::Rect& corner_rect) {
-  if (corner_rect.IsEmpty())
+  if (corner_rect.IsEmpty()) {
     return;
+  }
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, display_item_client,
                                                   DisplayItem::kScrollCorner))

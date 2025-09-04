@@ -497,9 +497,9 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     }
     // Avoid animating in web tests to improve reliability.
     if (WebTestSupport::IsRunningWebTest()) {
-      settings.scrollbar_thinning_duration = base::Milliseconds(0);
+      settings.scrollbar_thinning_duration = base::TimeDelta();
       settings.scrollbar_fade_delay = base::TimeDelta::Max();
-      settings.scrollbar_fade_duration = base::Milliseconds(0);
+      settings.scrollbar_fade_duration = base::TimeDelta();
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)

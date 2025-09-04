@@ -730,7 +730,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void SetPageColorSchemes(const CSSValue* color_scheme);
   ColorSchemeFlags GetPageColorSchemes() const { return page_color_schemes_; }
-  mojom::PreferredColorScheme GetPreferredColorScheme() const {
+  mojom::blink::PreferredColorScheme GetPreferredColorScheme() const {
     return preferred_color_scheme_;
   }
   bool GetForceDarkModeEnabled() const { return force_dark_mode_enabled_; }

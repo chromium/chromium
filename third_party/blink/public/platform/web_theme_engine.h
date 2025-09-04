@@ -39,7 +39,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
@@ -60,8 +60,6 @@ class WebThemeEngine {
     kStateHover,
     kStateNormal,
     kStatePressed,
-    kStateFocused,
-    kStateReadonly,
   };
 
   // The UI part which is being accessed.

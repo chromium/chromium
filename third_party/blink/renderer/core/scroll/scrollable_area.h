@@ -35,7 +35,6 @@
 #include "cc/input/snap_selection_strategy.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_behavior.h"
 #include "third_party/blink/renderer/core/core_export.h"

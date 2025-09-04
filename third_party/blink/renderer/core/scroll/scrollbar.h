@@ -246,9 +246,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   bool ShouldPaint() const;
   bool LastKnownMousePositionInFrameRect() const;
 
-  // Returns the color provider for this scrollbar.
   const ui::ColorProvider* GetColorProvider(mojom::blink::ColorScheme) const;
-  // Returns the forced colors state for this scrollbar.
   bool InForcedColorsMode() const;
 
  protected:

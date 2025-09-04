@@ -78,6 +78,7 @@ class PLATFORM_EXPORT Color {
     kRec2020,
     kXYZD50,
     kXYZD65,
+
     // Serializes to lab(). The value of `param0_` is lightness and is
     // guaranteed to be non-negative. The value of `param1_` and `param2_` are
     // the a-axis and b-axis values and are unbounded.
@@ -93,22 +94,20 @@ class PLATFORM_EXPORT Color {
     kOklch,
     // Serializes to rgb() or rgba().
     // The values of `params0_`, `params1_`, and `params2_` are red, green, and
-    // blue sRGB values, and are guaranteed to be present and in the [0, 1]
+    // blue sRGB values, and are guaranteed to be present and in the [0, 255]
     // interval.
     kSRGBLegacy,
     // Serializes to rgb() or rgba() for non-relative colors and to hsl() for
     // unresolved relative colors.
     // The values of `params0_`, `params1_`, and `params2_` are Hue, Saturation,
-    // and Ligthness. These can be none. Hue is a namber in the range from 0.0
-    // to 6.0, and the rest are in the rance from 0.0 to 1.0.
-    // interval.
+    // and Lightness. These can be none. Hue is in the [0, 6] interval, and the
+    // rest are in the [0, 1] interval.
     kHSL,
     // Serializes to rgb() or rgba() for non-relative colors and to hwb() for
     // unresolved relative colors.
     // The values of `params0_`, `params1_`, and `params2_` are Hue, White,
-    // and Black. These can be none. Hue is a namber in the range from 0.0
-    // to 6.0, and the rest are in the rance from 0.0 to 1.0.
-    // interval.
+    // and Black. These can be none. Hue is in the [0, 6] interval, and the rest
+    // are in the [0, 1] interval.
     kHWB,
     // An uninitialized color.
     kNone,

@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "ui/base/ui_base_features.h"
 
