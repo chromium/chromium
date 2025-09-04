@@ -181,32 +181,3 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3DisabledTest,
                              /*server_eligibility_enabled=*/true);
   EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
 }
-
-class LensSearchFeatureFlagsUtilsEduActionChipEnabledTest
-    : public LensSearchFeatureFlagsUtilsBrowserTestBase {
- public:
-  LensSearchFeatureFlagsUtilsEduActionChipEnabledTest() = default;
-  ~LensSearchFeatureFlagsUtilsEduActionChipEnabledTest() override = default;
-
- protected:
-  base::test::ScopedFeatureList feature_list_{
-      lens::features::kLensOverlayEduActionChip};
-};
-
-IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsEduActionChipEnabledTest,
-                       TestEduActionChipEnabled_TrueWhenEnglish) {
-  g_browser_process->SetApplicationLocale("en");
-  EXPECT_TRUE(lens::IsLensOverlayEduActionChipEnabled());
-
-  g_browser_process->SetApplicationLocale("en-US");
-  EXPECT_TRUE(lens::IsLensOverlayEduActionChipEnabled());
-}
-
-IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsEduActionChipEnabledTest,
-                       TestEduActionChipEnabled_FalseWhenNotEnglish) {
-  g_browser_process->SetApplicationLocale("es");
-  EXPECT_FALSE(lens::IsLensOverlayEduActionChipEnabled());
-
-  g_browser_process->SetApplicationLocale("enq");
-  EXPECT_FALSE(lens::IsLensOverlayEduActionChipEnabled());
-}

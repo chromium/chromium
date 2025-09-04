@@ -17,9 +17,6 @@ bool IsLensOverlayContextualSearchboxEnabled();
 // Whether or not to enable the AIM M3 (side panel searchbox) experience.
 bool IsAimM3Enabled(Profile* profile);
 
-// Whether the EDU action chip is enabled.
-bool IsLensOverlayEduActionChipEnabled();
-
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_SEARCH_FEATURE_FLAG_UTILS_
