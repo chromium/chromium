@@ -42,7 +42,7 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
  public:
   WebGLRenderingContext(CanvasRenderingContextHost*,
                         std::unique_ptr<WebGraphicsContext3DProvider>,
-                        const Platform::GraphicsInfo&,
+                        const Platform::WebGLContextInfo&,
                         const CanvasContextCreationAttributesCore&);
 
   ImageBitmap* TransferToImageBitmap(ScriptState*, ExceptionState&) final;

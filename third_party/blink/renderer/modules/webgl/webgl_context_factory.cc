@@ -64,12 +64,12 @@ CanvasRenderingContext* WebGLContextFactory::CreateInternal(
   }
 
   // Create the Context3DProvider
-  Platform::GraphicsInfo graphics_info;
+  Platform::WebGLContextInfo context_info;
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider(
       WebGLRenderingContextBase::CreateWebGraphicsContext3DProvider(
-          host, attribs, GetContextType(), &graphics_info));
+          host, attribs, GetContextType(), &context_info));
   if (!context_provider) {
-    // CreateWebGraphicsContext3DProvider alreade dispatches a
+    // CreateWebGraphicsContext3DProvider already dispatches a
     // webglcontextcreationerror so we don't skip generating one here.
     return nullptr;
   }
@@ -118,10 +118,10 @@ CanvasRenderingContext* WebGLContextFactory::CreateInternal(
 
   if (is_webgl2_) {
     return Initialize(MakeGarbageCollected<WebGL2RenderingContext>(
-        host, std::move(context_provider), graphics_info, attribs));
+        host, std::move(context_provider), context_info, attribs));
   } else {
     return Initialize(MakeGarbageCollected<WebGLRenderingContext>(
-        host, std::move(context_provider), graphics_info, attribs));
+        host, std::move(context_provider), context_info, attribs));
   }
 }
 
@@ -156,7 +156,7 @@ const char* WebGLContextFactory::GetContextName() const {
   return "WebGLRenderingContext";
 }
 
-Platform::ContextType WebGLContextFactory::GetContextType() const {
+Platform::WebGLContextType WebGLContextFactory::GetContextType() const {
   if (is_webgl2_) {
     return Platform::kWebGL2ContextType;
   }

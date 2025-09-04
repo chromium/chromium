@@ -167,7 +167,7 @@ void ForceNextDrawingBufferCreationToFailForTest() {
 
 scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    const Platform::GraphicsInfo& graphics_info,
+    const Platform::WebGLContextInfo& context_info,
     bool using_swap_chain,
     Client* client,
     const gfx::Size& size,
@@ -233,7 +233,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
 
   scoped_refptr<DrawingBuffer> drawing_buffer =
       base::AdoptRef(new DrawingBuffer(
-          std::move(context_provider), graphics_info, using_swap_chain,
+          std::move(context_provider), context_info, using_swap_chain,
           desynchronized, std::move(extensions_util), client,
           discard_framebuffer_supported, texture_storage_enabled,
           want_alpha_channel, premultiplied_alpha, preserve, webgl_version,
@@ -248,7 +248,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
 
 DrawingBuffer::DrawingBuffer(
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    const Platform::GraphicsInfo& graphics_info,
+    const Platform::WebGLContextInfo& context_info,
     bool using_swap_chain,
     bool desynchronized,
     std::unique_ptr<Extensions3DUtil> extensions_util,
@@ -278,7 +278,7 @@ DrawingBuffer::DrawingBuffer(
                                                        : kUnpremul_SkAlphaType)
                                 : kOpaque_SkAlphaType),
       requested_format_(want_alpha_channel ? GL_RGBA8 : GL_RGB8),
-      graphics_info_(graphics_info),
+      context_info_(context_info),
       using_swap_chain_(using_swap_chain),
       low_latency_enabled_(desynchronized),
       want_depth_(want_depth),

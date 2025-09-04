@@ -25,7 +25,7 @@ bool WebGLBlendFuncExtended::Supported(WebGLRenderingContextBase* context) {
   // as the validating decoder may expose the extension string.
   DCHECK(context->GetDrawingBuffer());
   if (!context->GetDrawingBuffer()
-           ->GetGraphicsInfo()
+           ->ContextInfo()
            .using_passthrough_command_decoder) {
     return false;
   }

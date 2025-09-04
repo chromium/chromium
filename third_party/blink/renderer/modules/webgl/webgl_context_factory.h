@@ -47,7 +47,7 @@ class WebGLContextFactory : public CanvasRenderingContextFactory {
       const CanvasContextCreationAttributesCore&);
 
   const char* GetContextName() const;
-  Platform::ContextType GetContextType() const;
+  Platform::WebGLContextType GetContextType() const;
 
   bool is_webgl2_;
 };

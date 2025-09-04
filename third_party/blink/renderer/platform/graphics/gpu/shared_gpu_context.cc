@@ -264,4 +264,4 @@ bool SharedGpuContext::MaySupportImageChromium() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-}  // blink
+}  // namespace blink

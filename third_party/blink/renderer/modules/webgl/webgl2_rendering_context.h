@@ -21,7 +21,7 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   WebGL2RenderingContext(
       CanvasRenderingContextHost*,
       std::unique_ptr<WebGraphicsContext3DProvider>,
-      const Platform::GraphicsInfo&,
+      const Platform::WebGLContextInfo&,
       const CanvasContextCreationAttributesCore& requested_attributes);
 
   ImageBitmap* TransferToImageBitmap(ScriptState*, ExceptionState&) final;

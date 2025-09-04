@@ -420,7 +420,7 @@ class DrawingBufferForTests : public DrawingBuffer {
       std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
       std::unique_ptr<TestWebGraphicsSharedImageInterfaceProvider>
           shared_image_interface_provider_for_sw,
-      const Platform::GraphicsInfo& graphics_info,
+      const Platform::WebGLContextInfo& context_info,
       DrawingBuffer::Client* client,
       const gfx::Size& size,
       PreserveDrawingBuffer preserve,
@@ -430,7 +430,7 @@ class DrawingBufferForTests : public DrawingBuffer {
         Extensions3DUtil::Create(context_provider->ContextGL());
     scoped_refptr<DrawingBufferForTests> drawing_buffer =
         base::AdoptRef(new DrawingBufferForTests(
-            std::move(context_provider), graphics_info,
+            std::move(context_provider), context_info,
             std::move(extensions_util), client, preserve, desynchronized));
     if (!drawing_buffer->Initialize(
             size, use_multisampling != kDisableMultisampling)) {
@@ -445,14 +445,14 @@ class DrawingBufferForTests : public DrawingBuffer {
 
   DrawingBufferForTests(
       std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-      const Platform::GraphicsInfo& graphics_info,
+      const Platform::WebGLContextInfo& context_info,
       std::unique_ptr<Extensions3DUtil> extensions_util,
       DrawingBuffer::Client* client,
       PreserveDrawingBuffer preserve,
       bool desynchronized)
       : DrawingBuffer(
             std::move(context_provider),
-            graphics_info,
+            context_info,
             false /* usingSwapChain */,
             desynchronized,
             std::move(extensions_util),

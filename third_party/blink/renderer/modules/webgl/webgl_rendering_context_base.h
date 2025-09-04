@@ -155,11 +155,11 @@ class MODULES_EXPORT WebGLRenderingContextBase
   static std::unique_ptr<WebGraphicsContext3DProvider>
   CreateWebGraphicsContext3DProvider(CanvasRenderingContextHost*,
                                      const CanvasContextCreationAttributesCore&,
-                                     Platform::ContextType context_type,
-                                     Platform::GraphicsInfo* graphics_info);
+                                     Platform::WebGLContextType context_type,
+                                     Platform::WebGLContextInfo* context_info);
   static void ForceNextWebGLContextCreationToFail();
 
-  Platform::ContextType ContextType() const { return context_type_; }
+  Platform::WebGLContextType ContextType() const { return context_type_; }
 
   int drawingBufferWidth() const;
   int drawingBufferHeight() const;
@@ -707,12 +707,12 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   WebGLRenderingContextBase(CanvasRenderingContextHost*,
                             std::unique_ptr<WebGraphicsContext3DProvider>,
-                            const Platform::GraphicsInfo& graphics_info,
+                            const Platform::WebGLContextInfo&,
                             const CanvasContextCreationAttributesCore&,
-                            Platform::ContextType);
+                            Platform::WebGLContextType);
   scoped_refptr<DrawingBuffer> CreateDrawingBuffer(
       std::unique_ptr<WebGraphicsContext3DProvider>,
-      const Platform::GraphicsInfo& graphics_info);
+      const Platform::WebGLContextInfo&);
   void SetupFlags();
   bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
                                              SourceDrawingBuffer);
@@ -1966,14 +1966,14 @@ class MODULES_EXPORT WebGLRenderingContextBase
   WebGLRenderingContextBase(CanvasRenderingContextHost*,
                             scoped_refptr<base::SingleThreadTaskRunner>,
                             std::unique_ptr<WebGraphicsContext3DProvider>,
-                            const Platform::GraphicsInfo& graphics_info,
+                            const Platform::WebGLContextInfo&,
                             const CanvasContextCreationAttributesCore&,
-                            Platform::ContextType);
+                            Platform::WebGLContextType);
   static std::unique_ptr<WebGraphicsContext3DProvider>
   CreateContextProviderInternal(CanvasRenderingContextHost*,
                                 const CanvasContextCreationAttributesCore&,
-                                Platform::ContextType context_type,
-                                Platform::GraphicsInfo* graphics_info);
+                                Platform::WebGLContextType,
+                                Platform::WebGLContextInfo*);
 
   scoped_refptr<ExternalCanvasResource> ExportLowLatencyCanvasResource(
       SourceDrawingBuffer source_buffer,
@@ -2001,7 +2001,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
                       WebGLRenderingContextBase*);
   bool CanUseTexImageViaGPU(const TexImageParams&);
 
-  const Platform::ContextType context_type_;
+  const Platform::WebGLContextType context_type_;
 
   bool IsPaintable() const final { return GetDrawingBuffer(); }
 

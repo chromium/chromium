@@ -613,7 +613,7 @@ static void FormatWebGLStatusString(const StringView& gl_info,
 }
 
 static String ExtractWebGLContextCreationError(
-    const Platform::GraphicsInfo& info) {
+    const Platform::WebGLContextInfo& info) {
   StringBuilder builder;
   builder.Append("Could not create a WebGL context");
   FormatWebGLStatusString(
@@ -645,8 +645,8 @@ std::unique_ptr<WebGraphicsContext3DProvider>
 WebGLRenderingContextBase::CreateContextProviderInternal(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attributes,
-    Platform::ContextType context_type,
-    Platform::GraphicsInfo* graphics_info) {
+    Platform::WebGLContextType context_type,
+    Platform::WebGLContextInfo* context_info) {
   DCHECK(host);
   ExecutionContext* execution_context = host->GetTopExecutionContext();
   DCHECK(execution_context);
@@ -665,17 +665,17 @@ WebGLRenderingContextBase::CreateContextProviderInternal(
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
       CreateWebGLGraphicsContextProvider(
           prefer_low_power_gpu, attributes.fail_if_major_performance_caveat,
-          context_type, graphics_info, url);
+          context_type, context_info, url);
   if (context_provider && !context_provider->BindToCurrentSequence()) {
     context_provider = nullptr;
-    graphics_info->error_message = String("BindToCurrentSequence failed: " +
-                                          String(graphics_info->error_message));
+    context_info->error_message = String("BindToCurrentSequence failed: " +
+                                          String(context_info->error_message));
   }
   if (!context_provider || g_should_fail_context_creation_for_testing) {
     g_should_fail_context_creation_for_testing = false;
     host->HostDispatchEvent(WebGLContextEvent::Create(
         event_type_names::kWebglcontextcreationerror,
-        ExtractWebGLContextCreationError(*graphics_info)));
+        ExtractWebGLContextCreationError(*context_info)));
     return nullptr;
   }
   gpu::gles2::GLES2Interface* gl = context_provider->ContextGL();
@@ -693,8 +693,8 @@ std::unique_ptr<WebGraphicsContext3DProvider>
 WebGLRenderingContextBase::CreateWebGraphicsContext3DProvider(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attributes,
-    Platform::ContextType context_type,
-    Platform::GraphicsInfo* graphics_info) {
+    Platform::WebGLContextType context_type,
+    Platform::WebGLContextInfo* context_info) {
   if ((context_type == Platform::kWebGL1ContextType &&
        !host->IsWebGL1Enabled()) ||
       (context_type == Platform::kWebGL2ContextType &&
@@ -711,7 +711,7 @@ WebGLRenderingContextBase::CreateWebGraphicsContext3DProvider(
   // synchronized against any updates to the browser's set of blocked domains.
   // See https://crbug.com/1215907#c10 for more details.
   auto provider = CreateContextProviderInternal(host, attributes, context_type,
-                                                graphics_info);
+                                                context_info);
 
   // The host might block creation of a new WebGL context despite the
   // page settings; in particular, if WebGL contexts were lost one or
@@ -1220,24 +1220,24 @@ static constexpr std::array<GLenum, 4> kSupportedTypesTexImageSourceES3 = {
 WebGLRenderingContextBase::WebGLRenderingContextBase(
     CanvasRenderingContextHost* host,
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    const Platform::GraphicsInfo& graphics_info,
+    const Platform::WebGLContextInfo& context_info,
     const CanvasContextCreationAttributesCore& requested_attributes,
-    Platform::ContextType version)
+    Platform::WebGLContextType context_type)
     : WebGLRenderingContextBase(
           host,
           host->GetTopExecutionContext()->GetTaskRunner(TaskType::kWebGL),
           std::move(context_provider),
-          graphics_info,
+          context_info,
           requested_attributes,
-          version) {}
+          context_type) {}
 
 WebGLRenderingContextBase::WebGLRenderingContextBase(
     CanvasRenderingContextHost* host,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    const Platform::GraphicsInfo& graphics_info,
+    const Platform::WebGLContextInfo& context_info,
     const CanvasContextCreationAttributesCore& requested_attributes,
-    Platform::ContextType context_type)
+    Platform::WebGLContextType context_type)
     : WebGLContextObjectSupport(
           task_runner,
           /* is_webgl2 */ context_type == Platform::kWebGL2ContextType),
@@ -1266,7 +1266,7 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
   InitializeWebGLContextLimits(context_provider.get());
 
   scoped_refptr<DrawingBuffer> buffer =
-      CreateDrawingBuffer(std::move(context_provider), graphics_info);
+      CreateDrawingBuffer(std::move(context_provider), context_info);
   if (!buffer) {
     context_lost_mode_ = kSyntheticLostContext;
     return;
@@ -1305,7 +1305,7 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
 
 scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    const Platform::GraphicsInfo& graphics_info) {
+    const Platform::WebGLContextInfo& context_info) {
   const CanvasContextCreationAttributesCore& attrs = CreationAttributes();
   bool premultiplied_alpha = attrs.premultiplied_alpha;
   bool want_alpha_channel = attrs.alpha;
@@ -1346,7 +1346,7 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
 
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   return DrawingBuffer::Create(
-      std::move(context_provider), graphics_info, using_swap_chain, this,
+      std::move(context_provider), context_info, using_swap_chain, this,
       ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
       want_depth_buffer, want_stencil_buffer, want_antialiasing, desynchronized,
       preserve, web_gl_version, chromium_image_usage,
@@ -3958,15 +3958,15 @@ void WebGLRenderingContextBase::RecordShaderPrecisionFormatForStudy(
 
 void WebGLRenderingContextBase::RecordANGLEImplementation() {
   DCHECK(drawing_buffer_.get());
-  const Platform::GraphicsInfo& graphics_info =
-      drawing_buffer_->GetGraphicsInfo();
+  const Platform::WebGLContextInfo& context_info =
+      drawing_buffer_->ContextInfo();
   // For mapping mathematics, see WebGLANGLEImplementation definition above.
   int webgl_version_multiplier =
       (context_type_ == Platform::kWebGL2ContextType ? 2 : 0);
   WebGLANGLEImplementation webgl_angle_implementation =
       static_cast<WebGLANGLEImplementation>(
           webgl_version_multiplier * 10 +
-          static_cast<int>(graphics_info.angle_implementation));
+          static_cast<int>(context_info.angle_implementation));
   UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.WebGLANGLEImplementation",
                             webgl_angle_implementation);
 }
@@ -8992,7 +8992,7 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
   bool prefer_low_power_gpu =
       (PowerPreferenceToGpuPreference(creation_attributes.power_preference) ==
        gl::GpuPreference::kLowPower);
-  Platform::GraphicsInfo gl_info;
+  Platform::WebGLContextInfo gl_info;
   const auto& url = Host()->GetExecutionContextUrl();
 
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider =

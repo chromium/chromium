@@ -478,11 +478,11 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // GPU ----------------------------------------------------------------
   //
-  enum ContextType {
+  enum WebGLContextType {
     kWebGL1ContextType,  // WebGL 1.0 context, use only for WebGL canvases
     kWebGL2ContextType,  // WebGL 2.0 context, use only for WebGL canvases
   };
-  struct GraphicsInfo {
+  struct WebGLContextInfo {
     unsigned vendor_id = 0;
     unsigned device_id = 0;
     unsigned reset_notification_strategy = 0;
@@ -504,9 +504,9 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
   CreateWebGLGraphicsContextProvider(bool prefer_low_power_gpu,
                                      bool fail_if_major_performance_caveat,
-                                     ContextType context_type,
+                                     WebGLContextType context_type,
                                      const WebURL& document_url,
-                                     GraphicsInfo*);
+                                     WebGLContextInfo*);
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
   CreateRasterGraphicsContextProvider(const WebURL& document_url);
 

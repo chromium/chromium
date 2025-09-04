@@ -215,7 +215,7 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
   container_ = container;
 
   blink::WebURL url = container->GetDocument().Url();
-  blink::Platform::GraphicsInfo gl_info;
+  blink::Platform::WebGLContextInfo gl_info;
   std::unique_ptr<blink::WebGraphicsContext3DProvider> context_provider =
       blink::Platform::Current()->CreateWebGLGraphicsContextProvider(
           /*prefer_low_power_gpu=*/true,

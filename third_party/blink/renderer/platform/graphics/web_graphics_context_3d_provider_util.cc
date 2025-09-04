@@ -78,8 +78,8 @@ CreateRasterGraphicsContextProvider(const KURL& url) {
 std::unique_ptr<WebGraphicsContext3DProvider>
 CreateWebGLGraphicsContextProvider(bool prefer_low_power_gpu,
                                    bool fail_if_major_performance_caveat,
-                                   Platform::ContextType context_type,
-                                   Platform::GraphicsInfo* gl_info,
+                                   Platform::WebGLContextType context_type,
+                                   Platform::WebGLContextInfo* gl_info,
                                    const KURL& url) {
   if (IsMainThread()) {
     return Platform::Current()->CreateWebGLGraphicsContextProvider(
@@ -94,12 +94,12 @@ CreateWebGLGraphicsContextProvider(bool prefer_low_power_gpu,
         FROM_HERE,
         CrossThreadBindOnce(
             [](bool prefer_low_power_gpu, bool fail_if_major_performance_caveat,
-               Platform::ContextType context_type,
-               Platform::GraphicsInfo* gl_info, const KURL& url,
+               Platform::WebGLContextType context_type,
+               Platform::WebGLContextInfo* gl_info, const KURL& url,
                std::unique_ptr<WebGraphicsContext3DProvider>* out_provider,
                base::WaitableEvent* waitable_event) {
               DCHECK(IsMainThread());
-              // The gpu compositing mode is snapshotted in the GraphicsInfo
+              // The gpu compositing mode is snapshotted in the WebGLContextInfo
               // when making the context. The context will be lost if the mode
               // changes.
               *out_provider =

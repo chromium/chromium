@@ -180,9 +180,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   CreateWebGLGraphicsContextProvider(
       bool prefer_low_power_gpu,
       bool fail_if_major_performance_caveat,
-      blink::Platform::ContextType context_type,
+      blink::Platform::WebGLContextType context_type,
       const blink::WebURL& document_url,
-      blink::Platform::GraphicsInfo* gl_info) override;
+      blink::Platform::WebGLContextInfo* gl_info) override;
   std::unique_ptr<blink::WebGraphicsContext3DProvider>
   CreateRasterGraphicsContextProvider(
       const blink::WebURL& document_url) override;
@@ -274,8 +274,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
  private:
   bool CheckPreparsedJsCachingEnabled() const;
 
-  void Collect3DContextInformation(blink::Platform::GraphicsInfo* gl_info,
-                                   const gpu::GPUInfo& gpu_info) const;
+  void CollectWebGLContextInfo(blink::Platform::WebGLContextInfo* gl_info,
+                               const gpu::GPUInfo& gpu_info) const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)

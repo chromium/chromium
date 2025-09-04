@@ -164,7 +164,7 @@ media::AudioParameters GetAudioHardwareParams() {
       .output_params();
 }
 
-viz::WebGLContextType ToGpuContextType(blink::Platform::ContextType type) {
+viz::WebGLContextType ToGpuContextType(blink::Platform::WebGLContextType type) {
   switch (type) {
     case blink::Platform::kWebGL1ContextType:
       return viz::WebGLContextType::kWebGL1;
@@ -689,8 +689,8 @@ RendererBlinkPlatformImpl::GetVideoCaptureImplManager() {
 
 //------------------------------------------------------------------------------
 
-void RendererBlinkPlatformImpl::Collect3DContextInformation(
-    blink::Platform::GraphicsInfo* gl_info,
+void RendererBlinkPlatformImpl::CollectWebGLContextInfo(
+    blink::Platform::WebGLContextInfo* gl_info,
     const gpu::GPUInfo& gpu_info) const {
   DCHECK(gl_info);
   const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
@@ -713,9 +713,9 @@ std::unique_ptr<blink::WebGraphicsContext3DProvider>
 RendererBlinkPlatformImpl::CreateWebGLGraphicsContextProvider(
     bool prefer_low_power_gpu,
     bool fail_if_major_performance_caveat,
-    blink::Platform::ContextType context_type,
+    blink::Platform::WebGLContextType context_type,
     const blink::WebURL& document_url,
-    blink::Platform::GraphicsInfo* gl_info) {
+    blink::Platform::WebGLContextInfo* gl_info) {
   DCHECK(gl_info);
   if (!RenderThreadImpl::current()) {
     std::string error_message("Failed to run in Current RenderThreadImpl");
@@ -733,7 +733,7 @@ RendererBlinkPlatformImpl::CreateWebGLGraphicsContextProvider(
   }
 
   const auto& gpu_info = gpu_channel_host->gpu_info();
-  Collect3DContextInformation(gl_info, gpu_info);
+  CollectWebGLContextInfo(gl_info, gpu_info);
 
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       viz::ContextProviderCommandBuffer::CreateForWebGL(

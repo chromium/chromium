@@ -77,11 +77,11 @@ namespace blink {
 WebGLRenderingContext::WebGLRenderingContext(
     CanvasRenderingContextHost* host,
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    const Platform::GraphicsInfo& graphics_info,
+    const Platform::WebGLContextInfo& context_info,
     const CanvasContextCreationAttributesCore& requested_attributes)
     : WebGLRenderingContextBase(host,
                                 std::move(context_provider),
-                                graphics_info,
+                                context_info,
                                 requested_attributes,
                                 Platform::kWebGL1ContextType) {}
 

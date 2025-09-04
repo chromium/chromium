@@ -236,12 +236,12 @@ static constexpr auto kSupportedInternalFormatsStorage = std::to_array<GLenum>({
 WebGL2RenderingContextBase::WebGL2RenderingContextBase(
     CanvasRenderingContextHost* host,
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    const Platform::GraphicsInfo& graphics_info,
+    const Platform::WebGLContextInfo& context_info,
     const CanvasContextCreationAttributesCore& requested_attributes,
-    Platform::ContextType context_type)
+    Platform::WebGLContextType context_type)
     : WebGLRenderingContextBase(host,
                                 std::move(context_provider),
-                                graphics_info,
+                                context_info,
                                 requested_attributes,
                                 context_type) {
   for (size_t i = 0; i < std::size(kSupportedInternalFormatsStorage); ++i) {

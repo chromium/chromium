@@ -31,11 +31,11 @@ class DrawingBufferSoftwareCompositingTest : public testing::Test {
         static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
     auto sii_provider_for_sw =
         TestWebGraphicsSharedImageInterfaceProvider::Create();
-    Platform::GraphicsInfo graphics_info;
-    graphics_info.using_gpu_compositing = false;
+    Platform::WebGLContextInfo context_info;
+    context_info.using_gpu_compositing = false;
 
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), std::move(sii_provider_for_sw), graphics_info, gl_,
+        std::move(provider), std::move(sii_provider_for_sw), context_info, gl_,
         initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
     CHECK(drawing_buffer_);
   }
