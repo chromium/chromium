@@ -1351,90 +1351,113 @@ void RewriteExprForSubspan(const clang::Expr* expr,
   }
 }
 
-// Handle the case where we match `&container[<offset>]` being used as a buffer.
-void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
-                                  const std::string& key) {
-  auto replacement_range =
-      GetNodeOrCrash<clang::UnaryOperator>(
-          result, "container_buff_address",
-          "`container_buff_address` previously expected here")
-          ->getSourceRange();
-  replacement_range.setEnd(replacement_range.getEnd().getLocWithOffset(1));
-  const auto& container_decl_ref = *GetNodeOrCrash<clang::DeclRefExpr>(
-      result, "container_decl_ref",
-      "`container_buff_address` implies `container_decl_ref`");
+// Helper function for `EmitContainerPointerRewrites()`.
+//
+// A `&container[offset]` could either be
+// *  a C-style array subscript or
+// *  something with `operator[]` defined.
+//
+// This function helps find the right bracket in either case.
+clang::SourceLocation FindRightBracket(const MatchFinder::MatchResult& result,
+                                       const clang::Expr* subscript_expr) {
+  if (const auto* array_subscript_expr =
+          clang::dyn_cast<clang::ArraySubscriptExpr>(subscript_expr)) {
+    return array_subscript_expr->getRBracketLoc();
+  } else if (const auto* operator_subscript_expr =
+                 clang::dyn_cast<clang::CXXOperatorCallExpr>(subscript_expr)) {
+    return operator_subscript_expr->getRParenLoc();
+  }
+  llvm::errs() << "Error: no matching cast for `subscript_expr` in "
+               << __FUNCTION__ << "\n";
+  DumpMatchResult(result);
+  assert(false);
+}
 
-  std::string container_name = container_decl_ref.getNameInfo().getAsString();
-  std::string replacement_text;
+// Helper function for `EmitContainerPointerRewrites()`.
+//
+// Same motivation as `FindRightBracket()`; returns the expression inside the
+// square brackets.
+const clang::Expr* GetIndexExprForSubspan(
+    const MatchFinder::MatchResult& result,
+    const clang::Expr* subscript_expr) {
+  if (const auto* array_subscript_expr =
+          clang::dyn_cast<clang::ArraySubscriptExpr>(subscript_expr)) {
+    return array_subscript_expr->getIdx();
+  } else if (const auto* operator_subscript_expr =
+                 clang::dyn_cast<clang::CXXOperatorCallExpr>(subscript_expr)) {
+    assert(operator_subscript_expr->getNumArgs() == 2u);
+
+    // Call `IgnoreImpCasts()` to see past the implicit promotion to
+    // `...::size_type` and see the "original" type of the expression.
+    return operator_subscript_expr->getArg(1u)->IgnoreImpCasts();
+  }
+  llvm::errs() << "Error: no matching cast for `subscript_expr` in "
+               << __FUNCTION__ << "\n";
+  DumpMatchResult(result);
+  assert(false);
+}
+
+// Handles `&container[offset]` being used as a buffer.
+//
+// To handle a value passed into a newly spanified function:
+// *  replaces `&` with `base::span<T>(`
+// *  replaces `[` with `).subspan(`
+// *  fixes up the `offset` expression if necessary
+// *  replaces `]` with `)`
+void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
+                                  std::string_view key) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::LangOptions& lang_opts = result.Context->getLangOpts();
+  auto replacement_range = GetNodeOrCrash<clang::UnaryOperator>(
+                               result, "unaryOperator", __FUNCTION__)
+                               ->getSourceRange();
+
+  // Stretch across the `&`.
+  replacement_range.setEnd(replacement_range.getBegin().getLocWithOffset(1));
+
+  const auto& contained_type =
+      *GetNodeOrCrash<clang::QualType>(result, "contained_type", __FUNCTION__);
+
+  const auto* subscript_expr =
+      GetNodeOrCrash<clang::Expr>(result, "subscript_expr", __FUNCTION__);
+
+  const auto& container_decl_ref =
+      *GetNodeOrCrash<clang::Expr>(result, "container_decl_ref", __FUNCTION__);
+  const clang::SourceLocation left_bracket =
+      GetExprRange(container_decl_ref, source_manager, lang_opts).getEnd();
+  clang::SourceLocation right_bracket =
+      FindRightBracket(result, subscript_expr);
 
   // Special case: we detected and bound a zero offset (`&buf[0]`).
-  // We need not emit a `.subspan(...)`.
+  // Rather than emit a `.subspan(...)`, we delete the subscript
+  // expression entirely.
   if (result.Nodes.getNodeAs<clang::IntegerLiteral>("zero_container_offset")) {
-    replacement_text = container_name;
-  } else {
-    // Dance around the offset expression and emit one replacement on
-    // either side of it:
-    // `base::span<T>(container_decl_ref).subspan(` <offset> `)`
-
-    // Ready and emit the first replacement; pull the replacement
-    // range back to the opening bracket of the container.
-    replacement_range.setEnd(
-        container_decl_ref.getSourceRange().getBegin().getLocWithOffset(
-            container_name.length() + 1u));
-    const auto& contained_type = *GetNodeOrCrash<clang::QualType>(
-        result, "contained_type",
-        "`container_buff_address` implies `contained_type`");
-    replacement_text = llvm::formatv(
-        "base::span<{0}>({1}).subspan(",
-        GetTypeAsString(contained_type, *result.Context), container_name);
-    std::string replacement_directive = GetReplacementDirective(
-        replacement_range, std::move(replacement_text), *result.SourceManager);
-    EmitReplacement(key, replacement_directive);
-
-    // Ready the second replacement; advance the replacement range to
-    // the closing bracket (beyond the offset expression).
-    if (const auto* container_subscript =
-            result.Nodes.getNodeAs<clang::CXXOperatorCallExpr>(
-                "container_subscript")) {
-      // 1. implicit `this` arg and
-      // 2. the subscript expression.
-      if (container_subscript->getNumArgs() != 2u) {
-        llvm::errs() << "\nError: matched `operator[]`, expected exactly two "
-                        "args, but got "
-                     << container_subscript->getNumArgs() << "!\n";
-        DumpMatchResult(result);
-        assert(false && "apparently bogus `operator[]`");
-      }
-
-      // Call `IgnoreImpCasts()` to see past the implicit promotion to
-      // `...::size_type` and look at the "original" type of the
-      // expression.
-      RewriteExprForSubspan(container_subscript->getArg(1u)->IgnoreImpCasts(),
-                            result, key);
-
-      replacement_range = {
-          container_subscript->getRParenLoc(),
-          container_subscript->getRParenLoc().getLocWithOffset(1)};
-    } else {
-      // This is a C-style array.
-      const auto& c_style_array_with_subscript =
-          *GetNodeOrCrash<clang::ArraySubscriptExpr>(
-              result, "c_style_array_with_subscript",
-              "expected when `container_subscript` is not bound");
-      replacement_range = {
-          c_style_array_with_subscript.getEndLoc(),
-          c_style_array_with_subscript.getEndLoc().getLocWithOffset(1)};
-      const auto* subscript = GetNodeOrCrash<clang::Expr>(
-          result, "c_style_array_subscript",
-          "expected when `container_subscript` is not bound");
-      RewriteExprForSubspan(subscript, result, key);
-    }
-    // Close the call to `.subspan()`.
-    replacement_text = ")";
+    EmitReplacement(key, GetReplacementDirective(replacement_range, "",
+                                                 *result.SourceManager));
+    replacement_range = {left_bracket, right_bracket.getLocWithOffset(1)};
+    EmitReplacement(key, GetReplacementDirective(replacement_range, "",
+                                                 *result.SourceManager));
+    return;
   }
-  std::string replacement_directive = GetReplacementDirective(
-      replacement_range, std::move(replacement_text), *result.SourceManager);
-  EmitReplacement(key, replacement_directive);
+
+  EmitReplacement(
+      key, GetReplacementDirective(
+               replacement_range,
+               llvm::formatv("base::span<{0}>(  ",
+                             GetTypeAsString(contained_type, *result.Context)),
+               source_manager));
+
+  EmitReplacement(key, GetReplacementDirective(
+                           {left_bracket, left_bracket.getLocWithOffset(1)},
+                           ").subspan( ", source_manager));
+
+  const clang::Expr* index = GetIndexExprForSubspan(result, subscript_expr);
+  assert(index);
+  RewriteExprForSubspan(index, result, key);
+
+  EmitReplacement(key, GetReplacementDirective(
+                           {right_bracket, right_bracket.getLocWithOffset(1)},
+                           ")", source_manager));
 }
 
 // Handles code that passes address to a local variable as a single element
@@ -3034,17 +3057,16 @@ class Spanifier {
                     optionally(
                         hasDescendant(integerLiteral(equals(0u))
                                           .bind("zero_container_offset"))))
-                    .bind("container_subscript"),
+                    .bind("subscript_expr"),
                 arraySubscriptExpr(
                     hasBase(
                         declRefExpr(to(varDecl(hasType(arrayType(hasElementType(
                                         qualType().bind("contained_type")))))))
                             .bind("container_decl_ref")),
-                    hasIndex(expr().bind("c_style_array_subscript")),
                     optionally(hasIndex(integerLiteral(equals(0u))
                                             .bind("zero_container_offset"))))
-                    .bind("c_style_array_with_subscript"))))
-            .bind("container_buff_address");
+                    .bind("subscript_expr"))))
+            .bind("unaryOperator");
 
     // T* a = buf.data();
     auto member_data_call =
@@ -3140,7 +3162,9 @@ class Spanifier {
                                  isExpansionInSystemHeader(),
                                  raw_ptr_plugin::isInExternCContext())))),
                        cxxNullPtrLiteralExpr().bind("nullptr_expr"),
-                       cxxNewExpr(), buff_address_from_container,
+                       cxxNewExpr(),
+                       expr(buff_address_from_container)
+                           .bind("container_buff_address"),
                        buff_address_from_single_var))
                 .bind("size_node")),
         reinterpret_cast_wrapper);
