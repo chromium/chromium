@@ -4,12 +4,48 @@
 
 #include "ui/color/win/accent_color_observer.h"
 
+#include <windows.ui.viewmanagement.h>
+#include <wrl/client.h>
+
 #include <utility>
 
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/win/core_winrt_util.h"
+#include "base/win/scoped_hstring.h"
 #include "skia/ext/skia_utils_win.h"
 #include "ui/gfx/color_utils.h"
+
+namespace {
+
+std::optional<SkColor> TryGetAccentColorFromUISettings() {
+  Microsoft::WRL::ComPtr<ABI::Windows::UI::ViewManagement::IUISettings>
+      ui_settings;
+  base::win::ScopedHString class_id = base::win::ScopedHString::Create(
+      RuntimeClass_Windows_UI_ViewManagement_UISettings);
+  HRESULT hr = base::win::RoActivateInstance(class_id.get(), &ui_settings);
+  if (!SUCCEEDED(hr) || !ui_settings) {
+    return std::nullopt;
+  }
+
+  Microsoft::WRL::ComPtr<ABI::Windows::UI::ViewManagement::IUISettings3>
+      ui_settings3;
+  hr = ui_settings.As(&ui_settings3);
+  if (!SUCCEEDED(hr) || !ui_settings3) {
+    return std::nullopt;
+  }
+
+  ABI::Windows::UI::Color accent_color;
+  hr = ui_settings3->GetColorValue(
+      ABI::Windows::UI::ViewManagement::UIColorType_Accent, &accent_color);
+  if (!SUCCEEDED(hr)) {
+    return std::nullopt;
+  }
+
+  return SkColorSetARGB(0xFF, accent_color.R, accent_color.G, accent_color.B);
+}
+
+}  // namespace
 
 namespace ui {
 
@@ -72,12 +108,20 @@ void AccentColorObserver::UpdateAccentColors() {
     return;
   }
 
-  if (DWORD accent_color = 0;
-      dwm_key_->ReadValueDW(L"AccentColor", &accent_color) == ERROR_SUCCESS) {
-    accent_color_ = skia::COLORREFToSkColor(accent_color);
-  } else {
-    // When there is no accent color, ignore inactive/border colors.
-    return;
+  // Windows will set unsupported accent color values in the registry, while
+  // coercing the value to another color. Use the UISettings API to ensure we
+  // are getting the coerced color to match.
+  accent_color_ = TryGetAccentColorFromUISettings();
+
+  // Fall back to reading from registry if UISettings API failed.
+  if (!accent_color_.has_value()) {
+    if (DWORD accent_color = 0;
+        dwm_key_->ReadValueDW(L"AccentColor", &accent_color) == ERROR_SUCCESS) {
+      accent_color_ = skia::COLORREFToSkColor(accent_color);
+    } else {
+      // When there is no accent color, ignore inactive/border colors.
+      return;
+    }
   }
 
   if (DWORD accent_color_inactive = 0;
