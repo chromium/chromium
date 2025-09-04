@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
@@ -70,13 +71,13 @@ bool WaitableEvent::TimedWait(TimeDelta wait_delta) {
   return result;
 }
 
-size_t WaitableEvent::WaitMany(WaitableEvent** events, size_t count) {
-  DCHECK(count) << "Cannot wait on no events";
+size_t WaitableEvent::WaitMany(base::span<WaitableEvent*> events) {
+  DCHECK(!events.empty()) << "Cannot wait on no events";
   internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
       FROM_HERE, BlockingType::MAY_BLOCK);
 
-  const size_t signaled_id = WaitManyImpl(events, count);
-  WaitableEvent* const signaled_event = UNSAFE_TODO(events[signaled_id]);
+  const size_t signaled_id = WaitManyImpl(events.data(), events.size());
+  WaitableEvent* const signaled_event = events[signaled_id];
   if (!signaled_event->only_used_while_idle_) {
     TRACE_EVENT_INSTANT("wakeup.flow,toplevel.flow",
                         "WaitableEvent::WaitMany Complete",
