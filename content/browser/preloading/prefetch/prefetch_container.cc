@@ -885,9 +885,9 @@ void PrefetchContainer::PauseAllCookieListeners() {
   // TODO(crbug.com/377440445): Consider whether we actually need to
   // pause/resume all single prefetch's cookie listener during each single
   // prefetch's isolated cookie copy.
-  for (const auto& single_prefetch : redirect_chain_) {
-    if (single_prefetch->cookie_listener_) {
-      single_prefetch->cookie_listener_->PauseListening();
+  for (const auto& single_redirect_hop : redirect_chain_) {
+    if (single_redirect_hop->cookie_listener_) {
+      single_redirect_hop->cookie_listener_->PauseListening();
     }
   }
 }
@@ -896,9 +896,9 @@ void PrefetchContainer::ResumeAllCookieListeners() {
   // TODO(crbug.com/377440445): Consider whether we actually need to
   // pause/resume all single prefetch's cookie listener during each single
   // prefetch's isolated cookie copy.
-  for (const auto& single_prefetch : redirect_chain_) {
-    if (single_prefetch->cookie_listener_) {
-      single_prefetch->cookie_listener_->ResumeListening();
+  for (const auto& single_redirect_hop : redirect_chain_) {
+    if (single_redirect_hop->cookie_listener_) {
+      single_redirect_hop->cookie_listener_->ResumeListening();
     }
   }
 }
