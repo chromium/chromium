@@ -847,23 +847,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="Other"/>
 </enum>
 
-<enum name="DevToolsCSSHintShown">
-  <int value="0" label="Other"/>
-  <int value="1" label="AlignContent"/>
-  <int value="2" label="FlexItem"/>
-  <int value="3" label="FlexContainer"/>
-  <int value="4" label="GridContainer"/>
-  <int value="5" label="GridItem"/>
-  <int value="6" label="FlexGrid"/>
-  <int value="7" label="MulticolFlexGrid"/>
-  <int value="8" label="Padding"/>
-  <int value="9" label="Position"/>
-  <int value="10" label="ZIndex"/>
-  <int value="11" label="Sizing"/>
-  <int value="12" label="FlexOrGridItem"/>
-  <int value="13" label="FontVariationSettings"/>
-</enum>
-
 <enum name="DevToolsDebuggingUserDataDirStatus">
   <int value="0" label="Not being debugged"/>
   <int value="1" label="Debugging requested with a non-default user data dir"/>

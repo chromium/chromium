@@ -66,18 +66,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="DevTools.CSSHintShown" enum="DevToolsCSSHintShown"
-    expires_after="2025-10-12">
-  <owner>changhaohan@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <summary>
-    Records how many times different CSS hint types were shown in the Styles
-    panel in DevTools. It's recorded when a hint icon is shown in the Styles
-    panel.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.DeveloperResourceLoaded"
     enum="DevToolsDeveloperResourceLoaded" expires_after="M150">
   <owner>bmeurer@google.com</owner>
