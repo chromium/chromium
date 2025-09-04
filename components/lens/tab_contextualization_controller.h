@@ -19,7 +19,6 @@ namespace lens {
 
 class TabContextualizationController : public content::WebContentsObserver {
  public:
-  TabContextualizationController();
   explicit TabContextualizationController(tabs::TabInterface* tab);
   ~TabContextualizationController() override;
 
@@ -35,7 +34,7 @@ class TabContextualizationController : public content::WebContentsObserver {
       base::OnceCallback<void(bool page_context_eligible)>;
 
   // Gets contextual page content for the tab.
-  void GetPageContext(GetPageContextCallback callback);
+  virtual void GetPageContext(GetPageContextCallback callback);
 
   // Triggers initial page context eligibility check on the current page.
   // Equivalent to calling `optimization_guide::IsPageContextEligible()` with

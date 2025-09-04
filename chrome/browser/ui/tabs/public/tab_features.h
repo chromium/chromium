@@ -232,6 +232,10 @@ class TabFeatures {
   LensOverlayController* lens_overlay_controller();
   const LensOverlayController* lens_overlay_controller() const;
 
+  lens::TabContextualizationController* tab_contextualization_controller() {
+    return tab_contextualization_controller_.get();
+  }
+
   PwaInstallPageActionController* pwa_install_page_action_controller() {
     return pwa_install_page_action_controller_.get();
   }
@@ -257,6 +261,11 @@ class TabFeatures {
 
   TabUIHelper* SetTabUIHelperForTesting(
       std::unique_ptr<TabUIHelper> tab_ui_helper);
+
+  lens::TabContextualizationController*
+  SetTabContextualizationControllerForTesting(
+      std::unique_ptr<lens::TabContextualizationController>
+          tab_contextualization_controller);
 
   TabCreationMetricsController* tab_creation_metrics_controller() {
     return tab_creation_metrics_controller_.get();

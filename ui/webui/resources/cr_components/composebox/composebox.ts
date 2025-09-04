@@ -208,7 +208,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.expanded_ = !this.isCollapsible;
 
     this.listenerIds = [
-      this.callbackRouter_.onFileUploadStatusChanged.addListener(
+      this.callbackRouter_.onContextualInputStatusChanged.addListener(
           (token: UnguessableToken, status: FileUploadStatus,
            errorType: FileUploadErrorType) => {
             let file = this.files_.get(token);
@@ -353,7 +353,7 @@ export class ComposeboxElement extends I18nMixinLit
 
     this.files_ = new Map([...this.files_.entries()].filter(
         ([uuid, _]) => uuid !== e.detail.uuid));
-    this.pageHandler_.deleteFile(e.detail.uuid);
+    this.pageHandler_.deleteContext(e.detail.uuid);
     this.$.input.focus();
   }
 
@@ -393,7 +393,7 @@ export class ComposeboxElement extends I18nMixinLit
 
         const bigBuffer:
             BigBuffer = {bytes: Array.from(new Uint8Array(fileBuffer))};
-        const {token} = await this.pageHandler_.addFile(
+        const {token} = await this.pageHandler_.addFileContext(
             {
               fileName: file.name,
               mimeType: file.type,

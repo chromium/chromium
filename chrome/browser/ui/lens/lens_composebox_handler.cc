@@ -79,15 +79,21 @@ void LensComposeboxHandler::FocusChanged(bool focused) {
   lens_composebox_controller_->OnFocusChanged(focused);
 }
 
-void LensComposeboxHandler::AddFile(
+void LensComposeboxHandler::AddFileContext(
     composebox::mojom::SelectedFileInfoPtr file_info_mojom,
     mojo_base::BigBuffer file_bytes,
-    AddFileCallback callback) {
+    AddFileContextCallback callback) {
   // Ignored, intentionally unimplemented for Lens. Adding files via the
   // composebox is not yet supported.
 }
 
-void LensComposeboxHandler::DeleteFile(
+void LensComposeboxHandler::AddTabContext(int32_t tab_id,
+                                          AddTabContextCallback callback) {
+  // Ignored, intentionally unimplemented for Lens. Adding tabs via the
+  // composebox is not yet supported.
+}
+
+void LensComposeboxHandler::DeleteContext(
     const base::UnguessableToken& file_token) {
   // Ignored, intentionally unimplemented for Lens. Adding files via the
   // composebox is not yet supported.

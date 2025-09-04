@@ -20,10 +20,18 @@
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
 #include "components/variations/variations_client.h"
@@ -32,6 +40,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -67,13 +76,26 @@ class MockPage : public composebox::mojom::Page {
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   MOCK_METHOD(void,
-              OnFileUploadStatusChanged,
+              OnContextualInputStatusChanged,
               (const base::UnguessableToken&,
                composebox_query::mojom::FileUploadStatus,
                std::optional<composebox_query::mojom::FileUploadErrorType>));
 
   mojo::Receiver<composebox::mojom::Page> receiver_{this};
 };
+
+class MockTabContextualizationController
+    : public lens::TabContextualizationController {
+ public:
+  explicit MockTabContextualizationController(tabs::TabInterface* tab)
+      : lens::TabContextualizationController(tab) {}
+
+  MOCK_METHOD(void,
+              GetPageContext,
+              (GetPageContextCallback callback),
+              (override));
+};
+
 }  // namespace
 
 class MockQueryController : public TestComposeboxQueryController {
@@ -331,13 +353,14 @@ TEST_F(ComposeboxHandlerTest, AddFile_Pdf) {
   auto test_data_span = base::span<const uint8_t>(test_data);
   mojo_base::BigBuffer file_data(test_data_span);
 
-  base::MockCallback<ComposeboxHandler::AddFileCallback> callback;
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
   base::UnguessableToken controller_file_info_token;
   base::UnguessableToken callback_token;
   EXPECT_CALL(query_controller(), StartFileUploadFlow)
       .WillOnce(testing::SaveArg<0>(&controller_file_info_token));
   EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
-  handler().AddFile(std::move(file_info), std::move(file_data), callback.Get());
+  handler().AddFileContext(std::move(file_info), std::move(file_data),
+                           callback.Get());
 
   EXPECT_EQ(callback_token, controller_file_info_token);
 }
@@ -362,11 +385,12 @@ TEST_F(ComposeboxHandlerTest, AddFile_Image) {
             controller_file_info_token = file_token;
             image_options = std::move(options_arg);
           });
-  base::MockCallback<ComposeboxHandler::AddFileCallback> callback;
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
   base::UnguessableToken callback_token;
   EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
 
-  handler().AddFile(std::move(file_info), std::move(file_data), callback.Get());
+  handler().AddFileContext(std::move(file_info), std::move(file_data),
+                           callback.Get());
 
   EXPECT_EQ(callback_token, controller_file_info_token);
   EXPECT_TRUE(image_options.has_value());
@@ -402,7 +426,7 @@ TEST_F(ComposeboxHandlerTest, DeleteFile_Success) {
             return file_info.get();
           }));
 
-  handler().DeleteFile(delete_file_token);
+  handler().DeleteContext(delete_file_token);
 
   EXPECT_EQ(delete_file_token, token_arg);
   histogram_tester().ExpectTotalCount(
@@ -413,9 +437,9 @@ TEST_F(ComposeboxHandlerTest, DeleteFile_FailureThrowsMessage) {
   mojo::FakeMessageDispatchContext context;
   mojo::test::BadMessageObserver obs;
   EXPECT_CALL(query_controller(), DeleteFile).WillOnce(testing::Return(false));
-  handler().DeleteFile(base::UnguessableToken::Create());
+  handler().DeleteContext(base::UnguessableToken::Create());
 
-  EXPECT_EQ("An invalid file token was sent to DeleteFile",
+  EXPECT_EQ("An invalid token was sent to DeleteContext",
             obs.WaitForBadMessage());
 }
 
@@ -424,14 +448,108 @@ TEST_F(ComposeboxHandlerTest, ClearFiles) {
   handler().ClearFiles();
 }
 
+class ComposeboxHandlerTabContextTest : public ComposeboxHandlerTest {
+ public:
+  ComposeboxHandlerTabContextTest() {
+    ON_CALL(browser_window_interface_, GetTabStripModel())
+        .WillByDefault(::testing::Return(&tab_strip_model_));
+    ON_CALL(browser_window_interface_, GetUnownedUserDataHost)
+        .WillByDefault(::testing::ReturnRef(user_data_host_));
+    delegate_.SetBrowserWindowInterface(&browser_window_interface_);
+  }
+
+  ~ComposeboxHandlerTabContextTest() override {
+    // Break loop so we can deconstruct without dangling pointers.
+    delegate_.SetBrowserWindowInterface(nullptr);
+  }
+
+  void TearDown() override { ComposeboxHandlerTest::TearDown(); }
+
+  TestTabStripModelDelegate* delegate() { return &delegate_; }
+  TabStripModel* tab_strip_model() { return &tab_strip_model_; }
+  MockBrowserWindowInterface* browser_window_interface() {
+    return &browser_window_interface_;
+  }
+  std::unique_ptr<content::WebContents> CreateWebContents() {
+    return content::WebContentsTester::CreateTestWebContents(profile(),
+                                                             nullptr);
+  }
+
+  tabs::TabInterface* AddTab(GURL url) {
+    std::unique_ptr<content::WebContents> contents_unique_ptr =
+        CreateWebContents();
+    content::WebContentsTester::For(contents_unique_ptr.get())
+        ->NavigateAndCommit(url);
+    content::WebContents* content_ptr = contents_unique_ptr.get();
+    tab_strip_model()->AppendWebContents(std::move(contents_unique_ptr), true);
+    tabs::TabInterface* tab_interface =
+        tab_strip_model()->GetTabForWebContents(content_ptr);
+    tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
+    tab_features->SetTabUIHelperForTesting(
+        std::make_unique<TabUIHelper>(*tab_interface));
+    std::unique_ptr<lens::TabContextualizationController>
+        tab_contextualization_controller =
+            tabs::TabFeatures::GetUserDataFactoryForTesting()
+                .CreateInstance<MockTabContextualizationController>(
+                    *tab_interface, tab_interface);
+    tab_features->SetTabContextualizationControllerForTesting(
+        std::move(tab_contextualization_controller));
+
+    return tab_interface;
+  }
+
+ private:
+  TestTabStripModelDelegate delegate_;
+  TabStripModel tab_strip_model_{&delegate_, profile()};
+  ui::UnownedUserDataHost user_data_host_;
+  MockBrowserWindowInterface browser_window_interface_;
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
+};
+
+TEST_F(ComposeboxHandlerTabContextTest, AddTabContext) {
+  auto sample_url = GURL("https://www.google.com");
+  tabs::TabInterface* tab = AddTab(sample_url);
+  const int sample_tab_id = tab->GetHandle().raw_value();
+
+  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
+  MockTabContextualizationController* tab_contextualization_controller =
+      static_cast<MockTabContextualizationController*>(
+          tab_features->tab_contextualization_controller());
+  EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
+      .Times(1)
+      .WillRepeatedly(testing::Invoke(
+          [](lens::TabContextualizationController::GetPageContextCallback
+                 callback) {
+            std::move(callback).Run(
+                std::make_unique<lens::ContextualInputData>());
+          }));
+
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .Times(1);
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+
+  auto sample_contextual_input_data =
+      std::make_unique<lens::ContextualInputData>();
+  sample_contextual_input_data->page_url = sample_url;
+  handler().AddTabContext(sample_tab_id, callback.Get());
+
+  // Flush the mojo pipe to ensure the callback is run.
+  mock_page_.FlushForTesting();
+
+  // Clean up the tab.
+  tab_strip_model()->CloseAllTabs();
+}
+
 class ComposeboxHandlerFileUploadStatusTest
     : public ComposeboxHandlerTest,
       public testing::WithParamInterface<
           composebox_query::mojom::FileUploadStatus> {};
 
-TEST_P(ComposeboxHandlerFileUploadStatusTest, FileUploadStatusChanged) {
+TEST_P(ComposeboxHandlerFileUploadStatusTest, OnFileUploadStatusChanged) {
   composebox_query::mojom::FileUploadStatus status;
-  EXPECT_CALL(mock_page_, OnFileUploadStatusChanged)
+  EXPECT_CALL(mock_page_, OnContextualInputStatusChanged)
       .Times(1)
       .WillOnce(testing::Invoke(
           [&status](

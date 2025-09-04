@@ -410,6 +410,15 @@ TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
   return tab_ui_helper_.get();
 }
 
+lens::TabContextualizationController*
+TabFeatures::SetTabContextualizationControllerForTesting(
+    std::unique_ptr<lens::TabContextualizationController>
+        tab_contextualization_controller) {
+  tab_contextualization_controller_ =
+      std::move(tab_contextualization_controller);
+  return tab_contextualization_controller_.get();
+}
+
 void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                       content::WebContents* old_contents,
                                       content::WebContents* new_contents) {
