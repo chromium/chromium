@@ -222,7 +222,7 @@ class BottomSheet extends FrameLayout
         }
 
         float startX = mVisibleViewportRect.left;
-        float endX = getWidth() + mVisibleViewportRect.left;
+        float endX = mContainerWidth + mVisibleViewportRect.left;
         return currentEvent.getRawX() > startX && currentEvent.getRawX() < endX;
     }
 
