@@ -79,6 +79,22 @@ public class PasswordsPreferenceTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testPasswordManagerAvailableNoSubtitle() throws IOException {
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
+        when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
+                .thenReturn("random/file/path");
+
+        SettingsStation<MainSettings> page = mEntryPoints.startMainSettingsNonBatched();
+        PreferenceFacility passwordsPref = page.scrollToPref(MainSettings.PREF_PASSWORDS);
+
+        mRenderTestRule.render(
+                passwordsPref.prefViewElement.value(), "passwords_preference_no_subtitle");
+        TransitAsserts.assertFinalDestination(page);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testPwmStoppedWorkingSubtitle() throws IOException {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
