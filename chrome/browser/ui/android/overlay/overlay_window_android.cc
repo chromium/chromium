@@ -275,8 +275,29 @@ void OverlayWindowAndroid::OnViewSizeChanged(JNIEnv* env,
 }
 
 void OverlayWindowAndroid::OnBackToTab(JNIEnv* env) {
-  controller_->FocusInitiator();
-  Hide();
+  if (base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
+    // Call `CloseAndFocusInitiator()` here to prevent a race condition with the
+    // auto-PiP flow. The race occurs between two paths trying to close the
+    // window:
+    // 1. This manual "back to tab" action.
+    // 2. The `AutoPictureInPictureTabHelper`, which automatically closes the
+    //    window when the originating tab becomes visible.
+    //
+    // If we were to call `FocusInitiator()` first, it would make the tab
+    // visible, triggering path (2) immediately. This `OnBackToTab` flow (path
+    // 1) would then also try to close the window, leading to a use-after-free
+    // crash.
+    //
+    // `CloseAndFocusInitiator()` solves this by ensuring the controller
+    // destroys the window (`Close()`) *before* focusing the tab
+    // (`FocusInitiator()`). This way, by the time the tab helper in path (2)
+    // runs, the window is already gone, and its attempt to close it becomes a
+    // safe no-op.
+    controller_->CloseAndFocusInitiator();
+  } else {
+    controller_->FocusInitiator();
+    Hide();
+  }
 }
 
 void OverlayWindowAndroid::Close() {

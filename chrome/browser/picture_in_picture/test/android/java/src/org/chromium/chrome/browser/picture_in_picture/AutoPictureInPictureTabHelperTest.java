@@ -5,31 +5,39 @@
 package org.chromium.chrome.browser.picture_in_picture;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.ui.test.util.DeviceRestriction.RESTRICTION_TYPE_NON_AUTO;
 
+import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.media.PictureInPictureActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -46,6 +54,7 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.media.MediaFeatures;
 import org.chromium.media.MediaSwitches;
 
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** Test suite for {@link AutoPictureInPictureTabHelper}. */
@@ -56,6 +65,7 @@ import java.util.concurrent.TimeoutException;
 })
 @EnableFeatures({
     BlinkFeatures.MEDIA_SESSION_ENTER_PICTURE_IN_PICTURE,
+    MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID,
     MediaFeatures.AUTO_PICTURE_IN_PICTURE_FOR_VIDEO_PLAYBACK
 })
 @Restriction({RESTRICTION_TYPE_NON_AUTO, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -128,6 +138,61 @@ public class AutoPictureInPictureTabHelperTest {
                 });
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, false, "Did not exit auto-PiP after tab shown.");
+    }
+
+    @Test
+    @MediumTest
+    public void testBackToTabFromAutoPip() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        assertTrue(
+                "Page should have registered for auto-pip.",
+                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
+                        webContents));
+
+        // Create a new tab in the background to switch to later.
+        Tab originalTab = mPage.getTab();
+        Tab newTab = createNewTabInBackground(originalTab);
+
+        fulfillVideoPlaybackConditions(webContents);
+
+        // Switch away from the tab. This should trigger auto-PiP.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelUtils.selectTabById(
+                            mActivity.getTabModelSelector(),
+                            newTab.getId(),
+                            TabSelectionType.FROM_USER);
+                });
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, true, "Did not enter auto-PiP after tab hidden.");
+
+        // Get the PiP activity.
+        PictureInPictureActivity pipActivity = getPictureInPictureActivity();
+        assertNotNull("PictureInPictureActivity not found.", pipActivity);
+
+        // Wait for the activity to actually enter PiP mode.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(pipActivity.isInPictureInPictureMode(), Matchers.is(true));
+                });
+
+        // Simulate clicking the "back to tab" button.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Configuration config = pipActivity.getResources().getConfiguration();
+                    pipActivity.onPictureInPictureModeChanged(false, config);
+                });
+
+        // Wait for the PictureInPictureActivity to be destroyed.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            pipActivity == null || pipActivity.isDestroyed(), Matchers.is(true));
+                });
+
+        // Now that the activity is gone, verify the C++ state.
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Did not exit auto-PiP after back-to-tab.");
     }
 
     // TODO(crbug.com/421608904): add a test case for camera/mic based video auto-PiP.
@@ -393,5 +458,27 @@ public class AutoPictureInPictureTabHelperTest {
                                     TabLaunchType.FROM_LONGPRESS_BACKGROUND,
                                     parentTab);
                 });
+    }
+
+    /**
+     * Waits for and returns the currently active {@link PictureInPictureActivity}.
+     *
+     * @return The current {@link PictureInPictureActivity} instance, or null if not found.
+     */
+    private PictureInPictureActivity getPictureInPictureActivity() {
+        final Activity[] activityHolder = new Activity[1];
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    List<Activity> activities = ApplicationStatus.getRunningActivities();
+                    for (Activity activity : activities) {
+                        if (activity instanceof PictureInPictureActivity) {
+                            activityHolder[0] = activity;
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                "Could not find PictureInPictureActivity.");
+        return (PictureInPictureActivity) activityHolder[0];
     }
 }
