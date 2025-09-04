@@ -106,8 +106,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         mLastOffsetX = 0.f;
 
         // Set the correct sub-strategy.
-        if (interactingView instanceof StripLayoutTab) {
-            StripLayoutTab tab = (StripLayoutTab) interactingView;
+        if (interactingView instanceof StripLayoutTab tab) {
             if (mModel.isTabMultiSelected(tab.getTabId())
                     && mModel.getMultiSelectedTabsCount() > 1) {
                 mActiveSubStrategy = mMultiTabSubStrategy;
@@ -242,7 +241,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 StripLayoutView[] stripViews,
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
-                @NonNull StripLayoutView interactingView,
+                StripLayoutView interactingView,
                 PointF startPoint) {
             mWrappedStrategy.startReorderMode(
                     stripViews, stripTabs, stripGroupTitles, interactingView, startPoint);

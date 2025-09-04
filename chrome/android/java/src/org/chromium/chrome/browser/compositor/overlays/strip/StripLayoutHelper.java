@@ -163,8 +163,6 @@ public class StripLayoutHelper
                 StripUpdateDelegate,
                 AnimationHost,
                 TabListNotificationHandler {
-    private static final String TAG = "StripLayoutHelper";
-
     // Animation/Timer Constants
     private static final int SPINNER_UPDATE_DELAY_MS = 66;
     // Degrees per millisecond.
@@ -714,9 +712,7 @@ public class StripLayoutHelper
                         null,
                         NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP,
                         NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP,
-                        (text) -> {
-                            mToolbarContainerView.setTooltipText(text);
-                        },
+                        mToolbarContainerView::setTooltipText,
                         /* clickHandler= */ this,
                         /* keyboardFocusHandler= */ this,
                         R.drawable.ic_new_tab_button,
@@ -908,18 +904,18 @@ public class StripLayoutHelper
         return mTouchableRect;
     }
 
-    /** Returns The visually ordered list of visible {@link StripLayoutTab}s. */
+    /** Returns the visually ordered list of visible {@link StripLayoutTab}s. */
     public StripLayoutTab[] getStripLayoutTabsToRender() {
         return mStripTabsToRender;
     }
 
-    /** Returns The visually ordered list of visible {@link StripLayoutGroupTitle}s. */
+    /** Returns the visually ordered list of visible {@link StripLayoutGroupTitle}s. */
     public StripLayoutGroupTitle[] getStripLayoutGroupTitlesToRender() {
         return mStripGroupTitlesToRender;
     }
 
     /**
-     * Returns A {@link TintedCompositorButton} that represents the positioning of the new tab
+     * Returns a {@link TintedCompositorButton} that represents the positioning of the new tab
      * button.
      */
     public TintedCompositorButton getNewTabButton() {
@@ -934,7 +930,7 @@ public class StripLayoutHelper
         return getCachedTabWidth(isPinned) - TAB_OVERLAP_WIDTH_DP;
     }
 
-    /** Returns The total effective width of pinned tabs. */
+    /** Returns the total effective width of pinned tabs. */
     protected float getTotalPinnedTabsWidth() {
         float width = 0.f;
         for (StripLayoutTab tab : mStripTabs) {
@@ -946,7 +942,7 @@ public class StripLayoutHelper
         return width == 0.f ? 0.f : width + mScrollDelegate.getReorderStartMargin();
     }
 
-    /** Returns The visual offset to be applied to the new tab button. */
+    /** Returns the visual offset to be applied to the new tab button. */
     protected float getNewTabButtonVisualOffset() {
         boolean isRtl = LocalizationUtils.isLayoutRtl();
         float newTabButtonTouchTargetOffset;
@@ -959,17 +955,17 @@ public class StripLayoutHelper
     }
 
     /**
-     * Check whether the tab strip is full by checking whether tab width has decreased to fit more
+     * Returns whether the tab strip is full by checking whether tab width has decreased to fit more
      * tabs.
-     * @return Whether the tab strip is full.
      */
     private boolean isTabStripFull() {
         return getCachedTabWidth(/* isPinned= */ false) < MAX_TAB_WIDTH_DP;
     }
 
     /**
-     * Determine How far to shift new tab button icon visually towards the tab in order to achieve
+     * Determine how far to shift new tab button icon visually towards the tab in order to achieve
      * the desired spacing between new tab button and tabs when tab strip is not full.
+     *
      * @return Visual offset of new tab button icon.
      */
     protected float getNtbVisualOffsetHorizontal() {
@@ -979,12 +975,12 @@ public class StripLayoutHelper
                 0);
     }
 
-    /** Returns The opacity to use for the fade on the left side of the tab strip. */
+    /** Returns the opacity to use for the fade on the left side of the tab strip. */
     public float getLeftFadeOpacity() {
         return getFadeOpacity(true);
     }
 
-    /** Returns The opacity to use for the fade on the right side of the tab strip. */
+    /** Returns the opacity to use for the fade on the right side of the tab strip. */
     public float getRightFadeOpacity() {
         return getFadeOpacity(false);
     }
@@ -1009,7 +1005,7 @@ public class StripLayoutHelper
     }
 
     /**
-     * Returns The strip's current scroll offset. It's a 1-D vector on the X axis under the dynamic
+     * Returns the strip's current scroll offset. It's a 1-D vector on the X axis under the dynamic
      * coordinate system used by {@link ScrollDelegate}.
      */
     float getScrollOffset() {
@@ -1103,6 +1099,7 @@ public class StripLayoutHelper
 
     /**
      * Sets the right fade width based on which fade is showing.
+     *
      * @param fadeWidth The width of the right fade.
      */
     public void setRightFadeWidth(float fadeWidth) {
@@ -1608,12 +1605,11 @@ public class StripLayoutHelper
     /**
      * Called when a tab has been moved in the tabModel.
      *
-     * @param time The current time of the app in ms.
      * @param id The id of the Tab.
      * @param oldIndex The old index of the tab in the {@link TabModel}.
      * @param newIndex The new index of the tab in the {@link TabModel}.
      */
-    public void tabMoved(long time, int id, int oldIndex, int newIndex) {
+    public void tabMoved(int id, int oldIndex, int newIndex) {
         StripLayoutTab tab = findTabById(id);
         if (tab == null || oldIndex == newIndex) return;
 
@@ -1629,10 +1625,9 @@ public class StripLayoutHelper
     /**
      * Called when a tab will be closed. When called, the closing tab will be part of the model.
      *
-     * @param time The current time of the app in ms.
      * @param tab The tab that will be closed.
      */
-    public void willCloseTab(long time, Tab tab) {
+    public void willCloseTab(Tab tab) {
         if (tab == null) return;
         updateGroupTextAndSharedState(tab.getTabGroupId());
         onWillCloseView(findTabById(tab.getId()));
@@ -1642,10 +1637,9 @@ public class StripLayoutHelper
      * Called when a tab is being closed. When called, the closing tab will not be part of the
      * model.
      *
-     * @param time The current time of the app in ms.
      * @param id The id of the tab being closed.
      */
-    public void tabClosed(long time, int id) {
+    public void tabClosed(int id) {
         if (findTabById(id) == null) return;
 
         // 1. Rebuild the strip.
@@ -2108,12 +2102,11 @@ public class StripLayoutHelper
     /**
      * Called on touch drag event.
      *
-     * @param time The current time of the app in ms.
      * @param x The x coordinate of the end of the drag event.
      * @param y The y coordinate of the end of the drag event.
      * @param deltaX The number of pixels dragged in the x direction.
      */
-    public void drag(long time, float x, float y, float deltaX) {
+    public void drag(float x, float y, float deltaX) {
         deltaX = MathUtils.flipSignIf(deltaX, LocalizationUtils.isLayoutRtl());
 
         // 1. Reset the button state.
@@ -2122,12 +2115,10 @@ public class StripLayoutHelper
         // 2.a. Enter reorder mode either if the view was initially clicked by a mouse OR the view
         // was long-pressed, but we suppressed reorder mode to instead show the view's context menu.
         // In the second case, dismiss the aforementioned context menu.
-        boolean shouldTriggerReorder =
-                mDelayedReorderView != null
-                        && !mReorderDelegate.getInReorderMode()
-                        && (Math.abs(x - mDelayedReorderInitialX) > INITIATE_REORDER_DRAG_THRESHOLD
-                                || !isViewContextMenuShowing());
-        if (shouldTriggerReorder) {
+        if (mDelayedReorderView != null
+                && !mReorderDelegate.getInReorderMode()
+                && (Math.abs(x - mDelayedReorderInitialX) > INITIATE_REORDER_DRAG_THRESHOLD
+                        || !isViewContextMenuShowing())) {
             if (isViewContextMenuShowing()) dismissContextMenu();
             // Intentionally start the reorder at the initial long-press x. The difference from the
             // current event (accumulatedDeltaX in step 3) will then "snap" the interacting view to
@@ -2176,12 +2167,9 @@ public class StripLayoutHelper
      * Called on touch fling event. This is called before the onUpOrCancel event.
      *
      * @param time The current time of the app in ms.
-     * @param x The y coordinate of the start of the fling event.
-     * @param y The y coordinate of the start of the fling event.
      * @param velocityX The amount of velocity in the x direction.
-     * @param velocityY The amount of velocity in the y direction.
      */
-    public void fling(long time, float x, float y, float velocityX, float velocityY) {
+    public void fling(long time, float velocityX) {
         // 1. If we're currently in reorder mode or the context menu is showing, don't allow the
         // user to fling.
         if (mReorderDelegate.getInReorderMode() || isViewContextMenuShowing()) return;
@@ -2226,14 +2214,22 @@ public class StripLayoutHelper
      */
     public void onLongPress(float x, float y) {
         StripLayoutView stripView = determineClickedView(x, y, /* buttons= */ 0);
+
+        if (stripView == null) {
+            // Broadcast to start moving the window instance as the user has long pressed on the
+            // open space of the tab strip.
+            // TODO(crbug.com/358191015): Decouple the move window broadcast from this method and
+            // maybe move to #onLongPress when `stripView` is null.
+            sendMoveWindowBroadcast(mToolbarContainerView, x, y);
+            return;
+        }
+
         // If long-pressed on tab (not on close button) or group, mark for delayed reorder during
         // drag.
         if ((stripView instanceof StripLayoutTab clickedTab && !clickedTab.checkCloseHitTest(x, y))
                 || stripView instanceof StripLayoutGroupTitle) {
             mDelayedReorderView = stripView;
             mDelayedReorderInitialX = x;
-        } else if (stripView == null) {
-            startReorderMode(x, y, stripView, ReorderType.START_DRAG_DROP);
         }
         showContextMenu(stripView);
     }
@@ -2512,37 +2508,26 @@ public class StripLayoutHelper
     }
 
     private void startReorderMode(
-            float x,
-            float y,
-            @Nullable StripLayoutView interactingView,
-            @ReorderType int reorderType) {
+            float x, float y, StripLayoutView interactingView, @ReorderType int reorderType) {
         // Allow the user to drag the selected tab out of the tab strip.
-        if (interactingView != null) {
-            if (mReorderDelegate.getInReorderMode()) return;
-            // Attempt to start reordering. If the interacting view is a StripLayoutTab,
-            // only continue if it is valid (non-null, non-dying, non-placeholder) and
-            // the tab state is initialized.
-            if (interactingView instanceof StripLayoutTab interactingTab
-                    && (interactingTab.isDying()
-                            || interactingTab.getTabId() == Tab.INVALID_TAB_ID
-                            || !mTabStateInitialized)) {
-                return;
-            }
-
-            mReorderDelegate.startReorderMode(
-                    mStripViews,
-                    mStripTabs,
-                    mStripGroupTitles,
-                    interactingView,
-                    new PointF(x, y),
-                    reorderType);
-        } else {
-            // Broadcast to start moving the window instance as the user has long pressed on the
-            // open space of the tab strip.
-            // TODO(crbug.com/358191015): Decouple the move window broadcast from this method and
-            // maybe move to #onLongPress when `stripView` is null.
-            sendMoveWindowBroadcast(mToolbarContainerView, x, y);
+        if (mReorderDelegate.getInReorderMode()) return;
+        // Attempt to start reordering. If the interacting view is a StripLayoutTab,
+        // only continue if it is valid (non-null, non-dying, non-placeholder) and
+        // the tab state is initialized.
+        if (interactingView instanceof StripLayoutTab interactingTab
+                && (interactingTab.isDying()
+                        || interactingTab.getTabId() == Tab.INVALID_TAB_ID
+                        || !mTabStateInitialized)) {
+            return;
         }
+
+        mReorderDelegate.startReorderMode(
+                mStripViews,
+                mStripTabs,
+                mStripGroupTitles,
+                interactingView,
+                new PointF(x, y),
+                reorderType);
     }
 
     /**
@@ -2668,7 +2653,6 @@ public class StripLayoutHelper
         }
     }
 
-    @VisibleForTesting
     void setTabHoverCardView(StripTabHoverCardView tabHoverCardView) {
         mTabHoverCardView = tabHoverCardView;
         // If onHoverEnter was already processed before this method call, show card now.
@@ -2989,10 +2973,8 @@ public class StripLayoutHelper
 
     /**
      * Called on up or cancel touch events. This is called after the click and fling event if any.
-     *
-     * @param time The current time of the app in ms.
      */
-    public void onUpOrCancel(long time) {
+    public void onUpOrCancel() {
         /* 1. Stop any reordering that is happening. For Android drag&drop, this method is invoked
          * immediately after View#startDrag to stop ongoing gesture events. Do not stop reorder in
          * this case.
@@ -3049,7 +3031,7 @@ public class StripLayoutHelper
      * @param clickedView The view for which to show a context menu.
      * @return Whether a context menu was shown.
      */
-    private boolean showContextMenu(@Nullable StripLayoutView clickedView) {
+    private boolean showContextMenu(StripLayoutView clickedView) {
         if (clickedView == null) return false;
         if (clickedView instanceof StripLayoutTab clickedTab) {
             // The current tab is always multi selected. So we need to check if there are more tabs
@@ -3275,10 +3257,6 @@ public class StripLayoutHelper
 
     public int getAnchorTabIdForTesting() {
         return mAnchorTabId;
-    }
-
-    public void setAnchorTabIdForTesting(int tabId) {
-        mAnchorTabId = tabId;
     }
 
     private void handleGroupTitleClick(StripLayoutGroupTitle groupTitle) {
@@ -4306,24 +4284,6 @@ public class StripLayoutHelper
         return StripLayoutUtils.findTabById(mStripTabs, id);
     }
 
-    /**
-     * @param ids The set of Tab ids.
-     * @return The List of StripLayoutTab that corresponds to the tab ids.
-     */
-    @VisibleForTesting
-    public @Nullable List<StripLayoutTab> findTabsByIds(Set<Integer> ids) {
-        return StripLayoutUtils.findTabsByIds(mStripTabs, ids);
-    }
-
-    /**
-     * @param ids The set of Tab IDs to order.
-     * @return An ordered {@link List} of the provided tab IDs, or null if none are found on the
-     *     strip.
-     */
-    public @Nullable List<Integer> getTabIdsInOrder(Set<Integer> ids) {
-        return StripLayoutUtils.getTabIdsInOrder(mStripTabs, ids);
-    }
-
     private int findIndexForTab(int id) {
         return StripLayoutUtils.findIndexForTab(mStripTabs, id);
     }
@@ -4335,7 +4295,7 @@ public class StripLayoutHelper
                 && !(tab.isDying() && ChromeFeatureList.sTabletTabStripAnimation.isEnabled());
     }
 
-    /** Returns The total number of unpinned tabs that are live. */
+    /** Returns the total number of unpinned tabs that are live. */
     private int getNumLiveUnpinnedTabs() {
         int numLiveTabs = 0;
 
@@ -4348,7 +4308,7 @@ public class StripLayoutHelper
         return numLiveTabs;
     }
 
-    /** Returns The total number of pinned tabs that are live. */
+    /** Returns the total number of pinned tabs that are live. */
     private int getNumLivePinnedTabs() {
         int numPinnedTabs = 0;
 
@@ -4470,7 +4430,7 @@ public class StripLayoutHelper
                     || tab.isCollapsed()) {
                 continue;
             }
-            Float cachedTabWidth = getCachedTabWidth(tab.getIsPinned());
+            float cachedTabWidth = getCachedTabWidth(tab.getIsPinned());
             if (resizeAnimationList != null) {
                 CompositorAnimator animator;
                 // Handle animating a tab being closed for TabletTabStripAnimation.
@@ -4908,7 +4868,7 @@ public class StripLayoutHelper
         StripLayoutTab tab = mStripTabs[index];
         updateStrip();
         float x = tab.getDrawX() + (tab.getWidth() / 2);
-        startReorderMode(x, 0, getTabAtPosition(x), ReorderType.DRAG_WITHIN_STRIP);
+        startReorderMode(x, 0, tab, ReorderType.DRAG_WITHIN_STRIP);
     }
 
     @Override
@@ -5451,10 +5411,9 @@ public class StripLayoutHelper
         }
     }
 
-    public void handleDragWithin(
-            long time, float x, float y, float deltaX, boolean draggedTabIncognito) {
+    public void handleDragWithin(float x, float y, float deltaX, boolean draggedTabIncognito) {
         if (mIncognito == draggedTabIncognito) {
-            drag(time, x, y, deltaX);
+            drag(x, y, deltaX);
         }
     }
 

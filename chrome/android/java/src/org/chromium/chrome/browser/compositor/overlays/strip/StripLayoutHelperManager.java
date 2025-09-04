@@ -295,7 +295,7 @@ public class StripLayoutHelperManager
                 mTabModelSelector.selectModel(!mTabModelSelector.isIncognitoSelected());
                 return;
             }
-            getActiveStripLayoutHelper().onUpOrCancel(time());
+            getActiveStripLayoutHelper().onUpOrCancel();
         }
 
         @Override
@@ -306,7 +306,7 @@ public class StripLayoutHelperManager
             if (mModelSelectorButton != null) {
                 mModelSelectorButton.drag(x, y);
             }
-            getActiveStripLayoutHelper().drag(time(), x, y, dx);
+            getActiveStripLayoutHelper().drag(x, y, dx);
         }
 
         @Override
@@ -327,7 +327,7 @@ public class StripLayoutHelperManager
             if (DragDropGlobalState.hasValue()) {
                 return;
             }
-            getActiveStripLayoutHelper().fling(time(), x, y, velocityX, velocityY);
+            getActiveStripLayoutHelper().fling(time(), velocityX);
         }
 
         @Override
@@ -419,7 +419,7 @@ public class StripLayoutHelperManager
     /**
      * @return Returns layout observer for tab switcher.
      */
-    public TabSwitcherLayoutObserver getTabSwitcherObserver() {
+    public LayoutStateObserver getTabSwitcherObserver() {
         return mTabSwitcherLayoutObserver;
     }
 
@@ -1377,13 +1377,12 @@ public class StripLayoutHelperManager
 
                     @Override
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        getStripLayoutHelper(tab.isIncognitoBranded()).willCloseTab(time(), tab);
+                        getStripLayoutHelper(tab.isIncognitoBranded()).willCloseTab(tab);
                     }
 
                     @Override
                     public void tabRemoved(Tab tab) {
-                        getStripLayoutHelper(tab.isIncognitoBranded())
-                                .tabClosed(time(), tab.getId());
+                        getStripLayoutHelper(tab.isIncognitoBranded()).tabClosed(tab.getId());
                         updateModelSwitcherButton();
                     }
 
@@ -1393,7 +1392,6 @@ public class StripLayoutHelperManager
                         // expects destination index = position + 1
                         getStripLayoutHelper(tab.isIncognitoBranded())
                                 .tabMoved(
-                                        time(),
                                         tab.getId(),
                                         curIndex,
                                         newIndex > curIndex ? newIndex + 1 : newIndex);
@@ -1428,8 +1426,7 @@ public class StripLayoutHelperManager
                     @Override
                     public void onFinishingTabClosure(
                             Tab tab, @TabClosingSource int closingSource) {
-                        getStripLayoutHelper(tab.isIncognitoBranded())
-                                .tabClosed(time(), tab.getId());
+                        getStripLayoutHelper(tab.isIncognitoBranded()).tabClosed(tab.getId());
                         updateModelSwitcherButton();
                     }
 

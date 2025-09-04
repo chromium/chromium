@@ -98,9 +98,9 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
     protected void setupStripViews() {
         // [Tab1]  [Group1]([Tab2])  [Group2]([Tab3])
         mStripTab1 = buildStripTab(TAB_ID1, /* x= */ 0);
-        mGroupTitle1 = buildGroupTitle(TAB_ID2, GROUP_ID1, TAB_WIDTH);
+        mGroupTitle1 = buildGroupTitle(GROUP_ID1, TAB_WIDTH);
         mStripTab2 = buildStripTab(TAB_ID2, 2 * TAB_WIDTH);
-        mGroupTitle2 = buildGroupTitle(TAB_ID3, GROUP_ID2, 3 * TAB_WIDTH);
+        mGroupTitle2 = buildGroupTitle(GROUP_ID2, 3 * TAB_WIDTH);
         mStripTab3 = buildStripTab(TAB_ID3, 4 * TAB_WIDTH);
 
         // Construct expanded group.

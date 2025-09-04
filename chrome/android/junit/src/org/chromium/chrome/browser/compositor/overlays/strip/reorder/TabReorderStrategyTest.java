@@ -119,11 +119,11 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     @Override
     protected void setupStripViews() {
         // Data = [CollapsedGroup]([Tab])  [Tab]  [Tab]  [ExpandedGroup]([Tab] [Tab])  [Tab]
-        StripLayoutGroupTitle groupTitle1 = buildGroupTitle(TAB_ID1, GROUP_ID1, /* x= */ 0);
+        StripLayoutGroupTitle groupTitle1 = buildGroupTitle(GROUP_ID1, /* x= */ 0);
         mCollapsedTab = buildStripTab(TAB_ID1, TAB_WIDTH);
         mUngroupedTab1 = buildStripTab(TAB_ID2, 2 * TAB_WIDTH);
         mUngroupedTab2 = buildStripTab(TAB_ID3, 3 * TAB_WIDTH);
-        mExpandedTitle = buildGroupTitle(TAB_ID4, GROUP_ID2, 4 * TAB_WIDTH);
+        mExpandedTitle = buildGroupTitle(GROUP_ID2, 4 * TAB_WIDTH);
         mExpandedTab1 = buildStripTab(TAB_ID4, 5 * TAB_WIDTH);
         mExpandedTab2 = buildStripTab(TAB_ID5, 6 * TAB_WIDTH);
         mLastTab = buildStripTab(TAB_ID6, 7 * TAB_WIDTH);

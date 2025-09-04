@@ -100,15 +100,11 @@ public class ReorderDelegate {
     }
 
     // Tab State.
-    private TabGroupModelFilter mTabGroupModelFilter;
     private TabModel mModel;
 
     // Tab Strip State.
-    private AnimationHost mAnimationHost;
     private StripUpdateDelegate mStripUpdateDelegate;
     private ScrollDelegate mScrollDelegate;
-    private ObservableSupplierImpl<Token> mGroupIdToHideSupplier;
-    private View mContainerView;
 
     // Internal State.
     private boolean mInitialized;
@@ -227,25 +223,21 @@ public class ReorderDelegate {
             Supplier<Float> tabWidthSupplier,
             ObservableSupplierImpl<Token> groupIdToHideSupplier,
             View containerView) {
-        mAnimationHost = animationHost;
         mStripUpdateDelegate = stripUpdateDelegate;
-        mTabGroupModelFilter = tabGroupModelFilter;
         mScrollDelegate = scrollDelegate;
         mTabWidthSupplier = tabWidthSupplier;
-        mGroupIdToHideSupplier = groupIdToHideSupplier;
-        mContainerView = containerView;
-        mModel = mTabGroupModelFilter.getTabModel();
+        mModel = tabGroupModelFilter.getTabModel();
 
         mTabStrategy =
                 new TabReorderStrategy(
                         /* reorderDelegate= */ this,
                         mStripUpdateDelegate,
-                        mAnimationHost,
+                        animationHost,
                         mScrollDelegate,
                         mModel,
-                        mTabGroupModelFilter,
-                        mContainerView,
-                        mGroupIdToHideSupplier,
+                        tabGroupModelFilter,
+                        containerView,
+                        groupIdToHideSupplier,
                         mTabWidthSupplier,
                         mLastReorderScrollTimeSupplier,
                         mInReorderModeSupplier);
@@ -253,12 +245,12 @@ public class ReorderDelegate {
                 new MultiTabReorderStrategy(
                         /* reorderDelegate= */ this,
                         mStripUpdateDelegate,
-                        mAnimationHost,
+                        animationHost,
                         mScrollDelegate,
                         mModel,
-                        mTabGroupModelFilter,
-                        mContainerView,
-                        mGroupIdToHideSupplier,
+                        tabGroupModelFilter,
+                        containerView,
+                        groupIdToHideSupplier,
                         mTabWidthSupplier,
                         mLastReorderScrollTimeSupplier,
                         mInReorderModeSupplier);
@@ -266,12 +258,12 @@ public class ReorderDelegate {
                 new GroupReorderStrategy(
                         /* reorderDelegate= */ this,
                         mStripUpdateDelegate,
-                        mAnimationHost,
+                        animationHost,
                         mScrollDelegate,
                         mModel,
-                        mTabGroupModelFilter,
-                        mContainerView,
-                        mGroupIdToHideSupplier,
+                        tabGroupModelFilter,
+                        containerView,
+                        groupIdToHideSupplier,
                         mTabWidthSupplier,
                         mLastReorderScrollTimeSupplier);
         if (tabStripDragHandler != null) {
@@ -279,12 +271,12 @@ public class ReorderDelegate {
                     new SourceViewDragDropReorderStrategy(
                             /* reorderDelegate= */ this,
                             mStripUpdateDelegate,
-                            mAnimationHost,
+                            animationHost,
                             mScrollDelegate,
                             mModel,
-                            mTabGroupModelFilter,
-                            mContainerView,
-                            mGroupIdToHideSupplier,
+                            tabGroupModelFilter,
+                            containerView,
+                            groupIdToHideSupplier,
                             mTabWidthSupplier,
                             mLastReorderScrollTimeSupplier,
                             tabStripDragHandler,
@@ -296,12 +288,12 @@ public class ReorderDelegate {
                     new ExternalViewDragDropReorderStrategy(
                             /* reorderDelegate= */ this,
                             mStripUpdateDelegate,
-                            mAnimationHost,
+                            animationHost,
                             mScrollDelegate,
                             mModel,
-                            mTabGroupModelFilter,
-                            mContainerView,
-                            mGroupIdToHideSupplier,
+                            tabGroupModelFilter,
+                            containerView,
+                            groupIdToHideSupplier,
                             mTabWidthSupplier,
                             mLastReorderScrollTimeSupplier);
         }

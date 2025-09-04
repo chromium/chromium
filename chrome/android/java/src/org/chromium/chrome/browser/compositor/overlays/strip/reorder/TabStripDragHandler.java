@@ -35,7 +35,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.dragdrop.ChromeDragDropUtils;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
@@ -122,11 +121,11 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
             BrowserControlsStateProvider browserControlStateProvider,
-            Supplier<@Nullable Activity> mActivitySupplier,
+            Supplier<@Nullable Activity> activitySupplier,
             ObservableSupplier<Integer> tabStripHeightSupplier,
             Supplier<Boolean> isAppInDesktopWindowSupplier) {
         super(
-                mActivitySupplier,
+                activitySupplier,
                 multiInstanceManager,
                 dragAndDropDelegate,
                 isAppInDesktopWindowSupplier);
@@ -388,12 +387,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         float yDp = yPx * mPxToDp;
         mStripLayoutHelperSupplier
                 .get()
-                .handleDragWithin(
-                        LayoutManagerImpl.time(),
-                        xDp,
-                        yDp,
-                        xDp - mLastXDp,
-                        isDraggedItemIncognito());
+                .handleDragWithin(xDp, yDp, xDp - mLastXDp, isDraggedItemIncognito());
         return true;
     }
 

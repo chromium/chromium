@@ -98,7 +98,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     }
 
     private void setupForGroupDrag() {
-        mInteractingGroupTitle = buildGroupTitle(TAB_ID1, GROUP_ID1, TAB_WIDTH);
+        mInteractingGroupTitle = buildGroupTitle(GROUP_ID1, TAB_WIDTH);
     }
 
     @Test

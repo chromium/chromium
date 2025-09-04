@@ -106,7 +106,7 @@ public abstract class ReorderStrategyTestBase {
 
     protected abstract void setupStripViews();
 
-    protected StripLayoutGroupTitle buildGroupTitle(Integer rootId, Token groupId, int x) {
+    protected StripLayoutGroupTitle buildGroupTitle(Token groupId, int x) {
         StripLayoutGroupTitle title =
                 new StripLayoutGroupTitle(mActivity, null, null, false, groupId);
         setDrawProperties(title, x);

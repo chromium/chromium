@@ -118,10 +118,10 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     protected void setupStripViews() {
         // Layout: [Tab1] [ExpandedGroup]([Tab2][Tab3]) [Tab4(CollapsedGroup)] [Tab5] [Tab6]
         mUngroupedTab1 = buildStripTab(TAB_ID1, 0);
-        mExpandedGroupTitle = buildGroupTitle(TAB_ID2, GROUP_ID1, TAB_WIDTH);
+        mExpandedGroupTitle = buildGroupTitle(GROUP_ID1, TAB_WIDTH);
         mGroupedTab1 = buildStripTab(TAB_ID2, 2 * TAB_WIDTH);
         mGroupedTab2 = buildStripTab(TAB_ID3, 3 * TAB_WIDTH);
-        mCollapsedGroupTitle = buildGroupTitle(TAB_ID4, GROUP_ID2, 4 * TAB_WIDTH);
+        mCollapsedGroupTitle = buildGroupTitle(GROUP_ID2, 4 * TAB_WIDTH);
         mCollapsedGroupTab = buildStripTab(TAB_ID4, 4 * TAB_WIDTH);
         mUngroupedTab2 = buildStripTab(TAB_ID5, 5 * TAB_WIDTH);
         mUngroupedTab3 = buildStripTab(TAB_ID6, 6 * TAB_WIDTH);
