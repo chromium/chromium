@@ -366,7 +366,7 @@ using tab_groups::SharingState;
 
   // Group Ids doesn't match.
   if (savedGroup->collaboration_id().value() !=
-      tab_groups::CollaborationId(groupId.value())) {
+      syncer::CollaborationId(groupId.value())) {
     return;
   }
 
@@ -397,7 +397,7 @@ using tab_groups::SharingState;
 
   const TabGroup* tabGroup = [self currentTabGroup];
 
-  tab_groups::CollaborationId savedCollabID =
+  syncer::CollaborationId savedCollabID =
       tab_groups::utils::GetTabGroupCollabID(tabGroup, _tabGroupSyncService);
   BOOL isShared = !savedCollabID.value().empty();
   [self updateTabGroupSharingState:tabGroup];

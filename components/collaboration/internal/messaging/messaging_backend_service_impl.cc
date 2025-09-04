@@ -34,6 +34,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -260,9 +261,9 @@ std::optional<data_sharing::GroupId> GroupIdForTabGroup(
   return data_sharing::GroupId(tab_group.collaboration_id().value().value());
 }
 
-tab_groups::CollaborationId ToCollaborationId(
+syncer::CollaborationId ToCollaborationId(
     const data_sharing::GroupId& group_id) {
-  return tab_groups::CollaborationId(group_id.value());
+  return syncer::CollaborationId(group_id.value());
 }
 
 TabGroupMessageMetadata CreateTabGroupMessageMetadata(
@@ -1524,7 +1525,7 @@ MessagingBackendServiceImpl::GetTabGroupFromCollaborationId(
     return std::nullopt;
   }
 
-  tab_groups::CollaborationId collaboration_group_id(collaboration_id);
+  syncer::CollaborationId collaboration_group_id(collaboration_id);
   for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
     if (group.collaboration_id().has_value() &&
         group.collaboration_id().value() == collaboration_group_id) {

@@ -261,7 +261,7 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
 
   void InjectTombstoneToFakeServer(
       const sync_pb::SharedTabGroupDataSpecifics& shared_group_specifics,
-      const CollaborationId& collaboration_id) {
+      const syncer::CollaborationId& collaboration_id) {
     const syncer::ClientTagHash shared_group_client_tag_hash =
         syncer::ClientTagHash::FromUnhashed(
             syncer::SHARED_TAB_GROUP_DATA,
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
                        ShouldIgnoreTabGroupWithSameGuid) {
   ASSERT_TRUE(SetupSync());
 
-  const CollaborationId kCollaborationId("collaboration");
+  const syncer::CollaborationId kCollaborationId("collaboration");
   const base::Uuid kGroupGuid = base::Uuid::GenerateRandomV4();
 
   // Add a saved tab group locally and simulate a remote creation of a shared
@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
                        ShouldIgnoreTabUpdatesWithGuidOfSavedGroup) {
   ASSERT_TRUE(SetupSync());
 
-  const CollaborationId kCollaborationId("collaboration");
+  const syncer::CollaborationId kCollaborationId("collaboration");
 
   tab_groups::SavedTabGroup saved_group(u"Saved Title", TabGroupColorId::kGrey,
                                         /*urls=*/{}, /*position=*/0);
@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
                        ShouldRestoreOriginatingSavedGroupOnShareFailure) {
   const GURL kUrl = embedded_test_server()->GetURL(kDefaultURLPath);
-  const CollaborationId kCollaborationId("collaboration");
+  const syncer::CollaborationId kCollaborationId("collaboration");
 
   ASSERT_TRUE(SetupClients());
   RegisterCollaboration(kCollaborationId);

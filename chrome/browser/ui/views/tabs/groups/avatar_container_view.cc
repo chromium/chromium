@@ -198,7 +198,7 @@ void ManageSharingAvatarContainer::UpdateMemberGfxImage(
 
 ManageSharingAvatarContainer::ManageSharingAvatarContainer(
     Profile* profile,
-    const tab_groups::CollaborationId& collaboration_id)
+    const syncer::CollaborationId& collaboration_id)
     : data_sharing_service_(
           data_sharing::DataSharingServiceFactory::GetForProfile(profile)),
       profile_(profile),

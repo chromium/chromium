@@ -665,7 +665,7 @@ bool SavedTabGroupUtils::IsOwnerOfSharedTabGroup(Profile* profile,
     return true;
   }
 
-  std::optional<CollaborationId> collaboration_id =
+  std::optional<syncer::CollaborationId> collaboration_id =
       saved_group->collaboration_id();
   if (!collaboration_id) {
     return true;
@@ -688,7 +688,7 @@ bool SavedTabGroupUtils::IsOwnerOfSharedTabGroup(Profile* profile,
 std::vector<data_sharing::GroupMember>
 SavedTabGroupUtils::GetMembersOfSharedTabGroup(
     Profile* profile,
-    const tab_groups::CollaborationId& collaboration_id) {
+    const syncer::CollaborationId& collaboration_id) {
   collaboration::CollaborationService* collaboration_service =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
   if (!collaboration_service) {
@@ -720,7 +720,7 @@ std::optional<data_sharing::GroupId> SavedTabGroupUtils::GetDataSharingGroupId(
     return std::nullopt;
   }
 
-  std::optional<CollaborationId> collaboration_id =
+  std::optional<syncer::CollaborationId> collaboration_id =
       saved_tab_group->collaboration_id();
   if (!collaboration_id.has_value()) {
     return std::nullopt;

@@ -68,14 +68,14 @@ MATCHER_P(TabGuidEq, expected_tab, "") {
 
 tab_groups::SavedTabGroup CreateTestSharedTabGroup() {
   tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
-  group.SetCollaborationId(tab_groups::CollaborationId("collab_id"));
+  group.SetCollaborationId(syncer::CollaborationId("collab_id"));
   return group;
 }
 
 tab_groups::SavedTabGroup CreateTestSharedTabGroupWithNoTabs() {
   tab_groups::SavedTabGroup group =
       tab_groups::test::CreateTestSavedTabGroupWithNoTabs();
-  group.SetCollaborationId(tab_groups::CollaborationId("collab_id"));
+  group.SetCollaborationId(syncer::CollaborationId("collab_id"));
   return group;
 }
 }  // namespace

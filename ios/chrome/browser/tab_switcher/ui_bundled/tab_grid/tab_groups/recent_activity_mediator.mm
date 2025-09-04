@@ -201,7 +201,7 @@ const int kMaxNumberOfLogs = 5;
 - (void)populateItemsFromService {
   collaboration::messaging::ActivityLogQueryParams params;
   params.result_length = kMaxNumberOfLogs;
-  tab_groups::CollaborationId collabID =
+  syncer::CollaborationId collabID =
       tab_groups::utils::GetTabGroupCollabID(_tabGroup.get(), _syncService);
   params.collaboration_id = data_sharing::GroupId(collabID.value());
 

@@ -817,7 +817,7 @@ void IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup(
     return;
   }
 
-  tab_groups::CollaborationId collaboration_id =
+  syncer::CollaborationId collaboration_id =
       tab_groups::utils::GetTabGroupCollabID(either_id,
                                              tab_group_sync_service_);
   std::optional<tab_groups::SavedTabGroup> group =

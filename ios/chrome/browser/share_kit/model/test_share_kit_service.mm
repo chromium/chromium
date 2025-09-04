@@ -251,8 +251,8 @@ void TestShareKitService::LeaveGroup(ShareKitLeaveConfiguration* config) {
 void TestShareKitService::DeleteGroup(ShareKitDeleteConfiguration* config) {
   auto callback = config.callback;
   std::optional<tab_groups::SavedTabGroup> tab_group;
-  tab_groups::CollaborationId collaboration_id =
-      tab_groups::CollaborationId(base::SysNSStringToUTF8(config.collabID));
+  syncer::CollaborationId collaboration_id =
+      syncer::CollaborationId(base::SysNSStringToUTF8(config.collabID));
 
   for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
     if (group.collaboration_id().has_value() &&

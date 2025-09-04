@@ -301,9 +301,9 @@ data_sharing::MemberRole GetUserRoleForGroup(
     return data_sharing::MemberRole::kUnknown;
   }
 
-  CollaborationId collab_id =
+  syncer::CollaborationId collab_id =
       GetTabGroupCollabID(tab_group, tab_group_sync_service);
-  if (collab_id == CollaborationId()) {
+  if (collab_id == syncer::CollaborationId()) {
     return data_sharing::MemberRole::kUnknown;
   }
 
@@ -311,16 +311,16 @@ data_sharing::MemberRole GetUserRoleForGroup(
   return collaboration_service->GetCurrentUserRoleForGroup(group_id);
 }
 
-CollaborationId GetTabGroupCollabID(
+syncer::CollaborationId GetTabGroupCollabID(
     const TabGroup* tab_group,
     TabGroupSyncService* tab_group_sync_service) {
   if (!tab_group) {
-    return CollaborationId();
+    return syncer::CollaborationId();
   }
   return GetTabGroupCollabID(tab_group->tab_group_id(), tab_group_sync_service);
 }
 
-CollaborationId GetTabGroupCollabID(
+syncer::CollaborationId GetTabGroupCollabID(
     const tab_groups::EitherGroupID& tab_group_id,
     TabGroupSyncService* tab_group_sync_service) {
   if (tab_group_sync_service) {
@@ -331,7 +331,7 @@ CollaborationId GetTabGroupCollabID(
       return saved_group->collaboration_id().value();
     }
   }
-  return CollaborationId();
+  return syncer::CollaborationId();
 }
 
 }  // namespace utils

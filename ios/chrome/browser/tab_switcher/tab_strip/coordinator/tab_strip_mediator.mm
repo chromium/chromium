@@ -1441,7 +1441,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
 
   const TabGroup* group = itemIdentifier.tabGroupItem.tabGroup;
-  tab_groups::CollaborationId collaborationID =
+  syncer::CollaborationId collaborationID =
       tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
   if (collaborationID->empty()) {
     return nil;
@@ -1905,7 +1905,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                  sharedTabGroup:(const TabGroup*)group {
   CHECK(_collaborationService);
 
-  const tab_groups::CollaborationId collabId =
+  const syncer::CollaborationId collabId =
       tab_groups::utils::GetTabGroupCollabID(group, _tabGroupSyncService);
   CHECK(!collabId->empty());
   const data_sharing::GroupId groupId = data_sharing::GroupId(collabId.value());

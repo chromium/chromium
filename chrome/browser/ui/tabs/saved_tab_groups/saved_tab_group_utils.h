@@ -14,6 +14,7 @@
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -156,7 +157,7 @@ class SavedTabGroupUtils {
   // is missing or not accessible.
   static std::vector<data_sharing::GroupMember> GetMembersOfSharedTabGroup(
       Profile* profile,
-      const tab_groups::CollaborationId& collaboration_id);
+      const syncer::CollaborationId& collaboration_id);
 
   // Returns the GroupId for this tab group's collaboration.
   static std::optional<data_sharing::GroupId> GetDataSharingGroupId(

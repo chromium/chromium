@@ -581,8 +581,8 @@ NSString* CreationText(base::Time creation_date) {
     return;
   }
 
-  tab_groups::CollaborationId collaborationId =
-      tab_groups::CollaborationId(groupId.value());
+  syncer::CollaborationId collaborationId =
+      syncer::CollaborationId(groupId.value());
   std::vector<tab_groups::SavedTabGroup> groups =
       _tabGroupSyncService->GetAllGroups();
 

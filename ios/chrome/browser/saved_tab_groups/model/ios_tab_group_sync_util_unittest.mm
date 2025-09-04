@@ -486,7 +486,7 @@ TEST_F(TabGroupSyncUtilTest, IsTabGroupSharedWithShared) {
 
   SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
                             /*urls=*/{}, /*position=*/std::nullopt);
-  saved_group.SetCollaborationId(CollaborationId("collaboration"));
+  saved_group.SetCollaborationId(syncer::CollaborationId("collaboration"));
 
   EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
       .WillOnce(testing::Return(saved_group));
@@ -521,7 +521,7 @@ TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDWithShared) {
 
   SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
                             /*urls=*/{}, /*position=*/std::nullopt);
-  saved_group.SetCollaborationId(CollaborationId("collaboration"));
+  saved_group.SetCollaborationId(syncer::CollaborationId("collaboration"));
 
   tab_groups::EitherGroupID either_id = tab_group_id;
   EXPECT_CALL(*mock_service_, GetGroup(either_id))
@@ -564,7 +564,7 @@ TEST_F(TabGroupSyncUtilTest, GetUserRoleForGroupShared) {
 
   SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
                             /*urls=*/{}, /*position=*/std::nullopt);
-  saved_group.SetCollaborationId(CollaborationId("collaboration"));
+  saved_group.SetCollaborationId(syncer::CollaborationId("collaboration"));
 
   tab_groups::EitherGroupID either_id = tab_group_id;
   EXPECT_CALL(*mock_service_, GetGroup(either_id))

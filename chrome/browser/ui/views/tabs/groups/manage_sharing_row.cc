@@ -45,7 +45,7 @@ gfx::Insets GetControlInsets() {
 
 ManageSharingRow::ManageSharingRow(
     Profile* profile,
-    const tab_groups::CollaborationId& collaboration_id,
+    const syncer::CollaborationId& collaboration_id,
     PressedCallback callback)
     : Button(std::move(callback)),
       profile_(profile),

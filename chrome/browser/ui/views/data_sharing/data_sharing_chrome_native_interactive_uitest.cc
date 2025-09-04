@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowManageBubble) {
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::optional<tab_groups::SavedTabGroup> group =
       tab_group_service->GetGroup(group_id);
-  tab_groups::CollaborationId fake_collab_id("fake_collab_id");
+  syncer::CollaborationId fake_collab_id("fake_collab_id");
   group->SetCollaborationId(fake_collab_id);
   tab_group_service->RemoveGroup(group->saved_guid());
   tab_group_service->AddGroup(group.value());
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::optional<tab_groups::SavedTabGroup> group =
       tab_group_service->GetGroup(group_id);
-  tab_groups::CollaborationId fake_collab_id("fake_collab_id");
+  syncer::CollaborationId fake_collab_id("fake_collab_id");
   group->SetCollaborationId(fake_collab_id);
   tab_group_service->RemoveGroup(group->saved_guid());
   tab_group_service->AddGroup(group.value());

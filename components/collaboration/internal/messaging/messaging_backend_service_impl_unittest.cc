@@ -108,7 +108,7 @@ tab_groups::SavedTabGroup CreateSharedTabGroup(
                                       tab_groups::TabGroupColorId::kOrange,
                                       tabs, std::nullopt, tab_group_sync_id);
   tab_group.SetCollaborationId(
-      tab_groups::CollaborationId(collaboration_group_id.value()));
+      syncer::CollaborationId(collaboration_group_id.value()));
   return tab_group;
 }
 
@@ -130,7 +130,7 @@ tab_groups::SavedTabGroup CreateSharedTabGroup(
                                       tab_groups::TabGroupColorId::kOrange,
                                       tabs, std::nullopt, tab_group_sync_id);
   tab_group.SetCollaborationId(
-      tab_groups::CollaborationId(collaboration_group_id.value()));
+      syncer::CollaborationId(collaboration_group_id.value()));
   return tab_group;
 }
 

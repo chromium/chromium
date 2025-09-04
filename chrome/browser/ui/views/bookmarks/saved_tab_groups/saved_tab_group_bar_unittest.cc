@@ -394,7 +394,8 @@ TEST_F(SavedTabGroupBarUnitTest, AccessibleName) {
       data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 
   SavedTabGroup saved_tab_group = *service()->GetGroup(tab_group_id);
-  saved_tab_group.SetCollaborationId(CollaborationId("collaboration_id"));
+  saved_tab_group.SetCollaborationId(
+      syncer::CollaborationId("collaboration_id"));
   saved_tab_group_button->UpdateButtonData(saved_tab_group);
   data = ui::AXNodeData();
   saved_tab_group_button->GetViewAccessibility().GetAccessibleNodeData(&data);

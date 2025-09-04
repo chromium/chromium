@@ -681,7 +681,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     return;
   }
 
-  tab_groups::CollaborationId savedCollabID =
+  syncer::CollaborationId savedCollabID =
       tab_groups::utils::GetTabGroupCollabID(_tabGroup.get(),
                                              _tabGroupSyncService);
   BOOL isShared = !savedCollabID.value().empty();
@@ -851,7 +851,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 
   // Group Ids doesn't match.
   if (savedGroup->collaboration_id().value() !=
-      tab_groups::CollaborationId(groupId.value())) {
+      syncer::CollaborationId(groupId.value())) {
     return;
   }
 

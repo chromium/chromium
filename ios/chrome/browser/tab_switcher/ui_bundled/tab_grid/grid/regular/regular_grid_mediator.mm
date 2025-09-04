@@ -480,7 +480,7 @@ using ScopedTabGroupSyncObservation =
     return nil;
   }
 
-  tab_groups::CollaborationId collaborationID =
+  syncer::CollaborationId collaborationID =
       tab_groups::utils::GetTabGroupCollabID(tabGroup, _tabGroupSyncService);
   if (collaborationID->empty()) {
     return nil;

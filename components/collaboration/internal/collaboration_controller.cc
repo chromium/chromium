@@ -22,6 +22,7 @@
 #include "components/data_sharing/public/logger_common.mojom.h"
 #include "components/data_sharing/public/logger_utils.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/service/sync_service.h"
 
 namespace collaboration {
@@ -177,7 +178,7 @@ class ControllerState {
     for (const auto& group : all_groups) {
       if (group.collaboration_id().has_value() &&
           group.collaboration_id().value() ==
-              tab_groups::CollaborationId(group_id.value())) {
+              syncer::CollaborationId(group_id.value())) {
         return true;
       }
     }
@@ -926,7 +927,7 @@ class WaitingForSyncAndDataSharingGroup
         controller_->flow().join_token().group_id;
     if (group.is_shared_tab_group() &&
         group.collaboration_id().value() ==
-            tab_groups::CollaborationId(group_id.value()) &&
+            syncer::CollaborationId(group_id.value()) &&
         IsPeopleGroupInDataSharing(group_id)) {
       RecordJoinEvent(GetLogger(),
                       CollaborationServiceJoinEvent::kTabGroupFetched);

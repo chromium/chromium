@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/saved_tab_groups/public/types.h"
+#import "components/sync/base/collaboration_id.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -99,13 +100,13 @@ data_sharing::MemberRole GetUserRoleForGroup(
 
 // Returns the collabID of the given `tab_group` if it's shared.
 // Otherwise returns an empty collabID.
-CollaborationId GetTabGroupCollabID(
+syncer::CollaborationId GetTabGroupCollabID(
     const TabGroup* tab_group,
     TabGroupSyncService* tab_group_sync_service);
 
 // Returns the collabID of the given `tab_group_id` if it's shared.
 // Otherwise returns an empty collabID.
-CollaborationId GetTabGroupCollabID(
+syncer::CollaborationId GetTabGroupCollabID(
     const tab_groups::EitherGroupID& tab_group_id,
     TabGroupSyncService* tab_group_sync_service);
 
