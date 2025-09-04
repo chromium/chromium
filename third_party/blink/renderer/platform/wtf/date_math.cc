@@ -79,10 +79,10 @@
 #include <unicode/timezone.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
@@ -97,9 +97,9 @@ static const double kMaximumECMADateInMs = 8640000000000000.0;
 
 // Day of year for the first day of each month, where index 0 is January, and
 // day 0 is January 1.  First for non-leap years, then for leap years.
-static const int kFirstDayOfMonth[2][12] = {
-    {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334},
-    {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335}};
+static const std::array<std::array<int, 12>, 2> kFirstDayOfMonth = {
+    {{0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334},
+     {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335}}};
 
 bool IsLeapYear(int year) {
   if (year % 4 != 0)
@@ -233,7 +233,7 @@ int DayInMonthFromDayInYear(int day_in_year, bool leap_year) {
 }
 
 int DayInYear(int year, int month, int day) {
-  return UNSAFE_TODO(kFirstDayOfMonth[IsLeapYear(year)][month]) + day - 1;
+  return kFirstDayOfMonth[IsLeapYear(year)][month] + day - 1;
 }
 
 double DateToDaysFrom1970(int year, int month, int day) {
