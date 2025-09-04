@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -17,11 +19,39 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 #include "content/browser/indexed_db/status.h"
+#include "sql/meta_table.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-data-view.h"
 
 namespace content::indexed_db::sqlite {
+
+namespace {
+
+// TODO(crbug.com/419272072): de-dupe with backing_store_unittest.cc
+BlobWriteCallback CreateBlobWriteCallback(
+    bool* succeeded,
+    base::OnceClosure on_done = base::DoNothing()) {
+  *succeeded = false;
+  return base::BindOnce(
+      [](bool* succeeded, base::OnceClosure on_done, BlobWriteResult result,
+         storage::mojom::WriteBlobToFileResult error) {
+        switch (result) {
+          case BlobWriteResult::kFailure:
+            NOTREACHED();
+          case BlobWriteResult::kRunPhaseTwoAsync:
+          case BlobWriteResult::kRunPhaseTwoAndReturnResult:
+            CHECK_EQ(error, storage::mojom::WriteBlobToFileResult::kSuccess);
+            *succeeded = true;
+            break;
+        }
+        std::move(on_done).Run();
+        return Status::OK();
+      },
+      succeeded, std::move(on_done));
+}
+
+}  // namespace
 
 class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
  public:
@@ -53,7 +83,11 @@ class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
 
 class DatabaseConnectionTest : public testing::Test {
  public:
-  DatabaseConnectionTest() = default;
+  static constexpr int kObjectStoreId = 42;
+  const blink::IndexedDBKey kKey;
+  const IndexedDBValue kValue;
+
+  DatabaseConnectionTest() : kKey("key"), kValue("deadbeef", {}) {}
   ~DatabaseConnectionTest() override = default;
 
   void SetUp() override {
@@ -77,12 +111,35 @@ class DatabaseConnectionTest : public testing::Test {
     return reinterpret_cast<BackingStoreImpl*>(backing_store_.get());
   }
 
-  std::unique_ptr<BackingStore::Database> OpenDb(const std::u16string& name) {
+  std::unique_ptr<BackingStore::Database> OpenDb(std::u16string_view name) {
     StatusOr<std::unique_ptr<BackingStore::Database>> db =
-        backing_store()->CreateOrOpenDatabase(name);
+        backing_store()->CreateOrOpenDatabase(std::u16string(name));
     EXPECT_TRUE(db.has_value());
     EXPECT_TRUE(db.value().get());
     return std::move(db.value());
+  }
+
+  base::FilePath GetDatabasePath(std::u16string_view name) {
+    return temp_dir_.GetPath().Append(DatabaseNameToFileName(name));
+  }
+
+  // Create an object store with one record in it.
+  void InitializeDbWithOneRecord(BackingStore::Database& db) {
+    auto vc =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Default,
+                             blink::mojom::IDBTransactionMode::VersionChange);
+    vc->Begin({});
+    ASSERT_TRUE(
+        vc->CreateObjectStore(kObjectStoreId, u"object store name", {}, true)
+            .ok());
+    ASSERT_TRUE(vc->PutRecord(kObjectStoreId, kKey.Clone(), kValue.Clone())
+                    .has_value());
+    ASSERT_TRUE(vc->SetDatabaseVersion(1).ok());
+    bool succeeded = false;
+    ASSERT_TRUE(
+        vc->CommitPhaseOne(CreateBlobWriteCallback(&succeeded), {}).ok());
+    EXPECT_TRUE(succeeded);
+    ASSERT_TRUE(vc->CommitPhaseTwo().ok());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -91,35 +148,63 @@ class DatabaseConnectionTest : public testing::Test {
   std::unique_ptr<BackingStore> backing_store_;
 };
 
-// TODO(crbug.com/419272072): de-dupe with backing_store_unittest.cc
-BlobWriteCallback CreateBlobWriteCallback(
-    bool* succeeded,
-    base::OnceClosure on_done = base::DoNothing()) {
-  *succeeded = false;
-  return base::BindOnce(
-      [](bool* succeeded, base::OnceClosure on_done, BlobWriteResult result,
-         storage::mojom::WriteBlobToFileResult error) {
-        switch (result) {
-          case BlobWriteResult::kFailure:
-            NOTREACHED();
-          case BlobWriteResult::kRunPhaseTwoAsync:
-          case BlobWriteResult::kRunPhaseTwoAndReturnResult:
-            CHECK_EQ(error, storage::mojom::WriteBlobToFileResult::kSuccess);
-            *succeeded = true;
-            break;
-        }
-        std::move(on_done).Run();
-        return Status::OK();
-      },
-      succeeded, std::move(on_done));
+// Verifies that a DB which is too new (as determined by the compatible version
+// number) is considered an irrecoverable state and deleted.
+TEST_F(DatabaseConnectionTest, TooNew) {
+  // Create DB.
+  const std::u16string_view kDbName{u"test db"};
+  auto connection = OpenDb(kDbName);
+  ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*connection));
+  connection.reset();
+  const base::FilePath db_path = GetDatabasePath(kDbName);
+  ASSERT_TRUE(base::PathExists(db_path));
+
+  // Simulate a newer version of the browser updating the schema.
+  auto sql_db = std::make_unique<sql::Database>(sql::DatabaseOptions()
+                                                    .set_exclusive_locking(true)
+                                                    .set_wal_mode(true)
+                                                    .set_enable_triggers(true),
+                                                sql::test::kTestTag);
+  ASSERT_TRUE(sql_db->Open(db_path));
+  ASSERT_TRUE(sql::MetaTable::DoesTableExist(sql_db.get()));
+  int original_version, original_compat_version;
+  {
+    sql::MetaTable meta_table;
+    // Versions ignored since the table already exists.
+    EXPECT_TRUE(meta_table.Init(sql_db.get(), /*version=*/42,
+                                /*compatible_version=*/42));
+    original_version = meta_table.GetVersionNumber();
+    original_compat_version = meta_table.GetCompatibleVersionNumber();
+    EXPECT_TRUE(meta_table.SetVersionNumber(1000));
+    EXPECT_TRUE(meta_table.SetCompatibleVersionNumber(1000));
+  }
+  sql_db->Close();
+
+  // The database should be nuked because of the compatible version check, but
+  // it is automatically recreated.
+  connection = OpenDb(kDbName);
+  // Note that this would fail if the object store still existed (i.e. if the
+  // original DB hadn't been deleted).
+  ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*connection));
+  connection.reset();
+
+  ASSERT_TRUE(sql_db->Open(db_path));
+  ASSERT_TRUE(sql::MetaTable::DoesTableExist(sql_db.get()));
+  {
+    sql::MetaTable meta_table;
+    // Versions ignored since the table already exists.
+    EXPECT_TRUE(meta_table.Init(sql_db.get(), /*version=*/42,
+                                /*compatible_version=*/42));
+    // The meta table got recreated with the current version number and
+    // compatible version number.
+    EXPECT_EQ(original_version, meta_table.GetVersionNumber());
+    EXPECT_EQ(original_compat_version, meta_table.GetCompatibleVersionNumber());
+  }
 }
 
 class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
  public:
-  static constexpr int kObjectStoreId = 42;
-  const blink::IndexedDBKey kKey;
-
-  DatabaseConnectionCorruptionTest() : kKey("key") {}
+  DatabaseConnectionCorruptionTest() = default;
 
   // Writes a record to the DB and reads it back with `read_value_callback`,
   // which should normally succeed. Then corrupts the DB and tries to read
@@ -130,30 +215,10 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
   void VerifyCorruptionHandling(
       base::RepeatingCallback<StatusOr<IndexedDBValue>(
           BackingStore::Transaction&)> read_value_callback) {
-    const IndexedDBValue kValue("deadbeef", {});
-    const std::u16string kDbName{u"test db"};
+    const std::u16string_view kDbName{u"test db"};
 
     auto db = OpenDb(kDbName);
-
-    // Create an object store with one record in it.
-    auto set_up_db_with_one_record = [&]() {
-      auto vc = db->CreateTransaction(
-          blink::mojom::IDBTransactionDurability::Default,
-          blink::mojom::IDBTransactionMode::VersionChange);
-      vc->Begin({});
-      ASSERT_TRUE(
-          vc->CreateObjectStore(kObjectStoreId, u"object store name", {}, true)
-              .ok());
-      ASSERT_TRUE(vc->PutRecord(kObjectStoreId, kKey.Clone(), kValue.Clone())
-                      .has_value());
-      ASSERT_TRUE(vc->SetDatabaseVersion(1).ok());
-      bool succeeded = false;
-      ASSERT_TRUE(
-          vc->CommitPhaseOne(CreateBlobWriteCallback(&succeeded), {}).ok());
-      EXPECT_TRUE(succeeded);
-      ASSERT_TRUE(vc->CommitPhaseTwo().ok());
-    };
-    set_up_db_with_one_record();
+    ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*db));
 
     // Make sure that reading the record works.
     auto read_value = [&]() {
@@ -173,8 +238,7 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
 
     // Close the database and then corrupt it.
     db.reset();
-    base::FilePath db_path =
-        temp_dir_.GetPath().Append(DatabaseNameToFileName(kDbName));
+    const base::FilePath db_path = GetDatabasePath(kDbName);
     ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path, "records_by_key"));
 
     // Reopen the database. The corruption isn't detected until the index is
@@ -199,7 +263,7 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
 
       // Reinsert the record. If we don't, the database will be deleted the next
       // time the connection is destroyed, as the database is empty.
-      set_up_db_with_one_record();
+      ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*db));
       recovered_value = read_value();
 #endif
 

@@ -33,7 +33,7 @@ std::unique_ptr<BackingStore::Transaction>
 BackingStoreDatabaseImpl::CreateTransaction(
     blink::mojom::IDBTransactionDurability durability,
     blink::mojom::IDBTransactionMode mode) {
-  return db_->CreateTransaction(PassKey(), durability, mode);
+  return db_->CreateTransactionWrapper(PassKey(), durability, mode);
 }
 
 Status BackingStoreDatabaseImpl::DeleteDatabase(

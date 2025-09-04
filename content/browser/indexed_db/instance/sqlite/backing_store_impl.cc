@@ -115,15 +115,15 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
 StatusOr<std::unique_ptr<BackingStore::Database>>
 BackingStoreImpl::CreateOrOpenDatabase(const std::u16string& name) {
   if (auto it = open_connections_.find(name); it != open_connections_.end()) {
-    return std::make_unique<BackingStoreDatabaseImpl>(it->second->GetWeakPtr());
+    return it->second->CreateDatabaseWrapper();
   }
   base::FilePath db_path =
       in_memory() ? base::FilePath()
                   : directory_.Append(DatabaseNameToFileName(name));
   return DatabaseConnection::Open(name, std::move(db_path), *this)
       .transform([&](std::unique_ptr<DatabaseConnection> connection) {
-        auto database = std::make_unique<BackingStoreDatabaseImpl>(
-            connection->GetWeakPtr());
+        std::unique_ptr<BackingStoreDatabaseImpl> database =
+            connection->CreateDatabaseWrapper();
         open_connections_[name] = std::move(connection);
         return database;
       });

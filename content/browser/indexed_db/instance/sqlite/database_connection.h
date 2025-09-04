@@ -70,8 +70,6 @@ class DatabaseConnection {
 
   const blink::IndexedDBDatabaseMetadata& metadata() const { return metadata_; }
 
-  base::WeakPtr<DatabaseConnection> GetWeakPtr();
-
   // Gets the version of the database that is actually committed. This can be
   // different from the version in `metadata_` during a version change
   // transaction.
@@ -87,8 +85,10 @@ class DatabaseConnection {
   // Get the size of the database opened in-memory.
   uint64_t GetInMemorySize() const;
 
+  std::unique_ptr<BackingStoreDatabaseImpl> CreateDatabaseWrapper();
+
   // Exposed to `BackingStoreDatabaseImpl`.
-  std::unique_ptr<BackingStoreTransactionImpl> CreateTransaction(
+  std::unique_ptr<BackingStoreTransactionImpl> CreateTransactionWrapper(
       base::PassKey<BackingStoreDatabaseImpl>,
       blink::mojom::IDBTransactionDurability durability,
       blink::mojom::IDBTransactionMode mode);
@@ -274,6 +274,18 @@ class DatabaseConnection {
   // that's the case.
   bool CanBeDestroyed() const;
 
+  // Attempts to read metadata from the SQLite DB for storing in memory (in
+  // `metadata_`).
+  StatusOr<blink::IndexedDBDatabaseMetadata> GenerateIndexedDbMetadata();
+
+  // Called when a logical inconsistency or other irrecoverable state is
+  // detected. This could be due to a bug or due to disk corruption. This will
+  // not/should not be called when SQLite reports an error. If SQLite does not
+  // report an error, but a logical inconsistency is found in the database, we
+  // assume that recovering will fail. Therefore this function marks the
+  // database for deletion.
+  Status Fatal(Status s);
+
   // The expected path for `db_`, or empty for in-memory DBs.
   const base::FilePath path_;
 
@@ -341,9 +353,9 @@ class DatabaseConnection {
   // transaction is ultimately committed or rolled back.
   bool sync_active_blobs_after_transaction_ = false;
 
-  // False until `Init()` completes successfully. This is currently only used
-  // for verifying expectations wrt error handling.
-  bool inited_ = false;
+  // True once `DeleteIdbDatabase` has been called, or if a fatal error occurred
+  // that we can't recover from.
+  bool marked_for_permanent_deletion_ = false;
 
   // TODO(crbug.com/419203257): this should invalidate its weak pointers when
   // `db_` is closed.
@@ -352,7 +364,9 @@ class DatabaseConnection {
   // Only used for the callbacks passed to `blob_writers_`.
   base::WeakPtrFactory<DatabaseConnection> blob_writers_weak_factory_{this};
 
-  base::WeakPtrFactory<DatabaseConnection> weak_factory_{this};
+  // Used to vend pointers to the interfaces within `BackingStore`.
+  base::WeakPtrFactory<DatabaseConnection> interface_wrapper_weak_factory_{
+      this};
 };
 
 }  // namespace sqlite
