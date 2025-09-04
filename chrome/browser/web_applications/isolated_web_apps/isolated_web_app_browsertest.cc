@@ -646,7 +646,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, UseCounters) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
-      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+      IsolatedWebAppBuilder(
+          ManifestBuilder()
+              .AddPermissionsPolicyWildcard(
+                  network::mojom::PermissionsPolicyFeature::kDirectSockets)
+              .AddPermissionsPolicyWildcard(
+                  network::mojom::PermissionsPolicyFeature::
+                      kDirectSocketsPrivate))
+          .BuildBundle();
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
 
   histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
@@ -657,6 +664,22 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, UseCounters) {
 
   histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
                                      blink::mojom::WebFeature::kPageVisits, 1);
+
+  EXPECT_THAT(
+      content::EvalJs(app_frame,
+                      "(new UDPSocket({ localAddress: '127.0.0.1' })).opened"),
+      content::EvalJsResult::IsOk());
+
+  // Wait for all the socket histograms to propagate.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return std::ranges::all_of(
+        std::to_array({blink::mojom::WebFeature::kUDPSocketConstructor,
+                       blink::mojom::WebFeature::kUDPSocketOpenedAttribute}),
+        [&](blink::mojom::WebFeature feature) {
+          return histogram_tester.GetBucketCount("Blink.UseCounter.Features",
+                                                 feature) > 0;
+        });
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
