@@ -429,7 +429,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return base::unexpected(std::move(params_or_error).error());
     }
 
-    if (!base::Contains(params_or_error->registering_origins,
+    if (!params_or_error->registering_origins.has_value() ||
+        !base::Contains(*params_or_error->registering_origins,
                         url::Origin::Create(fetcher_endpoint_).Serialize())) {
       return base::unexpected(SessionError{
           SessionError::ErrorType::kSubdomainRegistrationUnauthorized});

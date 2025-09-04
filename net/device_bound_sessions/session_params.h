@@ -73,12 +73,14 @@ struct NET_EXPORT SessionParams final {
 
 // Struct to contain the parameters from the .well-known JSON.
 struct NET_EXPORT WellKnownParams {
-  explicit WellKnownParams(std::vector<std::string> registering_origins);
+  WellKnownParams();
   ~WellKnownParams();
   WellKnownParams(WellKnownParams&& other) noexcept;
   WellKnownParams& operator=(WellKnownParams&& other) noexcept;
 
-  std::vector<std::string> registering_origins;
+  std::optional<std::vector<std::string>> registering_origins;
+  std::optional<std::vector<std::string>> relying_origins;
+  std::optional<std::string> provider_origin;
 };
 
 }  // namespace net::device_bound_sessions
