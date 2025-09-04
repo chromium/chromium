@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/time/time.h"
 
@@ -37,6 +38,8 @@ struct EndpointIdStruct {
 // Used to send a `payload` between two messaging endpoints.
 struct SimpleMessageStruct {
   SimpleMessageStruct();
+  SimpleMessageStruct(const SimpleMessageStruct&);
+  SimpleMessageStruct& operator=(const SimpleMessageStruct&);
   ~SimpleMessageStruct();
 
   // A sender-side generated id for this payload.
@@ -84,6 +87,7 @@ struct ReceiveClientMessagesResponseStruct {
   ReceiveClientMessagesResponseStruct();
   ~ReceiveClientMessagesResponseStruct();
 
+  // TODO: joedow - Remove union after internal files start using variant field.
   union {
     // Sent when the channel is opened.
     ChannelOpenStruct channel_open;
@@ -92,6 +96,9 @@ struct ReceiveClientMessagesResponseStruct {
     // The message payload being delivered.
     SimpleMessageStruct simple_message;
   };
+
+  std::variant<ChannelOpenStruct, ChannelActiveStruct, SimpleMessageStruct>
+      message;
 };
 
 }  // namespace remoting::internal

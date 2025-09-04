@@ -10,6 +10,9 @@ ReceiveClientMessagesResponseStruct::ReceiveClientMessagesResponseStruct() {}
 ReceiveClientMessagesResponseStruct::~ReceiveClientMessagesResponseStruct() {}
 
 SimpleMessageStruct::SimpleMessageStruct() = default;
+SimpleMessageStruct::SimpleMessageStruct(const SimpleMessageStruct&) = default;
+SimpleMessageStruct& SimpleMessageStruct::operator=(
+    const SimpleMessageStruct&) = default;
 SimpleMessageStruct::~SimpleMessageStruct() = default;
 
 }  // namespace remoting::internal
