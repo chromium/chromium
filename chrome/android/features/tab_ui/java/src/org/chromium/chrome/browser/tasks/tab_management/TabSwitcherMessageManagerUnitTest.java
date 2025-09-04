@@ -241,6 +241,30 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
+    public void removeMessageItemsWhenCloseMultipleTabs() {
+        // Simulate only some tabs being closed.
+        doReturn(3).when(mTabModel).getCount();
+        getTabModelObserver(0).willCloseMultipleTabs(false, List.of(mTab1, mTab2));
+        verify(mTabListCoordinator, never()).removeSpecialListItem(anyInt(), anyInt());
+
+        // Simulate all tabs being closed.
+        doReturn(2).when(mTabModel).getCount();
+        getTabModelObserver(0).willCloseMultipleTabs(false, List.of(mTab1, mTab2));
+
+        verify(mTabListCoordinator).removeSpecialListItem(UiType.IPH_MESSAGE, MessageType.IPH);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(
+                        UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+                        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(
+                        UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
+        verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
+    }
+
+    @Test
     public void removeMessageItemsWhenCloseLastTab_withGroupSuggestion() {
         createGroupSuggestion();
 

@@ -121,12 +121,14 @@ public class TabSwitcherMessageManager {
             new TabModelObserver() {
                 @Override
                 public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                    TabGroupModelFilter tabGroupModelFilter =
-                            mCurrentTabGroupModelFilterSupplier.get();
-                    assumeNonNull(tabGroupModelFilter);
-                    if (tabGroupModelFilter.getTabModel().getCount() == 1) {
-                        removeAllAppendedMessage();
-                    }
+                    removeMessagesIfTabModelEmpty(/* numTabsToRemove= */ 1);
+                }
+
+                @Override
+                public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
+                    // Handles case where all tabs are removed without using 'Close All Tabs'
+                    // option.
+                    removeMessagesIfTabModelEmpty(/* numTabsToRemove= */ tabs.size());
                 }
 
                 @Override
@@ -722,5 +724,13 @@ public class TabSwitcherMessageManager {
 
     public PriceWelcomeMessageController getPriceWelcomeMessageController() {
         return mPriceWelcomeMessageController;
+    }
+
+    private void removeMessagesIfTabModelEmpty(int numTabsToRemove) {
+        TabGroupModelFilter tabGroupModelFilter = mCurrentTabGroupModelFilterSupplier.get();
+        assumeNonNull(tabGroupModelFilter);
+        if (tabGroupModelFilter.getTabModel().getCount() == numTabsToRemove) {
+            removeAllAppendedMessage();
+        }
     }
 }
