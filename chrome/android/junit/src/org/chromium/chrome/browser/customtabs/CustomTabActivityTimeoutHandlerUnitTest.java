@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 @EnableFeatures({ChromeFeatureList.CCT_RESET_TIMEOUT_ENABLED})
 public class CustomTabActivityTimeoutHandlerUnitTest {
     @Mock private Runnable mFinishRunnable;
+    @Mock private PendingIntent mPendingIntent;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
@@ -44,6 +46,7 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
     @Before
     public void setUp() {
         ChromeFeatureList.sCctResetMinimumTimeoutMinutes.setForTesting(1);
+        sIntentWithExtra.removeExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT);
         sIntentWithExtra.putExtra(
                 CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, TIMEOUT_MINUTES);
         mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, sIntentWithExtra);
@@ -137,5 +140,20 @@ public class CustomTabActivityTimeoutHandlerUnitTest {
         mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(minimumTimeoutMinutes + 1));
         mTimeoutHandler.onResume();
         verify(mFinishRunnable).run();
+    }
+
+    @Test
+    public void onResume_timeoutElapsed_closingIntentAttached_sendsIntent() throws Exception {
+        sIntentWithExtra.putExtra(
+                CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT,
+                mPendingIntent);
+
+        mTimeoutHandler = new CustomTabActivityTimeoutHandler(mFinishRunnable, sIntentWithExtra);
+
+        mTimeoutHandler.onUserLeaveHint();
+        mFakeTimeTestRule.advanceMillis(TimeUnit.MINUTES.toMillis(TIMEOUT_MINUTES + 1));
+        mTimeoutHandler.onResume();
+        verify(mPendingIntent).send();
+        verify(mFinishRunnable, never()).run();
     }
 }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -26,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 @NullMarked
 class CustomTabActivityTimeoutHandler {
 
+    private static final String TAG = "CustomTabTimeout";
+
     /**
      * An extra that can be used to provide a timeout in minutes. If the user leaves the app and
      * returns after the timeout has elapsed, the activity will be finished.
@@ -33,11 +37,16 @@ class CustomTabActivityTimeoutHandler {
     static final String EXTRA_TIMEOUT_MINUTES =
             "org.chromium.chrome.browser.customtabs.EXTRA_TIMEOUT_MINUTES";
 
+    static final String EXTRA_TIMEOUT_PENDING_INTENT =
+            "org.chromium.chrome.browser.customtabs.EXTRA_TIMEOUT_PENDING_INTENT";
+
     static final String KEY_LEAVE_TIMESTAMP = "CustomTabActivity.leave_timestamp";
 
     private final Runnable mFinishActivityRunnable;
     private final Intent mIntent;
     private final boolean mIsTimeoutEnabled;
+
+    @Nullable private final PendingIntent mEmbedderClosingIntent;
 
     // Timestamp of when the user left the activity, used for timeout logic.
     private long mLeaveTimestamp = -1;
@@ -45,6 +54,12 @@ class CustomTabActivityTimeoutHandler {
     CustomTabActivityTimeoutHandler(Runnable finishActivityRunnable, Intent intent) {
         mFinishActivityRunnable = finishActivityRunnable;
         mIntent = intent;
+        if (IntentUtils.safeGetParcelableExtra(intent, EXTRA_TIMEOUT_PENDING_INTENT)
+                instanceof PendingIntent pendingIntent) {
+            mEmbedderClosingIntent = pendingIntent;
+        } else {
+            mEmbedderClosingIntent = null;
+        }
         mIsTimeoutEnabled =
                 IntentUtils.safeHasExtra(intent, EXTRA_TIMEOUT_MINUTES)
                         && ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_RESET_TIMEOUT_ENABLED);
@@ -81,8 +96,18 @@ class CustomTabActivityTimeoutHandler {
             long elapsedTime = TimeUtils.elapsedRealtimeMillis() - mLeaveTimestamp;
 
             if (elapsedTime > timeoutMillis) {
-                // Finish the activity if the timeout has elapsed.
-                mFinishActivityRunnable.run();
+                // Finish the activity if the timeout has elapsed. If an embedder closing intent is
+                // specified, send it, otherwise finish the activity.
+                if (mEmbedderClosingIntent != null) {
+                    try {
+                        mEmbedderClosingIntent.send();
+                    } catch (PendingIntent.CanceledException e) {
+                        Log.e(TAG, "Failed to send embedder intent: %s", e);
+                    }
+                    return;
+                } else {
+                    mFinishActivityRunnable.run();
+                }
             }
         }
         // Reset the timestamp after checking to ensure the timeout logic only runs once per leave.
