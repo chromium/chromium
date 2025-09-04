@@ -326,7 +326,8 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
           ProcessAllocationSource::kNavigationRequest,
           NavigationProcessAllocationContext{
               ProcessAllocationNavigationStage::kBeforeNetworkRequest,
-              false}}));
+              /*navigation_id=*/0, RequiresNewProcessForCoop(false),
+              IsOutermostMainFrame(true)}}));
   histogram_tester.ExpectUniqueSample(
       "BrowserRenderProcessHost.NoSparePresentReason2",
       NoSpareRendererReason::kTimeout, 1);
@@ -868,8 +869,9 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
       ProcessAllocationContext{
           ProcessAllocationSource::kNavigationRequest,
           NavigationProcessAllocationContext{
-              ProcessAllocationNavigationStage::kBeforeNetworkRequest, 0,
-              false}}));
+              ProcessAllocationNavigationStage::kBeforeNetworkRequest,
+              /*navigation_id=*/0, RequiresNewProcessForCoop(false),
+              IsOutermostMainFrame(true)}}));
 
   // The spare renderer shall be taken and no spare renderer will be present.
   EXPECT_TRUE(spare_manager.GetSpares().empty());
@@ -879,7 +881,9 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
       ProcessAllocationContext{
           ProcessAllocationSource::kNavigationRequest,
           NavigationProcessAllocationContext{
-              ProcessAllocationNavigationStage::kAfterResponse, 0, true}}));
+              ProcessAllocationNavigationStage::kAfterResponse,
+              /*navigation_id=*/0, RequiresNewProcessForCoop(true),
+              IsOutermostMainFrame(true)}}));
   histogram_tester.ExpectUniqueSample(
       "BrowserRenderProcessHost.NoSparePresentReason2",
       NoSpareRendererReason::kTakenByPreviousNavigation, 1);
@@ -996,8 +1000,9 @@ IN_PROC_BROWSER_TEST_F(AndroidSpareRendererProcessHostManagerTest,
       ProcessAllocationContext{
           ProcessAllocationSource::kNavigationRequest,
           NavigationProcessAllocationContext{
-              ProcessAllocationNavigationStage::kBeforeNetworkRequest, 0,
-              false}}));
+              ProcessAllocationNavigationStage::kBeforeNetworkRequest,
+              /*navigation_id=*/0, RequiresNewProcessForCoop(false),
+              IsOutermostMainFrame(true)}}));
 }
 #endif
 

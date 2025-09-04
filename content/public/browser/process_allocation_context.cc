@@ -45,8 +45,9 @@ ProcessAllocationContext ProcessAllocationContext::CreateForNavigationRequest(
     bool is_outermost_main_frame) {
   return ProcessAllocationContext{
       ProcessAllocationSource::kNavigationRequest,
-      NavigationProcessAllocationContext{stage, navigation_id,
-                                         is_outermost_main_frame}};
+      NavigationProcessAllocationContext{
+          stage, navigation_id, RequiresNewProcessForCoop(false),
+          IsOutermostMainFrame(is_outermost_main_frame)}};
 }
 
 }  // namespace content
