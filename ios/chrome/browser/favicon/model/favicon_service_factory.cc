@@ -48,7 +48,7 @@ FaviconServiceFactory* FaviconServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 FaviconServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildFaviconService);
 }

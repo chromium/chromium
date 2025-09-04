@@ -41,7 +41,7 @@ PlaceholderServiceFactory* PlaceholderServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 PlaceholderServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildPlaceholderService);
 }

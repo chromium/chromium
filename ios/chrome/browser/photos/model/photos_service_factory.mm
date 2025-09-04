@@ -46,7 +46,7 @@ PhotosServiceFactory* PhotosServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 PhotosServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPhotosService);
 }

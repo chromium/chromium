@@ -65,7 +65,7 @@ InMemoryURLIndexFactory::InMemoryURLIndexFactory()
 InMemoryURLIndexFactory::~InMemoryURLIndexFactory() = default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 InMemoryURLIndexFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildInMemoryURLIndex);
 }

@@ -41,7 +41,7 @@ IOSChromeTabRestoreServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 IOSChromeTabRestoreServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildTabRestoreService);
 }

@@ -34,7 +34,7 @@ ProfileIdService* ProfileIdServiceFactoryIOS::GetForProfile(
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 ProfileIdServiceFactoryIOS::GetDefaultFactory() {
   return base::BindRepeating(&BuildProfileIdService);
 }

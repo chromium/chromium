@@ -39,7 +39,7 @@ IOSRealtimeReportingClient* IOSRealtimeReportingClientFactory::GetForProfile(
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 IOSRealtimeReportingClientFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildRealtimeReportingClient);
 }

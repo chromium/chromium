@@ -14,11 +14,11 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
 #include "ios/chrome/browser/net/model/net_types.h"
 #include "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#include "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace sync_preferences {
@@ -37,11 +37,11 @@ class TestProfileIOS final : public ProfileIOS {
   // AddTestingFactories(). See example call in the method's comment.
   struct TestingFactory {
     TestingFactory(
-        BrowserStateKeyedServiceFactory* service_factory,
-        BrowserStateKeyedServiceFactory::TestingFactory testing_factory);
+        ProfileKeyedServiceFactoryIOS* service_factory,
+        ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory);
 
-    TestingFactory(RefcountedBrowserStateKeyedServiceFactory* service_factory,
-                   RefcountedBrowserStateKeyedServiceFactory::TestingFactory
+    TestingFactory(RefcountedProfileKeyedServiceFactoryIOS* service_factory,
+                   RefcountedProfileKeyedServiceFactoryIOS::TestingFactory
                        testing_factory);
 
     TestingFactory(TestingFactory&&);
@@ -50,15 +50,15 @@ class TestProfileIOS final : public ProfileIOS {
     ~TestingFactory();
 
     std::variant<
-        std::pair<BrowserStateKeyedServiceFactory*,
-                  BrowserStateKeyedServiceFactory::TestingFactory>,
-        std::pair<RefcountedBrowserStateKeyedServiceFactory*,
-                  RefcountedBrowserStateKeyedServiceFactory::TestingFactory>>
+        std::pair<ProfileKeyedServiceFactoryIOS*,
+                  ProfileKeyedServiceFactoryIOS::TestingFactory>,
+        std::pair<RefcountedProfileKeyedServiceFactoryIOS*,
+                  RefcountedProfileKeyedServiceFactoryIOS::TestingFactory>>
         service_factory_and_testing_factory;
   };
 
   // Wrapper around std::vector to simplify the migration to OnceCallback
-  // for *BrowserStateKeyedServiceFactory::TestingFactory.
+  // for *ProfileKeyedServiceFactoryIOS::TestingFactory.
   class TestingFactories {
    public:
     TestingFactories();
@@ -154,18 +154,18 @@ class TestProfileIOS final : public ProfileIOS {
 
     ~Builder();
 
-    // Adds a testing factory to the TestProfileIOS. These testing
-    // factories are installed before the BrowserStateKeyedServices are created.
+    // Adds a testing factory to the TestProfileIOS. These testing factories
+    // are installed before the Profile's KeyedServices are created.
     Builder& AddTestingFactory(
-        BrowserStateKeyedServiceFactory* service_factory,
-        BrowserStateKeyedServiceFactory::TestingFactory testing_factory);
+        ProfileKeyedServiceFactoryIOS* service_factory,
+        ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory);
     Builder& AddTestingFactory(
-        RefcountedBrowserStateKeyedServiceFactory* service_factory,
-        RefcountedBrowserStateKeyedServiceFactory::TestingFactory
+        RefcountedProfileKeyedServiceFactoryIOS* service_factory,
+        RefcountedProfileKeyedServiceFactoryIOS::TestingFactory
             testing_factory);
 
     // Adds multiple testing factories to TestProfileIOS. These testing
-    // factories are installed before the BrowserStateKeyedServices are created.
+    // factories are installed before the Profile's KeyedServices are created.
     // Example use:
     //
     // AddTestingFactories(

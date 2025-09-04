@@ -48,7 +48,7 @@ BwgServiceFactory::BwgServiceFactory()
 BwgServiceFactory::~BwgServiceFactory() = default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 BwgServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildBwgService);
 }

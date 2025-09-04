@@ -100,7 +100,7 @@ PageContentAnnotationsServiceFactory::~PageContentAnnotationsServiceFactory() =
     default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 PageContentAnnotationsServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildPageContentAnnotationsService);
 }

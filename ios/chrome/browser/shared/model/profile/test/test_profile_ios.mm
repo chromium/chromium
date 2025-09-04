@@ -52,14 +52,14 @@ void AssignTestingFactories(
 }  // namespace
 
 TestProfileIOS::TestingFactory::TestingFactory(
-    BrowserStateKeyedServiceFactory* service_factory,
-    BrowserStateKeyedServiceFactory::TestingFactory testing_factory)
+    ProfileKeyedServiceFactoryIOS* service_factory,
+    ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory)
     : service_factory_and_testing_factory(
           std::make_pair(service_factory, std::move(testing_factory))) {}
 
 TestProfileIOS::TestingFactory::TestingFactory(
-    RefcountedBrowserStateKeyedServiceFactory* service_factory,
-    RefcountedBrowserStateKeyedServiceFactory::TestingFactory testing_factory)
+    RefcountedProfileKeyedServiceFactoryIOS* service_factory,
+    RefcountedProfileKeyedServiceFactoryIOS::TestingFactory testing_factory)
     : service_factory_and_testing_factory(
           std::make_pair(service_factory, std::move(testing_factory))) {}
 
@@ -328,15 +328,15 @@ TestProfileIOS::Builder& TestProfileIOS::Builder::operator=(Builder&&) =
 TestProfileIOS::Builder::~Builder() = default;
 
 TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactory(
-    BrowserStateKeyedServiceFactory* service_factory,
-    BrowserStateKeyedServiceFactory::TestingFactory testing_factory) {
+    ProfileKeyedServiceFactoryIOS* service_factory,
+    ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory) {
   testing_factories_.emplace_back(service_factory, std::move(testing_factory));
   return *this;
 }
 
 TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactory(
-    RefcountedBrowserStateKeyedServiceFactory* service_factory,
-    RefcountedBrowserStateKeyedServiceFactory::TestingFactory testing_factory) {
+    RefcountedProfileKeyedServiceFactoryIOS* service_factory,
+    RefcountedProfileKeyedServiceFactoryIOS::TestingFactory testing_factory) {
   testing_factories_.emplace_back(service_factory, std::move(testing_factory));
   return *this;
 }

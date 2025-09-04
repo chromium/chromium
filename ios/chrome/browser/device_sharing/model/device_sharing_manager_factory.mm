@@ -30,7 +30,7 @@ DeviceSharingManagerFactory* DeviceSharingManagerFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 DeviceSharingManagerFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildDeviceSharingManager);
 }

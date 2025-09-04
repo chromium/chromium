@@ -97,7 +97,7 @@ OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
 OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 OptimizationGuideServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildOptimizationGuideService);
 }

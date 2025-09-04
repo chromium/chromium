@@ -55,7 +55,7 @@ SendTabToSelfSyncService* SendTabToSelfSyncServiceFactory::GetForProfile(
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 SendTabToSelfSyncServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildSendTabToSelfService);
 }

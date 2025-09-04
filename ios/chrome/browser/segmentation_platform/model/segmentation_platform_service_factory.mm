@@ -262,7 +262,7 @@ SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 SegmentationPlatformServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildSegmentationPlatformService);
 }

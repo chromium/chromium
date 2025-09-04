@@ -68,7 +68,7 @@ DataSharingServiceFactory::DataSharingServiceFactory()
 DataSharingServiceFactory::~DataSharingServiceFactory() = default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 DataSharingServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildDataSharingService);
 }

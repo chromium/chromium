@@ -101,7 +101,7 @@ TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 TabGroupSyncServiceFactory::GetDefaultFactory() {
   // KeyedService factories are never destroyed, to base::Unretained(...)
   // is safe. See the implementation of GetInstance() for details.

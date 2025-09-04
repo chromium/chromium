@@ -81,7 +81,7 @@ SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForProfile(
 }
 
 template <typename T>
-BrowserStateKeyedServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::TestingFactory
 SessionProtoDBFactory<T>::GetDefaultFactory() {
   return base::BindRepeating(
       &session_proto_db::internal::BuildSessionProtoDB<T>);
