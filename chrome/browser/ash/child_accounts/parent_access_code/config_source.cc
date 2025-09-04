@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
@@ -29,8 +29,9 @@ constexpr char kOldConfigsDictKey[] = "old_configs";
 
 }  // namespace
 
-ConfigSource::ConfigSource() {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+ConfigSource::ConfigSource(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {
+  user_manager::KnownUser known_user(&local_state_.get());
 
   const user_manager::UserList& users =
       user_manager::UserManager::Get()->GetPersistedUsers();
@@ -58,7 +59,7 @@ void ConfigSource::UpdateConfigForUser(const AccountId& account_id,
   DCHECK(user->IsChild());
 #endif  // DCHECK_IS_ON()
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   known_user.SetPath(account_id, ::prefs::kKnownUserParentAccessCodeConfig,
                      base::Value(std::move(config)));
 
@@ -69,7 +70,7 @@ void ConfigSource::UpdateConfigForUser(const AccountId& account_id,
 }
 
 void ConfigSource::RemoveConfigForUser(const AccountId& account_id) {
-  user_manager::KnownUser(g_browser_process->local_state())
+  user_manager::KnownUser(&local_state_.get())
       .RemovePref(account_id, ::prefs::kKnownUserParentAccessCodeConfig);
 }
 

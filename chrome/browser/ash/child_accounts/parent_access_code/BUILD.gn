@@ -25,7 +25,6 @@ static_library("parent_access_code") {
 
   deps = [
     "//ash/public/cpp",
-    "//chrome/browser:browser_process",
     "//chrome/common:constants",
     "//components/prefs",
     "//components/user_manager",

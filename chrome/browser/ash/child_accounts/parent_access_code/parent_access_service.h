@@ -47,8 +47,11 @@ class ParentAccessService {
   // Gets the service singleton.
   static ParentAccessService& Get();
 
+  // `local_state` must be non-null, and must outlive `this`.
+  explicit ParentAccessService(PrefService* local_state);
   ParentAccessService(const ParentAccessService&) = delete;
   ParentAccessService& operator=(const ParentAccessService&) = delete;
+  ~ParentAccessService();
 
   // Checks if the provided |action| requires parental approval to be performed.
   // Requires owner_account_id to be available in the UserManager, so if calling
@@ -74,11 +77,6 @@ class ParentAccessService {
   void RemoveObserver(Observer* observer);
 
  private:
-  friend class base::NoDestructor<ParentAccessService>;
-
-  ParentAccessService();
-  ~ParentAccessService();
-
   void NotifyObservers(ParentCodeValidationResult validation_result,
                        const AccountId& account_id);
 

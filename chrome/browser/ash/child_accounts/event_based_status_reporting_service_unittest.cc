@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
+#include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -151,6 +152,11 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
         static_cast<TestingConsumerStatusReportingService*>(
             consumer_status_reporting_service);
 
+    // `ScreenTimeController` depends on `ParentAccessService`.
+    parent_access_service_ =
+        std::make_unique<parent_access::ParentAccessService>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+
     ScreenTimeControllerFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&CreateTestingScreenTimeController));
     ScreenTimeController* screen_time_controller =
@@ -169,6 +175,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     chromeos::PowerManagerClient::Shutdown();
 
     // This is following the production teardown order.
+    parent_access_service_.reset();
     session_manager_.reset();
     user_manager_.Reset();
   }
@@ -204,6 +211,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
+  std::unique_ptr<parent_access::ParentAccessService> parent_access_service_;
   ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<TestingConsumerStatusReportingService, DanglingUntriaged>

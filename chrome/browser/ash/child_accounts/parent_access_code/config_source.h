@@ -9,10 +9,12 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/authenticator.h"
 
 class AccountId;
+class PrefService;
 
 namespace ash {
 namespace parent_access {
@@ -25,7 +27,8 @@ class ConfigSource {
   typedef std::map<AccountId, std::vector<std::unique_ptr<Authenticator>>>
       AuthenticatorsMap;
 
-  ConfigSource();
+  // `local_state` must be non-null, and must outlive `this`.
+  explicit ConfigSource(PrefService* local_state);
 
   ConfigSource(const ConfigSource&) = delete;
   ConfigSource& operator=(const ConfigSource&) = delete;
@@ -50,6 +53,8 @@ class ConfigSource {
   // to an AccessCodeConfig in its serialized format.
   void AddAuthenticator(const base::Value::Dict& dict,
                         const AccountId& account_id);
+
+  const raw_ref<PrefService> local_state_;
 
   // Holds the Parent Access Code Authenticators for all children signed in this
   // device.

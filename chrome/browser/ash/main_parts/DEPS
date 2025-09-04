@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/ash/browser_delegate",
   "+chrome/browser/ash/camera",
   "+chrome/browser/ash/certs",
+  "+chrome/browser/ash/child_accounts/parent_access_code",
   "+chrome/browser/ash/chromebox_for_meetings",
   "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/crostini",

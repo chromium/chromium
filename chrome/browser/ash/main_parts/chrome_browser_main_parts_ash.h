@@ -110,6 +110,10 @@ namespace internal {
 class DBusServices;
 }
 
+namespace parent_access {
+class ParentAccessService;
+}
+
 namespace platform_keys {
 class KeyPermissionsManager;
 }
@@ -300,6 +304,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
 
   std::unique_ptr<ash::MagicBoostControllerAsh> magic_boost_controller_ash_;
+
+  std::unique_ptr<parent_access::ParentAccessService> parent_access_service_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };
