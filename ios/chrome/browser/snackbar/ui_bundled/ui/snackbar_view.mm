@@ -23,7 +23,7 @@ namespace {
 const double kRetainA11yFocusSeconds = 0.75;
 
 // Animation constants.
-const NSTimeInterval kSnackbarAnimationDuration = 0.3;
+const NSTimeInterval kSnackbarAnimationDuration = 0.8;
 
 // Snackbar constants.
 const CGFloat kSnackbarCornerRadius = 16.0;
@@ -95,10 +95,14 @@ const CGFloat kTextSpacing = 2.0;
   }
 
   if (animated && !UIAccessibilityIsReduceMotionEnabled()) {
-    self.alpha = 0.0;
+    self.alpha = 0;
+    self.transform = CGAffineTransformMakeTranslation(
+        0, self.bounds.size.height + self.bottomOffset);
+    // Animate the snackbar sliding up from the bottom.
     [UIView animateWithDuration:kSnackbarAnimationDuration
         animations:^{
-          self.alpha = 1.0;
+          self.alpha = 1;
+          self.transform = CGAffineTransformIdentity;
         }
         completion:^(BOOL finished) {
           [self scheduleDismissal];
@@ -116,9 +120,12 @@ const CGFloat kTextSpacing = 2.0;
 
 - (void)dismissAnimated:(BOOL)animated completion:(void (^)(void))completion {
   if (animated && !UIAccessibilityIsReduceMotionEnabled()) {
+    // Animate the snackbar sliding down off the screen.
     [UIView animateWithDuration:kSnackbarAnimationDuration
         animations:^{
-          self.alpha = 0.0;
+          self.alpha = 0;
+          self.transform = CGAffineTransformMakeTranslation(
+              0, self.bounds.size.height + self.bottomOffset);
         }
         completion:^(BOOL finished) {
           if (completion) {
