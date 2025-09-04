@@ -309,6 +309,12 @@ BASE_FEATURE(
     "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When true, duplicate navigations are ignored only if they are initiated
+// with a user gesture.
+BASE_FEATURE(kIgnoreDuplicateNavsOnlyWithUserGesture,
+             "IgnoreDuplicateNavsOnlyWithUserGesture",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A feature flag for the memory-backed code cache.
 BASE_FEATURE(kInMemoryCodeCache,
              "InMemoryCodeCache",

@@ -23705,6 +23705,106 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
 }
 
+class IgnoreDuplicateNavsUserGestureBrowserTest
+    : public NavigationControllerBrowserTestBase,
+      public testing::WithParamInterface<
+          std::tuple<std::string /* render_document_level */,
+                     bool /* ignore_duplicate_navs */,
+                     bool /* only_with_user_gesture */,
+                     bool /* has_user_gesture */>> {
+ public:
+  IgnoreDuplicateNavsUserGestureBrowserTest() {
+    InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
+                                       std::get<0>(GetParam()));
+
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (ignore_duplicate_navs()) {
+      enabled_features.push_back(features::kIgnoreDuplicateNavs);
+    } else {
+      disabled_features.push_back(features::kIgnoreDuplicateNavs);
+    }
+
+    if (only_with_user_gesture()) {
+      enabled_features.push_back(
+          features::kIgnoreDuplicateNavsOnlyWithUserGesture);
+    } else {
+      disabled_features.push_back(
+          features::kIgnoreDuplicateNavsOnlyWithUserGesture);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    auto [render_document_level, ignore_duplicate_navs, only_with_user_gesture,
+          has_user_gesture] = info.param;
+    return base::StringPrintf(
+        "%s_%s_%s_%s",
+        GetRenderDocumentLevelNameForTestParams(render_document_level).c_str(),
+        ignore_duplicate_navs ? "IgnoreDuplicateNavs" : "NoIgnoreDuplicateNavs",
+        only_with_user_gesture ? "RequireGesture" : "NoRequireGesture",
+        has_user_gesture ? "WithGesture" : "WithoutGesture");
+  }
+
+ protected:
+  bool ignore_duplicate_navs() const { return std::get<1>(GetParam()); }
+  bool only_with_user_gesture() const { return std::get<2>(GetParam()); }
+  bool has_user_gesture() const { return std::get<3>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_for_render_document_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IgnoreDuplicateNavsUserGestureBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool()),
+    IgnoreDuplicateNavsUserGestureBrowserTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsUserGestureBrowserTest,
+                       DuplicateNavigationBehavior) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_links.html"));
+  GURL link_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+
+  TestNavigationManager nav_manager(shell()->web_contents(), link_url);
+  // Start navigation with or without a user gesture.
+  EXPECT_TRUE(ExecJs(contents(), "document.getElementById('thelink').click()",
+                     has_user_gesture() ? EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                                        : EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+  // Trigger a duplicate navigation.
+  EXPECT_TRUE(ExecJs(contents(), "document.getElementById('thelink').click()",
+                     has_user_gesture() ? EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                                        : EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  bool should_be_ignored = ignore_duplicate_navs() &&
+                           (!only_with_user_gesture() || has_user_gesture());
+  if (should_be_ignored) {
+    // The first navigation should not be ignored and should commit.
+    EXPECT_TRUE(nav_manager.was_committed());
+    // The second navigation should be ignored.
+    EXPECT_FALSE(root->navigation_request());
+  } else {
+    // The first navigation should be canceled.
+    EXPECT_FALSE(nav_manager.was_committed());
+    // The second navigation should commit.
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    EXPECT_EQ(link_url, contents()->GetLastCommittedURL());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerAlertDialogBrowserTest,
