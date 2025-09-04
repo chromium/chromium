@@ -125,6 +125,24 @@ void RecordCreateShortcut(CreateShortcutResult result) {
   base::UmaHistogramEnumeration("Apps.CreateShortcuts.Mac.Result2", result);
 }
 
+// Result of updating the app shortcut's signature.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class UpdateSignatureResult {
+  kSuccess = 0,
+  kFailToCreateStaticCodeObject = 1,
+  kFailToCreateCodeSigner = 2,
+  kFailToAddSignature = 3,
+  kFailToCopySigningInformation = 4,
+  kMaxValue = kFailToCopySigningInformation,
+};
+
+// Records the result of updating the app shortcut's signature to UMA.
+void RecordUpdateSignatureResult(UpdateSignatureResult result) {
+  base::UmaHistogramEnumeration(
+      "Apps.CreateShortcuts.Mac.UpdateSignatureResult", result);
+}
+
 #if defined(COMPONENT_BUILD) || defined(ADDRESS_SANITIZER)
 // Adds `new_rpath` to the paths the binary at `executable_path` will look at
 // when loading shared libraries. Assumes there is enough room in the headers of
@@ -1014,6 +1032,8 @@ bool WebAppShortcutCreator::UpdateSignature(
   base::apple::ScopedCFTypeRef<SecStaticCodeRef> app_code;
   if (SecStaticCodeCreateWithPath(app_url.get(), kSecCSDefaultFlags,
                                   app_code.InitializeInto()) != errSecSuccess) {
+    RecordUpdateSignatureResult(
+        UpdateSignatureResult::kFailToCreateStaticCodeObject);
     return false;
   }
 
@@ -1033,6 +1053,7 @@ bool WebAppShortcutCreator::UpdateSignature(
   if (SecCodeSignerCreate(base::apple::NSToCFPtrCast(signer_params),
                           kSecCSDefaultFlags,
                           signer.InitializeInto()) != errSecSuccess) {
+    RecordUpdateSignatureResult(UpdateSignatureResult::kFailToCreateCodeSigner);
     return false;
   }
 
@@ -1041,6 +1062,7 @@ bool WebAppShortcutCreator::UpdateSignature(
           signer.get(), app_code.get(), kSecCSDefaultFlags,
           errors.InitializeInto()) != errSecSuccess) {
     LOG(ERROR) << "Failed to sign web app shim: " << errors.get();
+    RecordUpdateSignatureResult(UpdateSignatureResult::kFailToAddSignature);
     return false;
   }
 
@@ -1049,6 +1071,8 @@ bool WebAppShortcutCreator::UpdateSignature(
                                     app_shim_info.InitializeInto()) !=
       errSecSuccess) {
     LOG(ERROR) << "Failed to copy signing information from web app shim";
+    RecordUpdateSignatureResult(
+        UpdateSignatureResult::kFailToCopySigningInformation);
     return false;
   }
 
@@ -1063,6 +1087,7 @@ bool WebAppShortcutCreator::UpdateSignature(
                      base::Unretained(AppShimRegistry::Get()), info_->app_id,
                      std::move(cd_hash), base::DoNothing()));
 
+  RecordUpdateSignatureResult(UpdateSignatureResult::kSuccess);
   return true;
 }
 

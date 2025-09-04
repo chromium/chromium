@@ -2344,6 +2344,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.CreateShortcuts.Mac.UpdateSignatureResult"
+    enum="UpdateSignatureResult" expires_after="2025-12-02">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of updating the app shortcut's signature. This is
+    recorded when ad-hoc signing is used for web app shims.
+  </summary>
+</histogram>
+
 <histogram name="Apps.DefaultAppLaunch{DefaultAppLaunchSource}"
     enum="DefaultAppName" expires_after="2026-02-22">
   <owner>ovn@google.com</owner>
