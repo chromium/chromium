@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_price_tracking_view.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
@@ -296,6 +298,8 @@ const CGFloat kVerticalStackSpacing = 6.0f;
 
 // Initiates price tracking.
 - (void)trackItem {
+  base::RecordAction(
+      base::UserMetricsAction("IOS.MagicStack.ShopCard.PriceTracking.Track"));
   [self.commandHandler trackShopCardItem:_item];
 }
 
