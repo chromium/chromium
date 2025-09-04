@@ -365,7 +365,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
-#include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider_impl.h"
+#include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/file_manager/file_manager_pref_names.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -1861,7 +1861,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::UserImageManagerImpl::RegisterPrefs(registry);
   ash::UserSessionManager::RegisterPrefs(registry);
   component_updater::MetadataTable::RegisterPrefs(registry);
-  ash::CryptAuthDeviceIdProviderImpl::RegisterLocalPrefs(registry);
+  ash::cryptauth_device_id::RegisterLocalPrefs(registry);
   extensions::ExtensionAssetsManagerChromeOS::RegisterPrefs(registry);
   extensions::ExtensionsPermissionsTracker::RegisterLocalStatePrefs(registry);
   extensions::login_api::RegisterLocalStatePrefs(registry);
