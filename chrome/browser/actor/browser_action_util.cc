@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -487,6 +488,8 @@ std::unique_ptr<ToolRequest> CreateScriptToolRequest(
 std::unique_ptr<ToolRequest> CreateToolRequest(
     const optimization_guide::proto::Action& action,
     TabInterface* deprecated_fallback_tab) {
+  TRACE_EVENT1("actor", "CreateToolRequest", "action_type",
+               static_cast<int>(action.action_case()));
   switch (action.action_case()) {
     case optimization_guide::proto::Action::kClick: {
       const ClickAction& click_action = action.click();
@@ -574,6 +577,7 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
 
 base::expected<std::vector<std::unique_ptr<ToolRequest>>, size_t>
 BuildToolRequest(const optimization_guide::proto::Actions& actions) {
+  TRACE_EVENT0("actor", "BuildToolRequest");
   std::vector<std::unique_ptr<ToolRequest>> requests;
   requests.reserve(actions.actions_size());
   for (int i = 0; i < actions.actions_size(); ++i) {
@@ -592,6 +596,7 @@ BuildToolRequest(const optimization_guide::proto::Actions& actions) {
 void FillInTabObservation(
     const page_content_annotations::FetchPageContextResult& fetch_result,
     apc::TabObservation& tab_observation) {
+  TRACE_EVENT0("actor", "FillInTabObservation");
   if (fetch_result.screenshot_result.has_value()) {
     auto& data = fetch_result.screenshot_result->jpeg_data;
     if (data.size() != 0) {
@@ -619,6 +624,7 @@ void FetchCallback(
     base::TimeTicks fetch_context_time,
     apc::ActionsResult_LatencyInformation* latency_info,
     ActorKeyedService::TabObservationResult result) {
+  TRACE_EVENT0("actor", "FetchCallback");
   CHECK(tab_observation);
   CHECK(latency_info);
   base::ScopedClosureRunner run_barrier_at_return(barrier);
@@ -689,6 +695,7 @@ void BuildActionsResultWithObservations(
         void(std::unique_ptr<apc::ActionsResult>,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
         callback) {
+  TRACE_EVENT0("actor", "BuildActionsResultWithObservations");
   auto* profile = Profile::FromBrowserContext(&browser_context);
   auto* actor_service = actor::ActorKeyedService::Get(profile);
   CHECK(actor_service);
@@ -799,6 +806,7 @@ void BuildActionsResultWithObservations(
 apc::ActionsResult BuildErrorActionsResult(
     mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action) {
+  TRACE_EVENT0("actor", "BuildErrorActionsResult");
   apc::ActionsResult response;
   CHECK(!IsOk(result_code));
 
@@ -813,6 +821,7 @@ apc::ActionsResult BuildErrorActionsResult(
 base::expected<std::vector<std::unique_ptr<ToolRequest>>, size_t>
 BuildToolRequest(const optimization_guide::proto::BrowserAction& actions,
                  tabs::TabInterface* deprecated_fallback_tab) {
+  TRACE_EVENT0("actor", "BuildToolRequest");
   std::vector<std::unique_ptr<actor::ToolRequest>> requests;
   requests.reserve(actions.actions_size());
   for (int i = 0; i < actions.actions_size(); ++i) {
@@ -831,6 +840,7 @@ BuildToolRequest(const optimization_guide::proto::BrowserAction& actions,
 optimization_guide::proto::BrowserActionResult BuildBrowserActionResult(
     mojom::ActionResultCode result_code,
     int32_t tab_id) {
+  TRACE_EVENT0("actor", "BuildBrowserActionResult");
   optimization_guide::proto::BrowserActionResult response;
   response.set_action_result(static_cast<int32_t>(result_code));
   response.set_tab_id(tab_id);
@@ -838,6 +848,7 @@ optimization_guide::proto::BrowserActionResult BuildBrowserActionResult(
 }
 
 std::string ToBase64(const optimization_guide::proto::BrowserAction& actions) {
+  TRACE_EVENT0("actor", "BrowserActionToBase64");
   size_t size = actions.ByteSizeLong();
   std::vector<uint8_t> buffer(size);
   actions.SerializeToArray(buffer.data(), size);
@@ -845,6 +856,7 @@ std::string ToBase64(const optimization_guide::proto::BrowserAction& actions) {
 }
 
 std::string ToBase64(const optimization_guide::proto::Actions& actions) {
+  TRACE_EVENT0("actor", "ActionsToBase64");
   size_t size = actions.ByteSizeLong();
   std::vector<uint8_t> buffer(size);
   actions.SerializeToArray(buffer.data(), size);

@@ -63,6 +63,8 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("__metadata"),
     perfetto::Category("accessibility"),
     perfetto::Category("AccountFetcherService"),
+    perfetto::Category("actor").SetDescription(
+      "Events for the Actor component."),
     perfetto::Category("android.adpf"),
     perfetto::Category("android.ui.jank"),
     perfetto::Category("android_webview"),

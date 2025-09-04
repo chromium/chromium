@@ -19,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/state_transitions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/id_type.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -86,6 +87,7 @@ ExecutionEngine::ExecutionEngine(Profile* profile)
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       ui_event_dispatcher_(ui::NewUiEventDispatcher(
           ActorKeyedService::Get(profile)->GetActorUiStateManager())) {
+  TRACE_EVENT0("actor", "ExecutionEngine::ExecutionEngine");
   CHECK(profile_);
 }
 
@@ -95,6 +97,7 @@ ExecutionEngine::ExecutionEngine(
     : profile_(profile),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)) {
+  TRACE_EVENT0("actor", "ExecutionEngine::ExecutionEngine");
   CHECK(profile_);
 }
 
@@ -111,11 +114,13 @@ ExecutionEngine::~ExecutionEngine() {
 
 void ExecutionEngine::SetOwner(ActorTask* task) {
   task_ = task;
+  TRACE_EVENT0("actor", "ExecutionEngine::SetOwner");
   actor_login_service_ = std::make_unique<actor_login::ActorLoginServiceImpl>();
   tool_controller_ = std::make_unique<ToolController>(*task_, *this);
 }
 
 void ExecutionEngine::SetState(State state) {
+  TRACE_EVENT0("actor", "ExecutionEngine::SetState");
   journal_->Log(GURL(), task_->id(), mojom::JournalTrack::kActor,
                 "ExecutionEngine::StateChange",
                 absl::StrFormat("State %s -> %s", StateToString(state_),
@@ -179,12 +184,14 @@ bool ExecutionEngine::ShouldGateNavigation(
 }
 
 void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
+  TRACE_EVENT0("actor", "ExecutionEngine::CancelOngoingActions");
   if (!action_sequence_.empty()) {
     CompleteActions(MakeResult(reason), /*action_index=*/std::nullopt);
   }
 }
 
 void ExecutionEngine::FailCurrentTool(mojom::ActionResultCode reason) {
+  TRACE_EVENT0("actor", "ExecutionEngine::FailCurrentTool");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_NE(reason, mojom::ActionResultCode::kOk);
   if (state_ != State::kToolInvoke) {
@@ -196,6 +203,7 @@ void ExecutionEngine::FailCurrentTool(mojom::ActionResultCode reason) {
 
 void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
                           ActorTask::ActCallback callback) {
+  TRACE_EVENT0("actor", "ExecutionEngine::Act");
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   CHECK(!actions.empty());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -240,6 +248,7 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
 
 void ExecutionEngine::KickOffNextAction(
     mojom::ActionResultPtr init_hooks_result) {
+  TRACE_EVENT0("actor", "ExecutionEngine::KickOffNextAction");
   DCHECK(state_ == State::kInit || state_ == State::kUiPostInvoke ||
          state_ == State::kComplete)
       << "Current state is " << StateToString(state_);
@@ -265,6 +274,7 @@ void ExecutionEngine::KickOffNextAction(
 }
 
 void ExecutionEngine::SafetyChecksForNextAction() {
+  TRACE_EVENT0("actor", "ExecutionEngine::SafetyChecksForNextAction");
   tabs::TabInterface* tab = GetNextAction().GetTabHandle().Get();
 
   if (!tab) {
@@ -287,6 +297,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
 void ExecutionEngine::DidFinishAsyncSafetyChecks(
     const url::Origin& evaluated_origin,
     bool may_act) {
+  TRACE_EVENT0("actor", "ExecutionEngine::DidFinishAsyncSafetyChecks");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!action_sequence_.empty());
 
@@ -330,6 +341,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 }
 
 void ExecutionEngine::ExecuteNextAction() {
+  TRACE_EVENT0("actor", "ExecutionEngine::ExecuteNextAction");
   DCHECK_EQ(state_, State::kStartAction);
   CHECK(!action_sequence_.empty());
   CHECK(tool_controller_);
@@ -344,6 +356,7 @@ void ExecutionEngine::ExecuteNextAction() {
 }
 
 void ExecutionEngine::PostToolCreate(mojom::ActionResultPtr result) {
+  TRACE_EVENT0("actor", "ExecutionEngine::PostToolCreate");
   if (!IsOk(*result)) {
     CompleteActions(std::move(result), InProgressActionIndex());
     return;
@@ -355,6 +368,7 @@ void ExecutionEngine::PostToolCreate(mojom::ActionResultPtr result) {
 }
 
 void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
+  TRACE_EVENT0("actor", "ExecutionEngine::FinishedUiPreInvoke");
   DCHECK_EQ(state_, State::kUiPreInvoke);
   if (!IsOk(*result)) {
     CompleteActions(std::move(result), InProgressActionIndex());
@@ -367,6 +381,7 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
 }
 
 void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
+  TRACE_EVENT0("actor", "ExecutionEngine::FinishedToolInvoke");
   DCHECK_EQ(state_, State::kToolInvoke);
   // The current action errored out. Stop the chain.
   std::optional<mojom::ActionResultCode> external_tool_failure_reason;
@@ -393,6 +408,7 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
 }
 
 void ExecutionEngine::FinishedUiPostInvoke(mojom::ActionResultPtr result) {
+  TRACE_EVENT0("actor", "ExecutionEngine::FinishedUiPostInvoke");
   DCHECK_EQ(state_, State::kUiPostInvoke);
   CHECK(!action_sequence_.empty());
 
@@ -411,6 +427,7 @@ void ExecutionEngine::FinishedUiPostInvoke(mojom::ActionResultPtr result) {
 
 void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
                                       std::optional<size_t> action_index) {
+  TRACE_EVENT0("actor", "ExecutionEngine::CompleteActions");
   CHECK(!action_sequence_.empty());
   CHECK(act_callback_);
 
@@ -455,6 +472,7 @@ void ExecutionEngine::PromptToSelectCredential(
     const std::vector<actor_login::Credential>& credentials,
     const base::flat_map<std::string, gfx::Image>& icons,
     ToolDelegate::CredentialSelectedCallback callback) {
+  TRACE_EVENT0("actor", "ExecutionEngine::PromptToSelectCredential");
   CHECK(!credentials.empty());
 
   // In the same task, another login attempt is made before the previous one
@@ -475,6 +493,7 @@ void ExecutionEngine::PromptToSelectCredential(
 
 void ExecutionEngine::OnCredentialSelected(
     webui::mojom::SelectCredentialDialogResponsePtr response) {
+  TRACE_EVENT0("actor", "ExecutionEngine::OnCredentialSelected");
   if (credential_selected_callback_) {
     std::move(credential_selected_callback_).Run(std::move(response));
   }

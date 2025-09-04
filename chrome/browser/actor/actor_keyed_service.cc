@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_tab_data.h"
@@ -77,6 +78,7 @@ base::WeakPtr<ActorKeyedService> ActorKeyedService::GetWeakPtr() {
 }
 
 TaskId ActorKeyedService::AddActiveTask(std::unique_ptr<ActorTask> task) {
+  TRACE_EVENT0("actor", "ActorKeyedService::AddActiveTask");
   TaskId task_id = next_task_id_.GenerateNextId();
   task->SetId(base::PassKey<ActorKeyedService>(), task_id);
   task->GetExecutionEngine()->SetOwner(task.get());
@@ -114,6 +116,7 @@ void ActorKeyedService::ResetForTesting() {
 }
 
 TaskId ActorKeyedService::CreateTask() {
+  TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
   auto actor_task = std::make_unique<ActorTask>(
       profile_.get(), std::move(execution_engine),
@@ -149,6 +152,7 @@ void ActorKeyedService::NotifyRequestToShowCredentialSelectionDialog(
 void ActorKeyedService::OnCredentialSelected(
     TaskId request_task_id,
     webui::mojom::SelectCredentialDialogResponsePtr response) {
+  TRACE_EVENT0("actor", "ActorKeyedService::OnCredentialSelected");
   // TODO(crbug.com/440147814): Update the `UserGrantedPermissionDuration`
   // if the user changes the permission.
   TaskId response_task_id(response->task_id);
@@ -175,6 +179,7 @@ void ActorKeyedService::RequestTabObservation(
     tabs::TabInterface& tab,
     TaskId task_id,
     base::OnceCallback<void(TabObservationResult)> callback) {
+  TRACE_EVENT0("actor", "ActorKeyedService::RequestTabObservation");
   const GURL& last_committed_url = tab.GetContents()->GetLastCommittedURL();
   auto journal_entry = journal_.CreatePendingAsyncEntry(
       last_committed_url, task_id, mojom::JournalTrack::kActor,
@@ -244,6 +249,7 @@ void ActorKeyedService::PerformActions(
     TaskId task_id,
     std::vector<std::unique_ptr<ToolRequest>>&& actions,
     PerformActionsCallback callback) {
+  TRACE_EVENT0("actor", "ActorKeyedService::PerformActions");
   std::vector<ActionResultWithLatencyInfo> empty_results;
   auto* task = GetTask(task_id);
   if (!task) {
@@ -273,6 +279,7 @@ void ActorKeyedService::OnActionsFinished(
     mojom::ActionResultPtr result,
     std::optional<size_t> index_of_failed_action,
     std::vector<ActionResultWithLatencyInfo> action_results) {
+  TRACE_EVENT0("actor", "ActorKeyedService::OnActionsFinished");
   // If the result if Ok then we must not have a failed action.
   CHECK(!IsOk(*result) || !index_of_failed_action);
   RunLater(base::BindOnce(std::move(callback), result->code,
@@ -280,6 +287,7 @@ void ActorKeyedService::OnActionsFinished(
 }
 
 void ActorKeyedService::StopTask(TaskId task_id, bool success) {
+  TRACE_EVENT0("actor", "ActorKeyedService::StopTask");
   auto task = active_tasks_.extract(task_id);
   if (!task.empty()) {
     auto ret = inactive_tasks_.insert(std::move(task));
