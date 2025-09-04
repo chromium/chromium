@@ -945,6 +945,17 @@ void TextControlElement::AdjustPlaceholderBreakElement() {
     return;
   }
   Node* last_child = inner_editor->lastChild();
+  if (RuntimeEnabledFeatures::TextareaLastLineRemovalFixEnabled()) {
+    // Remove the last empty text.  It prevents from adding the placeholder
+    // break though it produces no height.
+    while (auto* text_last_child = DynamicTo<Text>(last_child)) {
+      if (!text_last_child->data().empty()) {
+        break;
+      }
+      last_child = last_child->previousSibling();
+      text_last_child->remove();
+    }
+  }
   if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
       IsA<HTMLBRElement>(last_child)) {
     if (!IsPlaceholderBreakElement(last_child)) {
