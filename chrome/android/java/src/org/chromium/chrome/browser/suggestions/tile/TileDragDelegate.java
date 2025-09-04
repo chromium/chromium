@@ -79,4 +79,10 @@ interface TileDragDelegate {
 
     /** Forces tile drag session to end. */
     void reset();
+
+    /** Returns whether the {@param tileView} is the first among draggable tiles. */
+    boolean isFirstDraggableTile(View tileView);
+
+    /** Returns whether the {@param tileView} is the last among draggable tiles. */
+    boolean isLastDraggableTile(View tileView);
 }

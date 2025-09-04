@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -27,6 +28,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPopupWindow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.ui.base.TestActivity;
 
@@ -77,5 +79,31 @@ public class ContextMenuManagerUnitTest {
                 mManager.showListContextMenu(mAnchorView, mDelegate));
         assertNotNull("List context menu is null.", mManager.getListMenuForTesting());
         verify(mDelegate).onContextMenuCreated();
+    }
+
+    @Test
+    public void testHandleMenuItemClick_MoveUp() {
+        mManager.handleMenuItemClick(ContextMenuItemId.MOVE_UP, mDelegate);
+        verify(mDelegate).moveItemUp();
+        verify(mDelegate, never()).moveItemDown();
+    }
+
+    @Test
+    public void testHandleMenuItemClick_MoveDown() {
+        mManager.handleMenuItemClick(ContextMenuItemId.MOVE_DOWN, mDelegate);
+        verify(mDelegate).moveItemDown();
+        verify(mDelegate, never()).moveItemUp();
+    }
+
+    @Test
+    public void testShouldShowItem_MoveUp() {
+        doReturn(true).when(mDelegate).isItemSupported(ContextMenuItemId.MOVE_UP);
+        assertTrue(mManager.shouldShowItem(ContextMenuItemId.MOVE_UP, mDelegate));
+    }
+
+    @Test
+    public void testShouldShowItem_MoveDown() {
+        doReturn(true).when(mDelegate).isItemSupported(ContextMenuItemId.MOVE_DOWN);
+        assertTrue(mManager.shouldShowItem(ContextMenuItemId.MOVE_DOWN, mDelegate));
     }
 }

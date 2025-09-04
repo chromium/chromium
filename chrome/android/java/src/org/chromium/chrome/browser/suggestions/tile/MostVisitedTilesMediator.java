@@ -215,6 +215,11 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
     }
 
     @Override
+    public void onCustomTileReorder(int newPos) {
+        mMvTilesLayout.ensureTileIsInViewOnNextLayout(newPos);
+    }
+
+    @Override
     public void onCustomTileNonReorderChange() {
         SuggestionsTileVerticalDivider divider = mMvTilesLayout.getDividerMaybeNull();
         if (divider != null) {
