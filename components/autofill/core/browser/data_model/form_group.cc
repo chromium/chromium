@@ -60,15 +60,15 @@ std::u16string FormGroup::GetInfo(FieldType type,
 }
 
 bool FormGroup::SetInfo(FieldType type,
-                        const std::u16string& value,
-                        const std::string& app_locale) {
+                        std::u16string_view value,
+                        std::string_view app_locale) {
   return SetInfoWithVerificationStatus(type, value, app_locale,
                                        VerificationStatus::kNoStatus);
 }
 
 bool FormGroup::SetInfo(const AutofillType& type,
-                        const std::u16string& value,
-                        const std::string& app_locale) {
+                        std::u16string_view value,
+                        std::string_view app_locale) {
   return SetInfoWithVerificationStatus(type, value, app_locale,
                                        VerificationStatus::kNoStatus);
 }
@@ -84,14 +84,14 @@ bool FormGroup::HasInfo(const AutofillType& type) const {
 }
 
 bool FormGroup::SetInfoWithVerificationStatus(FieldType type,
-                                              const std::u16string& value,
-                                              const std::string& app_locale,
+                                              std::u16string_view value,
+                                              std::string_view app_locale,
                                               const VerificationStatus status) {
   return SetInfoWithVerificationStatus(AutofillType(type), value, app_locale,
                                        status);
 }
 
-void FormGroup::SetRawInfo(FieldType type, const std::u16string& value) {
+void FormGroup::SetRawInfo(FieldType type, std::u16string_view value) {
   SetRawInfoWithVerificationStatus(type, value, VerificationStatus::kNoStatus);
 }
 

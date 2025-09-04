@@ -257,11 +257,11 @@ class CreditCard : public FormGroup {
                          std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
-                                        const std::u16string& value,
+                                        std::u16string_view value,
                                         VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(const AutofillType& type,
-                                     const std::u16string& value,
-                                     const std::string& app_locale,
+                                     std::u16string_view value,
+                                     std::string_view app_locale,
                                      VerificationStatus status) override;
   VerificationStatus GetVerificationStatus(FieldType type) const override;
 
@@ -386,7 +386,7 @@ class CreditCard : public FormGroup {
   const std::u16string& number() const { return number_; }
   // Sets `number_` to `number` and computes the appropriate card issuer
   // `network_`.
-  void SetNumber(const std::u16string& number);
+  void SetNumber(std::u16string number);
 
   // Logs the number of days since the card was last used and records its use.
   void RecordAndLogUse();

@@ -12,6 +12,7 @@
 #include <optional>
 #include <ostream>
 #include <string_view>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
@@ -107,8 +108,8 @@ std::u16string NetworkForFill(const std::string& network) {
   return std::u16string();
 }
 
-// Returns the last four digits of the credit card |number| (fewer if there are
-// not enough characters in |number|).
+// Returns the last four digits of the credit card `number` (fewer if there are
+// not enough characters in `number`).
 std::u16string GetLastFourDigits(const std::u16string& number) {
   static const size_t kNumLastDigits = 4;
 
@@ -546,7 +547,7 @@ std::u16string CreditCard::GetRawInfo(FieldType type) const {
 }
 
 void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
-                                                  const std::u16string& value,
+                                                  std::u16string_view value,
                                                   VerificationStatus status) {
   DCHECK(FieldTypeGroupSet(
              {FieldTypeGroup::kCreditCard, FieldTypeGroup::kStandaloneCvcField})
@@ -599,7 +600,7 @@ void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
     case CREDIT_CARD_NUMBER: {
       // Don't change the real value if the input is an obfuscated string.
       if (value.size() > 0 && value[0] != kCreditCardObfuscationSymbol) {
-        SetNumber(value);
+        SetNumber(std::u16string(value));
       }
       break;
     }
@@ -975,7 +976,7 @@ bool CreditCard::SetExpirationYearFromString(std::u16string_view text) {
 void CreditCard::SetExpirationDateFromString(std::u16string_view text) {
   static constexpr char16_t kDateRegex[] =
       uR"(^\s*[0-9]{1,2}\s*[-/|]?\s*[0-9]{2,4}\s*$)";
-  // Check that |text| fits the supported patterns: mmyy, mmyyyy, m-yy,
+  // Check that `text` fits the supported patterns: mmyy, mmyyyy, m-yy,
   // mm-yy, m-yyyy and mm-yyyy. Note that myy and myyyy matched by this pattern
   // but are not supported (ambiguous). Separators: -, / and |.
   if (!MatchesRegex<kDateRegex>(text)) {
@@ -1245,8 +1246,8 @@ std::u16string CreditCard::GetInfo(const AutofillType& autofill_type,
 }
 
 bool CreditCard::SetInfoWithVerificationStatus(const AutofillType& type,
-                                               const std::u16string& value,
-                                               const std::string& app_locale,
+                                               std::u16string_view value,
+                                               std::string_view app_locale,
                                                VerificationStatus status) {
   const FieldType storable_type = type.GetCreditCardType();
   if (storable_type == CREDIT_CARD_EXP_MONTH) {
@@ -1285,8 +1286,8 @@ std::u16string CreditCard::NicknameAndLastFourDigits(
              : base::StrCat({nickname, u"  ", obfuscated_last_four});
 }
 
-void CreditCard::SetNumber(const std::u16string& number) {
-  number_ = number;
+void CreditCard::SetNumber(std::u16string number) {
+  number_ = std::move(number);
 
   // Set the type based on the card number, but only for full numbers, not
   // when we have masked cards from the server (last 4 digits).

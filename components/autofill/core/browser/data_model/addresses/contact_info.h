@@ -86,11 +86,11 @@ class NameInfo : public FormGroup {
   std::u16string GetRawInfo(FieldType type) const override;
 
   void SetRawInfoWithVerificationStatus(FieldType type,
-                                        const std::u16string& value,
+                                        std::u16string_view value,
                                         VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(const AutofillType& type,
-                                     const std::u16string& value,
-                                     const std::string& app_locale,
+                                     std::u16string_view value,
+                                     std::string_view app_locale,
                                      VerificationStatus status) override;
   // Return the verification status of a structured name value.
   VerificationStatus GetVerificationStatus(FieldType type) const override;
@@ -191,11 +191,11 @@ class EmailInfo : public FormGroup {
                          std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
-                                        const std::u16string& value,
+                                        std::u16string_view value,
                                         VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(const AutofillType& type,
-                                     const std::u16string& value,
-                                     const std::string& app_locale,
+                                     std::u16string_view value,
+                                     std::string_view app_locale,
                                      const VerificationStatus status) override;
   VerificationStatus GetVerificationStatus(FieldType type) const override;
 
@@ -223,11 +223,11 @@ class CompanyInfo : public FormGroup {
                          std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
-                                        const std::u16string& value,
+                                        std::u16string_view value,
                                         VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(const AutofillType& type,
-                                     const std::u16string& value,
-                                     const std::string& locale,
+                                     std::u16string_view value,
+                                     std::string_view locale,
                                      VerificationStatus status) override;
 
   VerificationStatus GetVerificationStatus(FieldType type) const override;

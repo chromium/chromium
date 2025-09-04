@@ -498,7 +498,7 @@ std::u16string NameInfo::GetRawInfo(FieldType type) const {
 }
 
 void NameInfo::SetRawInfoWithVerificationStatus(FieldType type,
-                                                const std::u16string& value,
+                                                std::u16string_view value,
                                                 VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(type));
   GetRootForType(type)->SetValueForType(type, value, status);
@@ -519,8 +519,8 @@ std::u16string NameInfo::GetInfo(const AutofillType& type,
 }
 
 bool NameInfo::SetInfoWithVerificationStatus(const AutofillType& type,
-                                             const std::u16string& value,
-                                             const std::string& app_locale,
+                                             std::u16string_view value,
+                                             std::string_view app_locale,
                                              VerificationStatus status) {
   const FieldType ft = type.GetAddressType();
   if (ft == NAME_FULL || (ft == ALTERNATIVE_FULL_NAME &&
@@ -588,15 +588,15 @@ std::u16string EmailInfo::GetRawInfo(FieldType type) const {
 }
 
 void EmailInfo::SetRawInfoWithVerificationStatus(FieldType type,
-                                                 const std::u16string& value,
+                                                 std::u16string_view value,
                                                  VerificationStatus status) {
   DCHECK_EQ(EMAIL_ADDRESS, type);
   email_ = value;
 }
 
 bool EmailInfo::SetInfoWithVerificationStatus(const AutofillType& type,
-                                              const std::u16string& value,
-                                              const std::string& app_locale,
+                                              std::u16string_view value,
+                                              std::string_view app_locale,
                                               const VerificationStatus status) {
   SetRawInfoWithVerificationStatus(type.GetAddressType(), value, status);
   return true;
@@ -642,7 +642,7 @@ std::u16string CompanyInfo::GetRawInfo(FieldType type) const {
 }
 
 void CompanyInfo::SetRawInfoWithVerificationStatus(FieldType type,
-                                                   const std::u16string& value,
+                                                   std::u16string_view value,
                                                    VerificationStatus status) {
   DCHECK_EQ(COMPANY_NAME, type);
   company_name_ = value;
@@ -650,8 +650,8 @@ void CompanyInfo::SetRawInfoWithVerificationStatus(FieldType type,
 
 bool CompanyInfo::SetInfoWithVerificationStatus(
     const AutofillType& type,
-    const std::u16string& value,
-    const std::string& app_locale,
+    std::u16string_view value,
+    std::string_view app_locale,
     const VerificationStatus status) {
   SetRawInfoWithVerificationStatus(type.GetAddressType(), value, status);
   return true;

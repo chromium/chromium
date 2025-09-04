@@ -66,12 +66,12 @@ class Address : public FormGroup {
                          std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
-                                        const std::u16string& value,
+                                        std::u16string_view value,
                                         VerificationStatus status) override;
   // TODO(crbug.com/40264633): Change `AutofillType` into `FieldType`.
   bool SetInfoWithVerificationStatus(const AutofillType& type,
-                                     const std::u16string& value,
-                                     const std::string& locale,
+                                     std::u16string_view value,
+                                     std::string_view locale,
                                      VerificationStatus status) override;
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& locale,
@@ -127,7 +127,7 @@ class Address : public FormGroup {
   // Updates the address' country, builds the hierarchy model corresponding to
   // `country_code` and transfers the content of the old data model into the new
   // one.
-  void SetAddressCountryCode(const std::u16string& country_code,
+  void SetAddressCountryCode(std::u16string_view country_code,
                              VerificationStatus status);
 
   // Returns a pointer to the structured address' root node (i.e.

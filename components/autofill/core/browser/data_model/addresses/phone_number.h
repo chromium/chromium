@@ -67,11 +67,11 @@ class PhoneNumber : public FormGroup {
                          std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
-                                        const std::u16string& value,
+                                        std::u16string_view value,
                                         VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(const AutofillType& type,
-                                     const std::u16string& value,
-                                     const std::string& app_locale,
+                                     std::u16string_view value,
+                                     std::string_view app_locale,
                                      const VerificationStatus status) override;
   VerificationStatus GetVerificationStatus(FieldType type) const override;
 
@@ -82,7 +82,7 @@ class PhoneNumber : public FormGroup {
     ~PhoneCombineHelper();
 
     // Processes the `value` accordingly given a phone number `field_type`.
-    void SetInfo(FieldType field_type, const std::u16string& value);
+    void SetInfo(FieldType field_type, std::u16string_view value);
 
     // Parses the number built up from pieces stored via SetInfo() according to
     // the specified `profile`'s country code, falling back to the given

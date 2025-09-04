@@ -42,13 +42,12 @@ class FormGroup {
   // canonicalized, use SetInfo() instead.
   // Accepts a verification status.
   virtual void SetRawInfoWithVerificationStatus(FieldType type,
-                                                const std::u16string& value,
+                                                std::u16string_view value,
                                                 VerificationStatus status) = 0;
 
-  // Convenience wrapper to add
-  // `VerificationStatus::kNoStatus` to
+  // Convenience wrapper to add `VerificationStatus::kNoStatus` to
   // `SetRawInfoWithVerificationStatus`.
-  void SetRawInfo(FieldType type, const std::u16string& value);
+  void SetRawInfo(FieldType type, std::u16string_view value);
 
   // Returns true iff the string associated with `type` is nonempty (without
   // canonicalizing its value).
@@ -69,23 +68,23 @@ class FormGroup {
   // according to the specified `app_locale` prior to storing, if appropriate.
   // TODO(crbug.com/40264633): Remove the `AutofillType` version.
   bool SetInfo(FieldType type,
-               const std::u16string& value,
-               const std::string& app_locale);
+               std::u16string_view value,
+               std::string_view app_locale);
   bool SetInfo(const AutofillType& type,
-               const std::u16string& value,
-               const std::string& app_locale);
+               std::u16string_view value,
+               std::string_view app_locale);
 
   // Same as `SetInfo` but supports a verification status.
   // TODO(crbug.com/40264633): Remove the `AutofillType` version.
   bool SetInfoWithVerificationStatus(FieldType type,
-                                     const std::u16string& value,
-                                     const std::string& app_locale,
+                                     std::u16string_view value,
+                                     std::string_view app_locale,
                                      const VerificationStatus status);
 
   virtual bool SetInfoWithVerificationStatus(
       const AutofillType& type,
-      const std::u16string& value,
-      const std::string& app_locale,
+      std::u16string_view value,
+      std::string_view app_locale,
       const VerificationStatus status) = 0;
 
   // Returns true iff the string associated with `type` is nonempty.

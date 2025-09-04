@@ -127,7 +127,7 @@ std::u16string Address::GetRawInfo(FieldType type) const {
 }
 
 void Address::SetRawInfoWithVerificationStatus(FieldType type,
-                                               const std::u16string& value,
+                                               std::u16string_view value,
                                                VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfFieldType(type));
   // The street address has a structure that may have already been set before
@@ -208,8 +208,8 @@ std::u16string Address::GetInfo(const AutofillType& type,
 }
 
 bool Address::SetInfoWithVerificationStatus(const AutofillType& type,
-                                            const std::u16string& value,
-                                            const std::string& locale,
+                                            std::u16string_view value,
+                                            std::string_view locale,
                                             VerificationStatus status) {
   FieldType storable_type = type.GetAddressType();
   if (storable_type == ADDRESS_HOME_COUNTRY && type.is_country_code()) {
@@ -263,7 +263,7 @@ VerificationStatus Address::GetVerificationStatus(FieldType type) const {
   return GetRoot().GetVerificationStatusForType(type);
 }
 
-void Address::SetAddressCountryCode(const std::u16string& country_code,
+void Address::SetAddressCountryCode(std::u16string_view country_code,
                                     VerificationStatus verification_status) {
   const AddressCountryCode new_address_country_code =
       AddressCountryCode(base::UTF16ToUTF8(country_code));

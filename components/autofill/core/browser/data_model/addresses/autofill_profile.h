@@ -154,16 +154,16 @@ class AutofillProfile : public FormGroup {
                          std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
-                                        const std::u16string& value,
+                                        std::u16string_view value,
                                         VerificationStatus status) override;
   // TODO(crbug.com/40264633): Change `AutofillType` into `FieldType`.
   bool SetInfoWithVerificationStatus(const AutofillType& type,
-                                     const std::u16string& value,
-                                     const std::string& app_locale,
+                                     std::u16string_view value,
+                                     std::string_view app_locale,
                                      VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(FieldType type,
-                                     const std::u16string& value,
-                                     const std::string& app_locale,
+                                     std::u16string_view value,
+                                     std::string_view app_locale,
                                      VerificationStatus status);
   VerificationStatus GetVerificationStatus(const FieldType type) const override;
   FieldTypeSet GetSupportedTypes() const override;

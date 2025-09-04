@@ -94,7 +94,7 @@ std::u16string PhoneNumber::GetRawInfo(FieldType type) const {
 }
 
 void PhoneNumber::SetRawInfoWithVerificationStatus(FieldType type,
-                                                   const std::u16string& value,
+                                                   std::u16string_view value,
                                                    VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kPhone, GroupTypeOfFieldType(type));
   if (type != PHONE_HOME_WHOLE_NUMBER) {
@@ -288,8 +288,8 @@ std::u16string PhoneNumber::GetInfo(const AutofillType& autofill_type,
 }
 
 bool PhoneNumber::SetInfoWithVerificationStatus(const AutofillType& type,
-                                                const std::u16string& value,
-                                                const std::string& app_locale,
+                                                std::u16string_view value,
+                                                std::string_view app_locale,
                                                 VerificationStatus status) {
   SetRawInfoWithVerificationStatus(type.GetAddressType(), value, status);
 
@@ -332,7 +332,7 @@ PhoneNumber::PhoneCombineHelper::PhoneCombineHelper() = default;
 PhoneNumber::PhoneCombineHelper::~PhoneCombineHelper() = default;
 
 void PhoneNumber::PhoneCombineHelper::SetInfo(FieldType field_type,
-                                              const std::u16string& value) {
+                                              std::u16string_view value) {
   CHECK_EQ(GroupTypeOfFieldType(field_type), FieldTypeGroup::kPhone);
   switch (field_type) {
     case PHONE_HOME_COUNTRY_CODE:

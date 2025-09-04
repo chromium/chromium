@@ -445,7 +445,7 @@ std::u16string AutofillProfile::GetRawInfo(FieldType type) const {
 
 void AutofillProfile::SetRawInfoWithVerificationStatus(
     FieldType type,
-    const std::u16string& value,
+    std::u16string_view value,
     VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(type);
   if (form_group) {
@@ -1081,11 +1081,10 @@ std::u16string AutofillProfile::GetInfo(const AutofillType& type,
   return form_group->GetInfo(type, app_locale);
 }
 
-bool AutofillProfile::SetInfoWithVerificationStatus(
-    const AutofillType& type,
-    const std::u16string& value,
-    const std::string& app_locale,
-    VerificationStatus status) {
+bool AutofillProfile::SetInfoWithVerificationStatus(const AutofillType& type,
+                                                    std::u16string_view value,
+                                                    std::string_view app_locale,
+                                                    VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(type.GetAddressType());
   if (!form_group) {
     return false;
@@ -1097,11 +1096,10 @@ bool AutofillProfile::SetInfoWithVerificationStatus(
                                                    app_locale, status);
 }
 
-bool AutofillProfile::SetInfoWithVerificationStatus(
-    FieldType type,
-    const std::u16string& value,
-    const std::string& app_locale,
-    VerificationStatus status) {
+bool AutofillProfile::SetInfoWithVerificationStatus(FieldType type,
+                                                    std::u16string_view value,
+                                                    std::string_view app_locale,
+                                                    VerificationStatus status) {
   return SetInfoWithVerificationStatus(AutofillType(type), value, app_locale,
                                        status);
 }
