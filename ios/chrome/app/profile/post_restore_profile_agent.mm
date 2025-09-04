@@ -25,6 +25,8 @@
 @implementation PostRestoreProfileAgent {
   // The identity manager.
   raw_ptr<signin::IdentityManager> _identityManager;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityObserverBridge;
 
   // The PromosManager used to register promos.
   raw_ptr<PromosManager> _promosManager;
@@ -32,10 +34,6 @@
   // Profile pref service used to retrieve and/or clear the pre-restore
   // identity.
   raw_ptr<PrefService> _prefService;
-
-  // Observes changes in identity.
-  std::unique_ptr<signin::IdentityManagerObserverBridge>
-      _identityObserverBridge;
 
   // Stores whether we have pre-restore account info.
   BOOL _hasAccountInfo;
@@ -54,14 +52,15 @@
   ProfileIOS* profile = profileState.profile;
   _promosManager = PromosManagerFactory::GetForProfile(profile);
   _identityManager = IdentityManagerFactory::GetForProfile(profile);
+  _identityObserverBridge =
+      std::make_unique<signin::IdentityManagerObserverBridge>(_identityManager,
+                                                              self);
   _prefService = profile->GetPrefs();
   _hasAccountInfo = GetPreRestoreIdentity(_prefService).has_value();
+  // TODO(crbug.com/442982538): This dialog should be skipped if sign-in is
+  // disabled.
   [self maybeRegisterPromo];
-  if (_hasAccountInfo && _identityManager) {
-    _identityObserverBridge =
-        std::make_unique<signin::IdentityManagerObserverBridge>(
-            _identityManager, self);
-  } else {
+  if (!_hasAccountInfo) {
     [self shutdown];
   }
 }
