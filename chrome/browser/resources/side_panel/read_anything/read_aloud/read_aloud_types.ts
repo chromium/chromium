@@ -17,15 +17,28 @@ export abstract class ReadAloudNode {
 
   abstract domNode(): Node|undefined;
 
+  // TODO: crbug.com/440400392: This method is a convenience method for working
+  // with AxReadAloudNodes during the refactor and should be deleted once
+  // the TSTextSegmentation flag is fully enabled.
+  static createFromAxNode(
+      axNodeId: number, nodeStore = NodeStore.getInstance()): ReadAloudNode
+      |undefined {
+    const domNode: Node|undefined = nodeStore.getDomNode(axNodeId);
+    if (!domNode) {
+      return undefined;
+    }
+    return this.create(domNode, nodeStore);
+  }
+
   static create(node: Node, nodeStore = NodeStore.getInstance()): ReadAloudNode
       |undefined {
     if (chrome.readingMode.isTsTextSegmentationEnabled) {
-      return new DomReadAloudNode(node);
+      return new DomReadAloudNodeImpl(node);
     }
 
     const axNodeId = nodeStore.getAxId(node);
     if (axNodeId) {
-      return new AxReadAloudNode(axNodeId, nodeStore);
+      return new AxReadAloudNodeImpl(axNodeId, nodeStore);
     }
 
     return undefined;
@@ -33,7 +46,7 @@ export abstract class ReadAloudNode {
 }
 
 export class AxReadAloudNode extends ReadAloudNode {
-  constructor(
+  protected constructor(
       public readonly axNodeId: number,
       private readonly nodeStore_ = NodeStore.getInstance()) {
     super();
@@ -52,9 +65,23 @@ export class AxReadAloudNode extends ReadAloudNode {
   }
 }
 
+// TODO: crbug.com/440400392: The Impl classes are a tool for working
+// with ReadAloudNodes during the refactor in order to enforce more strict
+// ReadAloudNode creation. These classes should be deleted once
+// the TSTextSegmentation flag is fully enabled and sooner, if possible.
+
+// Impl class to help enforce that AxReadAloudNode should only be constructed
+// by one of the #create methods in ReadAloudNode.
+// This class should not be exported.
+class AxReadAloudNodeImpl extends AxReadAloudNode {
+  constructor(axNodeId: number, nodeStore = NodeStore.getInstance()) {
+    super(axNodeId, nodeStore);
+  }
+}
+
 // Represents a node used by read aloud that's based entirely on the DOM.
 export class DomReadAloudNode extends ReadAloudNode {
-  constructor(public readonly node: Node) {
+  protected constructor(public readonly node: Node) {
     super();
   }
 
@@ -71,6 +98,15 @@ export class DomReadAloudNode extends ReadAloudNode {
 
   domNode(): Node|undefined {
     return this.node;
+  }
+}
+
+// Impl class to help enforce that DomReadAloudNode should only be constructed
+// by one of the #create methods in ReadAloudNode.
+// This class should not be exported.
+class DomReadAloudNodeImpl extends DomReadAloudNode {
+  constructor(node: Node) {
+    super(node);
   }
 }
 
