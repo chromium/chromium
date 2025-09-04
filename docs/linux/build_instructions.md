@@ -306,6 +306,13 @@ Tip: you may want to use `--reapi_keep_exec_stream` if your backend
 terminates action when grpc stream is cancelled or closed, and
 doesn't work with WaitExecution.
 
+Tip: you can put these flags in `build/config/siso/.sisorc` like
+
+```shell
+ninja --reapi_grpc_conn_pool=1 --reapi_keep_exec_stream
+```
+so siso will use these flags for `siso ninja`, or `autoninja`.
+
 ##### gn setup for remote execution
 
 Then, add the following GN args to your `args.gn`:
