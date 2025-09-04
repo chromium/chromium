@@ -146,6 +146,10 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableSummarizeSuggestionHint",
       lens::features::ShouldEnableSummarizeHintForContextualSuggest());
+  html_source->AddBoolean("enableFloatingGForHeader",
+                          lens::features::GetEnableFloatingGForHeader());
+  html_source->AddBoolean("enableClientSideAimHeader",
+                          lens::features::GetEnableClientSideHeader());
   html_source->AddBoolean("enableAimSearchbox",
                           lens::IsAimM3Enabled(Profile::FromWebUI(web_ui)) &&
                               lens::features::GetAimSearchboxEnabled());
