@@ -28,13 +28,30 @@
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
-namespace {
 
+namespace {
 // The list of countries where the fallback parsing is not supported.
 static constexpr auto countries_not_supporting_fallback_parsing =
     base::MakeFixedFlatSet<AddressCountryCode>({AddressCountryCode("IN")});
-
 }  // namespace
+
+std::string_view VerificationStatusToStringView(VerificationStatus status) {
+  switch (status) {
+    case VerificationStatus::kNoStatus:
+      return "NoStatus";
+    case VerificationStatus::kParsed:
+      return "Parsed";
+    case VerificationStatus::kFormatted:
+      return "Formatted";
+    case VerificationStatus::kObserved:
+      return "Observed";
+    case VerificationStatus::kServerParsed:
+      return "ServerParsed";
+    case VerificationStatus::kUserVerified:
+      return "UserVerified";
+  }
+  NOTREACHED();
+}
 
 bool IsLessSignificantVerificationStatus(VerificationStatus left,
                                          VerificationStatus right) {
@@ -83,26 +100,7 @@ std::optional<VerificationStatus> ToSafeVerificationStatus(
 }
 
 std::ostream& operator<<(std::ostream& os, VerificationStatus status) {
-  switch (status) {
-    case VerificationStatus::kNoStatus:
-      os << "NoStatus";
-      break;
-    case VerificationStatus::kParsed:
-      os << "Parsed";
-      break;
-    case VerificationStatus::kFormatted:
-      os << "Formatted";
-      break;
-    case VerificationStatus::kObserved:
-      os << "Observed";
-      break;
-    case VerificationStatus::kServerParsed:
-      os << "ServerParsed";
-      break;
-    case VerificationStatus::kUserVerified:
-      os << "UserVerified";
-      break;
-  }
+  os << VerificationStatusToStringView(status);
   return os;
 }
 

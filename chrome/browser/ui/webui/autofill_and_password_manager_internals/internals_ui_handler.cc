@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -14,14 +15,18 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/autofill_and_password_manager_internals_resources.h"
 #include "components/grit/autofill_and_password_manager_internals_resources_map.h"
@@ -124,6 +129,9 @@ void InternalsUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "resetCache", base::BindRepeating(&InternalsUIHandler::OnResetCache,
                                         base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "dumpAddresses", base::BindRepeating(&InternalsUIHandler::OnDumpAddresses,
+                                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getAutofillAiCache",
       base::BindRepeating(&InternalsUIHandler::OnGetAutofillAiCache,
@@ -234,6 +242,23 @@ void InternalsUIHandler::OnResetCache(const base::Value::List& args) {
 
 void InternalsUIHandler::OnResetCacheDone(const std::string& message) {
   FireWebUIListener("notify-reset-done", base::Value(message));
+}
+
+void InternalsUIHandler::OnDumpAddresses(const base::Value::List& args) {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  PersonalDataManager* pdm =
+      PersonalDataManagerFactory::GetForBrowserContext(profile);
+  if (!pdm) {
+    return;
+  }
+  LogBuffer log;
+  for (const AutofillProfile* address :
+       pdm->address_data_manager().GetProfiles()) {
+    log << *address;
+  }
+  if (std::optional<base::Value::Dict> result = log.RetrieveResult()) {
+    LogEntry(*result);
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

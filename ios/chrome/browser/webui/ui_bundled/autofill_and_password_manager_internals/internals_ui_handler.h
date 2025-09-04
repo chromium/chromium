@@ -52,6 +52,7 @@ class InternalsUIHandler : public web::WebUIIOSMessageHandler,
 
   // JavaScript call handler.
   void OnLoaded(const base::Value::List& args);
+  void OnDumpAddresses(const base::Value::List& args);
 
  private:
   // JavaScript function to be called on load.

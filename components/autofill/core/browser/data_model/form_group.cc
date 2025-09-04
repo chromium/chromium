@@ -7,14 +7,19 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_map.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
 
 namespace autofill {
 
@@ -93,6 +98,32 @@ bool FormGroup::SetInfoWithVerificationStatus(FieldType type,
 
 void FormGroup::SetRawInfo(FieldType type, std::u16string_view value) {
   SetRawInfoWithVerificationStatus(type, value, VerificationStatus::kNoStatus);
+}
+
+LogBuffer& operator<<(LogBuffer& buffer, const FormGroup& form_group) {
+  base::flat_map<std::string, FieldType> sorted_types;
+  for (FieldType type : form_group.GetSupportedTypes()) {
+    sorted_types[std::string(FieldTypeToStringView(type))] = type;
+  }
+
+  buffer << Tag{"table"};
+  for (const auto& [type_string, type] : sorted_types) {
+    std::u16string value = form_group.GetRawInfo(type);
+    if (value.empty()) {
+      continue;
+    }
+    LogBuffer rendered_value;
+    rendered_value << Tag{"span"} << Attrib{"style", "white-space: pre"}
+                   << base::StrCat(
+                          {base::UTF16ToUTF8(value), " (",
+                           std::string(VerificationStatusToStringView(
+                               form_group.GetVerificationStatus(type))),
+                           ")"})
+                   << CTag{"span"};
+    buffer << Tr{} << type_string << std::move(rendered_value);
+  }
+  buffer << CTag{"table"};
+  return buffer;
 }
 
 }  // namespace autofill

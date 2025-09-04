@@ -55,6 +55,9 @@ std::optional<VerificationStatus> ToSafeVerificationStatus(
 // Prints the string representation of `status` to `os`.
 std::ostream& operator<<(std::ostream& os, VerificationStatus status);
 
+// Returns a string view representation of the `status`.
+std::string_view VerificationStatusToStringView(VerificationStatus status);
+
 // Returns true if `left` has a less significant verification status compared to
 // `right`.
 bool IsLessSignificantVerificationStatus(VerificationStatus left,

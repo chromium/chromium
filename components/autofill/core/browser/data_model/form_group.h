@@ -14,6 +14,7 @@
 namespace autofill {
 
 class AutofillType;
+class LogBuffer;
 
 // This class is an interface for collections of form fields, grouped by type.
 class FormGroup {
@@ -96,6 +97,8 @@ class FormGroup {
   // called.
   virtual FieldTypeSet GetSupportedTypes() const = 0;
 };
+
+LogBuffer& operator<<(LogBuffer& buffer, const FormGroup& form_group);
 
 }  // namespace autofill
 

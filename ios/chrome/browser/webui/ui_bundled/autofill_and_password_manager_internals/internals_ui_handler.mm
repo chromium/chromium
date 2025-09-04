@@ -4,13 +4,19 @@
 
 #import "ios/chrome/browser/webui/ui_bundled/autofill_and_password_manager_internals/internals_ui_handler.h"
 
+#import <optional>
+
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/logging/log_router.h"
+#import "components/autofill/core/common/logging/log_buffer.h"
 #import "components/grit/autofill_and_password_manager_internals_resources.h"
 #import "components/grit/autofill_and_password_manager_internals_resources_map.h"
 #import "components/version_info/version_info.h"
 #import "components/webui/version/version_handler_helper.h"
 #import "components/webui/version/version_ui_constants.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/common/channel_info.h"
@@ -64,6 +70,9 @@ void InternalsUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "loaded", base::BindRepeating(&InternalsUIHandler::OnLoaded,
                                     base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "dumpAddresses", base::BindRepeating(&InternalsUIHandler::OnDumpAddresses,
+                                           base::Unretained(this)));
 }
 
 void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
@@ -83,6 +92,22 @@ void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
   base::ValueView variations_args[] = {variations_event, variations_list};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", variations_args);
   StartSubscription();
+}
+
+void InternalsUIHandler::OnDumpAddresses(const base::Value::List& args) {
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  PersonalDataManager* pdm = PersonalDataManagerFactory::GetForProfile(profile);
+  if (!pdm) {
+    return;
+  }
+  LogBuffer log;
+  for (const AutofillProfile* address :
+       pdm->address_data_manager().GetProfiles()) {
+    log << *address;
+  }
+  if (std::optional<base::Value::Dict> result = log.RetrieveResult()) {
+    LogEntry(*result);
+  }
 }
 
 void InternalsUIHandler::StartSubscription() {

@@ -266,6 +266,7 @@ function setUpAutofillInternals(onLoadArgument: OnLoadArgument) {
   setUpScopeCheckboxes();
   setUpSettingCheckboxe();
   setUpMarker();
+  setUpDumpAddressesButton();
   setUpSubmittedFormsJSONDataDownload();
   setUpCheckAutofillAiPermissions();
   if (onLoadArgument.showDomNodeIDsEnabled) {
@@ -746,4 +747,14 @@ document.addEventListener('DOMContentLoaded', () => {
   resetCacheFakeButton.addEventListener('click', () => {
     chrome.send('resetCache');
   });
+
+  const dumpAddressesFakeButton =
+      getRequiredElement('dump-addresses-fake-button');
+  dumpAddressesFakeButton.addEventListener('click', () => {
+    chrome.send('dumpAddresses');
+  });
 });
+
+function setUpDumpAddressesButton() {
+  getRequiredElement('dump-addresses-fake-button').style.display = 'inline';
+}

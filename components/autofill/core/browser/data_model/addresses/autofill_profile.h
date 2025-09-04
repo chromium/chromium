@@ -36,6 +36,7 @@ namespace autofill {
 
 class AutofillProfileComparator;
 class AutofillProfileTestApi;
+class LogBuffer;
 
 // A collection of FormGroups stored in a profile.  AutofillProfile also
 // implements the FormGroup interface so that owners of this object can request
@@ -390,6 +391,8 @@ class AutofillProfile : public FormGroup {
 
  private:
   friend class AutofillProfileTestApi;
+  friend LogBuffer& operator<<(LogBuffer& buffer,
+                               const AutofillProfile& profile);
 
   // Creates inferred labels for |profiles| at indices corresponding to
   // |indices|, and stores the results to the corresponding elements of
@@ -471,6 +474,8 @@ class AutofillProfile : public FormGroup {
 
 // So we can compare AutofillProfiles with EXPECT_EQ().
 std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile);
+
+LogBuffer& operator<<(LogBuffer& buffer, const AutofillProfile& profile);
 
 }  // namespace autofill
 
