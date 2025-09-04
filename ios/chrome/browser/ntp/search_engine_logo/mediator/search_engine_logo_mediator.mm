@@ -293,6 +293,10 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 
 - (void)updateLogo:(const search_provider_logos::Logo*)logo
            animate:(BOOL)animate {
+  if (!_logoService) {
+    // The mediator was disconnected.
+    return;
+  }
   if (!logo) {
     _fingerprint = "";
     [self.containerView setLogoState:SearchEngineLogoState::kNone
