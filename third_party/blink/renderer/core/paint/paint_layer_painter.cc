@@ -262,13 +262,6 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       !paint_layer_.HasSelfPaintingLayerDescendant())
     return kFullyPainted;
 
-  if (((paint_flags & PaintFlag::kPaintingCanvasDrawElement) == 0) &&
-      IsA<Element>(object.GetNode()) &&
-      To<Element>(object.GetNode())->IsInCanvasSubtree()) {
-    // This prevents canvas fallback content from being rendered.
-    return kFullyPainted;
-  }
-
   std::optional<CheckAncestorPositionVisibilityScope>
       check_position_visibility_scope;
   if (paint_layer_.InvisibleForPositionVisibility() ||
@@ -478,6 +471,12 @@ PaintResult PaintLayerPainter::PaintChildren(
 
   if (paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock())
     return result;
+
+  // Prevent canvas fallback content from being rendered.
+  if (((paint_flags & PaintFlag::kPaintingCanvasDrawElement) == 0) &&
+      IsA<HTMLCanvasElement>(paint_layer_.GetLayoutObject().GetNode())) {
+    return result;
+  }
 
   PaintLayerPaintOrderIterator iterator(&paint_layer_, children_to_visit);
   while (PaintLayer* child = iterator.Next()) {
