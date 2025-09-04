@@ -25,7 +25,8 @@ class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
                                               scoped_refptr<Environment> env);
 
   SessionOptions(base::PassKey<SessionOptions>,
-                 ScopedOrtSessionOptions session_options);
+                 ScopedOrtSessionOptions session_options,
+                 mojom::Device device_type);
 
   SessionOptions(const SessionOptions&) = delete;
   SessionOptions& operator=(const SessionOptions&) = delete;
@@ -38,6 +39,7 @@ class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
   ~SessionOptions();
 
   ScopedOrtSessionOptions session_options_;
+  const mojom::Device device_type_;
 };
 
 }  // namespace webnn::ort

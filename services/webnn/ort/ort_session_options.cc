@@ -4,7 +4,12 @@
 
 #include "services/webnn/ort/ort_session_options.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/ort_status.h"
@@ -18,6 +23,177 @@
 namespace webnn::ort {
 
 namespace {
+
+constexpr base::cstring_view kCpuExecutionProvider = "CPUExecutionProvider";
+
+bool IsDefaultCpuEpDevice(const OrtEpDevice* device) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  return UNSAFE_BUFFERS(base::cstring_view(ort_api->EpDevice_EpName(device))) ==
+         kCpuExecutionProvider;
+}
+
+// Select the first device of specified hardware device type from the sorted
+// devices. Return nullptr if no such device is found.
+// This behavior mimics the selection logic in ORT's provider_policy_context.cc:
+// https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/core/session/provider_policy_context.cc#L402-L444
+template <OrtHardwareDeviceType DeviceType>
+const OrtEpDevice* SelectFirstEpDeviceForDeviceType(
+    base::span<const OrtEpDevice* const> sorted_devices) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  auto first_device = std::ranges::find_if(
+      sorted_devices, [ort_api](const OrtEpDevice* device) {
+        return ort_api->HardwareDevice_Type(ort_api->EpDevice_Device(device)) ==
+               DeviceType;
+      });
+
+  if (first_device != sorted_devices.end()) {
+    return *first_device;
+  }
+
+  return nullptr;
+}
+
+// Select the first CPU device and also append the default CPU EP device if the
+// selected device is not the default one.
+std::vector<const OrtEpDevice*> SelectEpDevicesForCpu(
+    base::span<const OrtEpDevice* const> sorted_devices) {
+  std::vector<const OrtEpDevice*> selected_devices;
+
+  const OrtEpDevice* first_cpu =
+      SelectFirstEpDeviceForDeviceType<OrtHardwareDeviceType_CPU>(
+          sorted_devices);
+
+  // Handle the rare case where no CPU EP device is available.
+  if (!first_cpu) {
+    LOG(ERROR) << "[WebNN] No CPU execution provider available.";
+    return selected_devices;
+  }
+
+  selected_devices.push_back(first_cpu);
+
+  // Add the default CPU EP device to ensure maximum coverage of opsets and
+  // operators.
+  if (!IsDefaultCpuEpDevice(first_cpu) &&
+      IsDefaultCpuEpDevice(sorted_devices.back())) {
+    selected_devices.push_back(sorted_devices.back());
+  }
+
+  return selected_devices;
+}
+
+// Select the first GPU device with CPU fallback.
+std::vector<const OrtEpDevice*> SelectEpDevicesForGpu(
+    base::span<const OrtEpDevice* const> sorted_devices) {
+  std::vector<const OrtEpDevice*> selected_devices;
+
+  const OrtEpDevice* first_gpu =
+      SelectFirstEpDeviceForDeviceType<OrtHardwareDeviceType_GPU>(
+          sorted_devices);
+
+  if (first_gpu) {
+    selected_devices.push_back(first_gpu);
+  }
+
+  std::vector<const OrtEpDevice*> cpu_fallback_devices =
+      SelectEpDevicesForCpu(sorted_devices);
+  selected_devices.insert(selected_devices.end(), cpu_fallback_devices.begin(),
+                          cpu_fallback_devices.end());
+
+  return selected_devices;
+}
+
+// Select the first NPU device with CPU fallback. If no NPU device is selected,
+// delegate to GPU device selection logic which selects the first GPU device
+// with CPU fallback.
+std::vector<const OrtEpDevice*> SelectEpDevicesForNpu(
+    base::span<const OrtEpDevice* const> sorted_devices) {
+  const OrtEpDevice* first_npu =
+      SelectFirstEpDeviceForDeviceType<OrtHardwareDeviceType_NPU>(
+          sorted_devices);
+
+  if (!first_npu) {
+    return SelectEpDevicesForGpu(sorted_devices);
+  }
+
+  std::vector<const OrtEpDevice*> selected_devices;
+  selected_devices.push_back(first_npu);
+
+  std::vector<const OrtEpDevice*> cpu_fallback_devices =
+      SelectEpDevicesForCpu(sorted_devices);
+  selected_devices.insert(selected_devices.end(), cpu_fallback_devices.begin(),
+                          cpu_fallback_devices.end());
+
+  return selected_devices;
+}
+
+// Execution Provider selection delegate function that selects EPs based on
+// WebNN device type.
+// TODO(crbug.com/425487285): Select EPs based on WebNN power preference.
+OrtStatus* EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
+                                     size_t num_devices,
+                                     const OrtKeyValuePairs* model_metadata,
+                                     const OrtKeyValuePairs* runtime_metadata,
+                                     const OrtEpDevice** selected,
+                                     size_t max_selected,
+                                     size_t* num_selected,
+                                     void* state) {
+  // Early return if no devices available.
+  if (num_devices == 0) {
+    *num_selected = 0;
+    return nullptr;
+  }
+
+  mojom::Device* device_type_ptr = static_cast<mojom::Device*>(state);
+  CHECK(device_type_ptr) << "Device type must be provided in state parameter";
+  mojom::Device device_type = *device_type_ptr;
+
+  // The `sorted_devices` array is already pre-sorted by device type (NPU -> GPU
+  // -> CPU), discrete GPU is preferred over integrated GPU, then by vendor
+  // preference (matching platform vendor first). The default CPU EP device is
+  // always placed last.
+  // According to:
+  // https://github.com/microsoft/onnxruntime/blob/f8c6262399e2c7e0a58cd494f0e58d4f4262dc43/onnxruntime/core/session/provider_policy_context.cc#L56
+  //
+  // TODO(crbug.com/439708046): Consolidate EP device selection logic into
+  // reusable function with WebNN's own sorting.
+  //
+  // SAFETY: ORT guarantees that `ep_devices` is valid and contains
+  // `num_devices` elements.
+  base::span<const OrtEpDevice* const> sorted_devices =
+      UNSAFE_BUFFERS(base::span(ep_devices, num_devices));
+  std::vector<const OrtEpDevice*> selected_devices;
+  switch (device_type) {
+    case mojom::Device::kCpu:
+      selected_devices = SelectEpDevicesForCpu(sorted_devices);
+      break;
+    case mojom::Device::kGpu:
+      selected_devices = SelectEpDevicesForGpu(sorted_devices);
+      break;
+    case mojom::Device::kNpu:
+      selected_devices = SelectEpDevicesForNpu(sorted_devices);
+      break;
+  }
+
+  // ORT currently allows a maximum of 8 selected devices. The delegate
+  // implementation here guarantees at most 3 EP devices will be selected.
+  // According to:
+  // https://github.com/microsoft/onnxruntime/blob/f8c6262399e2c7e0a58cd494f0e58d4f4262dc43/onnxruntime/core/session/provider_policy_context.cc#L159
+  CHECK_LE(selected_devices.size(), max_selected)
+      << "Selected device count (" << selected_devices.size()
+      << ") exceeds maximum allowed (" << max_selected << ")";
+
+  for (size_t i = 0; i < selected_devices.size(); ++i) {
+    // SAFETY: ORT guarantees that `selected` is valid and contains
+    // `max_selected` elements.
+    UNSAFE_BUFFERS(selected[i]) = selected_devices[i];
+  }
+
+  *num_selected = selected_devices.size();
+
+  return nullptr;
+}
 
 // Helper function to convert a string to GraphOptimizationLevel enum. Return
 // nullopt for invalid input to let ORT decide the optimization level.
@@ -53,26 +229,6 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
   ScopedOrtSessionOptions session_options;
   CHECK_STATUS(ort_api->CreateSessionOptions(
       ScopedOrtSessionOptions::Receiver(session_options).get()));
-
-  // TODO(crbug.com/425487285): Map WebNN power preference to ORT auto EP
-  // selection policy
-  OrtExecutionProviderDevicePolicy device_policy;
-  switch (device_type) {
-    case mojom::Device::kCpu:
-      device_policy = OrtExecutionProviderDevicePolicy::
-          OrtExecutionProviderDevicePolicy_PREFER_CPU;
-      break;
-    case mojom::Device::kGpu:
-      device_policy = OrtExecutionProviderDevicePolicy::
-          OrtExecutionProviderDevicePolicy_PREFER_GPU;
-      break;
-    case mojom::Device::kNpu:
-      device_policy = OrtExecutionProviderDevicePolicy::
-          OrtExecutionProviderDevicePolicy_PREFER_NPU;
-      break;
-  }
-  CHECK_STATUS(ort_api->SessionOptionsSetEpSelectionPolicy(
-      session_options.get(), device_policy));
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtDumpModel)) {
@@ -134,14 +290,27 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
         /*config_value=*/config_entry.value.c_str()));
   }
 
-  return base::MakeRefCounted<SessionOptions>(base::PassKey<SessionOptions>(),
-                                              std::move(session_options));
+  return base::MakeRefCounted<SessionOptions>(
+      base::PassKey<SessionOptions>(), std::move(session_options), device_type);
 }
 
 SessionOptions::SessionOptions(base::PassKey<SessionOptions>,
-                               ScopedOrtSessionOptions session_options)
-    : session_options_(std::move(session_options)) {
+                               ScopedOrtSessionOptions session_options,
+                               mojom::Device device_type)
+    : session_options_(std::move(session_options)), device_type_(device_type) {
   CHECK(session_options_.get());
+
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  // SAFETY: Passing `&device_type_` is safe because the delegate is only called
+  // synchronously during session creation, and `device_type_` is a member
+  // variable of this SessionOptions object which outlives the session creation
+  // process.
+  // NOTE: `const_cast` is safe here because `EpSelectionPolicyDelegate` only
+  // reads the `device_type_` value and never modifies it. The `void*` parameter
+  // is a C API limitation that doesn't preserve const-correctness.
+  CHECK_STATUS(ort_api->SessionOptionsSetEpSelectionPolicyDelegate(
+      session_options_.get(), EpSelectionPolicyDelegate,
+      const_cast<mojom::Device*>(&device_type_)));
 }
 
 SessionOptions::~SessionOptions() = default;
