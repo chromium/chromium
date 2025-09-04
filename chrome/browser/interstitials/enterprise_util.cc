@@ -195,9 +195,9 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
     const GURL& page_url,
     const std::string& threat_type,
     safe_browsing::RTLookupResponse rt_lookup_response) {
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
       referrer_chain;
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   enterprise_connectors::ReportingEventRouter* router =
       GetReportingEventRouter(web_contents);
 
@@ -210,6 +210,8 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_ANDROID)
+  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+      referrer_chain;
   enterprise_connectors::ReportingEventRouter* router =
       GetReportingEventRouter(web_contents);
 

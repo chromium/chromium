@@ -638,9 +638,11 @@ void ExtensionTelemetryService::SetEnabledForEnterprise(bool enable) {
     SetUpSignalProcessorsAndSubscribersForEnterprise();
     SetUpOffstoreFileDataCollection();
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
     enterprise_timer_.Start(
         FROM_HERE, kExtensionTelemetryEnterpriseReportingIntervalSeconds, this,
         &ExtensionTelemetryService::CreateAndSendEnterpriseReport);
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   } else {
     // Stop enterprise timer for periodic telemetry reports.
     enterprise_timer_.Stop();

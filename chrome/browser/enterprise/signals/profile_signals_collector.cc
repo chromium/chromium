@@ -45,9 +45,11 @@ ProfileSignalsCollector::ProfileSignalsCollector(Profile* profile)
           PolicyBlocklistFactory::GetForBrowserContext(profile)),
       profile_prefs_(profile->GetPrefs()),
       policy_manager_(profile->GetCloudPolicyManager()),
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
       connectors_service_(
           enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
               profile)),
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
       profile_id_service_(
           enterprise::ProfileIdServiceFactory::GetForProfile(profile)) {
   CHECK(connectors_service_);

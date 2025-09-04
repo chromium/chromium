@@ -21,6 +21,7 @@
 #include "components/device_signals/core/browser/browser_utils.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/content/policy_blocklist_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "device_management_backend.pb.h"
 
