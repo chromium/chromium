@@ -19,7 +19,7 @@ namespace autofill {
 class MockAutofillAiManager : public AutofillAiManager {
  public:
   MockAutofillAiManager(autofill::AutofillClient* client,
-                        strike_database::StrikeDatabase* strike_database);
+                        strike_database::StrikeDatabaseBase* strike_database);
   ~MockAutofillAiManager() override;
 
   MOCK_METHOD(std::vector<autofill::Suggestion>,

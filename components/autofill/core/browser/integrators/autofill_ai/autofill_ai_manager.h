@@ -31,7 +31,7 @@ struct Suggestion;
 class AutofillAiManager {
  public:
   AutofillAiManager(AutofillClient* client,
-                    strike_database::StrikeDatabase* strike_database);
+                    strike_database::StrikeDatabaseBase* strike_database);
   AutofillAiManager(const AutofillAiManager&) = delete;
   AutofillAiManager& operator=(const AutofillAiManager&) = delete;
   virtual ~AutofillAiManager();
