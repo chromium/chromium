@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -67,6 +69,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private ObservableSupplier<Tab> mCurrentTabSupplier;
     @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mIncognitoTabModel;
@@ -77,6 +80,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     @Mock private Callback<Integer> mOnItemClickedCallback;
     @Mock private Tracker mTracker;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private Tab mTab;
 
     private Context mContext;
     private TabSwitcherActionMenuCoordinator mCoordinator;
@@ -95,6 +99,8 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
                 .thenReturn(mTabGroupModelFilterProvider);
         when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
                 .thenReturn(mTabGroupModelFilter);
+        when(mCurrentTabSupplier.get()).thenReturn(mTab);
+        when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
 
         when(mContext.getResources()).thenReturn(mResources);
         when(mResources.getDimensionPixelOffset(anyInt())).thenReturn(PADDING_PX);
@@ -369,11 +375,26 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
 
     @Test
     public void testBuildListItemByMenuItemType_AddToGroup() {
+        when(mTab.getTabGroupId()).thenReturn(null);
+
         ListItem item =
                 mCoordinator.buildListItemByMenuItemType(
                         TabSwitcherActionMenuCoordinator.MenuItemType.ADD_TAB_TO_GROUP);
         assertEquals(
                 R.string.menu_add_tab_to_group, item.model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.add_tab_to_group_menu_id, item.model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    public void testBuildListItemByMenuItemType_MoveTabToGroup() {
+        when(mTab.getTabGroupId()).thenReturn(Token.createRandom());
+
+        ListItem item =
+                mCoordinator.buildListItemByMenuItemType(
+                        TabSwitcherActionMenuCoordinator.MenuItemType.ADD_TAB_TO_GROUP);
+        assertEquals(
+                R.string.menu_move_tab_to_group, item.model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.add_tab_to_group_menu_id, item.model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }

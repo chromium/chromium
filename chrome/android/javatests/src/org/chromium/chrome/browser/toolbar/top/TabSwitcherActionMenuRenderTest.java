@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -81,10 +82,12 @@ public class TabSwitcherActionMenuRenderTest {
 
     @Mock private Profile mProfile;
     @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private ObservableSupplier<Tab> mCurrentTabSupplier;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mModel;
     @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private Tab mTab;
 
     private View mView;
 
@@ -108,6 +111,8 @@ public class TabSwitcherActionMenuRenderTest {
                 .thenReturn(mTabGroupModelFilter);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
+        when(mCurrentTabSupplier.get()).thenReturn(mTab);
+        when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
     }
 
     @After

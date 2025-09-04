@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
@@ -286,7 +287,10 @@ public class TabSwitcherActionMenuCoordinator {
                         .build();
             case MenuItemType.ADD_TAB_TO_GROUP:
                 return new ListItemBuilder()
-                        .withTitleRes(R.string.menu_add_tab_to_group)
+                        .withTitleRes(
+                                isCurrentTabInGroup()
+                                        ? R.string.menu_move_tab_to_group
+                                        : R.string.menu_add_tab_to_group)
                         .withMenuId(R.id.add_tab_to_group_menu_id)
                         .withStartIconRes(R.drawable.ic_widgets)
                         .build();
@@ -311,6 +315,15 @@ public class TabSwitcherActionMenuCoordinator {
                             .getCurrentTabGroupModelFilter();
             assumeNonNull(currentTabGroupModelFilter);
             return currentTabGroupModelFilter.getTabGroupCount() != 0;
+        }
+        return false;
+    }
+
+    private boolean isCurrentTabInGroup() {
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        if (tabModelSelector != null) {
+            Tab tab = tabModelSelector.getCurrentTabSupplier().get();
+            return tab != null && tab.getTabGroupId() != null;
         }
         return false;
     }
