@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -78,8 +79,10 @@ class MockExecutionEngine : public ExecutionEngine {
 class ActorAttemptLoginToolTest : public ActorToolsTest {
  public:
   ActorAttemptLoginToolTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kActorLogin);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{password_manager::features::kActorLogin,
+                              actor::kGlicEnableAutoLoginDialogs},
+        /*disabled_features=*/{});
   }
 
   ~ActorAttemptLoginToolTest() override = default;

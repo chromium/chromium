@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
@@ -41,8 +42,10 @@ class AttemptLoginToolInteractiveUiTest
           AttemptLoginToolInteractiveUiTestBase> {
  public:
   AttemptLoginToolInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kActorLogin);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{password_manager::features::kActorLogin,
+                              actor::kGlicEnableAutoLoginDialogs},
+        /*disabled_features=*/{});
   }
   ~AttemptLoginToolInteractiveUiTest() override = default;
 

@@ -39,4 +39,8 @@ BASE_FEATURE(kGlicCrossOriginNavigationGating,
              "GlicCrossOriginNavigationGating",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicEnableAutoLoginDialogs,
+             "GlicEnableAutoLoginDialogs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace actor
