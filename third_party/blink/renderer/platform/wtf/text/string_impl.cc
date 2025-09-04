@@ -194,7 +194,7 @@ scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
   // struct as well as the data which it contains. This removes one
   // heap allocation from this call.
   StringImpl* string = new (Partitions::BufferMalloc(
-      AllocationSize<LChar>(narrowed_length), "WTF::StringImpl"))
+      AllocationSize<LChar>(narrowed_length), "blink::StringImpl"))
       StringImpl(narrowed_length, kForce8BitConstructor);
 
   data = string->CharacterBuffer<LChar>();
@@ -214,7 +214,7 @@ scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
   // struct as well as the data which it contains. This removes one
   // heap allocation from this call.
   StringImpl* string = new (Partitions::BufferMalloc(
-      AllocationSize<UChar>(narrowed_length), "WTF::StringImpl"))
+      AllocationSize<UChar>(narrowed_length), "blink::StringImpl"))
       StringImpl(narrowed_length);
 
   data = string->CharacterBuffer<UChar>();
@@ -284,7 +284,7 @@ StringImpl* StringImpl::CreateStatic(base::span<const char> string) {
   // heap allocation from this call.
   WTF_INTERNAL_LEAK_SANITIZER_DISABLED_SCOPE;
   StringImpl* impl = new (Partitions::BufferMalloc(
-      AllocationSize<LChar>(narrowed_length), "WTF::StringImpl"))
+      AllocationSize<LChar>(narrowed_length), "blink::StringImpl"))
       StringImpl(narrowed_length, hash, kStaticString);
 
   impl->CharacterBuffer<LChar>().copy_from(base::as_bytes(string));
