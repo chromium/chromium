@@ -87,16 +87,7 @@ struct ReceiveClientMessagesResponseStruct {
   ReceiveClientMessagesResponseStruct();
   ~ReceiveClientMessagesResponseStruct();
 
-  // TODO: joedow - Remove union after internal files start using variant field.
-  union {
-    // Sent when the channel is opened.
-    ChannelOpenStruct channel_open;
-    // Sent over a specific interval to indicate that the channel is active.
-    ChannelActiveStruct channel_active;
-    // The message payload being delivered.
-    SimpleMessageStruct simple_message;
-  };
-
+  // Each streaming response will contain one of the following messages.
   std::variant<ChannelOpenStruct, ChannelActiveStruct, SimpleMessageStruct>
       message;
 };
