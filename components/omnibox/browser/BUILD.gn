@@ -154,7 +154,6 @@ static_library("browser") {
     "actions/tab_switch_action.h",
     "aim_eligibility_service.cc",
     "aim_eligibility_service.h",
-    "aim_eligibility_service_observer.h",
     "answers_cache.cc",
     "answers_cache.h",
     "autocomplete_classifier.cc",
@@ -347,6 +346,7 @@ static_library("browser") {
   ]
 
   public_deps = [
+    ":aim_eligibility_service_features",
     ":buildflags",
     ":location_bar",
     ":mojo_bindings",
@@ -484,6 +484,14 @@ static_library("browser") {
       "//third_party/tflite_support:tflite_support_proto",
     ]
   }
+}
+
+source_set("aim_eligibility_service_features") {
+  sources = [
+    "aim_eligibility_service_features.cc",
+    "aim_eligibility_service_features.h",
+  ]
+  deps = [ "//base" ]
 }
 
 # A target that contains the minimal amount of code necessary for displaying a

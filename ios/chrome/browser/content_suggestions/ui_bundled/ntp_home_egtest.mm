@@ -10,6 +10,7 @@
 #import "build/branding_buildflags.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
+#import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/segmentation_platform/public/features.h"
@@ -181,6 +182,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
     // Disable doodle so that omnibox doesn't move and shift offset.
     config.additional_args.push_back(std::string(
         "-google-doodle-url=https://www.google.com/?deb=0nodoodle"));
+    // Disable AimServerEligibilityEnabledEn so that omnibox doesn't move and
+    // shift offset.
+    config.additional_args.push_back(base::StringPrintf(
+        "--disable-features=%s", omnibox::kAimServerEligibilityEnabledEn.name));
   } else {
     // Show doodle to make sure tests cover async callback logic updating logo.
     // Note: This makes testPositionRestoredWithShiftingOffset and

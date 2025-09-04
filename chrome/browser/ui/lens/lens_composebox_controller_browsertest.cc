@@ -31,6 +31,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
@@ -132,6 +133,7 @@ class LensComposeboxControllerBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
         {
             {lens::features::kLensOverlay,
              /*params=*/{}},
@@ -143,7 +145,7 @@ class LensComposeboxControllerBrowserTest : public InProcessBrowserTest {
                  {"update-viewport-each-query", "false"},
              }},
         },
-        /*disabled_features=*/{});
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabledEn});
 
     InProcessBrowserTest::SetUp();
   }
