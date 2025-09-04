@@ -470,17 +470,17 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometryMC) {
   ASSERT_EQ(main_gaps.size(), 3u);
   // Row midpoints based on grid-template-rows [90,130,110,140] and row-gap 12:
   // row track lines: [0, 102, 244, 366, 506]; midpoints: [96, 238, 360].
-  EXPECT_EQ(main_gaps[0].GetGapStartOffset(), LayoutUnit(96));
-  EXPECT_EQ(main_gaps[1].GetGapStartOffset(), LayoutUnit(238));
-  EXPECT_EQ(main_gaps[2].GetGapStartOffset(), LayoutUnit(360));
+  EXPECT_EQ(main_gaps[0].GetGapOffset(), LayoutUnit(96));
+  EXPECT_EQ(main_gaps[1].GetGapOffset(), LayoutUnit(238));
+  EXPECT_EQ(main_gaps[2].GetGapOffset(), LayoutUnit(360));
 
   // CrossGaps are column gap midpoints stored as LogicalOffsets.
   const auto& cross_gaps = gap_geometry->GetCrossGaps();
   ASSERT_EQ(cross_gaps.size(), 2u);  // 3 columns -> 2 column gaps
   // Column midpoints based on grid-template-columns [80,120,90] and column-gap 14:
   // column track lines: [0, 94, 228, 318]; midpoints: [87, 221].
-  EXPECT_EQ(cross_gaps[0].GetGapStartOffset().inline_offset, LayoutUnit(87));
-  EXPECT_EQ(cross_gaps[1].GetGapStartOffset().inline_offset, LayoutUnit(221));
+  EXPECT_EQ(cross_gaps[0].GetGapOffset().inline_offset, LayoutUnit(87));
+  EXPECT_EQ(cross_gaps[1].GetGapOffset().inline_offset, LayoutUnit(221));
 
   // Content edges should span the content box of the grid:
   // Inline: 0 -> 318 (80+14+120+14+90), Block: 0 -> 506 (90+12+130+12+110+12+140).
@@ -566,17 +566,17 @@ TEST_F(GridLayoutAlgorithmTest, GapGeomoetryWithSpanningItemsMC) {
   // Row track lines: [0, 110, 220, 330]; gap midpoints: [105, 215].
   const auto& main_gaps = gap_geometry->GetMainGaps();
   ASSERT_EQ(main_gaps.size(), 2u);
-  EXPECT_EQ(main_gaps[0].GetGapStartOffset(), LayoutUnit(105));
-  EXPECT_EQ(main_gaps[1].GetGapStartOffset(), LayoutUnit(215));
+  EXPECT_EQ(main_gaps[0].GetGapOffset(), LayoutUnit(105));
+  EXPECT_EQ(main_gaps[1].GetGapOffset(), LayoutUnit(215));
 
   // Test Cross Gaps (column gaps in the MC model).
   // With 3 columns, we have 2 column gaps.
   // Column track lines: [0, 110, 220, 320]; gap midpoints: [105, 215].
   const auto& cross_gaps = gap_geometry->GetCrossGaps();
   ASSERT_EQ(cross_gaps.size(), 2u);
-  EXPECT_EQ(cross_gaps[0].GetGapStartOffset().inline_offset,
+  EXPECT_EQ(cross_gaps[0].GetGapOffset().inline_offset,
             LayoutUnit(105));  // gap between cols 1-2
-  EXPECT_EQ(cross_gaps[1].GetGapStartOffset().inline_offset,
+  EXPECT_EQ(cross_gaps[1].GetGapOffset().inline_offset,
             LayoutUnit(215));  // gap between cols 2-3
 
   // Test Content Start/End Edges

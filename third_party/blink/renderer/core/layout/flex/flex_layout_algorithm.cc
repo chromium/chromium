@@ -838,7 +838,7 @@ class GapAccumulator {
     LayoutUnit cross_intersection_offset =
         flex_line.LineCrossEnd() + (gap_between_lines_ / 2);
 
-    main_gaps_[flex_line_index].SetGapStartOffset(
+    main_gaps_[flex_line_index].SetGapOffset(
         is_column_ ? main_intersection_offset : cross_intersection_offset);
   }
 

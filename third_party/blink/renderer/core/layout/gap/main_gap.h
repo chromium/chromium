@@ -19,10 +19,10 @@ namespace blink {
 class CORE_EXPORT MainGap {
  public:
   MainGap() = default;
-  MainGap(LayoutUnit offset) : gap_start_offset_(offset) {}
+  MainGap(LayoutUnit offset) : gap_offset_(offset) {}
 
-  void SetGapStartOffset(LayoutUnit offset) { gap_start_offset_ = offset; }
-  LayoutUnit GetGapStartOffset() const { return gap_start_offset_; }
+  void SetGapOffset(LayoutUnit offset) { gap_offset_ = offset; }
+  LayoutUnit GetGapOffset() const { return gap_offset_; }
 
   CrossGapRange& RangeOfCrossGapsBefore() {
     return range_of_cross_gaps_before_;
@@ -32,7 +32,7 @@ class CORE_EXPORT MainGap {
 
   blink::String ToString(bool verbose = false) const {
     blink::String str =
-        blink::String("MainOffset(") + gap_start_offset_.ToString() + "); ";
+        blink::String("MainOffset(") + gap_offset_.ToString() + "); ";
 
     if (verbose) {
       str = str + "Before: " + range_of_cross_gaps_before_.ToString() + ";";
@@ -43,10 +43,9 @@ class CORE_EXPORT MainGap {
   }
 
  private:
-  // This represents the offset (block or inline) of the start point for the
-  // gap. If the main direction is row it'll be the block offset otherwise
-  // it'll be the inline.
-  LayoutUnit gap_start_offset_;
+  // This represents the midpoint offset (block or inline) of the gap. If the main
+  // direction is row it'll be the block offset otherwise it'll be the inline.
+  LayoutUnit gap_offset_;
 
   // In Grid, because rows and columns neatly align, we can avoid duplication by
   // storing cross gaps once and share them across all main gaps. As a result,

@@ -101,7 +101,7 @@ void BaseLayoutAlgorithmTest::VerifyMainGaps(
   for (wtf_size_t i = 0; i < gaps.size(); ++i) {
     const auto& expected = expected_gaps[i];
     const auto& actual = gaps[i];
-    EXPECT_EQ(actual.GetGapStartOffset(), expected.GetGapStartOffset())
+    EXPECT_EQ(actual.GetGapOffset(), expected.GetGapOffset())
         << "Main gap at index: " << i << " mismatch";
   }
 }
@@ -113,7 +113,7 @@ void BaseLayoutAlgorithmTest::VerifyCrossGaps(
   for (wtf_size_t i = 0; i < gaps.size(); ++i) {
     const auto& expected = expected_gaps[i];
     const auto& actual = gaps[i];
-    EXPECT_EQ(actual.GetGapStartOffset(), expected.GetGapStartOffset())
+    EXPECT_EQ(actual.GetGapOffset(), expected.GetGapOffset())
         << "Cross gap at index: " << i << " mismatch";
     EXPECT_EQ(actual.GetEdgeIntersectionState(),
               expected.GetEdgeIntersectionState())
