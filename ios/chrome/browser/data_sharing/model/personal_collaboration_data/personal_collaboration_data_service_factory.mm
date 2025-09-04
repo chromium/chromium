@@ -23,8 +23,9 @@ namespace data_sharing::personal_collaboration_data {
 // static
 PersonalCollaborationDataService*
 PersonalCollaborationDataServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<PersonalCollaborationDataService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<PersonalCollaborationDataService>(
+          profile, /*create=*/true);
 }
 
 // static

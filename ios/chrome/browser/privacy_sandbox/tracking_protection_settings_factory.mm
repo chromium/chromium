@@ -24,8 +24,9 @@ TrackingProtectionSettingsFactory::GetInstance() {
 // static
 privacy_sandbox::TrackingProtectionSettings*
 TrackingProtectionSettingsFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<privacy_sandbox::TrackingProtectionSettings*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<privacy_sandbox::TrackingProtectionSettings>(
+          profile, /*create=*/true);
 }
 
 void TrackingProtectionSettingsFactory::RegisterProfilePrefs(

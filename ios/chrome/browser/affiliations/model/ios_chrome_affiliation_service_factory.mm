@@ -28,8 +28,9 @@ affiliations::AffiliationService*
 IOSChromeAffiliationServiceFactory::GetForProfile(ProfileIOS* profile) {
   CHECK(profile);
 
-  return static_cast<affiliations::AffiliationService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<affiliations::AffiliationService>(
+          profile, /*create=*/true);
 }
 
 IOSChromeAffiliationServiceFactory::IOSChromeAffiliationServiceFactory()

@@ -253,7 +253,7 @@ void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
     StorageFormat requested_format,
     base::OnceClosure closure) {
   DCHECK(!profile->IsOffTheRecord());
-  DCHECK(!GetServiceForBrowserState(profile, false));
+  DCHECK(!GetServiceForProfileAs<SessionRestorationService>(profile, false));
 
   PrefService* const prefs = profile->GetPrefs();
   const SessionStorageMigrationStatus status =

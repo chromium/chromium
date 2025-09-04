@@ -11,8 +11,8 @@
 // static
 BookmarkModelMetricsService* BookmarkModelMetricsServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<BookmarkModelMetricsService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<BookmarkModelMetricsService>(
+      profile, /*create=*/true);
 }
 
 // static

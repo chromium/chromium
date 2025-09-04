@@ -23,8 +23,9 @@ IOSChromePasswordSenderServiceFactory::GetInstance() {
 // static
 password_manager::PasswordSenderService*
 IOSChromePasswordSenderServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<password_manager::PasswordSenderService*>(
-      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+  return GetInstance()
+      ->GetServiceForProfileAs<password_manager::PasswordSenderService>(
+          profile, /*create=*/true);
 }
 
 IOSChromePasswordSenderServiceFactory::IOSChromePasswordSenderServiceFactory()

@@ -12,8 +12,8 @@
 // static
 AppStoreBundleService* AppStoreBundleServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<AppStoreBundleService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<AppStoreBundleService>(
+      profile, /*create=*/true);
 }
 
 // static

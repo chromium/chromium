@@ -30,8 +30,8 @@ history::WebHistoryService* WebHistoryServiceGetter(
 // static
 TabsSearchService* TabsSearchServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<TabsSearchService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<TabsSearchService>(
+      profile, /*create=*/true);
 }
 
 TabsSearchServiceFactory* TabsSearchServiceFactory::GetInstance() {

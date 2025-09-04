@@ -90,8 +90,8 @@ std::unique_ptr<KeyedService> BuildService(
 // static
 TabGroupSyncService* TabGroupSyncServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<TabGroupSyncService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<TabGroupSyncService>(
+      profile, /*create=*/true);
 }
 
 // static

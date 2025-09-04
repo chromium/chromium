@@ -15,8 +15,8 @@
 // static
 AimEligibilityService* IOSChromeAimEligibilityServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<IOSChromeAimEligibilityService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<IOSChromeAimEligibilityService>(
+      profile, /*create=*/true);
 }
 
 // static
