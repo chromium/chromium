@@ -881,7 +881,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByFallback) {
 }
 
 // Tests that aria-describedby works: Simple case: a single id referenced.
-TEST_F(FormAutofillUtilsTest, GetAriaDescribedBySingle) {
+TEST_F(FormAutofillUtilsTest, GetAriaDescriptionBySingle) {
   LoadHTML(
       "<input id='input' type='text' aria-describedby='div1'/>"
       "<div id='div1'>aria description</div>");
@@ -892,7 +892,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedBySingle) {
 }
 
 // Tests that aria-describedby works: Complex case: multiple ids referenced.
-TEST_F(FormAutofillUtilsTest, GetAriaDescribedByMulti) {
+TEST_F(FormAutofillUtilsTest, GetAriaDescriptionByMulti) {
   LoadHTML(
       "<input id='input' type='text' aria-describedby='div1 div2'/>"
       "<div id='div2'>description</div>"
@@ -904,12 +904,35 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByMulti) {
 }
 
 // Tests that invalid aria-describedby returns the empty string.
-TEST_F(FormAutofillUtilsTest, GetAriaDescribedByInvalid) {
+TEST_F(FormAutofillUtilsTest, GetAriaDescriptionByInvalid) {
   LoadHTML("<input id='input' type='text' aria-describedby='invalid'/>");
 
   WebDocument doc = GetDocument();
   auto element = GetFormControlElementById(doc, "input");
   EXPECT_EQ(GetAriaDescriptionForTesting(doc, element), u"");
+}
+
+// Tests that aria-describedby is prioritized over aria-description.
+TEST_F(FormAutofillUtilsTest, GetAriaDescriptionPrioritization) {
+  LoadHTML(
+      "<input id='input' type='text' aria-describedby='div1'"
+      "       aria-description='aria description'/>"
+      "<div id='div1'>aria describedby</div>");
+
+  WebDocument doc = GetDocument();
+  auto element = GetFormControlElementById(doc, "input");
+  EXPECT_EQ(GetAriaDescriptionForTesting(doc, element), u"aria describedby");
+}
+
+// Tests that aria-description is used as a fallback if aria-describedby is
+// unspecified.
+TEST_F(FormAutofillUtilsTest, GetAriaDescriptionFallback) {
+  LoadHTML(
+      "<input id='input' type='text' aria-description='aria description'/>");
+
+  WebDocument doc = GetDocument();
+  auto element = GetFormControlElementById(doc, "input");
+  EXPECT_EQ(GetAriaDescriptionForTesting(doc, element), u"aria description");
 }
 
 // Tests IsOwnedByFrame().

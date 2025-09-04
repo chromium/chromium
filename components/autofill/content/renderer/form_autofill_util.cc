@@ -137,6 +137,7 @@ constexpr size_t kMaxFourDigitCombinationMatches = 5;
 // Constants to be passed to GetWebString<kConstant>().
 constexpr std::string_view kAnchor = "a";
 constexpr std::string_view kAutocomplete = "autocomplete";
+constexpr std::string_view kAriaDescription = "aria-description";
 constexpr std::string_view kAriaDescribedBy = "aria-describedby";
 constexpr std::string_view kAriaLabel = "aria-label";
 constexpr std::string_view kAriaLabelledBy = "aria-labelledby";
@@ -664,31 +665,34 @@ std::u16string CoalesceTextByIdList(const WebDocument& document,
 }
 
 // Returns the ARIA label text of the elements denoted by the aria-labelledby
-// attribute of |element| or the value of the aria-label attribute of
-// |element|, with priority given to the aria-labelledby attribute.
+// attribute of `element` or the value of the aria-label attribute of
+// `element`, with priority given to the aria-labelledby attribute.
 std::u16string GetAriaLabel(const WebDocument& document,
                             const WebElement& element) {
   if (HasAttribute<kAriaLabelledBy>(element)) {
-    WebString aria_label_attribute = GetAttribute<kAriaLabelledBy>(element);
-    std::u16string text = CoalesceTextByIdList(document, aria_label_attribute);
+    std::u16string text =
+        CoalesceTextByIdList(document, GetAttribute<kAriaLabelledBy>(element));
     if (!text.empty()) {
       return text;
     }
   }
-
-  if (HasAttribute<kAriaLabel>(element)) {
-    return GetAttribute<kAriaLabel>(element).Utf16();
-  }
-
-  return std::u16string();
+  return GetAttribute<kAriaLabel>(element).Utf16();
 }
 
-// Returns the ARIA label text of the elements denoted by the aria-describedby
-// attribute of |element|.
+// Returns the ARIA description text of the elements denoted by the
+// aria-describedby attribute of `element` or the value of the aria-description
+// attribute of `element`, with priority given to the aria-describedby
+// attribute.
 std::u16string GetAriaDescription(const WebDocument& document,
                                   const WebElement& element) {
-  return CoalesceTextByIdList(document,
-                              GetAttribute<kAriaDescribedBy>(element));
+  if (HasAttribute<kAriaDescribedBy>(element)) {
+    std::u16string text =
+        CoalesceTextByIdList(document, GetAttribute<kAriaDescribedBy>(element));
+    if (!text.empty()) {
+      return text;
+    }
+  }
+  return GetAttribute<kAriaDescription>(element).Utf16();
 }
 
 // Helper for |InferLabelForElement()| that infers a label, if possible, from
