@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
-#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -131,6 +130,10 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
 
   // HistorySyncOptinHelper::Delegate implementation:
   void ShowHistorySyncOptinScreen() override;
+  void ShowAccountManagementScreen(
+      signin::SigninChoiceCallback on_account_management_screen_closed)
+      override;
+  void FinishFlowWithoutHistorySyncOptin() override;
 
   // Callbacks that finalize initialization of WebUI pages.
   void SwitchToSyncConfirmationFinished();
@@ -170,6 +173,11 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   // should be shown or not. E.g: Sync confirmation screen, profile switch, or
   // enterprise management.
   StepSwitchFinishedCallback step_switch_callback_;
+
+  // Steps to be executed after the user has made a choice in the sync
+  // confirmation screen or the history sync optin screen. Might be executed
+  // when the screen is also skipped.
+  base::OnceClosure on_sync_screen_closed_closure_;
 
   std::unique_ptr<HistorySyncOptinHelper> history_sync_optin_helper_;
 

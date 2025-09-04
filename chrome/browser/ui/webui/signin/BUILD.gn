@@ -133,6 +133,7 @@ source_set("signin") {
     ]
     public_deps += [
       "history_sync_optin:mojo_bindings",
+      "//chrome/browser/ui/webui/signin:profile",
       "//ui/webui",
     ]
   }
@@ -541,6 +542,7 @@ if (!is_chromeos) {
       "//base/test:test_support",
       "//build:buildflag_header_h",
       "//chrome/browser",
+      "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/test:test_support",

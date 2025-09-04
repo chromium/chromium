@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capability_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -99,6 +102,38 @@ void SyncServiceStartupStateObserver::OnSyncStartupStateChanged(
   }
 }
 
+HistorySyncOptinPolicyHelper::HistorySyncOptinPolicyHelper(
+    Profile* profile,
+    const AccountInfo& account_info,
+    base::OnceCallback<void(bool)> on_register_for_policies_callback,
+    base::OnceClosure on_policies_fetched_callback)
+    : profile_(profile),
+      account_info_(account_info),
+      on_register_for_policies_callback_(
+          std::move(on_register_for_policies_callback)),
+      on_policies_fetched_callback_(std::move(on_policies_fetched_callback)) {
+  CHECK(!on_register_for_policies_callback_.is_null());
+  CHECK(!on_policies_fetched_callback_.is_null());
+}
+
+HistorySyncOptinPolicyHelper::~HistorySyncOptinPolicyHelper() = default;
+
+void HistorySyncOptinPolicyHelper::RegisterForPolicies() {
+  CHECK(!policy_fetch_tracker_);
+  policy_fetch_tracker_ = TurnSyncOnHelperPolicyFetchTracker::CreateInstance(
+      profile_, account_info_);
+  policy_fetch_tracker_->RegisterForPolicy(
+      std::move(on_register_for_policies_callback_));
+}
+
+void HistorySyncOptinPolicyHelper::FetchPolicies() {
+  CHECK(policy_fetch_tracker_);
+  CHECK(!on_policies_fetched_callback_.is_null());
+  bool fetch_started = policy_fetch_tracker_->FetchPolicy(
+      std::move(on_policies_fetched_callback_));
+  CHECK(fetch_started);
+}
+
 HistorySyncOptinHelper::HistorySyncOptinHelper(
     signin::IdentityManager* identity_manager,
     Profile* profile,
@@ -107,17 +142,16 @@ HistorySyncOptinHelper::HistorySyncOptinHelper(
     : profile_(profile),
       account_info_(account_info),
       delegate_(delegate),
-      account_enterprise_policy_capability_fetcher_(std::make_unique<
-                                                    AccountCapabilityFetcher>(
+      is_managed_capability_fetcher_(std::make_unique<AccountCapabilityFetcher>(
           identity_manager,
           account_info,
           /*get_capability_state_callback=*/
           base::BindRepeating(
-              &HistorySyncOptinHelper::CanApplyAccountLevelEnterprisePolicies,
+              &HistorySyncOptinHelper::AccountIsManagedCapability,
               base::Unretained(this)),
           /*on_capability_fetched_callback=*/
           base::BindOnce(
-              &HistorySyncOptinHelper::StartShowHistorySyncOptinScreenFlow,
+              &HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow,
               base::Unretained(this)))) {
   CHECK(base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin));
   CHECK(delegate);
@@ -126,17 +160,45 @@ HistorySyncOptinHelper::HistorySyncOptinHelper(
 HistorySyncOptinHelper::~HistorySyncOptinHelper() {}
 
 void HistorySyncOptinHelper::StartHistorySyncOptinFlow() {
-  account_enterprise_policy_capability_fetcher_->FetchCapability();
+  is_managed_capability_fetcher_->FetchCapability();
 }
 
-void HistorySyncOptinHelper::StartShowHistorySyncOptinScreenFlow(
-    signin::Tribool is_managed_account) {
-  CHECK(is_managed_account_ == signin::Tribool::kUnknown);
-  is_managed_account_ = is_managed_account;
+void HistorySyncOptinHelper::MaybeShowAccountManagementScreen(
+    bool is_managed_account) {
+  if (!is_managed_account) {
+    ResumeShowHistorySyncOptinScreenFlow(signin::Tribool::kFalse);
+    return;
+  }
+  if (is_managed_account &&
+      !enterprise_util::UserAcceptedAccountManagement(profile_)) {
+    // If the user has not yet have accepted management, we show the appropriate
+    // screen.
+    ShowAccountManagementScreen();
+    return;
+  }
+  CHECK(policy_helper_);
+  policy_helper_->FetchPolicies();
+}
 
-  // TODO(crbug.com/434964019): Ensure the step of checking the state of the
-  // sync service happens only after policy fetching and loading policies for
-  // managed accounts.
+void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
+    signin::Tribool maybe_managed_account) {
+  if (maybe_managed_account == signin::Tribool::kTrue && !policy_helper_) {
+    // Register for policies to determine if the user is managed.
+    // Show the management screen for managed user, before proceeding with the
+    // flow.
+    policy_helper_ = std::make_unique<HistorySyncOptinPolicyHelper>(
+        profile_, account_info_,
+        /*on_register_for_policies_callback=*/
+        base::BindOnce(
+            &HistorySyncOptinHelper::MaybeShowAccountManagementScreen,
+            weak_ptr_factory_.GetWeakPtr()),
+        /*on_policies_fetched_callback=*/
+        base::BindOnce(
+            &HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow,
+            weak_ptr_factory_.GetWeakPtr(), signin::Tribool::kTrue));
+    policy_helper_->RegisterForPolicies();
+    return;
+  }
 
   syncer::SyncService* sync_service = GetSyncService(profile_);
   if (sync_service) {
@@ -151,24 +213,13 @@ void HistorySyncOptinHelper::StartShowHistorySyncOptinScreenFlow(
     sync_startup_state_observer_ = SyncServiceStartupStateObserver::
         MaybeCreateSyncServiceStateObserverForAccountWithClouldPolicies(
             sync_service, profile_, account_info_,
-            base::BindOnce(
-                &HistorySyncOptinHelper::MaybeShowHistorySyncOptinScreen,
-                weak_ptr_factory_.GetWeakPtr()));
+            base::BindOnce(&HistorySyncOptinHelper::ShowHistorySyncOptinScreen,
+                           weak_ptr_factory_.GetWeakPtr()));
     if (sync_startup_state_observer_) {
       return;
     }
   }
-  MaybeShowHistorySyncOptinScreen();
-}
-
-void HistorySyncOptinHelper::MaybeShowHistorySyncOptinScreen() {
-  if (is_managed_account_ != signin::Tribool::kTrue) {
-    // TODO(crbug.com/434964019): Handle the managed account case by showing the
-    // corresponding screen first. Deciding on the right screen might
-    // require knowledge of the Sync Service's status.
-    ShowHistorySyncOptinScreen();
-    return;
-  }
+  ShowHistorySyncOptinScreen();
 }
 
 void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
@@ -180,12 +231,44 @@ void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
   // history sync we may want to show an error when sync is disabled. Otherwise,
   // if the goal is to sign in the user, we can skip the history
   // optin screen.
+  delegate_->FinishFlowWithoutHistorySyncOptin();
 }
 
-signin::Tribool HistorySyncOptinHelper::CanApplyAccountLevelEnterprisePolicies(
+void HistorySyncOptinHelper::ShowAccountManagementScreen() {
+  CHECK(!enterprise_util::UserAcceptedAccountManagement(profile_));
+  delegate_->ShowAccountManagementScreen(
+      base::BindOnce(&HistorySyncOptinHelper::OnAccountManagementScreenClosed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void HistorySyncOptinHelper::OnAccountManagementScreenClosed(
+    signin::SigninChoice result) {
+  switch (result) {
+    case signin::SIGNIN_CHOICE_CONTINUE:
+    case signin::SIGNIN_CHOICE_SIZE:
+      // These cases do not apply in the profile picker flow.
+      // TODO(crbug.com/404806750): Enforce that this method is only invoked
+      // for the profile picker case.
+      NOTREACHED();
+    case signin::SIGNIN_CHOICE_CANCEL:
+      // TODO(crbug.com/404806750): Handle whether the account should be
+      // kept or removed and proceed with the flow which should open the
+      // browser.
+      delegate_->FinishFlowWithoutHistorySyncOptin();
+      return;
+    case signin::SIGNIN_CHOICE_NEW_PROFILE:
+      // Mark the user having accepted the management.
+      enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
+      CHECK(policy_helper_);
+      policy_helper_->FetchPolicies();
+      return;
+  }
+}
+
+signin::Tribool HistorySyncOptinHelper::AccountIsManagedCapability(
     const AccountInfo& account_info) {
   if (!account_info.IsEmpty()) {
-    return account_info.CanApplyAccountLevelEnterprisePolicies();
+    return account_info.IsManaged();
   }
   return signin::Tribool::kUnknown;
 }

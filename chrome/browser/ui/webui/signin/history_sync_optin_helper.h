@@ -12,12 +12,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
 class AccountCapabilityFetcher;
 class Profile;
+class TurnSyncOnHelperPolicyFetchTracker;
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -25,7 +28,7 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-// Helper class to track the state of the SyncService..
+// Helper class to track the state of the SyncService.
 // Executes a callback when the SyncService's state is no longer pending.
 class SyncServiceStartupStateObserver {
  public:
@@ -50,18 +53,56 @@ class SyncServiceStartupStateObserver {
       this};
 };
 
+// Helper class to determine if a user is managed and fetch the applicable
+// policies. Executes a callback when the policy fetching is done or if the
+// user is not managed so there are no policies to fetch.
+class HistorySyncOptinPolicyHelper {
+ public:
+  HistorySyncOptinPolicyHelper(Profile* profile,
+               const AccountInfo& account_info,
+               base::OnceCallback<void(bool)> on_register_for_policies_callback,
+               base::OnceClosure on_policies_fetched_callback);
+  ~HistorySyncOptinPolicyHelper();
+
+  // Starts the process of registering the policies for a potentially managed
+  // user.
+  void RegisterForPolicies();
+  // Fetches the policies for a managed account.
+  void FetchPolicies();
+
+ private:
+  raw_ptr<Profile> profile_;
+  const AccountInfo account_info_;
+
+  // Callback executed when the policies are fetched.
+  base::OnceCallback<void(bool)> on_register_for_policies_callback_;
+  base::OnceClosure on_policies_fetched_callback_;
+  std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> policy_fetch_tracker_;
+
+  base::WeakPtrFactory<HistorySyncOptinPolicyHelper> weak_ptr_factory_{this};
+};
+
 // This is a skeleton for the class that shows the history sync optin screen,
 // potentially after the account management screen.
-// TODO(404806750):
-// 1) Add tracking of the SyncService state (which may be disabled).
-// 2) Fetch applicable policies for managed accounts.
-// 3) Incorporate spinner screens in the flow while we wait for the above
+// TODO(crbug.com/404806750):
+// 1) Fetch applicable policies for managed accounts.
+// 2) Incorporate spinner screens in the flow while we wait for the above
 // necessary information to be fetched.
 class HistorySyncOptinHelper {
  public:
   class Delegate {
    public:
+    virtual ~Delegate() = default;
+    // Displays the history sync optin screen.
     virtual void ShowHistorySyncOptinScreen() = 0;
+    // Displays the account management screen.
+    virtual void ShowAccountManagementScreen(
+        signin::SigninChoiceCallback on_account_management_screen_closed) = 0;
+    // Invoked in cases we want to exit the flow early without showing the
+    // history sync optin screen. Executes any steps that would normally occur
+    // after the history sync optin screen (e.g. opening of the browser in the
+    // profile picker flow).
+    virtual void FinishFlowWithoutHistorySyncOptin() = 0;
   };
 
   HistorySyncOptinHelper(signin::IdentityManager* identity_manager,
@@ -73,25 +114,37 @@ class HistorySyncOptinHelper {
   void StartHistorySyncOptinFlow();
 
   AccountCapabilityFetcher* GetAccountCapabilityFetcherForTesting() {
-    return account_enterprise_policy_capability_fetcher_.get();
+    return is_managed_capability_fetcher_.get();
+  }
+
+  SyncServiceStartupStateObserver*
+  GetSyncServiceStartupStateObserverForTesting() {
+    return sync_startup_state_observer_.get();
   }
 
  private:
-  void StartShowHistorySyncOptinScreenFlow(signin::Tribool is_managed_account);
-  void MaybeShowHistorySyncOptinScreen();
+  void ResumeShowHistorySyncOptinScreenFlow(
+      signin::Tribool maybe_managed_account);
   void ShowHistorySyncOptinScreen();
+  void MaybeShowAccountManagementScreen(bool is_managed_account);
 
-  signin::Tribool CanApplyAccountLevelEnterprisePolicies(
-      const AccountInfo& account_info);
+  // Shows the account management screen.
+  void ShowAccountManagementScreen();
+  // Callback executed when the user makes a choice in the account management
+  // screen.
+  void OnAccountManagementScreenClosed(signin::SigninChoice result);
+
+  signin::Tribool AccountIsManagedCapability(const AccountInfo& account_info);
 
   raw_ptr<Profile> profile_;
   const AccountInfo account_info_;
   raw_ptr<Delegate> delegate_;
-  std::unique_ptr<AccountCapabilityFetcher>
-      account_enterprise_policy_capability_fetcher_;
+  // TODO(crbug.com/434964019): Rename this class and instances as they do not
+  // track capabilities anymore.
+  std::unique_ptr<AccountCapabilityFetcher> is_managed_capability_fetcher_;
 
-  signin::Tribool is_managed_account_ = signin::Tribool::kUnknown;
   std::unique_ptr<SyncServiceStartupStateObserver> sync_startup_state_observer_;
+  std::unique_ptr<HistorySyncOptinPolicyHelper> policy_helper_;
 
   base::WeakPtrFactory<HistorySyncOptinHelper> weak_ptr_factory_{this};
 };
