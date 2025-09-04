@@ -32,6 +32,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   std::optional<webapps::AppId> GetAppId() const override;
   bool IsWebApp() const override;
   bool IsClosing() const override;
+  bool IsAttemptingToClose() const override;
   bool IsActive() const override;
   bool IsMinimized() const override;
   void Show() override;

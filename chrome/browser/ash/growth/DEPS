@@ -19,9 +19,6 @@ include_rules = [
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_element_identifiers.h",
-  "+chrome/browser/ui/web_applications",
   "+chrome/browser/web_applications/mojom",
   "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app_command_scheduler.h",
@@ -40,5 +37,6 @@ include_rules = [
 specific_include_rules = {
   "campaigns_manager_interactive_uitest\\.cc": [
     "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
+    "+chrome/browser/ui/browser_element_identifiers.h",
   ],
 }

@@ -81,7 +81,13 @@ class BrowserDelegate {
   // Returns whether the browser is a web app window/pop-up.
   virtual bool IsWebApp() const = 0;
 
+  // Returns true during the initial phase of the browser being closed, when
+  // `beforeunload` handlers are running (async). It may be aborted.
+  virtual bool IsAttemptingToClose() const = 0;
+
   // Returns whether the browser is in the process of being closed and deleted.
+  // In this phase, closing committed, browser is hidden and deletion is
+  // scheduled. It cannot be aborted.
   virtual bool IsClosing() const = 0;
 
   // Returns whether the browser window is active.

@@ -14,6 +14,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,8 +30,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/growth/action_performer.h"
 #include "chromeos/ash/components/growth/campaigns_constants.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
@@ -61,6 +61,10 @@ Profile* GetProfile() {
   }
 
   return ProfileManager::GetActiveUserProfile();
+}
+
+AccountId GetAccountId() {
+  return CHECK_DEREF(ash::AnnotatedAccountId::Get(GetProfile()));
 }
 
 bool IsEligible() {
@@ -225,37 +229,29 @@ void MaybeTriggerDelayedCampaigns() {
 
 // The app_id is optional and only required if the browser type is app.
 content::WebContents* FindActiveWebContent(
-    const Profile* profile,
-    Browser::Type browser_type,
+    const AccountId& account_id,
+    ash::BrowserType browser_type,
     const webapps::AppId& app_id = std::string()) {
   content::WebContents* result = nullptr;
   ash::BrowserController::GetInstance()->ForEachBrowser(
       ash::BrowserController::BrowserOrder::kAscendingActivationTime,
-      [&](ash::BrowserDelegate& delegate) {
-        Browser* browser = &delegate.GetBrowser();
-        if (browser->IsAttemptingToCloseBrowser() ||
-            browser->IsBrowserClosing()) {
+      [&](ash::BrowserDelegate& browser) {
+        if (browser.IsAttemptingToClose() || browser.IsClosing()) {
           return ash::BrowserController::kContinueIteration;
         }
-        if (browser->type() != browser_type) {
+        if (browser.GetType() != browser_type) {
           return ash::BrowserController::kContinueIteration;
         }
-        if (browser->profile() != profile) {
+        if (account_id != browser.GetAccountId()) {
           return ash::BrowserController::kContinueIteration;
         }
         // For web app type, it must match the app_id.
-        if (browser_type == Browser::TYPE_APP &&
-            !web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
+        if (browser_type == ash::BrowserType::kApp &&
+            (!browser.IsWebApp() || browser.GetAppId() != app_id)) {
           return ash::BrowserController::kContinueIteration;
         }
 
-        const auto* tab_strip_model = browser->tab_strip_model();
-        if (!tab_strip_model) {
-          CAMPAIGNS_LOG(ERROR) << "No tab_strip_model.";
-          return ash::BrowserController::kContinueIteration;
-        }
-
-        auto* active_web_contents = tab_strip_model->GetActiveWebContents();
+        auto* active_web_contents = browser.GetActiveWebContents();
         if (!active_web_contents) {
           CAMPAIGNS_LOG(ERROR) << "No active web contents.";
           return ash::BrowserController::kContinueIteration;
@@ -267,17 +263,18 @@ content::WebContents* FindActiveWebContent(
   return result;
 }
 
-const GURL FindActiveWebAppUrl(Profile* profile, const webapps::AppId& app_id) {
+const GURL FindActiveWebAppUrl(const AccountId& account_id,
+                               const webapps::AppId& app_id) {
   auto* active_web_contents =
-      FindActiveWebContent(profile, Browser::TYPE_APP, app_id);
+      FindActiveWebContent(account_id, ash::BrowserType::kApp, app_id);
   if (!active_web_contents) {
     return GURL::EmptyGURL();
   }
   return active_web_contents->GetURL();
 }
 
-content::WebContents* FindActiveTabWebContent(Profile* profile) {
-  return FindActiveWebContent(profile, Browser::TYPE_NORMAL);
+content::WebContents* FindActiveTabWebContent(const AccountId& account_id) {
+  return FindActiveWebContent(account_id, ash::BrowserType::kNormal);
 }
 
 std::optional<apps::AppType> GetAppType(const std::string& app_id) {
@@ -505,7 +502,7 @@ void CampaignsManagerSession::PrimaryPageChanged(
   // 2. While `url1` is loading, open a "tab 2" and load the same URL `url1`
   // 3. The nudge triggered twice - one by the inactive "tab 1" and one by the
   // active "tab 2".
-  auto* active_tab_web_contents = FindActiveTabWebContent(GetProfile());
+  auto* active_tab_web_contents = FindActiveTabWebContent(GetAccountId());
   if (active_tab_web_contents != web_contents) {
     return;
   }
@@ -655,7 +652,7 @@ void CampaignsManagerSession::HandlePwaInstanceUpdate(
     return;
   }
 
-  CacheAppOpenContext(update, FindActiveWebAppUrl(GetProfile(), app_id));
+  CacheAppOpenContext(update, FindActiveWebAppUrl(GetAccountId(), app_id));
   MaybeTriggerCampaignsWhenAppOpened();
 }
 
