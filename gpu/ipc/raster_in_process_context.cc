@@ -44,18 +44,13 @@ RasterInProcessContext::~RasterInProcessContext() {
 
 ContextResult RasterInProcessContext::Initialize(
     CommandBufferTaskExecutor* task_executor,
-    const ContextCreationAttribs& attribs,
-    const SharedMemoryLimits& memory_limits,
+    bool enable_gpu_rasterization,
     gpu::raster::GrShaderCache* gr_shader_cache,
     GpuProcessShmCount* use_shader_cache_shm_count) {
-  DCHECK(attribs.enable_raster_interface);
-  if (!attribs.enable_raster_interface) {
-    return ContextResult::kFatalFailure;
-  }
-  DCHECK(!attribs.enable_gles2_interface);
-  if (attribs.enable_gles2_interface) {
-    return ContextResult::kFatalFailure;
-  }
+  ContextCreationAttribs attribs;
+  attribs.enable_gles2_interface = false;
+  attribs.enable_raster_interface = true;
+  attribs.enable_gpu_rasterization = enable_gpu_rasterization;
 
   command_buffer_ =
       std::make_unique<InProcessCommandBuffer>(task_executor, GURL());
@@ -66,6 +61,8 @@ ContextResult RasterInProcessContext::Initialize(
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;
   }
+
+  const SharedMemoryLimits memory_limits;
 
   // Create the RasterCmdHelper, which writes the command buffer protocol.
   auto raster_helper =

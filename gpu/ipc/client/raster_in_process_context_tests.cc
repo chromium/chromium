@@ -40,14 +40,9 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
     if (!RasterInProcessContext::SupportedInTest())
       return nullptr;
 
-    ContextCreationAttribs attributes;
-    attributes.enable_gpu_rasterization = true;
-    attributes.enable_gles2_interface = false;
-    attributes.enable_raster_interface = true;
-
     auto context = std::make_unique<RasterInProcessContext>();
     auto result = context->Initialize(
-        gpu_thread_holder_.GetTaskExecutor(), attributes, SharedMemoryLimits(),
+        gpu_thread_holder_.GetTaskExecutor(), /*enable_gpu_rasterization=*/true,
         /*gr_shader_cache=*/nullptr, /*use_shader_cache_shm_count=*/nullptr);
     DCHECK_EQ(result, ContextResult::kSuccess);
     return context;
