@@ -67,7 +67,8 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
       scoped_refptr<WebWorkerFetchContext>,
       WorkerReportingProxy&,
       bool is_worker_loaded_from_data_url,
-      bool is_default_world_of_isolate);
+      bool is_default_world_of_isolate,
+      std::optional<uint64_t> canvas_noise_token);
   ~WorkerOrWorkletGlobalScope() override;
 
   // EventTarget

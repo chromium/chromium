@@ -31,6 +31,8 @@ class WorkerInternals final : public ScriptWrappable {
 
   void forceLoseCanvasContext(CanvasRenderingContext* ctx);
   bool isCanvasImageSourceAccelerated(const CanvasImageSource*) const;
+
+  String getCanvasNoiseToken(ScriptState* script_state);
 };
 
 }  // namespace blink

@@ -209,6 +209,7 @@ EmbeddedWorkerInstanceClientImpl::BuildStartData(
   start_data->devtools_worker_token = params.devtools_worker_token;
   start_data->service_worker_token = params.service_worker_token;
   start_data->ukm_source_id = params.ukm_source_id;
+  start_data->canvas_noise_token = params.canvas_noise_token;
   return start_data;
 }
 

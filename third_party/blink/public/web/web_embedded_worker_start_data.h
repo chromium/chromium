@@ -71,6 +71,8 @@ struct WebEmbeddedWorkerStartData {
 
   std::unique_ptr<WebPolicyContainer> policy_container;
 
+  std::optional<uint64_t> canvas_noise_token;
+
   explicit WebEmbeddedWorkerStartData(
       WebFetchClientSettingsObject outside_fetch_client_settings_object)
       : wait_for_debugger_mode(kDontWaitForDebugger),

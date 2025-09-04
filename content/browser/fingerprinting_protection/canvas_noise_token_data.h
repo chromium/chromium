@@ -13,6 +13,9 @@
 
 namespace content {
 
+// TODO(https://crbug.com/442616874): Key CanvasNoiseTokens by (BrowserContext,
+// StorageKey) instead of (BrowserContext, Origin).
+
 // A user data class that generates and stores BrowserContext-associated noise
 // tokens used for canvas noising.
 class CONTENT_EXPORT CanvasNoiseTokenData

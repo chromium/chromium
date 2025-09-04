@@ -61,4 +61,13 @@ bool WorkerInternals::isCanvasImageSourceAccelerated(
   return image_source->IsAccelerated();
 }
 
+String WorkerInternals::getCanvasNoiseToken(ScriptState* script_state) {
+  std::optional<uint64_t> token =
+      ExecutionContext::From(script_state)->CanvasNoiseToken();
+  if (token.has_value()) {
+    return String::Number(token.value());
+  }
+  return String();
+}
+
 }  // namespace blink

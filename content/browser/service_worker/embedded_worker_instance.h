@@ -280,6 +280,9 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
   GetDipReporter();
 
+  // Helper to get or create a new canvas noise token for this worker.
+  std::optional<uint64_t> GetOrCreateCanvasNoiseToken();
+
  private:
   typedef base::ObserverList<Listener>::Unchecked ListenerList;
   struct StartInfo;

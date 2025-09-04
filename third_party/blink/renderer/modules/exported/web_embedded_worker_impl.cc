@@ -232,7 +232,7 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       net::StorageAccessApiStatus::kNone,
       false /* require_cross_site_request_for_cookies */,
       nullptr /* origin_to_use */, std::move(coep_reporting_observer),
-      std::move(dip_reporting_observer));
+      std::move(dip_reporting_observer), worker_start_data->canvas_noise_token);
 
   worker_thread_ = std::make_unique<ServiceWorkerThread>(
       std::make_unique<ServiceWorkerGlobalScopeProxy>(

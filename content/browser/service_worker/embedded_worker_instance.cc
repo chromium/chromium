@@ -22,6 +22,7 @@
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
+#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/process_lock.h"
@@ -473,6 +474,10 @@ void EmbeddedWorkerInstance::Start(
   params->coep_reporting_observer =
       std::move(coep_reporting_observer_receiver_);
   params->dip_reporting_observer = std::move(dip_reporting_observer_receiver_);
+
+  // Set initial canvas noise token, which ensures tokens are available as soon
+  // as worker execution context is ready.
+  params->canvas_noise_token = GetOrCreateCanvasNoiseToken();
 
   SendStartWorker(std::move(params));
   std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk);
@@ -1319,6 +1324,21 @@ EmbeddedWorkerInstance::GetDipReporterInternal(
 
   dip_reporter_->Clone(new_dip_reporter.InitWithNewPipeAndPassReceiver());
   return new_dip_reporter;
+}
+
+std::optional<uint64_t> EmbeddedWorkerInstance::GetOrCreateCanvasNoiseToken() {
+  DCHECK(context_);
+  BrowserContext* browser_context = context_->wrapper()->browser_context();
+  GURL top_url = owner_version_->key().top_level_site().GetURL();
+
+  if (!GetContentClient()->browser()->ShouldEnableCanvasNoise(browser_context,
+                                                              top_url)) {
+    return std::nullopt;
+  }
+  // TODO(https://crbug.com/442616874): Use StorageKeys to call GetToken(), once
+  // CanvasNoiseTokens are keyed by StorageKey instead of Origin.
+  return CanvasNoiseTokenData::GetToken(browser_context,
+                                        url::Origin::Create(top_url));
 }
 
 EmbeddedWorkerInstance::CacheStorageRequest::CacheStorageRequest(
