@@ -220,7 +220,7 @@ void GnomeRemoteDesktopSession::OnEiSession(
   ei_session_ = std::move(ei_session);
 
   capture_stream_manager_.Init(&connection_,
-                               display_config_client_.GetWeakPtr(),
+                               display_config_monitor_.GetWeakPtr(),
                                screencast_session_path_);
   capture_stream_manager_.AddStream(
       kInitialResolution,

@@ -16,6 +16,7 @@
 #include "remoting/host/linux/ei_sender_session.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
+#include "remoting/host/linux/gnome_display_config_monitor.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/pipewire_capture_stream_manager.h"
 
@@ -52,6 +53,11 @@ class GnomeRemoteDesktopSession {
   base::WeakPtr<PipewireCaptureStreamManager> capture_stream_manager() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return capture_stream_manager_.GetWeakPtr();
+  }
+
+  base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return display_config_monitor_.GetWeakPtr();
   }
 
   base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client() {
@@ -116,6 +122,8 @@ class GnomeRemoteDesktopSession {
       GUARDED_BY_CONTEXT(sequence_checker_);
   GnomeDisplayConfigDBusClient display_config_client_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  GnomeDisplayConfigMonitor display_config_monitor_ GUARDED_BY_CONTEXT(
+      sequence_checker_){display_config_client_.GetWeakPtr()};
   PipewireCaptureStreamManager capture_stream_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
   PipewireCaptureStreamManager::Observer::Subscription

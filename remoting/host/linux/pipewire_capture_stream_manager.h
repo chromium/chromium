@@ -14,7 +14,6 @@
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -23,6 +22,7 @@
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
+#include "remoting/host/linux/gnome_display_config_monitor.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -76,7 +76,7 @@ class PipewireCaptureStreamManager final {
   // Initializes the stream manager. Must be call once before calling other
   // methods of this class. `connection` must outlive `this`.
   void Init(GDBusConnectionRef* connection,
-            base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client,
+            base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
             gvariant::ObjectPath screencast_session_path);
 
   // Returns the stream associated with `screen_id`. A non-null result will only
@@ -147,8 +147,7 @@ class PipewireCaptureStreamManager final {
                        base::expected<std::tuple<>, Loggable> result);
   void OnPipeWireStreamAdded(std::string mapping_id,
                              std::tuple<std::uint32_t> args);
-  void QueryDisplayInfo();
-  void OnGnomeDisplayConfigReceived(GnomeDisplayConfig config);
+  void OnGnomeDisplayConfigChanged(const GnomeDisplayConfig& config);
 
   // Associates the pending stream with `screen_id`, then calls
   // RunCurrentAddStreamCallback() with the screen ID.
@@ -159,11 +158,11 @@ class PipewireCaptureStreamManager final {
   void SetUseDamageRegion();
 
   raw_ptr<GDBusConnectionRef> connection_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client_
+  base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor_
       GUARDED_BY_CONTEXT(sequence_checker_);
   gvariant::ObjectPath screencast_session_path_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<GnomeDisplayConfigDBusClient::Subscription>
+  std::unique_ptr<GnomeDisplayConfigMonitor::Subscription>
       monitors_changed_subscription_;
   // nullopt if not display config has been loaded yet.
   std::optional<GnomeDisplayConfig> last_seen_display_config_

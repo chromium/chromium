@@ -58,21 +58,22 @@ PipewireCaptureStreamManager::AddObserver(Observer* observer) {
 
 void PipewireCaptureStreamManager::Init(
     GDBusConnectionRef* connection,
-    base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client,
+    base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
     gvariant::ObjectPath screencast_session_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(connection);
-  DCHECK(display_config_client);
+  DCHECK(display_config_monitor);
 
   connection_ = connection;
-  display_config_client_ = display_config_client;
   screencast_session_path_ = std::move(screencast_session_path);
 
-  monitors_changed_subscription_ =
-      display_config_client_->SubscribeMonitorsChanged(base::BindRepeating(
-          &PipewireCaptureStreamManager::QueryDisplayInfo, GetWeakPtr()));
-  // Query the initial display info right away.
-  QueryDisplayInfo();
+  if (display_config_monitor) {
+    monitors_changed_subscription_ = display_config_monitor->AddCallback(
+        base::BindRepeating(
+            &PipewireCaptureStreamManager::OnGnomeDisplayConfigChanged,
+            GetWeakPtr()),
+        /*call_with_current_config=*/true);
+  }
 }
 
 base::WeakPtr<PipewireCaptureStream> PipewireCaptureStreamManager::GetStream(
@@ -299,24 +300,14 @@ void PipewireCaptureStreamManager::OnPipeWireStreamAdded(
   pending_stream_->StartVideoCapture();
 }
 
-void PipewireCaptureStreamManager::QueryDisplayInfo() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (display_config_client_) {
-    display_config_client_->GetMonitorsConfig(base::BindOnce(
-        &PipewireCaptureStreamManager::OnGnomeDisplayConfigReceived,
-        GetWeakPtr()));
-  }
-}
-
-void PipewireCaptureStreamManager::OnGnomeDisplayConfigReceived(
-    GnomeDisplayConfig config) {
+void PipewireCaptureStreamManager::OnGnomeDisplayConfigChanged(
+    const GnomeDisplayConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // See comment in AddStream().
   if (!last_seen_display_config_.has_value()) {
     DCHECK(!pending_stream_);
-    last_seen_display_config_ = std::move(config);
+    last_seen_display_config_ = config;
     if (!pending_add_stream_requests_.empty()) {
       HOST_LOG << "Adding stream after initial display config is loaded.";
       MaybeAddStreamForCurrentRequest();
@@ -325,13 +316,13 @@ void PipewireCaptureStreamManager::OnGnomeDisplayConfigReceived(
     return;
   }
   if (!pending_stream_) {
-    last_seen_display_config_ = std::move(config);
+    last_seen_display_config_ = config;
     SetUseDamageRegion();
     return;
   }
 
   GnomeDisplayConfig previous_config = std::move(*last_seen_display_config_);
-  last_seen_display_config_ = std::move(config);
+  last_seen_display_config_ = config;
 
   std::vector<webrtc::ScreenId> new_screen_ids;
   for (const auto& [name, monitor] : last_seen_display_config_->monitors) {

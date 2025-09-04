@@ -8,6 +8,7 @@
 #include <gio/gio.h>
 
 #include "base/callback_list.h"
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -46,14 +47,13 @@ class GnomeDisplayConfigDBusClient {
     ~Subscription();
 
    private:
-    explicit Subscription(
-        std::unique_ptr<GDBusConnectionRef::SignalSubscription>
-            signal_subscription);
+    Subscription();
 
     friend class GnomeDisplayConfigDBusClient;
 
     std::unique_ptr<GDBusConnectionRef::SignalSubscription>
         signal_subscription_;
+    base::WeakPtrFactory<Subscription> weak_factory_{this};
   };
 
   GnomeDisplayConfigDBusClient();
@@ -90,6 +90,23 @@ class GnomeDisplayConfigDBusClient {
   base::WeakPtr<GnomeDisplayConfigDBusClient> GetWeakPtr();
 
  private:
+  // Represents a subscription that is pending because DBus is not yet
+  // initialized.
+  struct PendingSubscription {
+    PendingSubscription(base::RepeatingClosure callback,
+                        base::WeakPtr<Subscription> subscription);
+    PendingSubscription();
+    PendingSubscription(PendingSubscription&&);
+    PendingSubscription& operator=(PendingSubscription&&);
+    ~PendingSubscription();
+
+    base::RepeatingClosure callback;
+
+    // Used to check if the subscription has already been discarded by the
+    // caller, in which case the pending subscription will also be discarded.
+    base::WeakPtr<Subscription> subscription;
+  };
+
   static void OnDBusGetReply(GObject* source_object,
                              GAsyncResult* result,
                              gpointer user_data);
@@ -102,6 +119,9 @@ class GnomeDisplayConfigDBusClient {
 
   // Starts an async call to the DBus GetCurrentState() method.
   void CallDBusGetCurrentState();
+
+  // Handles all pending DBus MonitorsChanged signal subscriptions.
+  void SubscribeDBusMonitorsChanged();
 
   // Called by OnDBusGetReply().
   void OnDBusGet(ScopedGObject<GDBusConnection> dbus_connection);
@@ -121,6 +141,9 @@ class GnomeDisplayConfigDBusClient {
   GDBusConnectionRef dbus_connection_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::OnceCallbackList<CallbackSignature> pending_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::queue<PendingSubscription> pending_subscriptions_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
