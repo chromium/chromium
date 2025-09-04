@@ -38,6 +38,7 @@ CGFloat const kHalfSheetFullHeightProportion = 0.9;
 CGFloat const kIncognitoStackWidthOffset = 32.0;
 CGFloat const kHorizontalPadding = 20.0;
 CGFloat const kButtonHeight = 50;
+CGFloat const kBottomGradientViewHeight = 60.0;
 
 NSString* const kPrimaryActionAccessibilityIdentifier =
     @"PrimaryActionAccessibilityIdentifier";
@@ -91,6 +92,9 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 
 @implementation YoutubeIncognitoSheet {
   UIView* _icognitoIconView;
+  UIScrollView* _scrollView;
+  UIView* _bottomGradientView;
+  CAGradientLayer* _bottomGradientLayer;
 }
 
 - (instancetype)init {
@@ -102,16 +106,37 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   self.view.backgroundColor = [UIColor systemBackgroundColor];
 
-  UIScrollView* scrollView = [[UIScrollView alloc] init];
-  scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:scrollView];
+  _scrollView = [[UIScrollView alloc] init];
+  _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_scrollView];
+
+  _bottomGradientView = [[UIView alloc] init];
+  _bottomGradientView.translatesAutoresizingMaskIntoConstraints = NO;
+  _bottomGradientView.userInteractionEnabled = NO;
+  [self.view addSubview:_bottomGradientView];
+  _bottomGradientLayer = [CAGradientLayer layer];
+  [_bottomGradientView.layer insertSublayer:_bottomGradientLayer atIndex:0];
+  _bottomGradientView.hidden = YES;
+
+  UIColor* backgroundColor = self.view.backgroundColor;
+  if (!backgroundColor) {
+    backgroundColor = [UIColor blackColor];
+  }
+  _bottomGradientLayer.colors = @[
+    (id)[backgroundColor colorWithAlphaComponent:0.0].CGColor,
+    (id)backgroundColor.CGColor
+  ];
+  _bottomGradientLayer.locations = @[ @(0.0), @(0.8) ];
+
+  _bottomGradientLayer.startPoint = CGPointMake(0.5, 0.0);
+  _bottomGradientLayer.endPoint = CGPointMake(0.5, 1.0);
 
   UIStackView* mainStackView = [[UIStackView alloc] init];
   mainStackView.axis = UILayoutConstraintAxisVertical;
   mainStackView.spacing = kVerticalSpacing;
   mainStackView.alignment = UIStackViewAlignmentCenter;
   mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  [scrollView addSubview:mainStackView];
+  [_scrollView addSubview:mainStackView];
 
   UIView* animatedTitleView = [self animatedTitleView];
   [mainStackView addArrangedSubview:animatedTitleView];
@@ -184,22 +209,22 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
       (idiom == UIUserInterfaceIdiomPad) ? kIncognitoStackWidthOffset : 0;
 
   [NSLayoutConstraint activateConstraints:@[
-    [scrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-    [scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-    [scrollView.trailingAnchor
+    [_scrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [_scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [_scrollView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
-    [scrollView.bottomAnchor constraintEqualToAnchor:primaryButton.topAnchor
-                                            constant:-kVerticalSpacing],
+    [_scrollView.bottomAnchor constraintEqualToAnchor:primaryButton.topAnchor
+                                             constant:-kVerticalSpacing],
 
     [mainStackView.topAnchor
-        constraintEqualToAnchor:scrollView.contentLayoutGuide.topAnchor],
+        constraintEqualToAnchor:_scrollView.contentLayoutGuide.topAnchor],
     [mainStackView.bottomAnchor
-        constraintEqualToAnchor:scrollView.contentLayoutGuide.bottomAnchor],
+        constraintEqualToAnchor:_scrollView.contentLayoutGuide.bottomAnchor],
     [mainStackView.leadingAnchor
-        constraintEqualToAnchor:scrollView.frameLayoutGuide.leadingAnchor
+        constraintEqualToAnchor:_scrollView.frameLayoutGuide.leadingAnchor
                        constant:kHorizontalPadding],
     [mainStackView.trailingAnchor
-        constraintEqualToAnchor:scrollView.frameLayoutGuide.trailingAnchor
+        constraintEqualToAnchor:_scrollView.frameLayoutGuide.trailingAnchor
                        constant:-kHorizontalPadding],
 
     [incognitoContentStackView.widthAnchor
@@ -215,11 +240,32 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
     [primaryButton.bottomAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
                        constant:-kVerticalSpacing],
-    [primaryButton.heightAnchor constraintEqualToConstant:kButtonHeight]
+    [primaryButton.heightAnchor constraintEqualToConstant:kButtonHeight],
+    [_bottomGradientView.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [_bottomGradientView.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [_bottomGradientView.bottomAnchor
+        constraintEqualToAnchor:primaryButton.topAnchor],
+    [_bottomGradientView.heightAnchor
+        constraintEqualToConstant:kBottomGradientViewHeight]
   ]];
 
+  [self.view bringSubviewToFront:_bottomGradientView];
+  [self.view bringSubviewToFront:primaryButton];
   [self setUpBottomSheetPresentationController];
   [self setUpBottomSheetDetents];
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  _bottomGradientLayer.frame = _bottomGradientView.bounds;
+  BOOL isScrollable =
+      _scrollView.contentSize.height > _scrollView.bounds.size.height;
+
+  // Show gradient only if scrollable
+  _bottomGradientView.hidden = !isScrollable;
 }
 
 - (void)primaryButtonTapped {
