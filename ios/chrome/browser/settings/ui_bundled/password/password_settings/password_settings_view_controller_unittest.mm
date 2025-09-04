@@ -366,8 +366,6 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DeleteAllDataDisabledWhenUserNotEligible) {
-  // Re-create the controller so that the enabled flag is picked up.
-  CreateController();
   [controller() setCanDeleteAllCredentials:NO];
   EXPECT_TRUE(GetTableViewItem(SectionIdentifierDeleteCredentialsButton,
                                /*item=*/0)
@@ -377,8 +375,6 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        DeleteAllDataButtonEnabledWhenUserEligible) {
-  // Re-create the controller so that the enabled flag is picked up.
-  CreateController();
   [controller() setCanDeleteAllCredentials:YES];
   EXPECT_FALSE(GetTableViewItem(SectionIdentifierDeleteCredentialsButton,
                                 /*item=*/0)
