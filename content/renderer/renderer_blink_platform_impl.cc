@@ -758,23 +758,17 @@ RendererBlinkPlatformImpl::CreateRasterGraphicsContextProvider(
     return nullptr;
   }
 
-  gpu::ContextCreationAttribs attributes;
-  attributes.enable_raster_interface = true;
-  attributes.enable_gpu_rasterization = true;
-  attributes.enable_gles2_interface = false;
-  attributes.gpu_preference = gl::GpuPreference::kLowPower;
-  attributes.fail_if_major_perf_caveat = false;
-  attributes.context_type = gpu::CONTEXT_TYPE_OPENGLES2;
-
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;
 
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
-      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
+      viz::ContextProviderCommandBuffer::CreateForRaster(
           std::move(gpu_channel_host), kGpuStreamIdDefault,
           kGpuStreamPriorityDefault, GURL(document_url), automatic_flushes,
-          support_locking, gpu::SharedMemoryLimits(), attributes,
-          viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR));
+          support_locking, gpu::SharedMemoryLimits(),
+          viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR,
+          /*enable_gpu_rasterization=*/true,
+          /*lose_context_when_out_of_memory=*/false));
 }
 
 //------------------------------------------------------------------------------

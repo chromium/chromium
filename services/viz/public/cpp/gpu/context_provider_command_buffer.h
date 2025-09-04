@@ -87,6 +87,18 @@ class ContextProviderCommandBuffer
       bool prefer_low_power_gpu,
       bool fail_if_major_performance_caveat);
 
+  static scoped_refptr<ContextProviderCommandBuffer> CreateForRaster(
+      scoped_refptr<gpu::GpuChannelHost> channel,
+      int32_t stream_id,
+      gpu::SchedulingPriority stream_priority,
+      const GURL& active_url,
+      bool automatic_flushes,
+      bool support_locking,
+      const gpu::SharedMemoryLimits& memory_limits,
+      command_buffer_metrics::ContextType type,
+      bool enable_gpu_rasterization,
+      bool lose_context_when_out_of_memory);
+
   ContextProviderCommandBuffer(
       scoped_refptr<gpu::GpuChannelHost> channel,
       int32_t stream_id,

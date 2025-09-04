@@ -1065,19 +1065,16 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
   // This context is only used to create textures and mailbox them, so
   // use lower limits than the default.
   gpu::SharedMemoryLimits limits = gpu::SharedMemoryLimits::ForMailboxContext();
-  gpu::ContextCreationAttribs attributes;
-  attributes.lose_context_when_out_of_memory = true;
-  attributes.enable_gles2_interface = false;
-  attributes.enable_raster_interface = true;
-  attributes.enable_gpu_rasterization = false;
   video_frame_compositor_context_provider_ =
-      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
+      viz::ContextProviderCommandBuffer::CreateForRaster(
           gpu_channel_host, kGpuStreamIdMedia, kGpuStreamPriorityMedia,
           GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/"
                "RenderCompositor"),
           /*automatic_flushes=*/false, /*support_locking=*/false, limits,
-          attributes,
-          viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR);
+          viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR,
+          /*enable_gpu_rasterization=*/false,
+          /*lose_context_when_out_of_memory=*/true);
+
   return video_frame_compositor_context_provider_;
 }
 
@@ -1126,20 +1123,18 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
     return nullptr;
   }
 
-  gpu::ContextCreationAttribs attributes;
-  attributes.lose_context_when_out_of_memory = true;
-  attributes.enable_gles2_interface = false;
-  attributes.enable_raster_interface = true;
-  attributes.enable_gpu_rasterization = true;
   shared_main_thread_contexts_ =
-      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
+      viz::ContextProviderCommandBuffer::CreateForRaster(
           std::move(gpu_channel_host), kGpuStreamIdDefault,
           kGpuStreamPriorityDefault,
           GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/"
                "RendererMainThread"),
           /*automatic_flushes=*/true, /*support_locking=*/false,
-          gpu::SharedMemoryLimits(), attributes,
-          viz::command_buffer_metrics::ContextType::RENDERER_MAIN_THREAD);
+          gpu::SharedMemoryLimits(),
+          viz::command_buffer_metrics::ContextType::RENDERER_MAIN_THREAD,
+          /*enable_gpu_rasterization=*/true,
+          /*lose_context_when_out_of_memory=*/true);
+
   auto result = shared_main_thread_contexts_->BindToCurrentSequence();
   if (result != gpu::ContextResult::kSuccess) {
     shared_main_thread_contexts_ = nullptr;
@@ -1643,20 +1638,17 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
   auto shared_memory_limits =
       support_gpu_rasterization ? gpu::SharedMemoryLimits::ForOOPRasterContext()
                                 : gpu::SharedMemoryLimits();
-
-  gpu::ContextCreationAttribs attributes;
-  attributes.lose_context_when_out_of_memory = true;
-  attributes.enable_gles2_interface = false;
-  attributes.enable_raster_interface = true;
-  attributes.enable_gpu_rasterization = support_gpu_rasterization;
-  shared_worker_context_provider_ = base::MakeRefCounted<
-      viz::ContextProviderCommandBuffer>(
-      std::move(gpu_channel_host), kGpuStreamIdWorker, kGpuStreamPriorityWorker,
-      GURL(
-          "chrome://gpu/RenderThreadImpl::CreateOffscreenContext/RenderWorker"),
-      /*automatic_flushes=*/false, /*support_locking=*/true,
-      shared_memory_limits, attributes,
-      viz::command_buffer_metrics::ContextType::RENDER_WORKER);
+  shared_worker_context_provider_ =
+      viz::ContextProviderCommandBuffer::CreateForRaster(
+          std::move(gpu_channel_host), kGpuStreamIdWorker,
+          kGpuStreamPriorityWorker,
+          GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/"
+               "RenderWorker"),
+          /*automatic_flushes=*/false, /*support_locking=*/true,
+          shared_memory_limits,
+          viz::command_buffer_metrics::ContextType::RENDER_WORKER,
+          /*enable_gpu_rasterization=*/support_gpu_rasterization,
+          /*lose_context_when_out_of_memory=*/true);
 
   auto result = shared_worker_context_provider_->BindToCurrentSequence();
   if (result != gpu::ContextResult::kSuccess) {

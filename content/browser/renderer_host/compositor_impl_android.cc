@@ -103,14 +103,6 @@ gpu::SharedMemoryLimits GetCompositorContextSharedMemoryLimits(
   return gpu::SharedMemoryLimits::ForDisplayCompositor(screen_size);
 }
 
-gpu::ContextCreationAttribs GetCompositorContextAttributes() {
-  gpu::ContextCreationAttribs attributes;
-  attributes.enable_raster_interface = true;
-  attributes.enable_gles2_interface = false;
-
-  return attributes;
-}
-
 void CreateContextProviderAfterGpuChannelEstablished(
     Compositor::ContextProviderCallback callback,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
@@ -517,15 +509,17 @@ void CompositorImpl::OnGpuChannelEstablished(
                               ->GetDisplayNearestWindow(root_window_)
                               .GetColorSpaces();
 
-  auto context_provider =
-      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          std::move(gpu_channel_host), stream_id, stream_priority,
-          GURL(std::string("chrome://gpu/CompositorImpl::") +
-               std::string("CompositorContextProvider")),
-          automatic_flushes, support_locking,
-          GetCompositorContextSharedMemoryLimits(root_window_),
-          GetCompositorContextAttributes(),
-          viz::command_buffer_metrics::ContextType::BROWSER_COMPOSITOR);
+  auto context_provider = viz::ContextProviderCommandBuffer::CreateForRaster(
+      std::move(gpu_channel_host), stream_id, stream_priority,
+      GURL(std::string("chrome://gpu/CompositorImpl::") +
+           std::string("CompositorContextProvider")),
+      automatic_flushes, support_locking,
+      GetCompositorContextSharedMemoryLimits(root_window_),
+      viz::command_buffer_metrics::ContextType::BROWSER_COMPOSITOR,
+      /*enable_gpu_rasterization=*/false,
+      /*lose_context_when_out_of_memory=*/false
+
+  );
   auto result = context_provider->BindToCurrentSequence();
 
   if (result == gpu::ContextResult::kFatalFailure) {

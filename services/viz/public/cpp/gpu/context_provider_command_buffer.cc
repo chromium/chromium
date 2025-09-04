@@ -138,6 +138,30 @@ ContextProviderCommandBuffer::CreateForWebGL(
       command_buffer_metrics::ContextType::WEBGL);
 }
 
+// static
+scoped_refptr<ContextProviderCommandBuffer>
+ContextProviderCommandBuffer::CreateForRaster(
+    scoped_refptr<gpu::GpuChannelHost> channel,
+    int32_t stream_id,
+    gpu::SchedulingPriority stream_priority,
+    const GURL& active_url,
+    bool automatic_flushes,
+    bool support_locking,
+    const gpu::SharedMemoryLimits& memory_limits,
+    command_buffer_metrics::ContextType type,
+    bool enable_gpu_rasterization,
+    bool lose_context_when_out_of_memory) {
+  gpu::ContextCreationAttribs attributes;
+  attributes.enable_gles2_interface = false;
+  attributes.enable_raster_interface = true;
+  attributes.enable_gpu_rasterization = enable_gpu_rasterization;
+  attributes.lose_context_when_out_of_memory = lose_context_when_out_of_memory;
+
+  return base::MakeRefCounted<ContextProviderCommandBuffer>(
+      std::move(channel), stream_id, stream_priority, active_url,
+      automatic_flushes, support_locking, memory_limits, attributes, type);
+}
+
 ContextProviderCommandBuffer::~ContextProviderCommandBuffer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(context_sequence_checker_);
 

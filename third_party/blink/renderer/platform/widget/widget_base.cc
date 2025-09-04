@@ -882,25 +882,15 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   // uploads happen on the worker context instead.
   gpu::SharedMemoryLimits limits = gpu::SharedMemoryLimits::ForMailboxContext();
 
-  // This is for an offscreen context for the compositor. So the default
-  // framebuffer doesn't need alpha, depth, stencil, antialiasing.
-  gpu::ContextCreationAttribs attributes;
-  attributes.lose_context_when_out_of_memory = true;
-  // VideoResourceUpdater was the only usage of gles2 interface from this
-  // RasterContextProvider and now we use RasterInterface in
-  // VideoResourceUpdater.
-  attributes.enable_gles2_interface = false;
-  attributes.enable_raster_interface = true;
-  attributes.enable_gpu_rasterization = false;
-
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
 
-  auto context_provider =
-      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          gpu_channel_host, kGpuStreamIdDefault, kGpuStreamPriorityDefault,
-          GURL(url), automatic_flushes, support_locking, limits, attributes,
-          viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR);
+  auto context_provider = viz::ContextProviderCommandBuffer::CreateForRaster(
+      gpu_channel_host, kGpuStreamIdDefault, kGpuStreamPriorityDefault,
+      GURL(url), automatic_flushes, support_locking, limits,
+      viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR,
+      /*enable_gpu_rasterization=*/false,
+      /*lose_context_when_out_of_memory=*/true);
 
 #if BUILDFLAG(IS_ANDROID)
   if (Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView() &&
