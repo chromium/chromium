@@ -116,14 +116,9 @@ void WebGPUTest::Initialize(const Options& options) {
   gpu_service_holder_ =
       std::make_unique<viz::TestGpuServiceHolder>(gpu_preferences);
 
-  ContextCreationAttribs attributes;
-  attributes.enable_gles2_interface = false;
-  attributes.context_type = CONTEXT_TYPE_WEBGPU;
-
   context_ = std::make_unique<WebGPUInProcessContext>();
   ContextResult result =
-      context_->Initialize(gpu_service_holder_->task_executor(), attributes,
-                           options.shared_memory_limits);
+      context_->Initialize(gpu_service_holder_->task_executor());
   ASSERT_EQ(result, ContextResult::kSuccess) << "Context failed to initialize";
 
   cmd_helper_ = std::make_unique<webgpu::WebGPUCmdHelper>(

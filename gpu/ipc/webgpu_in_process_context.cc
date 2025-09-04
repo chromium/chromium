@@ -39,15 +39,10 @@ WebGPUInProcessContext::~WebGPUInProcessContext() {
 }
 
 ContextResult WebGPUInProcessContext::Initialize(
-    CommandBufferTaskExecutor* task_executor,
-    const ContextCreationAttribs& attribs,
-    const SharedMemoryLimits& memory_limits) {
-  DCHECK(attribs.context_type == CONTEXT_TYPE_WEBGPU);
-
-  if (attribs.context_type != CONTEXT_TYPE_WEBGPU ||
-      attribs.enable_raster_interface || attribs.enable_gles2_interface) {
-    return ContextResult::kFatalFailure;
-  }
+    CommandBufferTaskExecutor* task_executor) {
+  ContextCreationAttribs attribs;
+  attribs.enable_gles2_interface = false;
+  attribs.context_type = CONTEXT_TYPE_WEBGPU;
 
   client_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   command_buffer_ =
@@ -61,6 +56,8 @@ ContextResult WebGPUInProcessContext::Initialize(
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return result;
   }
+
+  const auto memory_limits = SharedMemoryLimits::ForWebGPUContext();
 
   // Create the WebGPUCmdHelper, which writes the command buffer protocol.
   auto webgpu_helper =

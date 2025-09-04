@@ -21,7 +21,6 @@ class CommandBufferHelper;
 class ServiceTransferCache;
 class TransferBuffer;
 struct GpuFeatureInfo;
-struct SharedMemoryLimits;
 
 namespace webgpu {
 class WebGPUImplementation;
@@ -41,9 +40,7 @@ class WebGPUInProcessContext {
   // |attrib_list| must be null or a NONE-terminated list of attribute/value
   // pairs. |gpu_channel_manager| should be non-null when used in the GPU
   // process.
-  ContextResult Initialize(CommandBufferTaskExecutor* task_executor,
-                           const ContextCreationAttribs& attribs,
-                           const SharedMemoryLimits& memory_limits);
+  ContextResult Initialize(CommandBufferTaskExecutor* task_executor);
 
   const Capabilities& GetCapabilities() const;
   const GpuFeatureInfo& GetGpuFeatureInfo() const;

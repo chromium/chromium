@@ -42,9 +42,6 @@ class WebGPUTest : public testing::Test {
   struct Options {
     Options();
 
-    // Shared memory limits
-    SharedMemoryLimits shared_memory_limits =
-        SharedMemoryLimits::ForWebGPUContext();
     bool force_fallback_adapter = false;
     wgpu::FeatureLevel feature_level = wgpu::FeatureLevel::Core;
     bool enable_unsafe_webgpu = false;
