@@ -1633,21 +1633,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 mTabModelSelector.selectModel(/* incognito= */ false);
                 mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
             }
-
-            boolean shouldHideOverviewMode =
-                    IntentUtils.safeGetBooleanExtra(
-                            intent, IntentHandler.EXTRA_EXIT_XR_OVERVIEW_MODE, false);
-            if (shouldHideOverviewMode
-                    && IntentHandler.wasIntentSenderChrome(intent)
-                    && isInOverviewMode()) {
-                // Request switching to Home Space mode on XR.
-                var xrSceneCoreSessionManager = mXrSceneCoreSessionManagerSupplier.get();
-                if (xrSceneCoreSessionManager != null) {
-                    xrSceneCoreSessionManager.requestSpaceModeChange(
-                            /* requestFullSpaceMode= */ false);
-                }
-                hideOverview(/* animate= */ true);
-            }
             // Launch history on an already running instance of Chrome.
             maybeLaunchHistory();
         }
