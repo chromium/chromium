@@ -1296,4 +1296,10 @@ void PeerConnectionDependencyFactory::BindPermissionService(
       std::move(permission_service));
 }
 
+std::unique_ptr<webrtc::LocalNetworkAccessPermissionFactoryInterface>
+PeerConnectionDependencyFactory::
+    CreateLocalNetworkAccessPermissionFactoryForTesting() {
+  return std::make_unique<LocalNetworkAccessPermissionFactory>(this);
+}
+
 }  // namespace blink

@@ -42,6 +42,10 @@ namespace gfx {
 class ColorSpace;
 }
 
+namespace webrtc {
+class LocalNetworkAccessPermissionFactoryInterface;
+}
+
 namespace blink {
 
 class IpcNetworkManager;
@@ -152,6 +156,9 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   void BindPermissionService(
       mojo::PendingReceiver<mojom::blink::PermissionService>
           permission_service);
+
+  std::unique_ptr<webrtc::LocalNetworkAccessPermissionFactoryInterface>
+  CreateLocalNetworkAccessPermissionFactoryForTesting();
 
   void Trace(Visitor*) const override;
 
