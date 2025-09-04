@@ -226,32 +226,38 @@ bool GlicInstanceCoordinatorImpl::IsWarmed() const {
 base::WeakPtr<GlicWindowController> GlicInstanceCoordinatorImpl::GetWeakPtr() {
   // TODO(crbug.com/441542357) - remove from public interface.
   // Method should only be called on individual panels not the coordinator.
-  NOTREACHED();
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 GlicView* GlicInstanceCoordinatorImpl::GetGlicView() const {
   // Method should only be called on individual panels not the coordinator.
-  NOTREACHED();
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 base::WeakPtr<views::View> GlicInstanceCoordinatorImpl::GetGlicViewAsView() {
   // Method should only be called on individual panels not the coordinator.
-  NOTREACHED();
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 GlicWidget* GlicInstanceCoordinatorImpl::GetGlicWidget() const {
   // Method should only be called on individual panels not the coordinator.
-  NOTREACHED();
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 gfx::NativeWindow GlicInstanceCoordinatorImpl::GetHostNativeWindow() {
   // Method should only be called on individual panels not the coordinator.
-  NOTREACHED();
+  NOTIMPLEMENTED();
+  return gfx::NativeWindow{};
 }
 
 Browser* GlicInstanceCoordinatorImpl::attached_browser() {
   // Method should only be called on individual panels not the coordinator.
-  NOTREACHED();
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 GlicWindowController::State GlicInstanceCoordinatorImpl::state() const {
@@ -263,7 +269,8 @@ GlicWindowController::State GlicInstanceCoordinatorImpl::state() const {
 GlicWindowAnimator* GlicInstanceCoordinatorImpl::window_animator() {
   // TODO(crbug.com/441545112) - Remove from GlicWindowController.
   // Method should only be called on individual panels not the coordinator.
-  NOTREACHED();
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 Profile* GlicInstanceCoordinatorImpl::profile() {

@@ -29,6 +29,7 @@ void GlicSidePanelUi::Resize(const gfx::Size& size,
                              base::TimeDelta duration,
                              base::OnceClosure callback) {
   NOTIMPLEMENTED();
+  std::move(callback).Run();
 }
 
 void GlicSidePanelUi::SetDraggableAreas(
