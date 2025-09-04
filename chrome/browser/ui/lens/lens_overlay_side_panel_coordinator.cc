@@ -151,6 +151,7 @@ void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
     // Exit early if the side panel is already registered or opening.
     return;
   }
+
   state_ = State::kOpeningSidePanel;
   RegisterEntry();
   GetSidePanelUI(GetLensOverlayController())
@@ -313,6 +314,7 @@ void LensOverlaySidePanelCoordinator::NotifyNewQueryLoaded(std::string query,
   // Update searchbox and selection state to match the new query.
   GetLensSearchboxController()->SetSearchboxInputText(query);
 }
+
 void LensOverlaySidePanelCoordinator::PopAndLoadQueryFromHistory() {
   if (initialization_data_->search_query_history_stack_.empty()) {
     return;
@@ -762,6 +764,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
   // Focus the web contents immediately, so that hotkey presses (i.e. escape)
   // are handled.
   GetSidePanelWebContents()->Focus();
+  SetSidePanelIsOffline(net::NetworkChangeNotifier::IsOffline());
 
   const GURL& nav_url = navigation_handle->GetURL();
 
@@ -836,7 +839,6 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
   // page and any feature-specific request headers.
   navigation_handle->SetRequestHeader(kChromeSideSearchVersionHeaderName,
                                       kChromeSideSearchVersionHeaderValue);
-  SetSidePanelIsOffline(net::NetworkChangeNotifier::IsOffline());
   SetSidePanelNewTabUrl(GURL());
 
   // Notify the side panel that the results have moved to/from the AIM UI.
