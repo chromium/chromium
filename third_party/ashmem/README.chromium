@@ -31,3 +31,5 @@ Patches:
      syscalls when necessary.
   0008-Allow-ashmem_get_-size-prot-_region-to-support-both-.patch
      Support both ashmem and memfds for querying size/protection information about them.
+  0009-Fix-NULL-pointer-dereference-when-choosing-shared-me.patch
+     Ensure shared memory functions structure is always initialized.
