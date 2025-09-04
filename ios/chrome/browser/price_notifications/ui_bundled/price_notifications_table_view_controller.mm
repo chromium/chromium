@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_table_view_controller.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_image_container_view.h"
@@ -274,10 +272,10 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
   NSString* messageText = l10n_util::GetNSString(
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_MENU_ITEM_STOP_TRACKING_SNACKBAR);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
+  SnackbarMessage* message = CreateCustomSnackbarMessage(messageText);
   [self.snackbarCommandsHandler
-      showSnackbarMessage:message
-           withHapticType:UINotificationFeedbackTypeSuccess];
+      showCustomSnackbarMessage:message
+                 withHapticType:UINotificationFeedbackTypeSuccess];
 
   if (!self.viewIfLoaded.window) {
     return;
