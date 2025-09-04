@@ -15,7 +15,8 @@ TestStrikeDatabase::~TestStrikeDatabase() = default;
 void TestStrikeDatabase::GetProtoStrikes(
     const std::string& key,
     const StrikesCallback& outer_callback) {
-  outer_callback.Run(GetStrikesForTesting(key));
+  auto it = db_.find(key);
+  outer_callback.Run(it != db_.end() ? it->second.num_strikes() : 0);
 }
 
 void TestStrikeDatabase::ClearAllProtoStrikes(
@@ -29,20 +30,6 @@ void TestStrikeDatabase::ClearAllProtoStrikesForKey(
     const ClearStrikesCallback& outer_callback) {
   db_.erase(key);
   outer_callback.Run(/*success=*/true);
-}
-
-void TestStrikeDatabase::AddEntryWithNumStrikes(const std::string& key,
-                                                int num_strikes) {
-  strike_database::StrikeData strike_data;
-  strike_data.set_num_strikes(num_strikes);
-  strike_data.set_last_update_timestamp(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  db_[key] = strike_data;
-}
-
-int TestStrikeDatabase::GetStrikesForTesting(const std::string& key) {
-  auto it = db_.find(key);
-  return it != db_.end() ? it->second.num_strikes() : 0;
 }
 
 }  // namespace autofill

@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_PAYMENTS_TEST_STRIKE_DATABASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_PAYMENTS_TEST_STRIKE_DATABASE_H_
 
-#include <memory>
 #include <string>
 #include <unordered_map>
-#include <utility>
 
 #include "components/strike_database/strike_data.pb.h"
 #include "components/strike_database/strike_database.h"
@@ -29,10 +27,6 @@ class TestStrikeDatabase : public strike_database::StrikeDatabase {
   void ClearAllProtoStrikesForKey(
       const std::string& key,
       const ClearStrikesCallback& outer_callback) override;
-
-  // TestStrikeDatabase:
-  void AddEntryWithNumStrikes(const std::string& key, int num_strikes);
-  int GetStrikesForTesting(const std::string& key);
 
  private:
   // In-memory database of StrikeData.
