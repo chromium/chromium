@@ -90,6 +90,11 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
             int currentId = currentTab.getId();
             int currentIndex = TabModelUtils.getTabIndexById(currentModel, currentId);
 
+            // If the current tab is a pinned tab, new tabs are inserted after the last pinned tab.
+            if (currentTab.getIsPinned()) {
+                return currentModel.findFirstNonPinnedTabIndex();
+            }
+
             if (willOpenInForeground(type, newTab.isIncognito())) {
                 // If the tab was opened in the foreground, insert it adjacent to its parent tab if
                 // that exists and that tab is not the current selected tab, else insert the tab

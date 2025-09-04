@@ -752,6 +752,42 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    public void testAddTab_CurrentTabPinned() {
+        createTabs(4);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(5, mTabModelJni.getCount());
+
+                    // Detach a tab which will be added again later.
+                    Tab tabToRemove = mTabModelJni.getTabAt(4);
+                    mTabModelJni.getTabRemover().removeTab(tabToRemove, /* allowDialog= */ false);
+
+                    // Pin first two tabs.
+                    Tab tab0 = mTabModelJni.getTabAt(0);
+                    Tab tab1 = mTabModelJni.getTabAt(1);
+
+                    mTabModelJni.pinTab(tab0);
+                    mTabModelJni.pinTab(tab1);
+
+                    // Select the first tab which is pinned.
+                    mTabModelJni.setIndex(0, TabSelectionType.FROM_USER);
+
+                    // Index is passed 1, since hitting "Open in new tab" will trigger it to next
+                    // index by default.
+                    mTabModelJni.addTab(
+                            tabToRemove,
+                            1,
+                            TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                            TabCreationState.LIVE_IN_BACKGROUND);
+
+                    // It should move to start of non pinned tabs.
+                    assertEquals(mTabModelJni.getTabAt(2), tabToRemove);
+                });
+    }
+
+    @Test
+    @SmallTest
     public void testAddTabsToGroup() {
         createTabs(2);
         // 0:Tab0 | 1:Tab1 | 2:Tab2
