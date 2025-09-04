@@ -36,9 +36,7 @@ std::vector<StaticAppId> GetDefaultPinnedApps(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Pin Mall after AI offerings.
-  if (chromeos::features::IsCrosMallSwaEnabled()) {
-    app_ids.push_back(ash::kMallSystemAppId);
-  }
+  app_ids.push_back(ash::kMallSystemAppId);
 
   app_ids.insert(app_ids.end(), {
                                     ash::kGmailAppId,

@@ -44,14 +44,6 @@ BASE_FEATURE(BlinkExtensionKiosk, base::FEATURE_DISABLED_BY_DEFAULT);
 // cros-jellybean-team@google.com.
 BASE_FEATURE(CrosComponents, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables an app to discover and install other apps. This flag will be enabled
-// with Finch.
-BASE_FEATURE(CrosMall, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the Mall app for managed users. Only has an effect when kCrosMall is
-// also enabled.
-BASE_FEATURE(CrosMallManaged, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables denying file access to dlp protected files in MyFiles.
 BASE_FEATURE(DataControlsFileAccessDefaultDeny,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -329,10 +321,6 @@ bool IsBlinkExtensionEnabled() {
 
 bool IsCrosComponentsEnabled() {
   return base::FeatureList::IsEnabled(kCrosComponents);
-}
-
-bool IsCrosMallSwaEnabled() {
-  return base::FeatureList::IsEnabled(kCrosMall);
 }
 
 bool IsDataControlsFileAccessDefaultDenyEnabled() {

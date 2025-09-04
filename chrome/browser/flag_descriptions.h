@@ -4561,15 +4561,6 @@ extern const char kCrOSDspBasedNsAllowedDescription[];
 extern const char kCrOSDspBasedAgcAllowedName[];
 extern const char kCrOSDspBasedAgcAllowedDescription[];
 
-extern const char kCrosMallName[];
-extern const char kCrosMallDescription[];
-
-extern const char kCrosMallManagedName[];
-extern const char kCrosMallManagedDescription[];
-
-extern const char kCrosMallUrlName[];
-extern const char kCrosMallUrlDescription[];
-
 extern const char kCrosSeparateGeoApiKeyName[];
 extern const char kCrosSeparateGeoApiKeyDescription[];
 

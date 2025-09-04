@@ -138,20 +138,6 @@ class HelpAppIntegrationTestWithAutoTriggerDisabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class HelpAppIntegrationTestWithAppMallEnabled : public HelpAppIntegrationTest {
- public:
-  HelpAppIntegrationTestWithAppMallEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            chromeos::features::kCrosMall,
-        },
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class HelpAppIntegrationTestWithFirstRunEnabled
     : public HelpAppIntegrationTest {
  public:
@@ -723,8 +709,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
 }
 
 // Test that the Help App's `openAppMallPath` opens the App Mall SWA.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAppMallEnabled,
-                       HelpAppV2ShowAppMallSWA) {
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowAppMallSWA) {
   WaitForTestSystemAppInstall();
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
 
@@ -1252,7 +1237,4 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    HelpAppIntegrationTestWithAppMallEnabled);
 }  // namespace ash

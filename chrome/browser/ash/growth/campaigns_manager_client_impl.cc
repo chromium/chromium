@@ -280,12 +280,6 @@ void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name,
     return;
   }
 
-  // If the App Mall app is not enabled, do not trigger by the event.
-  if (event_name == growth::kGrowthCampaignsEventHotseatHover &&
-      !chromeos::features::IsCrosMallSwaEnabled()) {
-    return;
-  }
-
   if (auto* session = CampaignsManagerSession::Get()) {
     session->MaybeTriggerCampaignsOnEvent(event_name);
   }
