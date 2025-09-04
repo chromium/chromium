@@ -5683,7 +5683,13 @@
     },
     {
       name: "WebSpeechRecognitionContext",
-      status: "experimental",
+      status: {
+        "Win": "stable",
+        "Mac": "stable",
+        "Linux": "stable",
+        "ChromeOS": "experimental",
+        "default": "",
+      },
     },
     {
       name: "WebTransportApplicationProtocol",
