@@ -734,7 +734,8 @@ GpuProcessHost::~GpuProcessHost() {
   if (in_process_gpu_thread_)
     DCHECK(process_);
 
-  if (!process_start_time_.is_null()) {
+  if (!process_start_time_.is_null() &&
+      kind_ != GPU_PROCESS_KIND_INFO_COLLECTION) {
     base::TimeDelta process_lifetime =
         base::TimeTicks::Now() - process_start_time_;
 
@@ -744,7 +745,7 @@ GpuProcessHost::~GpuProcessHost() {
     // UmaHistogramCustomTimes() because that records in milliseconds which are
     // too small when max is in weeks.
     constexpr int kLifetimeMax = 60 * 60 * 24 * 14;
-    base::UmaHistogramCustomCounts("GPU.ProcessLifetime",
+    base::UmaHistogramCustomCounts("GPU.ProcessLifetime2",
                                    process_lifetime.InSeconds(), 1,
                                    kLifetimeMax, 50);
   }
