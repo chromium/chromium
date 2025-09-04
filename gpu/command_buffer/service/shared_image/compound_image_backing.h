@@ -24,6 +24,7 @@
 
 namespace gpu {
 
+class D3DImageBackingFactoryTest;
 class SharedImageBackingFactory;
 class SharedImageCopyManager;
 
@@ -58,9 +59,11 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   static SharedImageUsageSet GetGpuSharedImageUsage(SharedImageUsageSet usage);
 
   // Creates a backing that contains a shared memory backing and GPU backing
-  // provided by `gpu_backing_factory`.
-  static std::unique_ptr<SharedImageBacking> CreateSharedMemory(
-      SharedImageBackingFactory* gpu_backing_factory,
+  // provided by `shared_image_factory` based on `usage`. Eventually, instead of
+  // creating a shm+gpu backing, this method will have various strategy to
+  // allocate different combination of backings based on the `usage`.
+  static std::unique_ptr<SharedImageBacking> Create(
+      SharedImageFactory* shared_image_factory,
       scoped_refptr<SharedImageCopyManager> copy_manager,
       const Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle handle,
@@ -73,14 +76,16 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
       std::string debug_label);
 
   // Creates a backing that contains a shared memory backing and GPU backing
-  // provided by `gpu_backing_factory`. We additionally pass a |buffer_usage|
-  // parameter here in order to create a CPU mappable by creating a shared
-  // memory handle.
+  // provided by `shared_image_factory` based on `usage`. Eventually, instead of
+  // creating a shm+gpu backing, this method will have various strategy to
+  // allocate different combination of backings based on the `usage`.
+  // We additionally pass a |buffer_usage| parameter here in order to create a
+  // CPU mappable by creating a shared memory handle.
   // TODO(crbug.com/40276878): Remove this method once we figure out the mapping
   // between SharedImageUsage and BufferUsage and no longer need to use
   // BufferUsage.
-  static std::unique_ptr<SharedImageBacking> CreateSharedMemory(
-      SharedImageBackingFactory* gpu_backing_factory,
+  static std::unique_ptr<SharedImageBacking> Create(
+      SharedImageFactory* shared_image_factory,
       scoped_refptr<SharedImageCopyManager> copy_manager,
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -140,6 +145,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
 
  private:
   friend class CompoundImageBackingTest;
+  friend class D3DImageBackingFactoryTest;
 
   // Holds one element, aka SharedImageBacking and related information, that
   // makes up the compound.
@@ -166,6 +172,41 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
     std::unique_ptr<SharedImageBacking> backing;
   };
 
+  // Creates a backing that contains a shared memory backing and GPU backing
+  // provided by `gpu_backing_factory`.
+  static std::unique_ptr<SharedImageBacking> CreateSharedMemoryForTesting(
+      SharedImageBackingFactory* gpu_backing_factory,
+      scoped_refptr<SharedImageCopyManager> copy_manager,
+      const Mailbox& mailbox,
+      gfx::GpuMemoryBufferHandle handle,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      SharedImageUsageSet usage,
+      std::string debug_label);
+
+  // Creates a backing that contains a shared memory backing and GPU backing
+  // provided by `gpu_backing_factory`. We additionally pass a |buffer_usage|
+  // parameter here in order to create a CPU mappable by creating a shared
+  // memory handle.
+  // TODO(crbug.com/40276878): Remove this method once we figure out the mapping
+  // between SharedImageUsage and BufferUsage and no longer need to use
+  // BufferUsage.
+  static std::unique_ptr<SharedImageBacking> CreateSharedMemoryForTesting(
+      SharedImageBackingFactory* gpu_backing_factory,
+      scoped_refptr<SharedImageCopyManager> copy_manager,
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      SharedImageUsageSet usage,
+      std::string debug_label,
+      gfx::BufferUsage buffer_usage);
+
   CompoundImageBacking(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -176,6 +217,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
       SharedImageUsageSet usage,
       std::string debug_label,
       std::unique_ptr<SharedImageBacking> shm_backing,
+      base::WeakPtr<SharedImageFactory> shared_image_factory,
       base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
       scoped_refptr<SharedImageCopyManager> copy_manager,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
@@ -213,6 +255,15 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
                          std::unique_ptr<SharedImageBacking>& backing);
 
   void OnCopyToGpuMemoryBufferComplete(bool success);
+
+  // This is required for CompoundImageBacking to be able to query an
+  // appropriate SharedImageBackingFactory dynamically based on clients
+  // required usage(Produce*) which typically happens after the backing
+  // creation time. WeakPtr since backings can outlive SharedImageFactory.
+  // Note that CompoundImageBacking is not thread-safe at this moment and
+  // we would need to switch WeakPtr to something else if we make it
+  // thread-safe.
+  base::WeakPtr<SharedImageFactory> shared_image_factory_;
 
   uint32_t latest_content_id_ = 1;
 

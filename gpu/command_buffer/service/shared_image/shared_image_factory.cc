@@ -456,41 +456,27 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
       bool use_compound = false;
       if (!factory && !IsSharedBetweenThreads(usage)) {
-        // Check if CompoundImageBacking can hold shared memory buffer plus
-        // another GPU backing type to satisfy requirements.
-        if (CompoundImageBacking::IsValidSharedMemoryBufferFormat(size,
-                                                                  format)) {
-          factory =
-              GetFactoryByUsage(CompoundImageBacking::GetGpuSharedImageUsage(
-                                    SharedImageUsageSet(usage)),
-                                format, size,
-                                /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
-          use_compound = factory != nullptr;
-        }
-      }
-
-      if (!factory) {
-        LogGetFactoryFailed(usage, format, gfx::SHARED_MEMORY_BUFFER, size,
-                            debug_label);
-        return false;
-      }
-
-      if (use_compound) {
-        backing = CompoundImageBacking::CreateSharedMemory(
-            factory, copy_manager(), mailbox, format, size, color_space,
+        // Check if CompoundImageBacking can be created. CompoundImageBacking
+        // holds
+        // a shared memory buffer plus another GPU backing type to satisfy the
+        // requirements.
+        backing = CompoundImageBacking::Create(
+            this, copy_manager(), mailbox, format, size, color_space,
             surface_origin, alpha_type, usage, debug_label, buffer_usage);
-      } else {
-        backing = factory->CreateSharedImage(
-            mailbox, format, surface_handle, size, color_space, surface_origin,
-            alpha_type, SharedImageUsageSet(usage), debug_label,
-            IsSharedBetweenThreads(usage), buffer_usage);
+        use_compound = backing != nullptr;
       }
 
-      if (backing) {
-        DVLOG(1) << "CreateSharedImageBackedByBuffer[" << backing->GetName()
-                 << "] size=" << size.ToString()
-                 << " usage=" << CreateLabelForSharedImageUsage(usage)
-                 << " format=" << format.ToString();
+      if (!use_compound) {
+        if (factory) {
+          backing = factory->CreateSharedImage(
+              mailbox, format, surface_handle, size, color_space,
+              surface_origin, alpha_type, SharedImageUsageSet(usage),
+              debug_label, IsSharedBetweenThreads(usage), buffer_usage);
+        } else {
+          LogGetFactoryFailed(usage, format, gfx::SHARED_MEMORY_BUFFER, size,
+                              debug_label);
+          return false;
+        }
       }
     }
   }
@@ -546,34 +532,27 @@ bool SharedImageFactory::CreateSharedImage(
   gfx::GpuMemoryBufferType gmb_type = buffer_handle.type;
 
   bool use_compound = false;
+  std::unique_ptr<SharedImageBacking> backing;
   SharedImageBackingFactory* factory =
       GetFactoryByUsage(usage, format, size, {}, gmb_type);
 
   if (!factory && gmb_type == gfx::SHARED_MEMORY_BUFFER &&
       !IsSharedBetweenThreads(usage)) {
-    // Check if CompoundImageBacking can hold shared memory buffer plus
-    // another GPU backing type to satisfy requirements.
-    if (CompoundImageBacking::IsValidSharedMemoryBufferFormat(size, format)) {
-      factory =
-          GetFactoryByUsage(CompoundImageBacking::GetGpuSharedImageUsage(
-                                SharedImageUsageSet(usage)),
-                            format, size, /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
-      use_compound = factory != nullptr;
-    }
+    // Check if CompoundImageBacking can be created. CompoundImageBacking holds
+    // a shared memory buffer plus another GPU backing type to satisfy the
+    // requirements.
+    backing = CompoundImageBacking::Create(
+        this, copy_manager(), mailbox, buffer_handle.Clone(), format, size,
+        color_space, surface_origin, alpha_type, usage, debug_label);
+    use_compound = backing != nullptr;
   }
 
-  if (!factory) {
+  if (!use_compound && !factory) {
     LogGetFactoryFailed(usage, format, gmb_type, size, debug_label);
     return false;
   }
 
-  std::unique_ptr<SharedImageBacking> backing;
-  if (use_compound) {
-    backing = CompoundImageBacking::CreateSharedMemory(
-        factory, copy_manager(), mailbox, std::move(buffer_handle), format,
-        size, color_space, surface_origin, alpha_type, usage,
-        std::move(debug_label));
-  } else {
+  if (!use_compound) {
     backing = factory->CreateSharedImage(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
         std::move(debug_label), IsSharedBetweenThreads(usage),
@@ -841,6 +820,10 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
 
 bool SharedImageFactory::HasSharedImage(const Mailbox& mailbox) const {
   return shared_images_.contains(mailbox);
+}
+
+base::WeakPtr<SharedImageFactory> SharedImageFactory::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void SharedImageFactory::SetGpuExtraInfo(

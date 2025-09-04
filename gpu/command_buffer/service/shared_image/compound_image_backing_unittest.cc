@@ -167,7 +167,7 @@ class CompoundImageBackingTest : public testing::Test {
     constexpr gfx::BufferUsage buffer_usage =
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
 
-    return CompoundImageBacking::CreateSharedMemory(
+    return CompoundImageBacking::CreateSharedMemoryForTesting(
         &test_factory_, copy_manager_, Mailbox::Generate(),
         viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, usage, "TestLabel",
@@ -179,7 +179,7 @@ class CompoundImageBackingTest : public testing::Test {
     constexpr gfx::BufferUsage buffer_usage =
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
 
-    return CompoundImageBacking::CreateSharedMemory(
+    return CompoundImageBacking::CreateSharedMemoryForTesting(
         &test_factory_, copy_manager_, Mailbox::Generate(),
         viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,

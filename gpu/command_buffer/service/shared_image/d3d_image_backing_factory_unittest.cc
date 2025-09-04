@@ -1989,7 +1989,7 @@ void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
 
   // CompoundImageBacking wrapping D3DImageBacking is required for shared
   // memory support.
-  auto backing = CompoundImageBacking::CreateSharedMemory(
+  auto backing = CompoundImageBacking::CreateSharedMemoryForTesting(
       shared_image_factory_.get(), copy_manager_, mailbox,
       std::move(shm_gmb_handle), viz::MultiPlaneFormat::kNV12, size,
       gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
