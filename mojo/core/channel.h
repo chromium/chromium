@@ -276,7 +276,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     virtual void SetHandles(
         std::vector<PlatformHandleInTransit> new_handles) = 0;
     virtual std::vector<PlatformHandleInTransit> TakeHandles() = 0;
-    virtual size_t NumHandlesForTransit() const = 0;
 
     void SetVersionForTest(uint16_t version_number);
 

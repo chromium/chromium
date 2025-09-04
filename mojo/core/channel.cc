@@ -132,7 +132,6 @@ struct IpczMessage : public Channel::Message {
   std::vector<PlatformHandleInTransit> TakeHandles() override {
     return std::move(handles_);
   }
-  size_t NumHandlesForTransit() const override { return handles_.size(); }
 
   base::span<const char> data_span() const override { return data_; }
   base::span<char> mutable_data_span() override { NOTREACHED(); }
@@ -162,7 +161,6 @@ struct ComplexMessage : public Channel::Message {
   void SetHandles(std::vector<PlatformHandle> new_handles) override;
   void SetHandles(std::vector<PlatformHandleInTransit> new_handles) override;
   std::vector<PlatformHandleInTransit> TakeHandles() override;
-  size_t NumHandlesForTransit() const override;
 
   base::span<const char> data_span() const override { return data_; }
   base::span<char> mutable_data_span() override { return data_.as_span(); }
@@ -221,7 +219,6 @@ struct TrivialMessage : public Channel::Message {
   void SetHandles(std::vector<PlatformHandle> new_handles) override;
   void SetHandles(std::vector<PlatformHandleInTransit> new_handles) override;
   std::vector<PlatformHandleInTransit> TakeHandles() override;
-  size_t NumHandlesForTransit() const override;
 
  private:
   friend struct Channel::Message;
@@ -712,10 +709,6 @@ std::vector<PlatformHandleInTransit> ComplexMessage::TakeHandles() {
   return std::move(handle_vector_);
 }
 
-size_t ComplexMessage::NumHandlesForTransit() const {
-  return handle_vector_.size();
-}
-
 // static
 Channel::MessagePtr TrivialMessage::TryConstruct(size_t payload_size,
                                                  MessageType message_type) {
@@ -777,10 +770,6 @@ void TrivialMessage::SetHandles(
 
 std::vector<PlatformHandleInTransit> TrivialMessage::TakeHandles() {
   return std::vector<PlatformHandleInTransit>();
-}
-
-size_t TrivialMessage::NumHandlesForTransit() const {
-  return 0;
 }
 
 // Helper class for managing a Channel's read buffer allocations. This maintains
