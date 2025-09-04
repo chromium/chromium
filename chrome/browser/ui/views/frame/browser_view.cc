@@ -256,6 +256,7 @@
 #include "extensions/common/command.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "ui/accessibility/ax_enums.mojom-data-view.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/assistive_tech.h"
@@ -3141,11 +3142,11 @@ bool BrowserView::IsBookmarkBarAnimating() const {
 }
 
 bool BrowserView::IsTabStripEditable() const {
-  return tab_strip_region_view_->tab_strip()->IsTabStripEditable();
+  return tab_strip_view()->IsTabStripEditable();
 }
 
 void BrowserView::SetTabStripNotEditableForTesting() {
-  tabstrip()->SetTabStripNotEditableForTesting();  // IN-TEST
+  tab_strip_view()->SetTabStripNotEditableForTesting();  // IN-TEST
 }
 
 bool BrowserView::IsToolbarVisible() const {
@@ -3976,7 +3977,17 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
 
 void BrowserView::UpdateAccessibleNameForAllTabs() {
   for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
-    tabstrip()->tab_at(i)->UpdateAccessibleName();
+    std::u16string accessible_title = GetAccessibleTabLabel(i, true);
+    views::View* tab = tab_strip_view()->GetTabAnchorViewAt(i);
+    CHECK(tab);
+    if (accessible_title.empty()) {
+      // Under the right conditions GetAccessibleTabLabel can return an empty
+      // string.
+      tab->GetViewAccessibility().SetName(
+          std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    } else {
+      tab->GetViewAccessibility().SetName(accessible_title);
+    }
   }
 }
 
@@ -4882,7 +4893,7 @@ bool BrowserView::RotatePaneFocusFromView(views::View* focused_view,
 views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
   // You cannot close a frame for which there is an active originating drag
   // session.
-  if (tabstrip() && !tabstrip()->IsTabStripCloseable()) {
+  if (tab_strip_view() && !tab_strip_view()->IsTabStripCloseable()) {
     return views::CloseRequestResult::kCannotClose;
   }
 
@@ -5146,13 +5157,12 @@ void BrowserView::AddedToWidget() {
   if (GetIsNormalType()) {
     if (features::HasTabSearchToolbarButton()) {
       tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
-          toolbar_->tab_search_button(), browser_.get(),
-          tabstrip()->AsWeakPtr());
+          toolbar_->tab_search_button(), browser_.get());
     } else {
       tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
           BrowserElementsViews::From(browser_.get())
               ->GetViewAs<TabSearchButton>(kTabSearchButtonElementId),
-          browser_.get(), tabstrip()->AsWeakPtr());
+          browser_.get());
     }
   }
 
@@ -5410,7 +5420,8 @@ void BrowserView::LoadingAnimationCallback(base::TimeTicks timestamp) {
     // Loading animations are shown in the tab for tabbed windows. Update them
     // even if the tabstrip isn't currently visible so they're in the right
     // state when it returns.
-    tabstrip()->UpdateLoadingAnimations(timestamp - loading_animation_start_);
+    tab_strip_view()->UpdateLoadingAnimations(timestamp -
+                                              loading_animation_start_);
   }
 
   if (ShouldShowWindowIcon()) {

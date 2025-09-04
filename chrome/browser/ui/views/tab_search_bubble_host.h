@@ -28,7 +28,6 @@ class BrowserWindowInterface;
 class Profile;
 class TabOrganizationService;
 class TabSearchBubbleHostObserver;
-class TabStrip;
 
 // TabSearchBubbleHost assumes responsibility for configuring its button,
 // showing / hiding the tab search bubble and handling metrics collection.
@@ -37,8 +36,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
                             public WebUIBubbleManagerObserver {
  public:
   TabSearchBubbleHost(views::Button* button,
-                      BrowserWindowInterface* browser_window_interface,
-                      base::WeakPtr<TabStrip> tab_strip);
+                      BrowserWindowInterface* browser_window_interface);
   TabSearchBubbleHost(const TabSearchBubbleHost&) = delete;
   TabSearchBubbleHost& operator=(const TabSearchBubbleHost&) = delete;
   ~TabSearchBubbleHost() override;
@@ -113,8 +111,6 @@ class TabSearchBubbleHost : public views::WidgetObserver,
 
   base::ScopedObservation<WebUIBubbleManager, WebUIBubbleManagerObserver>
       webui_bubble_manager_observer_{this};
-
-  base::WeakPtr<TabStrip> tab_strip_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_BUBBLE_HOST_H_

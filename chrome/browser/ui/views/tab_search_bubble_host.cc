@@ -65,8 +65,7 @@ TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
 
 TabSearchBubbleHost::TabSearchBubbleHost(
     views::Button* button,
-    BrowserWindowInterface* browser_window_interface,
-    base::WeakPtr<TabStrip> tab_strip)
+    BrowserWindowInterface* browser_window_interface)
     : button_(button),
       profile_(browser_window_interface->GetProfile()),
       webui_bubble_manager_(WebUIBubbleManager::Create<TabSearchUI>(
@@ -77,8 +76,7 @@ TabSearchBubbleHost::TabSearchBubbleHost(
       widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
         base::UmaHistogramMediumTimes("Tabs.TabSearch.WindowDisplayedDuration3",
                                       time_elapsed);
-      })),
-      tab_strip_(tab_strip) {
+      })) {
   auto* const tab_organization_service =
       TabOrganizationServiceFactory::GetForProfile(profile_.get());
   if (tab_organization_service) {

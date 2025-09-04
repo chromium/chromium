@@ -571,12 +571,28 @@ views::View* TabStripRegionView::GetDefaultFocusableChild() {
                          : AccessiblePaneView::GetDefaultFocusableChild();
 }
 
+bool TabStripRegionView::IsTabStripEditable() const {
+  return tab_strip_->IsTabStripEditable();
+}
+void TabStripRegionView::SetTabStripNotEditableForTesting() const {
+  tab_strip_->SetTabStripNotEditableForTesting();  // IN-TEST
+}
+
+bool TabStripRegionView::IsTabStripCloseable() const {
+  return tab_strip_->IsTabStripCloseable();
+}
+
 bool TabStripRegionView::IsAnimating() const {
   return tab_strip_->IsAnimatingInTabStrip();
 }
 
 void TabStripRegionView::StopAnimating() {
   return tab_strip_->StopAnimating();
+}
+
+void TabStripRegionView::UpdateLoadingAnimations(
+    const base::TimeDelta& elapsed_time) {
+  tab_strip_->UpdateLoadingAnimations(elapsed_time);
 }
 
 std::optional<int> TabStripRegionView::GetFocusedTabIndex() const {
