@@ -412,3 +412,27 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   chrome::CloseFind(browser());
   DisableFindBarAnimationsDuringTesting(false);
 }
+
+// Regression test for crbug.com/431671448. Asserts that the Browser is able to
+// tollerate the system destroying the overlay widget before the Browser widget.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       HandlesOverlayWidgetDestruction) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* overlay_widget = browser_view->overlay_widget();
+
+  // Transition to fullscreen.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  FullscreenController* fullscreen_controller = browser()
+                                                    ->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+  EXPECT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+
+  // Simulate a synchronous destruction of the overlay widget. This should not
+  // crash.
+  overlay_widget->CloseNow();
+
+  // Transition out of fullscreen.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
+}

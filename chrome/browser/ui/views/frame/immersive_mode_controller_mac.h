@@ -42,6 +42,7 @@ class ImmersiveModeOverlayWidgetObserver : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   raw_ptr<ImmersiveModeControllerMac> controller_;
