@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_POLICY_CHROME_BROWSER_CLOUD_MANAGEMENT_CONTROLLER_ANDROID_H_
 #define CHROME_BROWSER_POLICY_CHROME_BROWSER_CLOUD_MANAGEMENT_CONTROLLER_ANDROID_H_
 
+#include <memory>
+
 #include "base/task/single_thread_task_runner.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-
-#include <memory>
+#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
+#include "components/enterprise/client_certificates/core/certificate_store.h"
+#include "components/enterprise/client_certificates/core/prefs_certificate_store.h"
 
 namespace policy {
 
@@ -55,12 +58,16 @@ class ChromeBrowserCloudManagementControllerAndroid
   bool ReadyToInit() override;
   std::unique_ptr<ClientDataDelegate> CreateClientDataDelegate() override;
   void DeferInitialization(base::OnceClosure callback) override;
+  std::unique_ptr<client_certificates::CertificateProvisioningService>
+  CreateCertificateProvisioningService() override;
 
  private:
   // Active while it can't be determined if enrollment token is set by non-CBCM
   // policies.
   std::unique_ptr<PolicyService::ProviderUpdateObserver>
       provider_update_observer_;
+  // Responsible for storing and retrieving browser-level managed identities.
+  std::unique_ptr<client_certificates::CertificateStore> certificate_store_;
 };
 
 }  // namespace policy

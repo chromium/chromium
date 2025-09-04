@@ -18,6 +18,15 @@ bool IsManagedBrowserClientCertificateEnabled() {
   return base::FeatureList::IsEnabled(kManagedBrowserClientCertificateEnabled);
 }
 
+BASE_FEATURE(kEnableClientCertificateProvisioningOnAndroid,
+             "EnableClientCertificateProvisioningOnAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsClientCertificateProvisioningOnAndroidEnabled() {
+  return base::FeatureList::IsEnabled(
+      kEnableClientCertificateProvisioningOnAndroid);
+}
+
 BASE_FEATURE(kManagedUserClientCertificateInPrefs,
              "ManagedUserClientCertificateInPrefs",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -305,21 +305,9 @@ ChromeBrowserCloudManagementControllerDesktop::
             client_certificates::CreatePrivateKeyFactory());
   }
 
-  auto* device_management_service = GetDeviceManagementService();
-  auto url_loader_factory = GetSharedURLLoaderFactory();
-  if (!url_loader_factory || !device_management_service ||
-      !certificate_store_) {
-    return nullptr;
-  }
-
-  return client_certificates::CertificateProvisioningService::Create(
+  return client_certificates::CreateBrowserCertificateProvisioningService(
       g_browser_process->local_state(), certificate_store_.get(),
-      std::make_unique<client_certificates::BrowserContextDelegate>(),
-      client_certificates::KeyUploadClient::Create(
-          std::make_unique<
-              enterprise_attestation::BrowserCloudManagementDelegate>(
-              enterprise_attestation::DMServerClient::Create(
-                  device_management_service, std::move(url_loader_factory)))));
+      GetDeviceManagementService(), GetSharedURLLoaderFactory());
 #else
   return nullptr;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

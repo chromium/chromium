@@ -110,7 +110,7 @@ static_library("enterprise") {
   }
 
   if (enterprise_client_certificates) {
-    deps += [ "//components/enterprise/client_certificates/core" ]
+    public_deps += [ "//components/enterprise/client_certificates/core" ]
   }
 
   if (!is_ios && !is_android) {

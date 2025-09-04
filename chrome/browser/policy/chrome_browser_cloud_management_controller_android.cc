@@ -10,6 +10,8 @@
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/client_certificates/browser_context_delegate.h"
+#include "chrome/browser/enterprise/client_certificates/cert_utils.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
@@ -17,6 +19,11 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/client_data_delegate_android.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/enterprise/client_certificates/core/browser_cloud_management_delegate.h"
+#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
+#include "components/enterprise/client_certificates/core/dm_server_client.h"
+#include "components/enterprise/client_certificates/core/features.h"
+#include "components/enterprise/client_certificates/core/key_upload_client.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -237,6 +244,27 @@ void ChromeBrowserCloudManagementControllerAndroid::DeferInitialization(
 
   provider_update_observer_ =
       std::make_unique<DeferredInitializationRunner>(std::move(callback));
+}
+
+std::unique_ptr<client_certificates::CertificateProvisioningService>
+ChromeBrowserCloudManagementControllerAndroid::
+    CreateCertificateProvisioningService() {
+  if (!base::FeatureList::IsEnabled(
+          client_certificates::features::
+              kEnableClientCertificateProvisioningOnAndroid)) {
+    return nullptr;
+  }
+
+  if (!certificate_store_) {
+    certificate_store_ =
+        std::make_unique<client_certificates::PrefsCertificateStore>(
+            g_browser_process->local_state(),
+            client_certificates::CreatePrivateKeyFactory());
+  }
+
+  return client_certificates::CreateBrowserCertificateProvisioningService(
+      g_browser_process->local_state(), certificate_store_.get(),
+      GetDeviceManagementService(), GetSharedURLLoaderFactory());
 }
 
 }  // namespace policy
