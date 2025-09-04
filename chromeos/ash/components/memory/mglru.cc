@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "chromeos/ash/components/memory/mglru.h"
 
 #include "base/feature_list.h"
@@ -40,7 +38,7 @@ void OnMGLRUSetEnable(bool success) {
 
 }  // namespace
 
-BASE_FEATURE(MGLRUEnable, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMGLRUEnable, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kMGLRUEnableValue = {&kMGLRUEnable,
                                                    "MGLRUEnableValue", 0};

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -21,7 +19,7 @@
 
 namespace ash {
 
-BASE_FEATURE(CrOSLockMainProgramText, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSLockMainProgramText, base::FEATURE_ENABLED_BY_DEFAULT);
 // The maximum number of bytes that the browser will attempt to lock.
 const base::FeatureParam<int> kCrOSLockMainProgramTextMaxSize{
     &kCrOSLockMainProgramText, "CrOSLockMainProgramTextMaxSize",

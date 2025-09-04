@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_impl.h"
 
 #include <iterator>
@@ -25,7 +23,7 @@
 
 namespace ash::enhanced_network_tts {
 
-BASE_FEATURE(EnhancedNetworkTtsOverride, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnhancedNetworkTtsOverride, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<std::string> EnhancedNetworkTtsImpl::kApiKey;
 

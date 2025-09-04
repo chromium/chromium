@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 
 #include "ash/constants/ash_features.h"
@@ -13,11 +11,11 @@
 
 namespace ash::assistant::features {
 
-BASE_FEATURE(AssistantAudioEraser, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAssistantAudioEraser, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(AssistantDebugging, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAssistantDebugging, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(EnableDspHotword, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableDspHotword, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableStereoAudioInput,
              "AssistantEnableStereoAudioInput",
@@ -32,7 +30,7 @@ BASE_FEATURE(kEnableLibAssistantBetaBackend,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Disable voice match for test purpose.
-BASE_FEATURE(DisableVoiceMatch, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisableVoiceMatch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableLibAssistantDLC,
              "LibAssistantDLC",

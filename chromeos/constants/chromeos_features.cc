@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "chromeos/constants/chromeos_features.h"
 
 #include "base/byte_count.h"
@@ -15,44 +13,44 @@
 namespace chromeos::features {
 
 // Adds Managed APN Policies support.
-BASE_FEATURE(ApnPolicies, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kApnPolicies, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables smaller battery badge icons to improve legibility of the battery
 // percentage.
-BASE_FEATURE(BatteryBadgeIcon, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBatteryBadgeIcon, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables better quick settings UI for bluetooth and wifi error states.
-BASE_FEATURE(BluetoothWifiQSPodRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBluetoothWifiQSPodRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // System location provider will use caching to optimize GCP usage. This flag
 // will be enabled with Finch.
-BASE_FEATURE(CachedLocationProvider, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCachedLocationProvider, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables cloud game features.
-BASE_FEATURE(CloudGamingDevice, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCloudGamingDevice, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables MPS to push payload to chrome devices.
-BASE_FEATURE(AlmanacLauncherPayload, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAlmanacLauncherPayload, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables ChromeOS Apps APIs.
-BASE_FEATURE(BlinkExtension, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBlinkExtension, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables ChromeOS Kiosk APIs.
-BASE_FEATURE(BlinkExtensionKiosk, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBlinkExtensionKiosk, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of cros-component UI elements. Contact:
 // cros-jellybean-team@google.com.
-BASE_FEATURE(CrosComponents, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCrosComponents, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables denying file access to dlp protected files in MyFiles.
-BASE_FEATURE(DataControlsFileAccessDefaultDeny,
+BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables data migration.
-BASE_FEATURE(DataMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDataMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Disables blur on various system surfaces.
-BASE_FEATURE(DisableSystemBlur, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisableSystemBlur, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Disable idle sockets closing on memory pressure for NetworkContexts that
 // belong to Profiles. It only applies to Profiles because the goal is to
@@ -64,107 +62,109 @@ BASE_FEATURE(kDisableIdleSocketsCloseOnMemoryPressure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Disables translation services of the Quick Answers V2.
-BASE_FEATURE(DisableQuickAnswersV2Translation,
+BASE_FEATURE(kDisableQuickAnswersV2Translation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Essential Search in Omnibox for both launcher and browser.
-BASE_FEATURE(EssentialSearch, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEssentialSearch, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag used to enable external display event telemetry.
-BASE_FEATURE(ExternalDisplayEventTelemetry, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kExternalDisplayEventTelemetry, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag used to gate preinstallation of the Gemini app.
-BASE_FEATURE(GeminiAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Kiosk Heartbeats to be sent via Encrypted Reporting Pipeline
-BASE_FEATURE(KioskHeartbeatsViaERP, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kKioskHeartbeatsViaERP, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new Magic Boost Consent Flow.
-BASE_FEATURE(MagicBoostRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMagicBoostRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new Magic Boost Consent Flow For Quick Answers.
-BASE_FEATURE(MagicBoostRevampForQuickAnswers, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMagicBoostRevampForQuickAnswers,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the mahi feature.
-BASE_FEATURE(Mahi, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMahi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the mahi feature from the feature management
 // module.
-BASE_FEATURE(FeatureManagementMahi, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFeatureManagementMahi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the Mahi resize feature
 // Does nothing if "Mahi" and "FeatureManagementMahi" are disabled.
-BASE_FEATURE(MahiPanelResizable, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMahiPanelResizable, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether mahi sends url when making request to the server.
-BASE_FEATURE(MahiSendingUrl, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMahiSendingUrl, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to enable Mahi for managed users.
-BASE_FEATURE(MahiManaged, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMahiManaged, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the mahi debugging.
-BASE_FEATURE(MahiDebugging, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMahiDebugging, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the pompano feature.
-BASE_FEATURE(Pompano, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPompano, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the summary of selected text feature.
-BASE_FEATURE(MahiSummarizeSelected, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMahiSummarizeSelected, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether NotebookLM is preinstalled.
-BASE_FEATURE(NotebookLmAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNotebookLmAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch to disable the new guest profile implementation on CrOS that is
 // consistent with desktop chrome.
 // TODO(crbug.com/40233408): Remove if the change is fully launched.
-BASE_FEATURE(NewGuestProfile, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNewGuestProfile, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Changes the ChromeOS notification width size from 360px to 400px for pop-up
 // notifications and 344px to 400px for notifications in the message center.
-BASE_FEATURE(NotificationWidthIncrease, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNotificationWidthIncrease, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the Navigation Capturing Reimpl for the Office
 // PWA.
-BASE_FEATURE(OfficeNavigationCapturingReimpl, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOfficeNavigationCapturingReimpl,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the orca feature.
-BASE_FEATURE(Orca, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOrca, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the orca feature for dogfood population.
-BASE_FEATURE(OrcaDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables Orca internationalization.
-BASE_FEATURE(OrcaInternationalize, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaInternationalize, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling / disabling orca l10n strings.
-BASE_FEATURE(OrcaUseL10nStrings, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOrcaUseL10nStrings, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature management flag used to gate preinstallation of the Gemini app. This
 // flag is meant to be enabled by the feature management module.
-BASE_FEATURE(FeatureManagementGeminiAppPreinstall,
+BASE_FEATURE(kFeatureManagementGeminiAppPreinstall,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the history embedding feature from the
 // feature management module.
-BASE_FEATURE(FeatureManagementHistoryEmbedding,
+BASE_FEATURE(kFeatureManagementHistoryEmbedding,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the orca feature from the feature management
 // module.
-BASE_FEATURE(FeatureManagementOrca, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFeatureManagementOrca, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to disable chrome compose.
-BASE_FEATURE(FeatureManagementDisableChromeCompose,
+BASE_FEATURE(kFeatureManagementDisableChromeCompose,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables rounded windows. This flag is intended to be controlled by the
 // feature management module.
-BASE_FEATURE(FeatureManagementRoundedWindows,
+BASE_FEATURE(kFeatureManagementRoundedWindows,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the reworked implementation of usage indicators for the
 // `getAllScreensMedia` API.
-BASE_FEATURE(MultiCaptureReworkedUsageIndicators,
+BASE_FEATURE(kMultiCaptureReworkedUsageIndicators,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the first wave of new features for the chrome.enterprise.platformKeys
@@ -173,42 +173,42 @@ BASE_FEATURE(MultiCaptureReworkedUsageIndicators,
 //   - a new API method to `setKeyTag()`, used to mark keys for future lookup.
 // Other features might be added in this first wave, or be hold for the second
 // wave. For additional details, see crbug.com/288880151.
-BASE_FEATURE(PlatformKeysChangesWave1, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPlatformKeysChangesWave1, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to enable quick answers V2 settings sub-toggles.
-BASE_FEATURE(QuickAnswersV2SettingsSubToggle,
+BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to enable Quick Answers Rich card.
-BASE_FEATURE(QuickAnswersRichCard, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kQuickAnswersRichCard, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to enable Material Next UI for Quick Answers.
-BASE_FEATURE(QuickAnswersMaterialNextUI, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kQuickAnswersMaterialNextUI, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Quick Share v2, which defaults Quick Share to 'Your Devices'
 // visibility, removes the 'Selected Contacts' visibility, removes the Quick
 // Share On/Off toggle, and adds a visibility dialog menu to Quick Settings.
-BASE_FEATURE(QuickShareV2, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kQuickShareV2, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsQuickShareV2Enabled() {
   return base::FeatureList::IsEnabled(kQuickShareV2);
 }
 
 // Enables the Office files upload workflow to improve Office files support.
-BASE_FEATURE(UploadOfficeToCloud, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUploadOfficeToCloud, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Office files upload workflow for enterprise users to improve
 // Office files support.
-BASE_FEATURE(UploadOfficeToCloudForEnterprise,
+BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables syncing of user's Office files upload workflow preferences for
 // enterprise users, such as whether to ask before moving files to the cloud.
-BASE_FEATURE(UploadOfficeToCloudSync, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUploadOfficeToCloudSync, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the use of scope extensions for the Microsoft 365 PWA from finch as
 // a fallback.
-BASE_FEATURE(Microsoft365ScopeExtensions, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMicrosoft365ScopeExtensions, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Comma separated list of scope extension URLs for the Microsoft 365 PWA.
 const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsURLs{
@@ -250,7 +250,7 @@ const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsDomains{
 
 // Controls whether the PWA manifest on Microsoft 365 Urls should be overridden
 // with a static PWA manifest id.
-BASE_FEATURE(Microsoft365ManifestOverride, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMicrosoft365ManifestOverride, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Comma separated list of Urls where the M365 PWA manifest should be
 // overridden.
@@ -266,29 +266,31 @@ const base::FeatureParam<std::string> kMicrosoft365ManifestUrls{
 
 // Enables the Microsoft OneDrive integration workflow for enterprise users to
 // cloud integration support.
-BASE_FEATURE(MicrosoftOneDriveIntegrationForEnterprise,
+BASE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables CloudFileSystem for FileSystemProvider extensions.
-BASE_FEATURE(FileSystemProviderCloudFileSystem,
+BASE_FEATURE(kFileSystemProviderCloudFileSystem,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a content cache in CloudFileSystem for FileSystemProvider extensions.
-BASE_FEATURE(FileSystemProviderContentCache, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFileSystemProviderContentCache,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables hiding apps disabled by SystemFeaturesDisableList policy by default
 // in user sessions.
-BASE_FEATURE(SystemFeaturesDisableListHidden, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSystemFeaturesDisableListHidden,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables pinning the NotebookLM preinstalled app to the shelf.
-BASE_FEATURE(NotebookLmAppShelfPin, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNotebookLmAppShelfPin, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Resets the act of pinning the NotebookLM preinstalled app to the shelf, used
 // for manual testing.
-BASE_FEATURE(NotebookLmAppShelfPinReset, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNotebookLmAppShelfPinReset, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables support for protocols handlers registered via web app manifest.
-BASE_FEATURE(WebAppManifestProtocolHandlerSupport,
+BASE_FEATURE(kWebAppManifestProtocolHandlerSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsApnPoliciesEnabled() {

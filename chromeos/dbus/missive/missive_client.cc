@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "chromeos/dbus/missive/missive_client.h"
 
 #include <cstdlib>
@@ -54,7 +52,7 @@ namespace chromeos {
 // default because this is a bug fix. Only putting it behind a feature flag for
 // kill switch in case of emergency.
 // TODO(b/339059662): remove feature flag once retries are in stable channel.
-BASE_FEATURE(EnableRetryEnqueueRecord, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableRetryEnqueueRecord, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Number of seconds we'll retry to enqueue a record if Missive is unavailable.
 // If `kEnableRetryEnqueueRecord` is not enabled, the parameter is not set, or
