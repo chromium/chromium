@@ -18014,45 +18014,6 @@
             ]
         }
     ],
-    "PerformanceInterventionString": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledString1_20250630",
-                    "params": {
-                        "string_version": "1"
-                    },
-                    "enable_features": [
-                        "PerformanceInterventionNotificationStringImprovements"
-                    ]
-                },
-                {
-                    "name": "EnabledString2_20250630",
-                    "params": {
-                        "string_version": "2"
-                    },
-                    "enable_features": [
-                        "PerformanceInterventionNotificationStringImprovements"
-                    ]
-                },
-                {
-                    "name": "EnabledString3_20250630",
-                    "params": {
-                        "string_version": "3"
-                    },
-                    "enable_features": [
-                        "PerformanceInterventionNotificationStringImprovements"
-                    ]
-                }
-            ]
-        }
-    ],
     "PermissionElementPromptPositioning": [
         {
             "platforms": [
