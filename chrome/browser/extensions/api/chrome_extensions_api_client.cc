@@ -29,6 +29,9 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
@@ -39,6 +42,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/referrer.h"
 #include "extensions/browser/api/messaging/messaging_delegate.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/api/messaging/native_message_port.h"
@@ -278,6 +282,37 @@ void ChromeExtensionsAPIClient::ClearActionCount(
     ExtensionActionDispatcher::Get(context)->NotifyChange(
         action, active_contents, context);
   }
+}
+
+void ChromeExtensionsAPIClient::OpenFileUrl(
+    const GURL& file_url,
+    content::BrowserContext* browser_context) {
+  CHECK(file_url.is_valid());
+  CHECK(file_url.SchemeIsFile());
+
+  // Find the first browser window that matches this profile.
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  BrowserWindowInterface* browser = nullptr;
+  for (BrowserWindowInterface* bwi : GetAllBrowserWindowInterfaces()) {
+    if (bwi->GetProfile() == profile) {
+      browser = bwi;
+      break;
+    }
+  }
+  CHECK(browser) << "Unable to find browser with matching profile.";
+
+  // Find the active tab.
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser)->GetActiveTab();
+  content::WebContents* web_contents =
+      active_tab ? active_tab->GetContents() : nullptr;
+  CHECK(web_contents) << "Unable to find active tab web contents.";
+
+  // Open the file URL in the current tab.
+  content::OpenURLParams params(
+      file_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_FROM_API, /*is_renderer_initiated=*/false);
+  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
