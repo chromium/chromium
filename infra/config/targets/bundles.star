@@ -5227,6 +5227,7 @@ targets.bundle(
 
 # This suite is a union of ios_simulator_tests and
 # ios_simulator_full_configs_tests.
+# TODO(crbug.com/442375894): Add back ios26 variants after ARM migration is complete.
 targets.bundle(
     name = "ios_code_coverage_tests",
     targets = [
@@ -5235,7 +5236,7 @@ targets.bundle(
             variants = [
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_16_26_0",
+                #"SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5246,10 +5247,10 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPAD_PRO_7TH_GEN_26_0",
+                #"SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_16_26_0",
+                #"SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5260,10 +5261,10 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPAD_PRO_7TH_GEN_26_0",
+                #"SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_16_26_0",
+                #"SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5271,10 +5272,10 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPAD_PRO_7TH_GEN_26_0",
+                #"SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_16_26_0",
+                #"SIM_IPHONE_16_26_0",
             ],
         ),
     ],
