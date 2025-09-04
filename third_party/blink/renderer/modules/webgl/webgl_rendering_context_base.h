@@ -722,8 +722,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool CanUseDrawingBufferSIWithoutCopyForLowLatency();
   void PageVisibilityChanged() override;
   void SizeChanged() override;
-  std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider(
-      bool use_bitmap_provider);
+  std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider();
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;
@@ -1980,8 +1979,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
       SourceDrawingBuffer source_buffer,
       bool export_only_if_update);
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
-      bool use_bitmap_provider);
+  CanvasResourceProvider* GetOrCreateCanvasResourceProvider();
 
   // Attempts to paint the most recent rendering results into a
   // CanvasResourceProvider. Returns the CanvasResourceProvider if the paint
@@ -2030,6 +2028,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool PushFrameNoCopy();
 
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
+  std::unique_ptr<CanvasResourceProvider> bitmap_resource_provider_;
   static bool webgl_context_limits_initialized_;
   static unsigned max_active_webgl_contexts_;
   static unsigned max_active_webgl_contexts_on_worker_;

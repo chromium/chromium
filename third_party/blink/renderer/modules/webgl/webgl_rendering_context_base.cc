@@ -1664,6 +1664,7 @@ bool WebGLRenderingContextBase::PushFrameNoCopy() {
 
 void WebGLRenderingContextBase::Dispose() {
   resource_provider_.reset();
+  bitmap_resource_provider_.reset();
   CanvasRenderingContext::Dispose();
 }
 
@@ -1904,6 +1905,7 @@ void WebGLRenderingContextBase::PageVisibilityChanged() {
 void WebGLRenderingContextBase::SizeChanged() {
   did_fail_to_create_resource_provider_ = false;
   resource_provider_.reset();
+  bitmap_resource_provider_.reset();
 }
 
 scoped_refptr<ExternalCanvasResource>
@@ -1949,20 +1951,42 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     Host()->DiscardResources();
   }
 
+  if (bitmap_resource_provider_.get() &&
+      bitmap_resource_provider_.get()->Size() != GetDrawingBuffer()->Size()) {
+    bitmap_resource_provider_.reset();
+    Host()->DiscardResources();
+  }
+
   // The host's ResourceProvider is purged to save memory when the tab
   // is backgrounded.
 
-  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
-    // `resource_provider_` already has the current contents.
-    return resource_provider_->Snapshot(reason);
+  if (!must_paint_to_canvas_ && !cleared_content) {
+    if (resource_provider_.get()) {
+      // `resource_provider_` already has the current contents.
+      return resource_provider_->Snapshot(reason);
+    }
+    if (bitmap_resource_provider_.get()) {
+      // `bitmap_resource_provider_` already has the current contents.
+      return bitmap_resource_provider_->Snapshot(reason);
+    }
   }
 
   must_paint_to_canvas_ = false;
 
   CanvasResourceProvider* resource_provider =
-      GetOrCreateCanvasResourceProvider(/*use_bitmap_provider=*/true);
+      GetOrCreateCanvasResourceProvider();
   if (!resource_provider) {
-    return nullptr;
+    if (!bitmap_resource_provider_) {
+      bitmap_resource_provider_ = CanvasResourceProvider::CreateBitmapProvider(
+          Host()->Size(), GetSharedImageFormat(), GetAlphaType(),
+          GetColorSpace(), CanvasResourceProvider::ShouldInitialize::kNo,
+          Host());
+    }
+    resource_provider = bitmap_resource_provider_.get();
+
+    if (!resource_provider) {
+      return nullptr;
+    }
   }
 
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
@@ -1977,8 +2001,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     return nullptr;
   }
 
-  bool copy_succeeded = CopyRenderingResultsFromDrawingBuffer(
-      resource_provider_.get(), source_buffer);
+  bool copy_succeeded =
+      CopyRenderingResultsFromDrawingBuffer(resource_provider, source_buffer);
   if (!copy_succeeded) {
     return nullptr;
   }
@@ -2004,8 +2028,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
 }
 
 std::unique_ptr<CanvasResourceProvider>
-WebGLRenderingContextBase::CreateCanvasResourceProvider(
-    bool use_bitmap_provider) {
+WebGLRenderingContextBase::CreateCanvasResourceProvider() {
   base::WeakPtr<CanvasResourceDispatcher> dispatcher =
       Host()->GetOrCreateResourceDispatcher()
           ? Host()->GetOrCreateResourceDispatcher()->GetWeakPtr()
@@ -2059,22 +2082,25 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider(
             Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
             SharedGpuContext::SharedImageInterfaceProvider(), Host());
   }
-  if (!provider && use_bitmap_provider) {
-    provider = CanvasResourceProvider::CreateBitmapProvider(
-        Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
-        Host());
-  }
 
   return provider;
 }
 
 CanvasResourceProvider*
-WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider(
-    bool use_bitmap_provider) {
+WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
+  // If `bitmap_resource_provider_` is non-null, it means that
+  // PaintRenderingResultsToSnapshot() was unable to populate
+  // `resource_provider_`. We will try to create `resource_provider_` again
+  // only when one of the conditions that will cause
+  // `bitmap_resource_provider_` to be cleared occurs.
+  if (bitmap_resource_provider_) {
+    return nullptr;
+  }
+
   auto* provider = resource_provider_.get();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (Host()->IsValidImageSize()) {
-      resource_provider_ = CreateCanvasResourceProvider(use_bitmap_provider);
+      resource_provider_ = CreateCanvasResourceProvider();
       Host()->UpdateMemoryUsage();
       provider = resource_provider_.get();
     }
@@ -2086,15 +2112,6 @@ WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider(
       base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                     provider->GetType());
     }
-  }
-  if (provider &&
-      provider->GetType() ==
-          CanvasResourceProvider::ResourceProviderType::kBitmap &&
-      !use_bitmap_provider) {
-    // In addition to not *creating* a CRPBitmap if `use_bitmap_provider` is
-    // false, ensure that we don't return a cached CRPBitmap that was created
-    // previously in a call from a callsite that still uses CRPBitmap.
-    return nullptr;
   }
 
   return provider;
@@ -2128,9 +2145,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   // The host's ResourceProvider is purged to save memory when the tab
   // is backgrounded.
 
-  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get() &&
-      resource_provider_->GetType() !=
-          CanvasResourceProvider::ResourceProviderType::kBitmap) {
+  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
     // `resource_provider_` already has the current contents, so it can can be
     // used by the caller as-is.
     return resource_provider_.get();
@@ -2139,7 +2154,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   must_paint_to_canvas_ = false;
 
   CanvasResourceProvider* resource_provider =
-      GetOrCreateCanvasResourceProvider(/*use_bitmap_provider=*/false);
+      GetOrCreateCanvasResourceProvider();
   if (!resource_provider)
     return nullptr;
 
@@ -9325,6 +9340,9 @@ int WebGLRenderingContextBase::AllocatedBufferCountPerPixel() {
   }
 
   auto* provider = resource_provider_.get();
+  if (!provider) {
+    provider = bitmap_resource_provider_.get();
+  }
   if (provider) {
     buffer_count++;
     if (provider->IsAccelerated()) {
