@@ -548,12 +548,6 @@ const char kFwupdDeveloperModeDescription[] =
     "Allows display and installation in UI of unauthenticated firmware by "
     "disabling all checks.";
 
-const char kTransferableResourcePassAlphaTypeDirectlyName[] =
-    "TransferableResource pass alpha type directly";
-const char kTransferableResourcePassAlphaTypeDirectlyDescription[] =
-    "Enables Transferableresource passing the SkAlphaType dierctly rather than "
-    "flattening it to premul/unpremul";
-
 #if BUILDFLAG(IS_ANDROID)
 const char kDisableInstanceLimitName[] = "Disable Instance Limit";
 const char kDisableInstanceLimitDescription[] =

@@ -12807,12 +12807,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
-    {"transferable-resource-pass-alpha-type-directly",
-     flag_descriptions::kTransferableResourcePassAlphaTypeDirectlyName,
-     flag_descriptions::kTransferableResourcePassAlphaTypeDirectlyDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kTransferableResourcePassAlphaTypeDirectly)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"enable-exclusive-access-manager-on-android",
      flag_descriptions::kEnableExclusiveAccessManagerName,
