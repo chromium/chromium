@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "extensions/browser/api/storage/storage_api.h"
 
 #include <stddef.h>
@@ -41,7 +39,7 @@ namespace extensions {
 
 namespace {
 
-BASE_FEATURE(EnforceStorageGetSizeLimit, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnforceStorageGetSizeLimit, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Returns a vector of any strings within the given list.
 std::vector<std::string> GetKeysFromList(const base::Value::List& list) {

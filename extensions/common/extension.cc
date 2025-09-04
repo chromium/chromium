@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "extensions/common/extension.h"
 
 #include <stddef.h>
@@ -60,7 +58,7 @@ namespace errors = manifest_errors;
 
 namespace {
 
-BASE_FEATURE(ValidateGetResourceURLPath, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kValidateGetResourceURLPath, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr int kMinimumSupportedManifestVersion = 2;
 constexpr int kMaximumSupportedManifestVersion = 3;

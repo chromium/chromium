@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "extensions/renderer/dispatcher.h"
 
 #include <stddef.h>
@@ -129,10 +127,10 @@ namespace extensions {
 namespace {
 
 // A feature flag for the crash issue in crbug.com/389971360.
-BASE_FEATURE(SpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext,
+BASE_FEATURE(kSpeculativeFixForServiceWorkerDataInDidStartServiceWorkerContext,
              base::FEATURE_ENABLED_BY_DEFAULT);
 // A feature flag for the crash issue in crbug.com/424476776.
-BASE_FEATURE(SpeculativeFixForNoExtensionInDidStartServiceWorkerContext,
+BASE_FEATURE(kSpeculativeFixForNoExtensionInDidStartServiceWorkerContext,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 static const char kOnSuspendEvent[] = "runtime.onSuspend";

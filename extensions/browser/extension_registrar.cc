@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "extensions/browser/extension_registrar.h"
 
 #include "base/check_op.h"
@@ -50,7 +48,7 @@ namespace extensions {
 
 namespace {
 
-BASE_FEATURE(ExtensionUpdatesImmediatelyUnregisterWorker,
+BASE_FEATURE(kExtensionUpdatesImmediatelyUnregisterWorker,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
