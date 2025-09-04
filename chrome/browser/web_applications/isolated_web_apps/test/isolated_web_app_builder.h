@@ -22,7 +22,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/traits_bag.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
