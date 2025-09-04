@@ -1210,6 +1210,15 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
 
   mojom::blink::InputEventResultState ack_state =
       InputEventDispositionToAck(event_disposition);
+  if (event->Event().GetType() ==
+      blink::WebInputEvent::Type::kGestureScrollUpdate) {
+    input_event_queue_->OnGestureScrollUpdateAck(ack_state);
+  }
+  if (event->Event().GetType() ==
+      blink::WebInputEvent::Type::kGestureScrollEnd) {
+    input_event_queue_->OnGestureScrollEndAck(ack_state);
+  }
+
   if (ack_state == mojom::blink::InputEventResultState::kConsumed) {
     widget_scheduler_->DidHandleInputEventOnCompositorThread(
         event->Event(), scheduler::WidgetScheduler::InputEventState::

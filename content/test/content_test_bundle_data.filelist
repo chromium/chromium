@@ -2196,10 +2196,10 @@ data/accessibility/css/table-display-other.html
 data/accessibility/css/table-display.html
 data/accessibility/css/table-incomplete-expected-blink.txt
 data/accessibility/css/table-incomplete.html
-data/accessibility/css/target-current-html-anchor-role-expected-blink.txt
-data/accessibility/css/target-current-html-anchor-role.html
 data/accessibility/css/target-current-html-anchor-role-dynamic-expected-blink.txt
 data/accessibility/css/target-current-html-anchor-role-dynamic.html
+data/accessibility/css/target-current-html-anchor-role-expected-blink.txt
+data/accessibility/css/target-current-html-anchor-role.html
 data/accessibility/css/text-overflow-ellipsis-expected-blink.txt
 data/accessibility/css/text-overflow-ellipsis.html
 data/accessibility/css/transform-expected-blink.txt
@@ -6808,6 +6808,7 @@ data/blob_storage/blob_creation_and_slicing.html
 data/blob_storage/common.js
 data/blue.html
 data/body_overflow_hidden.html
+data/body_overflow_hidden_blocking_touch_handlers.html
 data/browsing_data/embedded_site_data.html
 data/browsing_data/embeds_storage_accessor.html
 data/browsing_data/empty.js

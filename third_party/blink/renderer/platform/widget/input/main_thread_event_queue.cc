@@ -381,6 +381,24 @@ bool MainThreadEventQueue::Allowed(const WebInputEvent& event,
   return allowed;
 }
 
+void MainThreadEventQueue::OnGestureScrollUpdateAck(
+    mojom::blink::InputEventResultState ack_state) {
+  base::AutoLock lock(shared_state_lock_);
+  if (shared_state_.gsu_acked_as_consumed_) {
+    return;
+  }
+  if (ack_state != mojom::blink::InputEventResultState::kConsumed) {
+    return;
+  }
+  shared_state_.gsu_acked_as_consumed_ = true;
+}
+
+void MainThreadEventQueue::OnGestureScrollEndAck(
+    mojom::blink::InputEventResultState ack_state) {
+  base::AutoLock lock(shared_state_lock_);
+  shared_state_.gsu_acked_as_consumed_ = false;
+}
+
 void MainThreadEventQueue::HandleEvent(
     std::unique_ptr<WebCoalescedInputEvent> event,
     DispatchType original_dispatch_type,
@@ -670,7 +688,9 @@ void MainThreadEventQueue::DispatchRafAlignedInput(base::TimeTicks frame_time) {
 
       if (IsRafAlignedEvent(shared_state_.events_.front())) {
         // Throttle touchmoves that are async.
-        if (IsAsyncTouchMove(shared_state_.events_.front())) {
+        if (IsAsyncTouchMove(shared_state_.events_.front()) &&
+            ShouldThrottleAsyncTouchMoves(
+                shared_state_.gsu_acked_as_consumed_)) {
           if (shared_state_.events_.size() == 1 &&
               frame_time < shared_state_.last_async_touch_move_timestamp_ +
                                kAsyncTouchMoveInterval) {
@@ -955,6 +975,19 @@ MainThreadEventQueue::GetCompositorThreadOnly() {
   DCHECK(compositor_task_runner_->BelongsToCurrentThread());
 #endif
   return compositor_thread_only_;
+}
+
+bool MainThreadEventQueue::ShouldThrottleAsyncTouchMoves(
+    bool gsu_acked_as_consumed) {
+  // TODO(441800312): Investigate updating touch moves throttling logic during
+  // scrolls.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAsyncTouchMovesImmediatelyAfterScroll)) {
+    // If a gsu is acked as consumed already, async touch moves should indeed be
+    // throttled.
+    return gsu_acked_as_consumed;
+  }
+  return true;
 }
 
 }  // namespace blink
