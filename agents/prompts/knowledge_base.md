@@ -43,8 +43,9 @@ orient yourself before diving into specific component code.
     `third_party/blink/renderer/`:**
     *   **Concept:** The Blink rendering engine has its own memory management
         and container libraries. This is a critical boundary.
-    *   **Action:** **You MUST use WTF types** (e.g., `WTF::Vector`,
-        `WTF::String`) and **Oilpan for garbage collection** (`Member<>`,
+    *   **Action:** **You MUST use container types and string types defined in
+        `third_party/blink/renderer/platform/wtf/`** (e.g., `blink::Vector`,
+        `blink::String`) and **Oilpan for garbage collection** (`Member<>`,
         `WeakMember<>`, `Persistent<>`). **DO NOT** use STL containers or most
         `base/` equivalents inside Blink code. Refer to the
         [Blink C++ Style Guide](https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/c++/blink-c++.md)
