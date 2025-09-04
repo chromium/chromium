@@ -114,8 +114,10 @@ public class SettingsStylingController {
      * @return Whether the preference has custom styling.
      */
     private boolean hasCustomStyling(Preference preference) {
-        return preference instanceof PreferenceCategory
-                || preference instanceof CustomStyledPreference;
+        if (preference instanceof CustomStyledPreference customStyledPreference) {
+            return customStyledPreference.getCustomBackgroundStyle() != BackgroundStyle.STANDARD;
+        }
+        return preference instanceof PreferenceCategory;
     }
 
     private @NonNull PreferenceStyle getPreferenceStyleForPosition(

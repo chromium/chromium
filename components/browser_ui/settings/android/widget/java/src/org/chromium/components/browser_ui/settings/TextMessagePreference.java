@@ -16,7 +16,7 @@ import org.chromium.ui.UiUtils;
 
 /** A preference that displays informational text, and a summary which can contain a link. */
 @NullMarked
-public class TextMessagePreference extends ChromeBasePreference implements CustomStyledPreference {
+public class TextMessagePreference extends ChromeBasePreference {
     private @Nullable TextView mTitleView;
     private @Nullable TextView mSummaryView;
     private @Nullable Integer mLiveRegionMode;

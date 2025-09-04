@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.settings;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -23,7 +24,8 @@ import org.chromium.build.annotations.Nullable;
 
 /** A Chrome switch preference that supports managed preferences. */
 @NullMarked
-public class ChromeSwitchPreference extends SwitchPreferenceCompat {
+public class ChromeSwitchPreference extends SwitchPreferenceCompat
+        implements CustomStyledPreference {
     private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
 
     /** The View for this preference. */
@@ -47,6 +49,7 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
     private @Nullable String mSummaryOverrideForScreenReader;
 
     private boolean mUseSummaryAsTitle;
+    private final @BackgroundStyle int mBackgroundStyle;
 
     public ChromeSwitchPreference(Context context) {
         this(context, null);
@@ -54,6 +57,12 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
 
     public ChromeSwitchPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChromeBasePreference);
+        mBackgroundStyle =
+                a.getInt(
+                        R.styleable.ChromeBasePreference_backgroundStyle, BackgroundStyle.STANDARD);
+        a.recycle();
 
         mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
         mUseSummaryAsTitle = true;
@@ -170,5 +179,11 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
         if (mView == null || mBackgroundColorInt == null) return;
         mInitialBackgroundDrawable = mView.getBackground();
         mView.setBackgroundColor(mBackgroundColorInt);
+    }
+
+    /** Returns the custom background style for the preference. */
+    @Override
+    public @BackgroundStyle int getCustomBackgroundStyle() {
+        return mBackgroundStyle;
     }
 }

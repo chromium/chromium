@@ -18,16 +18,25 @@ public interface CustomStyledPreference {
     int DEFAULT_COLOR = -1;
     float DEFAULT_RADIUS = -1f;
 
-    @IntDef({BackgroundStyle.NONE, BackgroundStyle.CARD})
+    // LINT.IfChange
+    @IntDef({BackgroundStyle.CARD, BackgroundStyle.NONE, BackgroundStyle.STANDARD})
     @Retention(RetentionPolicy.SOURCE)
     @interface BackgroundStyle {
-        int NONE = 0;
+        int STANDARD = 0;
         int CARD = 1;
+        int NONE = 2;
     }
 
-    /** Returns the custom background style for the preference. */
+    // LINT.ThenChange(//components/browser_ui/settings/android/java/res/values/attrs.xml)
+
+    /**
+     * Returns the custom background style for the preference. By default, the standard background
+     * will be used.
+     */
     @BackgroundStyle
-    int getCustomBackgroundStyle();
+    default int getCustomBackgroundStyle() {
+        return BackgroundStyle.STANDARD;
+    }
 
     /**
      * @return The custom top margin for the preference in pixels. If DEFAULT_MARGIN, the default

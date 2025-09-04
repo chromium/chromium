@@ -21,8 +21,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  * TextMessagePreference} with one or more ClickableSpans accessible.
  */
 @NullMarked
-public class ClickableSpansTextMessagePreference extends ChromeBasePreference
-        implements CustomStyledPreference {
+public class ClickableSpansTextMessagePreference extends ChromeBasePreference {
     private @Nullable CharSequence mTitle;
     private @Nullable CharSequence mSummary;
 

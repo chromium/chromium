@@ -91,13 +91,13 @@ public class SettingsStylingControllerTest {
         return textMessagePreference;
     }
 
-    private TextMessagePreference createCustomTextMessagePreference(
+    private ChromeBasePreference createCustomPreference(
             @BackgroundStyle int backgroundStyle,
             int topMargin,
             int bottomMargin,
             int horizontalMargin,
             int backgroundColor) {
-        return new TextMessagePreference(mContext, null) {
+        return new ChromeBasePreference(mContext, null) {
             @Override
             public int getCustomBackgroundStyle() {
                 return backgroundStyle;
@@ -274,7 +274,7 @@ public class SettingsStylingControllerTest {
         final int topMargin = 100;
         final int bottomMargin = 200;
         mPreferenceScreen.addPreference(
-                createCustomTextMessagePreference(
+                createCustomPreference(
                         BackgroundStyle.CARD,
                         topMargin,
                         bottomMargin,
@@ -293,7 +293,7 @@ public class SettingsStylingControllerTest {
     public void testCustomStyledPreference_WithTopMarginOnly() {
         final int topMargin = 100;
         mPreferenceScreen.addPreference(
-                createCustomTextMessagePreference(
+                createCustomPreference(
                         BackgroundStyle.CARD,
                         topMargin,
                         DEFAULT_MARGIN,
@@ -312,7 +312,7 @@ public class SettingsStylingControllerTest {
     public void testCustomStyledPreference_WithBottomMarginOnly() {
         final int bottomMargin = 200;
         mPreferenceScreen.addPreference(
-                createCustomTextMessagePreference(
+                createCustomPreference(
                         BackgroundStyle.CARD,
                         DEFAULT_MARGIN,
                         bottomMargin,
@@ -332,7 +332,7 @@ public class SettingsStylingControllerTest {
         final int bottomMargin = 200;
         final int horizontalMargin = 50;
         mPreferenceScreen.addPreference(
-                createCustomTextMessagePreference(
+                createCustomPreference(
                         BackgroundStyle.CARD,
                         DEFAULT_MARGIN,
                         bottomMargin,
@@ -352,7 +352,7 @@ public class SettingsStylingControllerTest {
         final int topMargin = 100;
         final int bottomMargin = 200;
         mPreferenceScreen.addPreference(
-                createCustomTextMessagePreference(
+                createCustomPreference(
                         BackgroundStyle.NONE,
                         topMargin,
                         bottomMargin,
@@ -372,7 +372,7 @@ public class SettingsStylingControllerTest {
     public void testCustomStyledPreference_WithCustomBackgroundColor() {
         final int backgroundColor = Color.BLUE;
         mPreferenceScreen.addPreference(
-                createCustomTextMessagePreference(
+                createCustomPreference(
                         BackgroundStyle.CARD,
                         DEFAULT_MARGIN,
                         DEFAULT_MARGIN,
