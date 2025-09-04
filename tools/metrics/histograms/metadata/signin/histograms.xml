@@ -1048,6 +1048,21 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError"
+    enum="OAuthMultiloginDeviceBoundSessionParsingError"
+    expires_after="2026-06-01">
+  <owner>ernn@google.com</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records an error (or lack of any) that occured during parsing the device
+    bound sessions data from the OAuthMultilogin API response. Recorded upon
+    receiving a successful response from OAuthMultilogin API only if the cookie
+    parsing completed successfully and the response contained extra information
+    about device bound cookies.
+  </summary>
+</histogram>
+
 <histogram
     name="Signin.BoundSessionCredentials.OAuthMultilogin.RegisteredSessions"
     units="sessions" expires_after="2026-06-01">
@@ -1058,6 +1073,19 @@ prefs when the profile is loaded.  -->
     Records the number of bound sessions registered by OAuthMultilogin. Recorded
     after cookies from a successful OAuthMultilogin response are set. Only
     recorded for Chrome instances that support OAuthMultilogin cookies binding.
+  </summary>
+</histogram>
+
+<histogram name="Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain"
+    units="domains" expires_after="2026-06-01">
+  <owner>ernn@google.com</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the number of unknown domains in the device bound sessions data from
+    the OAuthMultilogin API response. Recorded upon receiving a successful
+    response from OAuthMultilogin API only if the cookie parsing and the device
+    bound sessions parsing completed successfully.
   </summary>
 </histogram>
 
@@ -2555,34 +2583,6 @@ tokens and is needed for as long as Chrome is fetching access tokens. -->
   <owner>droger@chromium.org</owner>
   <summary>
     Reason fetching an OAuth2 Token is being retried. Available on all OSes.
-  </summary>
-</histogram>
-
-<histogram name="Signin.OAuthMultiloginDeviceBoundSessionParsingError"
-    enum="OAuthMultiloginDeviceBoundSessionParsingError"
-    expires_after="2026-06-01">
-  <owner>ernn@google.com</owner>
-  <owner>alexilin@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records an error (or lack of any) that occured during parsing the device
-    bound sessions data from the OAuthMultilogin API response. Recorded upon
-    receiving a successful response from OAuthMultilogin API only if the cookie
-    parsing completed successfully and the response contained extra information
-    about device bound cookies.
-  </summary>
-</histogram>
-
-<histogram name="Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain"
-    units="domains" expires_after="2026-06-01">
-  <owner>ernn@google.com</owner>
-  <owner>alexilin@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the number of unknown domains in the device bound sessions data from
-    the OAuthMultilogin API response. Recorded upon receiving a successful
-    response from OAuthMultilogin API only if the cookie parsing and the device
-    bound sessions parsing completed successfully.
   </summary>
 </histogram>
 

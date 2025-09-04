@@ -44,12 +44,12 @@ void RecordMultiloginResponseEncryptionError(
 void RecordDeviceBoundSessionParsingError(
     OAuthMultiloginDeviceBoundSessionParsingError error) {
   base::UmaHistogramEnumeration(
-      "Signin.OAuthMultiloginDeviceBoundSessionParsingError", error);
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError", error);
 }
 
 void RecordDeviceBoundSessionUnknownDomainsCount(int count) {
   base::UmaHistogramCounts100(
-      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain", count);
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain", count);
 }
 
 DeviceBoundSession::Domain ParseDeviceBoundSessionDomain(

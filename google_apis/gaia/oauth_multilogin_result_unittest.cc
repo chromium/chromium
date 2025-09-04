@@ -1069,10 +1069,10 @@ TEST(OAuthMultiloginResultTest, NoDeviceBoundSessionInfo) {
   EXPECT_THAT(result.device_bound_sessions(), IsEmpty());
 
   histogram_tester.ExpectTotalCount(
-      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
-      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
       /*expected_count=*/0);
 }
 
@@ -1120,11 +1120,11 @@ TEST(OAuthMultiloginResultTest, ReuseExistingDeviceBoundSession) {
                               Eq(std::nullopt)))));
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
       /*sample=*/0,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
       OAuthMultiloginDeviceBoundSessionParsingError::kNone,
       /*expected_bucket_count=*/1);
 }
@@ -1217,11 +1217,11 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSession) {
                 Field(&DeviceBoundSession::domain, kGoogle))));
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
       /*sample=*/0,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
       OAuthMultiloginDeviceBoundSessionParsingError::kNone,
       /*expected_bucket_count=*/1);
 }
@@ -1272,11 +1272,11 @@ TEST(OAuthMultiloginResultTest, UnknownDeviceBoundSessionDomain) {
                         Field(&DeviceBoundSession::domain, kGoogle))));
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
       /*sample=*/1,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
       OAuthMultiloginDeviceBoundSessionParsingError::kNone,
       /*expected_bucket_count=*/1);
 }
@@ -1320,11 +1320,11 @@ TEST(OAuthMultiloginResultTest, IsNotDeviceBoundSession) {
   EXPECT_THAT(result.device_bound_sessions(), IsEmpty());
 
   histogram_tester.ExpectUniqueSample(
-      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
       /*sample=*/0,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
       OAuthMultiloginDeviceBoundSessionParsingError::kNone,
       /*expected_bucket_count=*/1);
 }
@@ -1382,10 +1382,10 @@ TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSessionInvalidPayload) {
   EXPECT_THAT(result.device_bound_sessions(), IsEmpty());
 
   histogram_tester.ExpectTotalCount(
-      "Signin.OAuthMultiloginDeviceBoundSessionUnknownDomain",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
       /*expected_count=*/0);
   histogram_tester.ExpectUniqueSample(
-      "Signin.OAuthMultiloginDeviceBoundSessionParsingError",
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
       OAuthMultiloginDeviceBoundSessionParsingError::
           kRegisterPayloadRequiredFieldMissing,
       /*expected_bucket_count=*/1);
