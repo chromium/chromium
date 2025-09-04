@@ -355,17 +355,6 @@ SuggestionWithMetadata GetSuggestionForEntity(
     field_to_value.emplace_back(field->global_id(), std::move(attribute_value));
   }
 
-  // Retrieve all entity values used to generate labels later on.
-  std::vector<std::pair<AttributeType, std::u16string>> attribute_type_to_value;
-  for (const AttributeInstance& attribute : entity.attributes()) {
-    std::u16string full_attribute_value = attribute.GetCompleteInfo(app_locale);
-    if (full_attribute_value.empty()) {
-      continue;
-    }
-    attribute_type_to_value.emplace_back(attribute.type(),
-                                         std::move(full_attribute_value));
-  }
-
   Suggestion suggestion =
       Suggestion(trigger_attribute.GetInfo(
                      trigger_field.field->Type().GetAutofillAiType(
