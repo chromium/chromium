@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeBottomSheetManager;
 import org.chromium.chrome.browser.download.DownloadMetrics.OpenWithExternalAppsSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
@@ -176,6 +177,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
@@ -335,6 +337,7 @@ public class RootUiCoordinator
     @NonNull protected final ObservableSupplier<Integer> mOverviewColorSupplier;
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
     @Nullable private PageZoomCoordinator mPageZoomCoordinator;
+    @Nullable private ReaderModeBottomSheetManager mReaderModeBottomSheetManager;
     private AppMenuObserver mAppMenuObserver;
 
     private final OneshotSupplierImpl<ToolbarManager> mToolbarManagerOneshotSupplier =
@@ -782,6 +785,11 @@ public class RootUiCoordinator
             mBoardingPassController = null;
         }
 
+        if (mReaderModeBottomSheetManager != null) {
+            mReaderModeBottomSheetManager.destroy();
+            mReaderModeBottomSheetManager = null;
+        }
+
         if (mAutomotiveBackButtonToolbarCoordinator != null) {
             mAutomotiveBackButtonToolbarCoordinator.destroy();
             mAutomotiveBackButtonToolbarCoordinator = null;
@@ -978,6 +986,12 @@ public class RootUiCoordinator
                 contextualSearchManager.addObserver(mReadAloudContextualSearchObserver);
             }
         }
+        if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) {
+            mReaderModeBottomSheetManager =
+                    new ReaderModeBottomSheetManager(
+                            mActivity, getBottomSheetController(), mActivityTabProvider);
+        }
+
         if (DeviceInfo.isAutomotive()) {
             mAutomotiveBackButtonToolbarCoordinator =
                     new AutomotiveBackButtonToolbarCoordinator(

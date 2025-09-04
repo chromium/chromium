@@ -1301,6 +1301,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/display_cutout/DisplayCutoutControllerTest.java",
       "src/org/chromium/chrome/browser/dom_distiller/ReaderModeActionRateLimiterTest.java",
       "src/org/chromium/chrome/browser/dom_distiller/ReaderModeBottomSheetCoordinatorTest.java",
+      "src/org/chromium/chrome/browser/dom_distiller/ReaderModeBottomSheetManagerTest.java",
       "src/org/chromium/chrome/browser/dom_distiller/ReaderModeIphControllerTest.java",
       "src/org/chromium/chrome/browser/dom_distiller/ReaderModeManagerTest.java",
       "src/org/chromium/chrome/browser/dom_distiller/ReaderModeMetricsTest.java",

@@ -90,13 +90,19 @@ public class ReaderModeBottomSheetCoordinator {
         }
     }
 
+    /** Hides the reader mode bottom sheet. */
+    public void hide() {
+        mDestroyChecker.checkNotDestroyed();
+        mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true);
+    }
+
     /** Destroys the coordinator. */
     public void destroy() {
         mDestroyChecker.destroy();
         mChangeProcessor.destroy();
     }
 
-    private class ReaderModeBottomSheetContent implements BottomSheetContent {
+    private static class ReaderModeBottomSheetContent implements BottomSheetContent {
         private final View mContentView;
 
         ReaderModeBottomSheetContent(View contentView) {
@@ -119,9 +125,7 @@ public class ReaderModeBottomSheetCoordinator {
         }
 
         @Override
-        public void destroy() {
-            ReaderModeBottomSheetCoordinator.this.destroy();
-        }
+        public void destroy() {}
 
         @Override
         public int getPriority() {
@@ -140,7 +144,7 @@ public class ReaderModeBottomSheetCoordinator {
 
         @Override
         public boolean swipeToDismissEnabled() {
-            return true;
+            return false;
         }
 
         @Override
@@ -165,6 +169,11 @@ public class ReaderModeBottomSheetCoordinator {
 
         @Override
         public boolean hasCustomScrimLifecycle() {
+            return false;
+        }
+
+        @Override
+        public boolean hasCustomLifecycle() {
             return false;
         }
 

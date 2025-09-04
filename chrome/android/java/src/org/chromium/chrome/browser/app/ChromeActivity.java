@@ -2691,7 +2691,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
 
         if (id == R.id.reader_mode_prefs_id) {
-            DomDistillerUiUtils.openSettings(currentTab.getWebContents());
+            DomDistillerUiUtils.openDialogSettings(currentTab.getWebContents());
             return true;
         }
 

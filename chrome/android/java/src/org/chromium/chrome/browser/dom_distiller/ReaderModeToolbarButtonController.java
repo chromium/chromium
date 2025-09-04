@@ -44,8 +44,6 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
     private final TabSupplierObserver mActivityTabObserver;
     private final ButtonSpec mEntryPointSpec;
     private final ButtonSpec mExitPointSpec;
-    // Created as needed.
-    private @Nullable ReaderModeBottomSheetCoordinator mReaderModeBottomSheetCoordinator;
     // Only populated when the TabSupplierObserver events fire.
     private @Nullable GURL mTabLastUrlSeen;
 
@@ -87,7 +85,6 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
                         GURL currentUrl = tab == null ? null : tab.getUrl();
                         if (Objects.equals(currentUrl, mTabLastUrlSeen)) return;
                         mTabLastUrlSeen = currentUrl;
-                        maybeShowBottomSheet(tab);
                     }
 
                     @Override
@@ -116,15 +113,6 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
                         /* actionChipLabelResId= */ Resources.ID_NULL,
                         /* tooltipTextResId= */ Resources.ID_NULL,
                         /* hasErrorBadge= */ false);
-    }
-
-    @Override
-    public void destroy() {
-        mActivityTabObserver.destroy();
-        if (mReaderModeBottomSheetCoordinator != null) {
-            mReaderModeBottomSheetCoordinator.destroy();
-        }
-        super.destroy();
     }
 
     @Override
@@ -168,13 +156,6 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
         }
 
         notifyObservers(mButtonData.canShow());
-    }
-
-    private void maybeShowBottomSheet(@Nullable Tab tab) {
-        if (!DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) return;
-        if (tab == null || !DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) return;
-
-        DomDistillerUiUtils.openSettingsInBottomSheet(tab, /* showFullSheet= */ false);
     }
 
     // Testing-specific functions
