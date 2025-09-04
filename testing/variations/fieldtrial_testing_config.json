@@ -18495,9 +18495,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "PrefetchEnabled_PreconnectEnabled",
                     "enable_features": [
-                        "BookmarkTriggerForPreconnect"
+                        "BookmarkTriggerForPreconnect",
+                        "BookmarkTriggerForPrefetch"
                     ]
                 }
             ]
