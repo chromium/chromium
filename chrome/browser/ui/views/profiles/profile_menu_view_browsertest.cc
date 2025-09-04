@@ -1885,6 +1885,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
   SetTargetBrowser(browser());
   OpenProfileMenu();
   ASSERT_TRUE(profile_menu_view());
+  static_cast<ProfileMenuView*>(profile_menu_view())
+      ->set_skip_window_active_check_for_testing(true);
   for (const auto& item : kActionableItems_WithAnotherProfile) {
     profile_menu_view()->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
     if (item == ProfileMenuViewBase::ActionableItem::kOtherProfileButton) {
@@ -1922,6 +1924,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
   SetTargetBrowser(browser());
   OpenProfileMenu();
   ASSERT_TRUE(profile_menu_view());
+  static_cast<ProfileMenuView*>(profile_menu_view())
+      ->set_skip_window_active_check_for_testing(true);
 
   // Dismiss the profile menu.
   profile_menu_view()->GetWidget()->Close();
@@ -1971,6 +1975,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest, SurveyProductDataBucketed) {
   SetTargetBrowser(browser());
   OpenProfileMenu();
   ASSERT_TRUE(profile_menu_view());
+  static_cast<ProfileMenuView*>(profile_menu_view())
+      ->set_skip_window_active_check_for_testing(true);
 
   // Dismiss the profile menu.
   profile_menu_view()->GetWidget()->Close();
@@ -2003,6 +2009,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
     // Open the profile menu.
     OpenProfileMenu();
     ASSERT_TRUE(profile_menu_view());
+    static_cast<ProfileMenuView*>(profile_menu_view())
+        ->set_skip_window_active_check_for_testing(true);
     profile_menu_view()->set_perform_menu_actions_for_testing(false);
 
     // Click on the selected item.

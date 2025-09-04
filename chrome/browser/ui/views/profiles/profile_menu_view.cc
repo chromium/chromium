@@ -219,10 +219,13 @@ ProfileMenuView::ProfileMenuView(
 ProfileMenuView::~ProfileMenuView() = default;
 
 void ProfileMenuView::OnClose() {
-  if (!actionable_item_clicked()) {
-    // Launch a HaTS survey only if the user dismissed the profile menu by
-    // clicking outside or pressing the Escape key. Do not launch if a button
-    // within the menu was clicked.
+  bool is_browser_window_active =
+      skip_window_active_check_for_testing_ ||
+      (browser().window() && browser().window()->IsActive());
+  if (!actionable_item_clicked() && is_browser_window_active) {
+    // Launch a HaTS survey only if the user dismissed the menu without
+    // selecting an item (e.g., by clicking outside or pressing ESC), and the
+    // browser window remains active.
     signin::LaunchSigninHatsSurveyForProfile(
         kHatsSurveyTriggerIdentityProfileMenuDismissed, &profile());
   }

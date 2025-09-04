@@ -65,6 +65,10 @@ class ProfileMenuView : public ProfileMenuViewBase {
   // ProfileMenuViewBase:
   void BuildMenu() override;
 
+  void set_skip_window_active_check_for_testing(bool skip) {
+    skip_window_active_check_for_testing_ = skip;
+  }
+
  private:
   friend class ProfileMenuViewExtensionsTest;
   friend class ProfileMenuViewSigninPendingTest;
@@ -103,6 +107,11 @@ class ProfileMenuView : public ProfileMenuViewBase {
   // to flaky tests where unexpected UI events are triggering this behavior.
   // Tests set this to "false" for more consistent operation.
   static bool close_on_deactivate_for_testing_;
+
+  // Prevents flaky tests by skipping the browser window active check within
+  // `ProfileMenuView::OnClose`. Window active status is often unpredictable
+  // during automated tests.
+  bool skip_window_active_check_for_testing_ = false;
 
   // Helper methods for building the menu.
   void SetMenuTitleForAccessibility();
