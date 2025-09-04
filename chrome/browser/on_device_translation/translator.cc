@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
@@ -22,6 +24,11 @@
 namespace on_device_translation {
 
 namespace {
+
+// Define a feature flag to implement sentence split for translateStreaming.
+BASE_FEATURE(kTranslateStreamingBySentence,
+             "kTranslateStreamingBySentence",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTranslatableCharacter(char character) {
   return !base::IsAsciiWhitespace(character) &&
@@ -51,6 +58,11 @@ void Translator::Translate(
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   CHECK(browser_context_);
+  // TODO(crbug.com/325332284): Implement TranslateStreaming feature flag.
+  VLOG(1) << "kTranslateStreamingBySentence is "
+          << (base::FeatureList::IsEnabled(kTranslateStreamingBySentence)
+                  ? "enabled"
+                  : "disabled");
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
       std::move(pending_responder));
   if (!Profile::FromBrowserContext(browser_context_.get())
