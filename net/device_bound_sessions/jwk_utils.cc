@@ -5,7 +5,10 @@
 #include "net/device_bound_sessions/jwk_utils.h"
 
 #include "base/base64url.h"
+#include "base/json/json_writer.h"
+#include "base/notreached.h"
 #include "crypto/evp.h"
+#include "crypto/sha2.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -120,6 +123,43 @@ base::Value::Dict ConvertPkeySpkiToJwk(
     default:
       return base::Value::Dict();
   }
+}
+
+std::string CreateJwkThumbprint(
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    base::span<const uint8_t> pkey_spki) {
+  base::Value::Dict jwk = ConvertPkeySpkiToJwk(algorithm, pkey_spki);
+  if (jwk.empty()) {
+    return "";
+  }
+
+  // Move only the required fields from `jwk` to `canonical_jwk`.
+  base::Value::Dict canonical_jwk;
+  switch (algorithm) {
+    case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+      canonical_jwk.Set(kKeyTypeParam, std::move(*jwk.Extract(kKeyTypeParam)));
+      canonical_jwk.Set(kRsaExponent, std::move(*jwk.Extract(kRsaExponent)));
+      canonical_jwk.Set(kRsaModulus, std::move(*jwk.Extract(kRsaModulus)));
+      break;
+    case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+      canonical_jwk.Set(kKeyTypeParam, std::move(*jwk.Extract(kKeyTypeParam)));
+      canonical_jwk.Set(kEcCurve, std::move(*jwk.Extract(kEcCurve)));
+      canonical_jwk.Set(kEcCoordinateX,
+                        std::move(*jwk.Extract(kEcCoordinateX)));
+      canonical_jwk.Set(kEcCoordinateY,
+                        std::move(*jwk.Extract(kEcCoordinateY)));
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  // The canonical representation of the JWK requires the keys to be sorted
+  // alphabetically. `base::Value::Dict` is already sorted.
+  std::string canonical_jwk_string;
+  CHECK(base::JSONWriter::Write(canonical_jwk, &canonical_jwk_string));
+
+  std::string thumbprint_hash = crypto::SHA256HashString(canonical_jwk_string);
+  return Base64UrlEncode(base::as_bytes(base::span(thumbprint_hash)));
 }
 
 }  // namespace net::device_bound_sessions

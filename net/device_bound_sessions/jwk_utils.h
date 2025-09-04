@@ -11,11 +11,19 @@
 #include "net/base/net_export.h"
 
 namespace net::device_bound_sessions {
+
 // Converts a public key in SPKI format to a JWK (JSON Web Key). Only supports
 // ES256 and RS256 keys.
 base::Value::Dict NET_EXPORT
 ConvertPkeySpkiToJwk(crypto::SignatureVerifier::SignatureAlgorithm algorithm,
                      base::span<const uint8_t> pkey_spki);
+
+// Creates a JWK thumbprint as defined in RFC 7638. Returns an empty
+// string for failure to create a JWK from `pkey_spki`.
+std::string NET_EXPORT
+CreateJwkThumbprint(crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+                    base::span<const uint8_t> pkey_spki);
+
 }  // namespace net::device_bound_sessions
 
 #endif  // NET_DEVICE_BOUND_SESSIONS_JWK_UTILS_H_
