@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/main_content/ui_bundled/web_scroll_view_main_content_ui_forwarder.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/logo_animation_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
@@ -167,6 +168,7 @@ const CGFloat kTopDynamicIslandInset = 24;
 // Note other delegates defined in the Delegates category header.
 @interface BrowserViewController () <CardSwipeViewDelegate,
                                      FullscreenUIElement,
+                                     LogoAnimationControllerOwnerOwner,
                                      MainContentUI,
                                      SideSwipeUIControllerDelegate,
                                      UIGestureRecognizerDelegate> {
@@ -2865,6 +2867,13 @@ const CGFloat kTopDynamicIslandInset = 24;
       [NSLayoutConstraint activateConstraints:_diamondToolbarBottomConstraints];
       break;
   }
+}
+
+#pragma mark - LogoAnimationControllerOwnerOwner (Public)
+
+- (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
+  // This is required to enable voice search in the NTP.
+  return nil;
 }
 
 #pragma mark - FindBarPresentationDelegate
