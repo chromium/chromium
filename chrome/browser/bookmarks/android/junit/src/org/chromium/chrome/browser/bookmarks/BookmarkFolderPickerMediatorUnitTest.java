@@ -234,6 +234,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingService mShoppingService;
     @Captor private ArgumentCaptor<BookmarkUiPrefs.Observer> mBookmarkUiPrefsObserverCaptor;
+    private Runnable mFinishModelLoadCallback;
 
     private Activity mActivity;
     private BookmarkFolderPickerMediator mMediator;
@@ -294,7 +295,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
         doReturn(mReadingListItem1).when(mBookmarkModel).getBookmarkById(mReadingListItemId1);
         doReturn(mReadingListItem2).when(mBookmarkModel).getBookmarkById(mReadingListItemId2);
         doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
-        doCallback((Runnable runnable) -> runnable.run())
+        doCallback((Runnable runnable) -> mFinishModelLoadCallback = runnable)
                 .when(mBookmarkModel)
                 .finishLoadingBookmarkModel(any());
 
@@ -314,23 +315,8 @@ public class BookmarkFolderPickerMediatorUnitTest {
         doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
         doReturn(BookmarkRowSortOrder.MANUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
 
-        mMediator =
-                new BookmarkFolderPickerMediator(
-                        mActivity,
-                        mBookmarkModel,
-                        Arrays.asList(mUserBookmarkId),
-                        mFinishRunnable,
-                        mBookmarkUiPrefs,
-                        mModel,
-                        mModelList,
-                        mAddNewFolderCoordinator,
-                        new ImprovedBookmarkRowCoordinator(
-                                mActivity,
-                                mBookmarkImageFetcher,
-                                mBookmarkModel,
-                                mBookmarkUiPrefs,
-                                mShoppingService),
-                        mShoppingService);
+        remakeMediator(mBookmarkModel, mUserBookmarkId);
+        mFinishModelLoadCallback.run();
     }
 
     private void remakeMediator(BookmarkModel bookmarkModel, BookmarkId... bookmarkIds) {
@@ -356,6 +342,14 @@ public class BookmarkFolderPickerMediatorUnitTest {
                         mAddNewFolderCoordinator,
                         rowCoordinator,
                         mShoppingService);
+    }
+
+    @Test
+    public void testModelNotYetReady() {
+        // Regression test for crbug.com/439882814
+        remakeMediator(mBookmarkModel, mUserFolderId);
+        // Do not call finishLoadingBookmarkModel().
+        mMediator.updateToolbarButtons();
     }
 
     @Test
@@ -450,6 +444,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Test
     public void testMoveMultiple_sharedParent() {
         remakeMediator(mBookmarkModel, mUserBookmarkId, mUserBookmarkId1);
+        mFinishModelLoadCallback.run();
         assertEquals("Mobile bookmarks", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertTrue(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }
@@ -457,6 +452,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Test
     public void testMoveMultiple_noSharedParent() {
         remakeMediator(mBookmarkModel, mUserFolderId, mUserBookmarkId1);
+        mFinishModelLoadCallback.run();
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }
@@ -464,6 +460,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Test
     public void testMoveMultiple_readingList() {
         remakeMediator(mBookmarkModel, mReadingListItemId1, mReadingListItemId2);
+        mFinishModelLoadCallback.run();
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }
