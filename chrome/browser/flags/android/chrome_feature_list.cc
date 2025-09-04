@@ -467,7 +467,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &permissions::features::kPermissionSiteSettingsRadioButton,
     &plus_addresses::features::kPlusAddressesEnabled,
     &plus_addresses::features::kPlusAddressAndroidOpenGmsCoreManagementPage,
-    &privacy_sandbox::kAlwaysBlock3pcsIncognito,
     &privacy_sandbox::kDisplayWildcardInContentSettings,
     &privacy_sandbox::kFingerprintingProtectionUx,
     &privacy_sandbox::kIpProtectionUx,
