@@ -16,7 +16,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//content/test:content_browsertests/",
+        "module_name": "//content/test:content_browsertests",
         "module_scheme": "gtest",
         "name": "content_browsertests",
         "swarming": {
@@ -47,7 +47,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//content/test:content_browsertests/",
+        "module_name": "//content/test:content_browsertests",
         "module_scheme": "gtest",
         "name": "content_browsertests_sequential",
         "swarming": {

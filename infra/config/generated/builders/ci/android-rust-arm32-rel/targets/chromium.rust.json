@@ -9,7 +9,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//base:base_unittests/",
+        "module_name": "//base:base_unittests",
         "module_scheme": "gtest",
         "name": "base_unittests",
         "swarming": {
@@ -29,7 +29,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//mojo/public/rust:mojo_rust_integration_unittests/",
+        "module_name": "//mojo/public/rust:mojo_rust_integration_unittests",
         "module_scheme": "gtest",
         "name": "mojo_rust_integration_unittests",
         "swarming": {
@@ -49,7 +49,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//mojo/public/rust:mojo_rust_unittests/",
+        "module_name": "//mojo/public/rust:mojo_rust_unittests",
         "module_scheme": "gtest",
         "name": "mojo_rust_unittests",
         "swarming": {
@@ -69,7 +69,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//testing/rust_gtest_interop:rust_gtest_interop_unittests/",
+        "module_name": "//testing/rust_gtest_interop:rust_gtest_interop_unittests",
         "module_scheme": "gtest",
         "name": "rust_gtest_interop_unittests",
         "swarming": {
@@ -89,7 +89,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests/",
+        "module_name": "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests",
         "module_scheme": "gtest",
         "name": "test_cpp_including_rust_unittests",
         "swarming": {
@@ -109,7 +109,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient/",
+        "module_name": "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
         "module_scheme": "gtest",
         "name": "test_serde_json_lenient",
         "swarming": {

@@ -14,7 +14,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
+        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
         "module_scheme": "gtest",
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
@@ -43,7 +43,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
+        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
         "module_scheme": "gtest",
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
@@ -71,7 +71,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
+        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
         "module_scheme": "gtest",
         "name": "dawn_end2end_tests",
         "swarming": {
@@ -100,7 +100,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
+        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
         "module_scheme": "gtest",
         "name": "dawn_end2end_wire_tests",
         "swarming": {

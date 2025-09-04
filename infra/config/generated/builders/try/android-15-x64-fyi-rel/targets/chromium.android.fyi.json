@@ -19,7 +19,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests/",
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests",
         "module_scheme": "junit",
         "name": "webview_trichrome_64_cts_tests full_mode",
         "resultdb": {
@@ -81,7 +81,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests/",
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests",
         "module_scheme": "junit",
         "name": "webview_trichrome_64_cts_tests instant_mode",
         "resultdb": {
@@ -142,7 +142,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests/",
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests",
         "module_scheme": "junit",
         "name": "webview_trichrome_64_cts_tests_no_field_trial",
         "resultdb": {
@@ -201,7 +201,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/",
+        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
         "module_scheme": "junit",
         "name": "webview_ui_test_app_test_apk_no_field_trial",
         "resultdb": {

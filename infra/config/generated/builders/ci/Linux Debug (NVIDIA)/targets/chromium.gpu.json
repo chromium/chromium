@@ -8,7 +8,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_unittests/",
+        "module_name": "//third_party/angle/src/tests:angle_unittests",
         "module_scheme": "gtest",
         "name": "angle_unittests",
         "swarming": {
@@ -36,7 +36,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//gpu:gl_tests/",
+        "module_name": "//gpu:gl_tests",
         "module_scheme": "gtest",
         "name": "gl_tests_passthrough",
         "swarming": {
@@ -63,7 +63,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//ui/gl:gl_unittests/",
+        "module_name": "//ui/gl:gl_unittests",
         "module_scheme": "gtest",
         "name": "gl_unittests",
         "precommit_args": [
@@ -102,7 +102,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "context_lost_passthrough_tests",
         "resultdb": {
           "enable": true,
@@ -142,7 +142,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "expected_color_pixel_passthrough_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -183,7 +183,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "gpu_process_launch_tests",
         "resultdb": {
           "enable": true,
@@ -219,7 +219,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "hardware_accelerated_feature_tests",
         "resultdb": {
           "enable": true,
@@ -259,7 +259,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "info_collection_tests",
         "resultdb": {
           "enable": true,
@@ -299,7 +299,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "pixel_skia_gold_passthrough_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -341,7 +341,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "screenshot_sync_passthrough_tests",
         "resultdb": {
           "enable": true,
@@ -377,7 +377,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "trace_test",
         "resultdb": {
           "enable": true,
@@ -414,7 +414,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "webgl_conformance_tests",
         "resultdb": {
           "enable": true,

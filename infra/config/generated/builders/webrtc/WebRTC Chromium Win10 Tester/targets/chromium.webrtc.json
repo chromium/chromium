@@ -13,7 +13,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/test:browser_tests/",
+        "module_name": "//chrome/test:browser_tests",
         "module_scheme": "gtest",
         "name": "browser_tests",
         "swarming": {
@@ -33,7 +33,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/test:browser_tests/",
+        "module_name": "//chrome/test:browser_tests",
         "module_scheme": "gtest",
         "name": "browser_tests_functional",
         "swarming": {
@@ -52,7 +52,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//content/test:content_browsertests/",
+        "module_name": "//content/test:content_browsertests",
         "module_scheme": "gtest",
         "name": "content_browsertests",
         "swarming": {
@@ -72,7 +72,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//content/test:content_browsertests/",
+        "module_name": "//content/test:content_browsertests",
         "module_scheme": "gtest",
         "name": "content_browsertests_sequential",
         "swarming": {
@@ -93,7 +93,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//content/test:content_browsertests/",
+        "module_name": "//content/test:content_browsertests",
         "module_scheme": "gtest",
         "name": "content_browsertests_stress",
         "swarming": {
@@ -112,7 +112,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//content/test:content_unittests/",
+        "module_name": "//content/test:content_unittests",
         "module_scheme": "gtest",
         "name": "content_unittests",
         "swarming": {
@@ -131,7 +131,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//remoting:remoting_unittests/",
+        "module_name": "//remoting:remoting_unittests",
         "module_scheme": "gtest",
         "name": "remoting_unittests",
         "swarming": {

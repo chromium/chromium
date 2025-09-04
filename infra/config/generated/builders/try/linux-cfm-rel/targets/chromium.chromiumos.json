@@ -5,7 +5,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chromeos:chromeos_unittests/",
+        "module_name": "//chromeos:chromeos_unittests",
         "module_scheme": "gtest",
         "name": "chromeos_unittests",
         "swarming": {
@@ -22,7 +22,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/test:unit_tests/",
+        "module_name": "//chrome/test:unit_tests",
         "module_scheme": "gtest",
         "name": "unit_tests",
         "swarming": {

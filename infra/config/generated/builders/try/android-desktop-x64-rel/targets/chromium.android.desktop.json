@@ -25,7 +25,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//chrome/test:android_browsertests/",
+        "module_name": "//chrome/test:android_browsertests",
         "module_scheme": "gtest",
         "name": "android_browsertests",
         "resultdb": {
@@ -79,7 +79,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//chrome/android:chrome_public_test_apk/",
+        "module_name": "//chrome/android:chrome_public_test_apk",
         "module_scheme": "junit",
         "name": "chrome_public_test_apk_desktop",
         "precommit_args": [
@@ -136,7 +136,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//chrome/android:chrome_public_unit_test_apk/",
+        "module_name": "//chrome/android:chrome_public_unit_test_apk",
         "module_scheme": "junit",
         "name": "chrome_public_unit_test_apk",
         "precommit_args": [
@@ -191,7 +191,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//extensions:extensions_unittests/",
+        "module_name": "//extensions:extensions_unittests",
         "module_scheme": "gtest",
         "name": "extensions_unittests",
         "resultdb": {
@@ -241,7 +241,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//chrome/test:unit_tests/",
+        "module_name": "//chrome/test:unit_tests",
         "module_scheme": "gtest",
         "name": "unit_tests",
         "resultdb": {
@@ -291,7 +291,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//media/gpu/test:video_encode_accelerator_tests/",
+        "module_name": "//media/gpu/test:video_encode_accelerator_tests",
         "module_scheme": "gtest",
         "name": "video_encode_accelerator_tests",
         "resultdb": {
@@ -345,7 +345,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "module_name": "//chrome/android:chrome_public_wpt/",
+        "module_name": "//chrome/android:chrome_public_wpt",
         "module_scheme": "webtest",
         "name": "android_chrome_wpt_tests",
         "resultdb": {
@@ -383,7 +383,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/android:chrome_junit_tests/",
+        "module_name": "//chrome/android:chrome_junit_tests",
         "module_scheme": "junit",
         "name": "chrome_junit_tests",
         "resultdb": {

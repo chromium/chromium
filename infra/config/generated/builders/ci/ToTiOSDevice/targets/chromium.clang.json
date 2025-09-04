@@ -32,7 +32,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//base:base_unittests/",
+        "module_name": "//base:base_unittests",
         "module_scheme": "gtest",
         "name": "base_unittests iPhone 15 Pro 18",
         "resultdb": {
@@ -77,7 +77,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/highway:highway_tests/",
+        "module_name": "//third_party/highway:highway_tests",
         "module_scheme": "gtest",
         "name": "highway_tests iPhone 15 Pro 18",
         "resultdb": {

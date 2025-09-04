@@ -16,7 +16,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:android_webview_unittests/",
+        "module_name": "//android_webview/test:android_webview_unittests",
         "module_scheme": "gtest",
         "name": "android_webview_unittests",
         "resultdb": {
@@ -54,7 +54,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
+        "module_name": "//android_webview/test:webview_instrumentation_test_apk",
         "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk_mutations",
         "resultdb": {
@@ -93,7 +93,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
+        "module_name": "//android_webview/test:webview_instrumentation_test_apk",
         "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk_no_field_trial",
         "resultdb": {

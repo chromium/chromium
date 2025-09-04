@@ -19,7 +19,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//chrome/test:android_browsertests/",
+        "module_name": "//chrome/test:android_browsertests",
         "module_scheme": "gtest",
         "name": "android_browsertests_no_fieldtrial",
         "resultdb": {
@@ -67,7 +67,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk/",
+        "module_name": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
         "module_scheme": "junit",
         "name": "system_webview_shell_layout_test_apk Disable Field Trial Config",
         "resultdb": {
@@ -118,7 +118,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk/",
+        "module_name": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
         "module_scheme": "junit",
         "name": "system_webview_shell_layout_test_apk Single Group Per Study Prefer Existing Behavior Field Trial Config",
         "resultdb": {
@@ -169,7 +169,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk/",
+        "module_name": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
         "module_scheme": "junit",
         "name": "system_webview_shell_layout_test_apk Single Group Per Study Prefer New Behavior Field Trial Config",
         "resultdb": {
@@ -218,7 +218,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
+        "module_name": "//android_webview/test:webview_instrumentation_test_apk",
         "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk Disable Field Trial Config",
         "resultdb": {
@@ -271,7 +271,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
+        "module_name": "//android_webview/test:webview_instrumentation_test_apk",
         "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk Single Group Per Study Prefer Existing Behavior Field Trial Config",
         "resultdb": {
@@ -324,7 +324,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_instrumentation_test_apk/",
+        "module_name": "//android_webview/test:webview_instrumentation_test_apk",
         "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk Single Group Per Study Prefer New Behavior Field Trial Config",
         "resultdb": {
@@ -375,7 +375,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests/",
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests",
         "module_scheme": "junit",
         "name": "webview_trichrome_64_cts_tests Disable Field Trial Config",
         "resultdb": {
@@ -436,7 +436,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests/",
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests",
         "module_scheme": "junit",
         "name": "webview_trichrome_64_cts_tests Single Group Per Study Prefer Existing Behavior Field Trial Config",
         "resultdb": {
@@ -497,7 +497,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests/",
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests",
         "module_scheme": "junit",
         "name": "webview_trichrome_64_cts_tests Single Group Per Study Prefer New Behavior Field Trial Config",
         "resultdb": {
@@ -553,7 +553,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/",
+        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
         "module_scheme": "junit",
         "name": "webview_ui_test_app_test_apk Disable Field Trial Config",
         "resultdb": {
@@ -604,7 +604,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/",
+        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
         "module_scheme": "junit",
         "name": "webview_ui_test_app_test_apk Single Group Per Study Prefer Existing Behavior Field Trial Config",
         "resultdb": {
@@ -655,7 +655,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/",
+        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
         "module_scheme": "junit",
         "name": "webview_ui_test_app_test_apk Single Group Per Study Prefer New Behavior Field Trial Config",
         "resultdb": {

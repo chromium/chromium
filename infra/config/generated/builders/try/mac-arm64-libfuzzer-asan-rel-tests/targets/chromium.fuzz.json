@@ -8,7 +8,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//testing/libfuzzer/tests:fuzzing_unittests/",
+        "module_name": "//testing/libfuzzer/tests:fuzzing_unittests",
         "module_scheme": "gtest",
         "name": "fuzzing_unittests",
         "swarming": {

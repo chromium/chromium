@@ -20,7 +20,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "info_collection_tests GTX 1660",
         "resultdb": {
           "enable": true,
@@ -58,7 +58,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "info_collection_tests UHD 630",
         "resultdb": {
           "enable": true,
@@ -92,7 +92,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "trace_test GTX 1660",
         "resultdb": {
           "enable": true,
@@ -126,7 +126,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "trace_test UHD 630",
         "resultdb": {
           "enable": true,
@@ -160,7 +160,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "webcodecs_tests GTX 1660",
         "resultdb": {
           "enable": true,
@@ -194,7 +194,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "webcodecs_tests UHD 630",
         "resultdb": {
           "enable": true,
@@ -230,7 +230,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "webgl2_conformance_gl_passthrough_tests GTX 1660",
         "resultdb": {
           "enable": true,
@@ -267,7 +267,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "webgl2_conformance_gl_passthrough_tests UHD 630",
         "resultdb": {
           "enable": true,
@@ -303,7 +303,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "webgl_conformance_gl_passthrough_tests GTX 1660",
         "resultdb": {
           "enable": true,
@@ -339,7 +339,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "webgl_conformance_gl_passthrough_tests UHD 630",
         "resultdb": {
           "enable": true,
@@ -374,7 +374,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "webrtc_tests GTX 1660",
         "resultdb": {
           "enable": true,
@@ -408,7 +408,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//chrome/test:telemetry_gpu_integration_test/",
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
         "name": "webrtc_tests UHD 630",
         "resultdb": {
           "enable": true,

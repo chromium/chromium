@@ -26,7 +26,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//base:base_unittests/",
+        "module_name": "//base:base_unittests",
         "module_scheme": "gtest",
         "name": "base_unittests Apple TV 4K (3rd generation) 18.5",
         "resultdb": {
@@ -78,7 +78,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//components:components_browsertests/",
+        "module_name": "//components:components_browsertests",
         "module_scheme": "gtest",
         "name": "components_browsertests Apple TV 4K (3rd generation) 18.5",
         "resultdb": {
@@ -130,7 +130,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//components:components_unittests/",
+        "module_name": "//components:components_unittests",
         "module_scheme": "gtest",
         "name": "components_unittests Apple TV 4K (3rd generation) 18.5",
         "resultdb": {
@@ -182,7 +182,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//content/test:content_unittests/",
+        "module_name": "//content/test:content_unittests",
         "module_scheme": "gtest",
         "name": "content_unittests Apple TV 4K (3rd generation) 18.5",
         "resultdb": {
@@ -234,7 +234,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//media:media_unittests/",
+        "module_name": "//media:media_unittests",
         "module_scheme": "gtest",
         "name": "media_unittests Apple TV 4K (3rd generation) 18.5",
         "resultdb": {

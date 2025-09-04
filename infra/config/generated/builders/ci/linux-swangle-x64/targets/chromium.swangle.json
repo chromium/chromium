@@ -9,7 +9,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_egl_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_egl_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_egl_tests",
         "swarming": {
@@ -35,7 +35,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_gles2_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_gles2_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_gles2_tests",
         "swarming": {
@@ -61,7 +61,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_gles31_rotate180_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_gles31_rotate180_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_gles31_rotate180_tests",
         "swarming": {
@@ -87,7 +87,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_gles31_rotate270_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_gles31_rotate270_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_gles31_rotate270_tests",
         "swarming": {
@@ -113,7 +113,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_gles31_rotate90_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_gles31_rotate90_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_gles31_rotate90_tests",
         "swarming": {
@@ -139,7 +139,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_gles31_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_gles31_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_gles31_tests",
         "swarming": {
@@ -166,7 +166,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_gles3_rotate180_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_gles3_rotate180_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_gles3_rotate180_tests",
         "swarming": {
@@ -192,7 +192,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_gles3_rotate270_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_gles3_rotate270_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_gles3_rotate270_tests",
         "swarming": {
@@ -218,7 +218,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_gles3_rotate90_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_gles3_rotate90_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_gles3_rotate90_tests",
         "swarming": {
@@ -244,7 +244,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_gles3_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_gles3_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_gles3_tests",
         "swarming": {
@@ -271,7 +271,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_khr_gles2_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_khr_gles2_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_khr_gles2_tests",
         "swarming": {
@@ -297,7 +297,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_khr_gles31_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_khr_gles31_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_khr_gles31_tests",
         "swarming": {
@@ -323,7 +323,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_deqp_khr_gles3_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_deqp_khr_gles3_tests",
         "module_scheme": "gtest",
         "name": "angle_deqp_khr_gles3_tests",
         "swarming": {
@@ -349,7 +349,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/angle/src/tests:angle_end2end_tests/",
+        "module_name": "//third_party/angle/src/tests:angle_end2end_tests",
         "module_scheme": "gtest",
         "name": "angle_end2end_tests",
         "swarming": {

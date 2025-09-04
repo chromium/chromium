@@ -12,7 +12,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/test:android_browsertests/",
+        "module_name": "//chrome/test:android_browsertests",
         "module_scheme": "gtest",
         "name": "site_per_process_android_browsertests",
         "resultdb": {
@@ -40,7 +40,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/android:chrome_public_test_apk/",
+        "module_name": "//chrome/android:chrome_public_test_apk",
         "module_scheme": "junit",
         "name": "site_per_process_chrome_public_test_apk",
         "precommit_args": [
@@ -74,7 +74,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/android:chrome_public_unit_test_apk/",
+        "module_name": "//chrome/android:chrome_public_unit_test_apk",
         "module_scheme": "junit",
         "name": "site_per_process_chrome_public_unit_test_apk",
         "precommit_args": [
@@ -106,7 +106,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//components:components_browsertests/",
+        "module_name": "//components:components_browsertests",
         "module_scheme": "gtest",
         "name": "site_per_process_components_browsertests",
         "resultdb": {
@@ -133,7 +133,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//components:components_unittests/",
+        "module_name": "//components:components_unittests",
         "module_scheme": "gtest",
         "name": "site_per_process_components_unittests",
         "resultdb": {
@@ -162,7 +162,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//content/test:content_browsertests/",
+        "module_name": "//content/test:content_browsertests",
         "module_scheme": "gtest",
         "name": "site_per_process_content_browsertests",
         "resultdb": {
@@ -190,7 +190,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//content/shell/android:content_shell_test_apk/",
+        "module_name": "//content/shell/android:content_shell_test_apk",
         "module_scheme": "junit",
         "name": "site_per_process_content_shell_test_apk",
         "resultdb": {
@@ -218,7 +218,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//content/test:content_unittests/",
+        "module_name": "//content/test:content_unittests",
         "module_scheme": "gtest",
         "name": "site_per_process_content_unittests",
         "resultdb": {
@@ -245,7 +245,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/test:unit_tests/",
+        "module_name": "//chrome/test:unit_tests",
         "module_scheme": "gtest",
         "name": "site_per_process_unit_tests",
         "resultdb": {

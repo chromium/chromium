@@ -10,7 +10,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/updater:updater_tests/",
+        "module_name": "//chrome/updater:updater_tests",
         "module_scheme": "gtest",
         "name": "updater_tests",
         "swarming": {
@@ -29,7 +29,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/updater:updater_tests_system/",
+        "module_name": "//chrome/updater:updater_tests_system",
         "module_scheme": "gtest",
         "name": "updater_tests_system",
         "swarming": {
@@ -54,7 +54,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/updater:updater_tests_system/",
+        "module_name": "//chrome/updater:updater_tests_system",
         "module_scheme": "gtest",
         "name": "updater_tests_system",
         "swarming": {
@@ -75,7 +75,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/updater:updater_tests_win_uac/",
+        "module_name": "//chrome/updater:updater_tests_win_uac",
         "module_scheme": "gtest",
         "name": "updater_tests_win_uac",
         "swarming": {
@@ -97,7 +97,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/updater:updater_tests_system/",
+        "module_name": "//chrome/updater:updater_tests_system",
         "module_scheme": "gtest",
         "name": "updater_tests_system",
         "swarming": {
@@ -118,7 +118,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/updater:updater_tests_win_uac/",
+        "module_name": "//chrome/updater:updater_tests_win_uac",
         "module_scheme": "gtest",
         "name": "updater_tests_win_uac",
         "swarming": {

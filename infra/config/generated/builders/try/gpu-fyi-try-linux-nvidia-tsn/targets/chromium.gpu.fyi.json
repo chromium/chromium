@@ -11,7 +11,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//gpu:gl_tests/",
+        "module_name": "//gpu:gl_tests",
         "module_scheme": "gtest",
         "name": "gl_tests_passthrough",
         "swarming": {
@@ -38,7 +38,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//ui/gl:gl_unittests/",
+        "module_name": "//ui/gl:gl_unittests",
         "module_scheme": "gtest",
         "name": "gl_unittests",
         "precommit_args": [
