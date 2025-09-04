@@ -39,9 +39,7 @@ bool NativeMessagingWriter::WriteMessage(base::ValueView message) {
     return false;
   }
 
-  std::string message_json;
-  base::JSONWriter::Write(message, &message_json);
-
+  std::string message_json = base::WriteJson(message).value_or("");
   CHECK_LE(message_json.length(), kMaximumMessageSize);
 
   // Cast from std::size_t to the proper header type, checking this won't

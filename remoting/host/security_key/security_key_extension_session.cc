@@ -206,14 +206,9 @@ void SecurityKeyExtensionSession::SendMessageToClient(
   }
   request_dict.Set(kDataPayload, std::move(bytes));
 
-  base::Value request(std::move(request_dict));
-
-  std::string request_json;
-  CHECK(base::JSONWriter::Write(request, &request_json));
-
   protocol::ExtensionMessage message;
   message.set_type(kExtensionMessageType);
-  message.set_data(request_json);
+  message.set_data(base::WriteJson(request_dict).value());
 
   client_stub_->DeliverHostMessage(message);
 }

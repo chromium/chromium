@@ -215,9 +215,9 @@ void RemoteWebAuthnNativeMessagingHostTest::
 
 void RemoteWebAuthnNativeMessagingHostTest::SendMessage(
     const base::Value::Dict& message) {
-  std::string serialized_message;
-  ASSERT_TRUE(base::JSONWriter::Write(message, &serialized_message));
-  host_->OnMessage(serialized_message);
+  std::optional<std::string> serialized_message = base::WriteJson(message);
+  ASSERT_TRUE(serialized_message.has_value());
+  host_->OnMessage(serialized_message.value());
 }
 
 const base::Value::Dict& RemoteWebAuthnNativeMessagingHostTest::ReadMessage() {

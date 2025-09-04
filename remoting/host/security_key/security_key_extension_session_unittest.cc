@@ -218,9 +218,8 @@ void SecurityKeyExtensionSessionTest::WaitForAndVerifyHostMessage() {
     expected_data.Append(kRequestData[i]);
   }
 
-  std::string expected_data_json;
-  base::JSONWriter::Write(expected_data, &expected_data_json);
-  client_stub_.CheckHostDataMessage(1, expected_data_json);
+  client_stub_.CheckHostDataMessage(
+      1, base::WriteJson(expected_data).value_or(""));
 }
 
 void SecurityKeyExtensionSessionTest::CreateSecurityKeyConnection() {

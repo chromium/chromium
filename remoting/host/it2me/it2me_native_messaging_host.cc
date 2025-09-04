@@ -221,9 +221,7 @@ void It2MeNativeMessagingHost::Start(Client* client) {
 void It2MeNativeMessagingHost::SendMessageToClient(
     base::Value::Dict message) const {
   DCHECK(task_runner()->BelongsToCurrentThread());
-  std::string message_json;
-  base::JSONWriter::Write(message, &message_json);
-  client_->PostMessageFromNativeHost(message_json);
+  client_->PostMessageFromNativeHost(base::WriteJson(message).value_or(""));
 }
 
 void It2MeNativeMessagingHost::ProcessHello(base::Value::Dict message,

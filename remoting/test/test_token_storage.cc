@@ -182,14 +182,15 @@ bool TestTokenStorageOnDisk::StoreTokenForKey(const std::string& key,
     return false;
   }
 
-  std::string json_string;
   token_data->SetByDottedPath(user_name_ + '.' + key, value);
-  if (!base::JSONWriter::Write(*token_data, &json_string)) {
+  std::optional<std::string> json_string = base::WriteJson(*token_data);
+  if (!json_string.has_value()) {
     LOG(ERROR) << "Couldn't convert JSON data to string";
     return false;
   }
 
-  if (!base::ImportantFileWriter::WriteFileAtomically(file_path, json_string)) {
+  if (!base::ImportantFileWriter::WriteFileAtomically(file_path,
+                                                      json_string.value())) {
     LOG(ERROR) << "Failed to save token to the file on disk.";
     return false;
   }
