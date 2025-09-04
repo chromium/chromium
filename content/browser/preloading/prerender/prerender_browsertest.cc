@@ -15614,6 +15614,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderProcessReuseBrowserTest,
   if (!AreAllSitesIsolatedForTesting()) {
     return;
   }
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1. Navigate to an initial page.
@@ -15643,6 +15644,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderProcessReuseBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), navigation_url));
   RenderProcessHost* navigation_process = current_frame_host()->GetProcess();
   EXPECT_EQ(navigation_process, prerender_process);
+  // Verify that the reuse policy UMA is correctly recoreded.
+  histogram_tester.ExpectUniqueSample(
+      "BrowserRenderProcessHost.ReuseExistingProcess.ReusePolicy",
+      ProcessReusePolicy::kReusePrerenderingProcessForMainFrame, 1);
 
   // 4. Create a second tab and navigation to the same site.
   const GURL new_window_url =
