@@ -1441,8 +1441,79 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testPinTabsStatePersistWhenClosePanelAndReopen) {
+  const int tab_id =
+      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
+  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
+
+  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+                     "tabId", base::NumberToString(tab_id)))});
+
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testPinTabsStatePersistWhenClientRestarts) {
+  const int tab_id =
+      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
+  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
+
+  ExecuteJsTest(
+      {.params = base::Value(base::Value::Dict()
+                                 .Set("tabId", base::NumberToString(tab_id))
+                                 .Set("isFirstRun", true))});
+
+  WebUIStateListener listener(&host());
+  window_controller().Reload();
+  listener.WaitForWebUiState(mojom::WebUiState::kUninitialized);
+
+  ExecuteJsTest(
+      {.params = base::Value(base::Value::Dict().Set("isFirstRun", false))});
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
+  browser_activator().SetMode(BrowserActivator::Mode::kFirst);
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+
+  // Open a new incognito window.
+  auto* incognito = CreateIncognitoBrowser();
+  const GURL page_url = InProcessBrowserTest::embedded_test_server()->GetURL(
+      "/glic/browser_tests/test.html");
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, page_url, std::nullopt, incognito));
+  const int incognito_tab_id =
+      GetTabId(incognito->tab_strip_model()->GetActiveWebContents());
+
+  ExecuteJsTest(
+      {.params = base::Value(base::Value::Dict().Set(
+           "incognitoTabId", base::NumberToString(incognito_tab_id)))});
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testUnpinTabsFailsWhenNotPinned) {
   // Unpinning a tab that is not pinned should fail.
+  const int tab_id =
+      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
+  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
+
+  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+                     "tabId", base::NumberToString(tab_id)))});
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testUnpinAllTabs) {
+  const int tab_id =
+      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
+  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
+
+  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+                     "tabId", base::NumberToString(tab_id)))});
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testPinTabsHaveNoEffectOnFocusedTab) {
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
