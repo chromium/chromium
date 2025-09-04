@@ -179748,6 +179748,19 @@
        {}
       ]
      ],
+     "overflow-does-not-apply-to-inline-box.html": [
+      "f4c8a1816399ed368fb219bd1a4e49f61f18d083",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-ellipsis-dynamic-001.html": [
       "2a9edba9308bf06009d7b9a27f21f1e0f1a231c7",
       [
@@ -332377,10 +332390,6 @@
       ]
      },
      "tentative": {
-      "script-url-allowed-by-hash.https-expected.txt": [
-       "2a9a38f7ac98867cddb02253b9b3b8c1af16101d",
-       []
-      ],
       "support": {
        "add_dynamic_script.js": [
         "b6b780bf44d880ee1498ec02ba34429c086c2964",
@@ -332428,11 +332437,7 @@
         "e813b8b13e505745c45c7ff4959d59eafad0c7d5",
         []
        ]
-      },
-      "url-hash-in-header-and-meta.https-expected.txt": [
-       "55b0fe1bd29959636899dc2a0cd2e15b346f630b",
-       []
-      ]
+      }
      }
     },
     "script-src-attr-elem": {
@@ -387473,6 +387478,10 @@
       ],
       "mq-non-matching-lazy-load-style.css": [
        "b128f7398e3bbcb7166dbb235350e0202819ebcf",
+       []
+      ],
+      "preferences-helper.js": [
+       "35097abad2466c66511f920dcc3d42714cd8d3f2",
        []
       ],
       "prefers-color-scheme-dark.svg": [
@@ -496986,7 +496995,7 @@
       ]
      ],
      "report-multiple-violations-02.html": [
-      "cc64f151a3b1d60853d8d58a173073c7c4723ed0",
+      "b5b6bc552910790cb2214d9783602f033f69b751",
       [
        null,
        {}
@@ -545490,7 +545499,7 @@
       ]
      ],
      "scrollParent.html": [
-      "9faa0c9a3e92e38662ac77d25b08731fe00a7db3",
+      "344ee522ef2664e0b963e79812074f08f343f5bf",
       [
        null,
        {}
@@ -546382,6 +546391,41 @@
      ],
      "overflow-media-features.html": [
       "fb983318427f33bd8eb5a69f8b7fafeac9874515",
+      [
+       null,
+       {}
+      ]
+     ],
+     "preferences-colorScheme.tentative.https.html": [
+      "ae1655ab23b320e76ad1c43ddf67785ae63c6725",
+      [
+       null,
+       {}
+      ]
+     ],
+     "preferences-contrast.tentative.https.html": [
+      "51c4d278349cfccd3043c6857b4b2645ab7bb34e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "preferences-reducedData.tentative.https.html": [
+      "5fe50ef240562ee7ba226f73809b277ff84f3001",
+      [
+       null,
+       {}
+      ]
+     ],
+     "preferences-reducedMotion.tentative.https.html": [
+      "2f2f7a40857f26df080b2efe909803cb1b935424",
+      [
+       null,
+       {}
+      ]
+     ],
+     "preferences-reducedTransparency.tentative.https.html": [
+      "73900069abc07da395386ff447aabe7d5cec0c4b",
       [
        null,
        {}
@@ -660789,11 +660833,12 @@
         ]
        ],
        "show-picker-disabled-readonly.html": [
-        "74448f70fb5640ddecc681f719de3da8f11152be",
+        "5cf03f32fff27d48c282550c9bee5a1f056b97a1",
         [
          null,
          {
-          "testdriver": true
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ],
@@ -668578,7 +668623,7 @@
         ]
        ],
        "interestfor-keyboard-behavior.tentative.html": [
-        "ccfa99b3975f99d4a0c72318a6dd140f459a4a38",
+        "211e6f1df38343c60352c4b749dfd11ed66b18c9",
         [
          null,
          {
@@ -715921,13 +715966,6 @@
       ]
      ],
      "parsing": {
-      "animation-trigger-name-parsing.html": [
-       "c2a746bc4f946143f67f02abcb00916982b2272b",
-       [
-        null,
-        {}
-       ]
-      ],
       "animation-trigger-parsing.tentative.html": [
        "5deeee8048711ba0d7fdc75c8419394eda9d9764",
        [
@@ -715986,6 +716024,13 @@
       ],
       "timeline-trigger-exit-range-start-valid.tentative.html": [
        "23700cab713e2066b89ea2d434ef4bc63411f6c8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "timeline-trigger-name-parsing.html": [
+       "c2a746bc4f946143f67f02abcb00916982b2272b",
        [
         null,
         {}
@@ -766902,7 +766947,7 @@
        ]
       ],
       "audiosource-onended.html": [
-       "20ef4a1c6381ffddd73f097de838dfe110b0e4e3",
+       "ed15c2a40b7e2053668cd56f673d502ddea77e94",
        [
         null,
         {}
@@ -766944,7 +766989,7 @@
        ]
       ],
       "sample-accurate-scheduling.html": [
-       "fd244e8a5f62c9910d17058c0edc8c1cb8cf8880",
+       "371bb2c4bd4ea905e007598970605202f8e6dfd7",
        [
         null,
         {}

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL]  scheduler: focus and blur events
+  assert_array_equals: lengths differ, expected array ["inline script #1", "focus event", "blur event", "focus el 2 event", "end script #1", "inline script #2"] length 6, got ["inline script #1", "end script #1", "inline script #2"] length 3
+Harness: the test ran to completion.
+
