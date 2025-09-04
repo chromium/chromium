@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 
 #include "ash/public/cpp/window_properties.h"
@@ -44,7 +42,7 @@ namespace ash {
 
 namespace {
 
-BASE_FEATURE(CCALocalOverride, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCCALocalOverride, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FilePath::CharType kCCALocalOverrideDirectoryPath[] =
     FILE_PATH_LITERAL("/etc/camera/cca");
 

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "ash/public/cpp/app_list/app_list_features.h"
 
 #include "ash/constants/ash_features.h"
@@ -12,15 +10,15 @@
 
 namespace app_list_features {
 
-BASE_FEATURE(EnableAppReinstallZeroState, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(EnableAppListLaunchRecording, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(EnableExactMatchForNonLatinLocale,
+BASE_FEATURE(kEnableAppReinstallZeroState, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableAppListLaunchRecording, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableExactMatchForNonLatinLocale,
              base::FEATURE_ENABLED_BY_DEFAULT);
 // DO NOT REMOVE: Tast integration tests use this feature. (See crbug/1340267)
-BASE_FEATURE(ForceShowContinueSection, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(DynamicSearchUpdateAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(LauncherPlayStoreSearch, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(AppsCollections, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kForceShowContinueSection, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDynamicSearchUpdateAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLauncherPlayStoreSearch, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAppsCollections, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppReinstallZeroStateEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppReinstallZeroState);
