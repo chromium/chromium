@@ -69,7 +69,12 @@ class MediaCodecBridgeBuilder {
                             info.supportsAdaptivePlayback && allowAdaptivePlayback,
                             profile);
             assert format != null;
-            format.setInteger(MediaFormat.KEY_LOW_LATENCY, useLowLatencyMode ? 1 : 0);
+            if (useLowLatencyMode) {
+                // Note: We only set this key when `useLowLatencyMode` is true
+                // since setting it even to disabled (the default) breaks on
+                // some devices (e.g., Android X86 emulator).
+                format.setInteger(MediaFormat.KEY_LOW_LATENCY, 1);
+            }
 
             if (!bridge.configureVideo(
                     format,
