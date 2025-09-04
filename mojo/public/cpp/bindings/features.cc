@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "mojo/public/cpp/bindings/features.h"
 
 namespace mojo {
@@ -29,10 +27,10 @@ BASE_FEATURE(kTaskPerMessage,
 // small random selection of Connectors enable the unread message count quota
 // on their associated message pipe, and record the highest unread message count
 // seen during the Connector's lifetime.
-BASE_FEATURE(MojoRecordUnreadMessageCount, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMojoRecordUnreadMessageCount, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables predictive allocation for Mojo serialization.
-BASE_FEATURE(MojoPredictiveAllocation, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMojoPredictiveAllocation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace mojo

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -37,7 +35,7 @@ namespace mojo {
 
 namespace {
 
-BASE_FEATURE(MojoBindingsInlineSLS, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMojoBindingsInlineSLS, base::FEATURE_ENABLED_BY_DEFAULT);
 
 base::GenericSequenceLocalStorageSlot<internal::MessageDispatchContext*>&
 GetSLSMessageDispatchContext() {

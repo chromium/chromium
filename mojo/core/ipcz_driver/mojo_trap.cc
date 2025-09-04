@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "mojo/core/ipcz_driver/mojo_trap.h"
 
 #include <cstdint>
@@ -29,7 +27,7 @@ namespace {
 // A feature which enables a tentative fix for https://crbug.com/1468933, which
 // is caused by overly aggressive trap event suppression. Gated by a feature so
 // we can evaluate performance impact.
-BASE_FEATURE(FixDataPipeTrapBug, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFixDataPipeTrapBug, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Translates Mojo signal conditions to equivalent IpczTrapConditions for any
 // portal used as a message pipe endpoint.
