@@ -262,7 +262,8 @@ void ManagedUserProfileNoticeUI::Initialize(
         "enterpriseProfileWelcomeTitle",
         l10n_util::GetStringUTF16(IDS_ENTERPRISE_WELCOME_PROFILE_SETUP_TITLE));
     update_data.Set("profileDisclosureTitle",
-                    IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE);
+                    l10n_util::GetStringUTF16(
+                        IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE));
 
     update_data.Set("showLinkDataCheckbox", false);
   }
