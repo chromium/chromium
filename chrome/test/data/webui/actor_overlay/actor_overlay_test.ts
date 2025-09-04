@@ -48,16 +48,24 @@ suite('Scrim', function() {
     assertFalse(await testHandler.whenCalled('onHoverStatusChanged'));
   });
 
-  test('SetScrimBackground', async function() {
+  test('BackgroundVisibleUpdates', async function() {
     // Initial state should not contain the background-visible class.
     assertFalse(page.classList.contains('background-visible'));
 
-    testRemote.setScrimBackground(true);
+    page.dispatchEvent(new PointerEvent('pointerenter'));
+    assertTrue(page.classList.contains('background-visible'));
+
+    testRemote.setHandoffButtonHoverStatus(true);
+    page.dispatchEvent(new PointerEvent('pointerleave'));
     await microtasksFinished();
     assertTrue(page.classList.contains('background-visible'));
 
-    testRemote.setScrimBackground(false);
+    testRemote.setHandoffButtonHoverStatus(false);
+    page.dispatchEvent(new PointerEvent('pointerenter'));
     await microtasksFinished();
+    assertTrue(page.classList.contains('background-visible'));
+
+    page.dispatchEvent(new PointerEvent('pointerleave'));
     assertFalse(page.classList.contains('background-visible'));
   });
 
