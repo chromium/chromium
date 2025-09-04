@@ -43,6 +43,8 @@ public class WebViewCachedFlags {
     private static final String CACHED_ENABLED_FLAGS_PREF = "CachedFlagsEnabled";
     private static final String CACHED_DISABLED_FLAGS_PREF = "CachedFlagsDisabled";
     private static final String MIGRATION_HISTOGRAM_NAME = "Android.WebView.CachedFlagMigration";
+    private static final String CACHED_FLAGS_EXIST_HISTOGRAM_NAME =
+            "Android.WebView.CachedFlagsExist";
 
     @IntDef({DefaultState.DISABLED, DefaultState.ENABLED})
     @Retention(RetentionPolicy.SOURCE)
@@ -151,6 +153,10 @@ public class WebViewCachedFlags {
     @VisibleForTesting
     public WebViewCachedFlags(
             SharedPreferences prefs, Map<String, @DefaultState Integer> defaults) {
+        boolean flagsExist =
+                prefs.contains(CACHED_ENABLED_FLAGS_PREF)
+                        && prefs.contains(CACHED_DISABLED_FLAGS_PREF);
+        RecordHistogram.recordBooleanHistogram(CACHED_FLAGS_EXIST_HISTOGRAM_NAME, flagsExist);
         // TODO(crbug.com/414342590): Remove the call to HashSet constructor once the migration code
         // is removed.
         mOverrideEnabled =

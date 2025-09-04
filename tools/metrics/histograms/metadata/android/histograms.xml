@@ -6460,6 +6460,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.CachedFlagsExist" enum="BooleanExists"
+    expires_after="2026-04-28">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>colibie@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    When we read the cached flags from shared preferences, this histogram
+    records whether we successfully found existing cached flags. The cached
+    flags may not be there if the app/user has cleared the data directory, the
+    app is freshly installed or in some cases when the WebView version changes.
+    This metric does not include the &quot;old manual experiments&quot;
+    referenced in WebViewCachedFlags.java. This metric is recorded once per
+    startup.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.CacheQuotaFreshness"
     enum="CacheQuotaFreshness" expires_after="2025-12-31">
   <owner>abhijithnair@chromium.org</owner>
