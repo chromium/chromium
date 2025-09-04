@@ -649,6 +649,73 @@ TEST(RegistrationFetcherParamTest, EmptyStringAuthorization) {
   EXPECT_EQ(param.authorization(), "");
 }
 
+TEST(RegistrationFetcherParamTest, ValidProviderParams) {
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeader,
+      "(ES256);path=\"startsession\";challenge=\"c1\";provider_key=\"key\";"
+      "provider_url=\"https://"
+      "provider.example.com\";provider_session_id=\"id\"");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(registration_request,
+                                              response_headers.get());
+  ASSERT_EQ(params.size(), 1U);
+  const auto& param = params[0];
+  EXPECT_EQ(param.registration_endpoint(),
+            GURL("https://www.example.com/startsession"));
+  EXPECT_THAT(param.supported_algos(), UnorderedElementsAre(ECDSA_SHA256));
+  EXPECT_EQ(param.challenge(), "c1");
+  EXPECT_EQ(param.provider_key(), "key");
+  EXPECT_EQ(param.provider_url(), GURL("https://provider.example.com"));
+  EXPECT_EQ(param.provider_session_id(), Session::Id("id"));
+}
+
+TEST(RegistrationFetcherParamTest, IncompleteProviderParams) {
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeader,
+      "(ES256);path=\"startsession\";challenge=\"c1\";provider_key=\"key\"");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(registration_request,
+                                              response_headers.get());
+  EXPECT_TRUE(params.empty());
+}
+
+TEST(RegistrationFetcherParamTest, IncompleteProviderParams2) {
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeader,
+      "(ES256);path=\"startsession\";challenge=\"c1\";"
+      "provider_key=\"key\";provider_session_id=\"id\"");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(registration_request,
+                                              response_headers.get());
+  EXPECT_TRUE(params.empty());
+}
+
+TEST(RegistrationFetcherParamTest, InvalidProviderUrl) {
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeader,
+      "(ES256);path=\"startsession\";challenge=\"c1\";provider_key=\"key\";"
+      "provider_url=\"http://"
+      "provider.example.com\";provider_session_id=\"id\"");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(registration_request,
+                                              response_headers.get());
+  // The provider_url is not secure, so reject the federated registration
+  // request.
+  EXPECT_TRUE(params.empty());
+}
+
 }  // namespace
 
 }  // namespace net::device_bound_sessions

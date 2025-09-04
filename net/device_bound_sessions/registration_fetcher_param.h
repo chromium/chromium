@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "crypto/signature_verifier.h"
 #include "net/base/net_export.h"
+#include "net/device_bound_sessions/session.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
@@ -52,7 +53,10 @@ class NET_EXPORT RegistrationFetcherParam {
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
       std::string challenge,
-      std::optional<std::string> authorization);
+      std::optional<std::string> authorization,
+      std::optional<std::string> provider_key = std::nullopt,
+      std::optional<GURL> provider_url = std::nullopt,
+      std::optional<Session::Id> provider_session_id = std::nullopt);
 
   const GURL& registration_endpoint() const { return registration_endpoint_; }
 
@@ -65,6 +69,16 @@ class NET_EXPORT RegistrationFetcherParam {
 
   const std::optional<std::string>& authorization() const {
     return authorization_;
+  }
+
+  const std::optional<std::string>& provider_key() const {
+    return provider_key_;
+  }
+
+  const std::optional<GURL>& provider_url() const { return provider_url_; }
+
+  const std::optional<Session::Id>& provider_session_id() const {
+    return provider_session_id_;
   }
 
   GURL TakeRegistrationEndpoint() { return std::move(registration_endpoint_); }
@@ -81,7 +95,10 @@ class NET_EXPORT RegistrationFetcherParam {
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
       std::string challenge,
-      std::optional<std::string> authorization);
+      std::optional<std::string> authorization,
+      std::optional<std::string> provider_key,
+      std::optional<GURL> provider_url,
+      std::optional<Session::Id> provider_session_id);
 
   static std::optional<RegistrationFetcherParam> ParseItem(
       const GURL& request_url,
@@ -91,6 +108,9 @@ class NET_EXPORT RegistrationFetcherParam {
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos_;
   std::string challenge_;
   std::optional<std::string> authorization_;
+  std::optional<std::string> provider_key_;
+  std::optional<GURL> provider_url_;
+  std::optional<Session::Id> provider_session_id_;
 };
 
 }  // namespace net::device_bound_sessions
