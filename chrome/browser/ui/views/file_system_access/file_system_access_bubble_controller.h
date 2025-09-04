@@ -9,11 +9,9 @@ namespace content {
 class WebContents;
 }
 
-/** FileSystemAccessBubbleController class hosting helper methods to assist with
- * the page action such as the logic for showing the action bubble. */
+// FileSystemAccessBubbleController class hosting helper methods to assist with
+// the page action such as the logic for showing the action bubble.
 
-// TODO(crbug.com/376282751) Implement the rest of the page action controller
-// class
 // TODO(crbug.com/436624856) Make this into a BrowserWindowFeature.
 class FileSystemAccessBubbleController {
  public:
