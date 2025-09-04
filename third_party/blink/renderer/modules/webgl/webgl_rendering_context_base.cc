@@ -1940,10 +1940,53 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     return resource ? resource->Bitmap() : nullptr;
   }
 
-  CanvasResourceProvider* provider = PaintRenderingResultsToResourceProvider(
-      source_buffer, /*use_bitmap_provider=*/true);
+  if (isContextLost() || !GetDrawingBuffer()) {
+    return nullptr;
+  }
 
-  return provider ? provider->Snapshot(reason) : nullptr;
+  bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
+
+  if (resource_provider_.get() &&
+      resource_provider_.get()->Size() != GetDrawingBuffer()->Size()) {
+    resource_provider_.reset();
+    Host()->DiscardResources();
+  }
+
+  // The host's ResourceProvider is purged to save memory when the tab
+  // is backgrounded.
+
+  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
+    // `resource_provider_` already has the current contents.
+    return resource_provider_->Snapshot(reason);
+  }
+
+  must_paint_to_canvas_ = false;
+
+  CanvasResourceProvider* resource_provider =
+      GetOrCreateCanvasResourceProvider(/*use_bitmap_provider=*/true);
+  if (!resource_provider) {
+    return nullptr;
+  }
+
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
+  // TODO(sunnyps): Why is a texture restorer needed? See if it can be removed.
+  ScopedTexture2DRestorer restorer(this);
+  ScopedFramebufferRestorer fbo_restorer(this);
+
+  // In rare situations on macOS the drawing buffer can be destroyed
+  // during the resolve process, specifically during automatic
+  // graphics switching. Guard against this.
+  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw()) {
+    return nullptr;
+  }
+
+  bool copy_succeeded = CopyRenderingResultsFromDrawingBuffer(
+      resource_provider_.get(), source_buffer);
+  if (!copy_succeeded) {
+    return nullptr;
+  }
+
+  return resource_provider->Snapshot(reason);
 }
 
 scoped_refptr<CanvasResource>
