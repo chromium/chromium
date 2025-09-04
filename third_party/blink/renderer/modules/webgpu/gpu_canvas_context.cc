@@ -766,18 +766,18 @@ GPUCanvasContext::GetFrontBufferMailboxTexture() {
 }
 
 void GPUCanvasContext::ReplaceDrawingBuffer(bool destroy_swap_buffers) {
-  if (swap_buffers_) {
-    swap_buffers_->DiscardCurrentSwapBuffer();
-    swap_texture_ = nullptr;
+  if (!swap_buffers_) {
+    return;
   }
 
-  if (copy_to_swap_texture_required_ && texture_) {
-    texture_->ClearBeforeDestroyCallback();
-    texture_->destroy();
-  }
-  texture_ = nullptr;
+  swap_buffers_->DiscardCurrentSwapBuffer();
 
-  if (swap_buffers_ && destroy_swap_buffers) {
+  // DiscardCurrentSwapBuffer() will call OnTextureTransferred() which should
+  // have destroyed the previous textures.
+  CHECK(!texture_);
+  CHECK(!swap_texture_);
+
+  if (destroy_swap_buffers) {
     // Tell any previous swapbuffers that it will no longer be used and can
     // destroy all its resources (and produce errors when used).
     swap_buffers_->Neuter();

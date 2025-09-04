@@ -257,11 +257,15 @@ gpu::SyncToken WebGPUMailboxTexture::Dissociate() {
         recyclable_canvas_resource_->SetCompletionSyncToken(
             finished_access_token);
       }
-      if (finished_access_callback_) {
-        std::move(finished_access_callback_).Run(finished_access_token);
-      }
+    }
+    // Run the finished access callback even if the context provider is lost.
+    // The callback could be holding on to refs that need to be released.
+    if (finished_access_callback_) {
+      std::move(finished_access_callback_).Run(finished_access_token);
     }
   }
+  recyclable_canvas_resource_.reset();
+  scoped_access_.reset();
   shared_image_.reset();
   return finished_access_token;
 #else
