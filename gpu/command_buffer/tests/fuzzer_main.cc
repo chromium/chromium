@@ -450,13 +450,13 @@ class CommandBufferSetup {
     // SharedContextState and should have its own.
     auto decoder_feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
         config_.workarounds, gpu_feature_info);
-    scoped_refptr<gles2::ContextGroup> context_group = new gles2::ContextGroup(
-        gpu_preferences_, /*memory_tracker=*/nullptr, &translator_cache_,
-        &completeness_cache_, decoder_feature_info,
-        /*bind_generates_resource=*/false,
-        /*progress_reporter=*/nullptr, gpu_feature_info,
-        discardable_manager_.get(), passthrough_discardable_manager_.get(),
-        shared_image_manager_.get());
+    scoped_refptr<gles2::ContextGroup> context_group =
+        MakeRefCounted<gles2::ContextGroup>(
+            gpu_preferences_, /*memory_tracker=*/nullptr, &translator_cache_,
+            &completeness_cache_, decoder_feature_info,
+            /*progress_reporter=*/nullptr, gpu_feature_info,
+            discardable_manager_.get(), passthrough_discardable_manager_.get(),
+            shared_image_manager_.get());
     auto* context = context_.get();
     decoder_.reset(gles2::GLES2Decoder::Create(
         command_buffer_.get(), command_buffer_->service(), &outputter_,

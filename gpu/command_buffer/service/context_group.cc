@@ -73,7 +73,6 @@ ContextGroup::ContextGroup(
     ShaderTranslatorCache* shader_translator_cache,
     FramebufferCompletenessCache* framebuffer_completeness_cache,
     const scoped_refptr<FeatureInfo>& feature_info,
-    bool bind_generates_resource,
     gl::ProgressReporter* progress_reporter,
     const GpuFeatureInfo& gpu_feature_info,
     ServiceDiscardableManager* discardable_manager,
@@ -94,7 +93,6 @@ ContextGroup::ContextGroup(
       framebuffer_completeness_cache_(framebuffer_completeness_cache),
 #endif
       enforce_gl_minimums_(gpu_preferences_.enforce_gl_minimums),
-      bind_generates_resource_(bind_generates_resource),
       max_vertex_attribs_(0u),
       max_texture_units_(0u),
       max_texture_image_units_(0u),
@@ -127,9 +125,6 @@ ContextGroup::ContextGroup(
       shared_image_manager_(shared_image_manager) {
   DCHECK(discardable_manager);
   DCHECK(feature_info_);
-
-  // Temporary check to ensure nothing is using bind_generates_resource.
-  CHECK(!bind_generates_resource_);
 
   use_passthrough_cmd_decoder_ = gpu_preferences_.use_passthrough_cmd_decoder;
 }
@@ -399,8 +394,9 @@ gpu::ContextResult ContextGroup::Initialize(
     texture_manager_ = std::make_unique<TextureManager>(
         memory_tracker_, feature_info_.get(), max_texture_size,
         max_cube_map_texture_size, max_rectangle_texture_size,
-        max_3d_texture_size, max_array_texture_layers, bind_generates_resource_,
-        progress_reporter_, discardable_manager_);
+        max_3d_texture_size, max_array_texture_layers,
+        /*use_default_textures=*/false, progress_reporter_,
+        discardable_manager_);
   }
 
   const GLint kMinTextureImageUnits = 8;

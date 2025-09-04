@@ -328,8 +328,7 @@ void TestHelper::SetupContextGroupInitExpectations(
     const DisallowedFeatures& disallowed_features,
     const char* extensions,
     const char* gl_version,
-    ContextType context_type,
-    bool bind_generates_resource) {
+    ContextType context_type) {
   InSequence sequence;
 
   bool enable_es3 = !(context_type == CONTEXT_TYPE_OPENGLES2 ||
@@ -449,7 +448,7 @@ void TestHelper::SetupContextGroupInitExpectations(
       .WillRepeatedly(SetArgPointee<1>(kMinProgramTexelOffset))
       .RetiresOnSaturation();
 
-  bool use_default_textures = bind_generates_resource;
+  bool use_default_textures = false;
   SetupTextureManagerInitExpectations(gl, enable_es3,
                                       gl_info.IsAtLeastGLES(3, 0),
                                       extension_set, use_default_textures);

@@ -211,12 +211,11 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   scoped_refptr<FeatureInfo> feature_info =
       new FeatureInfo(workarounds, gpu_feature_info);
 
-  const bool bind_generates_resource = false;
-  group_ = scoped_refptr<ContextGroup>(new ContextGroup(
+  group_ = MakeRefCounted<ContextGroup>(
       gpu_preferences_, memory_tracker_, &shader_translator_cache_,
-      &framebuffer_completeness_cache_, feature_info, bind_generates_resource,
+      &framebuffer_completeness_cache_, feature_info,
       /*progress_reporter=*/nullptr, gpu_feature_info, &discardable_manager_,
-      nullptr, &shared_image_manager_));
+      nullptr, &shared_image_manager_);
 
   InSequence sequence;
 
@@ -234,8 +233,7 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
 
   TestHelper::SetupContextGroupInitExpectations(
       gl_.get(), DisallowedFeatures(), normalized_init.extensions.c_str(),
-      normalized_init.gl_version.c_str(), init.context_type,
-      bind_generates_resource);
+      normalized_init.gl_version.c_str(), init.context_type);
 
   // We initialize the ContextGroup with a MockGLES2Decoder so that
   // we can use the ContextGroup to figure out how the real GLES2Decoder
@@ -2358,10 +2356,9 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   ASSERT_EQ(gl::GetANGLEImplementation(), gl::ANGLEImplementation::kNull);
 
   scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();
-  group_ = new gles2::ContextGroup(
+  group_ = MakeRefCounted<gles2::ContextGroup>(
       gpu_preferences_, /*memory_tracker=*/nullptr, &shader_translator_cache_,
       &framebuffer_completeness_cache_, feature_info,
-      /*bind_generates_resource=*/false,
       /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
       &passthrough_discardable_manager_, &shared_image_manager_);
 

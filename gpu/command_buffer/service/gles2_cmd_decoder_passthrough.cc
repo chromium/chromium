@@ -975,8 +975,6 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
                                        PassthroughGLBlobCacheGetCallback, this);
   }
 
-  bind_generates_resource_ = group_->bind_generates_resource();
-
   resources_ = group_->passthrough_resources();
 
   // Query information about the texture units

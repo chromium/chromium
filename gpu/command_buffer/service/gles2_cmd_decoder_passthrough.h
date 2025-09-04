@@ -518,11 +518,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // time. Can be disabled for testing with only specific extensions enabled.
   bool request_optional_extensions_ = true;
 
-  // Some objects may generate resources when they are bound even if they were
-  // not generated yet: texture, buffer, renderbuffer, framebuffer, transform
-  // feedback, vertex array
-  bool bind_generates_resource_;
-
   // Mappings from client side IDs to service side IDs for shared objects
   raw_ptr<PassthroughResources> resources_ = nullptr;
 

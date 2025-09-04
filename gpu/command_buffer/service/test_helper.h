@@ -108,8 +108,7 @@ class TestHelper {
       const DisallowedFeatures& disallowed_features,
       const char* extensions,
       const char* gl_version,
-      ContextType context_type,
-      bool bind_generates_resource);
+      ContextType context_type);
   static void SetupFeatureInfoInitExpectations(::gl::MockGLInterface* gl,
                                                const char* extensions);
   static void SetupFeatureInfoInitExpectationsWithGLVersion(

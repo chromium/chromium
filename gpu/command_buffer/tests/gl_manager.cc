@@ -165,8 +165,6 @@ void GLManager::InitializeWithWorkaroundsImpl(
 
   share_group_ = share_group ? share_group : new gl::GLShareGroup;
 
-  const bool bind_generates_resource = false;
-
   ContextCreationAttribs attribs;
   attribs.context_type = options.context_type;
 
@@ -185,7 +183,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
     // not unexpectedly use the wrong command decoder
     context_group = new gles2::ContextGroup(
         gpu_preferences_, /*memory_tracker=*/nullptr, translator_cache_.get(),
-        &completeness_cache_, feature_info, bind_generates_resource,
+        &completeness_cache_, feature_info,
         /*progress_reporter=*/nullptr, gpu_feature_info,
         discardable_manager_.get(), passthrough_discardable_manager_.get(),
         &shared_image_manager_);

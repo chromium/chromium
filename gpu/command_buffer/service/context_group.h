@@ -63,7 +63,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
                ShaderTranslatorCache* shader_translator_cache,
                FramebufferCompletenessCache* framebuffer_completeness_cache,
                const scoped_refptr<FeatureInfo>& feature_info,
-               bool bind_generates_resource,
                gl::ProgressReporter* progress_reporter,
                const GpuFeatureInfo& gpu_feature_info,
                ServiceDiscardableManager* discardable_manager,
@@ -95,10 +94,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
 
   FramebufferCompletenessCache* framebuffer_completeness_cache() const {
     return framebuffer_completeness_cache_;
-  }
-
-  bool bind_generates_resource() {
-    return bind_generates_resource_;
   }
 
   uint32_t max_vertex_attribs() const { return max_vertex_attribs_; }
@@ -261,7 +256,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   raw_ptr<FramebufferCompletenessCache> framebuffer_completeness_cache_;
 
   bool enforce_gl_minimums_;
-  bool bind_generates_resource_;
 
   uint32_t max_vertex_attribs_;
   uint32_t max_texture_units_;

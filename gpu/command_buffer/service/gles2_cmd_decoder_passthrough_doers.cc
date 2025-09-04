@@ -120,19 +120,11 @@ error::Error DeleteHelper(ClientType client_id,
   return error::kNoError;
 }
 
-template <typename ClientType, typename ServiceType, typename GenFunction>
+template <typename ClientType, typename ServiceType>
 ServiceType GetServiceID(ClientType client_id,
-                         ClientServiceMap<ClientType, ServiceType>* id_map,
-                         bool create_if_missing,
-                         GenFunction gen_function) {
+                         ClientServiceMap<ClientType, ServiceType>* id_map) {
   ServiceType service_id = id_map->invalid_service_id();
   if (id_map->GetServiceID(client_id, &service_id)) {
-    return service_id;
-  }
-
-  if (create_if_missing) {
-    service_id = gen_function();
-    id_map->SetIDMapping(client_id, service_id);
     return service_id;
   }
 
@@ -141,17 +133,9 @@ ServiceType GetServiceID(ClientType client_id,
 
 GLuint GetTextureServiceID(gl::GLApi* api,
                            GLuint client_id,
-                           PassthroughResources* resources,
-                           bool create_if_missing) {
+                           PassthroughResources* resources) {
   GLuint service_id = resources->texture_id_map.invalid_service_id();
   if (resources->texture_id_map.GetServiceID(client_id, &service_id)) {
-    return service_id;
-  }
-
-  if (create_if_missing) {
-    service_id = 0;
-    api->glGenTexturesFn(1, &service_id);
-    resources->texture_id_map.SetIDMapping(client_id, service_id);
     return service_id;
   }
 
@@ -160,37 +144,20 @@ GLuint GetTextureServiceID(gl::GLApi* api,
 
 GLuint GetBufferServiceID(gl::GLApi* api,
                           GLuint client_id,
-                          PassthroughResources* resources,
-                          bool create_if_missing) {
-  return GetServiceID(client_id, &resources->buffer_id_map, create_if_missing,
-                      [api]() {
-                        GLuint service_id = 0;
-                        api->glGenBuffersARBFn(1, &service_id);
-                        return service_id;
-                      });
+                          PassthroughResources* resources) {
+  return GetServiceID(client_id, &resources->buffer_id_map);
 }
 
 GLuint GetRenderbufferServiceID(gl::GLApi* api,
                                 GLuint client_id,
-                                PassthroughResources* resources,
-                                bool create_if_missing) {
-  return GetServiceID(client_id, &resources->renderbuffer_id_map,
-                      create_if_missing, [api]() {
-                        GLuint service_id = 0;
-                        api->glGenRenderbuffersEXTFn(1, &service_id);
-                        return service_id;
-                      });
+                                PassthroughResources* resources) {
+  return GetServiceID(client_id, &resources->renderbuffer_id_map);
 }
 
 GLuint GetFramebufferServiceID(gl::GLApi* api,
                                GLuint client_id,
-                               ClientServiceMap<GLuint, GLuint>* id_map,
-                               bool create_if_missing) {
-  return GetServiceID(client_id, id_map, create_if_missing, [api]() {
-    GLuint service_id = 0;
-    api->glGenFramebuffersEXTFn(1, &service_id);
-    return service_id;
-  });
+                               ClientServiceMap<GLuint, GLuint>* id_map) {
+  return GetServiceID(client_id, id_map);
 }
 
 GLuint GetTransformFeedbackServiceID(GLuint client_id,
@@ -425,8 +392,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindAttribLocation(
 error::Error GLES2DecoderPassthroughImpl::DoBindBuffer(GLenum target,
                                                        GLuint buffer) {
   CheckErrorCallbackState();
-  api()->glBindBufferFn(target, GetBufferServiceID(api(), buffer, resources_,
-                                                   bind_generates_resource_));
+  api()->glBindBufferFn(target, GetBufferServiceID(api(), buffer, resources_));
   if (CheckErrorCallbackState()) {
     return error::kNoError;
   }
@@ -444,9 +410,8 @@ error::Error GLES2DecoderPassthroughImpl::DoBindBufferBase(GLenum target,
                                                            GLuint index,
                                                            GLuint buffer) {
   CheckErrorCallbackState();
-  api()->glBindBufferBaseFn(
-      target, index,
-      GetBufferServiceID(api(), buffer, resources_, bind_generates_resource_));
+  api()->glBindBufferBaseFn(target, index,
+                            GetBufferServiceID(api(), buffer, resources_));
   if (CheckErrorCallbackState()) {
     return error::kNoError;
   }
@@ -466,10 +431,9 @@ error::Error GLES2DecoderPassthroughImpl::DoBindBufferRange(GLenum target,
                                                             GLintptr offset,
                                                             GLsizeiptr size) {
   CheckErrorCallbackState();
-  api()->glBindBufferRangeFn(
-      target, index,
-      GetBufferServiceID(api(), buffer, resources_, bind_generates_resource_),
-      offset, size);
+  api()->glBindBufferRangeFn(target, index,
+                             GetBufferServiceID(api(), buffer, resources_),
+                             offset, size);
   if (CheckErrorCallbackState()) {
     return error::kNoError;
   }
@@ -488,8 +452,8 @@ error::Error GLES2DecoderPassthroughImpl::DoBindFramebuffer(
     GLuint framebuffer) {
   CheckErrorCallbackState();
   api()->glBindFramebufferEXTFn(
-      target, GetFramebufferServiceID(api(), framebuffer, &framebuffer_id_map_,
-                                      bind_generates_resource_));
+      target,
+      GetFramebufferServiceID(api(), framebuffer, &framebuffer_id_map_));
   if (CheckErrorCallbackState()) {
     return error::kNoError;
   }
@@ -524,9 +488,8 @@ error::Error GLES2DecoderPassthroughImpl::DoBindImageTexture(GLuint unit,
                                                              GLenum access,
                                                              GLenum format) {
   api()->glBindImageTextureEXTFn(
-      unit,
-      GetTextureServiceID(api(), texture, resources_, bind_generates_resource_),
-      level, layered, layer, access, format);
+      unit, GetTextureServiceID(api(), texture, resources_), level, layered,
+      layer, access, format);
   return error::kNoError;
 }
 
@@ -534,8 +497,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindRenderbuffer(
     GLenum target,
     GLuint renderbuffer) {
   api()->glBindRenderbufferEXTFn(
-      target, GetRenderbufferServiceID(api(), renderbuffer, resources_,
-                                       bind_generates_resource_));
+      target, GetRenderbufferServiceID(api(), renderbuffer, resources_));
   return error::kNoError;
 }
 
@@ -547,8 +509,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBindSampler(GLuint unit,
 
 error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
                                                         GLuint texture) {
-  GLuint service_id =
-      GetTextureServiceID(api(), texture, resources_, bind_generates_resource_);
+  GLuint service_id = GetTextureServiceID(api(), texture, resources_);
 
   CheckErrorCallbackState();
 
@@ -1394,7 +1355,7 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferRenderbuffer(
   }
   api()->glFramebufferRenderbufferEXTFn(
       target, attachment, renderbuffertarget,
-      GetRenderbufferServiceID(api(), renderbuffer, resources_, false));
+      GetRenderbufferServiceID(api(), renderbuffer, resources_));
   return error::kNoError;
 }
 
@@ -1411,7 +1372,7 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2D(
   }
   api()->glFramebufferTexture2DEXTFn(
       target, attachment, textarget,
-      GetTextureServiceID(api(), texture, resources_, false), level);
+      GetTextureServiceID(api(), texture, resources_), level);
   return error::kNoError;
 }
 
@@ -1427,8 +1388,8 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTextureLayer(
     return error::kNoError;
   }
   api()->glFramebufferTextureLayerFn(
-      target, attachment,
-      GetTextureServiceID(api(), texture, resources_, false), level, layer);
+      target, attachment, GetTextureServiceID(api(), texture, resources_),
+      level, layer);
   return error::kNoError;
 }
 
@@ -1445,9 +1406,8 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTextureMultiviewOVR(
     return error::kNoError;
   }
   api()->glFramebufferTextureMultiviewOVRFn(
-      target, attachment,
-      GetTextureServiceID(api(), texture, resources_, false), level,
-      base_view_index, num_views);
+      target, attachment, GetTextureServiceID(api(), texture, resources_),
+      level, base_view_index, num_views);
   return error::kNoError;
 }
 
@@ -2296,8 +2256,7 @@ error::Error GLES2DecoderPassthroughImpl::DoInvalidateSubFramebuffer(
 
 error::Error GLES2DecoderPassthroughImpl::DoIsBuffer(GLuint buffer,
                                                      uint32_t* result) {
-  *result =
-      api()->glIsBufferFn(GetBufferServiceID(api(), buffer, resources_, false));
+  *result = api()->glIsBufferFn(GetBufferServiceID(api(), buffer, resources_));
   return error::kNoError;
 }
 
@@ -2317,7 +2276,7 @@ error::Error GLES2DecoderPassthroughImpl::DoIsEnablediOES(GLenum target,
 error::Error GLES2DecoderPassthroughImpl::DoIsFramebuffer(GLuint framebuffer,
                                                           uint32_t* result) {
   *result = api()->glIsFramebufferEXTFn(
-      GetFramebufferServiceID(api(), framebuffer, &framebuffer_id_map_, false));
+      GetFramebufferServiceID(api(), framebuffer, &framebuffer_id_map_));
   return error::kNoError;
 }
 
@@ -2330,7 +2289,7 @@ error::Error GLES2DecoderPassthroughImpl::DoIsProgram(GLuint program,
 error::Error GLES2DecoderPassthroughImpl::DoIsRenderbuffer(GLuint renderbuffer,
                                                            uint32_t* result) {
   *result = api()->glIsRenderbufferEXTFn(
-      GetRenderbufferServiceID(api(), renderbuffer, resources_, false));
+      GetRenderbufferServiceID(api(), renderbuffer, resources_));
   return error::kNoError;
 }
 
@@ -2354,8 +2313,8 @@ error::Error GLES2DecoderPassthroughImpl::DoIsSync(GLuint sync,
 
 error::Error GLES2DecoderPassthroughImpl::DoIsTexture(GLuint texture,
                                                       uint32_t* result) {
-  *result = api()->glIsTextureFn(
-      GetTextureServiceID(api(), texture, resources_, false));
+  *result =
+      api()->glIsTextureFn(GetTextureServiceID(api(), texture, resources_));
   return error::kNoError;
 }
 
@@ -3765,7 +3724,7 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2DMultisampleEXT(
   }
   api()->glFramebufferTexture2DMultisampleEXTFn(
       target, attachment, textarget,
-      GetTextureServiceID(api(), texture, resources_, false), level, samples);
+      GetTextureServiceID(api(), texture, resources_), level, samples);
   return error::kNoError;
 }
 
@@ -4663,10 +4622,10 @@ error::Error GLES2DecoderPassthroughImpl::DoCopyTextureCHROMIUM(
   gl::ScopedEnableTextureRectangleInShaderCompiler enable(
       feature_info_->IsWebGLContext() ? api() : nullptr);
   api()->glCopyTextureCHROMIUMFn(
-      GetTextureServiceID(api(), source_id, resources_, false), source_level,
-      dest_target, GetTextureServiceID(api(), dest_id, resources_, false),
-      dest_level, internalformat, dest_type, unpack_flip_y,
-      unpack_premultiply_alpha, unpack_unmultiply_alpha);
+      GetTextureServiceID(api(), source_id, resources_), source_level,
+      dest_target, GetTextureServiceID(api(), dest_id, resources_), dest_level,
+      internalformat, dest_type, unpack_flip_y, unpack_premultiply_alpha,
+      unpack_unmultiply_alpha);
 
   UpdateTextureSizeFromClientID(dest_id);
 
@@ -4691,9 +4650,9 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySubTextureCHROMIUM(
   gl::ScopedEnableTextureRectangleInShaderCompiler enable(
       feature_info_->IsWebGLContext() ? api() : nullptr);
   api()->glCopySubTextureCHROMIUMFn(
-      GetTextureServiceID(api(), source_id, resources_, false), source_level,
-      dest_target, GetTextureServiceID(api(), dest_id, resources_, false),
-      dest_level, xoffset, yoffset, x, y, width, height, unpack_flip_y,
+      GetTextureServiceID(api(), source_id, resources_), source_level,
+      dest_target, GetTextureServiceID(api(), dest_id, resources_), dest_level,
+      xoffset, yoffset, x, y, width, height, unpack_flip_y,
       unpack_premultiply_alpha, unpack_unmultiply_alpha);
   return error::kNoError;
 }
@@ -5164,8 +5123,8 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageToTextureINTERNAL(
     return error::kNoError;
   }
 
-  GLuint gl_texture_service_id = GetTextureServiceID(
-      api(), texture, resources_, /*create_if_missing=*/false);
+  GLuint gl_texture_service_id =
+      GetTextureServiceID(api(), texture, resources_);
   if (gl_texture_service_id == 0) {
     InsertError(GL_INVALID_OPERATION, "Cannot get texture service id");
     return error::kNoError;
@@ -5223,8 +5182,8 @@ GLES2DecoderPassthroughImpl::DoFramebufferTexturePixelLocalStorageANGLE(
     return error::kNoError;
   }
   api()->glFramebufferTexturePixelLocalStorageANGLEFn(
-      plane, GetTextureServiceID(api(), backingtexture, resources_, false),
-      level, layer);
+      plane, GetTextureServiceID(api(), backingtexture, resources_), level,
+      layer);
   return error::kNoError;
 }
 
