@@ -318,6 +318,11 @@ public class CompositorViewHolder extends FrameLayout
                 }
 
                 @Override
+                public void onCrash(Tab tab) {
+                    mNumGestureActiveTouches = 0;
+                }
+
+                @Override
                 public void onDidFinishNavigationInPrimaryMainFrame(
                         Tab tab, NavigationHandle navigation) {
                     if (!navigation.isSameDocument() && navigation.hasCommitted()) {
@@ -337,7 +342,7 @@ public class CompositorViewHolder extends FrameLayout
 
                 @Override
                 public void onGestureEnd() {
-                    mNumGestureActiveTouches--;
+                    mNumGestureActiveTouches = Math.max(mNumGestureActiveTouches - 1, 0);
                     updateInMotion();
                 }
             };
@@ -1541,6 +1546,7 @@ public class CompositorViewHolder extends FrameLayout
             mHasKeyboardGeometryChangeFired = false;
             if (mTabVisible != null) mTabVisible.removeObserver(mTabObserver);
             if (tab != null) {
+                mNumGestureActiveTouches = 0;
                 tab.addObserver(mTabObserver);
                 mCompositorView.onTabChanged();
             }
