@@ -351,6 +351,12 @@ public class LayerTitleCache {
         return originalFavicon;
     }
 
+    /** Returns a chrome favicon if the tab is a native page. else returns a default favicon. */
+    public Bitmap getDefaultFavicon(Tab tab) {
+        boolean isDarkTheme = tab.isIncognito();
+        return mDefaultFaviconHelper.getDefaultFaviconBitmap(mContext, tab.getUrl(), !isDarkTheme);
+    }
+
     private @Nullable ViewResourceAdapter getResourceAdapterFromLoader(int resId) {
         DynamicResourceLoader dynamicResourceLoader = mResourceManager.getDynamicResourceLoader();
         return (ViewResourceAdapter) dynamicResourceLoader.getResource(resId);

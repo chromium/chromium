@@ -11,7 +11,9 @@ import android.app.Activity;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Handler;
@@ -656,12 +658,27 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         private final View mDragSourceView;
         // Whether drag shadow should be shown.
         private boolean mShowDragShadow;
+        // Paint for the shadow.
+        private final Paint mShadowPaint;
+        private final float mCornerRadius;
 
         public TabDragShadowBuilder(View dragSourceView, View shadowView, PointF dragShadowOffset) {
             // Store the View parameter.
             super(shadowView);
             mDragShadowOffset = dragShadowOffset;
             mDragSourceView = dragSourceView;
+
+            // Set up the shadow paint.
+            Context context = shadowView.getContext();
+            Resources resources = shadowView.getResources();
+            mShadowPaint = new Paint();
+            mShadowPaint.setAntiAlias(true);
+            mShadowPaint.setColor(context.getColor(R.color.tab_strip_reorder_shadow_color));
+            float blurThickness =
+                    resources.getDimension(R.dimen.tab_strip_dragged_tab_shadow_thickness);
+            mShadowPaint.setMaskFilter(
+                    new BlurMaskFilter(blurThickness, BlurMaskFilter.Blur.OUTER));
+            mCornerRadius = resources.getDimension(R.dimen.tab_grid_card_bg_radius);
         }
 
         public void update(boolean show) {
@@ -673,6 +690,22 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         public void onDrawShadow(Canvas canvas) {
             View shadowView = getView();
             if (mShowDragShadow) {
+                View cardView = shadowView.findViewById(R.id.card_view);
+                if (cardView == null) {
+                    shadowView.draw(canvas); // Fallback
+                    return;
+                }
+                // Draw the shadow.
+                canvas.drawRoundRect(
+                        cardView.getLeft(),
+                        cardView.getTop(),
+                        cardView.getRight(),
+                        cardView.getBottom(),
+                        mCornerRadius,
+                        mCornerRadius,
+                        mShadowPaint);
+
+                // Draw the view on top of the shadow.
                 shadowView.draw(canvas);
             } else {
                 // When drag shadow should hide, replace with empty ImageView.

@@ -203,9 +203,8 @@ public class StripDragShadowView extends FrameLayout {
         mFaviconUpdateTabObserver = getFaviconUpdateTabObserver();
         tab.addObserver(mFaviconUpdateTabObserver);
 
-        // Set the thumbnail and favicon to visible.
+        // Set the thumbnail to visible.
         mThumbnailView.setVisibility(View.VISIBLE);
-        mFaviconView.setVisibility(View.VISIBLE);
 
         prepareForDrag(
                 mSingleThumbnailCardProvider,
@@ -222,7 +221,8 @@ public class StripDragShadowView extends FrameLayout {
     /**
      * Set state on multi tab drag start.
      *
-     * @param tab A {@link Tab} in the group being dragged.
+     * @param tab A {@link Tab} in the selection being dragged.
+     * @param multiSelectedTabs The list of {@link Tab}s in the selection being dragged.
      * @param sourceWidthPx Width of the source strip tab container in px.
      */
     public void prepareForMultiTabDrag(Tab tab, List<Tab> multiSelectedTabs, int sourceWidthPx) {
@@ -230,12 +230,9 @@ public class StripDragShadowView extends FrameLayout {
         boolean isIncognito = tab.isIncognitoBranded();
 
         // Background color
-        @TabGroupColorId int colorId = TabGroupColorId.GREY;
-        @ColorInt
-        int groupColor =
-                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                        context, colorId, isIncognito);
-        mCardView.setBackgroundTintList(ColorStateList.valueOf(groupColor));
+        mCardView.setBackgroundTintList(
+                ColorStateList.valueOf(
+                        TabUiThemeUtil.getTabStripSelectedTabColor(context, isIncognito)));
 
         // Multi tab title text
         int numberOfSelectedTabs = multiSelectedTabs.size();
@@ -246,13 +243,13 @@ public class StripDragShadowView extends FrameLayout {
                                 numberOfSelectedTabs,
                                 numberOfSelectedTabs);
         mTitleView.setText(titleText);
-        mTitleView.setTextColor(
-                TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
-                        context, colorId, isIncognito));
+        mTitleView.setTextColor(TabUiThemeUtil.getTabTextColor(context, isIncognito));
 
+        // Favicon
+        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
+        mFaviconView.setImageBitmap(layerTitleCache.getDefaultFavicon(tab));
         // Hide the thumbnail and favicon to create a "pill" shape.
         mThumbnailView.setVisibility(View.GONE);
-        mFaviconView.setVisibility(View.GONE);
 
         prepareForDrag(
                 mMultiThumbnailCardProvider,
@@ -305,9 +302,8 @@ public class StripDragShadowView extends FrameLayout {
 
         // Clear the tab favicon if needed
         mFaviconView.setImageBitmap(null);
-        // Set the thumbnail and favicon to visible.
+        // Set the thumbnail to visible.
         mThumbnailView.setVisibility(View.VISIBLE);
-        mFaviconView.setVisibility(View.VISIBLE);
 
         prepareForDrag(
                 mMultiThumbnailCardProvider,
@@ -334,21 +330,6 @@ public class StripDragShadowView extends FrameLayout {
         Size cardSize = getCardSize();
         mWidthPx = isMultiTabDrag ? (int) (cardSize.getWidth() * 0.6f) : cardSize.getWidth();
         mHeightPx = isMultiTabDrag ? mSourceHeightPx : cardSize.getHeight();
-
-        // Adjust title alignment and margin for the drag type.
-        ConstraintLayout.LayoutParams titleLayoutParams =
-                (ConstraintLayout.LayoutParams) mTitleView.getLayoutParams();
-        if (isMultiTabDrag) {
-            int padding =
-                    getResources()
-                            .getDimensionPixelSize(R.dimen.tab_grid_card_favicon_padding_start);
-            // Add title margin to start of the view.
-            titleLayoutParams.setMarginStart((int) (padding * 1.5f));
-        } else {
-            // Restore title margin for symmetry with the favicon.
-            titleLayoutParams.setMarginStart(0);
-        }
-        mTitleView.setLayoutParams(titleLayoutParams);
 
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
         layoutParams.width = mWidthPx;

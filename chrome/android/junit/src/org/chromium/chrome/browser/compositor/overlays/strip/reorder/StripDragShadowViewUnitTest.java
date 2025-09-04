@@ -29,7 +29,6 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -65,7 +64,6 @@ import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 
-import java.util.Collections;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link StripDragShadowView}. */
@@ -387,49 +385,5 @@ public class StripDragShadowViewUnitTest {
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
                         mActivity, colorId, incognito);
         assertEquals("Unexpected text color.", expectedTextColor, mTitleView.getCurrentTextColor());
-    }
-
-    @Test
-    public void testUpdate_TitleMargin() {
-        // Start with multi-tab drag.
-        // During multi tab drag we reset the title start margin. This test verifies that the
-        // margin is reset when switching between multi-tab and single-tab drag, and is also reset
-        // when switching to group drag.
-        mStripDragShadowView.prepareForMultiTabDrag(
-                mMockTab, Collections.singletonList(mMockTab), 0);
-
-        ConstraintLayout.LayoutParams titleLayoutParams =
-                (ConstraintLayout.LayoutParams) mTitleView.getLayoutParams();
-        int padding =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.tab_grid_card_favicon_padding_start);
-        assertEquals(
-                "Unexpected title margin for multi-tab drag.",
-                (int) (padding * 1.5f),
-                titleLayoutParams.getMarginStart());
-
-        // Switch to single-tab drag.
-        mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
-        titleLayoutParams = (ConstraintLayout.LayoutParams) mTitleView.getLayoutParams();
-        assertEquals(
-                "Title margin not reset for single-tab drag.",
-                0,
-                titleLayoutParams.getMarginStart());
-
-        // Switch back to multi-tab drag.
-        mStripDragShadowView.prepareForMultiTabDrag(
-                mMockTab, Collections.singletonList(mMockTab), 0);
-        titleLayoutParams = (ConstraintLayout.LayoutParams) mTitleView.getLayoutParams();
-        assertEquals(
-                "Unexpected title margin for multi-tab drag.",
-                (int) (padding * 1.5f),
-                titleLayoutParams.getMarginStart());
-
-        // Switch to group drag.
-        mStripDragShadowView.prepareForGroupDrag(mMockTab, 0);
-        titleLayoutParams = (ConstraintLayout.LayoutParams) mTitleView.getLayoutParams();
-        assertEquals(
-                "Title margin not reset for group drag.", 0, titleLayoutParams.getMarginStart());
     }
 }

@@ -425,4 +425,7 @@ found in the LICENSE file.
     <dimen name="reader_mode_theme_button_selected_stroke_width">2dp</dimen>
     <dimen name="reader_mode_prefs_font_style_signifier_text_size">24sp</dimen>
     <dimen name="reader_mode_prefs_font_style_name_text_size">10sp</dimen>
+
+    <!-- Tab Strip Reorder dimensions -->
+    <dimen name="tab_strip_dragged_tab_shadow_thickness">8dp</dimen>
 </resources>
