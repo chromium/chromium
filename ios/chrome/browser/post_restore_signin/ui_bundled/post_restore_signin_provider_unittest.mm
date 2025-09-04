@@ -7,8 +7,10 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/sync/test/sync_user_settings_mock.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/post_restore_signin/ui_bundled/metrics.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
@@ -207,6 +209,23 @@ TEST_F(PostRestoreSignInProviderTest, AlreadySignedIn) {
   });
 
   SignIn();
+  [provider_ standardPromoAlertDefaultAction];
+
+  EXPECT_FALSE(didCallShowSignIn);
+}
+
+// Tests that when tapping "continue" when signed-in does not attempt to
+// re-signin.
+TEST_F(PostRestoreSignInProviderTest, SigninDisabled) {
+  GetApplicationContext()->GetLocalState()->SetInteger(
+      prefs::kBrowserSigninPolicy,
+      static_cast<int>(BrowserSigninMode::kDisabled));
+  __block bool didCallShowSignIn = false;
+  SetupMockHandler();
+  OCMStub([mock_handler_ showSignin:[OCMArg any]]).andDo(^(NSInvocation* inv) {
+    didCallShowSignIn = true;
+  });
+
   [provider_ standardPromoAlertDefaultAction];
 
   EXPECT_FALSE(didCallShowSignIn);
