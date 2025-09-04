@@ -276,7 +276,6 @@ luci.notifier(
 luci.notifier(
     name = "annotator-rel",
     notify_emails = [
-        "chiav@chromium.org",
         "crmullins@chromium.org",
         "nicolaso@chromium.org",
         "pastarmovj@chromium.org",
