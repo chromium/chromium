@@ -105,6 +105,8 @@ extern const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled;
 
 BASE_DECLARE_FEATURE(kDevToolsLiveEdit);
 
+BASE_DECLARE_FEATURE(kDevToolsIndividualRequestThrottling);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

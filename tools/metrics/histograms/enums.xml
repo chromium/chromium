@@ -12146,6 +12146,7 @@ from previous Chrome versions.
   <int value="-753988121" label="FlossIsAvailabilityCheckNeeded:enabled"/>
   <int value="-753833897" label="AppLaunchAutomation:disabled"/>
   <int value="-753747289" label="AudioDucking:disabled"/>
+  <int value="-753607213" label="DevToolsIndividualRequestThrottling:enabled"/>
   <int value="-753170441" label="LocationProviderManager:disabled"/>
   <int value="-752707368" label="HistoryPagePromoCtaStringVariation:disabled"/>
   <int value="-752554170" label="ShowNewTabAnimations:disabled"/>
@@ -13447,6 +13448,7 @@ from previous Chrome versions.
   <int value="-283024110" label="WebXRPlaneDetection:disabled"/>
   <int value="-282770689"
       label="ExperimentalWebAppStoragePartitionIsolation:disabled"/>
+  <int value="-282070727" label="DevToolsIndividualRequestThrottling:disabled"/>
   <int value="-281844827" label="AutofillCreditCardAblationExperiment:enabled"/>
   <int value="-280129257" label="MacLoopbackAudioForScreenShare:enabled"/>
   <int value="-280064896" label="HelpAppAppsDiscovery:disabled"/>

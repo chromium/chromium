@@ -1532,6 +1532,13 @@ const char kDesktopPWAsSubAppsDescription[] =
     "Prototype implementation of: "
     "https://github.com/ivansandrk/multi-apps/blob/main/explainer.md";
 
+const char kDevToolsIndividualRequestThrottlingName[] =
+    "Enable individual request throttling in DevTools";
+const char kDevToolsIndividualRequestThrottlingDescription[] =
+    "Enables a new feature in DevTools' network panel to apply network "
+    "conditions to individual requests, extending the per-request blocking "
+    "behavior.";
+
 const char kDesktopPWAsScopeExtensionsName[] = "Desktop PWA Scope Extensions";
 const char kDesktopPWAsScopeExtensionsDescription[] =
     "Enable web app manifests to declare scope extensions to extend app scope "

@@ -11523,6 +11523,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsPrivacyUIDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsPrivacyUI)},
 
+    {"devtools-individual-request-throttling",
+     flag_descriptions::kDevToolsIndividualRequestThrottlingName,
+     flag_descriptions::kDevToolsIndividualRequestThrottlingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDevToolsIndividualRequestThrottling)},
+
     {"permissions-ai-v1", flag_descriptions::kPermissionsAIv1Name,
      flag_descriptions::kPermissionsAIv1Description, kOsDesktop,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionsAIv1)},

@@ -871,6 +871,9 @@ extern const char kDesktopPWAsTabStripCustomizationsDescription[];
 extern const char kDesktopPWAsSubAppsName[];
 extern const char kDesktopPWAsSubAppsDescription[];
 
+extern const char kDevToolsIndividualRequestThrottlingName[];
+extern const char kDevToolsIndividualRequestThrottlingDescription[];
+
 extern const char kDesktopPWAsScopeExtensionsName[];
 extern const char kDesktopPWAsScopeExtensionsDescription[];
 
