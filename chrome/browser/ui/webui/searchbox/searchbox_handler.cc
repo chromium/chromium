@@ -99,6 +99,8 @@ constexpr char kGoogleKeepNoteIconResourceName[] =
     "//resources/cr_components/searchbox/icons/note.svg";
 constexpr char kGoogleSitesIconResourceName[] =
     "//resources/cr_components/searchbox/icons/sites.svg";
+constexpr char kGoogleLensMonochromeLogoIcon[] =
+    "//resources/cr_components/searchbox/icons/lens.svg";
 #endif
 const char* kHistoryIconResourceName = "//resources/images/icon_history.svg";
 const char* kIncognitoIconResourceName =
@@ -663,6 +665,9 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
       icon.name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
     return kGoogleGIconResourceName;
   }
+  if (icon.name == vector_icons::kGoogleLensMonochromeLogoIcon.name) {
+    return kGoogleLensMonochromeLogoIcon;
+  }
 #endif
   if (icon.name == omnibox::kIncognitoIcon.name ||
       icon.name == omnibox::kIncognitoCr2023Icon.name) {
@@ -709,6 +714,10 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
   if (icon.name == omnibox::kStarActiveIcon.name ||
       icon.name == omnibox::kStarActiveChromeRefreshIcon.name) {
     return kStarActiveIconResourceName;
+  }
+  if (icon.name == vector_icons::kHistoryIcon.name ||
+      icon.name == vector_icons::kHistoryChromeRefreshIcon.name) {
+    return kHistoryIconResourceName;
   }
   if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
     // The subdirectory arrow right icon is used for contextual suggestions only
