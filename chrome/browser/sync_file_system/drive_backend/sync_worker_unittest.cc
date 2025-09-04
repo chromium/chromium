@@ -132,8 +132,7 @@ class SyncWorkerTest : public testing::Test {
                 GetCurrentDefault() /* worker_task_runner */));
 
     sync_worker_ = std::make_unique<SyncWorker>(
-        profile_dir_.GetPath(), extension_service_->registrar().GetWeakPtr(),
-        extension_service_->registry().GetWeakPtr(), in_memory_env_.get());
+        profile_dir_.GetPath(), profile_->GetWeakPtr(), in_memory_env_.get());
     sync_worker_->Initialize(std::move(sync_engine_context));
 
     sync_worker_->SetSyncEnabled(true);

@@ -25,6 +25,8 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+class Profile;
+
 namespace base {
 class SequencedTaskRunner;
 }
@@ -32,11 +34,6 @@ class SequencedTaskRunner;
 namespace drive {
 class DriveServiceInterface;
 class DriveUploaderInterface;
-}
-
-namespace extensions {
-class ExtensionRegistrar;
-class ExtensionRegistry;
 }
 
 namespace leveldb {
@@ -152,8 +149,7 @@ class SyncEngine
              const scoped_refptr<base::SequencedTaskRunner>& drive_task_runner,
              const base::FilePath& sync_file_system_dir,
              TaskLogger* task_logger,
-             extensions::ExtensionRegistrar* extension_registrar,
-             extensions::ExtensionRegistry* extension_registry,
+             Profile* profile,
              signin::IdentityManager* identity_manager,
              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
              std::unique_ptr<DriveServiceFactory> drive_service_factory,
@@ -178,13 +174,12 @@ class SyncEngine
   const base::FilePath sync_file_system_dir_;
   raw_ptr<TaskLogger> task_logger_;
 
+  base::WeakPtr<Profile> profile_;
+
   // These external services are not owned by SyncEngine.
   // The owner of the SyncEngine is responsible for their lifetime.
   // I.e. the owner should declare the dependency explicitly by calling
   // KeyedService::DependsOn().
-  raw_ptr<extensions::ExtensionRegistrar, DanglingUntriaged>
-      extension_registrar_;
-  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> extension_registry_;
   raw_ptr<signin::IdentityManager> identity_manager_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
