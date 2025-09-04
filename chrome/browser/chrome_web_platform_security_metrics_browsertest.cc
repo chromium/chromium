@@ -435,6 +435,33 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
   CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
+               0);
+}
+
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost \
+  DISABLED_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost
+#else
+#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost \
+  PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost
+#endif
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessWebSocketMetricBrowserTest,
+    MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      http_server().GetURL(
+          "a.com",
+          "/local_network_access/"
+          "websocket-treat-as-public-address.html"
+          "?url=" +
+              ws_server().GetURL("b.com", "/echo-with-no-extension").spec())));
+
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+  CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
+               1);
 }
 
 // When WebSocket is connected to the same ip address space, do not log a use
@@ -460,6 +487,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebSocketMetricBrowserTest,
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
   CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 0);
+  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
+               0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,

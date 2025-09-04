@@ -251,7 +251,7 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
   // Grab Metrics first, then do acutal LNA checks.
   if (impl_->url_loader_network_observer_) {
     impl_->url_loader_network_observer_->OnWebSocketConnectedToPrivateNetwork(
-        TransportInfoToIPAddressSpace(info));
+        request->url(), TransportInfoToIPAddressSpace(info));
   }
 
   // Currently this function only does LNA checks, so if those are not enabled,

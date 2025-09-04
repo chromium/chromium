@@ -164,6 +164,7 @@ void UrlLoaderNetworkServiceObserver::Clone(
 }
 
 void UrlLoaderNetworkServiceObserver::OnWebSocketConnectedToPrivateNetwork(
+    const GURL& request_url,
     network::mojom::IPAddressSpace ip_address_space) {}
 
 void UrlLoaderNetworkServiceObserver::OnUrlLoaderConnectedToPrivateNetwork(

@@ -354,6 +354,7 @@ void NetworkServiceClient::Clone(
 }
 
 void NetworkServiceClient::OnWebSocketConnectedToPrivateNetwork(
+    const GURL& request_url,
     network::mojom::IPAddressSpace ip_address_space) {}
 
 void NetworkServiceClient::OnUrlLoaderConnectedToPrivateNetwork(

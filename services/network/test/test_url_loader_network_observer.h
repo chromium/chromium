@@ -74,6 +74,7 @@ class TestURLLoaderNetworkObserver
   void Clone(
       mojo::PendingReceiver<URLLoaderNetworkServiceObserver> observer) override;
   void OnWebSocketConnectedToPrivateNetwork(
+      const GURL& request_url,
       network::mojom::IPAddressSpace ip_address_space) override;
   void OnUrlLoaderConnectedToPrivateNetwork(
       const GURL& request_url,
