@@ -3,6 +3,7 @@ include_rules = [
   "+components/optimization_guide/proto",
   "+content/public/browser",
   "+content/public/common",
+  "+content/public/android",
   "+content/public/test",
   "+mojo/public",
   "+services/metrics/public",

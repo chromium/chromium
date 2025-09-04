@@ -7,7 +7,7 @@
 #include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/optimization_guide/android/jni_headers/PageContentProtoProviderBridge_jni.h"
+#include "components/optimization_guide/content/browser/android/jni_headers/PageContentProtoProviderBridge_jni.h"
 
 using ::base::android::ScopedJavaGlobalRef;
 using ::jni_zero::JavaRef;

@@ -143,7 +143,7 @@ specific_include_rules = {
     "+components/version_info/android",
   ],
   'PageContentProtoViewStructureBuilder\.java':[
-    "+chrome/browser/optimization_guide/android/java/src/org/chromium/chrome/browser/optimization_guide/PageContentProtoProviderBridge.java",
+    "+components/optimization_guide/content/browser/android/java/src/org/chromium/components/optimization_guide/content/PageContentProtoProviderBridge.java",
   ],
   'TabStateBrowserControlsVisibilityDelegate\.java': [
     "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/ChromeAccessibilityUtil.java",

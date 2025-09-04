@@ -657,6 +657,7 @@ if (_is_default_toolchain) {
       "//components/offline_items_collection/core:core_java",
       "//components/omnibox/browser:browser_java",
       "//components/omnibox/common:features_java",
+      "//components/optimization_guide/content/browser/android:optimization_guide_content_java",
       "//components/optimization_guide/proto:optimization_guide_proto_java",
       "//components/page_image_service/mojom:mojo_bindings_java",
       "//components/page_info/android:java",

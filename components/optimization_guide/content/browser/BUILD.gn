@@ -39,6 +39,11 @@ static_library("browser") {
     "//services/network/public/cpp",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (is_android) {
+    sources += [ "page_content_proto_provider_bridge.cc" ]
+    public_deps += [ "android:jni_headers" ]
+  }
 }
 
 source_set("page_context_eligibility_api") {
