@@ -83,7 +83,7 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
   bool is_on_external_display =
       base::FeatureList::IsEnabled(
           chrome::android::kDesktopUAOnConnectedDisplay) &&
-      (display::Screen::Get()
+      (display::Screen::GetScreen()
            ->GetDisplayNearestView(web_contents()->GetNativeView())
            .id() != display::kDefaultDisplayId);
   desktop_mode |= is_on_external_display;

@@ -310,7 +310,7 @@ class PowerSaveBlocker::Delegate {
     if (suspend) {
       DCHECK(!screen_saver_suspender_);
       // The screen can be nullptr in tests.
-      if (auto* const screen = display::Screen::Get()) {
+      if (auto* const screen = display::Screen::GetScreen()) {
         screen_saver_suspender_ = screen->SuspendScreenSaver();
       }
     } else {

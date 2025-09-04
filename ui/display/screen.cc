@@ -32,6 +32,11 @@ Screen::Screen() : display_id_for_new_windows_(kInvalidDisplayId) {}
 Screen::~Screen() = default;
 
 // static
+Screen* Screen::GetScreen() {
+  return g_screen;
+}
+
+// static
 Screen* Screen::Get() {
   return g_screen;
 }
@@ -252,7 +257,7 @@ ScopedNativeScreen::ScopedNativeScreen(const base::Location& location) {
 
 ScopedNativeScreen::~ScopedNativeScreen() {
   if (screen_) {
-    DCHECK_EQ(screen_.get(), Screen::Get());
+    DCHECK_EQ(screen_.get(), Screen::GetScreen());
     Screen::SetScreenInstance(nullptr);
     screen_.reset();
   }
