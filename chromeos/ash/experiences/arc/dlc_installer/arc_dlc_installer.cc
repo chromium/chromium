@@ -26,7 +26,7 @@ namespace {
 constexpr const char kArcvmDlcId[] = "android-vm-dlc";
 constexpr const char kArcvmBindMountDlcPath[] =
     "arcvm_2dbind_2dmount_2ddlc_2dpath";
-constexpr const char kVmConciergeServiceName[] = "vm_5fconcierge";
+
 }  // namespace
 
 ArcDlcInstaller::ArcDlcInstaller(
@@ -177,13 +177,8 @@ void ArcDlcInstaller::OnPrepareArcDlc(base::OnceCallback<void(bool)> callback,
     return;
   }
 
-  // Restarting vm_concierge is required because its sandboxed mount, created at
-  // startup, does not see later ARC root path bind-mounts. The restart forces
-  // it to re-initialize its mounts to find the new DLC content.
   std::deque<JobDesc> jobs = {
       JobDesc{kArcvmBindMountDlcPath, UpstartOperation::JOB_STOP_AND_START, {}},
-      JobDesc{
-          kVmConciergeServiceName, UpstartOperation::JOB_STOP_AND_START, {}},
   };
 
   ConfigureUpstartJobs(
