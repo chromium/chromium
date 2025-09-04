@@ -588,6 +588,10 @@ HEADLESS_PROTOCOL_TEST(ScreenDetailsColorDepth,
 HEADLESS_PROTOCOL_TEST(ScreenDetailsWorkArea,
                        "shared/screen-details-work-area.js")
 
+// This produces unexpected results, see http://crbug.com/442922581.
+HEADLESS_PROTOCOL_TEST(ScreenDetailsWorkAreaScaled,
+                       "shared/screen-details-work-area-scaled.js")
+
 HEADLESS_PROTOCOL_TEST(RequestFullscreen, "shared/request-fullscreen.js")
 
 HEADLESS_PROTOCOL_TEST(RequestFullscreenOnSecondaryScreen,

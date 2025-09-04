@@ -24,6 +24,8 @@
     const screenDetails = await getScreenDetails();
     const screenInfos = screenDetails.screens.map(
         s => `${s.label}: ${s.left},${s.top} ${s.width}x${s.height}` +
+            ` avail: ${s.availLeft},${s.availTop} ${s.availWidth}x${
+                 s.availHeight}` +
             ` isPrimary=${s.isPrimary} isExtended=${s.isExtended}`);
     return screenInfos.join('\n');
   });

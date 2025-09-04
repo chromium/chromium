@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// META: --screen-info={label='1st'}{label='2nd' devicePixelRatio=2.0}
+// META: --screen-info={workAreaLeft=100 workAreaRight=100 \
+// META:   workAreaTop=100 workAreaBottom=100 devicePixelRatio=2.0}
+// META: fork_headless_shell_expectations
 
 (async function(testRunner) {
-  const {session, dp} = await testRunner.startBlank(
-      'Tests multiple screens details scaled origin and size.');
+  const {session, dp} =
+      await testRunner.startBlank('Tests scaled screen work area.');
 
   const HttpInterceptor =
       await testRunner.loadScriptAbsolute('../resources/http-interceptor.js');
@@ -21,13 +23,10 @@
   await session.navigate('https://example.com/index.html');
 
   const result = await session.evaluateAsync(async () => {
-    const screenDetails = await getScreenDetails();
-    const screenInfos = screenDetails.screens.map(
-        s => `${s.label}: ${s.left},${s.top} ${s.width}x${s.height}` +
-            ` avail: ${s.availLeft},${s.availTop} ${s.availWidth}x${
-                 s.availHeight}` +
-            ` isPrimary=${s.isPrimary} isExtended=${s.isExtended}`);
-    return screenInfos.join('\n');
+    const cs = (await getScreenDetails()).currentScreen;
+    return `Screen: ${cs.left},${cs.top} ${cs.width}x${cs.height}\n` +
+        `Work area: ${cs.availLeft},${cs.availTop} ${cs.availWidth}x${
+               cs.availHeight}`;
   });
 
   testRunner.log(result);

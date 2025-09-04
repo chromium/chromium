@@ -350,6 +350,15 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreenDetailsColorDepth,
 HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsWorkArea,
                             "shared/screen-details-work-area.js")
 
+// This fails on Linux and Mac, see http://crbug.com/442922581.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_ScreenDetailsWorkAreaScaled DISABLED_ScreenDetailsWorkAreaScaled
+#else
+#define MAYBE_ScreenDetailsWorkAreaScaled ScreenDetailsWorkAreaScaled
+#endif
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreenDetailsWorkAreaScaled,
+                            "shared/screen-details-work-area-scaled.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreen, "shared/request-fullscreen.js")
 
 // Fails on all platforms, see https://crbug.com/429035133
