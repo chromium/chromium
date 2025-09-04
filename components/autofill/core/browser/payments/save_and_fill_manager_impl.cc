@@ -68,7 +68,7 @@ void SaveAndFillManagerImpl::OnSuggestionOffered() {
   save_and_fill_suggestion_offered_ = true;
 }
 
-void SaveAndFillManagerImpl::OnCreditCardFormSubmitted() {
+void SaveAndFillManagerImpl::MaybeAddStrikeForSaveAndFill() {
   if (save_and_fill_suggestion_offered_ &&
       !save_and_fill_suggestion_selected_) {
     GetSaveAndFillStrikeDatabase()->AddStrike();
@@ -101,11 +101,36 @@ bool SaveAndFillManagerImpl::ShouldBlockFeature() {
 
 void SaveAndFillManagerImpl::MaybeLogSaveAndFillSuggestionNotShownReason(
     autofill_metrics::SaveAndFillSuggestionNotShownReason reason) {
-  if (has_logged_save_and_fill_suggestion_not_shown_reason_) {
+  if (logging_context_.has_logged_save_and_fill_suggestion_not_shown_reason) {
     return;
   }
   autofill_metrics::LogSaveAndFillSuggestionNotShownReason(reason);
-  has_logged_save_and_fill_suggestion_not_shown_reason_ = true;
+  logging_context_.has_logged_save_and_fill_suggestion_not_shown_reason = true;
+}
+
+void SaveAndFillManagerImpl::LogCreditCardFormFilled() {
+  if (!logging_context_.has_logged_form_filled) {
+    CHECK(logging_context_.last_attempt_succeeded.has_value());
+    CHECK(logging_context_.last_attempt_was_for_upload.has_value());
+    autofill_metrics::LogSaveAndFillFunnelMetrics(
+        logging_context_.last_attempt_succeeded.value(),
+        logging_context_.last_attempt_was_for_upload.value(),
+        autofill_metrics::SaveAndFillFormEvent::kFormFilled);
+    logging_context_.has_logged_form_filled = true;
+  }
+}
+
+void SaveAndFillManagerImpl::LogCreditCardFormSubmitted() {
+  if (!logging_context_.has_logged_form_submitted &&
+      logging_context_.has_logged_form_filled) {
+    CHECK(logging_context_.last_attempt_succeeded.has_value());
+    CHECK(logging_context_.last_attempt_was_for_upload.has_value());
+    autofill_metrics::LogSaveAndFillFunnelMetrics(
+        logging_context_.last_attempt_succeeded.value(),
+        logging_context_.last_attempt_was_for_upload.value(),
+        autofill_metrics::SaveAndFillFormEvent::kFormSubmitted);
+    logging_context_.has_logged_form_submitted = true;
+  }
 }
 
 void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
@@ -114,6 +139,8 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
         user_provided_card_save_and_fill_details) {
   switch (user_decision) {
     case CardSaveAndFillDialogUserDecision::kAccepted: {
+      logging_context_.last_attempt_was_for_upload = false;
+      logging_context_.last_attempt_succeeded = true;
       if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
         autofill_metrics::LogSaveAndFillNumOfStrikesPresentWhenDialogAccepted(
             strike_database->GetStrikes());
@@ -294,6 +321,7 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
   switch (user_decision) {
     case CardSaveAndFillDialogUserDecision::kAccepted:
       upload_save_and_fill_dialog_accepted_ = true;
+      logging_context_.last_attempt_was_for_upload = true;
       if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
         autofill_metrics::LogSaveAndFillNumOfStrikesPresentWhenDialogAccepted(
             strike_database->GetStrikes());
@@ -301,9 +329,6 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
       }
       PopulateCreditCardInfo(upload_details_.card,
                              user_provided_card_save_and_fill_details);
-      if (fill_card_callback_) {
-        std::move(fill_card_callback_).Run(upload_details_.card);
-      }
       // If risk data has already been loaded, send the request now. Otherwise,
       // continue to wait and let OnDidLoadRiskData handle it.
       if (!upload_details_.risk_data.empty()) {
@@ -346,6 +371,8 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
   autofill_metrics::LogSaveAndFillCreateCardResultAndLatency(
       result == PaymentsRpcResult::kSuccess,
       base::TimeTicks::Now() - request_sent_timestamp);
+  logging_context_.last_attempt_succeeded =
+      result == PaymentsRpcResult::kSuccess;
 
   if (result != PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     // If card creation fails, save the card locally instead. All card
@@ -364,6 +391,9 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
       payments_autofill_client()->GetPaymentsDataManager().AddServerCvc(
           parsed_instrument_id, upload_details_.card.cvc());
     }
+  }
+  if (fill_card_callback_) {
+    std::move(fill_card_callback_).Run(upload_details_.card);
   }
   payments_autofill_client()->HideCreditCardSaveAndFillDialog();
   // Invoke feedback bubble. No callback needed (virtual card enrollment is not

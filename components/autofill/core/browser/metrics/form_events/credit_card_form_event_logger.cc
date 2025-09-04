@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/save_and_fill_manager.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -335,6 +336,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
   signin_state_for_metrics_ = signin_state_for_metrics;
 
   filled_credit_card_ = credit_card;
+  trigger_source_ = trigger_source;
 
   client().GetFormInteractionsUkmLogger().LogDidFillSuggestion(
       driver().GetPageUkmSourceId(), form, field, record_type);
@@ -347,6 +349,21 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
        .field = field,
        .newly_filled_fields = newly_filled_fields,
        .safe_fields = safe_filled_fields});
+
+  if (trigger_source_ == AutofillTriggerSource::kCreditCardSaveAndFill) {
+    // If the fill is triggered by the Save and Fill flow. We log form filling
+    // separately as the it is not triggered by regular Autofill credit card
+    // suggestions. Also Save and Fill flow is offered only on full credit card
+    // forms. These factors could pollute the existing card
+    // retrieval / filling / submission metrics.
+    auto* save_and_fill_manager =
+        client().GetPaymentsAutofillClient()->GetSaveAndFillManager();
+    // If the `trigger_source` is kCreditCardSaveAndFill, then
+    // `save_and_fill_manager` must exist.
+    CHECK(save_and_fill_manager);
+    save_and_fill_manager->LogCreditCardFormFilled();
+    return;
+  }
 
   latest_filled_card_was_masked_server_card_ = false;
   latest_filled_card_was_card_info_retrieval_enrolled_ = false;
@@ -509,7 +526,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledCreditCardSuggestion"));
 
-  if (trigger_source != AutofillTriggerSource::kFastCheckout) {
+  if (trigger_source_ != AutofillTriggerSource::kFastCheckout) {
     ++form_interaction_counts_.autofill_fills;
   }
   UpdateFlowId();
@@ -605,6 +622,11 @@ void CreditCardFormEventLogger::RecordShowSuggestions() {
 }
 
 void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
+  if (trigger_source_ == AutofillTriggerSource::kCreditCardSaveAndFill) {
+    // If it is a Save and Fill flow. Don't log any will-submit metrics.
+    return;
+  }
+
   if (!has_logged_form_filling_suggestion_filled_) {
     Log(FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, form);
   } else if (logged_suggestion_filled_was_masked_server_card_) {
@@ -658,6 +680,14 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
 }
 
 void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
+  if (trigger_source_ == AutofillTriggerSource::kCreditCardSaveAndFill) {
+    auto* save_and_fill_manager =
+        client().GetPaymentsAutofillClient()->GetSaveAndFillManager();
+    CHECK(save_and_fill_manager);
+    save_and_fill_manager->LogCreditCardFormSubmitted();
+    return;
+  }
+
   if (!has_logged_form_filling_suggestion_filled_) {
     Log(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, form);
   } else if (logged_suggestion_filled_was_masked_server_card_) {

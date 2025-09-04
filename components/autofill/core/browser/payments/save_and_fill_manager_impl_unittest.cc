@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
@@ -658,6 +659,10 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
 
   save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
       fill_card_callback_.Get());
+  save_and_fill_manager_impl_->OnDidCreateCard(
+      base::TimeTicks::Now(),
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*instrument_id=*/"1122334455");
 
   EXPECT_EQ(u"1111222233334444", card_to_fill.GetRawInfo(CREDIT_CARD_NUMBER));
   EXPECT_EQ(u"Jane Smith", card_to_fill.GetRawInfo(CREDIT_CARD_NAME_FULL));
@@ -749,7 +754,7 @@ TEST_F(SaveAndFillManagerImplTest,
   SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
 
   save_and_fill_manager_impl_->OnSuggestionOffered();
-  save_and_fill_manager_impl_->OnCreditCardFormSubmitted();
+  save_and_fill_manager_impl_->MaybeAddStrikeForSaveAndFill();
 
   EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
 }
@@ -763,7 +768,7 @@ TEST_F(SaveAndFillManagerImplTest,
   save_and_fill_manager_impl_->OnSuggestionOffered();
   save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
       fill_card_callback_.Get());
-  save_and_fill_manager_impl_->OnCreditCardFormSubmitted();
+  save_and_fill_manager_impl_->MaybeAddStrikeForSaveAndFill();
 
   EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());
 }
@@ -1100,6 +1105,107 @@ TEST_F(SaveAndFillManagerImplTest,
 
   save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
       fill_card_callback_.Get());
+}
+
+TEST_F(SaveAndFillManagerImplTest, LogFunnelMetrics_ServerSave) {
+  base::HistogramTester histogram_tester;
+
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*create_valid_legal_message=*/true);
+
+  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
+      .WillOnce([&](const LegalMessageLines&,
+                    TestPaymentsAutofillClient::CardSaveAndFillDialogCallback
+                        callback) {
+        std::move(callback).Run(CardSaveAndFillDialogUserDecision::kAccepted,
+                                CreateUserProvidedCardDetails(
+                                    /*card_number=*/u"1111222233334444",
+                                    /*cardholder_name=*/u"Jane Smith",
+                                    /*expiration_date_month=*/u"06",
+                                    /*expiration_date_year=*/u"2035",
+                                    /*security_code=*/u"456"));
+      });
+
+  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
+      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
+        std::move(callback).Run("some risk data");
+      });
+  EXPECT_CALL(*mock_network_interface_, CreateCard)
+      .WillOnce(testing::Return(RequestId("11223344")));
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+  save_and_fill_manager_impl_->OnDidCreateCard(
+      base::TimeTicks::Now(),
+      PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      /*instrument_id=*/"");
+
+  save_and_fill_manager_impl_->LogCreditCardFormFilled();
+  save_and_fill_manager_impl_->LogCreditCardFormSubmitted();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Upload.Failure",
+      autofill_metrics::SaveAndFillFormEvent::kFormFilled,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Upload.Failure",
+      autofill_metrics::SaveAndFillFormEvent::kFormSubmitted,
+      /*expected_count=*/1);
+
+  // Make sure calling it multiple times has no effect.
+  save_and_fill_manager_impl_->LogCreditCardFormFilled();
+  save_and_fill_manager_impl_->LogCreditCardFormSubmitted();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Upload.Failure",
+      autofill_metrics::SaveAndFillFormEvent::kFormFilled,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Upload.Failure",
+      autofill_metrics::SaveAndFillFormEvent::kFormSubmitted,
+      /*expected_count=*/1);
+}
+
+TEST_F(SaveAndFillManagerImplTest, LogFunnelMetrics_LocalSave) {
+  base::HistogramTester histogram_tester;
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+      CardSaveAndFillDialogUserDecision::kAccepted,
+      CreateUserProvidedCardDetails(
+          /*card_number=*/u"1111222233334444",
+          /*cardholder_name=*/u"Jane Smith",
+          /*expiration_date_month=*/u"06",
+          /*expiration_date_year=*/u"2035",
+          /*security_code=*/u"456"));
+
+  save_and_fill_manager_impl_->LogCreditCardFormFilled();
+  save_and_fill_manager_impl_->LogCreditCardFormSubmitted();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Local.Success",
+      autofill_metrics::SaveAndFillFormEvent::kFormFilled,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Local.Success",
+      autofill_metrics::SaveAndFillFormEvent::kFormSubmitted,
+      /*expected_count=*/1);
+
+  // Make sure calling it multiple times has no effect.
+  save_and_fill_manager_impl_->LogCreditCardFormFilled();
+  save_and_fill_manager_impl_->LogCreditCardFormSubmitted();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Local.Success",
+      autofill_metrics::SaveAndFillFormEvent::kFormFilled,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SaveAndFill.Funnel.Local.Success",
+      autofill_metrics::SaveAndFillFormEvent::kFormSubmitted,
+      /*expected_count=*/1);
 }
 
 }  // namespace autofill::payments

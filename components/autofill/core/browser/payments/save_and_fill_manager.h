@@ -29,15 +29,19 @@ class SaveAndFillManager {
       FillCardCallback fill_card_callback) = 0;
   // Called when the Save and Fill suggestion is shown to the user.
   virtual void OnSuggestionOffered() = 0;
-  // Called when the form is submitted. This is used to check if a strike should
-  // be added if the suggestion was shown but not selected.
-  virtual void OnCreditCardFormSubmitted() = 0;
+  // If the strike database exists, add a strike if the suggestion was shown but
+  // not selected.
+  virtual void MaybeAddStrikeForSaveAndFill() = 0;
   // Returns true if the feature offer should be blocked.
   virtual bool ShouldBlockFeature() = 0;
   // Logs the reason why the Save and Fill suggestion was not shown if this
   // metric has not yet been recorded, as this is logged once per page load.
   virtual void MaybeLogSaveAndFillSuggestionNotShownReason(
       autofill_metrics::SaveAndFillSuggestionNotShownReason reason) = 0;
+  // Logs when the credit card form was filled / submitted with the
+  // Save-and-Fill candidate card.
+  virtual void LogCreditCardFormFilled() = 0;
+  virtual void LogCreditCardFormSubmitted() = 0;
 };
 
 }  // namespace autofill::payments

@@ -5955,6 +5955,26 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.SaveAndFill.Funnel.{SaveType}.{Result}"
+    enum="SaveAndFillFormEvent" expires_after="2026-06-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>averina@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records form events to calculate the Save and Fill conversion rate. Logged
+    when the form is filled and when form is submitted. It has two breakdowns to
+    indicate that the save is a {SaveType} and {Result}.
+  </summary>
+  <token key="SaveType">
+    <variant name="Local" summary="local save"/>
+    <variant name="Upload" summary="server save"/>
+  </token>
+  <token key="Result">
+    <variant name="Failure" summary="save failed"/>
+    <variant name="Success" summary="save succeeded"/>
+  </token>
+</histogram>
+
 <histogram
     name="Autofill.SaveAndFill.GetDetailsForCreateCard.Latency{RequestResult}"
     units="ms" expires_after="2026-06-01">

@@ -21,12 +21,14 @@ class MockSaveAndFillManager : public payments::SaveAndFillManager {
               (FillCardCallback fill_card_callback),
               (override));
   MOCK_METHOD(void, OnSuggestionOffered, (), (override));
-  MOCK_METHOD(void, OnCreditCardFormSubmitted, (), (override));
+  MOCK_METHOD(void, MaybeAddStrikeForSaveAndFill, (), (override));
   MOCK_METHOD(bool, ShouldBlockFeature, (), (override));
   MOCK_METHOD(void,
               MaybeLogSaveAndFillSuggestionNotShownReason,
               (autofill_metrics::SaveAndFillSuggestionNotShownReason reason),
               (override));
+  MOCK_METHOD(void, LogCreditCardFormFilled, (), (override));
+  MOCK_METHOD(void, LogCreditCardFormSubmitted, (), (override));
 };
 
 }  // namespace autofill

@@ -960,7 +960,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
   if (auto* save_and_fill_manager =
           client().GetPaymentsAutofillClient()->GetSaveAndFillManager()) {
-    save_and_fill_manager->OnCreditCardFormSubmitted();
+    save_and_fill_manager->MaybeAddStrikeForSaveAndFill();
   }
 }
 
