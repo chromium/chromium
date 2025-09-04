@@ -43,8 +43,10 @@
 #include "net/websockets/websocket_frame.h"  // for WebSocketFrameHeader::OpCode
 #include "net/websockets/websocket_handshake_request_info.h"
 #include "net/websockets/websocket_handshake_response_info.h"
+#include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
+#include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/throttling/throttling_controller.h"
 #include "services/network/throttling/throttling_network_interceptor.h"
 #include "services/network/websocket_factory.h"
@@ -246,42 +248,63 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
     net::URLRequest* request,
     const net::TransportInfo& info,
     net::CompletionOnceCallback callback) {
+  // Grab Metrics first, then do acutal LNA checks.
   if (impl_->url_loader_network_observer_) {
-    mojom::IPAddressSpace ip_address_space =
-        TransportInfoToIPAddressSpace(info);
-    if (ip_address_space == network::mojom::IPAddressSpace::kLoopback ||
-        ip_address_space == network::mojom::IPAddressSpace::kLocal) {
-      impl_->url_loader_network_observer_->OnWebSocketConnectedToPrivateNetwork(
-          ip_address_space);
-      if (base::FeatureList::IsEnabled(
-              features::kLocalNetworkAccessChecksWebSockets)) {
-        // TODO(crbug.com/434744665): actually do a LessPrivate check using the
-        // provided client security state, instead of assuming any websocket
-        // connection to a local/loopback address is a LNA request and needs
-        // permissions.
-        impl_->url_loader_network_observer_
-            ->OnLocalNetworkAccessPermissionRequired(base::BindOnce(
-                [](base::WeakPtr<WebSocket> weak_self,
-                   net::CompletionOnceCallback callback,
-                   bool permission_granted) {
-                  if (!weak_self) {
-                    // Checking the weak ptr not to call the `callback` after
-                    // `this` is destructed. This is needed because the
-                    // observer's pipe may outlive `this` and the owner
-                    // `WebSocket`.
-                    return;
-                  }
-                  std::move(callback).Run(
-                      permission_granted
-                          ? net::OK
-                          : net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
-                },
-                impl_->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-        return net::ERR_IO_PENDING;
-      }
-    }
+    impl_->url_loader_network_observer_->OnWebSocketConnectedToPrivateNetwork(
+        TransportInfoToIPAddressSpace(info));
   }
-  return net::OK;
+
+  // Currently this function only does LNA checks, so if those are not enabled,
+  // return net::OK and skip the rest.
+  if (!base::FeatureList::IsEnabled(
+          features::kLocalNetworkAccessChecksWebSockets)) {
+    return net::OK;
+  }
+
+  // target_ip_address_space is always kUnknown as LNA doesn't do preflights.
+  //
+  // required_ip_address_space is always kUnknown as websockets API doesn't have
+  // a targetAddressSpace parameter like fetch() does to bypass mixed content
+  // checks.
+  PrivateNetworkAccessChecker checker(
+      request->url(),
+      /*target_ip_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+      request->initiator(),
+      /*required_ip_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+      impl_->client_security_state_.get(), impl_->options_);
+
+  PrivateNetworkAccessCheckResult check_result = checker.Check(info);
+  std::optional<mojom::CorsError> cors_error =
+      PrivateNetworkAccessCheckResultToCorsError(check_result);
+  if (!cors_error.has_value()) {
+    return net::OK;
+  }
+
+  if (impl_->url_loader_network_observer_ &&
+      check_result == PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
+    impl_->url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
+        base::BindOnce(
+            [](base::WeakPtr<WebSocket> weak_self,
+               net::CompletionOnceCallback callback, bool permission_granted) {
+              if (!weak_self) {
+                // Checking the weak ptr not to call the `callback` after
+                // `this` is destructed. This is needed because the
+                // observer's pipe may outlive `this` and the owner
+                // `WebSocket`.
+                return;
+              }
+              std::move(callback).Run(
+                  permission_granted
+                      ? net::OK
+                      : net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+            },
+            impl_->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return net::ERR_IO_PENDING;
+  }
+
+  // Otherwise, if there was a Local Network Access CORS error, block by
+  // default.
+  return net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS;
 }
 
 void WebSocket::WebSocketEventHandler::OnAddChannelResponse(
@@ -500,6 +523,7 @@ WebSocket::WebSocket(
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
     const url::Origin& origin,
+    network::mojom::ClientSecurityStatePtr client_security_state,
     uint32_t options,
     net::NetworkTrafficAnnotationTag traffic_annotation,
     HasRawHeadersAccess has_raw_headers_access,
@@ -522,6 +546,7 @@ WebSocket::WebSocket(
       options_(options),
       traffic_annotation_(traffic_annotation),
       origin_(std::move(origin)),
+      client_security_state_(std::move(client_security_state)),
       site_for_cookies_(site_for_cookies),
       isolation_info_(isolation_info),
       has_raw_headers_access_(has_raw_headers_access),

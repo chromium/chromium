@@ -14,6 +14,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 
 namespace device::enclave {
 namespace {
@@ -139,6 +140,7 @@ void EnclaveWebSocketClient::Connect() {
           url::Origin::Create(service_url_)),
       std::move(additional_headers), network::mojom::kBrowserProcessId,
       url::Origin::Create(service_url_),
+      network::mojom::ClientSecurityState::New(),
       network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_remote),

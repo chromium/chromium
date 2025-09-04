@@ -48,6 +48,31 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
   }
 }
 
+PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
+    const GURL& url,
+    mojom::IPAddressSpace target_ip_address_space,
+    const std::optional<url::Origin>& request_initiator,
+    mojom::IPAddressSpace required_ip_address_space,
+    const mojom::ClientSecurityState* client_security_state,
+    int32_t url_load_options)
+    : client_security_state_(client_security_state),
+      should_block_local_request_(url_load_options &
+                                  mojom::kURLLoadOptionBlockLocalRequest),
+      target_address_space_(target_ip_address_space),
+      request_initiator_(request_initiator),
+      required_address_space_(required_ip_address_space) {
+  SetRequestUrl(url);
+
+  if (!client_security_state_ ||
+      client_security_state_->private_network_request_policy ==
+          mojom::PrivateNetworkRequestPolicy::kAllow) {
+    // No client security state means PNA is implicitly disabled. A policy of
+    // `kAllow` means PNA is explicitly disabled. In both cases, the target IP
+    // address space should not be set on the request.
+    CHECK_EQ(target_address_space_, mojom::IPAddressSpace::kUnknown) << url;
+  }
+}
+
 PrivateNetworkAccessChecker::~PrivateNetworkAccessChecker() = default;
 
 PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(

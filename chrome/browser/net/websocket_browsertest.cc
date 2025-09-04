@@ -166,6 +166,7 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
         url, requested_protocols, site_for_cookies,
         net::StorageAccessApiStatus::kNone, isolation_info,
         std::move(additional_headers), process->GetDeprecatedID(), origin,
+        network::mojom::ClientSecurityState::New(),
         network::mojom::kWebSocketOptionNone,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::move(handshake_client),
@@ -224,17 +225,21 @@ class WebSocketBrowserConnectToTest : public WebSocketBrowserTest {
   void ConnectTo(const GURL& url) {
     ConnectTo(server().base_url().host(), url);
   }
+  void ConnectTo(const std::string& host, const GURL& url) {
+    ConnectTo(host, url, "/websocket/connect_to.html");
+  }
 
   // Supply a ws: or wss: URL to connect to via loading `host`/connect_to.html.
-  void ConnectTo(const std::string& host, const GURL& url) {
+  void ConnectTo(const std::string& host,
+                 const GURL& url,
+                 const std::string& resource) {
     ASSERT_TRUE(server().Started());
     std::string query("url=" + url.spec());
     GURL::Replacements replacements;
     replacements.SetQueryStr(query);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), server()
-                       .GetURL(host, "/websocket/connect_to.html")
-                       .ReplaceComponents(replacements)));
+        browser(),
+        server().GetURL(host, resource).ReplaceComponents(replacements)));
   }
 
   virtual net::EmbeddedTestServer& server() = 0;
@@ -282,12 +287,8 @@ class WebSocketBrowserHTTPSConnectToTest
   net::EmbeddedTestServer https_server_;
 };
 
-// TODO(crbug.com/434744665):
-// WebSocket::WebSocketEventHandler::OnURLRequestConnected currently doesn't do
-// the LNA LessPrivate check. Once this is done, this test will need to ensure
-// that the /websocket/connect_to.html page that it loads is in a public address
-// space to function properly (similar to examples in
-// chrome/test/data/local_network_access).
+// TODO(crbug.com/434744665): add more tests for websockets opened from all the
+// worker types (dedicated workers, shared workers, service workers).
 class LocalNetworkAccessWebSocketsBrowserTest
     : public WebSocketBrowserHTTPSConnectToTest {
  public:
@@ -340,8 +341,10 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
   // Launch a secure WebSocket server.
   ASSERT_TRUE(wss_server_.Start());
 
-  ConnectTo(kHostB, net::test_server::GetWebSocketURL(
-                        wss_server_, kHostA, "/echo-with-no-extension"));
+  ConnectTo(kHostB,
+            net::test_server::GetWebSocketURL(wss_server_, kHostA,
+                                              "/echo-with-no-extension"),
+            "/websocket/connect_to_as_public_address.html");
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
@@ -354,8 +357,10 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsBrowserTest,
   // Launch a secure WebSocket server.
   ASSERT_TRUE(wss_server_.Start());
 
-  ConnectTo(kHostB, net::test_server::GetWebSocketURL(
-                        wss_server_, kHostA, "/echo-with-no-extension"));
+  ConnectTo(kHostB,
+            net::test_server::GetWebSocketURL(wss_server_, kHostA,
+                                              "/echo-with-no-extension"),
+            "/websocket/connect_to_as_public_address.html");
 
   EXPECT_EQ("FAIL", WaitAndGetTitle());
 }

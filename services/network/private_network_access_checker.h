@@ -53,6 +53,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
       const ResourceRequest& resource_request,
       const mojom::ClientSecurityState* client_security_state,
       int32_t url_load_options);
+  PrivateNetworkAccessChecker(
+      const GURL& url,
+      mojom::IPAddressSpace target_ip_address_space,
+      const std::optional<url::Origin>& request_initiator,
+      mojom::IPAddressSpace required_ip_address_space,
+      const mojom::ClientSecurityState* client_security_state,
+      int32_t url_load_options);
 
   // Instances of this class are neither copyable nor movable.
   PrivateNetworkAccessChecker(const PrivateNetworkAccessChecker&) = delete;

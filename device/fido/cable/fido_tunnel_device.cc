@@ -27,6 +27,7 @@
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
@@ -145,7 +146,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
       /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
-      url::Origin::Create(url), network::mojom::kWebSocketOptionBlockAllCookies,
+      url::Origin::Create(url), network::mojom::ClientSecurityState::New(),
+      network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       websocket_client_->BindNewHandshakeClientPipe(),
       /*url_loader_network_observer=*/mojo::NullRemote(),
@@ -202,7 +204,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
       std::move(headers), network::mojom::kBrowserProcessId,
-      url::Origin::Create(url), network::mojom::kWebSocketOptionBlockAllCookies,
+      url::Origin::Create(url), network::mojom::ClientSecurityState::New(),
+      network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       websocket_client_->BindNewHandshakeClientPipe(),
       /*url_loader_network_observer=*/mojo::NullRemote(),

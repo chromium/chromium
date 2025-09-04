@@ -37,6 +37,7 @@
 #include "net/http/http_status_code.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -63,6 +64,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       std::vector<network::mojom::HttpHeaderPtr> additional_headers,
       int32_t process_id,
       const url::Origin& origin,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       uint32_t options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
@@ -670,7 +672,7 @@ class LateLinkingDevice : public authenticator::Transaction {
         target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
         net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
-        url::Origin::Create(target),
+        url::Origin::Create(target), network::mojom::ClientSecurityState::New(),
         network::mojom::kWebSocketOptionBlockAllCookies,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         websocket_client_->BindNewHandshakeClientPipe(),
@@ -890,7 +892,7 @@ class HandshakeErrorDevice : public authenticator::Transaction {
         target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
         net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
-        url::Origin::Create(target),
+        url::Origin::Create(target), network::mojom::ClientSecurityState::New(),
         network::mojom::kWebSocketOptionBlockAllCookies,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         websocket_client_->BindNewHandshakeClientPipe(),

@@ -747,7 +747,8 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
           ancestor_render_frame_host_id_.child_id,
           ancestor_render_frame_host_id_.frame_routing_id,
           GetStorageKey().origin(),
-          ancestor_render_frame_host->GetIsolationInfoForSubresources()),
+          ancestor_render_frame_host->GetIsolationInfoForSubresources(),
+          worker_client_security_state_->Clone()),
       std::move(receiver));
 }
 

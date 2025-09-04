@@ -1492,6 +1492,7 @@ interface NetworkContext {
       array<HttpHeader> additional_headers,
       int32 process_id,
       url.mojom.Origin origin,
+      ClientSecurityState client_security_state,
       uint32 options,
       MutableNetworkTrafficAnnotationTag traffic_annotation,
       pending_remote<WebSocketHandshakeClient> handshake_client,

@@ -620,7 +620,8 @@ void SharedWorkerHost::CreateWebSocketConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
           GetProcessHost()->GetDeprecatedID(), IPC::mojom::kRoutingIdNone,
-          storage_key.origin(), storage_key.ToPartialNetIsolationInfo()),
+          storage_key.origin(), storage_key.ToPartialNetIsolationInfo(),
+          worker_client_security_state_->Clone()),
       std::move(receiver));
 }
 

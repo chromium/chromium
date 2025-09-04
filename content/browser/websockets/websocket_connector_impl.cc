@@ -63,11 +63,13 @@ WebSocketConnectorImpl::WebSocketConnectorImpl(
     int process_id,
     int frame_id,
     const url::Origin& origin,
-    const net::IsolationInfo& isolation_info)
+    const net::IsolationInfo& isolation_info,
+    network::mojom::ClientSecurityStatePtr client_security_state)
     : process_id_(process_id),
       frame_id_(frame_id),
       origin_(MaybeTreatLocalOriginAsOpaque(origin)),
-      isolation_info_(isolation_info) {}
+      isolation_info_(isolation_info),
+      client_security_state_(std::move(client_security_state)) {}
 
 WebSocketConnectorImpl::~WebSocketConnectorImpl() = default;
 
@@ -96,7 +98,8 @@ void WebSocketConnectorImpl::Connect(
         base::BindOnce(ConnectCalledByContentBrowserClient, requested_protocols,
                        site_for_cookies, storage_access_api_status,
                        isolation_info_, process_id_, frame_id_, origin_,
-                       options, std::move(throttling_profile_id)),
+                       client_security_state_->Clone(), options,
+                       std::move(throttling_profile_id)),
         url, site_for_cookies, user_agent, std::move(handshake_client));
     return;
   }
@@ -107,7 +110,8 @@ void WebSocketConnectorImpl::Connect(
   }
   process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
       url, requested_protocols, site_for_cookies, storage_access_api_status,
-      isolation_info_, std::move(headers), process_id_, origin_, options,
+      isolation_info_, std::move(headers), process_id_, origin_,
+      client_security_state_->Clone(), options,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
       process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
@@ -123,6 +127,7 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     int process_id,
     int frame_id,
     const url::Origin& origin,
+    network::mojom::ClientSecurityStatePtr client_security_state,
     uint32_t options,
     std::optional<base::UnguessableToken> throttling_profile_id,
     const GURL& url,
@@ -141,7 +146,8 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
   process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
       url, requested_protocols, site_for_cookies, storage_access_api_status,
       isolation_info, std::move(additional_headers), process_id, origin,
-      options, net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
+      std::move(client_security_state), options,
+      net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
       process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
           process_id, frame_id),

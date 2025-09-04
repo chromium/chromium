@@ -13,6 +13,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom.h"
@@ -32,10 +33,12 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
   //   frame's id.
   // - For shared workers and service workers, |frame_id| should be
   //   IPC::mojom::kRoutingIdNone because they do not have a frame.
-  WebSocketConnectorImpl(int process_id,
-                         int frame_id,
-                         const url::Origin& origin,
-                         const net::IsolationInfo& isolation_info);
+  WebSocketConnectorImpl(
+      int process_id,
+      int frame_id,
+      const url::Origin& origin,
+      const net::IsolationInfo& isolation_info,
+      network::mojom::ClientSecurityStatePtr client_security_state);
   ~WebSocketConnectorImpl() override;
 
   // WebSocketConnector implementation
@@ -58,6 +61,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
       int process_id,
       int frame_id,
       const url::Origin& origin,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       uint32_t options,
       std::optional<base::UnguessableToken> throttling_profile_id,
       const GURL& url,
@@ -73,6 +77,7 @@ class WebSocketConnectorImpl final : public blink::mojom::WebSocketConnector {
   const int frame_id_;
   const url::Origin origin_;
   const net::IsolationInfo isolation_info_;
+  const network::mojom::ClientSecurityStatePtr client_security_state_;
 };
 
 }  // namespace content

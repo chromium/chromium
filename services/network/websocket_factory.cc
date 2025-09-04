@@ -37,6 +37,7 @@ void WebSocketFactory::CreateWebSocket(
     std::vector<mojom::HttpHeaderPtr> additional_headers,
     int32_t process_id,
     const url::Origin& origin,
+    network::mojom::ClientSecurityStatePtr client_security_state,
     uint32_t options,
     net::NetworkTrafficAnnotationTag traffic_annotation,
     mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
@@ -82,9 +83,10 @@ void WebSocketFactory::CreateWebSocket(
   connections_.insert(std::make_unique<WebSocket>(
       this, url, requested_protocols, site_for_cookies,
       storage_access_api_status, isolation_info, std::move(additional_headers),
-      origin, options, traffic_annotation, has_raw_headers_access,
-      std::move(handshake_client), std::move(url_loader_network_observer),
-      std::move(auth_handler), std::move(header_client),
+      origin, std::move(client_security_state), options, traffic_annotation,
+      has_raw_headers_access, std::move(handshake_client),
+      std::move(url_loader_network_observer), std::move(auth_handler),
+      std::move(header_client),
       throttler_.IssuePendingConnectionTracker(process_id),
       throttler_.CalculateDelay(process_id), throttling_profile_id));
 }
