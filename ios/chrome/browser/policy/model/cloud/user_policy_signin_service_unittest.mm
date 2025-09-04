@@ -29,6 +29,7 @@
 #import "google_apis/gaia/gaia_constants.h"
 #import "google_apis/gaia/gaia_urls.h"
 #import "google_apis/gaia/google_service_auth_error.h"
+#import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
@@ -220,8 +221,9 @@ class UserPolicySigninServiceTest : public PlatformTest {
   // service that is hold by `user_policy_signin_service_`.
   void InitUserPolicySigninService() {
     user_policy_signin_service_ = std::make_unique<UserPolicySigninService>(
-        profile_->GetPrefs(), pref_service_, &device_management_service_,
-        profile_->GetUserCloudPolicyManager(),
+        profile_->GetPrefs(), pref_service_,
+        enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile_.get()),
+        &device_management_service_, profile_->GetUserCloudPolicyManager(),
         identity_test_env_.identity_manager(),
         profile_->GetSharedURLLoaderFactory());
   }

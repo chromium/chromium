@@ -48,9 +48,7 @@ void CloudProfileReportingServiceIOS::CreateReportScheduler() {
   ReportingDelegateFactoryIOS delegate_factory;
   ReportScheduler::CreateParams params;
   params.client = cloud_policy_client_.get();
-  // TODO(b/385175028): Add per-profile support to ReportSchedulerIOS,
-  // and create a per-profile scheduler there.
-  params.delegate = delegate_factory.GetReportSchedulerDelegate();
+  params.delegate = delegate_factory.GetReportSchedulerDelegate(profile_);
 
   params.profile_request_generator =
       std::make_unique<ChromeProfileRequestGenerator>(

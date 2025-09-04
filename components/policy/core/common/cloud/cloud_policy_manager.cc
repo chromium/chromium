@@ -23,12 +23,24 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/prefs/pref_service.h"
+#include "device_management_backend.pb.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/core/common/cloud/resource_cache.h"
 #endif
 
 namespace policy {
+
+namespace {
+
+const enterprise_management::PolicyData* GetPolicyData(
+    const CloudPolicyManager* manager) {
+  CHECK(manager);
+  const policy::CloudPolicyStore* store = manager->core()->store();
+  return store && store->has_policy() ? store->policy() : nullptr;
+}
+
+}  // namespace
 
 BASE_FEATURE(kPublishPolicyWithoutWaiting,
              "PublishPolicyWithoutWaiting",
@@ -49,6 +61,22 @@ CloudPolicyManager::CloudPolicyManager(
       waiting_for_policy_refresh_(false) {}
 
 CloudPolicyManager::~CloudPolicyManager() = default;
+
+std::optional<policy::DMToken> CloudPolicyManager::GetDMToken() const {
+  const auto* data = GetPolicyData(this);
+  if (!data || !data->has_request_token()) {
+    return std::nullopt;
+  }
+  return policy::DMToken::CreateValidToken(data->request_token());
+}
+
+std::optional<std::string> CloudPolicyManager::GetClientId() const {
+  const auto* data = GetPolicyData(this);
+  if (!data || !data->has_device_id()) {
+    return std::nullopt;
+  }
+  return data->device_id();
+}
 
 bool CloudPolicyManager::IsClientRegistered() const {
   return client() && client()->is_registered();

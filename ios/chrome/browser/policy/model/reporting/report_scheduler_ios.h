@@ -5,14 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_REPORT_SCHEDULER_IOS_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_REPORT_SCHEDULER_IOS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
+
+class ProfileIOS;
 
 namespace enterprise_reporting {
 
 // Desktop implementation of the ReportScheduler delegate.
 class ReportSchedulerIOS : public ReportScheduler::Delegate {
  public:
-  ReportSchedulerIOS();
+  // Used for profile reporting if `profile` is non-null.
+  explicit ReportSchedulerIOS(ProfileIOS* profile = nullptr);
   ReportSchedulerIOS(const ReportSchedulerIOS&) = delete;
   ReportSchedulerIOS& operator=(const ReportSchedulerIOS&) = delete;
 
@@ -30,6 +34,9 @@ class ReportSchedulerIOS : public ReportScheduler::Delegate {
   void OnSecuritySignalsUploaded() override;
   policy::DMToken GetProfileDMToken() override;
   std::string GetProfileClientId() override;
+
+ private:
+  raw_ptr<ProfileIOS> profile_;
 };
 
 }  // namespace enterprise_reporting

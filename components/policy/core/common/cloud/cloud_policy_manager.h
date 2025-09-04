@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_POLICY_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -13,6 +14,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
+#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
@@ -57,6 +59,12 @@ class POLICY_EXPORT CloudPolicyManager
   ComponentCloudPolicyService* component_policy_service() const {
     return component_policy_service_.get();
   }
+
+  // Returns the DM Token, if it exists.
+  std::optional<policy::DMToken> GetDMToken() const;
+
+  // Returns the client ID, if it exists.
+  std::optional<std::string> GetClientId() const;
 
   // Returns true if the underlying CloudPolicyClient is already registered.
   // Virtual for mocking.

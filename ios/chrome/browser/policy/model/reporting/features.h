@@ -12,6 +12,9 @@ namespace enterprise_reporting {
 // Enables Cloud Profile Reporting on iOS.
 BASE_DECLARE_FEATURE(kCloudProfileReporting);
 
+// Reports all known profiles, not just loaded profiles, in the browser report.
+BASE_DECLARE_FEATURE(kBrowserReportIncludeAllProfiles);
+
 }  // namespace enterprise_reporting
 
 #endif  // IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_FEATURES_H_

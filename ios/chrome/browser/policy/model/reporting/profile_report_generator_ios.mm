@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/policy/model/reporting/profile_report_generator_ios.h"
 
+#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/policy/core/browser/policy_conversions.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/policy_conversions_client_ios.h"
+#import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -55,6 +59,7 @@ void ProfileReportGeneratorIOS::GetSigninUserInfo(
 void ProfileReportGeneratorIOS::GetAffiliationInfo(
     enterprise_management::ChromeUserProfileInfo* report) {
   // Affiliation information is currently not supported on iOS.
+  // TODO(crbug.com/6777441): Port the desktop implementation to iOS.
 }
 
 void ProfileReportGeneratorIOS::GetExtensionInfo(
@@ -69,7 +74,15 @@ void ProfileReportGeneratorIOS::GetExtensionRequest(
 
 void ProfileReportGeneratorIOS::GetProfileId(
     enterprise_management::ChromeUserProfileInfo* report) {
-  // TODO(crbug.com/389974117): Profile ID is currently unavailable on iOS.
+  if (base::FeatureList::IsEnabled(
+          enterprise_reporting::kCloudProfileReporting)) {
+    std::optional<std::string> profile_id =
+        enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile_)
+            ->GetProfileId();
+    if (profile_id.has_value()) {
+      report->set_profile_id(profile_id.value());
+    }
+  }
 }
 
 void ProfileReportGeneratorIOS::GetProfileName(

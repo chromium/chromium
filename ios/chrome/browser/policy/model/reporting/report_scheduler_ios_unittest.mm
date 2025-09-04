@@ -15,6 +15,7 @@
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/browser/reporting/report_request.h"
 #import "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -78,7 +79,8 @@ class MockReportUploader : public ReportUploader {
                     ReportCallback));
 };
 
-class ReportSchedulerIOSTest : public PlatformTest {
+class ReportSchedulerIOSTest : public PlatformTest,
+                               public testing::WithParamInterface<bool> {
  public:
   ReportSchedulerIOSTest() = default;
   ReportSchedulerIOSTest(const ReportSchedulerIOSTest&) = delete;
@@ -86,6 +88,10 @@ class ReportSchedulerIOSTest : public PlatformTest {
   ~ReportSchedulerIOSTest() override = default;
 
   void SetUp() override {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          enterprise_reporting::kCloudProfileReporting);
+    }
     client_ptr_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_ = client_ptr_.get();
     generator_ptr_ =
@@ -182,25 +188,25 @@ class ReportSchedulerIOSTest : public PlatformTest {
   std::unique_ptr<MockReportUploader> uploader_ptr_;
 };
 
-TEST_F(ReportSchedulerIOSTest, NoReportWithoutPolicy) {
+TEST_P(ReportSchedulerIOSTest, NoReportWithoutPolicy) {
   Init(false, kDMToken, kClientId);
   CreateScheduler();
   EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
 }
 
-TEST_F(ReportSchedulerIOSTest, NoReportWithoutDMToken) {
+TEST_P(ReportSchedulerIOSTest, NoReportWithoutDMToken) {
   Init(true, "", kClientId);
   CreateScheduler();
   EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
 }
 
-TEST_F(ReportSchedulerIOSTest, NoReportWithoutClientId) {
+TEST_P(ReportSchedulerIOSTest, NoReportWithoutClientId) {
   Init(true, kDMToken, "");
   CreateScheduler();
   EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
 }
 
-TEST_F(ReportSchedulerIOSTest, UploadReportSucceeded) {
+TEST_P(ReportSchedulerIOSTest, UploadReportSucceeded) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -223,7 +229,7 @@ TEST_F(ReportSchedulerIOSTest, UploadReportSucceeded) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, UploadReportTransientError) {
+TEST_P(ReportSchedulerIOSTest, UploadReportTransientError) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -246,7 +252,7 @@ TEST_F(ReportSchedulerIOSTest, UploadReportTransientError) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, UploadReportPersistentError) {
+TEST_P(ReportSchedulerIOSTest, UploadReportPersistentError) {
   EXPECT_CALL_SetupRegistrationWithSetDMToken();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -274,7 +280,7 @@ TEST_F(ReportSchedulerIOSTest, UploadReportPersistentError) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, NoReportGenerate) {
+TEST_P(ReportSchedulerIOSTest, NoReportGenerate) {
   EXPECT_CALL_SetupRegistrationWithSetDMToken();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(0)));
@@ -299,7 +305,7 @@ TEST_F(ReportSchedulerIOSTest, NoReportGenerate) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, TimerDelayWithLastUploadTimestamp) {
+TEST_P(ReportSchedulerIOSTest, TimerDelayWithLastUploadTimestamp) {
   const base::TimeDelta gap = base::Hours(10);
   SetLastUploadInHour(gap);
   SetReportFrequency(kUploadFrequency);
@@ -325,7 +331,7 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayWithLastUploadTimestamp) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, TimerDelayWithoutLastUploadTimestamp) {
+TEST_P(ReportSchedulerIOSTest, TimerDelayWithoutLastUploadTimestamp) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -344,7 +350,7 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayWithoutLastUploadTimestamp) {
   ::testing::Mock::VerifyAndClearExpectations(client_);
 }
 
-TEST_F(ReportSchedulerIOSTest, TimerDelayUpdate) {
+TEST_P(ReportSchedulerIOSTest, TimerDelayUpdate) {
   const base::TimeDelta gap = base::Hours(5);
   SetLastUploadInHour(gap);
   SetReportFrequency(kUploadFrequency);
@@ -376,7 +382,7 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayUpdate) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, IgnoreFrequencyWithoutReportEnabled) {
+TEST_P(ReportSchedulerIOSTest, IgnoreFrequencyWithoutReportEnabled) {
   Init(false, kDMToken, kClientId);
   CreateScheduler();
   EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
@@ -396,7 +402,7 @@ TEST_F(ReportSchedulerIOSTest, IgnoreFrequencyWithoutReportEnabled) {
   EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
 }
 
-TEST_F(ReportSchedulerIOSTest,
+TEST_P(ReportSchedulerIOSTest,
        ReportingIsDisabledWhileNewReportIsScheduledButNotPosted) {
   EXPECT_CALL_SetupRegistration();
 
@@ -416,7 +422,7 @@ TEST_F(ReportSchedulerIOSTest,
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, ReportingIsDisabledWhileNewReportIsPosted) {
+TEST_P(ReportSchedulerIOSTest, ReportingIsDisabledWhileNewReportIsPosted) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -443,5 +449,9 @@ TEST_F(ReportSchedulerIOSTest, ReportingIsDisabledWhileNewReportIsPosted) {
   ::testing::Mock::VerifyAndClearExpectations(client_);
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReportSchedulerIOSTest,
+                         testing::Values(false, true));
 
 }  // namespace enterprise_reporting

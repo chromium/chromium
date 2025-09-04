@@ -11,13 +11,17 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
+#import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/enterprise/browser/reporting/report_type.h"
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/schema_registry.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
+#import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -38,9 +42,28 @@ namespace em = enterprise_management;
 
 namespace enterprise_reporting {
 
-class ProfileReportGeneratorIOSTest : public PlatformTest {
+namespace {
+
+constexpr char kFakeProfileId[] = "fake-profile-id";
+
+std::unique_ptr<KeyedService> CreateProfileIdService(
+    web::BrowserState* browser_state) {
+  return std::make_unique<enterprise::ProfileIdService>(kFakeProfileId);
+}
+
+}  // namespace
+
+class ProfileReportGeneratorIOSTest : public PlatformTest,
+                                      public testing::WithParamInterface<bool> {
  public:
-  ProfileReportGeneratorIOSTest() : generator_(&delegate_factory_) {
+  ProfileReportGeneratorIOSTest() : generator_(&delegate_factory_) {}
+
+  void SetUp() override {
+    if (IsProfileReportingEnabled()) {
+      feature_list_.InitAndEnableFeature(
+          enterprise_reporting::kCloudProfileReporting);
+    }
+
     InitPolicyMap();
 
     TestProfileIOS::Builder builder;
@@ -48,6 +71,9 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(
+        enterprise::ProfileIdServiceFactoryIOS::GetInstance(),
+        base::BindRepeating(&CreateProfileIdService));
     builder.SetPolicyConnector(std::make_unique<ProfilePolicyConnectorMock>(
         CreateMockPolicyService(), &schema_registry_));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
@@ -73,6 +99,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
 
     return policy_service;
   }
+
+  bool IsProfileReportingEnabled() const { return GetParam(); }
 
   void InitPolicyMap() {
     policy_map_.Set("kPolicyName1", policy::POLICY_LEVEL_MANDATORY,
@@ -121,6 +149,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
   ProfileReportGenerator generator_;
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
@@ -132,13 +162,13 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
 };
 
-TEST_F(ProfileReportGeneratorIOSTest, UnsignedInProfile) {
+TEST_P(ProfileReportGeneratorIOSTest, UnsignedInProfile) {
   auto report = GenerateReport();
   ASSERT_TRUE(report);
   EXPECT_FALSE(report->has_chrome_signed_in_user());
 }
 
-TEST_F(ProfileReportGeneratorIOSTest, SignedInProfile) {
+TEST_P(ProfileReportGeneratorIOSTest, SignedInProfile) {
   FakeSystemIdentity* fake_identity = SignIn();
   auto report = GenerateReport();
   ASSERT_TRUE(report);
@@ -149,7 +179,7 @@ TEST_F(ProfileReportGeneratorIOSTest, SignedInProfile) {
             report->chrome_signed_in_user().obfuscated_gaia_id());
 }
 
-TEST_F(ProfileReportGeneratorIOSTest, PoliciesReportedOnlyWhenEnabled) {
+TEST_P(ProfileReportGeneratorIOSTest, PoliciesReportedOnlyWhenEnabled) {
   // Policies are reported by default.
   std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
   ASSERT_TRUE(report);
@@ -169,5 +199,24 @@ TEST_F(ProfileReportGeneratorIOSTest, PoliciesReportedOnlyWhenEnabled) {
   ASSERT_TRUE(report);
   EXPECT_EQ(2, report->chrome_policies_size());
 }
+
+TEST_P(ProfileReportGeneratorIOSTest, ProfileId) {
+  std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
+  if (IsProfileReportingEnabled()) {
+    EXPECT_EQ(kFakeProfileId, report->profile_id());
+  } else {
+    EXPECT_EQ(std::string(), report->profile_id());
+  }
+}
+
+TEST_P(ProfileReportGeneratorIOSTest, IsAffiliated) {
+  std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
+  // TODO(crbug.com/6777441): Update after affiliation is implemented.
+  EXPECT_FALSE(report->has_affiliation());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ProfileReportGeneratorIOSTest,
+                         testing::Values(false, true));
 
 }  // namespace enterprise_reporting
