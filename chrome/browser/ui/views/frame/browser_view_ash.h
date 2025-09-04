@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_ASH_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_ASH_H_
 
+#include <memory>
+
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
 namespace gfx {
@@ -17,7 +19,7 @@ class Browser;
 // OS under classic ash.
 class BrowserViewAsh : public BrowserView {
  public:
-  explicit BrowserViewAsh(Browser* browser);
+  explicit BrowserViewAsh(std::unique_ptr<Browser> browser);
 
   BrowserViewAsh(const BrowserViewAsh&) = delete;
   BrowserViewAsh& operator=(const BrowserViewAsh&) = delete;

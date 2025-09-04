@@ -40,7 +40,7 @@ class WebUIBrowserWindow : public BrowserWindow,
                            public ui::AcceleratorTarget,
                            public views::WidgetObserver {
  public:
-  explicit WebUIBrowserWindow(Browser* browser);
+  explicit WebUIBrowserWindow(std::unique_ptr<Browser> browser);
   ~WebUIBrowserWindow() override;
 
   // Returns the containing browser window for a WebContents that hosts
@@ -278,8 +278,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   gfx::Rect GetContentsBoundsInScreen() const;
 
  protected:
-  // BrowserWindow:
-  void DeleteBrowserWindow() final;
+  void DestroyBrowser() override;
 
  private:
   class WidgetDelegate;
@@ -306,7 +305,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   void OnWindowCloseRequested(views::Widget::ClosedReason close_reason);
   WebUIBrowserUI* GetWebUIBrowserUI() const;
 
-  const raw_ptr<Browser> browser_;
+  std::unique_ptr<Browser> browser_;
   std::unique_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
   std::unique_ptr<WidgetDelegate> widget_delegate_;
   std::unique_ptr<views::Widget> widget_;

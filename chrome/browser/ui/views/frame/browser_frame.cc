@@ -22,7 +22,6 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
@@ -129,6 +128,7 @@ BrowserFrame::BrowserFrame(BrowserView* browser_view)
       root_view_(nullptr),
       browser_frame_view_(nullptr),
       browser_view_(browser_view) {
+  browser_view_->set_frame(this);
   set_is_secondary_widget(false);
   // Don't focus anything on creation, selecting a tab will set the focus.
   set_focus_on_creation(false);
@@ -136,30 +136,19 @@ BrowserFrame::BrowserFrame(BrowserView* browser_view)
 
 BrowserFrame::~BrowserFrame() {
   set_widget_closed();
-
-  // Synchronously destroy owned Widgets, which are typically owned by the
-  // BrowserFrame's NativeWidget, to mitigate the risk of dangling pointers to
-  // Browser and related objects during destruction.
-  views::Widget::ForEachOwnedWidget(GetNativeView(),
-                                    [this](views::Widget* widget) {
-                                      if (widget != this) {
-                                        widget->CloseNow();
-                                      }
-                                    });
-
-  // Invoke the pre-window-destruction lifecycle hook before the owned
-  // BrowserView is destroyed.
-  // Do this here and not in ~BrowserView() as BrowserWindowFeatures may attempt
-  // to read state on the BrowserFrame as they undergo destruction, and
-  // BrowserFrame state is destroyed at the end of this scope.
-  browser_view_->browser()->GetFeatures().TearDownPreBrowserWindowDestruction();
+  // Window placement is expected to be saved when the window closes. Under the
+  // CLIENT_OWNS_WIDGET ownership scheme this signal is received in the
+  // Widget destructor. `SaveWindowPlacement()` must be called here as this
+  // depends on state in BrowserFrame, which will have been torn down by the
+  // time the Widget destructor runs.
+  SaveWindowPlacementIfNeeded();
 }
 
 void BrowserFrame::InitBrowserFrame() {
   native_browser_frame_ =
       NativeBrowserFrameFactory::CreateNativeBrowserFrame(this, browser_view_);
   views::Widget::InitParams params = native_browser_frame_->GetWidgetParams(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.name = "BrowserFrame";
   params.delegate = browser_view_;
   params.headless_mode = headless::IsHeadlessMode();
@@ -473,21 +462,6 @@ void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
   }
 #endif
   Widget::OnNativeWidgetWorkspaceChanged();
-}
-
-void BrowserFrame::OnNativeWidgetDestroyed() {
-  native_browser_frame_ = nullptr;
-  Browser* const browser = browser_view_->browser();
-
-  // Current expectations are that the Browser is destroyed synchronously when
-  // its NativeWidget is destroyed. Prepare Browser and request synchronous
-  // destruction here.
-  // TODO(crbug.com/413168662): Once clients have been migrated away from
-  // closing Browsers via their NativeWidgets explore removing this completely.
-  browser->set_force_skip_warning_user_on_close(true);
-  browser->OnWindowClosing();
-  Widget::OnNativeWidgetDestroyed();
-  browser->SynchronouslyDestroyBrowser();
 }
 
 void BrowserFrame::ShowContextMenuForViewImpl(

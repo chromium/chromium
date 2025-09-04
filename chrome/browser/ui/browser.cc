@@ -100,8 +100,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
-#include "chrome/browser/ui/browser_manager_service.h"
-#include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_select_file_dialog_controller.h"
@@ -326,6 +324,13 @@ namespace {
 
 // How long we wait before updating the browser chrome while loading a page.
 constexpr base::TimeDelta kUIUpdateCoalescingTime = base::Milliseconds(200);
+
+BrowserWindow* CreateBrowserWindow(std::unique_ptr<Browser> browser,
+                                   bool user_gesture,
+                                   bool in_tab_dragging) {
+  return BrowserWindow::CreateBrowserWindow(std::move(browser), user_gesture,
+                                            in_tab_dragging);
+}
 
 const extensions::Extension* GetExtensionForOrigin(
     Profile* profile,
@@ -572,12 +577,7 @@ Browser* Browser::Create(const CreateParams& params) {
   // not possible, e.g. using the wrong profile or during shutdown. The caller
   // should handle this; see e.g. crbug.com/1141608 and crbug.com/1261628.
   CHECK_EQ(CreationStatus::kOk, GetCreationStatusForProfile(params.profile));
-
-  std::unique_ptr<Browser> browser = base::WrapUnique(new Browser(params));
-  Browser* const browser_ptr = browser.get();
-  BrowserManagerServiceFactory::GetForProfile(params.profile)
-      ->AddBrowser(std::move(browser));
-  return browser_ptr;
+  return new Browser(params);
 }
 
 // static
@@ -664,13 +664,14 @@ Browser::Browser(const CreateParams& params)
 #endif  // BUILDFLAG(IS_OZONE)
 
   if (params.window) {
-    CHECK_IS_TEST() << "Browser::CreateParams::window is a test-only param";
+    window_for_testing_.reset(params.window.get());
+    window_ = params.window.get();
+  } else {
+    // TODO(crbug.com/413168662): This can be consolidated with above once
+    // Browser always owns BrowserWindow.
+    window_ = CreateBrowserWindow(std::unique_ptr<Browser>(this),
+                                  params.user_gesture, params.in_tab_dragging);
   }
-  window_ =
-      params.window
-          ? std::unique_ptr<BrowserWindow, BrowserWindowDeleter>(params.window)
-          : BrowserWindow::CreateBrowserWindow(this, params.user_gesture,
-                                               params.in_tab_dragging);
 
   if (auto* const app_browser_controller = GetAppBrowserController();
       app_browser_controller) {
@@ -693,8 +694,10 @@ Browser::Browser(const CreateParams& params)
 }
 
 Browser::~Browser() {
+  // Reset the test window, if present, before tearing down browser state.
+  window_for_testing_.reset();
+
   BrowserList::RemoveBrowser(this);
-  window_.reset();
 
   // Tear down `BrowserWindowFeatures` and `BrowserUserData`s now to avoid
   // exposing them to Browser in a partially-destroyed state. Eventually,
@@ -1232,11 +1235,8 @@ base::CallbackListSubscription Browser::RegisterDidBecomeInactive(
 }
 
 void Browser::SynchronouslyDestroyBrowser() {
-  // TODO(crbug.com/413168662): Eliminate the need for BrowserCloseManager to
-  // call this directly, instead allow Browsers to be destroyed by their owning
-  // BrowserManagerService at shutdown.
-  BrowserManagerServiceFactory::GetForProfile(profile())->DeleteBrowser(this);
-  // `this` is no longer valid from this point forward.
+  CHECK(window_);
+  window_->DestroyBrowser();
 }
 
 ExclusiveAccessManager* Browser::GetExclusiveAccessManager() {
@@ -1391,15 +1391,6 @@ void Browser::OnWindowClosing() {
     // At this point the browser has successfully closed and is scheduled for
     // deletion.
     browser_did_close_callback_list_.Notify(this);
-
-    // Once a Browser has successfully closed, client code expects control to
-    // return to the run loop before the instance is finally deleted. To
-    // maintain existing expectations schedule the delete asynchronously here.
-    // TODO(crbug.com/413168662): Explore synchronously destroying the browser
-    // instead.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&Browser::SynchronouslyDestroyBrowser,
-                                  weak_factory_.GetWeakPtr()));
   }
 }
 

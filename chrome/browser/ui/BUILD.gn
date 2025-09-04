@@ -1042,8 +1042,6 @@ static_library("ui") {
       "browser_view_prefs.cc",
       "browser_view_prefs.h",
       "browser_window.h",
-      "browser_window_deleter.cc",
-      "browser_window_deleter.h",
       "browser_window_state.cc",
       "browser_window_state.h",
       "chrome_pages.cc",

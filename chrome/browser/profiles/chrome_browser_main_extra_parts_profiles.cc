@@ -351,7 +351,6 @@
 #include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
 #include "chrome/browser/storage/storage_notification_service_factory.h"
-#include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
@@ -769,9 +768,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   browser_switcher::BrowserSwitcherServiceFactory::GetInstance();
 #endif
   browser_sync::UserEventServiceFactory::GetInstance();
-#if !BUILDFLAG(IS_ANDROID)
-  BrowserManagerServiceFactory::GetInstance();
-#endif
   browsing_topics::BrowsingTopicsServiceFactory::GetInstance();
   BrowsingDataHistoryObserverService::Factory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)

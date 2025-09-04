@@ -62,16 +62,32 @@ void TestWithBrowserView::SetUp() {
 void TestWithBrowserView::TearDown() {
   // Destroy Browsers directly managed by TestWithBrowserView.
   for (std::unique_ptr<Browser>& browser : additional_browsers_) {
-    browser->tab_strip_model()->CloseAllTabs();
-    browser.reset();
+    // For Browsers created with a corresponding BrowserView, the Browser is
+    // ultimately deleted by its owning NativeWidget. To avoid a double-free
+    // situation we must release the Browser's unique_ptr and request the
+    // NativeWidget close via its BrowserView.
+    // TODO(crbug.com/413168662): Eliminate this once Browser ownership changes
+    // have landed.
+    BrowserView* browser_view = static_cast<BrowserView*>(browser->window());
+    browser.release()->tab_strip_model()->CloseAllTabs();
+    browser_view->GetWidget()->CloseNow();
   }
 
   // Because CreateBrowserWindow() is overridden to return null, a real
-  // BrowserView is created. Nullify the BrowserView pointer before destroying
-  // the Browser to avoid dangling pointers.
+  // BrowserView is created, and BrowserView has a unique_ptr that owns the
+  // Browser for which it is the view. This is a problem because
+  // BrowserWithTestWindowTest also has a unique_ptr to the Browser. Therefore,
+  // steal the BrowserWithTestWindowTest ownership and release it to fix the
+  // double-ownership problem.
+  ASSERT_TRUE(release_browser().release());
+
+  // Then trigger the close of the browser window via the view. It's critical
+  // that the Browser is gone before BrowserWithTestWindowTest::TearDown() is
+  // called so that the dependencies aren't closed out from underneath the
+  // browser.
   browser_view_->browser()->tab_strip_model()->CloseAllTabs();
-  browser_view_ = nullptr;
-  ASSERT_TRUE(release_browser());
+  browser_view_.ExtractAsDangling()->GetWidget()->CloseNow();
+  content::RunAllTasksUntilIdle();
 
   BrowserWithTestWindowTest::TearDown();
 #if BUILDFLAG(IS_CHROMEOS)

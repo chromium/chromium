@@ -273,7 +273,7 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
   bool IsClosed() const { return is_closed_; }
 
  protected:
-  void DeleteBrowserWindow() final;
+  void DestroyBrowser() override {}
 
  private:
   class TestLocationBar : public LocationBar {

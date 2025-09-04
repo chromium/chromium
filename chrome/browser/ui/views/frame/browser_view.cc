@@ -925,9 +925,9 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, public:
 
-BrowserView::BrowserView(Browser* browser)
+BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     : views::ClientView(nullptr, nullptr),
-      browser_(browser),
+      browser_(std::move(browser)),
       accessibility_mode_observer_(
           std::make_unique<AccessibilityModeObserver>(this)) {
   SetShowIcon(::ShouldShowWindowIcon(
@@ -1096,6 +1096,8 @@ BrowserView::BrowserView(Browser* browser)
 }
 
 BrowserView::~BrowserView() {
+  browser_->GetFeatures().TearDownPreBrowserWindowDestruction();
+
   // Remove the layout manager to avoid dangling. This needs to be earlier than
   // other cleanups that destroy views referenced in the layout manager.
   SetLayoutManager(nullptr);
@@ -3102,6 +3104,14 @@ void BrowserView::MaybeShowTabStripToolbarButtonIPH() {
   }
 }
 
+void BrowserView::DestroyBrowser() {
+  // After this returns other parts of Chrome are going to be shutdown. Close
+  // the window now so that we are deleted immediately and aren't left holding
+  // references to deleted objects.
+  GetWidget()->RemoveObserver(this);
+  frame_->CloseNow();
+}
+
 bool BrowserView::IsBookmarkBarVisible() const {
   if (!browser_->SupportsWindowFeature(Browser::FEATURE_BOOKMARKBAR)) {
     return false;
@@ -4581,20 +4591,6 @@ void BrowserView::CloseTabSearchBubble() {
   if (auto* tab_search_host = GetTabSearchBubbleHost()) {
     tab_search_host->CloseTabSearchBubble();
   }
-}
-
-void BrowserView::DeleteBrowserWindow() {
-  CHECK(frame_);
-
-  // Window placement is expected to be saved when the window closes.
-  // Determination for whether placement should be saved depends on the
-  // BrowserFrame object. `SaveWindowPlacementIfNeeded()` must be called here
-  // before the frame is destroyed to mitigate UAF risk.
-  frame_->SaveWindowPlacementIfNeeded();
-
-  frame_.reset();
-  // BrowserFrame owns BrowserView in its views::View hierarchy and `this` will
-  // not be valid after this returns.
 }
 
 void BrowserView::SetForceShowBookmarkBarFlag(
