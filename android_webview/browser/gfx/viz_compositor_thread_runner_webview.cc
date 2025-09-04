@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 
 #include <utility>
@@ -38,7 +36,7 @@ void RunAndSignal(base::OnceClosure viz_task, base::WaitableEvent* done) {
   done->Signal();
 }
 
-BASE_FEATURE(WebViewVizUseThreadPool, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebViewVizUseThreadPool, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

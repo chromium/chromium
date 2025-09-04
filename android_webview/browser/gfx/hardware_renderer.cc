@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "android_webview/browser/gfx/hardware_renderer.h"
 
 #include <algorithm>
@@ -65,7 +63,7 @@
 namespace android_webview {
 namespace {
 
-BASE_FEATURE(DrawAndSwapInjectLatency, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDrawAndSwapInjectLatency, base::FEATURE_DISABLED_BY_DEFAULT);
 
 class ScopedAcquireExternalContext {
  public:
