@@ -43,6 +43,7 @@
 #include "net/websockets/websocket_frame.h"  // for WebSocketFrameHeader::OpCode
 #include "net/websockets/websocket_handshake_request_info.h"
 #include "net/websockets/websocket_handshake_response_info.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/throttling/throttling_controller.h"
 #include "services/network/throttling/throttling_network_interceptor.h"
@@ -248,11 +249,36 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
   if (impl_->url_loader_network_observer_) {
     mojom::IPAddressSpace ip_address_space =
         TransportInfoToIPAddressSpace(info);
-    // TODO(crbug.com/434744665): Add LNA check here, feature-flag guarded.
     if (ip_address_space == network::mojom::IPAddressSpace::kLoopback ||
         ip_address_space == network::mojom::IPAddressSpace::kLocal) {
       impl_->url_loader_network_observer_->OnWebSocketConnectedToPrivateNetwork(
           ip_address_space);
+      if (base::FeatureList::IsEnabled(
+              features::kLocalNetworkAccessChecksWebSockets)) {
+        // TODO(crbug.com/434744665): actually do a LessPrivate check using the
+        // provided client security state, instead of assuming any websocket
+        // connection to a local/loopback address is a LNA request and needs
+        // permissions.
+        impl_->url_loader_network_observer_
+            ->OnLocalNetworkAccessPermissionRequired(base::BindOnce(
+                [](base::WeakPtr<WebSocket> weak_self,
+                   net::CompletionOnceCallback callback,
+                   bool permission_granted) {
+                  if (!weak_self) {
+                    // Checking the weak ptr not to call the `callback` after
+                    // `this` is destructed. This is needed because the
+                    // observer's pipe may outlive `this` and the owner
+                    // `WebSocket`.
+                    return;
+                  }
+                  std::move(callback).Run(
+                      permission_granted
+                          ? net::OK
+                          : net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+                },
+                impl_->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+        return net::ERR_IO_PENDING;
+      }
     }
   }
   return net::OK;
