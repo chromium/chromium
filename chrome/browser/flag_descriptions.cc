@@ -674,6 +674,12 @@ const char kIsolatedSandboxedIframesDescription[] =
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
 
+const char kAutofillAndPasswordsInSameSurfaceName[] =
+    "Allow Autofill and Passwords in the same dropdown";
+const char kAutofillAndPasswordsInSameSurfaceDescription[] =
+    "Enables a refactoring allowing to add password/passkey suggestions into "
+    "Autofill dropdowns alongside addresses, etc.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kAutofillAndroidDesktopSuppressAccessoryOnEmptyName[] =
     "Enable suppressing keyboard accessory on android desktop";

@@ -13267,6 +13267,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kMediaCodecLowDelayMode)},
 #endif
 
+    {"autofill-and-passwords-in-same-surface",
+     flag_descriptions::kAutofillAndPasswordsInSameSurfaceName,
+     flag_descriptions::kAutofillAndPasswordsInSameSurfaceDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAndPasswordsInSameSurface)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

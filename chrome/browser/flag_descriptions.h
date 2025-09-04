@@ -438,6 +438,9 @@ extern const char kEnableAutoDisableAccessibilityDescription[];
 extern const char kImageDescriptionsAlternateRoutingName[];
 extern const char kImageDescriptionsAlternateRoutingDescription[];
 
+extern const char kAutofillAndPasswordsInSameSurfaceName[];
+extern const char kAutofillAndPasswordsInSameSurfaceDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillAndroidDesktopSuppressAccessoryOnEmptyName[];
 extern const char kAutofillAndroidDesktopSuppressAccessoryOnEmptyDescription[];
