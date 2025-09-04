@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/passwords/model/features.h"
 
 #import "base/feature_list.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-BASE_FEATURE(kImportPasswordsFromSafari, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(ImportPasswordsFromSafari, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPasswordManagerEnableCrowdsourcingUploads,
+BASE_FEATURE(PasswordManagerEnableCrowdsourcingUploads,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ShouldShowSafariImportWorkflow(ProfileIOS* profile) {

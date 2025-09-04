@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/web/common/features.h"
 
 #import "base/metrics/field_trial_params.h"
@@ -10,39 +12,39 @@
 namespace web {
 namespace features {
 
-BASE_FEATURE(kCrashOnUnexpectedURLChange, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(CrashOnUnexpectedURLChange, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBlockUniversalLinksInOffTheRecordMode,
              "BlockUniversalLinksInOffTheRecord",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kKeepsRenderProcessAlive, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(KeepsRenderProcessAlive, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClearOldNavigationRecordsWorkaround,
+BASE_FEATURE(ClearOldNavigationRecordsWorkaround,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnablePersistentDownloads, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnablePersistentDownloads, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSetRequestAttribution, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(SetRequestAttribution, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSSharedHighlightingColorChange,
+BASE_FEATURE(IOSSharedHighlightingColorChange,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableMeasurements,
              "EnableMeasurementsExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kScrollViewProxyScrollEnabledWorkaround,
+BASE_FEATURE(ScrollViewProxyScrollEnabledWorkaround,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPreventNavigationWithoutUserInteraction,
+BASE_FEATURE(PreventNavigationWithoutUserInteraction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowCrossWindowExternalAppNavigation,
              "kAllowCrossWindowExternalAppNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableWebInspector, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(EnableWebInspector, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSmoothScrollingDefault,
              "FullscreenSmoothScrollingDefault",
@@ -53,7 +55,7 @@ BASE_FEATURE(kSmoothScrollingDefault,
 #endif
 );
 
-BASE_FEATURE(kFullscreenScrollThreshold, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(FullscreenScrollThreshold, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kFullscreenScrollThresholdAmount[] =
     "fullscreen_scroll_threshold_amount";
@@ -64,10 +66,9 @@ bool IsFullscreenScrollThresholdEnabled() {
 }
 
 // This feature will always be disabled and will only be enabled by tests.
-BASE_FEATURE(kForceSynthesizedRestoreSession,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(ForceSynthesizedRestoreSession, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDetectDestroyedNavigationContexts,
+BASE_FEATURE(DetectDestroyedNavigationContexts,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsWebInspectorSupportEnabled() {
@@ -77,21 +78,21 @@ bool IsWebInspectorSupportEnabled() {
   return false;
 }
 
-BASE_FEATURE(kDisableRaccoon, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(DisableRaccoon, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUserAgentBugFixVersion, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(UserAgentBugFixVersion, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLogJavaScriptErrors, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(LogJavaScriptErrors, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebKitHandlesMarketplaceKitLinks,
+BASE_FEATURE(WebKitHandlesMarketplaceKitLinks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRestoreWKWebViewEditMenuHandler,
+BASE_FEATURE(RestoreWKWebViewEditMenuHandler,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLogCrWebJavaScriptErrors, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(LogCrWebJavaScriptErrors, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAssertOnJavaScriptErrors, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(AssertOnJavaScriptErrors, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace web

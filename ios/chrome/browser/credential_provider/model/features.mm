@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/credential_provider/model/features.h"
 
-BASE_FEATURE(kCredentialProviderPasskeyPRF, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(CredentialProviderPasskeyPRF, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCredentialProviderPasskeyLargeBlob,
+BASE_FEATURE(CredentialProviderPasskeyLargeBlob,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCredentialProviderPerformanceImprovements,
+BASE_FEATURE(CredentialProviderPerformanceImprovements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCredentialProviderSignalAPI, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(CredentialProviderSignalAPI, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsCPEPerformanceImprovementsEnabled() {
   return base::FeatureList::IsEnabled(

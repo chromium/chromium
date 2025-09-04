@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 
 #import "base/metrics/field_trial_params.h"
@@ -14,12 +16,12 @@ constexpr base::TimeDelta kDefaultReturnToStartSurfaceInactiveDuration =
 
 }  // anonymous namespace
 
-BASE_FEATURE(kStartSurface, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(StartSurface, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSStartTimeBrowserBackgroundRemediations,
+BASE_FEATURE(IOSStartTimeBrowserBackgroundRemediations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSStartTimeStartupRemediations,
+BASE_FEATURE(IOSStartTimeStartupRemediations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kReturnToStartSurfaceInactiveDurationInSeconds[] =

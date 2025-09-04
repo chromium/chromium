@@ -2,24 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
 
 const char kTextClassifierAddressParameterName[] = "TCAddressOneTap";
 const char kTextClassifierPhoneNumberParameterName[] = "TCPhoneNumberOneTap";
 const char kTextClassifierEmailParameterName[] = "TCEmailOneTap";
 
-BASE_FEATURE(kEnableExpKitTextClassifier, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(EnableExpKitTextClassifier, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableExpKitTextClassifierDate,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableExpKitTextClassifierDate, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableExpKitTextClassifierAddress,
+BASE_FEATURE(EnableExpKitTextClassifierAddress,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableExpKitTextClassifierPhoneNumber,
+BASE_FEATURE(EnableExpKitTextClassifierPhoneNumber,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableExpKitTextClassifierEmail,
+BASE_FEATURE(EnableExpKitTextClassifierEmail,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsExpKitTextClassifierEntityEnabled() {

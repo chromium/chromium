@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/main/model/browser_agent_util.h"
 
 #import "base/check_op.h"
@@ -65,7 +67,7 @@
 namespace {
 
 // Feature controlling for which Browser to create agents.
-BASE_FEATURE(kLimitBrowserAgentsForInactiveBrowser,
+BASE_FEATURE(LimitBrowserAgentsForInactiveBrowser,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Attach agents for a regular, incognito or inactive Browser.

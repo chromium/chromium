@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/autofill/model/features.h"
 
 #import "base/feature_list.h"
@@ -10,14 +12,14 @@ BASE_FEATURE(kAutofillBottomSheetNewBlur,
              "AutofillBottomSheetNewBlur",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStatelessFormSuggestionController,
+BASE_FEATURE(StatelessFormSuggestionController,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kStatelessFormSuggestionControllerWithRequestDeduping,
+BASE_FEATURE(StatelessFormSuggestionControllerWithRequestDeduping,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kThrottleFormInputAccessorySuggestionRefresh,
+BASE_FEATURE(ThrottleFormInputAccessorySuggestionRefresh,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground,
+BASE_FEATURE(FormInputAccessorySkipInputViewReloadInBackground,
              base::FEATURE_ENABLED_BY_DEFAULT);

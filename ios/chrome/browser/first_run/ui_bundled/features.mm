@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 
 #import "base/metrics/field_trial_params.h"
@@ -11,21 +13,21 @@
 
 namespace first_run {
 
-BASE_FEATURE(kAnimatedDefaultBrowserPromoInFRE,
+BASE_FEATURE(AnimatedDefaultBrowserPromoInFRE,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBestFeaturesScreenInFirstRun,
              "BestFeaturesScreenInFirstRunExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kManualLogUploadsInTheFRE, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(ManualLogUploadsInTheFRE, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSkipDefaultBrowserPromoInFirstRun,
+BASE_FEATURE(SkipDefaultBrowserPromoInFirstRun,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUpdatedFirstRunSequence, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(UpdatedFirstRunSequence, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWelcomeBackInFirstRun, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(WelcomeBackInFirstRun, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kAnimatedDefaultBrowserPromoInFREExperimentType[] =
     "AnimatedDefaultBrowserPromoInFREExperimentType";

@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 
 namespace password_manager::features {
 
-BASE_FEATURE(kIOSEnablePasscodeSettings, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(IOSEnablePasscodeSettings, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSuggestStrongPasswordInAddPassword,
+BASE_FEATURE(SuggestStrongPasswordInAddPassword,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSEnablePasswordManagerTrustedVaultWidget,
+BASE_FEATURE(IOSEnablePasswordManagerTrustedVaultWidget,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPasscodeSettingsEnabled() {

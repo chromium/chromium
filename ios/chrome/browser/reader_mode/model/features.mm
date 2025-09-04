@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/reader_mode/model/features.h"
 
 #import "base/feature_list.h"
@@ -33,18 +35,18 @@ const char kReaderModeDefaultBrowserNumDaysCriteriaStringName[] =
 
 }  // namespace
 
-BASE_FEATURE(kEnableReaderMode, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableReaderMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReaderModeTranslation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableReaderModeTranslation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableReadabilityHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReaderModePageEligibilityForToolsMenu,
+BASE_FEATURE(EnableReaderModePageEligibilityForToolsMenu,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReaderModeDebugInfo, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(EnableReaderModeDebugInfo, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReaderModeDefaultBrowserPromo,
+BASE_FEATURE(EnableReaderModeDefaultBrowserPromo,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kReaderModeHeuristicPageLoadDelayDurationStringName[] =

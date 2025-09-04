@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #include "ios/components/security_interstitials/https_only_mode/feature.h"
 
 namespace security_interstitials {
 namespace features {
 
-BASE_FEATURE(kHttpsUpgrades, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(HttpsUpgrades, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kInsecureFormSubmissionInterstitial,
+BASE_FEATURE(InsecureFormSubmissionInterstitial,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

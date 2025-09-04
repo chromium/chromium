@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
+
 #import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_view_controller.h"
 
 #import "base/check.h"
@@ -39,7 +41,7 @@ const base::TimeDelta kBannerPromoAnimationDuration = base::Seconds(0.5);
 }  // namespace
 
 // TODO(crbug.com/374808149): Clean up the killswitch.
-BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
+BASE_FEATURE(PrimaryToolbarViewDidLoadUpdateViews,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 @interface PrimaryToolbarViewController () <TabGroupIndicatorViewDelegate>
