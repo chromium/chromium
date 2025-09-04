@@ -492,18 +492,20 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
                     minHeightBottomOffset = Math.min(minHeightBottomOffset, mTotalHeight);
                 }
+
+
+                logIfHeightMismatch(
+                        "Heights before #repositionLayers",
+                        mTotalHeight,
+                        mTotalMinHeight,
+                        "First pass in #repositionLayers",
+                        height,
+                        totalMinHeight);
             }
 
             yOffsetOfLayers.put(type, layerYOffset);
         }
 
-        logIfHeightMismatch(
-                "Heights before #repositionLayers",
-                mTotalHeight,
-                mTotalMinHeight,
-                "First pass in #repositionLayers",
-                height,
-                totalMinHeight);
 
         // 2. If animated, compare and fix the yOffset with the previous mLayerOffsets if reposition
         // is caused by an animated browser controls height adjustment. This needs to run in a
