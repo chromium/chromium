@@ -734,18 +734,6 @@ BASE_DECLARE_FEATURE(kHomeMemoryImprovements);
 // Whether Home memory improvements are enabled.
 bool IsHomeMemoryImprovementsEnabled();
 
-// Feature flag to enable account confirmation snackbar on startup.
-BASE_DECLARE_FEATURE(kIdentityConfirmationSnackbar);
-
-// Feature params to specify how much time between identity confirmation
-// snackbar triggers to avoid over-prompting. Overridable through Finch.
-extern const base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinDisplayInterval1;
-extern const base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinDisplayInterval2;
-extern const base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinDisplayInterval3;
-
 // Feature flag to enable the registration of customized UITrait arrays. This
 // feature flag is related to the effort to remove invocations of
 // 'traitCollectionDidChange' which was deprecated in iOS 17.

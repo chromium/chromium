@@ -73,7 +73,6 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
       "--force-fieldtrial-params=" + std::string(kStartSurface.name) +
       ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
       "/" + "0");
-  config.features_enabled.push_back(kIdentityConfirmationSnackbar);
 
   return config;
 }

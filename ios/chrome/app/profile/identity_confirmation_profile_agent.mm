@@ -162,16 +162,13 @@ enum class IdentityConfirmationSnackbarDecision {
   if (displayCount == 0) {
     // Wait 1 day before the first reminder.
     // Note: lastPrompted in this case is equal to kLastSigninTimestamp.
-    identityConfirmationMinDisplayInterval =
-        kIdentityConfirmationMinDisplayInterval1.Get();
+    identityConfirmationMinDisplayInterval = base::Days(1);
   } else if (displayCount == 1) {
     // Wait 7 days before the second reminder.
-    identityConfirmationMinDisplayInterval =
-        kIdentityConfirmationMinDisplayInterval2.Get();
+    identityConfirmationMinDisplayInterval = base::Days(7);
   } else if (displayCount == 2) {
     // Wait 30 days before the third reminder.
-    identityConfirmationMinDisplayInterval =
-        kIdentityConfirmationMinDisplayInterval3.Get();
+    identityConfirmationMinDisplayInterval = base::Days(30);
   } else {
     // Stop showing after the third reminder.
     return IdentityConfirmationSnackbarDecision::
@@ -190,10 +187,6 @@ enum class IdentityConfirmationSnackbarDecision {
                          displayCount + 1);
   localState->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
                       base::Time::Now());
-
-  if (!base::FeatureList::IsEnabled(kIdentityConfirmationSnackbar)) {
-    return IdentityConfirmationSnackbarDecision::kDontShowFeatureDisabled;
-  }
 
   return IdentityConfirmationSnackbarDecision::kShouldShow;
 }

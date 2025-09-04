@@ -768,25 +768,6 @@ bool IsHomeMemoryImprovementsEnabled() {
   return base::FeatureList::IsEnabled(kHomeMemoryImprovements);
 }
 
-BASE_FEATURE(IdentityConfirmationSnackbar, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Feature parameters for kIdentityConfirmationSnackbar.
-constexpr base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinDisplayInterval1{
-        &kIdentityConfirmationSnackbar,
-        /*name=*/"IdentityConfirmationMinDisplayInterval1",
-        /*default_value=*/base::Days(1)};
-constexpr base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinDisplayInterval2{
-        &kIdentityConfirmationSnackbar,
-        /*name=*/"IdentityConfirmationMinDisplayInterval2",
-        /*default_value=*/base::Days(7)};
-constexpr base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinDisplayInterval3{
-        &kIdentityConfirmationSnackbar,
-        /*name=*/"IdentityConfirmationMinDisplayInterval3",
-        /*default_value=*/base::Days(30)};
-
 BASE_FEATURE(EnableTraitCollectionRegistration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
