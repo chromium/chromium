@@ -118,14 +118,15 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
   }
 
   // Don't show the bubble if it's already visible.
-  if (bubble_view()) {
+  if (bubble_view() || !MaySetUpBubble()) {
     return;
   }
 
   SetupLocalSave(card, options, std::move(save_card_prompt_callback));
 
   if (options.show_prompt) {
-    SetupAndShowBubble();
+    CheckPreconditionsBeforeShowing();
+    QueueOrShowBubble();
   } else {
     ShowIconOnly();
   }
@@ -163,7 +164,7 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
   }
 
   // Don't show the bubble if it's already visible.
-  if (bubble_view()) {
+  if (bubble_view() || !MaySetUpBubble()) {
     return;
   }
 
@@ -171,7 +172,8 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
                   std::move(save_card_prompt_callback));
 
   if (options_.show_prompt) {
-    SetupAndShowBubble();
+    CheckPreconditionsBeforeShowing();
+    QueueOrShowBubble();
   } else {
     ShowIconOnly();
   }
@@ -211,7 +213,8 @@ void SaveCardBubbleControllerImpl::ShowBubbleForManageCardsForTesting(
     const CreditCard& card) {
   card_ = card;
   current_bubble_type_ = PaymentsBubbleType::kManageCards;
-  SetupAndShowBubble();
+  CheckPreconditionsBeforeShowing();
+  QueueOrShowBubble();
 }
 
 void SaveCardBubbleControllerImpl::ReshowBubble(
@@ -223,7 +226,8 @@ void SaveCardBubbleControllerImpl::ReshowBubble(
 
   is_reshow_ = true;
   is_triggered_by_user_gesture_ = is_triggered_by_user_gesture;
-  SetupAndShowBubble();
+  CheckPreconditionsBeforeShowing();
+  QueueOrShowBubble(/*force_show=*/true);
 }
 
 void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
@@ -245,7 +249,8 @@ void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
   on_confirmation_closed_callback_ = std::move(on_confirmation_closed_callback);
 
   // Show upload confirmation bubble.
-  SetupAndShowBubble();
+  CheckPreconditionsBeforeShowing();
+  QueueOrShowBubble();
 
   // Auto close confirmation bubble when card saved is successful.
   if (card_saved) {
@@ -825,7 +830,7 @@ SaveCardBubbleControllerImpl::GetBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void SaveCardBubbleControllerImpl::SetupAndShowBubble() {
+void SaveCardBubbleControllerImpl::CheckPreconditionsBeforeShowing() {
   CHECK(current_bubble_type_ != PaymentsBubbleType::kInactive);
   // Upload save callback should not be null for kUploadSave or
   // kUploadCvcSave state.
@@ -838,7 +843,6 @@ void SaveCardBubbleControllerImpl::SetupAndShowBubble() {
         (current_bubble_type_ != PaymentsBubbleType::kLocalSave &&
          current_bubble_type_ != PaymentsBubbleType::kLocalCvcSave));
   CHECK(!bubble_view());
-  ShowBubble();
 }
 
 void SaveCardBubbleControllerImpl::ShowIconOnly() {

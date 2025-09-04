@@ -37,10 +37,11 @@ class BubbleControllerBase;
 //
 // 2. If a bubble (A) is already showing:
 //    - The manager checks if B should preempt A. Preemption happens if:
-//      a) priority(B) > priority(A), OR
-//      b) Both A and B are password bubbles.
+//      a) the request is a force show request
+//      b) priority(B) > priority(A)
+//      c) Both A and B are password bubbles.
 //    - HOWEVER, preemption is blocked if the user is currently hovering their
-//      mouse over bubble A.
+//      mouse over bubble A provided that it's not a force show request.
 //
 //    - If B preempts A:
 //      - Hide A and add it to the pending queue.
@@ -73,8 +74,8 @@ class BubbleManager {
   static BubbleManager* GetForWebContents(content::WebContents* web_contents);
 
   // Called by the bubbles once they are ready to be shown.
-  virtual void RequestShowController(
-      BubbleControllerBase& controller_to_show) = 0;
+  virtual void RequestShowController(BubbleControllerBase& controller_to_show,
+                                     bool force_show) = 0;
 
   // Called by the controller when its HideBubble() method is invoked.
   virtual void OnBubbleHiddenByController(

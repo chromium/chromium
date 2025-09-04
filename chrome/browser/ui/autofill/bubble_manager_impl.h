@@ -23,7 +23,8 @@ class BubbleManagerImpl : public BubbleManager {
   BubbleManagerImpl& operator=(const BubbleManagerImpl&) = delete;
 
   // BubbleManager:
-  void RequestShowController(BubbleControllerBase& controller_to_show) override;
+  void RequestShowController(BubbleControllerBase& controller_to_show,
+                             bool force_show) override;
   void OnBubbleHiddenByController(
       BubbleControllerBase& controller_to_hide) override;
   bool HasPendingBubble(const BubbleControllerBase& controller) override;
@@ -62,6 +63,13 @@ class BubbleManagerImpl : public BubbleManager {
   // Hides the currently active bubble to show a higher-priority one.
   void HideActiveBubbleForPreemption(
       base::WeakPtr<BubbleControllerBase> preempting_controller);
+
+  // Returns true if the `new_controller` should replace the
+  // `active_bubble_controller_`.
+  // 1. Certain bubbles always replace an existing one of similar type (e.g.
+  // passwords).
+  // 2. Any bubble with a higher priority replaces the active one.
+  bool ShouldReplaceExistingBubble(const BubbleType new_bubble_type) const;
 
   // Currently active controller that is shown.
   base::WeakPtr<BubbleControllerBase> active_bubble_controller_ = nullptr;

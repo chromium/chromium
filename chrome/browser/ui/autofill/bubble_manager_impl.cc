@@ -74,7 +74,8 @@ BubbleManagerImpl::BubbleManagerImpl() = default;
 BubbleManagerImpl::~BubbleManagerImpl() = default;
 
 void BubbleManagerImpl::RequestShowController(
-    BubbleControllerBase& controller_to_show) {
+    BubbleControllerBase& controller_to_show,
+    bool force_show) {
   base::WeakPtr<BubbleControllerBase> controller_weak_ptr =
       controller_to_show.GetBubbleControllerBaseWeakPtr();
 
@@ -86,19 +87,8 @@ void BubbleManagerImpl::RequestShowController(
     return;
   }
 
-  const BubbleType new_bubble_type = controller_weak_ptr->GetBubbleType();
-  const BubbleType active_bubble_type =
-      active_bubble_controller_->GetBubbleType();
-
-  // Preemption logic: New bubble replaces the active one.
-  // 1. A new password bubble always replaces an existing password bubble.
-  // 2. Any bubble with a higher priority replaces the active one.
-  bool should_preempt = (new_bubble_type == BubbleType::kPassword &&
-                         active_bubble_type == BubbleType::kPassword) ||
-                        (GetPriorityForBubbleType(new_bubble_type) >
-                         GetPriorityForBubbleType(active_bubble_type));
-
-  if (should_preempt && !active_bubble_controller_->IsMouseHovered()) {
+  if (force_show ||
+      ShouldReplaceExistingBubble(controller_weak_ptr->GetBubbleType())) {
     HideActiveBubbleForPreemption(controller_weak_ptr);
   } else {
     // New bubble has lower or equal priority, or the active bubble is hovered;
@@ -240,6 +230,21 @@ bool BubbleManagerImpl::HasPendingBubble(
   }
 
   return true;
+}
+
+bool BubbleManagerImpl::ShouldReplaceExistingBubble(
+    const BubbleType new_bubble_type) const {
+  if (active_bubble_controller_->IsMouseHovered()) {
+    return false;
+  }
+
+  const BubbleType active_bubble_type =
+      active_bubble_controller_->GetBubbleType();
+
+  return (new_bubble_type == BubbleType::kPassword &&
+          active_bubble_type == BubbleType::kPassword) ||
+         (GetPriorityForBubbleType(new_bubble_type) >
+          GetPriorityForBubbleType(active_bubble_type));
 }
 
 }  // namespace autofill

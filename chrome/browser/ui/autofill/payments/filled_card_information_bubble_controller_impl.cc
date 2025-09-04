@@ -95,7 +95,7 @@ void FilledCardInformationBubbleControllerImpl::RequestShowBubble() {
   if (base::FeatureList::IsEnabled(
           features::kAutofillShowBubblesBasedOnPriorities)) {
     if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
-      manager->RequestShowController(*this);
+      manager->RequestShowController(*this, /*force_show=*/false);
     }
   } else {
     ShowBubble();

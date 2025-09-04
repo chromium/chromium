@@ -61,7 +61,9 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
 
   // Calls the bubble manager to show the bubble if bubble manager is enabled.
   // Otherwise just shows the bubble.
-  void QueueOrShowBubble();
+  // `force_show` indicates to the bubble manager to show this bubble
+  // irrespective of its priority.
+  void QueueOrShowBubble(bool force_show = false);
 
   AutofillBubbleBase* bubble_view() const { return bubble_view_; }
   void set_bubble_view(AutofillBubbleBase* bubble_view) {

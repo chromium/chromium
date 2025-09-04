@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
@@ -20,14 +21,19 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
-class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
+class SaveCardBubbleControllerImplTest
+    : public DialogBrowserTest,
+      public base::test::WithFeatureOverride {
  public:
-  SaveCardBubbleControllerImplTest() = default;
+  SaveCardBubbleControllerImplTest()
+      : base::test::WithFeatureOverride(
+            features::kAutofillShowBubblesBasedOnPriorities) {}
   SaveCardBubbleControllerImplTest(const SaveCardBubbleControllerImplTest&) =
       delete;
   SaveCardBubbleControllerImplTest& operator=(
@@ -140,40 +146,40 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
 };
 
 // Invokes a bubble asking the user if they want to save a credit card locally.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, InvokeUi_LocalSave) {
+IN_PROC_BROWSER_TEST_P(SaveCardBubbleControllerImplTest, InvokeUi_LocalSave) {
   ShowAndVerifyUi();
 }
 
 // Invokes a bubble asking the user if they want to save the CVC for a credit
 // card locally.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest,
+IN_PROC_BROWSER_TEST_P(SaveCardBubbleControllerImplTest,
                        InvokeUi_LocalCvcSave) {
   ShowAndVerifyUi();
 }
 
 // Invokes a bubble asking the user if they want to save a credit card to the
 // server.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, InvokeUi_ServerSave) {
+IN_PROC_BROWSER_TEST_P(SaveCardBubbleControllerImplTest, InvokeUi_ServerSave) {
   ShowAndVerifyUi();
 }
 
 // Invokes a bubble asking the user if they want to save the CVC for a credit
 // card to Google Payments.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest,
+IN_PROC_BROWSER_TEST_P(SaveCardBubbleControllerImplTest,
                        InvokeUi_ServerCvcSave) {
   ShowAndVerifyUi();
 }
 
 // Invokes a bubble asking the user if they want to save a credit card to the
 // server, with an added textfield for entering/confirming cardholder name.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest,
+IN_PROC_BROWSER_TEST_P(SaveCardBubbleControllerImplTest,
                        InvokeUi_ServerSave_WithCardholderNameTextfield) {
   ShowAndVerifyUi();
 }
 
 // Invokes a bubble asking the user if they want to save a credit card to the
 // server, with a pair of dropdowns for entering expiration date.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest,
+IN_PROC_BROWSER_TEST_P(SaveCardBubbleControllerImplTest,
                        InvokeUi_ServerSave_WithCardExpirationDateDropDownBox) {
   ShowAndVerifyUi();
 }
@@ -189,12 +195,16 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, InvokeUi_Promo) {
 
 // Invokes a bubble displaying the card just saved and an option to
 // manage cards.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, InvokeUi_Manage) {
+IN_PROC_BROWSER_TEST_P(SaveCardBubbleControllerImplTest, InvokeUi_Manage) {
   ShowAndVerifyUi();
 }
 
 // Tests that opening a new tab will hide the save card bubble.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, NewTabHidesDialog) {
+IN_PROC_BROWSER_TEST_P(SaveCardBubbleControllerImplTest, NewTabHidesDialog) {
+  if (GetParam()) {
+    // TODO(crbug.com/432429605): Investigate.
+    GTEST_SKIP() << "The test is flaky.";
+  }
   ShowUi("LocalSave");
   EXPECT_NE(nullptr, controller()->GetPaymentBubbleView());
   // Open a new tab page in the foreground.
@@ -205,5 +215,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, NewTabHidesDialog) {
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(nullptr, controller()->GetPaymentBubbleView());
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SaveCardBubbleControllerImplTest);
 
 }  // namespace autofill

@@ -199,8 +199,8 @@ class SaveCardBubbleControllerImpl
       payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
           save_card_prompt_callback);
 
-  // Displays both the offer-to-save bubble and is associated omnibox icon.
-  void SetupAndShowBubble();
+  // This method runs a set of checks before showing the bubble.
+  void CheckPreconditionsBeforeShowing();
 
   // Displays the omnibox icon without popping up the offer-to-save bubble.
   void ShowIconOnly();
