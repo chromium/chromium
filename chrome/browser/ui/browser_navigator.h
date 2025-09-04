@@ -7,8 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 
-class GURL;
-
 namespace content {
 class NavigationHandle;
 }
@@ -19,8 +17,5 @@ struct NavigateParams;
 // Returns the NavigationHandle* for the started navigation, which might be null
 // if the navigation couldn't be started.
 base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params);
-
-// Returns true if the url is allowed to open in incognito window.
-bool IsURLAllowedInIncognito(const GURL& url);
 
 #endif  // CHROME_BROWSER_UI_BROWSER_NAVIGATOR_H_

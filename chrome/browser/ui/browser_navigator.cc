@@ -25,12 +25,12 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
-#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/status_bubble.h"
@@ -41,11 +41,10 @@
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_url_handler.h"
@@ -540,40 +539,6 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
   return WebContents::Create(create_params);
 }
 
-bool IsHostAllowedInIncognito(const GURL& url) {
-  std::string scheme = url.scheme();
-  std::string_view host = url.host_piece();
-  if (scheme != content::kChromeUIScheme) {
-    return true;
-  }
-
-  if (host == chrome::kChromeUIChromeSigninHost) {
-#if BUILDFLAG(IS_WIN)
-    // Allow incognito mode for the chrome-signin url if we only want to
-    // retrieve the login scope token without touching any profiles. This
-    // option is only available on Windows for use with Google Credential
-    // Provider for Windows.
-    return signin::GetSigninReasonForEmbeddedPromoURL(url) ==
-           signin_metrics::Reason::kFetchLstOnly;
-#else
-    return false;
-#endif  // BUILDFLAG(IS_WIN)
-  }
-
-  // Most URLs are allowed in incognito; the following are exceptions.
-  // chrome://extensions is on the list because it redirects to
-  // chrome://settings.
-  return host != chrome::kChromeUIAppLauncherPageHost &&
-         host != chrome::kChromeUISettingsHost &&
-#if BUILDFLAG(IS_CHROMEOS)
-         host != chrome::kChromeUIOSSettingsHost &&
-#endif
-         host != chrome::kChromeUIHelpHost &&
-         host != chrome::kChromeUIHistoryHost &&
-         host != chrome::kChromeUIExtensionsHost &&
-         host != password_manager::kChromeUIPasswordManagerHost;
-}
-
 }  // namespace
 
 base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
@@ -986,24 +951,4 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
         navigation_handle.get());
   }
   return navigation_handle;
-}
-
-bool IsURLAllowedInIncognito(const GURL& url) {
-  if (url.scheme() == content::kViewSourceScheme) {
-    // A view-source URL is allowed in incognito mode only if the URL itself
-    // is allowed in incognito mode. Remove the "view-source:" from the start
-    // of the URL and validate the rest.
-    const size_t scheme_len = strlen(content::kViewSourceScheme);
-    CHECK_GT(url.spec().size(), scheme_len);
-    std::string_view stripped_url_str(url.spec());
-    // Adding +1 for ':' character.
-    stripped_url_str.remove_prefix(scheme_len + 1);
-    const GURL stripped_url(stripped_url_str);
-    if (stripped_url.is_empty()) {
-      return true;
-    }
-    return stripped_url.is_valid() && IsURLAllowedInIncognito(stripped_url);
-  }
-
-  return IsHostAllowedInIncognito(url);
 }
