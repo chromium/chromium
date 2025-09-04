@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/account_checker.h"
 
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -198,20 +199,15 @@ void AccountChecker::FetchPriceEmailPref() {
 void AccountChecker::HandleFetchPriceEmailPrefResponse(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      responses->response,
-      base::BindOnce(&AccountChecker::OnFetchPriceEmailPrefJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
+  std::optional<base::Value::Dict> result =
+      base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
 
-void AccountChecker::OnFetchPriceEmailPrefJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
   // Only update the pref if we're still waiting for the pref fetch completion.
   // If users update the pref faster than we hear back from the server fetch,
   // the fetched result should be discarded.
   if (pref_service_ && is_waiting_for_pref_fetch_completion_ &&
-      result.has_value() && result->is_dict()) {
-    if (auto* preferences_map = result->GetDict().FindDict(kPreferencesKey)) {
+      result.has_value()) {
+    if (auto* preferences_map = result->FindDict(kPreferencesKey)) {
       if (std::optional<bool> price_email_pref =
               preferences_map->FindBool(kPriceTrackEmailPref)) {
         // Only set the pref value when necessary since it could affect
@@ -293,16 +289,10 @@ void AccountChecker::OnPriceEmailPrefChanged() {
 void AccountChecker::HandleSendPriceEmailPrefResponse(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      responses->response,
-      base::BindOnce(&AccountChecker::OnSendPriceEmailPrefJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void AccountChecker::OnSendPriceEmailPrefJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (pref_service_ && result.has_value() && result->is_dict()) {
-    if (auto* preferences_map = result->GetDict().FindDict(kPreferencesKey)) {
+  std::optional<base::Value::Dict> result =
+      base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
+  if (pref_service_ && result.has_value()) {
+    if (auto* preferences_map = result->FindDict(kPreferencesKey)) {
       if (auto price_email_pref =
               preferences_map->FindBool(kPriceTrackEmailPref)) {
         if (pref_service_->GetBoolean(kPriceEmailNotificationsEnabled) !=
