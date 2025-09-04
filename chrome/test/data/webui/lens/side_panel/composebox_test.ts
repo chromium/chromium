@@ -6,9 +6,13 @@ import 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 
 import type {LensSidePanelAppElement} from 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome-untrusted://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {ComposeboxProxyImpl} from 'chrome-untrusted://resources/cr_components/composebox/composebox_proxy.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome-untrusted://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestLensSidePanelBrowserProxy} from './test_side_panel_browser_proxy.js';
@@ -50,6 +54,14 @@ suite('Composebox', () => {
   async function setupTest(): Promise<HTMLElement> {
     testBrowserProxy = new TestLensSidePanelBrowserProxy();
     SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
+
+    // Mock the composebox handlers.
+    const mockPageHandler = TestMock.fromClass(PageHandlerRemote);
+    const mockSearchboxPageHandler =
+        TestMock.fromClass(SearchboxPageHandlerRemote);
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockPageHandler, new PageCallbackRouter(), mockSearchboxPageHandler,
+        new SearchboxPageCallbackRouter()));
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lensSidePanelElement = document.createElement('lens-side-panel-app');

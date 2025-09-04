@@ -5830,6 +5830,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "contextualize-on-focus": "true",
                         "enable-client-side-header": "true"
                     },
                     "enable_features": [
