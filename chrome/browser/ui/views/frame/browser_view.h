@@ -140,18 +140,18 @@ class BrowserView : public BrowserWindow,
   // The width of the vertical tab strip.
   static constexpr int kVerticalTabStripWidth = 240;
 
-  explicit BrowserView(std::unique_ptr<Browser> browser);
+  explicit BrowserView(Browser* browser);
   BrowserView(const BrowserView&) = delete;
   BrowserView& operator=(const BrowserView&) = delete;
   ~BrowserView() override;
 
-  void set_frame(BrowserFrame* frame) {
-    frame_ = frame;
+  void set_frame(std::unique_ptr<BrowserFrame> frame) {
+    frame_ = std::move(frame);
     paint_as_active_subscription_ =
         frame_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
             &BrowserView::PaintAsActiveChanged, base::Unretained(this)));
   }
-  BrowserFrame* frame() const { return frame_; }
+  BrowserFrame* frame() const { return frame_.get(); }
 
   // Returns a pointer to the BrowserView* interface implementation (an
   // instance of this object, typically) for a given native window, or null if
@@ -173,8 +173,8 @@ class BrowserView : public BrowserWindow,
   bool IsLoadingAnimationRunning() const;
 
   // Returns a Browser instance of this view.
-  Browser* browser() { return browser_.get(); }
-  const Browser* browser() const { return browser_.get(); }
+  Browser* browser() { return browser_; }
+  const Browser* browser() const { return browser_; }
 
   const TopControlsSlideController* top_controls_slide_controller() const {
     return top_controls_slide_controller_.get();
@@ -546,7 +546,6 @@ class BrowserView : public BrowserWindow,
   void FocusInactivePopupForAccessibility() override;
   void RotatePaneFocus(bool forwards) override;
   void FocusWebContentsPane() override;
-  void DestroyBrowser() override;
   bool IsBookmarkBarVisible() const override;
   bool IsBookmarkBarAnimating() const override;
   bool IsTabStripEditable() const override;
@@ -873,6 +872,10 @@ class BrowserView : public BrowserWindow,
   bool IsTrustedPinned() const;
 #endif
 
+ protected:
+  // BrowserWindow:
+  void DeleteBrowserWindow() final;
+
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
   // interface to keep these two classes decoupled and testable.
@@ -1101,11 +1104,11 @@ class BrowserView : public BrowserWindow,
   bool ShouldUseBrowserContentMinimumSize() const;
   bool IsBrowserAWebApp() const;
 
-  // The BrowserFrame that hosts this view.
-  raw_ptr<BrowserFrame> frame_ = nullptr;
+  // The BrowserFrame that owns this view.
+  std::unique_ptr<BrowserFrame> frame_;
 
-  // The Browser object we are associated with.
-  std::unique_ptr<Browser> browser_;
+  // The owning Browser object. `browser_` will outlive this.
+  const raw_ptr<Browser> browser_;
 
   base::CallbackListSubscription chip_visibility_subscription_;
 

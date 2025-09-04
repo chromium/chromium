@@ -308,7 +308,8 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<BrowserWindow> window_;  // Usually a TestBrowserWindow.
+  // Usually a TestBrowserWindow, owned by Browser.
+  raw_ptr<BrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
 
 #if BUILDFLAG(IS_CHROMEOS)

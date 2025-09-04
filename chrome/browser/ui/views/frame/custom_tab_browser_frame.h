@@ -13,12 +13,10 @@ class BrowserView;
 class CustomTabBrowserFrame : public BrowserFrame {
  public:
   explicit CustomTabBrowserFrame(BrowserView* browser_view);
+  ~CustomTabBrowserFrame() override = default;
 
   // BrowserFrame
   bool ShouldDrawFrameHeader() const override;
-
- protected:
-  ~CustomTabBrowserFrame() override = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CUSTOM_TAB_BROWSER_FRAME_H_

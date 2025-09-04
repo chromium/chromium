@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_window_deleter.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
@@ -32,12 +33,13 @@
 #endif
 
 // static
-BrowserWindow* BrowserWindow::CreateBrowserWindow(
-    std::unique_ptr<Browser> browser,
-    bool user_gesture,
-    bool in_tab_dragging) {
+std::unique_ptr<BrowserWindow, BrowserWindowDeleter>
+BrowserWindow::CreateBrowserWindow(Browser* browser,
+                                   bool user_gesture,
+                                   bool in_tab_dragging) {
   if (webui_browser::IsWebUIBrowserEnabled() && browser->is_type_normal()) {
-    return new WebUIBrowserWindow(std::move(browser));
+    return std::unique_ptr<BrowserWindow, BrowserWindowDeleter>(
+        new WebUIBrowserWindow(browser));
   }
 
 #if defined(USE_AURA)
@@ -50,22 +52,23 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
   // Create the view and the frame. The frame will attach itself via the view
   // so we don't need to do anything with the pointer.
   BrowserView* view = nullptr;
-  BrowserFrame* browser_frame = nullptr;
+  std::unique_ptr<BrowserFrame> browser_frame;
 #if BUILDFLAG(IS_CHROMEOS)
-  view = new BrowserViewAsh(std::move(browser));
+  view = new BrowserViewAsh(browser);
   if (view->browser()->is_type_custom_tab()) {
-    browser_frame = new CustomTabBrowserFrame(view);
+    browser_frame = std::make_unique<CustomTabBrowserFrame>(view);
   }
 #else
-  view = new BrowserView(std::move(browser));
+  view = new BrowserView(browser);
 #endif
   if (!browser_frame) {
-    browser_frame = new BrowserFrame(view);
+    browser_frame = std::make_unique<BrowserFrame>(view);
   }
+  view->set_frame(std::move(browser_frame));
   if (in_tab_dragging) {
-    browser_frame->SetTabDragKind(TabDragKind::kAllTabs);
+    view->frame()->SetTabDragKind(TabDragKind::kAllTabs);
   }
-  browser_frame->InitBrowserFrame();
+  view->frame()->InitBrowserFrame();
 
 #if BUILDFLAG(IS_MAC)
   if (view->UsesImmersiveFullscreenMode()) {
@@ -87,5 +90,5 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
   }
 #endif
 
-  return view;
+  return std::unique_ptr<BrowserWindow, BrowserWindowDeleter>(view);
 }
