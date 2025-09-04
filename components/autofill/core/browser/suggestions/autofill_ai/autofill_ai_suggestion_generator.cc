@@ -93,10 +93,6 @@ struct SuggestionWithMetadata {
 
   // The attribute (of `entity`) of the trigger field.
   AttributeType trigger_attribute_type;
-
-  // The values that would be filled by `suggestion`, indexed by the underlying
-  // field's ID.
-  base::flat_map<FieldGlobalId, std::u16string> field_to_value;
 };
 
 base::optional_ref<const AutofillFieldWithAttributeType> FindField(
@@ -234,22 +230,58 @@ std::vector<Suggestion> GetFooterSuggestions(
   return suggestions;
 }
 
-// Returns suggestions whose set of fields and values to be filled are not
-// subsets of another.
-std::vector<SuggestionWithMetadata> DedupeFillingSuggestions(
-    std::vector<SuggestionWithMetadata> s) {
-  for (auto it = s.cbegin(); it != s.cend();) {
-    // Erase `it` iff
-    // - `it` fills a proper subset of `jt` or
-    // - `it` fills the same values as `jt` and comes before `jt` in `s`.
-    bool erase_it = false;
-    for (auto jt = s.cbegin(); !erase_it && jt != s.cend(); ++jt) {
-      erase_it |= it != jt &&
-                  std::ranges::includes(jt->field_to_value, it->field_to_value);
+// Returns entities whose set of fields and values to be filled are not subsets
+// of another.
+std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
+    const std::vector<const EntityInstance*>& entities,
+    const AttributeTypeAssignment& type_assignment,
+    const std::string& app_locale) {
+  std::vector<std::vector<std::pair<FieldGlobalId, std::u16string>>>
+      fields_to_values(entities.size());
+  for (auto [entity, field_to_values] : base::zip(entities, fields_to_values)) {
+    for (const auto& [field, attribute_type] :
+         type_assignment.Find(entity->type())) {
+      base::optional_ref<const AttributeInstance> attribute =
+          entity->attribute(attribute_type);
+      if (!attribute) {
+        continue;
+      }
+      std::u16string attribute_value =
+          attribute->GetInfo(field->Type().GetAutofillAiType(entity->type()),
+                             app_locale, field->format_string());
+      if (attribute_value.empty()) {
+        continue;
+      }
+
+      field_to_values.emplace_back(field->global_id(),
+                                   std::move(attribute_value));
     }
-    it = erase_it ? s.erase(it) : it + 1;
   }
-  return s;
+
+  std::vector<const EntityInstance*> deduped_entities;
+  for (size_t i = 0; i < entities.size(); ++i) {
+    bool erase_i = false;
+    for (size_t j = 0; j < entities.size(); ++j) {
+      if (i == j) {
+        continue;
+      }
+      const bool j_includes_i =
+          std::ranges::includes(fields_to_values[j], fields_to_values[i]);
+      const bool j_equals_i = j_includes_i && fields_to_values[i].size() ==
+                                                  fields_to_values[j].size();
+      // Erase `i` iff:
+      // - `i` is a proper subset of `j` for some `j`.
+      // - `i` is equal to `j` for some j < i.
+      if ((j_includes_i && !j_equals_i) || (j_equals_i && i > j)) {
+        erase_i = true;
+        break;
+      }
+    }
+    if (!erase_i) {
+      deduped_entities.push_back(entities[i]);
+    }
+  }
+  return deduped_entities;
 }
 
 Suggestion::Icon GetSuggestionIcon(EntityType trigger_entity_type) {
@@ -334,27 +366,6 @@ SuggestionWithMetadata GetSuggestionForEntity(
   // The dereference is guaranteed by EntityShouldProduceSuggestion().
   const AttributeInstance& trigger_attribute =
       *entity.attribute(trigger_field.type);
-
-  std::vector<std::pair<FieldGlobalId, std::u16string>> field_to_value;
-  for (const auto& [field, attribute_type] : fields) {
-    DCHECK_EQ(entity.type(), attribute_type.entity_type());
-    base::optional_ref<const AttributeInstance> attribute =
-        entity.attribute(attribute_type);
-    if (!attribute) {
-      continue;
-    }
-
-    std::u16string attribute_value =
-        attribute->GetInfo(field->Type().GetAutofillAiType(entity.type()),
-                           app_locale, field->format_string());
-
-    if (attribute_value.empty()) {
-      continue;
-    }
-
-    field_to_value.emplace_back(field->global_id(), std::move(attribute_value));
-  }
-
   Suggestion suggestion =
       Suggestion(trigger_attribute.GetInfo(
                      trigger_field.field->Type().GetAutofillAiType(
@@ -363,8 +374,8 @@ SuggestionWithMetadata GetSuggestionForEntity(
                  SuggestionType::kFillAutofillAi);
   suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
   suggestion.icon = GetSuggestionIcon(entity.type());
-  return SuggestionWithMetadata(suggestion, raw_ref(entity), trigger_field.type,
-                                base::flat_map(std::move(field_to_value)));
+  return SuggestionWithMetadata(suggestion, raw_ref(entity),
+                                trigger_field.type);
 }
 
 // The desired ordering criteria are the following:
@@ -421,7 +432,8 @@ std::vector<const EntityInstance*> GetEntitiesForSuggestion(
       relevant_entities.push_back(&entity);
     }
   }
-  return OrderedEntitiesForSuggestion(std::move(relevant_entities));
+  return OrderedEntitiesForSuggestion(
+      DedupedEntitiesForSuggestions(relevant_entities, assignment, app_locale));
 }
 
 std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
@@ -463,7 +475,7 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
   }
 
   std::vector<Suggestion> suggestions = GenerateFillingSuggestionWithLabels(
-      DedupeFillingSuggestions(std::move(suggestions_with_metadata)),
+      std::move(suggestions_with_metadata),
       other_entities_that_can_fill_section, app_locale);
 
   base::Extend(suggestions, GetFooterSuggestions(trigger_field_data));
@@ -571,7 +583,7 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
   std::vector<EntityInstance> entities_to_suggest = base::ToVector(
       std::move(autofill_ai_suggestion_data),
       [](SuggestionData& suggestion_data) {
-        return std::get<autofill::EntityInstance>(std::move(suggestion_data));
+        return std::get<EntityInstance>(std::move(suggestion_data));
       });
   std::vector<Suggestion> suggestions = CreateAutofillAiFillingSuggestions(
       *form_structure, *trigger_autofill_field, entities_to_suggest,
