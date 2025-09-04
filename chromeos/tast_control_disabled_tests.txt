@@ -37,21 +37,11 @@ tast.arc.BuildProperties
 tast.arc.CheckAndroidVersion
 tast.arc.Downloads
 
-# b/293976130, NaCl issues on arm64 boards
-tast.nacl.Pnacl@jacuzzi
-tast.nacl.Pnacl@trogdor
-tast.terminal.SSH@jacuzzi
-tast.terminal.SSH@trogdor
-
 # b/338111076
 tast.crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus
 
 # b/346793249, b/330290054
 tast.videoconferencing.OpenCLCacher
-
-# b/352753237, Pnacl and terminal.SSH failing only on brya, blocking LKGM
-tast.nacl.Pnacl@brya
-tast.terminal.SSH@brya
 
 # b/352703668: tests failing on trogdor.
 tast.security.SELinuxFilesDataDir.arcvm_user@trogdor
