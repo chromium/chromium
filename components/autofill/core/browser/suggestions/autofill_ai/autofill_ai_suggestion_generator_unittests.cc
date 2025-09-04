@@ -255,6 +255,34 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesAutofillAiSuggestions) {
       }));
 }
 
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       NoSuggestionDataIfEntityDoesNotProduceValue) {
+  SetForm({PASSPORT_NUMBER});
+  // Driving licence does not fit into passport number field.
+  SetEntities({MakeDriversLicenseWithRandomGuid()});
+
+  base::MockCallback<base::OnceCallback<void(
+      std::pair<FillingProduct,
+                std::vector<SuggestionGenerator::SuggestionData>>)>>
+      suggestion_data_callback;
+
+  std::pair<FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>
+      saved_on_suggestion_data_returned_argument;
+
+  EXPECT_CALL(suggestion_data_callback,
+              Run(testing::Pair(FillingProduct::kAutofillAi, IsEmpty())))
+      .WillOnce(
+          testing::SaveArg<0>(&saved_on_suggestion_data_returned_argument));
+  generator().FetchSuggestionData(form(), field_data(), &form_structure(),
+                                  &field(), client(),
+                                  suggestion_data_callback.Get());
+  EXPECT_TRUE(
+      base::test::RunUntil([&saved_on_suggestion_data_returned_argument]() {
+        return saved_on_suggestion_data_returned_argument.first ==
+               FillingProduct::kAutofillAi;
+      }));
+}
+
 TEST_F(AutofillAiSuggestionGeneratorTest, NoSuggestionsIfNoEntities) {
   SetForm({PASSPORT_NUMBER});
 

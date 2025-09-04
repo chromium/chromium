@@ -55,26 +55,26 @@ struct AutocompleteSuggestionGenerator::QueryHandler {
 };
 
 void AutocompleteSuggestionGenerator::FetchSuggestionData(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::OnceCallback<
         void(std::pair<FillingProduct,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
-  if (!field_data.should_autocomplete()) {
+  if (!trigger_field.should_autocomplete()) {
     std::move(callback).Run({FillingProduct::kAutocomplete, {}});
     return;
   }
 
   CancelPendingQuery();
   if (!AutocompleteHistoryManager::IsFieldNameMeaningfulForAutocomplete(
-          field_data.name()) ||
+          trigger_field.name()) ||
       !client.IsAutocompleteEnabled() ||
-      field_data.form_control_type() == FormControlType::kTextArea ||
-      field_data.form_control_type() == FormControlType::kContentEditable ||
+      trigger_field.form_control_type() == FormControlType::kTextArea ||
+      trigger_field.form_control_type() == FormControlType::kContentEditable ||
       IsInAutofillSuggestionsDisabledExperiment()) {
     std::move(callback).Run({FillingProduct::kAutocomplete, {}});
     return;
@@ -86,18 +86,18 @@ void AutocompleteSuggestionGenerator::FetchSuggestionData(
   }
 
   pending_query_ = profile_database_->GetFormValuesForElementName(
-      field_data.name(), field_data.value(), kMaxAutocompleteMenuItems,
+      trigger_field.name(), trigger_field.value(), kMaxAutocompleteMenuItems,
       base::BindOnce(&AutocompleteSuggestionGenerator::OnAutofillValuesReturned,
                      weak_ptr_factory_.GetWeakPtr(),
-                     QueryHandler(field_data.global_id(), field_data.value(),
-                                  std::move(callback))));
+                     QueryHandler(trigger_field.global_id(),
+                                  trigger_field.value(), std::move(callback))));
 }
 
 void AutocompleteSuggestionGenerator::GenerateSuggestions(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
@@ -115,7 +115,7 @@ void AutocompleteSuggestionGenerator::GenerateSuggestions(
   // If there is only one suggestion that is the exact same string as
   // what is in the input box, then don't show the suggestion.
   if (autocomplete_entries.size() == 1 &&
-      field_data.value() == autocomplete_entries[0].key().value()) {
+      trigger_field.value() == autocomplete_entries[0].key().value()) {
     std::move(callback).Run({FillingProduct::kAutocomplete, {}});
     return;
   }

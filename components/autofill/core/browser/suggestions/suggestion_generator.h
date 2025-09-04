@@ -63,18 +63,18 @@ class SuggestionGenerator {
                                       IdentityCredential,
                                       HybridPasskeyAvailability>;
 
-  // Obtains data that will be used to generate suggestions on a given trigger
-  // `field` that belongs to `form` by calling `GenerateSuggestions` later (See
-  // top-level documentation of `SuggestionGenerator` for more details).
-  // Once the data is obtained, `callback` is called with the `FillingProduct`
-  // of which the data is for and the corresponding `SuggestionData`.
-  // `form` and `field` may be null if the `form_data` or `field_data` wasn't
-  // yet parsed.
+  // Obtains data that will be used to generate suggestions on a given
+  // `trigger_field` that belongs to `form` by calling `GenerateSuggestions`
+  // later (See top-level documentation of `SuggestionGenerator` for more
+  // details). Once the data is obtained, `callback` is called with the
+  // `FillingProduct` of which the data is for and the corresponding
+  // `SuggestionData`. `form_structure` and `trigger_autofill_field` may be null
+  // if the `form` or `trigger_field` wasn't yet parsed.
   virtual void FetchSuggestionData(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       base::OnceCallback<
           void(std::pair<FillingProduct,
@@ -84,16 +84,16 @@ class SuggestionGenerator {
   // Generates suggestions given `all_suggestion_data` that were fetched by
   // calling `FetchSuggestionData` on all generators (See top-level
   // documentation of `SuggestionGenerator` for more details).
-  // Suggestions were triggered on `field` which belongs to `form`. `callback`
-  // is called when generation is complete and a list of `Suggestion`
+  // Suggestions were triggered on `trigger_field` which belongs to `form`.
+  // `callback` is called when generation is complete and a list of `Suggestion`
   // objects is passed along with the corresponding `FillingProduct`.
-  // `form` and `field` may be null if the `form_data` or `field_data` wasn't
-  // yet parsed.
+  // `form_structure` and `trigger_autofill_field` may be null if the `form` or
+  // `trigger_field` wasn't yet parsed.
   virtual void GenerateSuggestions(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) = 0;

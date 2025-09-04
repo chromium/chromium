@@ -17,17 +17,17 @@ ComposeSuggestionGenerator::ComposeSuggestionGenerator(
 ComposeSuggestionGenerator::~ComposeSuggestionGenerator() = default;
 
 void ComposeSuggestionGenerator::FetchSuggestionData(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::OnceCallback<
         void(std::pair<FillingProduct,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   FetchSuggestionData(
-      form_data, field_data, form, field, client,
+      form, trigger_field, form_structure, trigger_autofill_field, client,
       [&callback](std::pair<FillingProduct,
                             std::vector<SuggestionGenerator::SuggestionData>>
                       suggestion_data) {
@@ -36,25 +36,26 @@ void ComposeSuggestionGenerator::FetchSuggestionData(
 }
 
 void ComposeSuggestionGenerator::GenerateSuggestions(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
-      form_data, field_data, form, field, all_suggestion_data,
+      form, trigger_field, form_structure, trigger_autofill_field,
+      all_suggestion_data,
       [&callback](ReturnedSuggestions returned_suggestions) {
         std::move(callback).Run(std::move(returned_suggestions));
       });
 }
 
 void ComposeSuggestionGenerator::FetchSuggestionData(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::FunctionRef<
         void(std::pair<FillingProduct,
@@ -65,16 +66,17 @@ void ComposeSuggestionGenerator::FetchSuggestionData(
 }
 
 void ComposeSuggestionGenerator::GenerateSuggestions(
-    const FormData& form_data,
-    const FormFieldData& field_data,
-    const FormStructure* form,
-    const AutofillField* field,
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
     const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   if (!compose_delegate_ ||
-      (field_data.form_control_type() != FormControlType::kTextArea &&
-       field_data.form_control_type() != FormControlType::kContentEditable)) {
+      (trigger_field.form_control_type() != FormControlType::kTextArea &&
+       trigger_field.form_control_type() !=
+           FormControlType::kContentEditable)) {
     callback({FillingProduct::kCompose, {}});
     return;
   }
@@ -93,7 +95,7 @@ void ComposeSuggestionGenerator::GenerateSuggestions(
   }
 
   std::optional<Suggestion> suggestion =
-      compose_delegate_->GetSuggestion(form_data, field_data, trigger_source_);
+      compose_delegate_->GetSuggestion(form, trigger_field, trigger_source_);
   if (!suggestion) {
     callback({FillingProduct::kCompose, {}});
     return;

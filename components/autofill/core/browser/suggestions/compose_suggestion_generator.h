@@ -17,10 +17,10 @@ class ComposeSuggestionGenerator : public SuggestionGenerator {
   ~ComposeSuggestionGenerator() override;
 
   void FetchSuggestionData(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       base::OnceCallback<
           void(std::pair<FillingProduct,
@@ -28,10 +28,10 @@ class ComposeSuggestionGenerator : public SuggestionGenerator {
           callback) override;
 
   void GenerateSuggestions(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
@@ -39,10 +39,10 @@ class ComposeSuggestionGenerator : public SuggestionGenerator {
   // Like SuggestionGenerator override, but takes a base::FunctionRef instead of
   // a base::OnceCallback. Calls that callback exactly once.
   void FetchSuggestionData(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       base::FunctionRef<
           void(std::pair<FillingProduct,
@@ -52,10 +52,10 @@ class ComposeSuggestionGenerator : public SuggestionGenerator {
   // Like SuggestionGenerator override, but takes a base::FunctionRef instead of
   // a base::OnceCallback. Calls that callback exactly once.
   void GenerateSuggestions(
-      const FormData& form_data,
-      const FormFieldData& field_data,
-      const FormStructure* form,
-      const AutofillField* field,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
       const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
           all_suggestion_data,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
