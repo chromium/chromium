@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
@@ -226,6 +227,12 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
       // Hide this menu option if Media Router is disabled.
       result->new_hidden_state =
           !media_router::MediaRouterEnabled(browser->profile());
+      break;
+    }
+    case IDC_BOOKMARK_ALL_TABS: {
+      // Disable bookmark sheet dialog when browser window already
+      // has an attached sheet.
+      result->enable &= ![AppController.sharedController keyWindowIsModal];
       break;
     }
     default:

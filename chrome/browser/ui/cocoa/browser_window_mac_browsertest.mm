@@ -9,10 +9,16 @@
 #include <memory>
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/app_controller_mac.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -139,4 +145,40 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest,
   EXPECT_TRUE(AddTabAtIndex(1, url_after, ui::PAGE_TRANSITION_TYPED));
   EXPECT_NSEQ([NSString stringWithUTF8String:url_after.spec().c_str()],
               [window accessibilityDocument]);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest,
+                       BookmarkAllTabsUpdatesOnSheetAttached) {
+  NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
+  // IDC_BOOKMARK_ALL_TABS should be enabled when the number of
+  // tabs exceeds 1
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  NSMenuItem* bookmark_all_tabs_item =
+      [[[[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU] submenu]
+          itemWithTag:IDC_BOOKMARK_ALL_TABS];
+  ASSERT_TRUE(bookmark_all_tabs_item);
+  EXPECT_TRUE([window validateUserInterfaceItem:bookmark_all_tabs_item]);
+  EXPECT_FALSE([AppController.sharedController keyWindowIsModal]);
+
+  auto* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  auto editor = std::make_unique<BookmarkEditorView>(
+      browser()->profile(),
+      BookmarkEditor::EditDetails::MoveNodes(
+          bookmark_model,
+          {bookmark_model->AddURL(bookmark_model->other_node(), 0, u"bookmark",
+                                  GURL("http://www.google.com"))}),
+      BookmarkEditor::SHOW_TREE, base::DoNothing());
+  editor->Show(browser()->window()->GetNativeWindow());
+  auto* editor_raw = editor.release();
+
+  // IDC_BOOKMARK_ALL_TABS should be disabled when the sheet is attached.
+  EXPECT_TRUE([AppController.sharedController keyWindowIsModal]);
+  EXPECT_FALSE([window validateUserInterfaceItem:bookmark_all_tabs_item]);
+  editor_raw->GetWidget()->CloseNow();
+
+  // IDC_BOOKMARK_ALL_TABS should be enabled again when the sheet is
+  // removed.
+  EXPECT_FALSE([AppController.sharedController keyWindowIsModal]);
+  EXPECT_TRUE([window validateUserInterfaceItem:bookmark_all_tabs_item]);
 }
