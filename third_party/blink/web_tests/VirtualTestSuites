@@ -2934,7 +2934,14 @@
       "external/wpt/audio-output",
       "external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/setSinkId-with-MediaElementAudioSourceNode.https.html"
     ],
-    "exclusive_tests": "ALL",
+    "exclusive_tests": [
+      "external/wpt/audio-output/enumerateDevices-with-selectAudioOutput.https.html",
+      "external/wpt/audio-output/removeTrack-after-setSinkId.https.html",
+      "external/wpt/audio-output/selectAudioOutput-permissions-policy.https.sub.html",
+      "external/wpt/audio-output/selectAudioOutput-sans-user-activation.https.html",
+      "external/wpt/audio-output/setSinkId-with-selectAudioOutput.https.html",
+      "external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/setSinkId-with-MediaElementAudioSourceNode.https.html"
+    ],
     "args": [
       "--enable-features=SelectAudioOutput"
     ],

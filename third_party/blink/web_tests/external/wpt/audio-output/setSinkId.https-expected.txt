@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] setSinkId() with output device IDs exposed by getUserMedia() should either reject with NotAllowedError or resolve
-  assert_true: audiooutput device groupId must match an exposed microphone expected true got false
-Harness: the test ran to completion.
-
