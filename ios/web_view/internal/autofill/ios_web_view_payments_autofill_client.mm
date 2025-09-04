@@ -112,4 +112,21 @@ IOSWebViewPaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return payments_reauth_manager_.get();
 }
 
+#if BUILDFLAG(IS_IOS)
+std::unique_ptr<AutofillProgressDialogControllerImpl>
+IOSWebViewPaymentsAutofillClient::GetProgressDialogModel() {
+  return nullptr;
+}
+
+std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
+IOSWebViewPaymentsAutofillClient::GetOtpInputDialogModel() {
+  return nullptr;
+}
+
+CardUnmaskPromptControllerImpl*
+IOSWebViewPaymentsAutofillClient::GetCardUnmaskPromptModel() {
+  return nullptr;
+}
+#endif
+
 }  // namespace autofill::payments

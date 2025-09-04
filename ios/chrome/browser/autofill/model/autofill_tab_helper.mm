@@ -58,6 +58,10 @@ id<FormSuggestionProvider> AutofillTabHelper::GetSuggestionProvider() {
   return autofill_agent_;
 }
 
+autofill::AutofillClientIOS* AutofillTabHelper::autofill_client() {
+  return autofill_client_.get();
+}
+
 AutofillTabHelper::AutofillTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state_observation_.Observe(web_state);

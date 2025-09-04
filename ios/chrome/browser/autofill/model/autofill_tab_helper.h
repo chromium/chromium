@@ -20,6 +20,7 @@
 @class UIViewController;
 
 namespace autofill {
+class AutofillClientIOS;
 class ChromeAutofillClientIOS;
 }
 
@@ -42,9 +43,7 @@ class AutofillTabHelper : public web::WebStateObserver,
   // Returns an object that can provide Autofill suggestions.
   id<FormSuggestionProvider> GetSuggestionProvider();
 
-  autofill::ChromeAutofillClientIOS* autofill_client() {
-    return autofill_client_.get();
-  }
+  autofill::AutofillClientIOS* autofill_client();
 
  private:
   friend class web::WebStateUserData<AutofillTabHelper>;

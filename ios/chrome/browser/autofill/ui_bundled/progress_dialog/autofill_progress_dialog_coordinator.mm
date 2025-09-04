@@ -38,12 +38,8 @@
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    // TODO(crbug.com/40714201): Use AutofillClientIOS::FromWebState() so that
-    // tests can easily inject their AutofillClient.
-    autofill::ChromeAutofillClientIOS* client =
-        AutofillTabHelper::FromWebState(
-            browser->GetWebStateList()->GetActiveWebState())
-            ->autofill_client();
+    auto* client = autofill::AutofillClientIOS::FromWebState(
+        browser->GetWebStateList()->GetActiveWebState());
     CHECK(client);
     auto* paymentsClient = client->GetPaymentsAutofillClient();
     CHECK(paymentsClient);

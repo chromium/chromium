@@ -58,15 +58,10 @@
 // TODO(crbug.com/333925306): Create a CVC input coordinator/mediator out of the
 // legacy CardUnmaskPromptViewBridge and move this function there.
 - (void)continueWithCvcAuth {
-  // TODO(crbug.com/40714201): Use AutofillClientIOS::FromWebState() so that
-  // tests can easily inject their AutofillClient.
-  autofill::ChromeAutofillClientIOS* client =
-      AutofillTabHelper::FromWebState(
-          self.browser->GetWebStateList()->GetActiveWebState())
-          ->autofill_client();
+  auto* client = autofill::AutofillClientIOS::FromWebState(
+      self.browser->GetWebStateList()->GetActiveWebState());
   CHECK(client);
-  autofill::payments::IOSChromePaymentsAutofillClient* paymentsClient =
-      client->GetPaymentsAutofillClient();
+  auto* paymentsClient = client->GetPaymentsAutofillClient();
   CHECK(paymentsClient);
 
   id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =

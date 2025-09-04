@@ -426,6 +426,21 @@ PaymentsDataManager& IOSChromePaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();
 }
 
+std::unique_ptr<AutofillProgressDialogControllerImpl>
+IOSChromePaymentsAutofillClient::GetProgressDialogModel() {
+  return std::move(progress_dialog_controller_);
+}
+
+std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
+IOSChromePaymentsAutofillClient::GetOtpInputDialogModel() {
+  return std::move(otp_input_dialog_controller_);
+}
+
+CardUnmaskPromptControllerImpl*
+IOSChromePaymentsAutofillClient::GetCardUnmaskPromptModel() {
+  return unmask_controller_.get();
+}
+
 void IOSChromePaymentsAutofillClient::ShowSaveCreditCard(
     AutofillSaveCardUiInfo ui_info,
     std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate) {

@@ -9,6 +9,7 @@
 
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "ios/web_view/internal/autofill/cwv_autofill_client_ios_bridge.h"
 
@@ -69,6 +70,14 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   PaymentsDataManager& GetPaymentsDataManager() final;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
+
+#if BUILDFLAG(IS_IOS)
+  std::unique_ptr<AutofillProgressDialogControllerImpl> GetProgressDialogModel()
+      override;
+  std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
+  GetOtpInputDialogModel() override;
+  CardUnmaskPromptControllerImpl* GetCardUnmaskPromptModel() override;
+#endif
 
  private:
   const raw_ref<autofill::WebViewAutofillClientIOS> client_;

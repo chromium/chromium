@@ -14,11 +14,11 @@
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
-#include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
+#import "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
-#include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
-#include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -132,18 +132,11 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       override;
   PaymentsDataManager& GetPaymentsDataManager() final;
 
-  std::unique_ptr<AutofillProgressDialogControllerImpl>
-  GetProgressDialogModel() {
-    return std::move(progress_dialog_controller_);
-  }
-  CardUnmaskPromptControllerImpl* GetCardUnmaskPromptModel() {
-    return unmask_controller_.get();
-  }
-
+  std::unique_ptr<AutofillProgressDialogControllerImpl> GetProgressDialogModel()
+      override;
   std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
-  GetOtpInputDialogModel() {
-    return std::move(otp_input_dialog_controller_);
-  }
+  GetOtpInputDialogModel() override;
+  CardUnmaskPromptControllerImpl* GetCardUnmaskPromptModel() override;
 
  private:
   // Shows save card UI offering upload or local save.
