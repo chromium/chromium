@@ -2879,20 +2879,10 @@ class WebViewChromium
 
     @Override
     public void setLayoutParams(final ViewGroup.LayoutParams layoutParams) {
-        // This API is our strongest signal from the View system that this
-        // WebView is going to be bound to a View hierarchy and so at this
-        // point we must bind Chromium's UI thread to the current thread.
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
         checkThread();
         mWebViewPrivate.super_setLayoutParams(layoutParams);
         if (checkNeedsPost()) {
-            mFactory.runVoidTaskOnUiThreadBlocking(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mAwContents.setLayoutParams(layoutParams);
-                        }
-                    });
+            mFactory.addTask(() -> setLayoutParams(layoutParams));
             return;
         }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_LAYOUT_PARAMS")) {
@@ -3393,8 +3383,14 @@ class WebViewChromium
 
     @Override
     public boolean onCheckIsTextEditor() {
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE);
-        if (checkNeedsPost()) {
+        if (mAwInit.isChromiumInitialized()) {
+            if (ThreadUtils.runningOnUiThread()) {
+                try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.ON_CHECK_IS_TEXT_EDITOR")) {
+                    recordWebViewSystemApiCall(SystemApiCall.ON_CHECK_IS_TEXT_EDITOR);
+                    return mAwContents.getViewMethods().onCheckIsTextEditor();
+                }
+            }
             return mFactory.runOnUiThreadBlocking(
                     new Callable<Boolean>() {
                         @Override
@@ -3403,11 +3399,7 @@ class WebViewChromium
                         }
                     });
         }
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.Framework.ON_CHECK_IS_TEXT_EDITOR")) {
-            recordWebViewSystemApiCall(SystemApiCall.ON_CHECK_IS_TEXT_EDITOR);
-            return mAwContents.getViewMethods().onCheckIsTextEditor();
-        }
+        return false;
     }
 
     @Override
