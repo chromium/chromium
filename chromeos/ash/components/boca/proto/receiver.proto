@@ -44,5 +44,7 @@ enum ReceiverState {
 
   CONNECTED = 5;
 
-  ERROR = 6;
+  DISCONNECTED = 6;
+
+  ERROR = 7;
 }
