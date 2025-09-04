@@ -29,7 +29,7 @@ PageColorsController::PageColorsController(PrefService* profile_prefs)
       prefs::kApplyPageColorsOnlyOnIncreasedContrast,
       base::BindRepeating(&PageColorsController::OnPageColorsChanged,
                           weak_factory_.GetWeakPtr()));
-  OnNativeThemeUpdated(ui::NativeTheme::GetInstanceForNativeUi());
+  OnPreferredContrastChanged();
 }
 
 PageColorsController::~PageColorsController() = default;
@@ -48,8 +48,7 @@ void PageColorsController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/false);
 }
 
-void PageColorsController::OnNativeThemeUpdated(
-    ui::NativeTheme* observed_theme) {
+void PageColorsController::OnPreferredContrastChanged() {
 #if BUILDFLAG(IS_WIN)
   ui::NativeTheme::PageColors page_colors =
       static_cast<ui::NativeTheme::PageColors>(
