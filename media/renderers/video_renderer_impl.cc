@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/renderers/video_renderer_impl.h"
 
 #include <algorithm>
@@ -44,7 +42,7 @@ namespace {
 // SetLatencyHint(), so we needed to peg this with a constant.
 constexpr int kAbsoluteMaxFrames = 24;
 
-BASE_FEATURE(ReportUnderflowForBackgroundRendering,
+BASE_FEATURE(kReportUnderflowForBackgroundRendering,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
 #include "base/metrics/histogram_functions.h"
@@ -22,7 +20,7 @@ namespace media {
 
 namespace {
 
-BASE_FEATURE(AcceleratedVideoDecodeLinuxZeroCopyGL,
+BASE_FEATURE(kAcceleratedVideoDecodeLinuxZeroCopyGL,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 VideoDecoderType GetPreferredLinuxDecoderImplementation() {

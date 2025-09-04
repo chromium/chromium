@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/base/video_codec_string_parsers.h"
 
 #include <array>
@@ -36,7 +34,7 @@ namespace media {
 
 // TODO(crbug.com/40232176): Remove after rollout.
 // Allow parsing HEVC range extension codec string.
-BASE_FEATURE(HEVCRextCodecStringParsing, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kHEVCRextCodecStringParsing, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   // Initialize optional fields to their defaults.

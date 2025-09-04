@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/audio/mac/catap_audio_input_stream.h"
 
 #include <CoreAudio/AudioHardware.h>
@@ -65,7 +63,7 @@ const char kHistogramDeviceIsAliveName[] = "IsAlive";
 // If this feature is enabled, the CoreAudio tap is probed after creation to
 // verify that we have the proper permissions. If this fails the creation is
 // reported as failed.
-BASE_FEATURE(MacCatapProbeTapOnCreation, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMacCatapProbeTapOnCreation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When `kMacCatapCaptureAllDevices` is disabled:
 //
@@ -78,7 +76,7 @@ BASE_FEATURE(MacCatapProbeTapOnCreation, base::FEATURE_ENABLED_BY_DEFAULT);
 //
 // CatapAudioInputStream captures all system audio, irrespective of the specific
 // output device it's played on or the device ID set.
-BASE_FEATURE(MacCatapCaptureAllDevices, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMacCatapCaptureAllDevices, base::FEATURE_DISABLED_BY_DEFAULT);
 
 API_AVAILABLE(macos(14.2))
 OSStatus DeviceIoProc(AudioDeviceID,

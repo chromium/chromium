@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/audio/android/aaudio_stream_wrapper.h"
 
 #include <aaudio/AAudio.h>
@@ -27,7 +25,7 @@
 // AAudioStreamBuilder_setChannelMask was not introduced until API version 32.
 #define AAUDIO_CHANNEL_MASK_MIN_API 32
 
-BASE_FEATURE(AAudioInputLowLatencyModeByDefault,
+BASE_FEATURE(kAAudioInputLowLatencyModeByDefault,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace media {

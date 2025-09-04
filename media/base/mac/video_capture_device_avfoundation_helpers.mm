@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/base/mac/video_capture_device_avfoundation_helpers.h"
 
 #include "base/debug/crash_logging.h"
@@ -14,7 +12,7 @@
 namespace media {
 
 #if BUILDFLAG(IS_MAC)
-BASE_FEATURE(UseAVCaptureDeviceTypeContinuity,
+BASE_FEATURE(kUseAVCaptureDeviceTypeContinuity,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 

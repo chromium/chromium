@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -50,10 +48,10 @@
 #import <UIKit/UIKit.h>
 #endif
 
-BASE_FEATURE(AVFoundationCaptureForwardSampleTimestamps,
+BASE_FEATURE(kAVFoundationCaptureForwardSampleTimestamps,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(AVFoundationCaptureSonomaRestartStalledCamera,
+BASE_FEATURE(kAVFoundationCaptureSonomaRestartStalledCamera,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
@@ -108,11 +106,11 @@ constexpr size_t kPixelBufferPoolSize = 10;
 namespace media {
 
 // Uses the most recent advice from Apple for configuring and starting.
-BASE_FEATURE(ConfigureCaptureBeforeStart, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kConfigureCaptureBeforeStart, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allow disabling optimizations (https://crbug.com/1143477,
 // https://crbug.com/959962) because of flickering (https://crbug.com/1515598).
-BASE_FEATURE(OverrideCameraIOSurfaceColorSpace,
+BASE_FEATURE(kOverrideCameraIOSurfaceColorSpace,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 AVCaptureDeviceFormat* FindBestCaptureFormat(

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 
 #include <d3d11.h>
@@ -55,7 +53,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace media {
 
-BASE_FEATURE(MediaFoundationVideoCaptureForwardSampleTimestamps,
+BASE_FEATURE(kMediaFoundationVideoCaptureForwardSampleTimestamps,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 ULONGLONG CaptureModeToExtendedPlatformFlags(

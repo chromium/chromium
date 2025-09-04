@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/gpu/android/codec_output_buffer_renderer.h"
 
 #include <string.h>
@@ -19,7 +17,7 @@
 
 namespace media {
 namespace {
-BASE_FEATURE(HandleUpdateTexImageFailures, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kHandleUpdateTexImageFailures, base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
 CodecOutputBufferRenderer::CodecOutputBufferRenderer(

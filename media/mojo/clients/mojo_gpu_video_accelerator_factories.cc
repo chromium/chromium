@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/mojo/clients/mojo_gpu_video_accelerator_factories.h"
 
 #include <GLES2/gl2.h>
@@ -40,7 +38,7 @@ namespace {
 // preferred 4:2:0 pixel format on Windows according to:
 // https://learn.microsoft.com/en-us/windows-hardware/drivers/display/4-2-0-video-pixel-formats
 // https://learn.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12
-BASE_FEATURE(UseNV12OutputFormat, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseNV12OutputFormat, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 #endif

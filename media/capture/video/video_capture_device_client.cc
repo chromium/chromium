@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -230,7 +228,7 @@ namespace media {
 #if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/40070224): When this code path has been verified on
 // Canary, change to enabled-by-default.
-BASE_FEATURE(FallbackToSharedMemoryIfNotNv12OnMac,
+BASE_FEATURE(kFallbackToSharedMemoryIfNotNv12OnMac,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

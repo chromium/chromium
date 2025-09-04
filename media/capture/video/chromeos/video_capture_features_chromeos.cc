@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 
 #include "base/command_line.h"
@@ -28,7 +26,7 @@ namespace features {
 // The built-in ChromeOS Camera App disables the frame rotation through the
 // private CameraAppDeviceImpl::SetCameraFrameRotationEnabledAtSource() call
 // to achieve zero-copy video encoding when the device is rotated.
-BASE_FEATURE(DisableCameraFrameRotationAtSource,
+BASE_FEATURE(kDisableCameraFrameRotationAtSource,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

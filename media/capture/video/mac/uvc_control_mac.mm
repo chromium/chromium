@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -28,7 +26,7 @@ namespace media {
 namespace {
 const unsigned int kRequestTimeoutInMilliseconds = 1000;
 
-BASE_FEATURE(ExposeAllUvcControls, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kExposeAllUvcControls, base::FEATURE_DISABLED_BY_DEFAULT);
 
 struct PanTilt {
   int32_t pan;

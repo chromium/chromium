@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -738,7 +736,7 @@ bool ValidFormatForDirectUploading(GrGLenum format, unsigned int type) {
 // is enabled or disabled. The one-copy path being enabled is the default
 // production state, with this Feature being used to be able to disable this
 // path for performance testing.
-BASE_FEATURE(OneCopyUploadOfVideoFrameToGLTexture,
+BASE_FEATURE(kOneCopyUploadOfVideoFrameToGLTexture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 

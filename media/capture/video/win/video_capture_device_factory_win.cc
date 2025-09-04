@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -70,7 +68,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace media {
 
-BASE_FEATURE(MediaFoundationD3D11VideoCaptureBlocklist,
+BASE_FEATURE(kMediaFoundationD3D11VideoCaptureBlocklist,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/audio/audio_features.h"
 
 #include "base/feature_list.h"
@@ -15,7 +13,7 @@ namespace features {
 #if BUILDFLAG(IS_WIN)
 // Enables application audio capture for getDisplayMedia (gDM) window capture in
 // Windows.
-BASE_FEATURE(ApplicationAudioCaptureWin, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kApplicationAudioCaptureWin, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -24,11 +22,11 @@ BASE_FEATURE(ApplicationAudioCaptureWin, base::FEATURE_DISABLED_BY_DEFAULT);
 // as OpenSLES provides more accurate output latency on those devices.
 //
 // TODO(crbug.com/401365323): Remove this feature in the future.
-BASE_FEATURE(UseAAudioDriver, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseAAudioDriver, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables loading and using AAudio instead of OpenSLES on compatible devices,
 // for audio input streams.
-BASE_FEATURE(UseAAudioInput, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseAAudioInput, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables selection of audio devices for each individual AAudio stream instead
 // of using communication streams and managing the system-wide communication
@@ -36,20 +34,21 @@ BASE_FEATURE(UseAAudioInput, base::FEATURE_ENABLED_BY_DEFAULT);
 //
 // Requires `UseAAudioDriver` and `UseAAudioInput`, otherwise it will have no
 // effect.
-BASE_FEATURE(AAudioPerStreamDeviceSelection, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAAudioPerStreamDeviceSelection,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use buffer size from AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER for
 // optimal output frame size.
-BASE_FEATURE(AlwaysUseAudioManagerOutputFramesPerBuffer,
+BASE_FEATURE(kAlwaysUseAudioManagerOutputFramesPerBuffer,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the AudioDeviceListener, which listens for changes to the list of
 // audio devices exposed by the OS.
-BASE_FEATURE(AndroidAudioDeviceListener, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidAudioDeviceListener, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use stereo channel layout for input stream parameters.
 // TODO(crbug.com/440210010): Remove when the experiment is done.
-BASE_FEATURE(AudioStereoInputStreamParameters,
+BASE_FEATURE(kAudioStereoInputStreamParameters,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -58,7 +57,7 @@ BASE_FEATURE(AudioStereoInputStreamParameters,
 // the hardware's sample rate, the resampling step that normally occurs within
 // the WebAudio destination node is skipped. This allows the AudioService to
 // handle any necessary resampling, potentially reducing latency and overhead.
-BASE_FEATURE(WebAudioRemoveAudioDestinationResampler,
+BASE_FEATURE(kWebAudioRemoveAudioDestinationResampler,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
 #else
@@ -71,7 +70,7 @@ BASE_FEATURE(WebAudioRemoveAudioDestinationResampler,
 // MacOS will then "Spatialize" the audio for users on compatible Airpods. The
 // end result will give users the option to change modes on their Airpods (Off,
 // Fixed, Head Tracking).
-BASE_FEATURE(MacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "media/ffmpeg/ffmpeg_common.h"
 
 #include "base/containers/span.h"
@@ -40,7 +38,7 @@ namespace media {
 namespace {
 
 // TODO(crbug.com/379418979): Remove after M133 is stable.
-BASE_FEATURE(StrictFFmpegCodecs, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kStrictFFmpegCodecs, base::FEATURE_ENABLED_BY_DEFAULT);
 
 EncryptionScheme GetEncryptionScheme(const AVStream* stream) {
   AVDictionaryEntry* key =
