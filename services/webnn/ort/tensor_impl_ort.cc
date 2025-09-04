@@ -23,19 +23,17 @@ TensorImplOrt::TensorImplOrt(
                       std::move(tensor_info)),
       buffer_state_(std::move(buffer_state)) {}
 
-TensorImplOrt::~TensorImplOrt() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
+TensorImplOrt::~TensorImplOrt() = default;
 
 const scoped_refptr<QueueableResourceState<BufferContentOrt>>&
 TensorImplOrt::GetBufferState() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   return buffer_state_;
 }
 
 void TensorImplOrt::ReadTensorImpl(ReadTensorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplOrt::ReadTensorImpl");
 
@@ -74,7 +72,7 @@ void TensorImplOrt::ReadTensorImpl(ReadTensorCallback callback) {
 }
 
 void TensorImplOrt::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplOrt::WriteTensorImpl");
 

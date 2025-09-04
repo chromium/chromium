@@ -59,10 +59,8 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
  private:
   ~TensorImplCoreml() override;
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
   scoped_refptr<QueueableResourceState<BufferContent>> buffer_state_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+      GUARDED_BY_CONTEXT(gpu_sequence_checker_);
 };
 
 }  // namespace coreml

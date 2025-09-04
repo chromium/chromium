@@ -276,12 +276,12 @@ TensorImplCoreml::TensorImplCoreml(
 }
 
 TensorImplCoreml::~TensorImplCoreml() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 }
 
 void TensorImplCoreml::ReadTensorImpl(
     mojom::WebNNTensor::ReadTensorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplCoreml::ReadTensorImpl");
 
@@ -324,7 +324,7 @@ void TensorImplCoreml::ReadTensorImpl(
 }
 
 void TensorImplCoreml::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplCoreml::WriteTensorImpl");
 
@@ -360,7 +360,7 @@ void TensorImplCoreml::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
 
 const scoped_refptr<QueueableResourceState<BufferContent>>&
 TensorImplCoreml::GetBufferState() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   return buffer_state_;
 }
 

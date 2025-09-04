@@ -49,10 +49,8 @@ class TensorImplTflite final : public WebNNTensorImpl {
   void ReadTensorImpl(ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
   scoped_refptr<QueueableResourceState<BufferContent>> buffer_state_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+      GUARDED_BY_CONTEXT(gpu_sequence_checker_);
 };
 
 }  // namespace tflite

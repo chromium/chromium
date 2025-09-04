@@ -120,7 +120,9 @@ class WebNNObjectImpl : public MojoInterface,
         base::SequencedTaskRunner::GetCurrentDefault(), owning_task_runner_);
   }
 
-  ~WebNNObjectImpl() override = default;
+  ~WebNNObjectImpl() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  }
 
   // Returns the AssociatedReceiver bound to this implementation.
   // Only legal to call from within the stack frame of a message dispatch.
@@ -135,6 +137,12 @@ class WebNNObjectImpl : public MojoInterface,
     DCHECK_CALLED_ON_VALID_SEQUENCE(mojo_sequence_checker_);
     owning_task_runner_->PostTask(FROM_HERE, std::move(task));
   }
+
+ protected:
+  // This SequenceChecker is bound to the sequence where WebNNObjectImpl is
+  // constructed. All messages dispatches and access to
+  // the GPU scheduler must occur on this sequence.
+  SEQUENCE_CHECKER(gpu_sequence_checker_);
 
  private:
   // This SequenceChecker is bound to the sequence where WebNNObjectImpl is

@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
 
   virtual base::WeakPtr<WebNNContextImpl> AsWeakPtr()
-      VALID_CONTEXT_REQUIRED(sequence_checker_) = 0;
+      VALID_CONTEXT_REQUIRED(gpu_sequence_checker_) = 0;
 
   // Disassociates a `WebNNTensor` instance owned by this context by its handle.
   // Called when a `WebNNTensor` instance has a connection error. After this
@@ -171,8 +171,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
       gpu::Mailbox mailbox) = 0;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   // Owns this object.
   raw_ptr<WebNNContextProviderImpl> context_provider_;
