@@ -173,6 +173,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kServiceWorkerStaticRouterStartServiceWorker);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerClientUrlIsCreationUrl);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSkipRedundantNavigationStateNotification);
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kStrictHighRankProcessLRU);
 #endif

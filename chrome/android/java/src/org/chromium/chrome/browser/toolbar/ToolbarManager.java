@@ -847,6 +847,7 @@ public class ToolbarManager
         mToolbarLayout = mActivity.findViewById(R.id.toolbar);
         mToolbarPositionSupplier = new ObservableSupplierImpl<>(ControlsPosition.NONE);
         mNtpDelegate = createNewTabPageDelegate();
+        mIsCustomTab = mToolbarLayout instanceof CustomTabToolbar;
 
         mLocationBarModel =
                 new LocationBarModel(
@@ -867,7 +868,8 @@ public class ToolbarManager
                                 return ret;
                             }
                         },
-                        mToolbarPositionSupplier);
+                        mToolbarPositionSupplier,
+                        /* matchTrustedCdnUrl= */ mIsCustomTab);
         mControlContainer = controlContainer;
         mToolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
 
@@ -945,7 +947,6 @@ public class ToolbarManager
         ThemeColorProvider overviewModeThemeColorProvider = mAppThemeColorProvider;
 
         Runnable requestFocusRunnable = compositorViewHolder::requestFocus;
-        mIsCustomTab = mToolbarLayout instanceof CustomTabToolbar;
         ThemeColorProvider menuButtonThemeColorProvider =
                 mIsCustomTab ? mCustomTabThemeColorProvider : browsingModeThemeColorProvider;
 
