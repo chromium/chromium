@@ -48,7 +48,8 @@ inline constexpr char kWebNNOrtLibraryPathForTesting[] =
 // for testing development EP build. This switch is not to be used in shipping
 // scenarios and is ignored by default.
 // Usage: --webnn-ort-ep-library-path-for-testing="C:\Program
-// Files\ONNXRuntime-EP" --allow-third-party-modules
+// Files\ONNXRuntime-EP\onnxruntime_providers_openvino_plugin.dll"
+// --allow-third-party-modules
 inline constexpr char kWebNNOrtEpLibraryPathForTesting[] =
     "webnn-ort-ep-library-path-for-testing";
 

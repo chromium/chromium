@@ -352,7 +352,7 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
     // the EP package path.
     base::FilePath ep_library_path;
     if (specified_ep_path) {
-      ep_library_path = specified_ep_path->Append(ep_info.library_name);
+      ep_library_path = specified_ep_path.value();
     } else {
       const std::optional<base::FilePath>& ep_package_path =
           platform_functions->InitializePackageDependency(
