@@ -304,6 +304,17 @@ base::FilePath Database::SharedMemoryFilePath(const base::FilePath& db_path) {
   return base::FilePath(db_path.value() + FILE_PATH_LITERAL("-shm"));
 }
 
+// static
+int Database::WalHookCallback(void* db_ptr,
+                              sqlite3* db_handle,
+                              const char* db_name,
+                              int pages) {
+  Database* self = reinterpret_cast<Database*>(db_ptr);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+  self->options_.wal_commit_callback_.Run(pages);
+  return SQLITE_OK;
+}
+
 base::WeakPtr<Database> Database::GetWeakPtr(InternalApiToken) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
@@ -2098,6 +2109,11 @@ bool Database::OpenInternal(const std::string& db_file_path) {
         RecordOpenDatabaseFailureReason(
             histogram_tag_, OpenDatabaseFailedReason::kPragmaJournalFailed);
         return false;
+      }
+
+      // Register a WAL commit hook to call the caller's `wal_commit_callback_`.
+      if (options_.wal_commit_callback_) {
+        sqlite3_wal_hook(db_, &Database::WalHookCallback, this);
       }
     } else {
       // For speed, change the journal mode from the default DELETE to TRUNCATE.

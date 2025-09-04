@@ -282,6 +282,30 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
     return *this;
   }
 
+  // Set a WAL commit callback for configuring manual WAL checkpointing.
+  //
+  // When this callback is provided, SQLite's automatic checkpointing is
+  // disabled. The callback is called each time data is committed to the
+  // database, with the number of pages currently in the write-ahead log file
+  // (including those that were just committed).
+  //
+  // The owner of the database is responsible for calling CheckpointDatabase()
+  // at appropriate times. The owner may choose to do so within the callback,
+  // or at any other time. This is useful for performance tuning, allowing
+  // checkpoints to be performed only when the process is idle to avoid
+  // blocking the main database sequence.
+  //
+  // When the callback is not set, SQLite will automatically checkpoint the
+  // database when the WAL file reaches 1000 pages.
+  //
+  // This option is only effective when WAL mode is enabled.
+  DatabaseOptions& set_wal_commit_callback(
+      base::RepeatingCallback<void(int)> wal_commit_callback) {
+    CHECK(wal_commit_callback);
+    wal_commit_callback_ = std::move(wal_commit_callback);
+    return *this;
+  }
+
  private:
   friend class Database;
   FRIEND_TEST_ALL_PREFIXES(DatabaseOptionsTest,
@@ -302,6 +326,7 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   bool mmap_enabled_ = true;
   bool read_only_ = false;
   bool enable_triggers_ = false;
+  base::RepeatingCallback<void(int)> wal_commit_callback_;
 };
 
 // Holds database diagnostics in a structured format.
@@ -905,6 +930,13 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Internal helper for Does*Exist() functions.
   bool DoesSchemaItemExist(std::string_view name, std::string_view type);
+
+  // This callback is registered with SQLite to be called after each commit when
+  // `set_wal_commit_callback()` is used.
+  static int WalHookCallback(void* db_ptr,
+                             sqlite3* db_handle,
+                             const char* db_name,
+                             int pages);
 
   // Used to implement the interface with sql::test::ScopedErrorExpecter.
   static ScopedErrorExpecterCallback* current_expecter_cb_;

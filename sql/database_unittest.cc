@@ -39,6 +39,7 @@
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -113,6 +114,10 @@ class ScopedUmaskSetter {
 bool IsOpenedInCorrectJournalMode(Database* db, bool is_wal) {
   std::string expected_mode = is_wal ? "wal" : "truncate";
   return ExecuteWithResult(db, "PRAGMA journal_mode") == expected_mode;
+}
+
+int64_t CheckedGetFileSize(const base::FilePath& file_path) {
+  return base::GetFileSize(file_path).value();
 }
 
 }  // namespace
@@ -2272,6 +2277,98 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
             "1");
   EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT value FROM foo where id=2"),
             "2");
+}
+
+TEST_P(SQLDatabaseTest, WALCommitCallback) {
+  if (!IsWALEnabled()) {
+    GTEST_SKIP() << "WAL mode not enabled";
+  }
+
+  db_->Close();
+  Database::Delete(db_path_);
+
+  std::optional<int> wal_callback_pages;
+  Database db(DatabaseOptions()
+#if BUILDFLAG(IS_WIN)
+                  .set_exclusive_database_file_lock(true)
+#endif  // IS_WIN
+                  .set_wal_mode(true)
+                  .set_wal_commit_callback(base::BindLambdaForTesting(
+                      [&](int pages) { wal_callback_pages = pages; })),
+              test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+
+  // The value of `wal_autocheckpoint` must be 0 when the db is created with
+  // manual checkpoint options.
+  EXPECT_EQ("0", ExecuteWithResult(&db, "PRAGMA wal_autocheckpoint"));
+
+  const base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
+  // The WAL file should not exist yet.
+  ASSERT_FALSE(base::GetFileSize(wal_path).has_value());
+
+  int64_t db_size = CheckedGetFileSize(db_path_);
+  int64_t previous_db_size = db_size;
+
+  // The following CREATE TABLE statement writes some pages into the WAL log.
+  ASSERT_TRUE(
+      db.Execute("CREATE TABLE foo (id INTEGER UNIQUE, value INTEGER)"));
+
+  // The WAL callback must have been called while creating a table.
+  ASSERT_TRUE(wal_callback_pages.has_value());
+  EXPECT_GT(*wal_callback_pages, 0);
+  int previous_wal_callback_pages = *wal_callback_pages;
+
+  // The WAL file should grow.
+  int64_t wal_size = CheckedGetFileSize(wal_path);
+  int64_t previous_wal_size = wal_size;
+  ASSERT_GT(wal_size, 0);
+
+  // The db file size should not change.
+  ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+
+  for (int i = 0; i < 100; ++i) {
+    // The following INSERT INTO statement writes some pages into the WAL log.
+    ASSERT_TRUE(db.Execute(
+        base::StringPrintf("INSERT INTO foo VALUES (%d, %d)", i, i)));
+
+    // The WAL callback must have been called with a greater `pages` value.
+    ASSERT_GT(*wal_callback_pages, previous_wal_callback_pages);
+    previous_wal_callback_pages = *wal_callback_pages;
+
+    // The WAL file should grow.
+    wal_size = CheckedGetFileSize(wal_path);
+    ASSERT_GT(wal_size, previous_wal_size);
+    previous_wal_size = wal_size;
+
+    // The db file size should not change.
+    ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+  }
+
+  wal_callback_pages.reset();
+  previous_wal_callback_pages = 0;
+
+  db.CheckpointDatabase();
+
+  // The WAL callback must not be called while running checkpoint.
+  ASSERT_FALSE(wal_callback_pages.has_value());
+
+  // The db file size should grow.
+  db_size = CheckedGetFileSize(db_path_);
+  ASSERT_GT(db_size, previous_db_size);
+  previous_db_size = db_size;
+
+  for (int i = 100; i < 200; ++i) {
+    // The following INSERT INTO statement writes some pages into the WAL log.
+    ASSERT_TRUE(db.Execute(
+        base::StringPrintf("INSERT INTO foo VALUES (%d, %d)", i, i)));
+
+    // The WAL callback must have been called with a greater `pages` value.
+    ASSERT_GT(*wal_callback_pages, previous_wal_callback_pages);
+    previous_wal_callback_pages = *wal_callback_pages;
+
+    // The db file size should not change.
+    ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+  }
 }
 
 #if BUILDFLAG(IS_WIN)
