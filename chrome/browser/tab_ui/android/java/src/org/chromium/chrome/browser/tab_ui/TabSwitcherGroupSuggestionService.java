@@ -45,7 +45,7 @@ public class TabSwitcherGroupSuggestionService {
 
     /* Tab gaps equal to this or beyond will not be permitted to be shown. */
     private static final int TAB_GAP_LIMIT = 2;
-    private static final int NUM_TABS_IN_FORCED_SUGGESTION = 3;
+    private static final int NUM_TABS_IN_FORCED_SUGGESTION = 14;
 
     /** Observes lifecycle events for tab group suggestions. */
     public interface SuggestionLifecycleObserver {
