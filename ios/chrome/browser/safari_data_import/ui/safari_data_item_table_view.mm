@@ -248,6 +248,7 @@ UIView* GetCheckmark() {
         << "multiple times";
   }
   switch (item.status) {
+    case SafariDataItemImportStatus::kBlockedByPolicy:
     case SafariDataItemImportStatus::kReady:
       _itemDictionary[itemType] = item;
       _pendingImportCount++;
@@ -324,10 +325,22 @@ UIView* GetCheckmark() {
 /// Helper method that sets up the description for `item`.
 - (void)setupDescriptionForItem:(SafariDataItem*)item
                         forCell:(TableViewDetailIconCell*)cell {
-  NSString* description =
-      item.status == SafariDataItemImportStatus::kImported
-          ? GetDescriptionForImportedItemTypeWithCount(item.type, item.count)
-          : GetDescriptionForUnimportedItemTypeWithCount(item.type, item.count);
+  NSString* description;
+  switch (item.status) {
+    case SafariDataItemImportStatus::kReady:
+    case SafariDataItemImportStatus::kImporting:
+      description =
+          GetDescriptionForUnimportedItemTypeWithCount(item.type, item.count);
+      break;
+    case SafariDataItemImportStatus::kImported:
+      description =
+          GetDescriptionForImportedItemTypeWithCount(item.type, item.count);
+      break;
+    case SafariDataItemImportStatus::kBlockedByPolicy:
+      description = l10n_util::GetNSString(
+          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_BLOCKED_BY_POLICY);
+      break;
+  }
   if (item.invalidCount > 0) {
     /// Concatenate string for invalid passwords.
     CHECK_EQ(item.type, SafariDataItemType::kPasswords);
@@ -347,6 +360,7 @@ UIView* GetCheckmark() {
 - (void)setupAccessoryForItem:(SafariDataItem*)item
                       forCell:(TableViewDetailIconCell*)cell {
   switch (item.status) {
+    case SafariDataItemImportStatus::kBlockedByPolicy:
     case SafariDataItemImportStatus::kReady:
       /// No accessory when user has not initiated importing.
       break;

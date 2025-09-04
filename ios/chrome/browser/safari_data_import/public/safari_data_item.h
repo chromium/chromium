@@ -24,6 +24,8 @@ enum class SafariDataItemImportStatus : NSUInteger {
   kImporting,
   /// Data import completed.
   kImported,
+  /// The data item cannot be imported because of an enterprise policy.
+  kBlockedByPolicy,
 };
 
 /// Hashable container for a type of data item that can be imported from Safari.

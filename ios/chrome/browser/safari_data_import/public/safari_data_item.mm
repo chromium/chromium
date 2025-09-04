@@ -33,9 +33,10 @@
     case SafariDataItemImportStatus::kImporting:
       _status = SafariDataItemImportStatus::kImported;
       break;
+    case SafariDataItemImportStatus::kBlockedByPolicy:
     case SafariDataItemImportStatus::kImported:
       NOTREACHED() << "item of type " << static_cast<NSUInteger>(self.type)
-                   << " is already imported";
+                   << " is in a terminal state and cannot be transitioned";
   }
 }
 

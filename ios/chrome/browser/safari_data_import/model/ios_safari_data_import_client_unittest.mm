@@ -62,7 +62,7 @@ TEST_F(IOSSafariDataImportClientTest, OnBookmarksReady) {
 
 /// Tests that OnHistoryReady() populates the consumer.
 TEST_F(IOSSafariDataImportClientTest, OnHistoryReady) {
-  client()->OnHistoryReady(20, {});
+  client()->OnHistoryReady(20);
   SafariDataItem* item = last_populated_item();
   ASSERT_TRUE(item);
   EXPECT_EQ(item.type, SafariDataItemType::kHistory);

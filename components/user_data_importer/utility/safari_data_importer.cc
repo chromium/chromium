@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -557,7 +558,7 @@ void SafariDataImporter::PreparePasswords(std::string csv_data) {
         DataTypeMetrics::ImportOutcome::kNotPresent);
 
     // Empty results object, indicating no work could be done.
-    client_->OnPasswordsReady({});
+    client_->OnPasswordsReady(base::ok(password_manager::ImportResults{}));
     return;
   }
 
@@ -565,7 +566,8 @@ void SafariDataImporter::PreparePasswords(std::string csv_data) {
           pref_service_, password_manager::prefs::kCredentialsEnableService)) {
     // TODO(crbug.com/407587751): Signal to UI that passwords import is blocked
     // by policy.
-    client_->OnPasswordsReady({});
+    client_->OnPasswordsReady(
+        base::unexpected(ImportPreparationError::kBlockedByPolicy));
     return;
   }
 
@@ -588,14 +590,15 @@ void SafariDataImporter::PreparePaymentCards(
           pref_service_, autofill::prefs::kAutofillCreditCardEnabled)) {
     // TODO(crbug.com/407587751): Signal to UI that payment cards import is
     // blocked by policy.
-    client_->OnPaymentCardsReady(/* count= */ 0);
+    client_->OnPaymentCardsReady(
+        base::unexpected(ImportPreparationError::kBlockedByPolicy));
     return;
   }
 
   if (result.entries.empty()) {
     metrics_recorder_.payment_card_metrics().LogOutcome(
         DataTypeMetrics::ImportOutcome::kNotPresent);
-    client_->OnPaymentCardsReady(/* count= */ 0);
+    client_->OnPaymentCardsReady(base::ok(0u));
     return;
   }
 
@@ -612,7 +615,7 @@ void SafariDataImporter::PreparePaymentCards(
 
   size_t count = cards_to_import_.size();
   metrics_recorder_.payment_card_metrics().OnPreparationFinished(count);
-  client_->OnPaymentCardsReady(count);
+  client_->OnPaymentCardsReady(base::ok(count));
 }
 
 void SafariDataImporter::PrepareBookmarks(
@@ -621,7 +624,8 @@ void SafariDataImporter::PrepareBookmarks(
           pref_service_, bookmarks::prefs::kEditBookmarksEnabled)) {
     // TODO(crbug.com/407587751): Signal to UI that bookmarks import is blocked
     // by policy.
-    client_->OnBookmarksReady(/* count= */ 0);
+    client_->OnBookmarksReady(
+        base::unexpected(ImportPreparationError::kBlockedByPolicy));
     return;
   }
 
@@ -630,7 +634,7 @@ void SafariDataImporter::PrepareBookmarks(
         DataTypeMetrics::ImportOutcome::kNotPresent);
     metrics_recorder_.reading_list_metrics().LogOutcome(
         DataTypeMetrics::ImportOutcome::kNotPresent);
-    client_->OnBookmarksReady(/* count= */ 0);
+    client_->OnBookmarksReady(base::ok(0u));
     return;
   }
 
@@ -650,14 +654,14 @@ void SafariDataImporter::OnPasswordsParsed(
   auto error = TranslatePasswordStatusToError(results.status);
   if (error) {
     metrics_recorder_.LogPasswordsError(*error);
-    client_->OnPasswordsReady({});
+    client_->OnPasswordsReady(base::ok(password_manager::ImportResults{}));
     return;
   }
 
   size_t count = results.displayed_entries.size() + results.number_to_import;
   metrics_recorder_.password_metrics().OnPreparationFinished(count);
 
-  client_->OnPasswordsReady(results);
+  client_->OnPasswordsReady(base::ok(results));
 }
 
 void SafariDataImporter::OnBookmarksParsed(
@@ -680,8 +684,8 @@ void SafariDataImporter::OnBookmarksParsed(
   metrics_recorder_.reading_list_metrics().OnPreparationFinished(
       pending_reading_list_.size());
 
-  client_->OnBookmarksReady(importable_bookmarks_count +
-                            pending_reading_list_.size());
+  client_->OnBookmarksReady(
+      base::ok(importable_bookmarks_count + pending_reading_list_.size()));
 }
 
 void SafariDataImporter::OnBookmarkParsingError(
@@ -692,7 +696,7 @@ void SafariDataImporter::OnBookmarkParsingError(
   metrics_recorder_.reading_list_metrics().LogOutcome(
       DataTypeMetrics::ImportOutcome::kFailure);
 
-  client_->OnBookmarksReady(/* count= */ 0);
+  client_->OnBookmarksReady(base::ok(0u));
 }
 
 void SafariDataImporter::PrepareHistory(size_t file_size_bytes) {
@@ -700,7 +704,8 @@ void SafariDataImporter::PrepareHistory(size_t file_size_bytes) {
                                        prefs::kSavingBrowserHistoryDisabled)) {
     // TODO(crbug.com/407587751): Signal to UI that history import is blocked
     // by policy.
-    client_->OnHistoryReady(/* estimated_count= */ 0, {});
+    client_->OnHistoryReady(
+        base::unexpected(ImportPreparationError::kBlockedByPolicy));
     return;
   }
 
@@ -720,7 +725,7 @@ void SafariDataImporter::PrepareHistory(size_t file_size_bytes) {
   }
 
   // TODO(crbug.com/407587751): Pass list of profiles.
-  client_->OnHistoryReady(approximate_number_of_urls, {});
+  client_->OnHistoryReady(base::ok(approximate_number_of_urls));
 }
 
 void SafariDataImporter::ImportHistoryEntries(
