@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace performance_manager {
 
@@ -306,14 +307,16 @@ void PageNodeImpl::AddFrame(base::PassKey<FrameNodeImpl>,
   DCHECK(graph()->NodeInGraph(frame_node));
 
   ++frame_node_count_;
+  auto frame_track = perfetto::NamedTrack(
+      "FrameNodes", frame_node->tracing_track().uuid, tracing_track());
+  TRACE_EVENT_BEGIN(
+      "performance_manager.graph",
+      perfetto::StaticString(
+          frame_node->parent_frame_node() == nullptr ? "MainFrame" : "Frame"),
+      frame_track, perfetto::Flow::Global(frame_node->tracing_track().uuid));
+
   if (frame_node->parent_frame_node() == nullptr) {
     main_frame_nodes_.insert(frame_node);
-    auto* rfh = frame_node->GetRenderFrameHostProxy().Get();
-    if (rfh) {
-      TRACE_EVENT_INSTANT(
-          "performance_manager.graph", "MainFrameAdded", loading_track_,
-          perfetto::protos::pbzero::ChromeTrackEvent::kRenderFrameHost, *rfh);
-    }
   }
 }
 
@@ -328,13 +331,10 @@ void PageNodeImpl::RemoveFrame(base::PassKey<FrameNodeImpl>,
   if (frame_node->parent_frame_node() == nullptr) {
     size_t removed = main_frame_nodes_.erase(frame_node);
     DCHECK_EQ(1u, removed);
-    auto* rfh = frame_node->GetRenderFrameHostProxy().Get();
-    if (rfh) {
-      TRACE_EVENT_INSTANT(
-          "performance_manager.graph", "MainFrameRemoved", loading_track_,
-          perfetto::protos::pbzero::ChromeTrackEvent::kRenderFrameHost, *rfh);
-    }
   }
+  auto frame_track = perfetto::NamedTrack(
+      "FrameNodes", frame_node->tracing_track().uuid, tracing_track());
+  TRACE_EVENT_END("performance_manager.graph", frame_track);
 }
 
 void PageNodeImpl::SetLoadingState(LoadingState loading_state) {

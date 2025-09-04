@@ -115,7 +115,6 @@ class ProcessNodeImpl
 
   // mojom::ChildProcessCoordinationUnit implementation:
   void InitializeChildProcessCoordination(
-      uint64_t process_track_id,
       InitializeChildProcessCoordinationCallback callback) override;
 
   // Partial ProcessNode implementation:
@@ -140,7 +139,7 @@ class ProcessNodeImpl
   // Private implementation properties.
   NodeSetView<FrameNodeImpl*> frame_nodes() const;
   NodeSetView<WorkerNodeImpl*> worker_nodes() const;
-  std::optional<perfetto::Track> tracing_track() const;
+  perfetto::Track tracing_track() const;
 
   void SetProcessExitStatus(int32_t exit_status);
   void SetProcessMetricsName(const std::string& metrics_name);
@@ -197,6 +196,9 @@ class ProcessNodeImpl
   using AnyChildProcessHostProxy =
       std::variant<RenderProcessHostProxy, BrowserChildProcessHostProxy>;
 
+  static perfetto::Track GetTracingTrack(content::ProcessType process_type,
+                                         const AnyChildProcessHostProxy& proxy);
+
   // Shared constructor for all process types.
   ProcessNodeImpl(content::ProcessType process_type,
                   AnyChildProcessHostProxy proxy,
@@ -245,6 +247,9 @@ class ProcessNodeImpl
   // process node for a child process (process_type() != PROCESS_TYPE_BROWSER).
   const AnyChildProcessHostProxy child_process_host_proxy_;
 
+  // The Perfetto ProcessTrack for this process.
+  perfetto::Track tracing_track_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,
       &ProcessNodeObserver::OnMainThreadTaskLoadIsLow>
@@ -263,10 +268,6 @@ class ProcessNodeImpl
   // A bit field that indicates which type of content this process has hosted,
   // either currently or in the past.
   ContentTypes hosted_content_types_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The Perfetto ProcessTrack for this process.
-  std::optional<perfetto::Track> tracing_track_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   NodeSet frame_nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
 

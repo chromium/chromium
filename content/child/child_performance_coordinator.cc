@@ -33,7 +33,6 @@ ChildPerformanceCoordinator::InitializeAndPassReceiver() {
       "PerformanceManager.InitializeChildProcessCoordination.RequestCount",
       true);
   coordination_unit_->InitializeChildProcessCoordination(
-      perfetto::ProcessTrack::Current().uuid,
       base::BindOnce(
           &ChildPerformanceCoordinator::OnInitializeChildProcessCoordination,
           weak_factory_.GetWeakPtr()));

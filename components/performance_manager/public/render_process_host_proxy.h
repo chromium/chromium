@@ -41,6 +41,10 @@ class RenderProcessHostProxy {
     return render_process_host_id_;
   }
 
+  content::ChildProcessId child_process_id() const {
+    return render_process_host_id_;
+  }
+
   static RenderProcessHostProxy CreateForTesting(
       RenderProcessHostId render_process_host_id);
 

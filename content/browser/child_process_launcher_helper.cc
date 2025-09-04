@@ -27,6 +27,7 @@
 #include "content/browser/child_process_launcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
+#include "content/public/browser/tracing_support.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -267,7 +268,7 @@ ChildProcessLauncherHelper::Process::Process::operator=(
     ChildProcessLauncherHelper::Process&& other) = default;
 
 ChildProcessLauncherHelper::ChildProcessLauncherHelper(
-    int child_process_id,
+    ChildProcessId child_process_id,
     std::unique_ptr<base::CommandLine> command_line,
     std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
     const base::WeakPtr<ChildProcessLauncher>& child_process_launcher,
@@ -387,6 +388,10 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
       tracing_output_memory_region_ ? &tracing_output_memory_region_->data
                                     : nullptr,
       command_line(), options_ptr, files_to_register.get());
+
+  auto track = GetChildProcessTracingTrack(child_process_id());
+  command_line_->AppendSwitchASCII(switches::kTraceProcessTrackUuid,
+                                   base::NumberToString(track.uuid));
 
   // Transfer logging switches & handles if necessary.
   PassLoggingSwitches(options_ptr, command_line());

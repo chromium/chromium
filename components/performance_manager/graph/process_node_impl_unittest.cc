@@ -294,25 +294,25 @@ TEST_F(ProcessNodeImplTest, InitializeChildProcessCoordination) {
   // No global memory mapped. ProcessNodeImpl automatically creates a process
   // memory region on request.
   process_node->InitializeChildProcessCoordination(
-      0u, base::BindLambdaForTesting(
-              [&](base::ReadOnlySharedMemoryRegion global_region,
-                  base::ReadOnlySharedMemoryRegion process_region) {
-                EXPECT_FALSE(global_region.IsValid());
-                EXPECT_TRUE(process_region.IsValid());
-              })
-              .Then(task_env().QuitClosure()));
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_FALSE(global_region.IsValid());
+            EXPECT_TRUE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
   task_env().RunUntilQuit();
 
   // Map global memory.
   ScopedGlobalScenarioMemory global_shared_memory;
   process_node->InitializeChildProcessCoordination(
-      0u, base::BindLambdaForTesting(
-              [&](base::ReadOnlySharedMemoryRegion global_region,
-                  base::ReadOnlySharedMemoryRegion process_region) {
-                EXPECT_TRUE(global_region.IsValid());
-                EXPECT_TRUE(process_region.IsValid());
-              })
-              .Then(task_env().QuitClosure()));
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_TRUE(global_region.IsValid());
+            EXPECT_TRUE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
   task_env().RunUntilQuit();
 
   // In single process mode, memory shouldn't be shared even if it's mapped,
@@ -321,13 +321,13 @@ TEST_F(ProcessNodeImplTest, InitializeChildProcessCoordination) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kSingleProcess);
   process_node->InitializeChildProcessCoordination(
-      0u, base::BindLambdaForTesting(
-              [&](base::ReadOnlySharedMemoryRegion global_region,
-                  base::ReadOnlySharedMemoryRegion process_region) {
-                EXPECT_FALSE(global_region.IsValid());
-                EXPECT_FALSE(process_region.IsValid());
-              })
-              .Then(task_env().QuitClosure()));
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_FALSE(global_region.IsValid());
+            EXPECT_FALSE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
   task_env().RunUntilQuit();
 }
 

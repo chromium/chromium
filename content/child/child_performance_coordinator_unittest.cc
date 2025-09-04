@@ -34,7 +34,7 @@ class MockChildProcessCoordinationUnit : public ChildProcessCoordinationUnit {
  public:
   MOCK_METHOD(void,
               InitializeChildProcessCoordination,
-              (uint64_t, InitializeChildProcessCoordinationCallback),
+              (InitializeChildProcessCoordinationCallback),
               (override));
 
   void Bind(mojo::PendingReceiver<ChildProcessCoordinationUnit> receiver) {
@@ -64,10 +64,9 @@ class ChildPerformanceCoordinatorTest : public ::testing::Test {
       base::ReadOnlySharedMemoryRegion process_region) {
     base::OnceClosure quit_closure = task_env_.QuitClosure();
     StrictMockChildProcessCoordinationUnit mock_coordination_unit;
-    EXPECT_CALL(mock_coordination_unit,
-                InitializeChildProcessCoordination(_, _))
+    EXPECT_CALL(mock_coordination_unit, InitializeChildProcessCoordination(_))
         .WillOnce(
-            [&](uint64_t, InitializeChildProcessCoordinationCallback callback) {
+            [&](InitializeChildProcessCoordinationCallback callback) {
               std::move(callback).Run(std::move(global_region),
                                       std::move(process_region));
               // `callback` will post to ChildPerformanceCoordinator. Quit the

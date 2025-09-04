@@ -122,7 +122,7 @@ class ChildProcessLauncherHelper
   };
 
   ChildProcessLauncherHelper(
-      int child_process_id,
+      ChildProcessId child_process_id,
       std::unique_ptr<base::CommandLine> command_line,
       std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
       const base::WeakPtr<ChildProcessLauncher>& child_process_launcher,
@@ -287,7 +287,7 @@ class ChildProcessLauncherHelper
     DCHECK(CurrentlyOnProcessLauncherTaskRunner());
     return command_line_.get();
   }
-  int child_process_id() const { return child_process_id_; }
+  ChildProcessId child_process_id() const { return child_process_id_; }
 
   static void ForceNormalProcessTerminationSync(
       ChildProcessLauncherHelper::Process process);
@@ -298,7 +298,7 @@ class ChildProcessLauncherHelper
   }
 #endif
 
-  const int child_process_id_;
+  const ChildProcessId child_process_id_;
   const scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
   base::TimeTicks begin_launch_time_;
   // Accessed on launcher thread.

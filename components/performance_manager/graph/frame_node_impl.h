@@ -132,6 +132,7 @@ class FrameNodeImpl
   PageNodeImpl* page_node() const;
   ProcessNodeImpl* process_node() const;
   int render_frame_id() const;
+  perfetto::Track tracing_track() const;
 
   // Getters for non-const properties. These are not thread safe.
   NodeSetView<FrameNodeImpl*> child_frame_nodes() const;
@@ -321,9 +322,6 @@ class FrameNodeImpl
   // RenderFrameHost::GetFrameToken().
   const blink::LocalFrameToken frame_token_;
 
-  // Perfetto track that can record trace events for the page.
-  const perfetto::NamedTrack tracing_track_;
-
   // The unique ID of the BrowsingInstance this frame belongs to. Frames in the
   // same BrowsingInstance are allowed to script each other at least
   // asynchronously (if cross-site), and sometimes synchronously (if same-site,
@@ -339,6 +337,9 @@ class FrameNodeImpl
   // A proxy object that lets the underlying RFH be safely dereferenced on the
   // UI thread.
   const RenderFrameHostProxy render_frame_host_proxy_;
+
+  // Perfetto track that can record trace events for the page.
+  const perfetto::NamedTrack tracing_track_;
 
   NodeSet child_frame_nodes_;
 

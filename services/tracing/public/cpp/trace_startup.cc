@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/memory/shared_memory_switch.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
@@ -56,6 +57,17 @@ void InitTracingPostFeatureList(
   DCHECK(!g_tracing_initialized_after_featurelist);
   g_tracing_initialized_after_featurelist = true;
 
+  std::optional<uint64_t> maybe_process_track_uuid;
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kTraceProcessTrackUuid)) {
+    uint64_t process_track_uuid;
+    if (base::StringToUint64(
+            command_line->GetSwitchValueASCII(switches::kTraceProcessTrackUuid),
+            &process_track_uuid)) {
+      maybe_process_track_uuid = process_track_uuid;
+    }
+  }
+
   // Create the PerfettoTracedProcess.
   auto& traced_process =
       PerfettoTracedProcess::MaybeCreateInstance(will_trace_thread_restart);
@@ -63,7 +75,7 @@ void InitTracingPostFeatureList(
     traced_process.SetAllowSystemTracingConsumerCallback(
         std::move(should_allow_system_tracing));
   }
-  traced_process.InitPostFeatureList(enable_consumer);
+  traced_process.InitPostFeatureList(enable_consumer, maybe_process_track_uuid);
 
   RegisterTracedValueProtoWriter();
 

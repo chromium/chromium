@@ -59,6 +59,10 @@ const char kTraceConfigHandle[] = "trace-config-handle";
 // recorded before sandbox setup.
 const char kTraceBufferHandle[] = "trace-buffer-handle";
 
+// Child process track uuid used by perfetto; this is chosen by the browser
+// process and sent to child processes to get predictable track uuid.
+const char kTraceProcessTrackUuid[] = "trace-process-track-uuid";
+
 // Sets the time in seconds until startup tracing ends. If omitted:
 // - if --trace-startup is specified, a default of 5 seconds is used.
 // - if --enable-tracing is specified, tracing lasts until the browser is

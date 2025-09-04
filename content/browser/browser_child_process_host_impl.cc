@@ -328,7 +328,7 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
           : nullptr;
 
   child_process_launcher_ = std::make_unique<ChildProcessLauncher>(
-      std::move(delegate), std::move(cmd_line), data_.id, this,
+      std::move(delegate), std::move(cmd_line), data_.GetChildProcessId(), this,
       std::move(*child_process_host_->GetMojoInvitation()),
       base::BindRepeating(&BrowserChildProcessHostImpl::OnMojoError,
                           weak_factory_.GetWeakPtr(),

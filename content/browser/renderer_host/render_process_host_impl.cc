@@ -1888,8 +1888,8 @@ bool RenderProcessHostImpl::Init() {
     // As long as there's no renderer prefix, we can use the zygote process
     // at this stage.
     child_process_launcher_ = std::make_unique<ChildProcessLauncher>(
-        std::move(sandbox_delegate), std::move(cmd_line), GetDeprecatedID(),
-        this, std::move(mojo_invitation_),
+        std::move(sandbox_delegate), std::move(cmd_line), GetID(), this,
+        std::move(mojo_invitation_),
         base::BindRepeating(&RenderProcessHostImpl::OnMojoError, id_),
         std::move(file_data),
         base::HistogramSharedMemory::PassOnCommandLineIsEnabled(

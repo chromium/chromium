@@ -319,7 +319,23 @@ void PerfettoTracedProcess::ResetForTesting() {
   task_runner_ = nullptr;
 }
 
-void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+void PerfettoTracedProcess::DeferOrConnectProducerSocket(
+    perfetto::CreateSocketCallback cb) {
+  CHECK(!system_tracing_producer_socket_cb_);
+  // Hold off the attempts to get socket fd until trace thread restarts.
+  if (will_trace_thread_restart_) {
+    system_tracing_producer_socket_cb_ = base::BindOnce(
+        ConnectProducerSocketViaMojo, cb, base::Milliseconds(100));
+  } else {
+    ConnectProducerSocketViaMojo(cb, base::Milliseconds(100));
+  }
+}
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+
+void PerfettoTracedProcess::InitPostFeatureList(
+    bool enable_consumer,
+    std::optional<uint64_t> process_track_uuid) {
   perfetto::TracingInitArgs init_args;
   init_args.platform = platform_.get();
   init_args.custom_backend = tracing_backend_.get();
@@ -329,6 +345,7 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   init_args.shmem_direct_patching_enabled = true;
   init_args.use_monotonic_clock = true;
   init_args.disallow_merging_with_system_tracks = true;
+  init_args.process_uuid = process_track_uuid;
 #if BUILDFLAG(IS_POSIX)
   if (ShouldSetupSystemTracing()) {
     init_args.backends |= perfetto::kSystemBackend;
@@ -365,24 +382,6 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   }
   TrackNameRecorder::GetInstance();
   CustomEventRecorder::GetInstance();
-}
-
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
-void PerfettoTracedProcess::DeferOrConnectProducerSocket(
-    perfetto::CreateSocketCallback cb) {
-  CHECK(!system_tracing_producer_socket_cb_);
-  // Hold off the attempts to get socket fd until trace thread restarts.
-  if (will_trace_thread_restart_) {
-    system_tracing_producer_socket_cb_ = base::BindOnce(
-        ConnectProducerSocketViaMojo, cb, base::Milliseconds(100));
-  } else {
-    ConnectProducerSocketViaMojo(cb, base::Milliseconds(100));
-  }
-}
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
-
-void PerfettoTracedProcess::InitPostFeatureList(bool enable_consumer) {
-  SetupClientLibrary(enable_consumer);
 }
 
 void PerfettoTracedProcess::SetAllowSystemTracingConsumerCallback(

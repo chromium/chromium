@@ -133,10 +133,6 @@ interface ChildProcessCoordinationUnit {
   // Called immediately after the interface is connected, to send and receive
   // initial state:
   //
-  // `process_track_id` is the uuid of the child's perfetto::ProcessTrack. If
-  // it's non-zero, the browser process can use this to record trace events
-  // associated with the child process.
-  //
   // The browser sends back handles to shared memory regions that communicate
   // state values between the browser and the child. If any returned region
   // handle is invalid, the child will use default state instead of reading from
@@ -149,7 +145,7 @@ interface ChildProcessCoordinationUnit {
   // `process_region` should contain a list of `std::atomic` enums representing
   // scenarios local to the renderer process that it should use when making
   // performance decisions.
-  InitializeChildProcessCoordination(uint64 process_track_id) =>
+  InitializeChildProcessCoordination() =>
       (mojo_base.mojom.ReadOnlySharedMemoryRegion? global_region,
        mojo_base.mojom.ReadOnlySharedMemoryRegion? process_region);
 };

@@ -16,6 +16,7 @@ TRACING_EXPORT extern const char kTraceStartup[];
 TRACING_EXPORT extern const char kTraceConfigHandle[];
 TRACING_EXPORT extern const char kEnableTracing[];
 TRACING_EXPORT extern const char kTraceBufferHandle[];
+TRACING_EXPORT extern const char kTraceProcessTrackUuid[];
 TRACING_EXPORT extern const char kTraceStartupDuration[];
 TRACING_EXPORT extern const char kTraceStartupFile[];
 TRACING_EXPORT extern const char kEnableTracingOutput[];

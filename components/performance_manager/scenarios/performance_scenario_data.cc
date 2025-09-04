@@ -100,9 +100,6 @@ const perfetto::NamedTrack* PerformanceScenarioData::input_tracing_track()
 
 void PerformanceScenarioData::EnsureTracingTracks(
     const ProcessNode* process_node) {
-  if (process_node && !HasProcessTracingTrack(process_node)) {
-    return;
-  }
   uint64_t track_id = reinterpret_cast<uint64_t>(tracing_tracks_.get());
   if (!tracing_tracks_->loading_track.has_value()) {
     tracing_tracks_->loading_track.emplace(CreateTracingTrack(

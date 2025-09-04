@@ -18,6 +18,7 @@
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
@@ -29,16 +30,27 @@ namespace {
 // Creates a tracing track for the FrameNode identified by `token` under
 // `parent_track`.
 const perfetto::NamedTrack CreateFrameNodeTrack(
-    std::optional<perfetto::Track> parent_track,
-    const base::UnguessableToken& token) {
-  // FrameNode usually appears under the renderer process track, although
-  // it will appear in the browser process if the renderer track isn't
-  // available.
+    perfetto::Track parent,
+    const blink::LocalFrameToken& frame_token,
+    bool is_main_frame,
+    content::RenderFrameHost* render_frame_host) {
+  // FrameNode appears under the associated renderer process track.
   auto track =
       perfetto::NamedTrack(
-          "FrameNode", base::UnguessableTokenHash()(token),
-          parent_track ? *parent_track : perfetto::ProcessTrack::Current())
+          perfetto::StaticString(is_main_frame ? "MainFrameNode" : "FrameNode"),
+          base::UnguessableTokenHash()(frame_token.value()), parent)
           .disable_sibling_merge();
+  TRACE_EVENT_INSTANT(
+      "performance_manager.graph", "FrameCreated", track,
+      perfetto::Flow::Global(track.uuid),
+      [render_frame_host](perfetto::EventContext& ctx) {
+        if (!render_frame_host) {
+          return;
+        }
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        render_frame_host->WriteIntoTrace(
+            ctx.Wrap(event->set_render_frame_host()));
+      });
   return base::trace_event::InitializeTrack(track);
 }
 
@@ -86,13 +98,16 @@ FrameNodeImpl::FrameNodeImpl(
       process_node_(process_node),
       render_frame_id_(render_frame_id),
       frame_token_(frame_token),
-      tracing_track_(CreateFrameNodeTrack(process_node_->tracing_track(),
-                                          frame_token.value())),
       browsing_instance_id_(browsing_instance_id),
       site_instance_group_id_(site_instance_group_id),
       render_frame_host_proxy_(content::GlobalRenderFrameHostId(
           process_node->GetRenderProcessHostId().value(),
           render_frame_id)),
+      tracing_track_(
+          CreateFrameNodeTrack(process_node_->tracing_track(),
+                               frame_token,
+                               /*is_main_frame=*/parent_frame_node_ == nullptr,
+                               render_frame_host_proxy_.Get())),
       is_current_(is_current),
       is_active_(is_active),
       priority_and_reason_(
@@ -408,6 +423,11 @@ ProcessNodeImpl* FrameNodeImpl::process_node() const {
 int FrameNodeImpl::render_frame_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return render_frame_id_;
+}
+
+perfetto::Track FrameNodeImpl::tracing_track() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracing_track_;
 }
 
 FrameNode::NodeSetView<FrameNodeImpl*> FrameNodeImpl::child_frame_nodes()

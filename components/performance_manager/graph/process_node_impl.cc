@@ -24,6 +24,7 @@
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/tracing_support.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -46,9 +47,7 @@ content::ProcessType ValidateBrowserChildProcessType(
 ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
     : ProcessNodeImpl(content::PROCESS_TYPE_BROWSER,
                       AnyChildProcessHostProxy{},
-                      base::TaskPriority::HIGHEST) {
-  tracing_track_.emplace(perfetto::ProcessTrack::Current());
-}
+                      base::TaskPriority::HIGHEST) {}
 
 ProcessNodeImpl::ProcessNodeImpl(RenderProcessHostProxy proxy,
                                  base::TaskPriority priority)
@@ -67,6 +66,7 @@ ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
                                  base::TaskPriority priority)
     : process_type_(process_type),
       child_process_host_proxy_(std::move(proxy)),
+      tracing_track_(GetTracingTrack(process_type_, child_process_host_proxy_)),
       priority_(priority) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Child process nodes must have a valid proxy.
@@ -209,15 +209,8 @@ void ProcessNodeImpl::OnRemoteIframeDetached(
 }
 
 void ProcessNodeImpl::InitializeChildProcessCoordination(
-    uint64_t process_track_id,
     InitializeChildProcessCoordinationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Should not be called for the Browser process, which already has a track.
-  // Otherwise, it's ok to overwrite `tracing_track_`, since processes can be
-  // re-initialized for the same ProcessNode (eg. after a crash).
-  CHECK_NE(process_type_, content::PROCESS_TYPE_BROWSER);
-  tracing_track_.emplace(perfetto::Track::Global(process_track_id));
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess)) {
@@ -332,7 +325,7 @@ ProcessNode::NodeSetView<WorkerNodeImpl*> ProcessNodeImpl::worker_nodes()
   return NodeSetView<WorkerNodeImpl*>(worker_nodes_);
 }
 
-std::optional<perfetto::Track> ProcessNodeImpl::tracing_track() const {
+perfetto::Track ProcessNodeImpl::tracing_track() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return tracing_track_;
 }
@@ -457,6 +450,17 @@ void ProcessNodeImpl::OnAllFramesInProcessFrozen() {
   for (auto& observer : GetObservers()) {
     observer.OnAllFramesInProcessFrozen(this);
   }
+}
+
+// static
+perfetto::Track ProcessNodeImpl::GetTracingTrack(
+    content::ProcessType process_type,
+    const AnyChildProcessHostProxy& proxy) {
+  if (process_type == content::PROCESS_TYPE_BROWSER) {
+    return perfetto::ProcessTrack::Current();
+  }
+  return content::GetChildProcessTracingTrack(std::visit(
+      [](const auto& proxy) { return proxy.child_process_id(); }, proxy));
 }
 
 void ProcessNodeImpl::OnInitializingProperties() {
