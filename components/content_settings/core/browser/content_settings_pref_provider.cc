@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
@@ -29,6 +30,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
@@ -59,6 +61,9 @@ constexpr char kObsoleteFederatedIdentityActiveSesssionExceptionsPref[] =
 constexpr char kObsoletePrivateNetworkChooserDataPref[] =
     "profile.content_settings.exceptions.private_network_chooser_data";
 
+constexpr char kGeolocationMigrateExceptionsPref[] =
+    "profile.content_settings.exceptions.migrate_geolocation";
+
 #if !BUILDFLAG(IS_IOS)
 // This setting was accidentally bound to a UI surface intended for a different
 // setting (https://crbug.com/364820109). It should not have been settable
@@ -82,6 +87,7 @@ void PrefProvider::RegisterProfilePrefs(
       prefs::kContentSettingsVersion,
       ContentSettingsPattern::kContentSettingsPatternVersion);
   registry->RegisterBooleanPref(prefs::kInContextCookieControlsOpened, false);
+  registry->RegisterBooleanPref(kGeolocationMigrateExceptionsPref, false);
 
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
@@ -148,6 +154,8 @@ PrefProvider::PrefProvider(PrefService* prefs,
             base::BindRepeating(&PrefProvider::Notify,
                                 base::Unretained(this)))));
   }
+
+  MigrateGeolocationExceptions();
 
   size_t num_exceptions = 0;
   if (!off_the_record_) {
@@ -451,6 +459,62 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   // TODO(https://crbug.com/367181093): clean this up.
   prefs_->ClearPref(kBug364820109AlreadyWorkedAroundPref);
 #endif  // !BUILDFLAG(IS_IOS)
+}
+
+void PrefProvider::MigrateGeolocationExceptions() {
+  if (off_the_record_) {
+    return;
+  }
+
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+  // TODO(b/307193732):  Partition keys were never launched and should be
+  // removed. If this changes, then we should run the migration over
+  // all keys.
+  auto partition_key = PartitionKey::WipGetDefault();
+  // Migrate when the feature gets enabled the first time.
+  if (base::FeatureList::IsEnabled(
+          features::kApproximateGeolocationPermission) &&
+      !prefs_->GetBoolean(kGeolocationMigrateExceptionsPref)) {
+    auto* old_pref = GetPref(ContentSettingsType::GEOLOCATION);
+    auto* options_pref = GetPref(ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+    auto it = old_pref->GetRuleIterator(false, partition_key);
+    while (it && it->HasNext()) {
+      auto rule = it->Next();
+      auto content_setting = ValueToContentSetting(rule->value);
+      auto geolocation_setting =
+          GeolocationSetting{ToPermissionOption(content_setting),
+                             ToPermissionOption(content_setting)};
+      options_pref->SetWebsiteSetting(
+          rule->primary_pattern, rule->secondary_pattern,
+          info->delegate().ToValue(geolocation_setting),
+          std::move(rule->metadata), partition_key);
+    }
+    it.reset();
+    old_pref->ClearAllContentSettingsRules(partition_key);
+    prefs_->SetBoolean(kGeolocationMigrateExceptionsPref, true);
+  }
+
+  // Migrate back when the feature is disabled the first time.
+  if (!base::FeatureList::IsEnabled(
+          features::kApproximateGeolocationPermission) &&
+      prefs_->GetBoolean(kGeolocationMigrateExceptionsPref)) {
+    auto* old_pref = GetPref(ContentSettingsType::GEOLOCATION);
+    auto* options_pref = GetPref(ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+    auto it = options_pref->GetRuleIterator(false, partition_key);
+    while (it && it->HasNext()) {
+      auto rule = it->Next();
+      auto geolocation_setting = std::get<GeolocationSetting>(
+          ValueToPermissionSetting(info, rule->value));
+      old_pref->SetWebsiteSetting(
+          rule->primary_pattern, rule->secondary_pattern,
+          ContentSettingToValue(ToContentSetting(geolocation_setting.precise)),
+          std::move(rule->metadata), partition_key);
+    }
+    it.reset();
+    options_pref->ClearAllContentSettingsRules(partition_key);
+    prefs_->SetBoolean(kGeolocationMigrateExceptionsPref, false);
+  }
 }
 
 void PrefProvider::SetClockForTesting(const base::Clock* clock) {

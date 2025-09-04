@@ -117,6 +117,9 @@ class PrefProvider : public UserModifiableProvider {
   // Clean up the obsolete preferences from the user's profile.
   void DiscardOrMigrateObsoletePreferences();
 
+  // Migrate between GEOLOCATION and GEOLOCATION_WITH_OPTIONS.
+  void MigrateGeolocationExceptions();
+
   // Returns true if this provider supports the given |content_type|.
   bool supports_type(ContentSettingsType content_type) const {
     return content_settings_prefs_.find(content_type) !=

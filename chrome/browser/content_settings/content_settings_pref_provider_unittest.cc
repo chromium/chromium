@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -24,6 +25,7 @@
 #include "components/content_settings/core/browser/content_settings_pref.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -32,6 +34,7 @@
 #include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/default_pref_store.h"
@@ -1199,6 +1202,101 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
                                          false, &metadata));
   EXPECT_EQ(metadata.last_visited(), base::Time());
   provider.ShutdownOnUIThread();
+}
+
+TEST_F(PrefProviderTest, MigrateOnFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kApproximateGeolocationPermission);
+
+  TestingProfile profile;
+  PrefService* prefs = profile.GetPrefs();
+
+  ContentSettingsPattern pattern =
+      ContentSettingsPattern::FromString("[*.]example.com");
+  GURL url("http://example.com");
+
+  {
+    PrefProvider provider(prefs, /*off_the_record=*/false,
+                          /*store_last_modified=*/true,
+                          /*restore_session=*/false);
+    provider.SetWebsiteSetting(
+        pattern, pattern, ContentSettingsType::GEOLOCATION,
+        base::Value(CONTENT_SETTING_ALLOW), {},
+        content_settings::PartitionKey::GetDefaultForTesting());
+    provider.ShutdownOnUIThread();
+  }
+
+  feature_list.Reset();
+  feature_list.InitAndEnableFeature(
+      features::kApproximateGeolocationPermission);
+
+  {
+    PrefProvider new_provider(prefs, /*off_the_record=*/false,
+                              /*store_last_modified=*/true,
+                              /*restore_session=*/false);
+    auto setting =
+        std::get<GeolocationSetting>(*TestUtils::GetPermissionSetting(
+            &new_provider, url, url,
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+            /*include_incognito=*/false));
+    EXPECT_EQ(PermissionOption::kAllowed, setting.precise);
+    EXPECT_EQ(PermissionOption::kAllowed, setting.approximate);
+    EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+              TestUtils::GetContentSetting(&new_provider, url, url,
+                                           ContentSettingsType::GEOLOCATION,
+                                           /*include_incognito=*/false));
+    new_provider.ShutdownOnUIThread();
+  }
+}
+
+TEST_F(PrefProviderTest, MigrateBackOnFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kApproximateGeolocationPermission);
+
+  TestingProfile profile;
+  PrefService* prefs = profile.GetPrefs();
+
+  ContentSettingsPattern pattern =
+      ContentSettingsPattern::FromString("[*.]example.com");
+  GURL url("http://example.com");
+
+  {
+    // Set a setting and enable the feature to trigger the migration.
+    PrefProvider provider(prefs, /*off_the_record=*/false,
+                          /*store_last_modified=*/true,
+                          /*restore_session=*/false);
+    auto* info = PermissionSettingsRegistry::GetInstance()->Get(
+        ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+    provider.SetWebsiteSetting(
+        pattern, pattern, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+        info->delegate().ToValue(GeolocationSetting{
+            PermissionOption::kAllowed, PermissionOption::kAllowed}),
+        {}, content_settings::PartitionKey::GetDefaultForTesting());
+    provider.ShutdownOnUIThread();
+  }
+
+  // Disable the feature to trigger the migration back.
+  feature_list.Reset();
+  feature_list.InitAndDisableFeature(
+      features::kApproximateGeolocationPermission);
+
+  {
+    PrefProvider new_provider(prefs, /*off_the_record=*/false,
+                              /*store_last_modified=*/true,
+                              /*restore_session=*/false);
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              TestUtils::GetContentSetting(&new_provider, url, url,
+                                           ContentSettingsType::GEOLOCATION,
+                                           /*include_incognito=*/false));
+    EXPECT_FALSE(TestUtils::GetPermissionSetting(
+                     &new_provider, url, url,
+                     ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+                     /*include_incognito=*/false)
+                     .has_value());
+    new_provider.ShutdownOnUIThread();
+  }
 }
 
 }  // namespace content_settings
