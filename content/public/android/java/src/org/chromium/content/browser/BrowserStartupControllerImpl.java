@@ -416,7 +416,9 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             // If startFullBrowser() fails, execute the callbacks right away. Otherwise,
             // callbacks will be deferred until browser startup completes.
             mCurrentBrowserStartType = BrowserStartType.FULL_BROWSER;
-            if (contentStart(false) > 0) enqueueCallbackExecutionOnStartupFailure();
+            if (contentStart(false) > 0) {
+                enqueueCallbackExecutionOnStartupFailure();
+            }
             return;
         }
 

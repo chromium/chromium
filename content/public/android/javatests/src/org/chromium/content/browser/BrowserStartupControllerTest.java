@@ -20,10 +20,12 @@ import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 
 /** Test of BrowserStartupController */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class BrowserStartupControllerTest {
     private TestBrowserStartupController mController;
 

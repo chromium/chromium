@@ -188,7 +188,7 @@ public class NativeBackgroundTaskTest {
         private boolean mWasOnStopTaskBeforeNativeLoadedCalled;
         private final BrowserStartupController mBrowserStartupController;
 
-        public TestNativeBackgroundTask(BrowserStartupController controller) {
+        TestNativeBackgroundTask(BrowserStartupController controller) {
             super();
             setDelegate(new ChromeNativeBackgroundTaskDelegate());
             mBrowserStartupController = controller;

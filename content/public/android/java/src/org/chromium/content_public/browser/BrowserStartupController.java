@@ -11,13 +11,13 @@ import org.chromium.content.browser.BrowserStartupControllerImpl;
 /**
  * This class controls how C++ browser main loop is started and ensures it happens only once.
  *
- * It supports kicking off the startup sequence in an asynchronous way. Startup can be called as
+ * <p>It supports kicking off the startup sequence in an asynchronous way. Startup can be called as
  * many times as needed (for instance, multiple activities for the same application), but the
  * browser process will still only be initialized once. All requests to start the browser will
  * always get their callback executed; if the browser process has already been started, the callback
  * is called immediately, else it is called when initialization is complete.
  *
- * All communication with this class must happen on the main thread.
+ * <p>All communication with this class must happen on the main thread.
  */
 @NullMarked
 public interface BrowserStartupController {
@@ -61,7 +61,7 @@ public interface BrowserStartupController {
             boolean startMinimalBrowser,
             boolean singleProcess,
             boolean scheduleFlushStartupTasks,
-            final StartupCallback callback);
+            StartupCallback callback);
 
     /**
      * Start the browser process synchronously. If the browser is already being started
