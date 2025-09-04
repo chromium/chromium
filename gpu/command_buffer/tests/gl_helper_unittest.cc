@@ -60,11 +60,9 @@ class GLHelperTest : public testing::Test {
   void SetUp() override {
     feature_list_.Init();
 
-    ContextCreationAttribs attributes;
     context_ = std::make_unique<GLInProcessContext>();
     auto result = context_->Initialize(
-        viz::TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
-        SharedMemoryLimits());
+        viz::TestGpuServiceHolder::GetInstance()->task_executor());
     DCHECK_EQ(result, ContextResult::kSuccess);
     gl_ = context_->GetImplementation();
     ContextSupport* support = context_->GetImplementation();

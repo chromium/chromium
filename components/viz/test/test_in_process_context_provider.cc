@@ -62,23 +62,17 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
 
   auto* holder = TestGpuServiceHolder::GetInstance();
 
-  gpu::ContextCreationAttribs attribs;
-
   if (type_ == TestContextType::kGLES2) {
-    attribs.enable_gles2_interface = true;
-    attribs.enable_raster_interface = false;
-    attribs.enable_gpu_rasterization = false;
-
     gles2_context_ = std::make_unique<gpu::GLInProcessContext>();
     auto result = gles2_context_->Initialize(
-        TestGpuServiceHolder::GetInstance()->task_executor(), attribs,
-        gpu::SharedMemoryLimits());
+        TestGpuServiceHolder::GetInstance()->task_executor());
     CHECK_EQ(result, gpu::ContextResult::kSuccess);
 
     caps_ = gles2_context_->GetCapabilities();
   } else {
     bool is_gpu_raster = type_ == TestContextType::kGpuRaster;
 
+    gpu::ContextCreationAttribs attribs;
     attribs.enable_gles2_interface = false;
     attribs.enable_raster_interface = true;
     attribs.enable_gpu_rasterization = is_gpu_raster;

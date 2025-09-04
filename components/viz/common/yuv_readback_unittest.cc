@@ -39,10 +39,8 @@ auto kYUVReadbackSizes = std::to_array<int>({2, 4, 14});
 class YUVReadbackTest : public testing::Test {
  protected:
   YUVReadbackTest() : context_(std::make_unique<gpu::GLInProcessContext>()) {
-    gpu::ContextCreationAttribs attributes;
     auto result = context_->Initialize(
-        TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
-        gpu::SharedMemoryLimits());
+        TestGpuServiceHolder::GetInstance()->task_executor());
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     gl_ = context_->GetImplementation();
 

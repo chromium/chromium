@@ -8,7 +8,6 @@
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
-#include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/gl_in_process_context.h"
 #include "gpu/ipc/test_gpu_thread_holder.h"
 
@@ -53,11 +52,9 @@ GLuint SetupFramebuffer(int width, int height) {
 namespace vr {
 
 GlTestEnvironment::GlTestEnvironment(const gfx::Size frame_buffer_size) {
-  gpu::ContextCreationAttribs attributes;
   context_ = std::make_unique<gpu::GLInProcessContext>();
   auto result =
-      context_->Initialize(gpu::GetTestGpuThreadHolder()->GetTaskExecutor(),
-                           attributes, gpu::SharedMemoryLimits());
+      context_->Initialize(gpu::GetTestGpuThreadHolder()->GetTaskExecutor());
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   gles2::SetGLContext(context_->GetImplementation());
 
