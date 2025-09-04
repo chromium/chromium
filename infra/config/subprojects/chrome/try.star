@@ -328,6 +328,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "mac-arm64-bluebird-rel",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-chrome",
 )
@@ -419,6 +423,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "win-arm64-bluebird-rel",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win-arm64-pgo",
 )
@@ -426,6 +434,10 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win-arm64-rel-ready",
+)
+
+chrome_internal_verifier(
+    builder = "win-bluebird-rel",
 )
 
 chrome_internal_verifier(
