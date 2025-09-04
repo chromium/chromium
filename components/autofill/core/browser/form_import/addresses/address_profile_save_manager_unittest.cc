@@ -1458,7 +1458,7 @@ TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateHomeProfile) {
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
       .import_candidate = final_profile,
-      .expected_final_profiles = {final_profile, mergeable_profile},
+      .expected_final_profiles = {final_profile},
       .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};
@@ -1486,7 +1486,7 @@ TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateWorkProfile) {
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
       .import_candidate = final_profile,
-      .expected_final_profiles = {final_profile, mergeable_profile},
+      .expected_final_profiles = {final_profile},
       .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};

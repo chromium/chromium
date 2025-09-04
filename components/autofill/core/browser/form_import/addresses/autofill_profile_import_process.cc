@@ -409,6 +409,11 @@ void ProfileImportProcess::ApplyImport() {
     // 3. `kAccountNameEmail` superset import prompt
     // 4. Merging the `kAccountNameEmail` profile with a H/W profile prompt
     address_data_manager_->AddProfile(*confirmed_import_candidate_);
+    if (import_type() == AutofillProfileImportType::kHomeAndWorkSuperset) {
+      // Remove the original H/W profile since a superset was just saved.
+      CHECK(merge_candidate_->IsHomeAndWorkProfile());
+      address_data_manager_->RemoveProfile(merge_candidate_->guid());
+    }
   }
 }
 
