@@ -169,13 +169,12 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
                        std::move(allowed_refresh_initiators));
 }
 
-base::expected<WellKnownParams, SessionError> ParseWellKnownJson(
+std::optional<WellKnownParams> ParseWellKnownJson(
     std::string_view response_json) {
   std::optional<base::Value::Dict> maybe_root = base::JSONReader::ReadDict(
       response_json, base::JSON_PARSE_RFC, /*max_depth=*/5u);
   if (!maybe_root) {
-    return base::unexpected(
-        SessionError{SessionError::ErrorType::kWellKnownMalformed});
+    return std::nullopt;
   }
 
   WellKnownParams params;
@@ -185,8 +184,7 @@ base::expected<WellKnownParams, SessionError> ParseWellKnownJson(
     const base::Value::List* registering_origins_list =
         registering_origins->GetIfList();
     if (!registering_origins_list) {
-      return base::unexpected(
-          SessionError{SessionError::ErrorType::kWellKnownMalformed});
+      return std::nullopt;
     }
     std::vector<std::string> registering_origin_strings;
     registering_origin_strings.reserve(registering_origins_list->size());
@@ -194,8 +192,7 @@ base::expected<WellKnownParams, SessionError> ParseWellKnownJson(
       const std::string* registering_origin_string =
           registering_origin.GetIfString();
       if (!registering_origin_string) {
-        return base::unexpected(
-            SessionError{SessionError::ErrorType::kWellKnownMalformed});
+        return std::nullopt;
       }
 
       registering_origin_strings.push_back(*registering_origin_string);
@@ -208,16 +205,14 @@ base::expected<WellKnownParams, SessionError> ParseWellKnownJson(
     const base::Value::List* relying_origins_list =
         relying_origins->GetIfList();
     if (!relying_origins_list) {
-      return base::unexpected(
-          SessionError{SessionError::ErrorType::kWellKnownMalformed});
+      return std::nullopt;
     }
     std::vector<std::string> relying_origin_strings;
     relying_origin_strings.reserve(relying_origins_list->size());
     for (const auto& relying_origin : *relying_origins_list) {
       const std::string* relying_origin_string = relying_origin.GetIfString();
       if (!relying_origin_string) {
-        return base::unexpected(
-            SessionError{SessionError::ErrorType::kWellKnownMalformed});
+        return std::nullopt;
       }
 
       relying_origin_strings.push_back(*relying_origin_string);
@@ -229,8 +224,7 @@ base::expected<WellKnownParams, SessionError> ParseWellKnownJson(
   if (provider_origin) {
     const std::string* provider_origin_string = provider_origin->GetIfString();
     if (!provider_origin_string) {
-      return base::unexpected(
-          SessionError{SessionError::ErrorType::kWellKnownMalformed});
+      return std::nullopt;
     }
     params.provider_origin = *provider_origin_string;
   }

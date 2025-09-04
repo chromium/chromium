@@ -48,9 +48,14 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kTransientHttpError:
       return std::nullopt;
     // Registration-only errors never trigger session deletion.
-    case kWellKnownUnavailable:
+    case kSubdomainRegistrationWellKnownUnavailable:
     case kSubdomainRegistrationUnauthorized:
-    case kWellKnownMalformed:
+    case kSubdomainRegistrationWellKnownMalformed:
+    case kFederatedNotAuthorized:
+    case kSessionProviderWellKnownUnavailable:
+    case kSessionProviderWellKnownMalformed:
+    case kRelyingPartyWellKnownUnavailable:
+    case kRelyingPartyWellKnownMalformed:
       NOTREACHED();
   }
 }
@@ -85,9 +90,14 @@ bool SessionError::IsServerError() const {
     case kInvalidScopeIncludeSite:
       return true;
     // Registration-only errors never get reported to the server.
-    case kWellKnownUnavailable:
+    case kSubdomainRegistrationWellKnownUnavailable:
     case kSubdomainRegistrationUnauthorized:
-    case kWellKnownMalformed:
+    case kSubdomainRegistrationWellKnownMalformed:
+    case kFederatedNotAuthorized:
+    case kSessionProviderWellKnownUnavailable:
+    case kSessionProviderWellKnownMalformed:
+    case kRelyingPartyWellKnownUnavailable:
+    case kRelyingPartyWellKnownMalformed:
       NOTREACHED();
   }
 }

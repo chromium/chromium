@@ -1959,9 +1959,11 @@ chromium-metrics-reviews@google.com.
     logged instead of the HTTP status code.
   </summary>
   <token key="RequestType">
+    <variant name="ProviderWellKnown" summary="session provider .well-known"/>
     <variant name="Refresh" summary="refresh"/>
     <variant name="Registration" summary="registration"/>
-    <variant name="SubdomainWellKnown" summary="subomdain .well-known"/>
+    <variant name="RelyingPartyWellKnown" summary="relying party .well-known"/>
+    <variant name="SubdomainWellKnown" summary="subdomain .well-known"/>
   </token>
 </histogram>
 

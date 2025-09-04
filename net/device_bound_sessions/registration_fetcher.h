@@ -81,6 +81,15 @@ class NET_EXPORT RegistrationFetcher {
           key_id,
       RegistrationCompleteCallback callback) = 0;
 
+  // Starts the network request to the DBSC registration endpoint for a
+  // federated session. `callback` is called with the fetch results upon
+  // completion.
+  virtual void StartFetchWithFederatedKey(
+      RegistrationRequestParam& request_params,
+      unexportable_keys::UnexportableKeyId key_id,
+      const GURL& provider_url,
+      RegistrationCompleteCallback callback) = 0;
+
   // Helper function for generating a new binding key and a registration token
   // to bind the key on the server. unexportable_key_service must outlive the
   // callback result

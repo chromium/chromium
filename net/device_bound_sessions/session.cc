@@ -510,9 +510,14 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
       backoff_.InformOfRequest(/*succeeded=*/false);
       break;
     // Registration-only errors
-    case kWellKnownUnavailable:
+    case kSubdomainRegistrationWellKnownUnavailable:
     case kSubdomainRegistrationUnauthorized:
-    case kWellKnownMalformed:
+    case kSubdomainRegistrationWellKnownMalformed:
+    case kFederatedNotAuthorized:
+    case kSessionProviderWellKnownUnavailable:
+    case kSessionProviderWellKnownMalformed:
+    case kRelyingPartyWellKnownUnavailable:
+    case kRelyingPartyWellKnownMalformed:
       NOTREACHED();
   }
 }
