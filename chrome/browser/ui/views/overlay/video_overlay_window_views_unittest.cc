@@ -55,6 +55,7 @@
 #include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
@@ -249,6 +250,16 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
 
   void AddEnabledFeature(base::test::FeatureRef feature) {
     enabled_features_.push_back(feature);
+  }
+
+  void GestureTapOnView(views::View* view) {
+    gfx::Point touchpoint = views::View::ConvertPointFromScreen(
+        overlay_window().GetRootView(),
+        view->GetBoundsInScreen().CenterPoint());
+    ui::GestureEvent tap_event(
+        touchpoint.x(), touchpoint.y(), 0, base::TimeTicks::Now(),
+        ui::GestureEventDetails(ui::EventType::kGestureTap));
+    overlay_window().OnGestureEvent(&tap_event);
   }
 
   TestingProfile& profile() { return profile_; }
@@ -1457,6 +1468,62 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_GestureTapOutside) {
       ui::GestureEventDetails(ui::EventType::kGestureTap));
   overlay_window().OnGestureEvent(&tap_outside_event);
   EXPECT_FALSE(live_caption_dialog->IsDrawn());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, LiveCaption_GestureTap) {
+  overlay_window().ShowInactive();
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  overlay_window().ForceControlsVisibleForTesting(true);
+
+  OverlayWindowLiveCaptionButton* live_caption_button =
+      overlay_window().live_caption_button_for_testing();
+  OverlayWindowLiveCaptionDialog* live_caption_dialog =
+      overlay_window().live_caption_dialog_for_testing();
+  views::ToggleButton* live_caption_toggle_button =
+      live_caption_dialog->live_caption_button_for_testing();
+  views::ToggleButton* live_translate_toggle_button =
+      live_caption_dialog->live_translate_button_for_testing();
+  views::Combobox* target_language_combobox =
+      live_caption_dialog->target_language_combobox_for_testing();
+
+  profile().GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
+  profile().GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled, false);
+
+  ASSERT_NE(nullptr, live_caption_button);
+  ASSERT_NE(nullptr, live_caption_dialog);
+  ASSERT_NE(nullptr, live_caption_toggle_button);
+  ASSERT_NE(nullptr, live_translate_toggle_button);
+  ASSERT_NE(nullptr, target_language_combobox);
+
+  // Click the live caption button to display the live caption dialog.
+  WaitForLayout();
+  views::test::ButtonTestApi live_caption_button_clicker(live_caption_button);
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
+  live_caption_button_clicker.NotifyClick(dummy_event);
+  WaitForLayout();
+  EXPECT_TRUE(live_caption_dialog->IsDrawn());
+
+  // Tap the live caption toggle button to enable live caption.
+  EXPECT_FALSE(profile().GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  GestureTapOnView(live_caption_toggle_button);
+  WaitForLayout();
+  EXPECT_TRUE(profile().GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+
+  // Tap the live translate button to enable live translate.
+  EXPECT_FALSE(profile().GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled));
+  GestureTapOnView(live_translate_toggle_button);
+  WaitForLayout();
+  EXPECT_TRUE(profile().GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled));
+
+  // Tap the target language combobox to open the target language selection.
+  EXPECT_FALSE(target_language_combobox->IsMenuRunning());
+  GestureTapOnView(target_language_combobox);
+  WaitForLayout();
+  EXPECT_TRUE(target_language_combobox->IsMenuRunning());
+
+  profile().GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
+  profile().GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled, false);
 }
 
 TEST_F(VideoOverlayWindowViewsWith2024UITest, InitialTitleAndScrimVisibility) {

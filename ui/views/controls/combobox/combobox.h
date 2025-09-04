@@ -136,6 +136,9 @@ class VIEWS_EXPORT Combobox : public View,
   // Returns whether or not the menu is currently running.
   bool IsMenuRunning() const;
 
+  // Opens the dropdown menu in response to |event|.
+  void ArrowButtonPressed(const ui::Event& event);
+
   // Overridden from View:
   gfx::Size CalculatePreferredSize(
       const SizeBounds& /*available_size*/) const override;
@@ -175,9 +178,6 @@ class VIEWS_EXPORT Combobox : public View,
 
   // Draws the selected value of the drop down list
   void PaintIconAndText(gfx::Canvas* canvas);
-
-  // Opens the dropdown menu in response to |event|.
-  void ArrowButtonPressed(const ui::Event& event);
 
   // Show the drop down list
   void ShowDropDownMenu(ui::mojom::MenuSourceType source_type);

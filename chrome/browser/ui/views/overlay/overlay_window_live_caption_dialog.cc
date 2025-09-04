@@ -211,5 +211,29 @@ void OverlayWindowLiveCaptionDialog::TargetLanguageChanged() {
           target_language_combobox_->GetSelectedIndex().value());
 }
 
+// Touch events on video picture-in-picture windows are manually handled in
+// `VideoOverlayWindowViews::OnGestureEvent()`. Since we're a view within the
+// video picture-in-picture window, this means we need to manually handle
+// gesture taps as well in order for tapping to work.
+void OverlayWindowLiveCaptionDialog::OnGestureTapEvent(
+    ui::GestureEvent* event) {
+  const gfx::Point tap_location =
+      ConvertPointToScreen(GetWidget()->GetRootView(), event->location());
+  if (live_caption_button_->GetBoundsInScreen().Contains(tap_location)) {
+    OnLiveCaptionButtonPressed();
+    event->SetHandled();
+  } else if (live_translate_button_->GetEnabled() &&
+             live_translate_button_->GetBoundsInScreen().Contains(
+                 tap_location)) {
+    OnLiveTranslateButtonPressed();
+    event->SetHandled();
+  } else if (target_language_combobox_->GetEnabled() &&
+             target_language_combobox_->GetBoundsInScreen().Contains(
+                 tap_location)) {
+    target_language_combobox_->ArrowButtonPressed(*event);
+    event->SetHandled();
+  }
+}
+
 BEGIN_METADATA(OverlayWindowLiveCaptionDialog)
 END_METADATA
