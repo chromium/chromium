@@ -2381,7 +2381,7 @@ void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
 }
 
 void BrowserView::SetDevToolsScrimVisibility(bool visible) {
-  if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
+  if (base::FeatureList::IsEnabled(features::kScrimForTabModal)) {
     GetActiveContentsContainerView()->devtools_scrim_view()->SetVisible(
         visible);
   }

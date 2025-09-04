@@ -141,7 +141,7 @@ BASE_DECLARE_FEATURE(kReloadSelectionModel);
 
 BASE_DECLARE_FEATURE(kScrimForBrowserWindowModal);
 
-BASE_DECLARE_FEATURE(KScrimForTabModal);
+BASE_DECLARE_FEATURE(kScrimForTabModal);
 
 BASE_DECLARE_FEATURE(kSideBySide);
 

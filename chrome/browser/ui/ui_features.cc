@@ -121,7 +121,7 @@ BASE_FEATURE(kScrimForBrowserWindowModal,
 
 // When enabled, a scrim is shown behind tab modal dialogs to cover the content
 // area. This gives user a visual cue that the content area is not interactable.
-BASE_FEATURE(KScrimForTabModal,
+BASE_FEATURE(kScrimForTabModal,
              "ScrimForTabModal",
              base::FEATURE_ENABLED_BY_DEFAULT);
 

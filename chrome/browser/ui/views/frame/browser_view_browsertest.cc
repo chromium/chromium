@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
 
 // Tests that a content area scrim is shown when a tab modal dialog is active.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForTabModal) {
-  if (!base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
+  if (!base::FeatureList::IsEnabled(features::kScrimForTabModal)) {
     GTEST_SKIP();
   }
 
@@ -881,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, ScrimForTabModalInSplitView) {
-  if (!base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
+  if (!base::FeatureList::IsEnabled(features::kScrimForTabModal)) {
     GTEST_SKIP();
   }
 
