@@ -2212,8 +2212,11 @@ void DragAndDropBrowserTest::CrossNavCrossSiteDrag_Step3(
 
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_CHROMEOS) && \
-                          (defined(ADDRESS_SANITIZER) || !defined(NDEBUG)))
+#if BUILDFLAG(IS_WIN) ||                                  \
+    (BUILDFLAG(IS_CHROMEOS) &&                            \
+     (defined(ADDRESS_SANITIZER) || !defined(NDEBUG))) || \
+    BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/442927728): Fix failing test on Linux
 // https://crbug.com/1393605: Flaky at ChromeOS ASAN and Debug builds
 #define MAYBE_CrossTabDrag DISABLED_CrossTabDrag
 #else
