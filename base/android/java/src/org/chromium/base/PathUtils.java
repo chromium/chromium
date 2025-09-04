@@ -100,7 +100,6 @@ public abstract class PathUtils {
 
     // TODO(crbug.com/41484704): Merge the Chrome and WebView implementations
     // of isPathUnderAppDir into one.
-    @RequiresApi(Build.VERSION_CODES.N)
     public static boolean isPathUnderAppDir(String path, Context context) {
         File file = new File(path);
         File dataDir = context.getDataDir();
@@ -275,18 +274,10 @@ public abstract class PathUtils {
     public static @JniType("std::string") String getDownloadsDirectory() {
         // TODO(crbug.com/41187555): Move calls to getDownloadsDirectory() to background thread.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // https://developer.android.com/preview/privacy/scoped-storage
-                // In Q+, Android has begun sandboxing external storage. Chrome may not have
-                // permission to write to Environment.getExternalStoragePublicDirectory(). Instead
-                // using Context.getExternalFilesDir() will return a path to sandboxed external
-                // storage for which no additional permissions are required.
-                String[] dirs = getAllPrivateDownloadsDirectories();
-                assert dirs != null;
-                return dirs.length == 0 ? "" : dirs[0];
-            }
-            return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                    .getPath();
+            // https://developer.android.com/preview/privacy/scoped-storage
+            String[] dirs = getAllPrivateDownloadsDirectories();
+            assert dirs != null;
+            return dirs.length == 0 ? "" : dirs[0];
         }
     }
 
