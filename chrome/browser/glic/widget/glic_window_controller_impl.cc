@@ -1124,7 +1124,7 @@ bool GlicWindowControllerImpl::ActivateBrowser() {
 }
 
 void GlicWindowControllerImpl::Close() {
-  if (state_ == State::kClosed) {
+  if (state_ == State::kClosed || state_ == State::kDetaching) {
     return;
   }
   window_config_.SetLastCloseTime();
