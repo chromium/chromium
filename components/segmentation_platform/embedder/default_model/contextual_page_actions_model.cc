@@ -32,11 +32,11 @@ constexpr std::array<const char*, kLabelInputSize>
         kContextualPageActionModelLabelReaderMode,
         kContextualPageActionModelLabelTabGrouping};
 
-MetadataWriter::CustomInput CreateCustomInput(std::string name) {
+MetadataWriter::CustomInput CreateCustomInput(const char* name) {
   return MetadataWriter::CustomInput{
       .tensor_length = 1,
       .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
-      .name = name.c_str()};
+      .name = name};
 }
 
 }  // namespace
