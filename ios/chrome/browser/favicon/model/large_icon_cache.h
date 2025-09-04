@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/lru_cache.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -21,7 +22,7 @@ struct LargeIconResult;
 //
 // Example usage:
 //   LargeIconCache* large_icon_cache =
-//       IOSChromeLargeIconServiceFactory::GetForProfile(profile);
+//       IOSChromeLargeIconCacheFactory::GetForProfile(profile);
 //   std::unique_ptr<favicon_base::LargeIconResult> icon =
 //       large_icon_cache->GetCachedResult(...);
 //
@@ -43,12 +44,17 @@ class LargeIconCache : public KeyedService {
   std::unique_ptr<favicon_base::LargeIconResult> GetCachedResult(
       const GURL& url);
 
+  // Returns a weak pointer to this object.
+  base::WeakPtr<LargeIconCache> GetWeakPtr();
+
  private:
   // Clones a LargeIconResult.
   std::unique_ptr<favicon_base::LargeIconResult> CloneLargeIconResult(
       const favicon_base::LargeIconResult& large_icon_result);
 
   base::LRUCache<GURL, std::unique_ptr<LargeIconCacheEntry>> cache_;
+
+  base::WeakPtrFactory<LargeIconCache> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_LARGE_ICON_CACHE_H_
