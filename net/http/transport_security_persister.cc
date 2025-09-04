@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "net/http/transport_security_persister.h"
 
 #include <algorithm>
@@ -34,7 +32,7 @@
 
 namespace net {
 
-BASE_FEATURE(TransportSecurityFileWriterSchedule,
+BASE_FEATURE(kTransportSecurityFileWriterSchedule,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {

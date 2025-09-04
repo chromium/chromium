@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
 #include <string_view>
@@ -47,7 +45,7 @@ constexpr int kCustomCertificateMaxValidityDays = 14;
 constexpr base::TimeDelta kMaxCloseTimeout = base::Seconds(2);
 
 // Enables custom congestion control for WebTransport over HTTP/3.
-BASE_FEATURE(WebTransportCongestionControl, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebTransportCongestionControl, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<quic::CongestionControlType>::Option
     kWebTransportCongestionControlAlgorithms[] = {
         {quic::kCubicBytes, "CUBIC"},

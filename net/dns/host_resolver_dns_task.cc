@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "net/dns/host_resolver_dns_task.h"
 
 #include <algorithm>
@@ -30,7 +28,7 @@
 namespace net {
 
 // When enabled, query HTTPS RR first.
-BASE_FEATURE(PrioritizeHttpsResourceRecord, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrioritizeHttpsResourceRecord, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 

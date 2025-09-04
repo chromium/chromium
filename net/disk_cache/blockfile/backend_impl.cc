@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "net/disk_cache/blockfile/backend_impl.h"
 
 #include <algorithm>
@@ -66,7 +64,7 @@ const int kBaseTableLen = 64 * 1024;
 // Avoid trimming the cache for the first 5 minutes (10 timer ticks).
 const int kTrimDelay = 10;
 
-BASE_FEATURE(BlockfileCacheBackendDumpWithoutCrashing,
+BASE_FEATURE(kBlockfileCacheBackendDumpWithoutCrashing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(double,
