@@ -43,7 +43,6 @@
 
 using testing::_;
 using testing::AnyNumber;
-using testing::Invoke;
 using testing::Mock;
 using testing::Pointee;
 
@@ -255,10 +254,10 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
 
     EXPECT_CALL(cloud_policy_client_,
                 UploadAppInstallReport(MatchEvents(&events_value_), _))
-        .WillOnce(Invoke([](base::Value::Dict,
-                            CloudPolicyClient::ResultCallback callback) {
+        .WillOnce([](base::Value::Dict,
+                     CloudPolicyClient::ResultCallback callback) {
           std::move(callback).Run(CloudPolicyClient::Result(DM_STATUS_SUCCESS));
-        }));
+        });
   }
 
   void FlushNonDelayedTasks() {

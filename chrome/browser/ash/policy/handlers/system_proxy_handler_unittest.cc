@@ -29,7 +29,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::WithArg;
 
 namespace {

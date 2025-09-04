@@ -907,7 +907,7 @@ class IOTaskBrowserTest
     EXPECT_CALL(*files_controller_,
                 CheckIfTransferAllowed(std::make_optional(task_id), testing::_,
                                        testing::_, is_move, testing::_))
-        .WillOnce(testing::Invoke(warn_on_check));
+        .WillOnce(warn_on_check);
   }
 
   // Expects CheckIfTransferAllowed to be called. Once called, it calls
@@ -931,7 +931,7 @@ class IOTaskBrowserTest
     EXPECT_CALL(*files_controller_,
                 CheckIfTransferAllowed(std::make_optional(task_id), testing::_,
                                        testing::_, is_move, testing::_))
-        .WillOnce(testing::Invoke(block_on_check));
+        .WillOnce(block_on_check);
   }
 
   // Expects CheckIfTransferAllowed to be called. Once called, it calls
@@ -969,7 +969,7 @@ class IOTaskBrowserTest
     EXPECT_CALL(*files_controller_,
                 CheckIfTransferAllowed(std::make_optional(task_id), testing::_,
                                        testing::_, is_move, testing::_))
-        .WillOnce(testing::Invoke(warn_on_check));
+        .WillOnce(warn_on_check);
     fpnm_->ShowDlpBlockedFiles(task_id, blocked_files, action);
   }
 
@@ -1004,7 +1004,7 @@ class IOTaskBrowserTest
     EXPECT_CALL(*files_controller_,
                 CheckIfTransferAllowed(std::make_optional(task_id), testing::_,
                                        testing::_, is_move, testing::_))
-        .WillOnce(testing::Invoke(warn_on_check));
+        .WillOnce(warn_on_check);
   }
 
   base::ScopedTempDir temp_dir_;

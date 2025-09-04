@@ -250,8 +250,9 @@ TEST_F(UserSessionActivityReporterTest, ReportWhenSessionEnds) {
 
   // Expect the delegate to report session activity.
   base::RunLoop run_loop;
-  EXPECT_CALL(*delegate, ReportSessionActivity())
-      .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_CALL(*delegate, ReportSessionActivity()).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
 
   std::unique_ptr<UserSessionActivityReporter> reporter = CreateReporter(
       &managed_session_service, fake_user_manager_.Get(), std::move(delegate));

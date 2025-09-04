@@ -91,7 +91,6 @@ using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtMost;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::SaveArg;
 using ::testing::StrictMock;
@@ -724,8 +723,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
           GetCertificate(
               ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
               /*force_new_key=*/true, _, _, _, _))
-          .WillOnce(
-              WithArgs<7>(Invoke(CertCallbackSuccessWithValidCertificate)));
+          .WillOnce(WithArgs<7>(CertCallbackSuccessWithValidCertificate));
     }
     AddStateKeys();
   }

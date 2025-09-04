@@ -26,7 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 using testing::WithArgs;
 
@@ -111,10 +110,10 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
 
   void CompleteSerialize() {
     EXPECT_CALL(delegate_, SerializeForUpload_)
-        .WillOnce(WithArgs<0>(Invoke(
+        .WillOnce(WithArgs<0>(
             [=, this](
                 ArcAppInstallEventLogUploader::Delegate::SerializationCallback&
-                    callback) { std::move(callback).Run(&log_); })));
+                    callback) { std::move(callback).Run(&log_); }));
   }
 
   void CaptureSerialize(
@@ -132,11 +131,11 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
 
     EXPECT_CALL(client_, UploadAppInstallReport(MatchValue(&value_report_), _))
         .WillOnce(
-            WithArgs<1>(Invoke([=](CloudPolicyClient::ResultCallback callback) {
+            WithArgs<1>([=](CloudPolicyClient::ResultCallback callback) {
               std::move(callback).Run(CloudPolicyClient::Result(
                   success ? DM_STATUS_SUCCESS
                           : DM_STATUS_TEMPORARY_UNAVAILABLE));
-            })));
+            }));
   }
 
   void CaptureUpload(CloudPolicyClient::ResultCallback* callback) {

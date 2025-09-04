@@ -33,7 +33,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::WithArgs;
 namespace em = ::enterprise_management;
@@ -233,10 +232,10 @@ class AppInstallEventLoggerTest : public testing::Test {
     }
     EXPECT_CALL(delegate_, GetAndroidId_(_))
         .WillOnce(WithArgs<0>(
-            Invoke([=](ArcAppInstallEventLogger::Delegate::AndroidIdCallback*
-                           callback) {
+            [=](ArcAppInstallEventLogger::Delegate::AndroidIdCallback*
+                    callback) {
               std::move(*callback).Run(android_id, kAndroidId);
-            })));
+            }));
   }
 
   PolicyMap CreatePolicyWithForceInstalls(std::set<std::string> package_names) {

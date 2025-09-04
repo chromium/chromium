@@ -230,12 +230,10 @@ TEST_F(MinimumVersionPolicyHandlerTest, CriticalUpdates) {
 
   base::RunLoop run_loop;
   // Expect calls to make sure that user is logged out.
-  EXPECT_CALL(*this, RestartToLoginScreen())
-      .Times(1)
-      .WillOnce(testing::Invoke([&run_loop]() {
-        run_loop.Quit();
-        return false;
-      }));
+  EXPECT_CALL(*this, RestartToLoginScreen()).Times(1).WillOnce([&run_loop]() {
+    run_loop.Quit();
+    return false;
+  });
   EXPECT_CALL(*this, ShowUpdateRequiredScreen()).Times(0);
   EXPECT_CALL(*this, HideUpdateRequiredScreenIfShown()).Times(0);
   EXPECT_CALL(*this, IsLoginSessionState())
@@ -267,12 +265,10 @@ TEST_F(MinimumVersionPolicyHandlerTest, CriticalUpdatesUnmanagedUser) {
   // Unmanaged user is not logged out of the session. The run loop is quit on
   // reaching IsLoginSessionState() because that implies we have fetched the
   // EOL status and reached the end of the policy handler code flow.
-  EXPECT_CALL(*this, IsLoginSessionState())
-      .Times(1)
-      .WillOnce(testing::Invoke([&run_loop]() {
-        run_loop.Quit();
-        return false;
-      }));
+  EXPECT_CALL(*this, IsLoginSessionState()).Times(1).WillOnce([&run_loop]() {
+    run_loop.Quit();
+    return false;
+  });
 
   // Set user as unmanaged.
   SetUserManaged(false);

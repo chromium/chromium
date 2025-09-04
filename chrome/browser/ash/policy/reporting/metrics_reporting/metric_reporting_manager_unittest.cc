@@ -47,7 +47,6 @@ using testing::_;
 using testing::AnyNumber;
 using testing::ByMove;
 using testing::Eq;
-using testing::Invoke;
 using testing::IsNull;
 using testing::Ne;
 using testing::Not;
@@ -230,19 +229,19 @@ class MetricReportingManagerTest
     mock_delegate_ =
         std::make_unique<::testing::NiceMock<test::MockDelegate>>();
     ON_CALL(*mock_delegate_, CreateMetricReportQueue(_, _, _, _, _))
-        .WillByDefault(WithArg<2>(Invoke([](Priority priority) {
+        .WillByDefault(WithArg<2>([](Priority priority) {
           return std::make_unique<test::FakeMetricReportQueue>(priority);
-        })));
+        }));
     ON_CALL(*mock_delegate_,
             CreatePeriodicUploadReportQueue(_, _, _, _, _, _, _, _))
         .WillByDefault(WithArgs<2, 3, 4, 5, 6>(
-            Invoke([](Priority priority, ReportingSettings* reporting_settings,
-                      const std::string& rate_setting_path,
-                      base::TimeDelta default_rate, int rate_unit_to_ms) {
+            [](Priority priority, ReportingSettings* reporting_settings,
+               const std::string& rate_setting_path,
+               base::TimeDelta default_rate, int rate_unit_to_ms) {
               return std::make_unique<test::FakeMetricReportQueue>(
                   priority, reporting_settings, rate_setting_path, default_rate,
                   rate_unit_to_ms);
-            })));
+            }));
   }
 
   ::ash::SessionTerminationManager session_termination_manager_;
