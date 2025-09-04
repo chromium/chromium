@@ -116,7 +116,8 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // attributes. See also `MigrateNewlyaAdded()`.
   [[nodiscard]] std::unique_ptr<PrefetchHandle> AddPrefetchContainerWithHandle(
       std::unique_ptr<PrefetchContainer> prefetch_container);
-  void AddPrefetchContainerWithoutStartingPrefetchForTesting(
+  [[nodiscard]] base::WeakPtr<PrefetchContainer>
+  AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::unique_ptr<PrefetchContainer> prefetch_container);
 
   // Returns `true` if a new prefetch request with `url` and
@@ -231,8 +232,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   base::WeakPtr<PrefetchService> GetWeakPtr();
 
  private:
-  friend class PrefetchURLLoaderInterceptorTestBase;
-
   struct CheckEligibilityParams;
 
   void InjectedEligibilityCheckCompletedForTesting(

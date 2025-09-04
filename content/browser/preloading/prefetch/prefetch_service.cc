@@ -655,9 +655,13 @@ std::unique_ptr<PrefetchHandle> PrefetchService::AddPrefetchContainerWithHandle(
   return std::make_unique<PrefetchHandleImpl>(GetWeakPtr(), prefetch_container);
 }
 
-void PrefetchService::AddPrefetchContainerWithoutStartingPrefetchForTesting(
+base::WeakPtr<PrefetchContainer>
+PrefetchService::AddPrefetchContainerWithoutStartingPrefetchForTesting(
     std::unique_ptr<PrefetchContainer> prefetch_container) {
+  base::WeakPtr<PrefetchContainer> weak_prefetch_container =
+      prefetch_container->GetWeakPtr();
   AddPrefetchContainerWithoutStartingPrefetch(std::move(prefetch_container));
+  return weak_prefetch_container;
 }
 
 void PrefetchService::PrefetchUrl(
