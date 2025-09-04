@@ -78,7 +78,7 @@ class RefcountedProfileKeyedServiceFactoryIOS
   bool ServiceIsCreatedWithBrowserState() const final;
   bool ServiceIsNULLWhileTesting() const final;
   void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      user_prefs::PrefRegistrySyncable* registry) final;
 
   // Registers any user preferences on this service. This should be overridden
   // by any service that wants to register profile-specific preferences.
