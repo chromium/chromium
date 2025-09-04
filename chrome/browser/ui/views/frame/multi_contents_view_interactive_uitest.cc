@@ -45,14 +45,12 @@
 #include "ui/views/test/views_test_utils.h"
 
 namespace {
-class MultiContentsViewBoundsChangedObserver
-    : public views::ViewObserver,
-      public ui::test::StateObserver<int> {
+class ViewBoundsChangedObserver : public views::ViewObserver,
+                                  public ui::test::StateObserver<int> {
  public:
-  explicit MultiContentsViewBoundsChangedObserver(Browser* browser) {
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    CHECK(browser_view);
-    observation_.Observe(browser_view->multi_contents_view());
+  explicit ViewBoundsChangedObserver(views::View* view) {
+    CHECK(view);
+    observation_.Observe(view);
   }
 
   // ui::test::StateObserver:
@@ -217,8 +215,8 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, EnterAndExitSplitViews) {
 // Tests switching tabs with split views. This also adds coverage to ensuring
 // that there isn't any unnecessary re-layout during tab switching.
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, TabSwitchWithSplitView) {
-  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewBoundsChangedObserver,
-                                      kMultiContentsViewBoundsChangedObserver);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewBoundsChangedObserver,
+                                      kActiveContentsViewBoundsChangedObserver);
   RunTestSequence(
       CreateTabsAndEnterSplitView(), WaitForActiveTabChange(0),
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
@@ -227,11 +225,12 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, TabSwitchWithSplitView) {
       // Check if there is just one resizing event that happens when switching
       // between a split view to a regular tab.
       WaitForActiveTabChange(0),
-      ObserveState(kMultiContentsViewBoundsChangedObserver, browser()),
+      ObserveState(kActiveContentsViewBoundsChangedObserver,
+                   multi_contents_view()->GetActiveContentsView()),
       SelectTab(kTabStripElementId, 2, InputType::kMouse),
       WaitForActiveTabChange(2),
-      CheckState(kMultiContentsViewBoundsChangedObserver, 0),
-      StopObservingState(kMultiContentsViewBoundsChangedObserver));
+      CheckState(kActiveContentsViewBoundsChangedObserver, 1),
+      StopObservingState(kActiveContentsViewBoundsChangedObserver));
 }
 
 // Check that MultiContentsView changes its active view when inactive view is
