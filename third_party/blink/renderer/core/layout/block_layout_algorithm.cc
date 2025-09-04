@@ -654,7 +654,7 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
 const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
     const InlineNode& node) {
   ParagraphScale paragraph_scale;
-  if (RuntimeEnabledFeatures::CssFitWidthTextConsistentEnabled()) {
+  if (RuntimeEnabledFeatures::CssFitWidthTextEnabled()) {
     const bool grow_consistent =
         Style().TextGrow().Target() == FitTextTarget::kConsistent;
     const bool shrink_consistent =
