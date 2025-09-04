@@ -15,7 +15,6 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_switches.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -67,11 +66,7 @@ bool SyncErrorInfoBarDelegate::Create(infobars::InfoBarManager* infobar_manager,
                                       ProfileIOS* profile,
                                       id<SyncPresenter> presenter,
                                       SyncErrorInfoBarTrigger trigger) {
-  bool flags_enabled =
-      base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError) ||
-      base::FeatureList::IsEnabled(
-          syncer::kSyncTrustedVaultInfobarImprovements);
-  if (flags_enabled && SyncErrorNotificationsPaused(profile)) {
+  if (SyncErrorNotificationsPaused(profile)) {
     return false;
   }
 
@@ -174,14 +169,8 @@ bool SyncErrorInfoBarDelegate::Accept() {
 }
 
 void SyncErrorInfoBarDelegate::InfoBarDismissed() {
-  bool flags_enabled =
-      base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError) ||
-      base::FeatureList::IsEnabled(
-          syncer::kSyncTrustedVaultInfobarImprovements);
-  if (flags_enabled) {
-    profile_->GetPrefs()->SetTime(
-        prefs::kIosSyncInfobarErrorLastDismissedTimestamp, base::Time::Now());
-  }
+  profile_->GetPrefs()->SetTime(
+      prefs::kIosSyncInfobarErrorLastDismissedTimestamp, base::Time::Now());
   LogSyncErrorInfobarDismissed(error_state_);
   ConfirmInfoBarDelegate::InfoBarDismissed();
 }
@@ -214,14 +203,8 @@ void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
 }
 
 void SyncErrorInfoBarDelegate::InfoBarDismissedByTimeout() const {
-  bool flags_enabled =
-      base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError) ||
-      base::FeatureList::IsEnabled(
-          syncer::kSyncTrustedVaultInfobarImprovements);
-  if (flags_enabled) {
-    profile_->GetPrefs()->SetTime(
-        prefs::kIosSyncInfobarErrorLastDismissedTimestamp, base::Time::Now());
-  }
+  profile_->GetPrefs()->SetTime(
+      prefs::kIosSyncInfobarErrorLastDismissedTimestamp, base::Time::Now());
 }
 
 bool SyncErrorInfoBarDelegate::DisplayPasswordErrorIcon() const {
@@ -230,10 +213,7 @@ bool SyncErrorInfoBarDelegate::DisplayPasswordErrorIcon() const {
         kNeedsTrustedVaultKeyForPasswords:
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForPasswords:
-      return base::FeatureList::IsEnabled(
-                 syncer::kSyncTrustedVaultInfobarImprovements) ||
-             base::FeatureList::IsEnabled(
-                 syncer::kSyncTrustedVaultInfobarMessageImprovements);
+      return true;
     case syncer::SyncService::UserActionableError::kNone:
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
     case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:

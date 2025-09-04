@@ -10,7 +10,6 @@
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
@@ -296,15 +295,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-
-  // TODO(crbug.com/371189341): Test fails on device.
-#if TARGET_OS_SIMULATOR
-  if ([self isRunningTest:@selector
-            (testPasswordGenerationFallbackSignedInEncryptionError)]) {
-    config.features_enabled.push_back(
-        syncer::kSyncTrustedVaultInfobarImprovements);
-  }
-#endif  // TARGET_OS_SIMULATOR
 
   if ([self isRunningTest:@selector
             (testAutofillFormButtonForBackupCredentialFillsForm)]) {

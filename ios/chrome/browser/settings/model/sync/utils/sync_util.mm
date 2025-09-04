@@ -127,23 +127,13 @@ NSString* GetIdentityErrorInfoBarMessage(
           IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_YOUR_CHROME_DATA_MESSAGE);
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForPasswords: {
-      if (base::FeatureList::IsEnabled(
-              syncer::kSyncTrustedVaultInfobarImprovements)) {
-        return base::FeatureList::IsEnabled(
-                   syncer::kSyncTrustedVaultInfobarMessageImprovements)
-                   ? l10n_util::GetNSString(
-                         IDS_IOS_IDENTITY_ERROR_INFOBAR_GET_ALL_YOUR_PASSWORDS_ON_THIS_DEVICE)
-                   : l10n_util::GetNSStringF(
-                         IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_PASSWORDS_MESSAGE_WITH_EMAIL,
-                         email);
-      } else {
-        return base::FeatureList::IsEnabled(
-                   syncer::kSyncTrustedVaultInfobarMessageImprovements)
-                   ? l10n_util::GetNSString(
-                         IDS_IOS_IDENTITY_ERROR_INFOBAR_GET_ALL_YOUR_PASSWORDS_ON_THIS_DEVICE)
-                   : l10n_util::GetNSString(
-                         IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_PASSWORDS_MESSAGE);
-      }
+      return base::FeatureList::IsEnabled(
+                 syncer::kSyncTrustedVaultInfobarMessageImprovements)
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_IDENTITY_ERROR_INFOBAR_GET_ALL_YOUR_PASSWORDS_ON_THIS_DEVICE)
+                 : l10n_util::GetNSStringF(
+                       IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_PASSWORDS_MESSAGE_WITH_EMAIL,
+                       email);
     }
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForPasswords:

@@ -7,10 +7,8 @@
 #import <memory>
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "components/infobars/core/infobar_manager.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -162,10 +160,6 @@ TEST_F(SyncErrorInfobarDelegateTest, LogsMetricOnDismissal) {
 }
 
 TEST_F(SyncErrorInfobarDelegateTest, InfobarNotCreatedBeforeTimeoutEnds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultInfobarImprovements);
-
   ON_CALL(*mock_sync_service(), GetUserActionableError())
       .WillByDefault(Return(syncer::SyncService::UserActionableError::
                                 kNeedsTrustedVaultKeyForPasswords));
@@ -183,10 +177,6 @@ TEST_F(SyncErrorInfobarDelegateTest, InfobarNotCreatedBeforeTimeoutEnds) {
 }
 
 TEST_F(SyncErrorInfobarDelegateTest, InfobarCreatedAgainAfterTimeout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultInfobarImprovements);
-
   ON_CALL(*mock_sync_service(), GetUserActionableError())
       .WillByDefault(Return(syncer::SyncService::UserActionableError::
                                 kNeedsTrustedVaultKeyForPasswords));
@@ -206,10 +196,6 @@ TEST_F(SyncErrorInfobarDelegateTest, InfobarCreatedAgainAfterTimeout) {
 // Tests that after the infobar is ignored by the user and dismissed by timeout,
 // the separate timeout kicks in to not display infobar for a defined period.
 TEST_F(SyncErrorInfobarDelegateTest, InfobarTimeoutActiveAfterIgnoredByUser) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultInfobarImprovements);
-
   ON_CALL(*mock_sync_service(), GetUserActionableError())
       .WillByDefault(Return(syncer::SyncService::UserActionableError::
                                 kNeedsTrustedVaultKeyForPasswords));

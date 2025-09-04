@@ -6,7 +6,6 @@
 
 #import "components/password_manager/core/browser/password_form_manager.h"
 #import "components/password_manager/core/browser/password_manager.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -211,9 +210,7 @@ void SyncErrorBrowserAgent::OnPasswordFormParsed(
       browser_->GetWebStateList()->GetActiveWebState();
   ProfileIOS* profile = browser_->GetProfile();
   if (active_web_state && active_web_state->IsRealized() &&
-      UserActionRequiredToFixPasswordSyncError(profile) &&
-      base::FeatureList::IsEnabled(
-          syncer::kSyncTrustedVaultInfobarImprovements)) {
+      UserActionRequiredToFixPasswordSyncError(profile)) {
     DisplaySyncErrors(profile, active_web_state, sync_presenter_provider_,
                       SyncErrorInfoBarTrigger::kPasswordFormParsed);
   }

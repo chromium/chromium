@@ -159,13 +159,6 @@ inline constexpr base::FeatureParam<int>
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
-// Enables a set of improvements to the existing trusted vault error infobar on
-// iOS (displaying it on pages with password forms, adjusting display time,
-// adding dismiss conditions, adding a notification pause after dismissal).
-BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarImprovements);
-#endif  // BUILDFLAG(IS_IOS)
-
-#if BUILDFLAG(IS_IOS)
 // Enables a message improvements to the existing trusted vault error infobar
 // (informing users that fixing the error will help them to start syncing their
 // passwords).

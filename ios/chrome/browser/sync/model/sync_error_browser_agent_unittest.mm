@@ -5,10 +5,8 @@
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/mock_password_form_cache.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
-#import "components/sync/base/features.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -70,9 +68,6 @@ class SyncErrorBrowserAgentTest : public PlatformTest {
 TEST_F(SyncErrorBrowserAgentTest,
        InfobarDisplayedOnPasswordFormParsedWithPasswordSyncError) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kSyncTrustedVaultInfobarImprovements);
 
   web::WebState* web_state = InsertWebState(browser_.get());
   InfoBarManagerImpl* infobar_manager =
