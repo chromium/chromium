@@ -417,7 +417,7 @@ InlineBoxState* InlineLayoutStateStack::OnCloseTag(const ConstraintSpace& space,
                                                    FontBaseline baseline_type) {
   DCHECK_EQ(box, &stack_.back());
   box->has_end_edge = true;
-  EndBoxState(space, box, line_box, baseline_type);
+  EndBoxState(space, stack_.size() - 1, line_box, baseline_type);
   // TODO(kojii): When the algorithm restarts from a break token, the stack may
   // underflow. We need either synthesize a missing box state, or push all
   // parents on initialize.
@@ -428,11 +428,15 @@ InlineBoxState* InlineLayoutStateStack::OnCloseTag(const ConstraintSpace& space,
 void InlineLayoutStateStack::OnEndPlaceItems(const ConstraintSpace& space,
                                              LogicalLineItems* line_box,
                                              FontBaseline baseline_type) {
-  for (auto& box : base::Reversed(stack_)) {
+  wtf_size_t i = stack_.size();
+  while (i > 0) {
+    --i;
+    InlineBoxState& box = stack_[i];
     if (!box.has_end_edge && box.needs_box_fragment &&
-        box.style->BoxDecorationBreak() == EBoxDecorationBreak::kClone)
+        box.style->BoxDecorationBreak() == EBoxDecorationBreak::kClone) {
       box.has_end_edge = true;
-    EndBoxState(space, &box, line_box, baseline_type);
+    }
+    EndBoxState(space, i, line_box, baseline_type);
   }
 
   // Up to this point, the offset of inline boxes are stored in placeholder so
@@ -446,20 +450,21 @@ void InlineLayoutStateStack::OnEndPlaceItems(const ConstraintSpace& space,
 }
 
 void InlineLayoutStateStack::EndBoxState(const ConstraintSpace& space,
-                                         InlineBoxState* box,
+                                         wtf_size_t stack_index,
                                          LogicalLineItems* line_box,
                                          FontBaseline baseline_type) {
+  const InlineBoxState* box = &stack_[stack_index];
   if (box->needs_box_fragment)
     AddBoxData(space, box, line_box);
 
   PositionPending position_pending =
-      ApplyBaselineShift(box, line_box, baseline_type);
+      ApplyBaselineShift(stack_index, line_box, baseline_type);
 
   // We are done here if there is no parent box.
-  if (box == stack_.data()) {
+  if (stack_index == 0) {
     return;
   }
-  InlineBoxState& parent_box = *std::prev(box);
+  InlineBoxState& parent_box = stack_[stack_index - 1];
 
   // Unite the metrics to the parent box.
   if (position_pending == kPositionNotPending)
@@ -533,7 +538,7 @@ void InlineLayoutStateStack::AddBoxFragmentPlaceholder(
 
 // Add a |BoxData|, for each close-tag that needs a box fragment.
 void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
-                                        InlineBoxState* box,
+                                        const InlineBoxState* box,
                                         LogicalLineItems* line_box) {
   DCHECK(box->needs_box_fragment);
   DCHECK(box->style);
@@ -1126,9 +1131,11 @@ void InlineLayoutStateStack::BoxData::Trace(Visitor* visitor) const {
 }
 
 InlineLayoutStateStack::PositionPending
-InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
+InlineLayoutStateStack::ApplyBaselineShift(wtf_size_t stack_index,
                                            LogicalLineItems* line_box,
                                            FontBaseline baseline_type) {
+  InlineBoxState* box = &stack_[stack_index];
+
   // The `vertical-align` property should not apply to the line wrapper for
   // block-in-inline.
   if (has_block_in_inline_) [[unlikely]] {
@@ -1252,7 +1259,7 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
         }
         break;
     }
-    baseline_shift += ComputeAlignmentBaselineShift(box);
+    baseline_shift += ComputeAlignmentBaselineShift(stack_index);
     if (!box->metrics.IsEmpty())
       box->metrics.Move(baseline_shift);
     line_box->MoveInBlockDirection(baseline_shift, box->fragment_start,
@@ -1262,17 +1269,12 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
 
   // 'vertical-align' aligns boxes relative to themselves, to their parent
   // boxes, or to the line box, depends on the value.
-  // Because |box| is an item in |stack_|, |box[-1]| is its parent box.
   // If this box doesn't have a parent; i.e., this box is a line box,
   // 'vertical-align' has no effect.
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  DCHECK(box >= stack_.data() &&
-         box < UNSAFE_TODO(stack_.data() + stack_.size()));
-  if (box == stack_.data()) {
+  if (stack_index == 0) {
     return kPositionNotPending;
   }
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  InlineBoxState& parent_box = UNSAFE_TODO(box[-1]);
+  InlineBoxState& parent_box = stack_[stack_index - 1];
 
   switch (vertical_align) {
     case EVerticalAlign::kSub:
@@ -1306,14 +1308,14 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
     case EVerticalAlign::kBottom: {
       // 'top' and 'bottom' require the layout size of the nearest ancestor that
       // has 'top' or 'bottom', or the line box if none.
-      InlineBoxState* ancestor = &parent_box;
-      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-      for (; ancestor != stack_.data(); UNSAFE_TODO(--ancestor)) {
+      wtf_size_t ancestor_index = stack_index - 1;
+      for (; ancestor_index > 0; --ancestor_index) {
+        InlineBoxState* ancestor = &stack_[ancestor_index];
         if (ancestor->style->VerticalAlign() == EVerticalAlign::kTop ||
             ancestor->style->VerticalAlign() == EVerticalAlign::kBottom)
           break;
       }
-      ancestor->pending_descendants.push_back(PendingPositions{
+      stack_[ancestor_index].pending_descendants.push_back(PendingPositions{
           box->fragment_start, fragment_end, box->metrics, vertical_align});
       return kPositionPending;
     }
@@ -1331,7 +1333,8 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
 }
 
 LayoutUnit InlineLayoutStateStack::ComputeAlignmentBaselineShift(
-    const InlineBoxState* box) {
+    wtf_size_t stack_index) {
+  const InlineBoxState* box = &stack_[stack_index];
   LayoutUnit result;
   if (const auto* font_data = box->font->PrimaryFont()) {
     const FontMetrics& metrics = font_data->GetFontMetrics();
@@ -1339,15 +1342,14 @@ LayoutUnit InlineLayoutStateStack::ComputeAlignmentBaselineShift(
              metrics.FixedAscent(box->alignment_type);
   }
 
-  if (box == stack_.data()) {
+  if (stack_index == 0) {
     return result;
   }
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  if (const auto* font_data = UNSAFE_TODO(box[-1]).font->PrimaryFont()) {
+  const InlineBoxState& parent = stack_[stack_index - 1];
+  if (const auto* font_data = parent.font->PrimaryFont()) {
     const FontMetrics& parent_metrics = font_data->GetFontMetrics();
-    result -= parent_metrics.FixedAscent(
-                  UNSAFE_TODO(box[-1]).style->GetFontBaseline()) -
-              parent_metrics.FixedAscent(UNSAFE_TODO(box[-1]).alignment_type);
+    result -= parent_metrics.FixedAscent(parent.style->GetFontBaseline()) -
+              parent_metrics.FixedAscent(parent.alignment_type);
   }
 
   return result;

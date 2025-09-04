@@ -268,7 +268,7 @@ class CORE_EXPORT InlineLayoutStateStack {
   // End of a box state, either explicitly by close tag, or implicitly at the
   // end of a line.
   void EndBoxState(const ConstraintSpace&,
-                   InlineBoxState*,
+                   wtf_size_t stack_index,
                    LogicalLineItems*,
                    FontBaseline);
 
@@ -276,7 +276,9 @@ class CORE_EXPORT InlineLayoutStateStack {
                                  const FitTextBlockScale& text_scale,
                                  LogicalLineItems*,
                                  FontBaseline);
-  void AddBoxData(const ConstraintSpace&, InlineBoxState*, LogicalLineItems*);
+  void AddBoxData(const ConstraintSpace&,
+                  const InlineBoxState*,
+                  LogicalLineItems*);
 
   enum PositionPending { kPositionNotPending, kPositionPending };
 
@@ -286,14 +288,14 @@ class CORE_EXPORT InlineLayoutStateStack {
   // the line box was computed.
   // https://www.w3.org/TR/CSS22/visudet.html#propdef-vertical-align
   // https://www.w3.org/TR/css-inline-3/#propdef-vertical-align
-  PositionPending ApplyBaselineShift(InlineBoxState*,
+  PositionPending ApplyBaselineShift(wtf_size_t stack_index,
                                      LogicalLineItems*,
                                      FontBaseline);
 
   // Computes an offset that will align the |box| with its 'alignment-baseline'
   // relative to the baseline of the line box. This takes into account both the
   // 'dominant-baseline' and 'alignment-baseline' of |box| and its parent.
-  LayoutUnit ComputeAlignmentBaselineShift(const InlineBoxState* box);
+  LayoutUnit ComputeAlignmentBaselineShift(wtf_size_t stack_index);
 
   // Compute the metrics for when 'vertical-align' is 'top' and 'bottom' from
   // |pending_descendants|.
