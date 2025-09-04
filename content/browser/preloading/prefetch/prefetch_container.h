@@ -198,10 +198,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   const PrefetchKey& key() const;
 
-  bool HasSameReferringURLForMetrics(const PrefetchContainer& other) const;
-  bool HasSameReferringRenderFrameHostIdForMetrics(
-      const PrefetchContainer& other) const;
-
   // The initial URL that was requested to be prefetched.
   const GURL& GetURL() const;
 

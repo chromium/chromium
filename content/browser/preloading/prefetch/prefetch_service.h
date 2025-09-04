@@ -416,12 +416,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
       PrefetchContainer& prefetch_container,
       PrefetchMatchResolver& prefetch_match_resolver);
 
-  // Checks if there is a prefetch in |owned_prefetches_| with the same URL as
-  // |prefetch_container| but from a different referring RenderFrameHost.
-  // Records the result to a UMA histogram.
-  void RecordExistingPrefetchWithMatchingURL(
-      const PrefetchContainer& prefetch_container) const;
-
   // If `should_progress` is true, calls `PrefetchScheduler::ProgressAsync()`
   // (implicitly). This argument is meaningful only if `UsePrefetchScheduler()`.
   void ResetPrefetchContainer(

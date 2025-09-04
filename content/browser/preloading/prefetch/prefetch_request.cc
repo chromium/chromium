@@ -12,7 +12,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
-#include "url/gurl.h"
 
 namespace content {
 namespace {
@@ -33,9 +32,7 @@ PrefetchRendererInitiatorInfo::PrefetchRendererInitiatorInfo(
       prefetch_document_manager_(std::move(prefetch_document_manager)),
       devtools_navigation_token_(
           render_frame_host.GetDevToolsNavigationToken()),
-      ukm_source_id_(GetUkmSourceId(render_frame_host)),
-      url_hash_(
-          base::FastHash(render_frame_host.GetLastCommittedURL().spec())) {}
+      ukm_source_id_(GetUkmSourceId(render_frame_host)) {}
 
 PrefetchRendererInitiatorInfo::PrefetchRendererInitiatorInfo(
     PrefetchRendererInitiatorInfo&&) = default;

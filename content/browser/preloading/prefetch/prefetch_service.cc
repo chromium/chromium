@@ -373,8 +373,6 @@ PrefetchOriginProber* PrefetchService::GetPrefetchOriginProber() const {
 
 void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
     std::unique_ptr<PrefetchContainer> owned_prefetch_container) {
-  RecordExistingPrefetchWithMatchingURL(*owned_prefetch_container);
-
   enum class Action {
     kTakeOldWithMigration,
     kReplaceOldWithNew,
@@ -2038,82 +2036,6 @@ void PrefetchService::SetInjectedEligibilityCheckForTesting(
 
 base::WeakPtr<PrefetchService> PrefetchService::GetWeakPtr() {
   return weak_method_factory_.GetWeakPtr();
-}
-
-void PrefetchService::RecordExistingPrefetchWithMatchingURL(
-    const PrefetchContainer& prefetch_container) const {
-  bool matching_prefetch = false;
-  int num_matching_prefetches = 0;
-
-  int num_matching_eligible_prefetch = 0;
-  int num_matching_servable_prefetch = 0;
-  int num_matching_prefetch_same_referrer = 0;
-  int num_matching_prefetch_same_rfh = 0;
-
-  for (const auto& prefetch_iter : owned_prefetches()) {
-    if (prefetch_iter.second &&
-        prefetch_iter.second->GetURL() == prefetch_container.GetURL()) {
-      matching_prefetch = true;
-      num_matching_prefetches++;
-
-      switch (prefetch_iter.second->GetLoadState()) {
-        case PrefetchContainer::LoadState::kNotStarted:
-        case PrefetchContainer::LoadState::kFailedIneligible:
-          break;
-        case PrefetchContainer::LoadState::kEligible:
-        case PrefetchContainer::LoadState::kFailedHeldback:
-        case PrefetchContainer::LoadState::kStarted:
-        case PrefetchContainer::LoadState::kDeterminedHead:
-        case PrefetchContainer::LoadState::kCompletedOrFailed:
-          num_matching_eligible_prefetch++;
-          break;
-      }
-
-      switch (
-          prefetch_iter.second->GetServableState(PrefetchCacheableDuration())) {
-        case PrefetchServableState::kNotServable:
-        case PrefetchServableState::kShouldBlockUntilHeadReceived:
-        case PrefetchServableState::kShouldBlockUntilEligibilityGot:
-          break;
-        case PrefetchServableState::kServable:
-          num_matching_servable_prefetch++;
-          break;
-      }
-
-      if (prefetch_iter.second->HasSameReferringURLForMetrics(
-              prefetch_container)) {
-        num_matching_prefetch_same_referrer++;
-      }
-
-      if (prefetch_iter.second->HasSameReferringRenderFrameHostIdForMetrics(
-              prefetch_container)) {
-        num_matching_prefetch_same_rfh++;
-      }
-    }
-  }
-
-  base::UmaHistogramBoolean(
-      "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL",
-      matching_prefetch);
-  base::UmaHistogramCounts100(
-      "PrefetchProxy.Prefetch.NumExistingPrefetchWithMatchingURL",
-      num_matching_prefetches);
-
-  if (matching_prefetch) {
-    base::UmaHistogramCounts100(
-        "PrefetchProxy.Prefetch.NumExistingEligiblePrefetchWithMatchingURL",
-        num_matching_eligible_prefetch);
-    base::UmaHistogramCounts100(
-        "PrefetchProxy.Prefetch.NumExistingServablePrefetchWithMatchingURL",
-        num_matching_servable_prefetch);
-    base::UmaHistogramCounts100(
-        "PrefetchProxy.Prefetch.NumExistingPrefetchWithMatchingURLAndReferrer",
-        num_matching_prefetch_same_referrer);
-    base::UmaHistogramCounts100(
-        "PrefetchProxy.Prefetch."
-        "NumExistingPrefetchWithMatchingURLAndRenderFrameHost",
-        num_matching_prefetch_same_rfh);
-  }
 }
 
 void PrefetchService::EvictPrefetchesForBrowsingDataRemoval(

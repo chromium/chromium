@@ -67,7 +67,6 @@ class CONTENT_EXPORT PrefetchRendererInitiatorInfo final {
     return devtools_navigation_token_;
   }
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
-  size_t url_hash() const { return url_hash_; }
 
  private:
   // The RenderFrameHostId/PrefetchDocumentManager of the Document that
@@ -80,9 +79,6 @@ class CONTENT_EXPORT PrefetchRendererInitiatorInfo final {
   std::optional<base::UnguessableToken> devtools_navigation_token_;
 
   ukm::SourceId ukm_source_id_;
-
-  // Used by metrics for equality checks.
-  size_t url_hash_;
 };
 
 // For browser-initiated prefetches.

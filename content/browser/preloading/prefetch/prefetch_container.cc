@@ -1262,30 +1262,6 @@ void PrefetchContainer::OnPrefetchStarted() {
   prefetch_container_metrics_.time_prefetch_started = base::TimeTicks::Now();
 }
 
-bool PrefetchContainer::HasSameReferringURLForMetrics(
-    const PrefetchContainer& other) const {
-  if (auto* renderer_initiator_info = request().GetRendererInitiatorInfo()) {
-    if (auto* other_renderer_initiator_info =
-            other.request().GetRendererInitiatorInfo()) {
-      return renderer_initiator_info->url_hash() ==
-             other_renderer_initiator_info->url_hash();
-    }
-  }
-  return false;
-}
-
-bool PrefetchContainer::HasSameReferringRenderFrameHostIdForMetrics(
-    const PrefetchContainer& other) const {
-  if (auto* renderer_initiator_info = request().GetRendererInitiatorInfo()) {
-    if (auto* other_renderer_initiator_info =
-            other.request().GetRendererInitiatorInfo()) {
-      return renderer_initiator_info->GetRenderFrameHostId() ==
-             other_renderer_initiator_info->GetRenderFrameHostId();
-    }
-  }
-  return false;
-}
-
 GURL PrefetchContainer::GetCurrentURL() const {
   return GetCurrentSingleRedirectHopToPrefetch().url_;
 }
