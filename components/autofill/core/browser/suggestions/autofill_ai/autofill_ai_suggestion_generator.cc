@@ -388,7 +388,7 @@ SuggestionWithMetadata GetSuggestionForEntity(
 // will be shown first, then all suggestions of the same type, then the next
 // most “frecent” suggestion, and so on.
 std::vector<const EntityInstance*> OrderedEntitiesForSuggestion(
-    std::vector<const EntityInstance*>&& entities) {
+    std::vector<const EntityInstance*> entities) {
   // Sort entities based on their frecency.
   std::ranges::sort(entities,
                     [comp = EntityInstance::FrecencyOrder(base::Time::Now())](
