@@ -1716,13 +1716,11 @@ interface NetworkContext {
   GetTrustAnchorIDsForTesting() => (array<array<uint8>> trust_anchor_ids);
 
   // Adds a Domain Reliability Context.
-  [Sync]
   AddDomainReliabilityContextForTesting(
       url.mojom.Origin origin, url.mojom.Url upload_url) => ();
 
   // Forces all pending Domain Reliability uploads to run now, even if their
   // minimum delay has not yet passed.
-  [Sync]
   ForceDomainReliabilityUploadsForTesting() => ();
 
   // Set the SCT auditing mode for this NetworkContext.
