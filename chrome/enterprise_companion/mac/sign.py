@@ -29,22 +29,29 @@ def sign(path, identity):
         '--options=restrict,library,runtime,kill', path
     ]).returncode
 
-def copy_files(source, dest):
-    """Copies a directory or file from source to dest. Using rsync allows us to
-    maintain vital metadata when copying these files.
+
+def copy_dir(source, dest):
+    """Copies a directory from source to dest. Using shutil.copytree with copy
+    function `shutil.copy2` makes sure to preserve all metadata.
 
     Args:
-        source: The path to the file or directory to copy.
-        dest: The path to the directory to copy the file or the contents
-        of the source directory into.
+        source: The path to the directory to copy.
+        dest: The path to the directory to copy the contents of the source
+        directory into.
 
     Returns:
         The return code of the rsync command.
     """
     assert source[-1] != '/'
-    return subprocess.run([
-        'rsync', '--archive', '--checksum', '--delete', source, dest
-        ]).returncode
+    try:
+        if os.path.exists(dest):
+            shutil.rmtree(dest)
+        shutil.copytree(source, dest, copy_function=shutil.copy2)
+    except (shutil.Error, OSError) as e:
+        logging.error('Failed to copy dir from "%s" to "%s": %s', source, dest,
+                      str(e))
+        return 1
+    return 0
 
 
 def validate(path):
@@ -79,8 +86,7 @@ def zip(path, output, add_install_file=True):
     if add_install_file:
         command.append('.install')
 
-    return subprocess.run(command,
-                          cwd=os.path.dirname(path)).returncode
+    return subprocess.run(command, cwd=os.path.dirname(path)).returncode
 
 
 def notarize(tool_path, file):
@@ -111,6 +117,7 @@ def staple(file):
     return subprocess.run(['xcrun', 'stapler', 'staple', '-v',
                            file]).returncode
 
+
 def write_install_script(path):
     """Creates the install script needed for both the dmg and the zip installer.
 
@@ -127,8 +134,9 @@ def write_install_script(path):
                 r'ChromeEnterpriseCompanion" ${SERVER_ARGS}')
     st = os.stat(install_file)
     os.chmod(install_file,
-                st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+             st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     return install_file
+
 
 def create_dmg(app_bundle_path, output_dir, install_script_path):
     """Creates an Omaha-compatible DMG for an application bundle via pkg-dmg.
@@ -146,14 +154,11 @@ def create_dmg(app_bundle_path, output_dir, install_script_path):
         work_dir = tempfile.mkdtemp(dir=tempdir)
         empty_dir = tempfile.mkdtemp(dir=tempdir)
         return subprocess.run([
-            os.path.join(os.path.dirname(sys.argv[0]), 'pkg-dmg'),
-            '--verbosity', '0',
-            '--tempdir', work_dir,
+            os.path.join(os.path.dirname(sys.argv[0]),
+                         'pkg-dmg'), '--verbosity', '0', '--tempdir', work_dir,
             '--source', empty_dir, '--target',
-            os.path.join(
-                output_dir, 'ChromeEnterpriseCompanion.dmg'),
-            '--format', 'UDBZ',
-            '--volname', 'ChromeEnterpriseCompanion',
+            os.path.join(output_dir, 'ChromeEnterpriseCompanion.dmg'),
+            '--format', 'UDBZ', '--volname', 'ChromeEnterpriseCompanion',
             '--copy', '{}:/'.format(os.path.normpath(app_bundle_path)),
             '--copy', '{}:/.install'.format(install_script_path)
         ]).returncode
@@ -164,67 +169,75 @@ def main(options):
     with tempfile.TemporaryDirectory() as tempdir:
         work_dir = tempfile.mkdtemp(dir=tempdir)
         temp_app_dir = os.path.join(work_dir, os.path.basename(options.input))
-        copy_err = copy_files(options.input, temp_app_dir)
-        if copy_err != 0:
-            logging.error(
-                    'Failed to copy the app dir %s to the work dir path %s '+
-                    'with err %d',
-                    options.input, temp_app_dir, copy_err)
+        if copy_dir(options.input, temp_app_dir) != 0:
             return 1
         # Sign the application bundle.
-        if sign(temp_app_dir, options.identity) != 0:
-            logging.error('Code signing failed')
+        sign_err = sign(temp_app_dir, options.identity)
+        if sign_err != 0:
+            logging.error('Code signing failed for app bundle "%s": %d',
+                          temp_app_dir, sign_err)
             return 1
-        if validate(temp_app_dir) != 0:
-            logging.error('Code signing validation failed')
+        validate_err = validate(temp_app_dir)
+        if validate_err != 0:
+            logging.error(
+                'Code signing validation failed for app bundle ' + '"%s"%: %d',
+                temp_app_dir, validate_err)
             return 1
 
         # Optionally notarize and staple the application.
         if should_notarize:
             # Application bundles are directories. They must be zipped for
             # uploading to Apple.
-            zip_path = os.path.join(work_dir, 'signed_enterprise_companion.zip')
-            if zip(temp_app_dir, zip_path) != 0:
+            zip_path = os.path.join(work_dir,
+                                    'signed_enterprise_companion.zip')
+            zip_err = zip(temp_app_dir, zip_path)
+            if zip_err != 0:
                 logging.error(
-                    'Failed to zip the app dir %s into the zip path %s for ' +
-                    'notarization',
-                    temp_app_dir    , zip_path)
+                    'Failed to zip the app dir "%s" into the zip path "%s" '
+                    'for notarization: %d', temp_app_dir, zip_path, zip_err)
                 return 1
-            if notarize(options.notarization_tool, zip_path) != 0:
-                logging.error('Failed to notarize %s', zip_path)
+
+            notarize_err = notarize(options.notarization_tool, zip_path)
+            if notarize_err != 0:
+                logging.error('Failed to notarize "%s": %d', zip_path,
+                              notarize_err)
                 return 1
-            if staple(temp_app_dir) != 0:
-                logging.error('Failed to staple %s', temp_app_dir)
+
+            staple_err = staple(temp_app_dir)
+            if staple_err != 0:
+                logging.error('Failed to staple "%s": %d', temp_app_dir,
+                              staple_err)
                 return 1
 
         # We must create the install_script in same directory as the input
         # in order to make sure we don't introduce unexpected parent directories
         # into the zip installer.
         install_script = write_install_script(work_dir)
-
-        zip_path = os.path.join(
-            options.output, 'ChromeEnterpriseCompanion.zip')
+        zip_path = os.path.join(options.output,
+                                'ChromeEnterpriseCompanion.zip')
         zip_err = zip(temp_app_dir, zip_path, True)
         if zip_err != 0:
-            logging.error(
-                'Failed to zip for zip-installer %s with err %s',
-                zip_path,
-                zip_err)
+            logging.error('Failed to zip for zip-installer "%s": %d', zip_path,
+                          zip_err)
             return 1
 
         # Create a DMG installer.
         if create_dmg(temp_app_dir, options.output, install_script) != 0:
-            logging.error('DMG packaging failed')
+            logging.error('DMG packaging failed for app bundle "%s": %d')
             return 1
+
         # Optionally notarize and staple the DMG.
         if should_notarize:
             dmg_path = os.path.join(options.output,
                                     'ChromeEnterpriseCompanion.dmg')
-            if notarize(options.notarization_tool, dmg_path) != 0:
-                logging.error('Failed to notarize %s', dmg_path)
+            notarize_err = notarize(options.notarization_tool, dmg_path)
+            if notarize_err != 0:
+                logging.error('Failed to notarize %s: %d', dmg_path,
+                              notarize_err)
                 return 1
-            if staple(dmg_path) != 0:
-                logging.error('Failed to staple %s', dmg_path)
+            staple_err = staple(dmg_path)
+            if staple_err != 0:
+                logging.error('Failed to staple %s: %d', dmg_path, staple_err)
                 return 1
 
     return 0
