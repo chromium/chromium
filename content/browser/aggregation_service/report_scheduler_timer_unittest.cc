@@ -10,13 +10,20 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/application_status_listener.h"
+#endif
 
 namespace content {
 
@@ -143,13 +150,17 @@ TEST_F(ReportSchedulerTimerTest, MultipleSetTimers_FiredAtAppropriateTime) {
 }
 
 TEST_F(ReportSchedulerTimerTest, NetworkChange) {
+  base::RunLoop run_loop;
+
   Checkpoint checkpoint;
   {
     InSequence seq;
 
     EXPECT_CALL(*timer_delegate_, OnReportingTimeReached).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*timer_delegate_, AdjustOfflineReportTimes);
+    EXPECT_CALL(*timer_delegate_, AdjustOfflineReportTimes).WillOnce([&](auto) {
+      run_loop.Quit();
+    });
   }
 
   timer_->MaybeSet(kExampleTime);
@@ -165,9 +176,8 @@ TEST_F(ReportSchedulerTimerTest, NetworkChange) {
   // Go back online.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_WIFI);
-  // Ensure that the network connection observers have been notified before
-  // this call returns.
-  task_environment_.RunUntilIdle();
+
+  run_loop.Run();
 }
 
 // TODO(apaseltiner): Figure out how to test the case in which the network
@@ -213,6 +223,50 @@ TEST(ReportSchedulerTimer, Constructor_AdjustsOfflineReportTimes) {
     }
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class ObserveAppStateReportSchedulerTimerTest
+    : public ReportSchedulerTimerTest {
+ public:
+  void SetUp() override {
+    auto timer_delegate = std::make_unique<MockReportSchedulerTimerDelegate>();
+    timer_delegate_ = timer_delegate.get();
+    timer_ = std::make_unique<ReportSchedulerTimer>(std::move(timer_delegate),
+                                                    /*observe_app_state=*/true);
+  }
+};
+
+TEST_F(ObserveAppStateReportSchedulerTimerTest, AndroidAppStatus) {
+  base::RunLoop run_loop;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*timer_delegate_, OnReportingTimeReached).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*timer_delegate_, AdjustOfflineReportTimes).WillOnce([&](auto) {
+      run_loop.Quit();
+    });
+  }
+
+  timer_->MaybeSet(kExampleTime);
+
+  // Go offline
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
+
+  task_environment_.FastForwardBy(kExampleTime - base::Time::Now());
+
+  checkpoint.Call(1);
+
+  // Go back online.
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
