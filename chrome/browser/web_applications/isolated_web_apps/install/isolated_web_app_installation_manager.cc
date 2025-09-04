@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
 
 #include <memory>
 #include <optional>
@@ -244,9 +244,9 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeProxy(
   CHECK(!callback.is_null());
   if (explicit_bundle_id && !explicit_bundle_id->is_for_proxy_mode()) {
     std::move(callback).Run(
-          base::unexpected("The bundle_id for devModeProxy installation must "
-                           "be of proxy_mode type"));
-      return;
+        base::unexpected("The bundle_id for devModeProxy installation must "
+                         "be of proxy_mode type"));
+    return;
   }
 
   // Ensure the URL we're given is okay.
