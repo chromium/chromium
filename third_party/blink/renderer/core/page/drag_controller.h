@@ -84,7 +84,7 @@ class CORE_EXPORT DragController final
 
   Operation DragEnteredOrUpdated(DragData*, LocalFrame& local_root);
   void DragExited(DragData*, LocalFrame& local_root);
-  void PerformDrop(DragData*,
+  void PerformDrag(DragData*,
                    LocalFrame& local_root,
                    const Operation& browser_drag_operation);
 

@@ -1104,7 +1104,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
   // Setup test expectations.
   DOMDragEventVerifier expected_dom_event_data;
   expected_dom_event_data.set_expected_client_position("(155, 150)");
-  expected_dom_event_data.set_expected_drop_effect("copy");
+  expected_dom_event_data.set_expected_drop_effect("none");
   expected_dom_event_data.set_expected_effect_allowed("all");
   expected_dom_event_data.set_expected_mime_types("text/plain");
   expected_dom_event_data.set_expected_page_position("(155, 150)");
@@ -1709,7 +1709,6 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step2(
       state->expected_dom_event_data.set_expected_client_position("(355, 150)");
       state->expected_dom_event_data.set_expected_page_position("(355, 150)");
       state->expected_dom_event_data.set_expected_file_names("");
-      state->expected_dom_event_data.set_expected_drop_effect("none");
       state->expected_dom_event_data.set_expected_mime_types(
           state->expect_image_accessible
               ? "Files,text/html,text/plain,text/uri-list"
@@ -1727,7 +1726,6 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step2(
       // (these coordinates are relative to the right frame).
       state->expected_dom_event_data.set_expected_client_position("(155, 150)");
       state->expected_dom_event_data.set_expected_page_position("(155, 150)");
-      state->expected_dom_event_data.set_expected_drop_effect("copy");
 
       EXPECT_TRUE(
           dragenter_event_waiter.WaitForNextMatchingEvent(&dragenter_event));
@@ -1894,7 +1892,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 
   // Setup test expectations.
   DragAndDropBrowserTest::DragImageFromDisappearingFrame_TestState state;
-  state.expected_dom_event_data.set_expected_drop_effect("copy");
+  state.expected_dom_event_data.set_expected_drop_effect("none");
   // (dragstart event handler in image_source.html is asking for "copy" only).
   state.expected_dom_event_data.set_expected_effect_allowed("copy");
   state.expected_dom_event_data.set_expected_mime_types(
@@ -2271,7 +2269,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
   state.right_frame_events_counter =
       std::make_unique<DOMDragEventCounter>(GetRightFrame(second_contents));
   state.expected_dom_event_data.set_expected_client_position("(55, 50)");
-  state.expected_dom_event_data.set_expected_drop_effect("copy");
+  state.expected_dom_event_data.set_expected_drop_effect("none");
   // (dragstart event handler in image_source.html is asking for "copy" only).
   state.expected_dom_event_data.set_expected_effect_allowed("copy");
   state.expected_dom_event_data.set_expected_mime_types(
