@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_H_
 
-#include <memory>
-
+#include "base/callback_list.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
@@ -14,10 +14,15 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/service/glic_conversation_helper.h"
 #include "chrome/browser/glic/service/panel_delegate.h"
 
 class BrowserWindowInterface;
 class Profile;
+
+namespace tabs {
+class TabInterface;
+}
 
 namespace glic {
 
@@ -38,10 +43,12 @@ class GlicInstance : public PanelDelegate {
     virtual ~AttachmentDelegate() = default;
     virtual void AttachInstance(GlicInstance* instance) = 0;
     virtual void DetachInstance(GlicInstance* instance) = 0;
+    virtual void OnInstanceOrphaned(GlicInstance* instance) = 0;
   };
 
   GlicInstance(Profile* profile,
                BrowserWindowInterface* bwi,
+               ConversationId conversation_id,
                Host& host,
                base::WeakPtr<AttachmentDelegate> attachment_delegate);
   ~GlicInstance() override;
@@ -59,13 +66,19 @@ class GlicInstance : public PanelDelegate {
   void DetachPanel() override;
   bool IsShowing() const;
   BrowserWindowInterface* associated_bwi() const { return associated_bwi_; }
+  const ConversationId& conversation_id() const { return conversation_id_; }
 
   // These methods should only be called by the GlicPanelCoordinator.
+  EmbedderType GetEmbedderType();
   void SetEmbedderType(EmbedderType type);
-  void Show();
+  void Show(tabs::TabInterface* tab);
   void Close();
-
   void Toggle();
+
+  // Manages the association of this conversation with a tab.
+  void AssociateWithTab(tabs::TabInterface* tab);
+  void DisassociateFromTab(tabs::TabInterface* tab);
+  bool IsOrphaned() const;
 
   // PanelDelegate:
   void ClosePanelAndShutdown() override;
@@ -79,6 +92,9 @@ class GlicInstance : public PanelDelegate {
   void GetZeroStateSuggestionsForFocusedTab() override;
 
  private:
+  void OnAssociatedTabDestroyed(tabs::TabInterface* tab,
+                                const ConversationId& conversation_id);
+
   raw_ptr<Profile> profile_;
 
   // Replaces GlicWindowController on existing GlicKeyedService.
@@ -89,7 +105,12 @@ class GlicInstance : public PanelDelegate {
   // when detached.
   raw_ptr<BrowserWindowInterface> associated_bwi_ = nullptr;
   base::WeakPtr<AttachmentDelegate> attachment_delegate_;
+  const ConversationId conversation_id_;
   raw_ref<Host> host_;
+
+  base::flat_map<tabs::TabInterface*, base::CallbackListSubscription>
+      associated_tab_subscriptions_;
+  base::WeakPtrFactory<GlicInstance> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

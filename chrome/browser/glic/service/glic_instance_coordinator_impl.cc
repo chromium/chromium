@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/service/glic_conversation_helper.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
@@ -32,14 +34,17 @@
 #include "chrome/browser/glic/widget/glic_window_config.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/screen.h"
@@ -69,18 +74,15 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
 
-void GlicInstanceCoordinatorImpl::OnBrowserRemoved(Browser* browser) {
-  // If the removed browser has an attached Glic instance, the instance must be
-  // destroyed as it cannot exist without its browser window.
-  if (auto* instance = GetAttachedInstanceForBrowser(browser)) {
-    RemoveInstance(instance);
-  }
+void GlicInstanceCoordinatorImpl::OnBrowserAdded(Browser* browser) {}
 
-  // If the floating instance was associated with the removed browser, we must
-  // disassociate it to prevent holding a dangling pointer. The floating
-  // instance itself is not destroyed.
-  if (floating_instance_ && floating_instance_->associated_bwi() == browser) {
-    floating_instance_->DisassociateWindow();
+void GlicInstanceCoordinatorImpl::OnBrowserRemoved(Browser* browser) {
+  browser_to_conversation_map_.erase(browser);
+}
+
+void GlicInstanceCoordinatorImpl::OnInstanceOrphaned(GlicInstance* instance) {
+  if (!IsFloatingInstance(instance)) {
+    RemoveInstance(instance);
   }
 }
 
@@ -289,7 +291,11 @@ void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
 std::unique_ptr<GlicView>
 GlicInstanceCoordinatorImpl::CreateGlicViewForSidePanel(
     BrowserWindowInterface& bwi) {
-  GlicInstance* instance = GetAttachedInstanceForBrowser(&bwi);
+  auto* tab = bwi.GetActiveTabInterface();
+  if (!tab) {
+    return nullptr;
+  }
+  auto* instance = GetOrCreateGlicInstanceForTab(tab);
   CHECK(instance);
   return instance->embedder().CreateGlicView();
 }
@@ -303,119 +309,110 @@ GlicInstanceCoordinatorImpl::RegisterFloatyStateChange(
 }
 
 void GlicInstanceCoordinatorImpl::AttachInstance(GlicInstance* instance) {
-  CHECK(HasAttachedInstance(instance) || IsFloatingInstance(instance));
-
-  BrowserWindowInterface* bwi = instance->associated_bwi();
-  if (!bwi) {
-    return;
-  }
-
-  if (auto* current_instance = GetAttachedInstanceForBrowser(bwi)) {
-    CHECK(current_instance == instance)
-        << "Multiple Glic instances per browser window are not yet supported.";
-  }
-
-  // If we are attaching the floating instance, it needs to be moved to the
-  // main list.
-  if (floating_instance_ && floating_instance_.get() == instance) {
-    attached_instances_.push_back(std::move(floating_instance_));
-  }
-
-  instance->SetEmbedderType(GlicInstance::EmbedderType::kSidePanel);
-  instance->Show();
+  NOTIMPLEMENTED();
 }
 
 void GlicInstanceCoordinatorImpl::DetachInstance(GlicInstance* instance) {
-  if (!HasAttachedInstance(instance)) {
-    return;
-  }
-  if (instance == floating_instance_.get()) {
-    // Panel is already detached do nothing.
-    return;
-  }
-  instance->Close();
-
-  if (floating_instance_) {
-    ReattachFloatingInstance();
-  }
-
-  auto it =
-      std::find_if(attached_instances_.begin(), attached_instances_.end(),
-                   [instance](const auto& p) { return p.get() == instance; });
-  if (it != attached_instances_.end()) {
-    floating_instance_ = std::move(*it);
-    attached_instances_.erase(it);
-  }
-
-  floating_instance_->SetEmbedderType(GlicInstance::EmbedderType::kFloating);
-  floating_instance_->Show();
+  NOTIMPLEMENTED();
 }
 
-void GlicInstanceCoordinatorImpl::ToggleFloaty() {
-  if (floating_instance_) {
-    ReattachFloatingInstance();
-    return;
-  }
+GlicInstance* GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceForTab(
+    tabs::TabInterface* tab) {
+  auto* helper = GlicConversationHelper::From(tab);
+  CHECK(helper);
 
-  // Create a new floating instance since there are no instances to detach.
-  floating_instance_ = std::make_unique<GlicInstance>(
-      profile_, /*bwi=*/nullptr, host(), weak_ptr_factory_.GetWeakPtr());
-  floating_instance_->SetEmbedderType(GlicInstance::EmbedderType::kFloating);
-  floating_instance_->Show();
-}
-
-void GlicInstanceCoordinatorImpl::ToggleSidePanel(
-    BrowserWindowInterface* browser) {
-  if (auto* instance = GetAttachedInstanceForBrowser(browser)) {
-    instance->Toggle();
-    return;
-  }
-  auto new_instance =
-      std::make_unique<GlicInstance>(profile_, browser, host(), weak_ptr_factory_.GetWeakPtr());
-  new_instance->SetEmbedderType(GlicInstance::EmbedderType::kSidePanel);
-  new_instance->Show();
-  attached_instances_.push_back(std::move(new_instance));
-}
-
-GlicInstance* GlicInstanceCoordinatorImpl::GetAttachedInstanceForBrowser(
-    BrowserWindowInterface* bwi) {
-  for (auto& instance : attached_instances_) {
-    if (instance->associated_bwi() == bwi) {
-      return instance.get();
+  auto conversation_id = helper->GetConversationId();
+  if (conversation_id.has_value()) {
+    if (auto* instance = GetInstanceFor(conversation_id.value())) {
+      return instance;
     }
+  }
+
+  // If the tab is not part of a conversation, we will check if the browser
+  // window is.
+  auto* bwi = tab->GetBrowserWindowInterface();
+  auto it = browser_to_conversation_map_.find(bwi);
+  if (it != browser_to_conversation_map_.end()) {
+    helper->SetConversationId(it->second);
+    return GetInstanceFor(it->second);
+  }
+
+  // Create a new conversation and instance.
+  auto* new_instance = CreateGlicInstance(bwi);
+  helper->SetConversationId(new_instance->conversation_id());
+  return new_instance;
+}
+
+GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceFor(
+    const ConversationId& id) {
+  auto it = instances_.find(id);
+  if (it != instances_.end()) {
+    return it->second.get();
   }
   return nullptr;
 }
 
+GlicInstance* GlicInstanceCoordinatorImpl::CreateGlicInstance(
+    BrowserWindowInterface* bwi) {
+  // TODO: Sync this id with the web client.
+  ConversationId new_conversation_id = base::Uuid::GenerateRandomV4();
+  auto new_instance =
+      std::make_unique<GlicInstance>(profile_, bwi, new_conversation_id, host(),
+                                     weak_ptr_factory_.GetWeakPtr());
+  if (bwi) {
+    browser_to_conversation_map_[bwi] = new_conversation_id;
+  }
+  auto* instance_ptr = new_instance.get();
+  instances_[new_conversation_id] = std::move(new_instance);
+  return instance_ptr;
+}
+
+void GlicInstanceCoordinatorImpl::ToggleFloaty() {
+  if (!floating_instance_) {
+    // Create a new floating instance if one doesn't exist.
+    floating_instance_ = CreateGlicInstance(/*bwi=*/nullptr);
+    floating_instance_->SetEmbedderType(GlicInstance::EmbedderType::kFloating);
+  }
+
+  CHECK(floating_instance_->GetEmbedderType() ==
+        GlicInstance::EmbedderType::kFloating);
+  if (floating_instance_->IsShowing()) {
+    floating_instance_->Close();
+  } else {
+    floating_instance_->Show(/*tab=*/nullptr);
+  }
+}
+
+void GlicInstanceCoordinatorImpl::ToggleSidePanel(
+    BrowserWindowInterface* browser) {
+  auto* tab = browser->GetActiveTabInterface();
+  if (!tab) {
+    return;
+  }
+  auto* instance = GetOrCreateGlicInstanceForTab(tab);
+  CHECK(instance->GetEmbedderType() == GlicInstance::EmbedderType::kSidePanel);
+  if (instance->IsShowing()) {
+    instance->Close();
+  } else {
+    instance->Show(tab);
+  }
+}
+
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
-  std::erase_if(attached_instances_,
-                [instance](const auto& i) { return i.get() == instance; });
+  instances_.erase(instance->conversation_id());
 }
 
 bool GlicInstanceCoordinatorImpl::HasAttachedInstance(GlicInstance* instance) {
-  for (auto& i : attached_instances_) {
-    if (i.get() == instance) {
-      return true;
-    }
-  }
+  NOTIMPLEMENTED();
   return false;
 }
 
 bool GlicInstanceCoordinatorImpl::IsFloatingInstance(GlicInstance* instance) {
-  return floating_instance_ && floating_instance_.get() == instance;
+  return floating_instance_ && floating_instance_ == instance;
 }
 
 void GlicInstanceCoordinatorImpl::ReattachFloatingInstance() {
-  if (!floating_instance_) {
-    return;
-  }
-  auto* bwi = floating_instance_->associated_bwi();
-  if (bwi) {
-    floating_instance_->SetEmbedderType(GlicInstance::EmbedderType::kSidePanel);
-    floating_instance_->Show();
-    attached_instances_.push_back(std::move(floating_instance_));
-  }
-  floating_instance_.reset();
+  NOTIMPLEMENTED();
 }
 
 }  // namespace glic

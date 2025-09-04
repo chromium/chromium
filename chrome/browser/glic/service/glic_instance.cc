@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/service/glic_instance.h"
 
+#include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
@@ -19,11 +20,14 @@ namespace glic {
 GlicInstance::GlicInstance(
     Profile* profile,
     BrowserWindowInterface* bwi,
+    ConversationId conversation_id,
     Host& host,
     base::WeakPtr<AttachmentDelegate> attachment_delegate)
     : profile_(profile),
       associated_bwi_(bwi),
+
       attachment_delegate_(attachment_delegate),
+      conversation_id_(conversation_id),
       host_(host) {}
 
 GlicInstance::~GlicInstance() = default;
@@ -51,11 +55,18 @@ bool GlicInstance::IsShowing() const {
   return embedder_ && embedder_->IsShowing();
 }
 
+GlicInstance::EmbedderType GlicInstance::GetEmbedderType() {
+  return embedder_type_;
+}
+
 void GlicInstance::SetEmbedderType(EmbedderType type) {
   embedder_type_ = type;
 }
 
-void GlicInstance::Show() {
+void GlicInstance::Show(tabs::TabInterface* tab) {
+  if (tab) {
+    AssociateWithTab(tab);
+  }
   if (!embedder_) {
     switch (embedder_type_) {
       case EmbedderType::kSidePanel:
@@ -92,7 +103,10 @@ void GlicInstance::Toggle() {
   if (IsShowing()) {
     Close();
   } else {
-    Show();
+    // TODO: Maybe it doesn't make sense to include toggle in this interface,
+    // because it doesn't know which tab to show on.
+    // Show();
+    NOTIMPLEMENTED();
   }
 }
 
@@ -126,6 +140,31 @@ void GlicInstance::GetZeroStateSuggestionsAndSubscribe() {
 }
 void GlicInstance::GetZeroStateSuggestionsForFocusedTab() {
   NOTIMPLEMENTED();
+}
+
+void GlicInstance::AssociateWithTab(tabs::TabInterface* tab) {
+  auto* helper = GlicConversationHelper::From(tab);
+  CHECK(helper);
+  associated_tab_subscriptions_[tab] = helper->SubscribeToDestruction(
+      base::BindRepeating(&GlicInstance::OnAssociatedTabDestroyed,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GlicInstance::DisassociateFromTab(tabs::TabInterface* tab) {
+  associated_tab_subscriptions_.erase(tab);
+}
+
+bool GlicInstance::IsOrphaned() const {
+  return associated_tab_subscriptions_.empty();
+}
+
+void GlicInstance::OnAssociatedTabDestroyed(
+    tabs::TabInterface* tab,
+    const ConversationId& conversation_id) {
+  DisassociateFromTab(tab);
+  if (IsOrphaned() && attachment_delegate_) {
+    attachment_delegate_->OnInstanceOrphaned(this);
+  }
 }
 
 }  // namespace glic

@@ -30,10 +30,15 @@
 
 class Browser;
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace gfx {
 class Size;
 class Point;
 }  // namespace gfx
+
 namespace glic {
 class GlicInstanceCoordinatorImpl : public GlicWindowController,
                                     public GlicInstance::AttachmentDelegate,
@@ -50,11 +55,13 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
   ~GlicInstanceCoordinatorImpl() override;
 
   // BrowserListObserver implementation
+  void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
   // GlicInstance::AttachmentDelegate implementation
   void AttachInstance(GlicInstance* instance) override;
   void DetachInstance(GlicInstance* instance) override;
+  void OnInstanceOrphaned(GlicInstance* instance) override;
 
   Host& host() const override;
   HostManager& host_manager() override;
@@ -113,10 +120,13 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
       FloatyStateChangeCallback callback) override;
 
  private:
+  GlicInstance* GetOrCreateGlicInstanceForTab(tabs::TabInterface* tab);
+  GlicInstance* GetInstanceFor(const ConversationId& id);
+  GlicInstance* CreateGlicInstance(BrowserWindowInterface* bwi);
+
   void ToggleFloaty();
   void ToggleSidePanel(BrowserWindowInterface* browser);
 
-  GlicInstance* GetAttachedInstanceForBrowser(BrowserWindowInterface* bwi);
   void RemoveInstance(GlicInstance* instance);
   bool HasAttachedInstance(GlicInstance* instance);
   bool IsFloatingInstance(GlicInstance* instance);
@@ -131,9 +141,16 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
   mojom::PanelState panel_state_;
   const raw_ptr<Profile> profile_;
 
-  std::vector<std::unique_ptr<GlicInstance>> attached_instances_;
+  // TODO: This is a temporary solution to associate a
+  // conversation with a browser window. This will be removed once there are
+  // affordances for users to manage their own conversations.
+  std::map<BrowserWindowInterface*, ConversationId>
+      browser_to_conversation_map_;
+
+  std::map<ConversationId, std::unique_ptr<GlicInstance>> instances_;
+
   // Pointer to the instance (if any) that is currently floating.
-  std::unique_ptr<GlicInstance> floating_instance_;
+  raw_ptr<GlicInstance> floating_instance_ = nullptr;
 
   std::unique_ptr<HostManager> host_manager_;
 
