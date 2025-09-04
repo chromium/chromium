@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_ACTIVITY_PROVIDER_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_ACTIVITY_PROVIDER_H_
 
+#include <memory>
 #include <set>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list_types.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_navigation_observer.h"
@@ -26,7 +29,6 @@ namespace ash::app_time {
 
 class AppId;
 class AppTimeController;
-class AppServiceWrapper;
 enum class ChromeAppActivityState;
 
 class WebTimeActivityProvider : public WebTimeNavigationObserver::EventListener,
@@ -82,18 +84,19 @@ class WebTimeActivityProvider : public WebTimeNavigationObserver::EventListener,
   // Reference to AppTimeController. Owned by ChildUserService.
   const raw_ptr<AppTimeController> app_time_controller_;
 
-  // Reference to AppServiceWrapper. Owned by AppTimeController.
-  const raw_ptr<AppServiceWrapper> app_service_wrapper_;
-
-  // The set of navigation observers |this| instance is listening to.
-  std::set<WebTimeNavigationObserver*> navigation_observers_;
-
   // A set of active browser instances.
   std::set<const Browser*> active_browsers_;
 
   // The default chrome app activity state.
   ChromeAppActivityState chrome_app_activity_state_ =
       ChromeAppActivityState::kInactive;
+
+  base::ScopedObservation<AppServiceWrapper, AppServiceWrapper::EventListener>
+      app_service_wrapper_observation_{this};
+
+  base::ScopedMultiSourceObservation<WebTimeNavigationObserver,
+                                     WebTimeNavigationObserver::EventListener>
+      web_time_navigation_observers_{this};
 };
 
 }  // namespace ash::app_time
