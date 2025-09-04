@@ -65,7 +65,8 @@ class FrameNodeImpl
                 const blink::LocalFrameToken& frame_token,
                 content::BrowsingInstanceId browsing_instance_id,
                 content::SiteInstanceGroupId site_instance_group_id,
-                bool is_current);
+                bool is_current,
+                bool is_active);
 
   FrameNodeImpl(const FrameNodeImpl&) = delete;
   FrameNodeImpl& operator=(const FrameNodeImpl&) = delete;
@@ -102,6 +103,7 @@ class FrameNodeImpl
   const GURL& GetURL() const override;
   const std::optional<url::Origin>& GetOrigin() const override;
   bool IsCurrent() const override;
+  bool IsActive() const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
   bool GetNetworkAlmostIdle() const override;
   bool IsAdFrame() const override;
@@ -141,6 +143,7 @@ class FrameNodeImpl
   static void UpdateCurrentFrame(FrameNodeImpl* previous_frame_node,
                                  FrameNodeImpl* current_frame_node,
                                  GraphImpl* graph);
+  void SetIsActive(bool is_active);
   void SetHadUserActivation();
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingBlockingIndexedDBLock(
@@ -375,6 +378,7 @@ class FrameNodeImpl
       is_holding_blocking_indexeddb_lock_{false};
 
   bool is_current_{false};
+  bool is_active_{false};
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.

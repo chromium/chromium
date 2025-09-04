@@ -171,6 +171,10 @@ class FrameNode : public TypedNode<FrameNode> {
   // See FrameNodeObserver::OnCurrentFrameChanged.
   virtual bool IsCurrent() const = 0;
 
+  // Returns true if this frame is active (the document is in the 'active'
+  // lifecycle state). See RenderFrameHost::IsActive() for more details.
+  virtual bool IsActive() const = 0;
+
   // Returns the current priority of the frame, and the reason for the frame
   // having that particular priority.
   virtual const PriorityAndReason& GetPriorityAndReason() const = 0;

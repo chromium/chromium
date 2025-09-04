@@ -237,7 +237,8 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
       outer_document_for_inner_frame_root, render_frame_host->GetRoutingID(),
       blink::LocalFrameToken(render_frame_host->GetFrameToken()),
       site_instance->GetBrowsingInstanceId(),
-      site_instance->GetSiteInstanceGroupId(), render_frame_host->IsActive());
+      site_instance->GetSiteInstanceGroupId(), render_frame_host->IsActive(),
+      render_frame_host->IsActive());
   FrameNodeImpl* frame = frame_node.get();
   frames_[render_frame_host] = std::move(frame_node);
   PerformanceManagerImpl::GetGraphImpl()->AddNewNode(frame);
@@ -300,6 +301,17 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
 
   FrameNodeImpl::UpdateCurrentFrame(old_frame, new_frame,
                                     PerformanceManagerImpl::GetGraphImpl());
+}
+
+void PerformanceManagerTabHelper::RenderFrameHostStateChanged(
+    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost::LifecycleState old_state,
+    content::RenderFrameHost::LifecycleState new_state) {
+  FrameNodeImpl* frame_node = GetFrameNode(render_frame_host);
+  if (!frame_node) {
+    return;
+  }
+  frame_node->SetIsActive(render_frame_host->IsActive());
 }
 
 void PerformanceManagerTabHelper::OnVisibilityChanged(

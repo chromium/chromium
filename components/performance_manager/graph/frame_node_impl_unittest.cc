@@ -564,6 +564,20 @@ TEST_F(FrameNodeImplTest, IsAdFrame) {
   EXPECT_FALSE(frame_node->IsAdFrame());
 }
 
+TEST_F(FrameNodeImplTest, IsActive) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  auto frame_node = CreateFrameNodeAutoId(process.get(), page.get());
+
+  // is_active is true by default from CreateFrameNodeAutoId.
+  EXPECT_TRUE(frame_node->IsActive());
+
+  frame_node->SetIsActive(false);
+  EXPECT_FALSE(frame_node->IsActive());
+  frame_node->SetIsActive(true);
+  EXPECT_TRUE(frame_node->IsActive());
+}
+
 TEST_F(FrameNodeImplTest, IsHoldingWebLock) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();

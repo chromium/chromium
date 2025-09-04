@@ -78,7 +78,8 @@ FrameNodeImpl::FrameNodeImpl(
     const blink::LocalFrameToken& frame_token,
     content::BrowsingInstanceId browsing_instance_id,
     content::SiteInstanceGroupId site_instance_group_id,
-    bool is_current)
+    bool is_current,
+    bool is_active)
     : parent_frame_node_(parent_frame_node),
       outer_document_for_inner_frame_root_(outer_document_for_inner_frame_root),
       page_node_(page_node),
@@ -93,6 +94,7 @@ FrameNodeImpl::FrameNodeImpl(
           process_node->GetRenderProcessHostId().value(),
           render_frame_id)),
       is_current_(is_current),
+      is_active_(is_active),
       priority_and_reason_(
           PriorityAndReason(base::TaskPriority::LOWEST, kDefaultPriorityReason),
           perfetto::NamedTrack("Priority", 0, tracing_track_),
@@ -137,6 +139,11 @@ void FrameNodeImpl::SetNetworkAlmostIdle() {
 void FrameNodeImpl::SetLifecycleState(mojom::LifecycleState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lifecycle_state_.SetAndMaybeNotify(this, state);
+}
+
+void FrameNodeImpl::SetIsActive(bool is_active) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_active_ = is_active;
 }
 
 void FrameNodeImpl::SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload) {
@@ -244,6 +251,11 @@ const std::optional<url::Origin>& FrameNodeImpl::GetOrigin() const {
 bool FrameNodeImpl::IsCurrent() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_current_;
+}
+
+bool FrameNodeImpl::IsActive() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_active_;
 }
 
 const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
