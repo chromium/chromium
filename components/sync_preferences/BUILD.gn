@@ -15,6 +15,13 @@ source_set("features") {
 source_set("timestamped_pref_value") {
   sources = [ "timestamped_pref_value/timestamped_pref_value.h" ]
   deps = [ "//base" ]
+  if (is_android) {
+    sources += [
+      "timestamped_pref_value/timestamped_pref_value_bridge_android.cc",
+      "timestamped_pref_value/timestamped_pref_value_bridge_android.h",
+    ]
+    deps += [ "timestamped_pref_value/android:jni_headers" ]
+  }
 }
 
 source_set("cross_device_pref_tracker") {
