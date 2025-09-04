@@ -1674,11 +1674,8 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   // (b) we successfully produced that content.
   bool resource_provider_was_updated = false;
 
-  // CanvasResourceProviderBitmap returns null from ProduceCanvasResource(), so
-  // there is no point in using one here.
   auto* resource_provider = PaintRenderingResultsToResourceProvider(
-      kBackBuffer, /*use_bitmap_provider=*/false,
-      &resource_provider_was_updated);
+      kBackBuffer, &resource_provider_was_updated);
   if (resource_provider && resource_provider_was_updated) {
     const int width = GetDrawingBuffer()->Size().width();
     const int height = GetDrawingBuffer()->Size().height();
@@ -1998,10 +1995,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
                                           /*export_only_if_update=*/false);
   }
 
-  // CanvasResourceProviderBitmap returns null from ProduceCanvasResource(), so
-  // there is no point in using one here.
-  auto* resource_provider = PaintRenderingResultsToResourceProvider(
-      source_buffer, /*use_bitmap_provider=*/false);
+  auto* resource_provider =
+      PaintRenderingResultsToResourceProvider(source_buffer);
   if (resource_provider) {
     return resource_provider->ProduceCanvasResource(reason);
   }
@@ -2108,7 +2103,6 @@ WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider(
 CanvasResourceProvider*
 WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     SourceDrawingBuffer source_buffer,
-    bool use_bitmap_provider,
     bool* resource_provider_was_updated /*=nullptr*/) {
   CHECK(!CanUseDrawingBufferSIWithoutCopyForLowLatency());
 
@@ -2135,9 +2129,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   // is backgrounded.
 
   if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get() &&
-      (use_bitmap_provider ||
-       resource_provider_->GetType() !=
-           CanvasResourceProvider::ResourceProviderType::kBitmap)) {
+      resource_provider_->GetType() !=
+          CanvasResourceProvider::ResourceProviderType::kBitmap) {
     // `resource_provider_` already has the current contents, so it can can be
     // used by the caller as-is.
     return resource_provider_.get();
@@ -2146,7 +2139,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   must_paint_to_canvas_ = false;
 
   CanvasResourceProvider* resource_provider =
-      GetOrCreateCanvasResourceProvider(use_bitmap_provider);
+      GetOrCreateCanvasResourceProvider(/*use_bitmap_provider=*/false);
   if (!resource_provider)
     return nullptr;
 

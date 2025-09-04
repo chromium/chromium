@@ -1988,7 +1988,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // succeeded; otherwise returns nullptr.
   CanvasResourceProvider* PaintRenderingResultsToResourceProvider(
       SourceDrawingBuffer source_buffer,
-      bool use_bitmap_provider,
       bool* resource_provider_was_updated = nullptr);
   void TexImageHelperMediaVideoFrame(
       TexImageParams,
