@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/tabbed_mode_scope_matcher.h"
+#include "chrome/browser/web_applications/url_pattern_with_regex_matcher.h"
 
 #include "base/types/expected.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,19 +25,19 @@ std::vector<liburlpattern::Part> ParsePatternInitField(std::string_view field) {
   return parse_result.value().PartList();
 }
 
-TEST(TabbedModeScopeMatcher, Empty) {
+TEST(UrlPatternWithRegexMatcher, Empty) {
   blink::SafeUrlPattern pattern;
-  web_app::TabbedModeScopeMatcher matcher(pattern);
+  web_app::UrlPatternWithRegexMatcher matcher(pattern);
 
   // All fields can match any value.
   EXPECT_TRUE(matcher.Match(
       GURL("http://user:pass@example.com:1234/foo/bar?x=y#anchor")));
 }
 
-TEST(TabbedModeScopeMatcher, Protocol) {
+TEST(UrlPatternWithRegexMatcher, Protocol) {
   blink::SafeUrlPattern pattern;
   pattern.protocol = ParsePatternInitField("http*");
-  web_app::TabbedModeScopeMatcher matcher(pattern);
+  web_app::UrlPatternWithRegexMatcher matcher(pattern);
 
   // Basic test.
   EXPECT_TRUE(matcher.Match(GURL("https://example.com/foo/bar")));
@@ -50,10 +50,10 @@ TEST(TabbedModeScopeMatcher, Protocol) {
   EXPECT_FALSE(matcher.Match(GURL("ftp://example.com/foo/bar")));
 }
 
-TEST(TabbedModeScopeMatcher, Hostname) {
+TEST(UrlPatternWithRegexMatcher, Hostname) {
   blink::SafeUrlPattern pattern;
   pattern.hostname = ParsePatternInitField("example.*.com");
-  web_app::TabbedModeScopeMatcher matcher(pattern);
+  web_app::UrlPatternWithRegexMatcher matcher(pattern);
 
   // Basic test.
   EXPECT_TRUE(matcher.Match(GURL("https://example.a.com/foo/bar")));
@@ -66,10 +66,10 @@ TEST(TabbedModeScopeMatcher, Hostname) {
   EXPECT_FALSE(matcher.Match(GURL("https://example.a.org/foo/bar")));
 }
 
-TEST(TabbedModeScopeMatcher, Port) {
+TEST(UrlPatternWithRegexMatcher, Port) {
   blink::SafeUrlPattern pattern;
   pattern.port = ParsePatternInitField("12*4");
-  web_app::TabbedModeScopeMatcher matcher(pattern);
+  web_app::UrlPatternWithRegexMatcher matcher(pattern);
 
   // Basic test.
   EXPECT_TRUE(matcher.Match(GURL("https://example.com:1234/foo/bar")));
@@ -82,10 +82,10 @@ TEST(TabbedModeScopeMatcher, Port) {
   EXPECT_FALSE(matcher.Match(GURL("https://example.com:1233/foo/bar")));
 }
 
-TEST(TabbedModeScopeMatcher, Pathname) {
+TEST(UrlPatternWithRegexMatcher, Pathname) {
   blink::SafeUrlPattern pattern;
   pattern.pathname = ParsePatternInitField("/foo/*/bar");
-  web_app::TabbedModeScopeMatcher matcher(pattern);
+  web_app::UrlPatternWithRegexMatcher matcher(pattern);
 
   // Basic test.
   EXPECT_TRUE(matcher.Match(GURL("https://example.com/foo/x/bar")));
@@ -98,10 +98,10 @@ TEST(TabbedModeScopeMatcher, Pathname) {
   EXPECT_FALSE(matcher.Match(GURL("https://example.com/foo/x/baz")));
 }
 
-TEST(TabbedModeScopeMatcher, Search) {
+TEST(UrlPatternWithRegexMatcher, Search) {
   blink::SafeUrlPattern pattern;
   pattern.search = ParsePatternInitField("x=*&p=q");
-  web_app::TabbedModeScopeMatcher matcher(pattern);
+  web_app::UrlPatternWithRegexMatcher matcher(pattern);
 
   // Basic test.
   EXPECT_TRUE(matcher.Match(GURL("https://example.com/foo/bar?x=y&p=q")));
@@ -117,10 +117,10 @@ TEST(TabbedModeScopeMatcher, Search) {
   EXPECT_FALSE(matcher.Match(GURL("https://example.com/foo/bar?p=q&x=y")));
 }
 
-TEST(TabbedModeScopeMatcher, Hash) {
+TEST(UrlPatternWithRegexMatcher, Hash) {
   blink::SafeUrlPattern pattern;
   pattern.hash = ParsePatternInitField("tr*t");
-  web_app::TabbedModeScopeMatcher matcher(pattern);
+  web_app::UrlPatternWithRegexMatcher matcher(pattern);
 
   // Basic test.
   EXPECT_TRUE(matcher.Match(GURL("https://example.com/foo/bar#treat")));
@@ -133,7 +133,7 @@ TEST(TabbedModeScopeMatcher, Hash) {
   EXPECT_FALSE(matcher.Match(GURL("https://example.com/foo/bar#thought")));
 }
 
-TEST(TabbedModeScopeMatcher, All) {
+TEST(UrlPatternWithRegexMatcher, All) {
   blink::SafeUrlPattern pattern;
   pattern.protocol = ParsePatternInitField("http*");
   pattern.username = ParsePatternInitField("us*r");
@@ -143,7 +143,7 @@ TEST(TabbedModeScopeMatcher, All) {
   pattern.pathname = ParsePatternInitField("/foo/*/bar");
   pattern.search = ParsePatternInitField("x=*&p=q");
   pattern.hash = ParsePatternInitField("tr*t");
-  web_app::TabbedModeScopeMatcher matcher(pattern);
+  web_app::UrlPatternWithRegexMatcher matcher(pattern);
 
   // Basic test.
   EXPECT_TRUE(matcher.Match(GURL(

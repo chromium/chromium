@@ -54,7 +54,7 @@ enum class WebappInstallSource;
 }
 
 namespace web_app {
-class TabbedModeScopeMatcher;
+class UrlPatternWithRegexMatcher;
 
 class WebApp {
  public:
@@ -347,7 +347,7 @@ class WebApp {
 
   // Returns the list of patterns to match URLs against for tabbed mode home
   // tab navigations.
-  const std::vector<TabbedModeScopeMatcher>& GetTabbedModeHomeScope() const;
+  const std::vector<UrlPatternWithRegexMatcher>& GetTabbedModeHomeScope() const;
 
   // Only used on Mac.
   bool always_show_toolbar_in_fullscreen() const {
@@ -708,9 +708,8 @@ class WebApp {
     // considered within home tab scope.
     //
     // An empty list means there is no home tab scope to match against (i.e.
-    // nothing matches), whereas an uninitialized list means it has not yet been
-    // needed.
-    std::optional<std::vector<TabbedModeScopeMatcher>> home_tab_scope;
+    // nothing matches), while a null list means it has not yet been needed.
+    std::optional<std::vector<UrlPatternWithRegexMatcher>> home_tab_scope;
   };
   mutable CachedDerivedData cached_derived_data_;
 };

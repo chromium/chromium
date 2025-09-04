@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/tabbed_mode_scope_matcher.h"
+#include "chrome/browser/web_applications/url_pattern_with_regex_matcher.h"
 
 #include <optional>
 #include <string>
@@ -52,7 +52,7 @@ bool MatchScopePart(const std::optional<RE2::Set>& scope_set,
 
 namespace web_app {
 
-TabbedModeScopeMatcher::TabbedModeScopeMatcher(
+UrlPatternWithRegexMatcher::UrlPatternWithRegexMatcher(
     const blink::SafeUrlPattern& pattern)
     : protocol_scope_set_(MakeScopeSet(pattern.protocol)),
       username_scope_set_(MakeScopeSet(pattern.username)),
@@ -63,14 +63,14 @@ TabbedModeScopeMatcher::TabbedModeScopeMatcher(
       search_scope_set_(MakeScopeSet(pattern.search)),
       hash_scope_set_(MakeScopeSet(pattern.hash)) {}
 
-TabbedModeScopeMatcher::~TabbedModeScopeMatcher() = default;
+UrlPatternWithRegexMatcher::~UrlPatternWithRegexMatcher() = default;
 
-TabbedModeScopeMatcher::TabbedModeScopeMatcher(TabbedModeScopeMatcher&& other) =
-    default;
-TabbedModeScopeMatcher& TabbedModeScopeMatcher::operator=(
-    TabbedModeScopeMatcher&& other) = default;
+UrlPatternWithRegexMatcher::UrlPatternWithRegexMatcher(
+    UrlPatternWithRegexMatcher&& other) = default;
+UrlPatternWithRegexMatcher& UrlPatternWithRegexMatcher::operator=(
+    UrlPatternWithRegexMatcher&& other) = default;
 
-bool TabbedModeScopeMatcher::Match(const GURL& url) const {
+bool UrlPatternWithRegexMatcher::Match(const GURL& url) const {
   return MatchScopePart(protocol_scope_set_, url.scheme()) &&
          MatchScopePart(username_scope_set_, url.username()) &&
          MatchScopePart(password_scope_set_, url.password()) &&

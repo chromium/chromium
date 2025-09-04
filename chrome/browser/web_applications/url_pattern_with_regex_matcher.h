@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TABBED_MODE_SCOPE_MATCHER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TABBED_MODE_SCOPE_MATCHER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_URL_PATTERN_WITH_REGEX_MATCHER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_URL_PATTERN_WITH_REGEX_MATCHER_H_
 
 #include <optional>
 
@@ -14,19 +14,21 @@
 
 namespace web_app {
 
-// A helper class to abstract the process of matching URLs against a home tab
-// scope (communicated from the renderer process via blink::SafeUrlPattern) for
-// tabbed mode.
-class TabbedModeScopeMatcher {
+// A helper class to abstract the process of matching URLs against a
+// `blink::SafeUrlPattern`, considering regular expression matching as well.
+// Useful for matching certain fields in a web app like the `home_tab_scope`
+// and `borderless_url_patterns`.
+class UrlPatternWithRegexMatcher {
  public:
-  explicit TabbedModeScopeMatcher(const blink::SafeUrlPattern& pattern);
-  ~TabbedModeScopeMatcher();
+  explicit UrlPatternWithRegexMatcher(const blink::SafeUrlPattern& pattern);
+  ~UrlPatternWithRegexMatcher();
 
-  TabbedModeScopeMatcher(TabbedModeScopeMatcher&& other);
-  TabbedModeScopeMatcher& operator=(TabbedModeScopeMatcher&& other);
+  UrlPatternWithRegexMatcher(UrlPatternWithRegexMatcher&& other);
+  UrlPatternWithRegexMatcher& operator=(UrlPatternWithRegexMatcher&& other);
 
-  TabbedModeScopeMatcher(const TabbedModeScopeMatcher&) = delete;
-  TabbedModeScopeMatcher& operator=(const TabbedModeScopeMatcher&) = delete;
+  UrlPatternWithRegexMatcher(const UrlPatternWithRegexMatcher&) = delete;
+  UrlPatternWithRegexMatcher& operator=(const UrlPatternWithRegexMatcher&) =
+      delete;
 
   bool Match(const GURL& url) const;
 
@@ -66,4 +68,4 @@ class TabbedModeScopeMatcher {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TABBED_MODE_SCOPE_MATCHER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_URL_PATTERN_WITH_REGEX_MATCHER_H_

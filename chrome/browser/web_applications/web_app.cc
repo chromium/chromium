@@ -42,7 +42,7 @@
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.to_value.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
-#include "chrome/browser/web_applications/tabbed_mode_scope_matcher.h"
+#include "chrome/browser/web_applications/url_pattern_with_regex_matcher.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -909,7 +909,7 @@ base::Value::Dict WebApp::ExternalManagementConfig::AsDebugValue() const {
   return root;
 }
 
-const std::vector<TabbedModeScopeMatcher>& WebApp::GetTabbedModeHomeScope()
+const std::vector<UrlPatternWithRegexMatcher>& WebApp::GetTabbedModeHomeScope()
     const {
   if (!cached_derived_data_.home_tab_scope.has_value()) {
     cached_derived_data_.home_tab_scope.emplace();
