@@ -1528,9 +1528,14 @@ void RenderThreadImpl::UpdateSystemColorInfo(
     mojom::UpdateSystemColorInfoParamsPtr params) {
   auto* native_theme = ui::NativeTheme::GetInstanceForWeb();
 
+  // LINT.IfChange(UserColor)
+  // TODO(pkasting): This is not the right way of plumbing this; it should go
+  // through the preferences/settings route that things like preferred contrast,
+  // preferred color scheme, forced colors, etc. use.
   bool did_accent_color_change =
       native_theme->user_color() != params->accent_color;
   native_theme->set_user_color(params->accent_color);
+  // LINT.ThenChange(//third_party/blink/renderer/platform/theme/web_theme_engine_default.cc:UserColor)
 
   if (did_accent_color_change) {
     // Notify blink of accent color changes. These can affect CSS styles and

@@ -16,7 +16,7 @@ void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
                               WebThemeEngine::State state,
                               const gfx::Rect& rect,
                               const WebThemeEngine::ExtraParams* extra_params,
-                              mojom::ColorScheme color_scheme,
+                              mojom::blink::ColorScheme color_scheme,
                               bool in_forced_colors,
                               const ui::ColorProvider* color_provider,
                               const std::optional<SkColor>& accent_color) {
@@ -51,7 +51,7 @@ void WebThemeEngineMac::PaintMacScrollBarParts(
     WebThemeEngine::State state,
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
-    mojom::ColorScheme color_scheme) {
+    mojom::blink::ColorScheme color_scheme) {
   ui::NativeTheme::ScrollbarExtraParams native_scrollbar_extra;
   const WebThemeEngine::ScrollbarExtraParams& scrollbar_extra =
       std::get<WebThemeEngine::ScrollbarExtraParams>(*extra_params);

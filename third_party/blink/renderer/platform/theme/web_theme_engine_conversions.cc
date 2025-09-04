@@ -4,12 +4,11 @@
 
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
+#include "ui/native_theme/native_theme.h"
+
 namespace blink {
 
-// TODO(https://crbug.com/988434): The mapping functions below are duplicated
-// inside Blink and in the Android implementation of WebThemeEngine. They should
-// be implemented in one place where dependencies between Blink and
-// ui::NativeTheme make sense.
 ui::NativeTheme::Part NativeThemePart(WebThemeEngine::Part part) {
   switch (part) {
     case WebThemeEngine::kPartScrollbarDownArrow:
@@ -69,11 +68,11 @@ ui::NativeTheme::State NativeThemeState(WebThemeEngine::State state) {
 }
 
 ui::NativeTheme::ColorScheme NativeColorScheme(
-    mojom::ColorScheme color_scheme) {
+    mojom::blink::ColorScheme color_scheme) {
   switch (color_scheme) {
-    case mojom::ColorScheme::kLight:
+    case mojom::blink::ColorScheme::kLight:
       return ui::NativeTheme::ColorScheme::kLight;
-    case mojom::ColorScheme::kDark:
+    case mojom::blink::ColorScheme::kDark:
       return ui::NativeTheme::ColorScheme::kDark;
   }
 }

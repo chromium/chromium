@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_THEME_WEB_THEME_ENGINE_ANDROID_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_THEME_WEB_THEME_ENGINE_ANDROID_H_
 
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 
 namespace blink {
@@ -21,7 +22,7 @@ class WebThemeEngineAndroid : public blink::WebThemeEngine {
              blink::WebThemeEngine::State state,
              const gfx::Rect& rect,
              const blink::WebThemeEngine::ExtraParams* extra_params,
-             blink::mojom::ColorScheme color_scheme,
+             mojom::blink::ColorScheme color_scheme,
              bool in_forced_colors,
              const ui::ColorProvider* color_provider,
              const std::optional<SkColor>& accent_color) override;

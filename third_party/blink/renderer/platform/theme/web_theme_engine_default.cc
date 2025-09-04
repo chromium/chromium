@@ -22,8 +22,6 @@
 
 namespace blink {
 
-using mojom::ColorScheme;
-
 namespace {
 
 #if BUILDFLAG(IS_WIN)
@@ -241,7 +239,7 @@ void WebThemeEngineDefault::Paint(
     WebThemeEngine::State state,
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
-    mojom::ColorScheme color_scheme,
+    mojom::blink::ColorScheme color_scheme,
     bool in_forced_colors,
     const ui::ColorProvider* color_provider,
     const std::optional<SkColor>& accent_color) {
@@ -322,7 +320,12 @@ int WebThemeEngineDefault::GetPaintedScrollbarTrackInset() const {
 }
 
 std::optional<SkColor> WebThemeEngineDefault::GetAccentColor() const {
+  // LINT.IfChange(UserColor)
+  // TODO(pkasting): This is not the right way of accessing this; it should come
+  // from the preferences/settings like preferred contrast, preferred color
+  // scheme, forced colors, etc.
   return ui::NativeTheme::GetInstanceForWeb()->user_color();
+  // LINT.ThenChange(//content/renderer/render_thread_impl.cc:UserColor)
 }
 
 #if BUILDFLAG(IS_WIN)
