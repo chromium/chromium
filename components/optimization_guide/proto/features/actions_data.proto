@@ -393,7 +393,7 @@ message WindowObservation {
 }
 
 // Information about a chrome tab.
-// Next ID: 5
+// Next ID: 6
 message TabObservation {
   // Unique id
   int32 id = 1 [features = { field_presence: EXPLICIT }];
@@ -406,6 +406,22 @@ message TabObservation {
 
   // The mime type of the |screenshot|.
   string screenshot_mime_type = 4 [features = { field_presence: EXPLICIT }];
+
+  // The result of the tab observation.
+  TabObservationResult result = 5 [features = { field_presence: EXPLICIT }];
+
+  // Result codes of a tab observation. It may be possible
+  // to retry an observation given specific error codes.
+  enum TabObservationResult {
+    // The tab was observed successfully.
+    TAB_OBSERVATION_OK = 0;
+
+    // The tab is not available because it went away.
+    TAB_OBSERVATION_TAB_WENT_AWAY = 1;
+
+    // The screenshot of the tab timed out.
+    TAB_OBSERVATION_SCREENSHOT_TIMEOUT = 2;
+  }
 }
 
 // All relevant state in chrome after the actions are taken or an error has
