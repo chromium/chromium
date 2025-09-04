@@ -34,17 +34,15 @@ message UserDeviceInfo {
 enum ReceiverState {
   RECEIVER_STATE_UNKNOWN = 0;
 
-  AVAILABLE = 1;
+  START_REQUESTED = 1;
 
-  START_REQUESTED = 2;
+  STOP_REQUESTED = 2;
 
-  STOP_REQUESTED = 3;
+  CONNECTING = 3;
 
-  CONNECTING = 4;
+  CONNECTED = 4;
 
-  CONNECTED = 5;
+  DISCONNECTED = 5;
 
-  DISCONNECTED = 6;
-
-  ERROR = 7;
+  ERROR = 6;
 }
