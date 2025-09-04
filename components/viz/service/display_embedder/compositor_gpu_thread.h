@@ -14,6 +14,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/ipc/common/memory_stats.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 
 namespace gl {
@@ -33,6 +34,9 @@ class VulkanContextProvider;
 
 class VIZ_SERVICE_EXPORT CompositorGpuThread : public base::Thread {
  public:
+  using GetVideoMemoryUsageStatsCallback =
+      base::OnceCallback<void(const ::gpu::VideoMemoryUsageStats&)>;
+
   struct CreateParams {
     raw_ptr<gpu::GpuChannelManager> gpu_channel_manager = nullptr;
     raw_ptr<gl::GLDisplay> display = nullptr;
@@ -74,6 +78,10 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread : public base::Thread {
   void OnBackgroundCleanup();
 
   void LoseContext();
+
+  void AddVideoMemoryUsageStatsOnCompositorGpu(
+      GetVideoMemoryUsageStatsCallback callback,
+      gpu::VideoMemoryUsageStats video_memory_usage_stats);
 
  private:
   CompositorGpuThread(

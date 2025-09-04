@@ -329,4 +329,24 @@ void CompositorGpuThread::LoseContext() {
   }
 }
 
+void CompositorGpuThread::AddVideoMemoryUsageStatsOnCompositorGpu(
+    GetVideoMemoryUsageStatsCallback callback,
+    gpu::VideoMemoryUsageStats video_memory_usage_stats) {
+  if (!task_runner()->BelongsToCurrentThread()) {
+    task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CompositorGpuThread::AddVideoMemoryUsageStatsOnCompositorGpu,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            video_memory_usage_stats));
+    return;
+  }
+
+  uint64_t size = GetSharedContextState()->GetMemoryUsage();
+  video_memory_usage_stats.process_map[base::GetCurrentProcId()].video_memory +=
+      size;
+  video_memory_usage_stats.bytes_allocated += size;
+  std::move(callback).Run(video_memory_usage_stats);
+}
+
 }  // namespace viz

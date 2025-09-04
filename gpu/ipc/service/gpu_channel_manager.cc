@@ -665,7 +665,7 @@ void GpuChannelManager::GetVideoMemoryUsageStats(
   }
 
   // Add the SharedContextState memory from the CrGpuMain thread to the total.
-  // GpuServiceImpl::AddVideoMemoryUsageStatsOnCompositorGpu() adds the
+  // CompositorGpuThread::AddVideoMemoryUsageStatsOnCompositorGpu() adds the
   // SharedContextState memory from CompositorGpuMain if DrDC is enabled.
   if (shared_context_state_ && !shared_context_state_->context_lost()) {
     total_size += shared_context_state_->GetMemoryUsage();
