@@ -1075,7 +1075,6 @@ EXPORTS
     ?SetCallback@FlagImpl@flags_internal@absl@@QEAAXQ6AXXZ@Z
     ?SetCordBtreeExhaustiveValidation@cord_internal@absl@@YAX_N@Z
     ?SetCrcCordState@Cord@absl@@AEAAXVCrcCordState@crc_internal@2@@Z
-    ?SetCtrlInLargeTable@container_internal@absl@@YAXAEBVCommonFields@12@_KE1@Z
     ?SetCurrentThreadIdentity@base_internal@absl@@YAXPEAUThreadIdentity@12@P6AXPEAX@Z@Z
     ?SetExitOnDFatal@log_internal@absl@@YAX_N@Z
     ?SetExpectedChecksum@Cord@absl@@QEAAXI@Z

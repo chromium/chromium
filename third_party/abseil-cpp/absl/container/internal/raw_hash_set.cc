@@ -108,6 +108,13 @@ size_t Resize1To3NewOffset(size_t hash, PerTableSeed seed) {
   return SingleGroupTableH1(hash, seed) & 2;
 }
 
+// Returns the address of the ith slot in slots where each slot occupies
+// slot_size.
+inline void* SlotAddress(void* slot_array, size_t slot, size_t slot_size) {
+  return static_cast<void*>(static_cast<char*>(slot_array) +
+                            (slot * slot_size));
+}
+
 // Returns the address of the slot `i` iterations after `slot` assuming each
 // slot has the specified size.
 inline void* NextSlot(void* slot, size_t slot_size, size_t i = 1) {
@@ -295,6 +302,69 @@ size_t FindFirstFullSlot(size_t start, size_t end, const ctrl_t* ctrl) {
 void PrepareInsertCommon(CommonFields& common) {
   common.increment_size();
   common.maybe_increment_generation_on_insert();
+}
+
+// Sets sanitizer poisoning for slot corresponding to control byte being set.
+inline void DoSanitizeOnSetCtrl(const CommonFields& c, size_t i, ctrl_t h,
+                                size_t slot_size) {
+  ABSL_SWISSTABLE_ASSERT(i < c.capacity());
+  auto* slot_i = static_cast<const char*>(c.slot_array()) + i * slot_size;
+  if (IsFull(h)) {
+    SanitizerUnpoisonMemoryRegion(slot_i, slot_size);
+  } else {
+    SanitizerPoisonMemoryRegion(slot_i, slot_size);
+  }
+}
+
+// Sets `ctrl[i]` to `h`.
+//
+// Unlike setting it directly, this function will perform bounds checks and
+// mirror the value to the cloned tail if necessary.
+inline void SetCtrl(const CommonFields& c, size_t i, ctrl_t h,
+                    size_t slot_size) {
+  ABSL_SWISSTABLE_ASSERT(!c.is_small());
+  DoSanitizeOnSetCtrl(c, i, h, slot_size);
+  ctrl_t* ctrl = c.control();
+  ctrl[i] = h;
+  ctrl[((i - NumClonedBytes()) & c.capacity()) +
+       (NumClonedBytes() & c.capacity())] = h;
+}
+// Overload for setting to an occupied `h2_t` rather than a special `ctrl_t`.
+inline void SetCtrl(const CommonFields& c, size_t i, h2_t h, size_t slot_size) {
+  SetCtrl(c, i, static_cast<ctrl_t>(h), slot_size);
+}
+
+// Like SetCtrl, but in a single group table, we can save some operations when
+// setting the cloned control byte.
+inline void SetCtrlInSingleGroupTable(const CommonFields& c, size_t i, ctrl_t h,
+                                      size_t slot_size) {
+  ABSL_SWISSTABLE_ASSERT(!c.is_small());
+  ABSL_SWISSTABLE_ASSERT(is_single_group(c.capacity()));
+  DoSanitizeOnSetCtrl(c, i, h, slot_size);
+  ctrl_t* ctrl = c.control();
+  ctrl[i] = h;
+  ctrl[i + c.capacity() + 1] = h;
+}
+// Overload for setting to an occupied `h2_t` rather than a special `ctrl_t`.
+inline void SetCtrlInSingleGroupTable(const CommonFields& c, size_t i, h2_t h,
+                                      size_t slot_size) {
+  SetCtrlInSingleGroupTable(c, i, static_cast<ctrl_t>(h), slot_size);
+}
+
+// Like SetCtrl, but in a table with capacity >= Group::kWidth - 1,
+// we can save some operations when setting the cloned control byte.
+inline void SetCtrlInLargeTable(const CommonFields& c, size_t i, ctrl_t h,
+                                size_t slot_size) {
+  ABSL_SWISSTABLE_ASSERT(c.capacity() >= Group::kWidth - 1);
+  DoSanitizeOnSetCtrl(c, i, h, slot_size);
+  ctrl_t* ctrl = c.control();
+  ctrl[i] = h;
+  ctrl[((i - NumClonedBytes()) & c.capacity()) + NumClonedBytes()] = h;
+}
+// Overload for setting to an occupied `h2_t` rather than a special `ctrl_t`.
+inline void SetCtrlInLargeTable(const CommonFields& c, size_t i, h2_t h,
+                                size_t slot_size) {
+  SetCtrlInLargeTable(c, i, static_cast<ctrl_t>(h), slot_size);
 }
 
 size_t DropDeletesWithoutResizeAndPrepareInsert(
