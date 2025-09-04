@@ -61,6 +61,28 @@ If you’re behind a corporate network or network proxy, your system’s auto
 configured timezone might be incorrect. If this is the case, go to your system’s
 settings and set timezone and/or time manually.
 
+### Latest depot_tools
+
+Ensure you
+[have depot_tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up)
+installed and configured on PATH.
+
+Then run:
+
+```
+update_depot_tools
+```
+
+### Git config for Gerrit
+
+Make sure your Git is configured for Gerrit. You only need to do this once.
+
+```
+git cl creds-check --global
+```
+
+Please follow the prompts from the tool and resolve any issues.
+
 ## Performing ReAuth
 
 You can ReAuth with a locally attached security key, or over an SSH or remote
@@ -74,11 +96,8 @@ when you start your day.
 This is for completing ReAuth when you're using a machine with a locally
 attached security key.
 
-First, ensure you have the latest depot_tools:
-
-```
-update_depot_tools
-```
+First, make sure you have the [latest depot_tools](#latest-depot_tools) and
+have [set up Git to access Gerrit](#git-config-for-gerrit).
 
 Then, check if you're already logged in (this is likely if you have already
 logged in with depot_tools):
@@ -116,15 +135,11 @@ This is for completing ReAuth when:
 - You SSH or remote desktop into a remote development machine (where the
   chromium/src checkout lives)
 
-First, ensure you
-[have the latest depot_tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up)
-installed on **both** local and remote machines.
+First, make sure you have the [latest depot_tools](#latest-depot_tools)
+installed on **both local and remote** machines.
 
-Note, you need to ensure depot_tools is on PATH (see the above link).
-
-```
-update_depot_tools
-```
+Then, make sure you have
+[set up Git to access](#git-config-for-gerrit).
 
 Then, ensure you're logged into Gerrit on the **remote machine**. You can check
 this by running:
