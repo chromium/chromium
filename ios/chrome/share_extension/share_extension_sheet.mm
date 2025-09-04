@@ -78,6 +78,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   NSArray<AccountInfo*>* _accounts;
   UISheetPresentationControllerDetent* _customDetent;
   UITableView* _accountTableView;
+  NSLayoutConstraint* _tableViewHeightConstraint;
 }
 
 - (instancetype)init {
@@ -130,6 +131,13 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
+
+  if (_tableViewHeightConstraint) {
+    CGFloat newHeight = _accountTableView.contentSize.height;
+    if (_tableViewHeightConstraint.constant != newHeight) {
+      _tableViewHeightConstraint.constant = newHeight;
+    }
+  }
 
   if (app_group::MultiProfileShareExtensionEnabled() &&
       ![self isScrolledToBottom]) {
@@ -296,8 +304,17 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 
   } else {
     content.text = self.selectedAccountInfo.fullName;
+    content.textProperties.numberOfLines = 1;
+    content.textProperties.lineBreakMode = NSLineBreakByTruncatingTail;
+
     content.secondaryText = self.selectedAccountInfo.email;
+    content.secondaryTextProperties.numberOfLines = 1;
+    content.secondaryTextProperties.lineBreakMode = NSLineBreakByTruncatingTail;
+
+    content.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(8, 0, 8, 0);
+
     content.image = self.selectedAccountInfo.avatar;
+
     UIListContentImageProperties* imageProperties = content.imageProperties;
     imageProperties.cornerRadius = kAvatarImageDimension / 2.0;
     imageProperties.maximumSize =
@@ -433,7 +450,8 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 
 - (UITableView*)createSelectedAccountTableView {
   UITableView* containerTable = [[UITableView alloc] initWithFrame:CGRectZero];
-  containerTable.rowHeight = kAccountRowHeight;
+  containerTable.estimatedRowHeight = kAccountRowHeight;
+  containerTable.rowHeight = UITableViewAutomaticDimension;
   containerTable.separatorStyle = UITableViewCellSeparatorStyleNone;
   containerTable.layer.cornerRadius = kAccountCellCornerRadius;
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
@@ -446,8 +464,9 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
          forCellReuseIdentifier:@"Account"];
   containerTable.dataSource = self;
   containerTable.delegate = self;
-  [containerTable.heightAnchor constraintEqualToConstant:kAccountRowHeight]
-      .active = YES;
+  _tableViewHeightConstraint =
+      [containerTable.heightAnchor constraintEqualToConstant:kAccountRowHeight];
+  _tableViewHeightConstraint.active = YES;
   return containerTable;
 }
 
