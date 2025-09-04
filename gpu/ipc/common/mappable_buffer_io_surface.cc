@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
+#include "gpu/ipc/common/mappable_buffer_io_surface.h"
 
 #include "base/apple/mach_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -44,7 +44,7 @@ uint32_t LockFlags(gfx::BufferUsage usage) {
 
 }  // namespace
 
-GpuMemoryBufferImplIOSurface::GpuMemoryBufferImplIOSurface(
+MappableBufferIOSurface::MappableBufferIOSurface(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::GpuMemoryBufferHandle handle,
@@ -54,7 +54,7 @@ GpuMemoryBufferImplIOSurface::GpuMemoryBufferImplIOSurface(
       handle_(std::move(handle)),
       lock_flags_(lock_flags) {}
 
-GpuMemoryBufferImplIOSurface::~GpuMemoryBufferImplIOSurface() {
+MappableBufferIOSurface::~MappableBufferIOSurface() {
 #if DCHECK_IS_ON()
   {
     base::AutoLock auto_lock(map_lock_);
@@ -63,7 +63,7 @@ GpuMemoryBufferImplIOSurface::~GpuMemoryBufferImplIOSurface() {
 #endif
 }
 
-void GpuMemoryBufferImplIOSurface::AssertMapped() {
+void MappableBufferIOSurface::AssertMapped() {
 #if DCHECK_IS_ON()
   base::AutoLock auto_lock(map_lock_);
   DCHECK_GT(map_count_, 0u);
@@ -71,8 +71,8 @@ void GpuMemoryBufferImplIOSurface::AssertMapped() {
 }
 
 // static
-std::unique_ptr<GpuMemoryBufferImplIOSurface>
-GpuMemoryBufferImplIOSurface::CreateFromHandleForTesting(
+std::unique_ptr<MappableBufferIOSurface>
+MappableBufferIOSurface::CreateFromHandleForTesting(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
@@ -82,7 +82,7 @@ GpuMemoryBufferImplIOSurface::CreateFromHandleForTesting(
 }
 
 // static
-base::OnceClosure GpuMemoryBufferImplIOSurface::AllocateForTesting(
+base::OnceClosure MappableBufferIOSurface::AllocateForTesting(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -93,8 +93,8 @@ base::OnceClosure GpuMemoryBufferImplIOSurface::AllocateForTesting(
 }
 
 // static
-std::unique_ptr<GpuMemoryBufferImplIOSurface>
-GpuMemoryBufferImplIOSurface::CreateFromHandle(
+std::unique_ptr<MappableBufferIOSurface>
+MappableBufferIOSurface::CreateFromHandle(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
@@ -104,8 +104,8 @@ GpuMemoryBufferImplIOSurface::CreateFromHandle(
 }
 
 // static
-std::unique_ptr<GpuMemoryBufferImplIOSurface>
-GpuMemoryBufferImplIOSurface::CreateFromHandleImpl(
+std::unique_ptr<MappableBufferIOSurface>
+MappableBufferIOSurface::CreateFromHandleImpl(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
@@ -141,14 +141,15 @@ GpuMemoryBufferImplIOSurface::CreateFromHandleImpl(
   }
 #endif
 
-  return base::WrapUnique(new GpuMemoryBufferImplIOSurface(
-      size, format, handle.Clone(), lock_flags));
+  return base::WrapUnique(
+      new MappableBufferIOSurface(size, format, handle.Clone(), lock_flags));
 }
 
-bool GpuMemoryBufferImplIOSurface::Map() {
+bool MappableBufferIOSurface::Map() {
   base::AutoLock auto_lock(map_lock_);
-  if (map_count_++)
+  if (map_count_++) {
     return true;
+  }
 
 #if BUILDFLAG(IS_IOS)
   if (!shared_memory_mapping_.IsValid()) {
@@ -163,13 +164,13 @@ bool GpuMemoryBufferImplIOSurface::Map() {
       IOSurfaceLock(handle_.io_surface().get(), lock_flags_, nullptr);
   DCHECK_EQ(kr, KERN_SUCCESS) << " lock_flags_: " << lock_flags_;
   MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
-      << "GpuMemoryBufferImplIOSurface::Map IOSurfaceLock lock_flags_: "
+      << "MappableBufferIOSurface::Map IOSurfaceLock lock_flags_: "
       << lock_flags_;
 #endif
   return true;
 }
 
-void* GpuMemoryBufferImplIOSurface::memory(size_t plane) {
+void* MappableBufferIOSurface::memory(size_t plane) {
   AssertMapped();
   CHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
 #if BUILDFLAG(IS_IOS)
@@ -185,22 +186,23 @@ void* GpuMemoryBufferImplIOSurface::memory(size_t plane) {
 #endif
 }
 
-void GpuMemoryBufferImplIOSurface::Unmap() {
+void MappableBufferIOSurface::Unmap() {
   base::AutoLock auto_lock(map_lock_);
   DCHECK_GT(map_count_, 0u);
-  if (--map_count_)
+  if (--map_count_) {
     return;
+  }
 #if !BUILDFLAG(IS_IOS)
   kern_return_t kr =
       IOSurfaceUnlock(handle_.io_surface().get(), lock_flags_, nullptr);
   DCHECK_EQ(kr, KERN_SUCCESS) << " lock_flags_: " << lock_flags_;
   MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
-      << "GpuMemoryBufferImplIOSurface::Unmap IOSurfaceUnlock lock_flags_: "
+      << "MappableBufferIOSurface::Unmap IOSurfaceUnlock lock_flags_: "
       << lock_flags_;
 #endif
 }
 
-int GpuMemoryBufferImplIOSurface::stride(size_t plane) const {
+int MappableBufferIOSurface::stride(size_t plane) const {
   CHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
 #if BUILDFLAG(IS_IOS)
   CHECK_LT(plane, gfx::kMaxIOSurfacePlanes);
@@ -210,21 +212,21 @@ int GpuMemoryBufferImplIOSurface::stride(size_t plane) const {
 #endif
 }
 
-gfx::GpuMemoryBufferType GpuMemoryBufferImplIOSurface::GetType() const {
+gfx::GpuMemoryBufferType MappableBufferIOSurface::GetType() const {
   DCHECK_EQ(handle_.type, gfx::IO_SURFACE_BUFFER);
   return handle_.type;
 }
 
-gfx::GpuMemoryBufferHandle GpuMemoryBufferImplIOSurface::CloneHandle() const {
+gfx::GpuMemoryBufferHandle MappableBufferIOSurface::CloneHandle() const {
   return handle_.Clone();
 }
 
-void GpuMemoryBufferImplIOSurface::MapAsync(
+void MappableBufferIOSurface::MapAsync(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(Map());
 }
 
-bool GpuMemoryBufferImplIOSurface::AsyncMappingIsNonBlocking() const {
+bool MappableBufferIOSurface::AsyncMappingIsNonBlocking() const {
   return false;
 }
 

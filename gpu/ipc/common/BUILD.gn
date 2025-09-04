@@ -91,15 +91,15 @@ source_set("ipc_common_sources") {
     "gpu_disk_cache_type.cc",
     "gpu_disk_cache_type.h",
     "gpu_memory_buffer_handle_info.h",
-    "gpu_memory_buffer_impl.h",
-    "gpu_memory_buffer_impl_shared_memory.cc",
-    "gpu_memory_buffer_impl_shared_memory.h",
     "gpu_memory_buffer_support.cc",
     "gpu_memory_buffer_support.h",
     "gpu_param_traits.cc",
     "gpu_param_traits.h",
     "gpu_param_traits_macros.h",
     "gpu_watchdog_timeout.h",
+    "mappable_buffer.h",
+    "mappable_buffer_shared_memory.cc",
+    "mappable_buffer_shared_memory.h",
     "result_codes.h",
   ]
 
@@ -107,8 +107,8 @@ source_set("ipc_common_sources") {
     sources += [
       "dxgi_helpers.cc",
       "dxgi_helpers.h",
-      "gpu_memory_buffer_impl_dxgi.cc",
-      "gpu_memory_buffer_impl_dxgi.h",
+      "mappable_buffer_dxgi.cc",
+      "mappable_buffer_dxgi.h",
     ]
     libs = [
       "d3d11.lib",
@@ -117,10 +117,10 @@ source_set("ipc_common_sources") {
   }
   if (use_ozone) {
     sources += [
-      "gpu_memory_buffer_impl_native_pixmap.cc",
-      "gpu_memory_buffer_impl_native_pixmap.h",
       "legacy_gpu_memory_buffer_for_video.cc",
       "legacy_gpu_memory_buffer_for_video.h",
+      "mappable_buffer_native_pixmap.cc",
+      "mappable_buffer_native_pixmap.h",
     ]
   }
   if (is_android) {
@@ -164,8 +164,8 @@ source_set("ipc_common_sources") {
 
   if (is_apple) {
     sources += [
-      "gpu_memory_buffer_impl_io_surface.cc",
-      "gpu_memory_buffer_impl_io_surface.h",
+      "mappable_buffer_io_surface.cc",
+      "mappable_buffer_io_surface.h",
     ]
     frameworks = [
       "IOSurface.framework",

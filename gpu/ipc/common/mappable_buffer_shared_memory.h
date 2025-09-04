@@ -2,39 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_SHARED_MEMORY_H_
-#define GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_SHARED_MEMORY_H_
+#ifndef GPU_IPC_COMMON_MAPPABLE_BUFFER_SHARED_MEMORY_H_
+#define GPU_IPC_COMMON_MAPPABLE_BUFFER_SHARED_MEMORY_H_
 
 #include <stddef.h>
 
 #include <memory>
 
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
+#include "gpu/ipc/common/mappable_buffer.h"
 
 namespace gpu {
 
 class ClientSharedImage;
 
 // Implementation of GPU memory buffer based on shared memory.
-class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
-    : public GpuMemoryBufferImpl {
+class GPU_IPC_COMMON_EXPORT MappableBufferSharedMemory : public MappableBuffer {
  public:
-  GpuMemoryBufferImplSharedMemory(const GpuMemoryBufferImplSharedMemory&) =
+  MappableBufferSharedMemory(const MappableBufferSharedMemory&) = delete;
+  MappableBufferSharedMemory& operator=(const MappableBufferSharedMemory&) =
       delete;
-  GpuMemoryBufferImplSharedMemory& operator=(
-      const GpuMemoryBufferImplSharedMemory&) = delete;
 
-  ~GpuMemoryBufferImplSharedMemory() override;
+  ~MappableBufferSharedMemory() override;
 
   static constexpr gfx::GpuMemoryBufferType kBufferType =
       gfx::SHARED_MEMORY_BUFFER;
 
-  static std::unique_ptr<GpuMemoryBufferImplSharedMemory>
-  CreateFromHandleForTesting(gfx::GpuMemoryBufferHandle handle,
-                             const gfx::Size& size,
-                             gfx::BufferFormat format,
-                             gfx::BufferUsage usage) {
+  static std::unique_ptr<MappableBufferSharedMemory> CreateFromHandleForTesting(
+      gfx::GpuMemoryBufferHandle handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage) {
     return CreateFromHandle(std::move(handle), size, format, usage);
   }
 
@@ -44,7 +42,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
       gfx::BufferUsage usage,
       gfx::GpuMemoryBufferHandle* handle);
 
-  // Overridden from GpuMemoryBufferImpl:
+  // Overridden from MappableBuffer:
   bool Map() override;
   void MapAsync(base::OnceCallback<void(bool)> callback) override;
   bool AsyncMappingIsNonBlocking() const override;
@@ -60,13 +58,13 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
  private:
   friend class ClientSharedImage;
 
-  static std::unique_ptr<GpuMemoryBufferImplSharedMemory> CreateFromHandle(
+  static std::unique_ptr<MappableBufferSharedMemory> CreateFromHandle(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage);
 
-  GpuMemoryBufferImplSharedMemory(
+  MappableBufferSharedMemory(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
@@ -92,4 +90,4 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_SHARED_MEMORY_H_
+#endif  // GPU_IPC_COMMON_MAPPABLE_BUFFER_SHARED_MEMORY_H_

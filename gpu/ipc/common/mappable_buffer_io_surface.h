@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_IO_SURFACE_H_
-#define GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_IO_SURFACE_H_
+#ifndef GPU_IPC_COMMON_MAPPABLE_BUFFER_IO_SURFACE_H_
+#define GPU_IPC_COMMON_MAPPABLE_BUFFER_IO_SURFACE_H_
 
 #include <IOSurface/IOSurfaceRef.h>
 #include <stddef.h>
@@ -13,7 +13,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
+#include "gpu/ipc/common/mappable_buffer.h"
 #include "ui/gfx/color_space.h"
 
 namespace gpu {
@@ -21,23 +21,21 @@ namespace gpu {
 class ClientSharedImage;
 
 // Implementation of GPU memory buffer based on IO surfaces.
-class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
-    : public GpuMemoryBufferImpl {
+class GPU_IPC_COMMON_EXPORT MappableBufferIOSurface : public MappableBuffer {
  public:
-  GpuMemoryBufferImplIOSurface(const GpuMemoryBufferImplIOSurface&) = delete;
-  GpuMemoryBufferImplIOSurface& operator=(const GpuMemoryBufferImplIOSurface&) =
-      delete;
+  MappableBufferIOSurface(const MappableBufferIOSurface&) = delete;
+  MappableBufferIOSurface& operator=(const MappableBufferIOSurface&) = delete;
 
-  ~GpuMemoryBufferImplIOSurface() override;
+  ~MappableBufferIOSurface() override;
 
   static constexpr gfx::GpuMemoryBufferType kBufferType =
       gfx::IO_SURFACE_BUFFER;
 
-  static std::unique_ptr<GpuMemoryBufferImplIOSurface>
-  CreateFromHandleForTesting(const gfx::GpuMemoryBufferHandle& handle,
-                             const gfx::Size& size,
-                             gfx::BufferFormat format,
-                             gfx::BufferUsage usage);
+  static std::unique_ptr<MappableBufferIOSurface> CreateFromHandleForTesting(
+      const gfx::GpuMemoryBufferHandle& handle,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage);
 
   static base::OnceClosure AllocateForTesting(
       const gfx::Size& size,
@@ -45,7 +43,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
       gfx::BufferUsage usage,
       gfx::GpuMemoryBufferHandle* handle);
 
-  // Overridden from GpuMemoryBufferImpl:
+  // Overridden from MappableBuffer:
   bool Map() override;
   void MapAsync(base::OnceCallback<void(bool)> callback) override;
   bool AsyncMappingIsNonBlocking() const override;
@@ -58,22 +56,22 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
  private:
   friend ClientSharedImage;
 
-  static std::unique_ptr<GpuMemoryBufferImplIOSurface> CreateFromHandle(
+  static std::unique_ptr<MappableBufferIOSurface> CreateFromHandle(
       const gfx::GpuMemoryBufferHandle& handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
       bool is_read_only_cpu_usage);
 
-  static std::unique_ptr<GpuMemoryBufferImplIOSurface> CreateFromHandleImpl(
+  static std::unique_ptr<MappableBufferIOSurface> CreateFromHandleImpl(
       const gfx::GpuMemoryBufferHandle& handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
       int32_t lock_flags);
 
-  GpuMemoryBufferImplIOSurface(const gfx::Size& size,
-                               gfx::BufferFormat format,
-                               gfx::GpuMemoryBufferHandle handle,
-                               uint32_t lock_flags);
+  MappableBufferIOSurface(const gfx::Size& size,
+                          gfx::BufferFormat format,
+                          gfx::GpuMemoryBufferHandle handle,
+                          uint32_t lock_flags);
 
   void AssertMapped();
 
@@ -97,4 +95,4 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_IO_SURFACE_H_
+#endif  // GPU_IPC_COMMON_MAPPABLE_BUFFER_IO_SURFACE_H_

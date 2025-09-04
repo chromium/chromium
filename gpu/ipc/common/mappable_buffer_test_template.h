@@ -7,11 +7,11 @@
 #pragma allow_unsafe_buffers
 #endif
 
-// This file defines tests that implementations of GpuMemoryBufferImpl should
+// This file defines tests that implementations of MappableBuffer should
 // pass in order to be conformant.
 
-#ifndef GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_TEST_TEMPLATE_H_
-#define GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_TEST_TEMPLATE_H_
+#ifndef GPU_IPC_COMMON_MAPPABLE_BUFFER_TEST_TEMPLATE_H_
+#define GPU_IPC_COMMON_MAPPABLE_BUFFER_TEST_TEMPLATE_H_
 
 #include <stddef.h>
 #include <string.h>
@@ -25,8 +25,8 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "gpu/ipc/common/mappable_buffer_shared_memory.h"
 #include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,31 +42,31 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
+#include "gpu/ipc/common/mappable_buffer_native_pixmap.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
+#include "gpu/ipc/common/mappable_buffer_io_surface.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
+#include "gpu/ipc/common/mappable_buffer_native_pixmap.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
+#include "gpu/ipc/common/mappable_buffer_dxgi.h"
 #endif
 
 namespace gpu {
 
-template <typename GpuMemoryBufferImplType>
-class GpuMemoryBufferImplTest : public testing::Test {
+template <typename MappableBufferType>
+class MappableBufferTest : public testing::Test {
  public:
-  GpuMemoryBufferImplTest() {
+  MappableBufferTest() {
 #if BUILDFLAG(IS_OZONE)
     client_native_pixmap_factory_ = ui::CreateClientNativePixmapFactoryOzone();
 #endif
@@ -76,33 +76,33 @@ class GpuMemoryBufferImplTest : public testing::Test {
                              gfx::BufferFormat format,
                              gfx::BufferUsage usage,
                              gfx::GpuMemoryBufferHandle* handle) {
-    GpuMemoryBufferImplType::AllocateForTesting(size, format, usage, handle);
+    MappableBufferType::AllocateForTesting(size, format, usage, handle);
   }
 
-  std::unique_ptr<GpuMemoryBufferImpl> CreateGpuMemoryBufferImplFromHandle(
+  std::unique_ptr<MappableBuffer> CreateMappableBufferFromHandle(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage) {
     switch (handle.type) {
       case gfx::SHARED_MEMORY_BUFFER:
-        return GpuMemoryBufferImplSharedMemory::CreateFromHandleForTesting(
+        return MappableBufferSharedMemory::CreateFromHandleForTesting(
             std::move(handle), size, format, usage);
 #if BUILDFLAG(IS_MAC)
       case gfx::IO_SURFACE_BUFFER:
-        return GpuMemoryBufferImplIOSurface::CreateFromHandleForTesting(
+        return MappableBufferIOSurface::CreateFromHandleForTesting(
             std::move(handle), size, format, usage);
 #endif
 #if BUILDFLAG(IS_OZONE)
       case gfx::NATIVE_PIXMAP:
-        return GpuMemoryBufferImplNativePixmap::CreateFromHandleForTesting(
+        return MappableBufferNativePixmap::CreateFromHandleForTesting(
             client_native_pixmap_factory_.get(), std::move(handle), size,
             format, usage);
 #endif
 #if BUILDFLAG(IS_WIN)
       case gfx::DXGI_SHARED_HANDLE:
-        return GpuMemoryBufferImplDXGI::CreateFromHandleForTesting(
-            std::move(handle), size, format);
+        return MappableBufferDXGI::CreateFromHandleForTesting(std::move(handle),
+                                                              size, format);
 #endif
       default:
         NOTREACHED();
@@ -181,9 +181,9 @@ class GpuMemoryBufferImplTest : public testing::Test {
 #endif
 };
 
-TYPED_TEST_SUITE_P(GpuMemoryBufferImplTest);
+TYPED_TEST_SUITE_P(MappableBufferTest);
 
-TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandle) {
+TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
   const gfx::Size kBufferSize(8, 8);
 
   for (auto format : gfx::GetBufferFormatsForTesting()) {
@@ -215,15 +215,15 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandle) {
         continue;
       }
 
-      std::unique_ptr<GpuMemoryBufferImpl> buffer(
-          TestFixture::CreateGpuMemoryBufferImplFromHandle(
+      std::unique_ptr<MappableBuffer> buffer(
+          TestFixture::CreateMappableBufferFromHandle(
               std::move(handle), kBufferSize, format, usage));
       ASSERT_TRUE(buffer);
     }
   }
 }
 
-TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandleSmallBuffer) {
+TYPED_TEST_P(MappableBufferTest, CreateFromHandleSmallBuffer) {
   const gfx::Size kBufferSize(8, 8);
 
   for (auto format : gfx::GetBufferFormatsForTesting()) {
@@ -258,8 +258,8 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandleSmallBuffer) {
       bogus_size.Enlarge(100, 100);
 
       // Handle import should fail when the size is bigger than expected.
-      std::unique_ptr<GpuMemoryBufferImpl> buffer(
-          TestFixture::CreateGpuMemoryBufferImplFromHandle(
+      std::unique_ptr<MappableBuffer> buffer(
+          TestFixture::CreateMappableBufferFromHandle(
               std::move(handle), bogus_size, format, usage));
 
       // Only non-mappable GMB implementations can be imported with invalid
@@ -272,7 +272,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandleSmallBuffer) {
   }
 }
 
-TYPED_TEST_P(GpuMemoryBufferImplTest, Map) {
+TYPED_TEST_P(MappableBufferTest, Map) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
@@ -292,8 +292,8 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, Map) {
       continue;
     }
 
-    std::unique_ptr<GpuMemoryBufferImpl> buffer(
-        TestFixture::CreateGpuMemoryBufferImplFromHandle(
+    std::unique_ptr<MappableBuffer> buffer(
+        TestFixture::CreateMappableBufferFromHandle(
             std::move(handle), kBufferSize, format,
             gfx::BufferUsage::GPU_READ_CPU_READ_WRITE));
     ASSERT_TRUE(buffer);
@@ -334,7 +334,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, Map) {
   }
 }
 
-TYPED_TEST_P(GpuMemoryBufferImplTest, PersistentMap) {
+TYPED_TEST_P(MappableBufferTest, PersistentMap) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
@@ -354,8 +354,8 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, PersistentMap) {
       continue;
     }
 
-    std::unique_ptr<GpuMemoryBufferImpl> buffer(
-        TestFixture::CreateGpuMemoryBufferImplFromHandle(
+    std::unique_ptr<MappableBuffer> buffer(
+        TestFixture::CreateMappableBufferFromHandle(
             std::move(handle), kBufferSize, format,
             gfx::BufferUsage::GPU_READ_CPU_READ_WRITE));
     ASSERT_TRUE(buffer);
@@ -410,7 +410,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, PersistentMap) {
   }
 }
 
-TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
+TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
   const gfx::Size kBufferSize(8, 8);
   const gfx::GpuMemoryBufferType kBufferType = TypeParam::kBufferType;
 
@@ -447,17 +447,17 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
           handle, output_handle);
       EXPECT_EQ(output_handle.type, kBufferType);
 
-      std::unique_ptr<GpuMemoryBufferImpl> buffer(
-          TestFixture::CreateGpuMemoryBufferImplFromHandle(
+      std::unique_ptr<MappableBuffer> buffer(
+          TestFixture::CreateMappableBufferFromHandle(
               std::move(output_handle), kBufferSize, format, usage));
       ASSERT_TRUE(buffer);
     }
   }
 }
 
-// The GpuMemoryBufferImplTest test case verifies behavior that is expected
+// The MappableBufferTest test case verifies behavior that is expected
 // from a GpuMemoryBuffer implementation in order to be conformant.
-REGISTER_TYPED_TEST_SUITE_P(GpuMemoryBufferImplTest,
+REGISTER_TYPED_TEST_SUITE_P(MappableBufferTest,
                             CreateFromHandle,
                             CreateFromHandleSmallBuffer,
                             Map,
@@ -466,4 +466,4 @@ REGISTER_TYPED_TEST_SUITE_P(GpuMemoryBufferImplTest,
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_TEST_TEMPLATE_H_
+#endif  // GPU_IPC_COMMON_MAPPABLE_BUFFER_TEST_TEMPLATE_H_

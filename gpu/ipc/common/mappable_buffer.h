@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_H_
-#define GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_H_
+#ifndef GPU_IPC_COMMON_MAPPABLE_BUFFER_H_
+#define GPU_IPC_COMMON_MAPPABLE_BUFFER_H_
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -19,17 +19,17 @@ namespace gpu {
 
 // Provides common implementation of a GPU memory buffer.
 //
-class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl {
+class GPU_IPC_COMMON_EXPORT MappableBuffer {
  public:
   using CopyNativeBufferToShMemCallback =
       base::RepeatingCallback<void(gfx::GpuMemoryBufferHandle,
                                    base::UnsafeSharedMemoryRegion,
                                    base::OnceCallback<void(bool)>)>;
 
-  GpuMemoryBufferImpl(const GpuMemoryBufferImpl&) = delete;
-  GpuMemoryBufferImpl& operator=(const GpuMemoryBufferImpl&) = delete;
+  MappableBuffer(const MappableBuffer&) = delete;
+  MappableBuffer& operator=(const MappableBuffer&) = delete;
 
-  virtual ~GpuMemoryBufferImpl() = default;
+  virtual ~MappableBuffer() = default;
 
   // Maps each plane of the buffer into the client's address space so it can be
   // written to by the CPU. This call may block, for instance if the GPU needs
@@ -74,16 +74,16 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl {
   virtual gfx::GpuMemoryBufferHandle CloneHandle() const = 0;
 
 #if BUILDFLAG(IS_WIN)
-  // Used to set the use_premapped_memory flag in the GpuMemoryBufferImplDXGI to
+  // Used to set the use_premapped_memory flag in the MappableBufferDXGI to
   // indicate whether to use the premapped memory or not. It is only used with
-  // MappableSI. See GpuMemoryBufferImplDXGI override for more details.
+  // MappableSI. See MappableBufferDXGI override for more details.
   virtual void SetUsePreMappedMemory(bool use_premapped_memory) = 0;
 #endif
 
  protected:
-  GpuMemoryBufferImpl() = default;
+  MappableBuffer() = default;
 };
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_H_
+#endif  // GPU_IPC_COMMON_MAPPABLE_BUFFER_H_

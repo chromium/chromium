@@ -4205,7 +4205,7 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_lacros_release_gtests",
     targets = [
-        "gpu_memory_buffer_impl_tests_suite",
+        "mappable_buffer_tests_suite",
     ],
 )
 
@@ -4247,7 +4247,7 @@ targets.bundle(
         "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
         "gpu_desktop_specific_gtests",
-        "gpu_memory_buffer_impl_tests_suite",
+        "mappable_buffer_tests_suite",
         "gpu_vulkan_gtests",
     ],
 )
@@ -4456,32 +4456,6 @@ targets.bundle(
             ),
             "gpu_integration_test_common_args",
         ],
-    },
-)
-
-targets.bundle(
-    name = "gpu_memory_buffer_impl_tests_suite",
-    targets = [
-        "gpu_memory_buffer_impl_tests",
-    ],
-    per_test_modifications = {
-        "gpu_memory_buffer_impl_tests": targets.mixin(
-            args = [
-                "--enable-gpu",
-                "--use-gpu-in-tests",
-                "--gtest_filter=*GpuMemoryBufferImplTest*",
-            ],
-            lacros_args = [
-                "--ozone-platform=wayland",
-                "--xvfb",
-                "--no-xvfb",
-                "--use-weston",
-                "--weston-use-gl",
-            ],
-            linux_args = [
-                "--no-xvfb",
-            ],
-        ),
     },
 )
 
@@ -6177,6 +6151,32 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 7,
             ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "mappable_buffer_tests_suite",
+    targets = [
+        "mappable_buffer_tests",
+    ],
+    per_test_modifications = {
+        "mappable_buffer_tests": targets.mixin(
+            args = [
+                "--enable-gpu",
+                "--use-gpu-in-tests",
+                "--gtest_filter=*MappableBufferTest*",
+            ],
+            lacros_args = [
+                "--ozone-platform=wayland",
+                "--xvfb",
+                "--no-xvfb",
+                "--use-weston",
+                "--weston-use-gl",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
         ),
     },
 )

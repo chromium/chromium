@@ -6,7 +6,7 @@
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
+#include "gpu/ipc/common/mappable_buffer_dxgi.h"
 
 #include <d3d11.h>
 #include <dxgi1_2.h>
@@ -27,26 +27,25 @@
 
 namespace gpu {
 
-GpuMemoryBufferImplDXGI::~GpuMemoryBufferImplDXGI() {
+MappableBufferDXGI::~MappableBufferDXGI() {
   base::AutoLock auto_lock(map_lock_);
   CHECK(!async_mapping_in_progress_);
   CHECK_EQ(map_count_, 0u);
 }
 
-std::unique_ptr<GpuMemoryBufferImplDXGI>
-GpuMemoryBufferImplDXGI::CreateFromHandle(
+std::unique_ptr<MappableBufferDXGI> MappableBufferDXGI::CreateFromHandle(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
     CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   DCHECK(handle.dxgi_handle().IsValid());
-  return base::WrapUnique(new GpuMemoryBufferImplDXGI(
+  return base::WrapUnique(new MappableBufferDXGI(
       size, format, std::move(handle).dxgi_handle(),
       std::move(copy_native_buffer_to_shmem_callback), std::move(pool)));
 }
 
-base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
+base::OnceClosure MappableBufferDXGI::AllocateForTesting(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -96,7 +95,7 @@ base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
   return base::DoNothing();
 }
 
-bool GpuMemoryBufferImplDXGI::Map() {
+bool MappableBufferDXGI::Map() {
   base::WaitableEvent event;
   bool mapping_result = false;
   // Note: this can be called from multiple threads at the same time. Some of
@@ -116,8 +115,7 @@ bool GpuMemoryBufferImplDXGI::Map() {
   return mapping_result;
 }
 
-void GpuMemoryBufferImplDXGI::MapAsync(
-    base::OnceCallback<void(bool)> result_cb) {
+void MappableBufferDXGI::MapAsync(base::OnceCallback<void(bool)> result_cb) {
   std::optional<base::OnceCallback<void(void)>> early_result;
   early_result = DoMapAsync(std::move(result_cb));
   // Can't run the callback inside DoMapAsync because it grabs the lock.
@@ -126,8 +124,8 @@ void GpuMemoryBufferImplDXGI::MapAsync(
   }
 }
 
-std::optional<base::OnceCallback<void(void)>>
-GpuMemoryBufferImplDXGI::DoMapAsync(base::OnceCallback<void(bool)> result_cb) {
+std::optional<base::OnceCallback<void(void)>> MappableBufferDXGI::DoMapAsync(
+    base::OnceCallback<void(bool)> result_cb) {
   base::AutoLock auto_lock(map_lock_);
   if (map_count_ > 0) {
     ++map_count_;
@@ -149,7 +147,7 @@ GpuMemoryBufferImplDXGI::DoMapAsync(base::OnceCallback<void(bool)> result_cb) {
       if (premapped_memory_.data() &&
           premapped_memory_.size() <
               gfx::BufferSizeForBufferFormat(size_, format_)) {
-        LOG(ERROR) << "GpuMemoryBufferImplDXGI: Premapped memory has "
+        LOG(ERROR) << "MappableBufferDXGI: Premapped memory has "
                       "insufficient size.";
         premapped_memory_ = base::span<uint8_t>();
         region_mapping_ = base::WritableSharedMemoryMapping();
@@ -183,14 +181,13 @@ GpuMemoryBufferImplDXGI::DoMapAsync(base::OnceCallback<void(bool)> result_cb) {
   // executes. This is CHECKed in the destructor.
   copy_native_buffer_to_shmem_callback_.Run(
       CloneHandle(), shared_memory_handle_->GetRegion().Duplicate(),
-      base::BindOnce(&GpuMemoryBufferImplDXGI::CheckAsyncMapResult,
+      base::BindOnce(&MappableBufferDXGI::CheckAsyncMapResult,
                      base::Unretained(this)));
 
   return std::nullopt;
 }
 
-void GpuMemoryBufferImplDXGI::CheckAsyncMapResult(
-    bool result) {
+void MappableBufferDXGI::CheckAsyncMapResult(bool result) {
   std::vector<base::OnceCallback<void(bool)>> map_callbacks;
   {
     // Must not hold the lock during the callbacks calls.
@@ -210,11 +207,11 @@ void GpuMemoryBufferImplDXGI::CheckAsyncMapResult(
   }
 }
 
-bool GpuMemoryBufferImplDXGI::AsyncMappingIsNonBlocking() const {
+bool MappableBufferDXGI::AsyncMappingIsNonBlocking() const {
   return true;
 }
 
-void* GpuMemoryBufferImplDXGI::memory(size_t plane) {
+void* MappableBufferDXGI::memory(size_t plane) {
   AssertMapped();
 
   if (plane > gfx::NumberOfPlanesForLinearBufferFormat(format_) ||
@@ -233,27 +230,28 @@ void* GpuMemoryBufferImplDXGI::memory(size_t plane) {
   return plane_addr;
 }
 
-void GpuMemoryBufferImplDXGI::Unmap() {
+void MappableBufferDXGI::Unmap() {
   base::AutoLock auto_lock(map_lock_);
   DCHECK_GT(map_count_, 0u);
   CHECK(!async_mapping_in_progress_);
-  if (--map_count_)
+  if (--map_count_) {
     return;
+  }
 
   if (shared_memory_handle_) {
     shared_memory_handle_.reset();
   }
 }
 
-int GpuMemoryBufferImplDXGI::stride(size_t plane) const {
+int MappableBufferDXGI::stride(size_t plane) const {
   return gfx::RowSizeForBufferFormat(size_.width(), format_, plane);
 }
 
-gfx::GpuMemoryBufferType GpuMemoryBufferImplDXGI::GetType() const {
+gfx::GpuMemoryBufferType MappableBufferDXGI::GetType() const {
   return gfx::DXGI_SHARED_HANDLE;
 }
 
-gfx::GpuMemoryBufferHandle GpuMemoryBufferImplDXGI::CloneHandle() const {
+gfx::GpuMemoryBufferHandle MappableBufferDXGI::CloneHandle() const {
   gfx::GpuMemoryBufferHandle handle(dxgi_handle_.Clone());
   handle.offset = 0;
   handle.stride = stride(0);
@@ -261,11 +259,11 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplDXGI::CloneHandle() const {
   return handle;
 }
 
-void GpuMemoryBufferImplDXGI::SetUsePreMappedMemory(bool use_premapped_memory) {
+void MappableBufferDXGI::SetUsePreMappedMemory(bool use_premapped_memory) {
   use_premapped_memory_ = use_premapped_memory;
 }
 
-gfx::GpuMemoryBufferHandle GpuMemoryBufferImplDXGI::CloneHandleWithRegion(
+gfx::GpuMemoryBufferHandle MappableBufferDXGI::CloneHandleWithRegion(
     base::UnsafeSharedMemoryRegion region) const {
   gfx::GpuMemoryBufferHandle handle(
       dxgi_handle_.CloneWithRegion(std::move(region)));
@@ -274,22 +272,22 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplDXGI::CloneHandleWithRegion(
   return handle;
 }
 
-HANDLE GpuMemoryBufferImplDXGI::GetHandle() const {
+HANDLE MappableBufferDXGI::GetHandle() const {
   return dxgi_handle_.buffer_handle();
 }
 
-const gfx::DXGIHandleToken& GpuMemoryBufferImplDXGI::GetToken() const {
+const gfx::DXGIHandleToken& MappableBufferDXGI::GetToken() const {
   return dxgi_handle_.token();
 }
 
-void GpuMemoryBufferImplDXGI::AssertMapped() {
+void MappableBufferDXGI::AssertMapped() {
 #if DCHECK_IS_ON()
   base::AutoLock auto_lock(map_lock_);
   DCHECK_GT(map_count_, 0u);
 #endif
 }
 
-GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
+MappableBufferDXGI::MappableBufferDXGI(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::DXGIHandle dxgi_handle,

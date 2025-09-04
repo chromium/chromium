@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
+#include "gpu/ipc/common/mappable_buffer_shared_memory.h"
 
 #include <stdint.h>
 
@@ -20,7 +20,7 @@
 
 namespace gpu {
 
-GpuMemoryBufferImplSharedMemory::GpuMemoryBufferImplSharedMemory(
+MappableBufferSharedMemory::MappableBufferSharedMemory(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -35,7 +35,7 @@ GpuMemoryBufferImplSharedMemory::GpuMemoryBufferImplSharedMemory(
       offset_(offset),
       stride_(stride) {}
 
-GpuMemoryBufferImplSharedMemory::~GpuMemoryBufferImplSharedMemory() {
+MappableBufferSharedMemory::~MappableBufferSharedMemory() {
 #if DCHECK_IS_ON()
   {
     base::AutoLock auto_lock(map_lock_);
@@ -44,7 +44,7 @@ GpuMemoryBufferImplSharedMemory::~GpuMemoryBufferImplSharedMemory() {
 #endif
 }
 
-void GpuMemoryBufferImplSharedMemory::AssertMapped() {
+void MappableBufferSharedMemory::AssertMapped() {
 #if DCHECK_IS_ON()
   base::AutoLock auto_lock(map_lock_);
   DCHECK_GT(map_count_, 0u);
@@ -52,12 +52,11 @@ void GpuMemoryBufferImplSharedMemory::AssertMapped() {
 }
 
 // static
-std::unique_ptr<GpuMemoryBufferImplSharedMemory>
-GpuMemoryBufferImplSharedMemory::CreateFromHandle(
-    gfx::GpuMemoryBufferHandle handle,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
+std::unique_ptr<MappableBufferSharedMemory>
+MappableBufferSharedMemory::CreateFromHandle(gfx::GpuMemoryBufferHandle handle,
+                                             const gfx::Size& size,
+                                             gfx::BufferFormat format,
+                                             gfx::BufferUsage usage) {
   DCHECK(handle.region().IsValid());
 
   size_t minimum_stride = 0;
@@ -69,19 +68,22 @@ GpuMemoryBufferImplSharedMemory::CreateFromHandle(
   size_t min_buffer_size = 0;
 
   if (gfx::NumberOfPlanesForLinearBufferFormat(format) == 1) {
-    if (handle.stride < minimum_stride)
+    if (handle.stride < minimum_stride) {
       return nullptr;
+    }
 
     base::CheckedNumeric<size_t> checked_min_buffer_size = handle.stride;
     checked_min_buffer_size *= size.height() - 1;
     checked_min_buffer_size += minimum_stride;
-    if (!checked_min_buffer_size.AssignIfValid(&min_buffer_size))
+    if (!checked_min_buffer_size.AssignIfValid(&min_buffer_size)) {
       return nullptr;
+    }
   } else {
     // Custom layout (i.e. non-standard stride) is not allowed for multi-plane
     // formats.
-    if (handle.stride != minimum_stride)
+    if (handle.stride != minimum_stride) {
       return nullptr;
+    }
 
     if (!gfx::BufferSizeForBufferFormatChecked(size, format,
                                                &min_buffer_size)) {
@@ -101,13 +103,13 @@ GpuMemoryBufferImplSharedMemory::CreateFromHandle(
 
   const uint32_t offset = handle.offset;
   const uint32_t stride = handle.stride;
-  return base::WrapUnique(new GpuMemoryBufferImplSharedMemory(
+  return base::WrapUnique(new MappableBufferSharedMemory(
       size, format, usage, std::move(handle).region(),
       base::WritableSharedMemoryMapping(), offset, stride));
 }
 
 // static
-base::OnceClosure GpuMemoryBufferImplSharedMemory::AllocateForTesting(
+base::OnceClosure MappableBufferSharedMemory::AllocateForTesting(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -124,7 +126,7 @@ base::OnceClosure GpuMemoryBufferImplSharedMemory::AllocateForTesting(
   return base::DoNothing();
 }
 
-bool GpuMemoryBufferImplSharedMemory::Map() {
+bool MappableBufferSharedMemory::Map() {
   base::AutoLock auto_lock(map_lock_);
   if (map_count_++) {
     DCHECK(shared_memory_mapping_.IsValid());
@@ -141,13 +143,14 @@ bool GpuMemoryBufferImplSharedMemory::Map() {
     // map offset + buffer_size here but this can be avoided using MapAt().
     size_t map_size = offset_ + buffer_size;
     shared_memory_mapping_ = shared_memory_region_.MapAt(0, map_size);
-    if (!shared_memory_mapping_.IsValid())
+    if (!shared_memory_mapping_.IsValid()) {
       base::TerminateBecauseOutOfMemory(map_size);
+    }
   }
   return true;
 }
 
-void* GpuMemoryBufferImplSharedMemory::memory(size_t plane) {
+void* MappableBufferSharedMemory::memory(size_t plane) {
   AssertMapped();
   DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
   return UNSAFE_TODO(static_cast<uint8_t*>(shared_memory_mapping_.memory()) +
@@ -155,35 +158,34 @@ void* GpuMemoryBufferImplSharedMemory::memory(size_t plane) {
                      gfx::BufferOffsetForBufferFormat(size_, format_, plane));
 }
 
-void GpuMemoryBufferImplSharedMemory::Unmap() {
+void MappableBufferSharedMemory::Unmap() {
   base::AutoLock auto_lock(map_lock_);
   DCHECK_GT(map_count_, 0u);
   --map_count_;
 }
 
-int GpuMemoryBufferImplSharedMemory::stride(size_t plane) const {
+int MappableBufferSharedMemory::stride(size_t plane) const {
   DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
   return gfx::RowSizeForBufferFormat(size_.width(), format_, plane);
 }
 
-gfx::GpuMemoryBufferType GpuMemoryBufferImplSharedMemory::GetType() const {
+gfx::GpuMemoryBufferType MappableBufferSharedMemory::GetType() const {
   return gfx::SHARED_MEMORY_BUFFER;
 }
 
-gfx::GpuMemoryBufferHandle GpuMemoryBufferImplSharedMemory::CloneHandle()
-    const {
+gfx::GpuMemoryBufferHandle MappableBufferSharedMemory::CloneHandle() const {
   gfx::GpuMemoryBufferHandle handle(shared_memory_region_.Duplicate());
   handle.offset = offset_;
   handle.stride = stride_;
   return handle;
 }
 
-void GpuMemoryBufferImplSharedMemory::MapAsync(
+void MappableBufferSharedMemory::MapAsync(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(Map());
 }
 
-bool GpuMemoryBufferImplSharedMemory::AsyncMappingIsNonBlocking() const {
+bool MappableBufferSharedMemory::AsyncMappingIsNonBlocking() const {
   return false;
 }
 

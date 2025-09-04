@@ -1308,7 +1308,7 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "gpu_memory_buffer_impl_tests",
+    name = "mappable_buffer_tests",
     mixins = [
         "gpu_gtest_common_args",
     ],

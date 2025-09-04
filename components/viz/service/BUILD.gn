@@ -293,7 +293,7 @@ viz_component("service") {
     "//components/input:mojom",
     "//components/startup_metric_utils",
 
-    # Note that dependency on //gpu/ipc/client is for GpuMemoryBufferImpl. This
+    # Note that dependency on //gpu/ipc/client is for MappableBuffer. This
     # dependency should not be in public_deps.
     "//components/version_info",
     "//components/viz/client",

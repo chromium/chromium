@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_DXGI_H_
-#define GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_DXGI_H_
+#ifndef GPU_IPC_COMMON_MAPPABLE_BUFFER_DXGI_H_
+#define GPU_IPC_COMMON_MAPPABLE_BUFFER_DXGI_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -21,7 +21,7 @@
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
+#include "gpu/ipc/common/mappable_buffer.h"
 #include "ui/gfx/color_space.h"
 
 namespace gpu {
@@ -29,18 +29,17 @@ namespace gpu {
 class ClientSharedImage;
 
 // Implementation of GPU memory buffer based on dxgi textures.
-class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
-    : public GpuMemoryBufferImpl {
+class GPU_IPC_COMMON_EXPORT MappableBufferDXGI : public MappableBuffer {
  public:
-  GpuMemoryBufferImplDXGI(const GpuMemoryBufferImplDXGI&) = delete;
-  GpuMemoryBufferImplDXGI& operator=(const GpuMemoryBufferImplDXGI&) = delete;
+  MappableBufferDXGI(const MappableBufferDXGI&) = delete;
+  MappableBufferDXGI& operator=(const MappableBufferDXGI&) = delete;
 
-  ~GpuMemoryBufferImplDXGI() override;
+  ~MappableBufferDXGI() override;
 
   static constexpr gfx::GpuMemoryBufferType kBufferType =
       gfx::DXGI_SHARED_HANDLE;
 
-  static std::unique_ptr<GpuMemoryBufferImplDXGI> CreateFromHandleForTesting(
+  static std::unique_ptr<MappableBufferDXGI> CreateFromHandleForTesting(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format) {
@@ -81,7 +80,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
  private:
   friend ClientSharedImage;
 
-  static std::unique_ptr<GpuMemoryBufferImplDXGI> CreateFromHandle(
+  static std::unique_ptr<MappableBufferDXGI> CreateFromHandle(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
@@ -89,7 +88,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
           CopyNativeBufferToShMemCallback(),
       scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
 
-  GpuMemoryBufferImplDXGI(
+  MappableBufferDXGI(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::DXGIHandle dxgi_handle,
@@ -150,4 +149,4 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_DXGI_H_
+#endif  // GPU_IPC_COMMON_MAPPABLE_BUFFER_DXGI_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_NATIVE_PIXMAP_H_
-#define GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_NATIVE_PIXMAP_H_
+#ifndef GPU_IPC_COMMON_MAPPABLE_BUFFER_NATIVE_PIXMAP_H_
+#define GPU_IPC_COMMON_MAPPABLE_BUFFER_NATIVE_PIXMAP_H_
 
 #include <stddef.h>
 
@@ -12,7 +12,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
+#include "gpu/ipc/common/mappable_buffer.h"
 
 namespace gfx {
 class ClientNativePixmap;
@@ -24,20 +24,17 @@ namespace gpu {
 class ClientSharedImage;
 
 // Implementation of GPU memory buffer based on Ozone native pixmap.
-class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
-    : public GpuMemoryBufferImpl {
+class GPU_IPC_COMMON_EXPORT MappableBufferNativePixmap : public MappableBuffer {
  public:
-  GpuMemoryBufferImplNativePixmap(const GpuMemoryBufferImplNativePixmap&) =
+  MappableBufferNativePixmap(const MappableBufferNativePixmap&) = delete;
+  MappableBufferNativePixmap& operator=(const MappableBufferNativePixmap&) =
       delete;
-  GpuMemoryBufferImplNativePixmap& operator=(
-      const GpuMemoryBufferImplNativePixmap&) = delete;
 
-  ~GpuMemoryBufferImplNativePixmap() override;
+  ~MappableBufferNativePixmap() override;
 
   static constexpr gfx::GpuMemoryBufferType kBufferType = gfx::NATIVE_PIXMAP;
 
-  static std::unique_ptr<GpuMemoryBufferImplNativePixmap>
-  CreateFromHandleForTesting(
+  static std::unique_ptr<MappableBufferNativePixmap> CreateFromHandleForTesting(
       gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
@@ -53,7 +50,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
       gfx::BufferUsage usage,
       gfx::GpuMemoryBufferHandle* handle);
 
-  // Overridden from GpuMemoryBufferImpl:
+  // Overridden from MappableBuffer:
   bool Map() override;
   void MapAsync(base::OnceCallback<void(bool)> callback) override;
   bool AsyncMappingIsNonBlocking() const override;
@@ -66,14 +63,14 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
  private:
   friend class ClientSharedImage;
 
-  static std::unique_ptr<GpuMemoryBufferImplNativePixmap> CreateFromHandle(
+  static std::unique_ptr<MappableBufferNativePixmap> CreateFromHandle(
       gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage);
 
-  GpuMemoryBufferImplNativePixmap(
+  MappableBufferNativePixmap(
       const gfx::Size& size,
       gfx::BufferFormat format,
       std::unique_ptr<gfx::ClientNativePixmap> native_pixmap);
@@ -92,4 +89,4 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_NATIVE_PIXMAP_H_
+#endif  // GPU_IPC_COMMON_MAPPABLE_BUFFER_NATIVE_PIXMAP_H_

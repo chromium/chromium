@@ -94,7 +94,7 @@
         "args": [
           "--enable-gpu",
           "--use-gpu-in-tests",
-          "--gtest_filter=*GpuMemoryBufferImplTest*",
+          "--gtest_filter=*MappableBufferTest*",
           "--no-xvfb"
         ],
         "merge": {
@@ -102,7 +102,7 @@
         },
         "module_name": "//gpu:gpu_unittests/",
         "module_scheme": "gtest",
-        "name": "gpu_memory_buffer_impl_tests",
+        "name": "mappable_buffer_tests",
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {

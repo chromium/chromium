@@ -414,7 +414,7 @@ bool VideoCaptureImpl::ProcessBuffer(
 #endif
 
       // Premapping of |gmb_handle.region| occurs in |buffer_context| when there
-      // is no GPU connection and inside GpuMemoryBufferImplDXGI when there is a
+      // is no GPU connection and inside MappableBufferDXGI when there is a
       // GPU connection.
       // Reset premapping in |buffer_context| to prevent concurrent mappings
       // that can occur when the GPU connection is lost and re-established.

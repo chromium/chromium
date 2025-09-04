@@ -512,8 +512,8 @@ test("gpu_unittests") {
     "config/gpu_util_unittest.cc",
     "ipc/client/command_buffer_proxy_impl_unittest.cc",
     "ipc/client/image_decode_accelerator_proxy_unittest.cc",
-    "ipc/common/gpu_memory_buffer_impl_shared_memory_unittest.cc",
-    "ipc/common/gpu_memory_buffer_impl_test_template.h",
+    "ipc/common/mappable_buffer_shared_memory_unittest.cc",
+    "ipc/common/mappable_buffer_test_template.h",
     "ipc/common/mojom_traits_unittest.cc",
     "ipc/host/gpu_disk_cache_unittest.cc",
     "ipc/service/gpu_channel_test_common.cc",
@@ -553,7 +553,7 @@ test("gpu_unittests") {
 
   if (is_mac) {
     sources += [
-      "ipc/common/gpu_memory_buffer_impl_io_surface_unittest.cc",
+      "ipc/common/mappable_buffer_io_surface_unittest.cc",
       "ipc/service/gpu_memory_buffer_factory_io_surface_unittest.cc",
     ]
   }
@@ -568,14 +568,14 @@ test("gpu_unittests") {
 
   if (is_linux || is_chromeos || use_ozone) {
     sources += [
-      "ipc/common/gpu_memory_buffer_impl_native_pixmap_unittest.cc",
+      "ipc/common/mappable_buffer_native_pixmap_unittest.cc",
       "ipc/service/gpu_memory_buffer_factory_native_pixmap_unittest.cc",
     ]
   }
 
   if (is_win) {
     sources += [
-      "ipc/common/gpu_memory_buffer_impl_dxgi_unittest.cc",
+      "ipc/common/mappable_buffer_dxgi_unittest.cc",
       "ipc/service/gpu_memory_buffer_factory_dxgi_unittest.cc",
     ]
   }

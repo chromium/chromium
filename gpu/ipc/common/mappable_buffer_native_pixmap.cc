@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
+#include "gpu/ipc/common/mappable_buffer_native_pixmap.h"
 
 #include <utility>
 
@@ -27,13 +27,13 @@ void FreeNativePixmapForTesting(
 
 }  // namespace
 
-GpuMemoryBufferImplNativePixmap::GpuMemoryBufferImplNativePixmap(
+MappableBufferNativePixmap::MappableBufferNativePixmap(
     const gfx::Size& size,
     gfx::BufferFormat format,
     std::unique_ptr<gfx::ClientNativePixmap> pixmap)
     : size_(size), format_(format), pixmap_(std::move(pixmap)) {}
 
-GpuMemoryBufferImplNativePixmap::~GpuMemoryBufferImplNativePixmap() {
+MappableBufferNativePixmap::~MappableBufferNativePixmap() {
 #if DCHECK_IS_ON()
   {
     base::AutoLock auto_lock(map_lock_);
@@ -42,7 +42,7 @@ GpuMemoryBufferImplNativePixmap::~GpuMemoryBufferImplNativePixmap() {
 #endif
 }
 
-void GpuMemoryBufferImplNativePixmap::AssertMapped() {
+void MappableBufferNativePixmap::AssertMapped() {
 #if DCHECK_IS_ON()
   base::AutoLock auto_lock(map_lock_);
   DCHECK_GT(map_count_, 0u);
@@ -50,8 +50,8 @@ void GpuMemoryBufferImplNativePixmap::AssertMapped() {
 }
 
 // static
-std::unique_ptr<GpuMemoryBufferImplNativePixmap>
-GpuMemoryBufferImplNativePixmap::CreateFromHandle(
+std::unique_ptr<MappableBufferNativePixmap>
+MappableBufferNativePixmap::CreateFromHandle(
     gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
@@ -60,15 +60,16 @@ GpuMemoryBufferImplNativePixmap::CreateFromHandle(
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory->ImportFromHandle(
           std::move(handle).native_pixmap_handle(), size, format, usage);
-  if (!native_pixmap)
+  if (!native_pixmap) {
     return nullptr;
+  }
 
-  return base::WrapUnique(new GpuMemoryBufferImplNativePixmap(
-      size, format, std::move(native_pixmap)));
+  return base::WrapUnique(
+      new MappableBufferNativePixmap(size, format, std::move(native_pixmap)));
 }
 
 // static
-base::OnceClosure GpuMemoryBufferImplNativePixmap::AllocateForTesting(
+base::OnceClosure MappableBufferNativePixmap::AllocateForTesting(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -95,10 +96,11 @@ base::OnceClosure GpuMemoryBufferImplNativePixmap::AllocateForTesting(
   return base::BindOnce(&FreeNativePixmapForTesting, pixmap);
 }
 
-bool GpuMemoryBufferImplNativePixmap::Map() {
+bool MappableBufferNativePixmap::Map() {
   base::AutoLock auto_lock(map_lock_);
-  if (map_count_++)
+  if (map_count_++) {
     return true;
+  }
 
   if (gfx::NumberOfPlanesForLinearBufferFormat(format_) !=
       pixmap_->GetNumberOfPlanes()) {
@@ -117,42 +119,42 @@ bool GpuMemoryBufferImplNativePixmap::Map() {
   return true;
 }
 
-void* GpuMemoryBufferImplNativePixmap::memory(size_t plane) {
+void* MappableBufferNativePixmap::memory(size_t plane) {
   AssertMapped();
   return pixmap_->GetMemoryAddress(plane);
 }
 
-void GpuMemoryBufferImplNativePixmap::Unmap() {
+void MappableBufferNativePixmap::Unmap() {
   base::AutoLock auto_lock(map_lock_);
   DCHECK_GT(map_count_, 0u);
-  if (--map_count_)
+  if (--map_count_) {
     return;
+  }
 
   pixmap_->Unmap();
 }
 
-int GpuMemoryBufferImplNativePixmap::stride(size_t plane) const {
+int MappableBufferNativePixmap::stride(size_t plane) const {
   // The caller is responsible for ensuring that |plane| is within bounds.
   CHECK_LT(plane, pixmap_->GetNumberOfPlanes());
   return pixmap_->GetStride(plane);
 }
 
-gfx::GpuMemoryBufferType GpuMemoryBufferImplNativePixmap::GetType() const {
+gfx::GpuMemoryBufferType MappableBufferNativePixmap::GetType() const {
   return gfx::NATIVE_PIXMAP;
 }
 
-gfx::GpuMemoryBufferHandle GpuMemoryBufferImplNativePixmap::CloneHandle()
-    const {
+gfx::GpuMemoryBufferHandle MappableBufferNativePixmap::CloneHandle() const {
   gfx::GpuMemoryBufferHandle handle(pixmap_->CloneHandleForIPC());
   return handle;
 }
 
-void GpuMemoryBufferImplNativePixmap::MapAsync(
+void MappableBufferNativePixmap::MapAsync(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(Map());
 }
 
-bool GpuMemoryBufferImplNativePixmap::AsyncMappingIsNonBlocking() const {
+bool MappableBufferNativePixmap::AsyncMappingIsNonBlocking() const {
   return false;
 }
 
