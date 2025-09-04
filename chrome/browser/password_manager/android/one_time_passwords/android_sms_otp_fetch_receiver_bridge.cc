@@ -6,6 +6,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/functional/bind.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/password_manager/android/one_time_passwords/jni_headers/AndroidSmsOtpFetchReceiverBridge_jni.h"
@@ -43,18 +46,42 @@ void AndroidSmsOtpFetchReceiverBridge::SetConsumer(
 void AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrieved(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& otp_value) {
+  std::string otp_str = base::android::ConvertJavaStringToUTF8(env, otp_value);
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrievedInternal,
+          weak_factory_.GetWeakPtr(), otp_str));
+}
+
+void AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrievedInternal(
+    const std::string& otp_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
   if (!consumer_) {
     return;
   }
-  consumer_->OnOtpValueRetrieved(
-      base::android::ConvertJavaStringToUTF8(env, otp_value));
+  consumer_->OnOtpValueRetrieved(otp_value);
 }
 
 void AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrievalError(
     JNIEnv* env,
     jint api_error_code) {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrievalErrorInternal,
+          weak_factory_.GetWeakPtr(), api_error_code));
+}
+
+void AndroidSmsOtpFetchReceiverBridge::OnOtpValueRetrievalErrorInternal(
+    jint api_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  if (!consumer_) {
+    return;
+  }
   consumer_->OnOtpValueRetrievalError(
       static_cast<SmsOtpRetrievalApiErrorCode>(api_error_code));
 }

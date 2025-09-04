@@ -52,6 +52,12 @@ class AndroidSmsOtpFetchReceiverBridge {
   static std::unique_ptr<AndroidSmsOtpFetchReceiverBridge> Create();
 
  private:
+  // Method to be run on the correct sequence when value retrieval succeeds.
+  void OnOtpValueRetrievedInternal(const std::string& otp_value);
+
+  // Method to be run on the correct sequence when value retrieval fails.
+  void OnOtpValueRetrievalErrorInternal(jint api_error_code);
+
   // The consumer to be notified when an OTP retrieval request finishes.
   base::WeakPtr<Consumer> consumer_;
 
@@ -60,6 +66,7 @@ class AndroidSmsOtpFetchReceiverBridge {
 
   // To check that all calls are executed on the default UI sequence.
   SEQUENCE_CHECKER(main_sequence_checker_);
+  base::WeakPtrFactory<AndroidSmsOtpFetchReceiverBridge> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ONE_TIME_PASSWORDS_ANDROID_SMS_OTP_FETCH_RECEIVER_BRIDGE_H_
