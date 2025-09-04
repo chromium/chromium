@@ -330,7 +330,7 @@ public class ClipboardImpl extends Clipboard
     }
 
     @Override
-    protected boolean hasImage() {
+    public boolean hasImage() {
         ClipDescription description = mClipboardManager.getPrimaryClipDescription();
         return hasImageMimeType(description);
     }

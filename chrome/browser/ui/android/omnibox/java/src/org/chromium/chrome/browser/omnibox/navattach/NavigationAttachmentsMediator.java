@@ -112,10 +112,14 @@ class NavigationAttachmentsMediator {
         }
     }
 
-    private void onToggleAttachmentsPopup() {
+    @VisibleForTesting
+    void onToggleAttachmentsPopup() {
         if (mPopup.isShowing()) {
             mPopup.dismiss();
         } else {
+            mModel.set(
+                    NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE,
+                    Clipboard.getInstance().hasImage());
             mPopup.show();
         }
     }

@@ -25,7 +25,8 @@ found in the LICENSE file.
         app:drawableTint="@color/default_icon_color_tint_list"
         android:text="@string/clipboard_permission_title"
         android:singleLine="true"
-        android:textAlignment="viewStart"/>
+        android:textAlignment="viewStart"
+        android:visibility="gone"/>
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/navigation_attachments_camera_button"

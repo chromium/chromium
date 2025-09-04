@@ -19,6 +19,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
@@ -105,6 +106,12 @@ public class Clipboard {
      */
     public static void resetForTesting() {
         sInstance = null;
+    }
+
+    @VisibleForTesting
+    public static void setInstanceForTesting(Clipboard instance) {
+        sInstance = instance;
+        ResettersForTesting.register(Clipboard::resetForTesting);
     }
 
     /** Cleans up clipboard on native side. */
@@ -219,7 +226,7 @@ public class Clipboard {
     }
 
     @CalledByNative
-    protected boolean hasImage() {
+    public boolean hasImage() {
         return false;
     }
 

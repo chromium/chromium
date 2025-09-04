@@ -38,6 +38,11 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED) {
             view.popup.mCameraButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_CAMERA_CLICKED).run());
+        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE) {
+            view.popup.mClipboardButton.setVisibility(
+                    model.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED) {
             view.popup.mClipboardButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED).run());

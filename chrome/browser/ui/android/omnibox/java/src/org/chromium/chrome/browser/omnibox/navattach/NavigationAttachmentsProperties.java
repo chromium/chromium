@@ -34,6 +34,10 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> POPUP_CAMERA_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the Clipboard button in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_CLIPBOARD_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /** Action to perform when the user clicks the Clipboard button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_CLIPBOARD_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -56,6 +60,7 @@ class NavigationAttachmentsProperties {
         BUTTON_ADD_CLICKED,
         ON_USE_AI_MODE_CHANGED,
         POPUP_CAMERA_CLICKED,
+        POPUP_CLIPBOARD_BUTTON_VISIBLE,
         POPUP_CLIPBOARD_CLICKED,
         POPUP_FILE_CLICKED,
         POPUP_GALLERY_CLICKED,

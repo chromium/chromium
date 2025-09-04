@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.navattach.AttachmentDetailsFetcher.AttachmentDetails;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -49,6 +50,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     private @Mock WindowAndroid mWindowAndroid;
     private @Mock Profile mProfile;
     private @Mock ComposeBoxQueryControllerBridge.Natives mNativeMock;
+    private @Mock Clipboard mClipboard;
 
     private Context mContext;
     private PropertyModel mModel;
@@ -71,6 +73,7 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 new ModelList(),
                                 mProfileSupplier));
         ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mNativeMock);
+        Clipboard.setInstanceForTesting(mClipboard);
     }
 
     @Test
@@ -165,5 +168,19 @@ public class NavigationAttachmentsMediatorUnitTest {
         mMediator.onUseAiModeChanged(false);
         assertFalse(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
         assertEquals(0, modelList.size());
+    }
+
+    @Test
+    public void onToggleAttachmentsPopup_clipboardHasImage_showsClipboardButton() {
+        doReturn(true).when(mClipboard).hasImage();
+        mMediator.onToggleAttachmentsPopup();
+        assertTrue(mModel.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void onToggleAttachmentsPopup_clipboardDoesNotHaveImage_hidesClipboardButton() {
+        doReturn(false).when(mClipboard).hasImage();
+        mMediator.onToggleAttachmentsPopup();
+        assertFalse(mModel.get(NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE));
     }
 }
