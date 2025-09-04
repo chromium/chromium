@@ -597,8 +597,16 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
   EXPECT_LT(bubble_bounds.y(), web_contents_bounds_in_screen.bottom());
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BubblePositioningSmallNonBrowserContext \
+  DISABLED_BubblePositioningSmallNonBrowserContext
+#else
+#define MAYBE_BubblePositioningSmallNonBrowserContext \
+  BubblePositioningSmallNonBrowserContext
+#endif
+// TODO(crbug.com/422049338): Re-enable once flakiness is addressed.
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
-                       BubblePositioningSmallNonBrowserContext) {
+                       MAYBE_BubblePositioningSmallNonBrowserContext) {
   auto context_widget =
       MakeWebViewWidget(browser()->profile(), {{0, 0}, {300, 100}});
 
