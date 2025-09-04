@@ -819,6 +819,9 @@ void AutofillManager::RunMlModels(
       std::move(receive_predictions).Run(std::move(context), {});
       return;
     }
+    LOG_AF(manager->client().GetCurrentLogManager())
+        << LoggingScope::kParsing << LogMessage::kTriggeringClientsideModelFor
+        << HeuristicSourceToString(source);
     manager->SubscribeToMlModelChanges(*ml_handler);
     std::vector<FormData> form_datas = base::ToVector(
         context.form_structures,

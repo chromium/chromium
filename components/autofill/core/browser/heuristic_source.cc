@@ -37,4 +37,16 @@ std::optional<PatternFile> HeuristicSourceToPatternFile(
   NOTREACHED();
 }
 
+std::string_view HeuristicSourceToString(HeuristicSource source) {
+  switch (source) {
+    case HeuristicSource::kRegexes:
+      return "Regexes";
+    case HeuristicSource::kAutofillMachineLearning:
+      return "Autofill machine learning";
+    case HeuristicSource::kPasswordManagerMachineLearning:
+      return "Password manager machine learning";
+  }
+  NOTREACHED();
+}
+
 }  // namespace autofill

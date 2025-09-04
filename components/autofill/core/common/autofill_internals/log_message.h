@@ -63,7 +63,9 @@ class LogBuffer;
     "field: ")                                                                 \
   T(FastCheckout, "Fast Checkout: ")                                           \
   T(TouchToFill, "Touch To Fill: ")                                            \
-  T(AutofillAi, "Autofill with AI: ")
+  T(AutofillAi, "Autofill with AI: ")                                          \
+  T(TriggeringClientsideModelFor,                                              \
+    "Triggered clientside classification model for : ")
 
 // Log messages for chrome://autofill-internals.
 
