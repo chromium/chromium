@@ -1664,7 +1664,7 @@ bool WebGLRenderingContextBase::PushFrameNoCopy() {
 
 void WebGLRenderingContextBase::Dispose() {
   resource_provider_.reset();
-  bitmap_resource_provider_.reset();
+  cached_snapshot_.reset();
   CanvasRenderingContext::Dispose();
 }
 
@@ -1905,7 +1905,7 @@ void WebGLRenderingContextBase::PageVisibilityChanged() {
 void WebGLRenderingContextBase::SizeChanged() {
   did_fail_to_create_resource_provider_ = false;
   resource_provider_.reset();
-  bitmap_resource_provider_.reset();
+  cached_snapshot_.reset();
 }
 
 scoped_refptr<ExternalCanvasResource>
@@ -1951,9 +1951,9 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     Host()->DiscardResources();
   }
 
-  if (bitmap_resource_provider_.get() &&
-      bitmap_resource_provider_.get()->Size() != GetDrawingBuffer()->Size()) {
-    bitmap_resource_provider_.reset();
+  if (cached_snapshot_ &&
+      cached_snapshot_->Size() != GetDrawingBuffer()->Size()) {
+    cached_snapshot_.reset();
     Host()->DiscardResources();
   }
 
@@ -1965,9 +1965,9 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
       // `resource_provider_` already has the current contents.
       return resource_provider_->Snapshot(reason);
     }
-    if (bitmap_resource_provider_.get()) {
-      // `bitmap_resource_provider_` already has the current contents.
-      return bitmap_resource_provider_->Snapshot(reason);
+    if (cached_snapshot_) {
+      // `cached_snapshot__` already has the current contents.
+      return cached_snapshot_;
     }
   }
 
@@ -1976,17 +1976,21 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
   CanvasResourceProvider* resource_provider =
       GetOrCreateCanvasResourceProvider();
   if (!resource_provider) {
-    if (!bitmap_resource_provider_) {
-      bitmap_resource_provider_ = CanvasResourceProvider::CreateBitmapProvider(
-          Host()->Size(), GetSharedImageFormat(), GetAlphaType(),
-          GetColorSpace(), CanvasResourceProvider::ShouldInitialize::kNo,
-          Host());
+    // As a last resort, try to create and return an unaccelerated snapshot.
+    // Match the SBI configuration to that produced when using GPU compositing:
+    // N32 and premul (as set by `CopyRenderingResultsFromDrawingBuffer`) and
+    // top-left origin (the orientation that is used by
+    // `CanvasResourceProvider::Snapshot()` when it is not passed an
+    // orientation explicitly).
+    if (!cached_snapshot_) {
+      cached_snapshot_ = CopyRenderingResultsToUnacceleratedStaticBitmapImage(
+          source_buffer, viz::SharedImageFormat::N32Format(),
+          kPremul_SkAlphaType, kTopLeft_GrSurfaceOrigin);
     }
-    resource_provider = bitmap_resource_provider_.get();
 
-    if (!resource_provider) {
-      return nullptr;
-    }
+    // Whether the snapshot was successfully created or not, there is nothing
+    // further we can do.
+    return cached_snapshot_;
   }
 
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
@@ -2088,12 +2092,12 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
 
 CanvasResourceProvider*
 WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
-  // If `bitmap_resource_provider_` is non-null, it means that
+  // If `cached_snapshot_` is non-null, it means that
   // PaintRenderingResultsToSnapshot() was unable to populate
   // `resource_provider_`. We will try to create `resource_provider_` again
   // only when one of the conditions that will cause
-  // `bitmap_resource_provider_` to be cleared occurs.
-  if (bitmap_resource_provider_) {
+  // `cached_snapshot_` to be cleared occurs.
+  if (cached_snapshot_) {
     return nullptr;
   }
 
@@ -9340,12 +9344,9 @@ int WebGLRenderingContextBase::AllocatedBufferCountPerPixel() {
   }
 
   auto* provider = resource_provider_.get();
-  if (!provider) {
-    provider = bitmap_resource_provider_.get();
-  }
-  if (provider) {
+  if (provider || cached_snapshot_) {
     buffer_count++;
-    if (provider->IsAccelerated()) {
+    if (provider && provider->IsAccelerated()) {
       // The number of internal GPU buffers vary between one (stable
       // non-displayed state) and three (triple-buffered animations).
       // Adding 2 is a pessimistic but relevant estimate.
