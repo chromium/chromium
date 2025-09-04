@@ -41,12 +41,12 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // `CrossDevicePrefTracker` overrides
   void AddObserver(CrossDevicePrefTracker::Observer* observer) override;
   void RemoveObserver(CrossDevicePrefTracker::Observer* observer) override;
-  std::vector<CrossDevicePrefTracker::TimestampedPrefValue> GetValues(
+  std::vector<TimestampedPrefValue> GetValues(
       std::string_view pref_name,
       const DeviceFilter& filter) const override;
-  std::optional<CrossDevicePrefTracker::TimestampedPrefValue>
-  GetMostRecentValue(std::string_view pref_name,
-                     const DeviceFilter& filter) const override;
+  std::optional<TimestampedPrefValue> GetMostRecentValue(
+      std::string_view pref_name,
+      const DeviceFilter& filter) const override;
 
   // `KeyedService` override
   void Shutdown() override;

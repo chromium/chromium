@@ -53,15 +53,15 @@ void CrossDevicePrefTrackerImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-std::vector<CrossDevicePrefTracker::TimestampedPrefValue>
-CrossDevicePrefTrackerImpl::GetValues(std::string_view pref_name,
-                                      const DeviceFilter& filter) const {
+std::vector<TimestampedPrefValue> CrossDevicePrefTrackerImpl::GetValues(
+    std::string_view pref_name,
+    const DeviceFilter& filter) const {
   // TODO(crbug.com/441330219): Implement the Query API.
 
   return {};
 }
 
-std::optional<CrossDevicePrefTracker::TimestampedPrefValue>
+std::optional<TimestampedPrefValue>
 CrossDevicePrefTrackerImpl::GetMostRecentValue(
     std::string_view pref_name,
     const DeviceFilter& filter) const {

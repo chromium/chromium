@@ -11,10 +11,9 @@
 #include <vector>
 
 #include "base/observer_list_types.h"
-#include "base/time/time.h"
-#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_preferences/timestamped_pref_value/timestamped_pref_value.h"
 
 namespace sync_preferences {
 
@@ -24,17 +23,6 @@ namespace sync_preferences {
 // across Chrome platforms and form factors.
 class CrossDevicePrefTracker : public KeyedService {
  public:
-  // Holds a Pref's `value` and the time of its last observed change.
-  //
-  // The timestamp is synced across devices. For a Pref that existed before this
-  // tracker was initialized, the timestamp is taken from the first recorded
-  // change after the user started syncing Prefs. If no change has been
-  // recorded, the timestamp will be unset.
-  struct TimestampedPrefValue {
-    base::Value value;
-    base::Time last_observed_change_time;
-  };
-
   // Observer interface for remote changes.
   class Observer : public base::CheckedObserver {
    public:

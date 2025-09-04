@@ -12,6 +12,11 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
+source_set("timestamped_pref_value") {
+  sources = [ "timestamped_pref_value/timestamped_pref_value.h" ]
+  deps = [ "//base" ]
+}
+
 source_set("cross_device_pref_tracker") {
   sources = [
     "cross_device_pref_tracker.cc",
@@ -21,6 +26,7 @@ source_set("cross_device_pref_tracker") {
   ]
 
   deps = [
+    ":timestamped_pref_value",
     "//base",
     "//components/keyed_service/core",
     "//components/prefs",
