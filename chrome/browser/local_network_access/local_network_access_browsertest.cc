@@ -352,10 +352,6 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), https_server().GetURL("a.com", kSharedWorkerHtmlPath)));
 
-  // Enable auto-deny of LNA permission request.
-  bubble_factory()->set_response_type(
-      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
-
   GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
   std::string_view script_template = "fetch_from_shared_worker($1);";
   // Failure to fetch URL
@@ -368,6 +364,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                        SharedWorkerAcceptPermission) {
+  // Use enterprise policy to allow LNA requests
   policy::PolicyMap policies;
   base::Value::List allowlist;
   allowlist.Append(base::Value("*"));
@@ -715,4 +712,34 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   EXPECT_EQ("Access-Control-Allow-Origin: *",
             content::EvalJs(web_contents(),
                             content::JsReplace(script_template, fetch_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       DeprecationTrialSharedWorker) {
+  // Use enterprise policy to allow LNA requests
+  policy::PolicyMap policies;
+  base::Value::List allowlist;
+  allowlist.Append(base::Value("*"));
+  SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
+            base::Value(std::move(allowlist)));
+  UpdateProviderPolicy(policies);
+
+  content::DeprecationTrialURLLoaderInterceptor interceptor;
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     interceptor.EnabledHttpSharedWorkerUrl()));
+  EXPECT_EQ(feature_histogram_tester.GetCount(
+                WebFeature::
+                    kLocalNetworkAccessNonSecureContextAllowedDeprecationTrial),
+            1);
+
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_shared_worker($1);";
+  // URL fetched, body is just the header that's set.
+  EXPECT_EQ("Access-Control-Allow-Origin: *",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
+  CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWithinSharedWorker, 1);
 }

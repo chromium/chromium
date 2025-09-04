@@ -19,8 +19,19 @@ DeprecationTrialURLLoaderInterceptor::~DeprecationTrialURLLoaderInterceptor() =
 bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
     RequestParams* request_params) const {
   const GURL& url = request_params->url_request.url;
-  if (url == EnabledHttpUrl() || url == EnabledHttpWorkerUrl()) {
-    HandleEnabledHttpUrlRequest(*request_params, url == EnabledHttpWorkerUrl());
+  if (url == EnabledHttpUrl() || url == EnabledHttpWorkerUrl() ||
+      url == EnabledHttpSharedWorkerUrl()) {
+    std::optional<std::string> body_file = std::nullopt;
+    if (url == EnabledHttpWorkerUrl()) {
+      body_file =
+          "chrome/test/data/local_network_access/"
+          "fetch-from-worker-as-public-address.html";
+    } else if (url == EnabledHttpSharedWorkerUrl()) {
+      body_file =
+          "chrome/test/data/local_network_access/"
+          "fetch-from-shared-worker-as-public-address.html";
+    }
+    HandleEnabledHttpUrlRequest(*request_params, body_file);
     return true;
   }
 
@@ -41,6 +52,14 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
     return true;
   }
 
+  if (url == enabled_http_shared_worker_js_url_) {
+    URLLoaderInterceptor::WriteResponse(
+        "chrome/test/data/local_network_access/"
+        "fetch-from-shared-worker-as-public-address.js",
+        request_params->client.get());
+    return true;
+  }
+
   if (url == EnabledHttpsUrl()) {
     HandleEnabledHttpsUrlRequest(*request_params);
     return true;
@@ -56,7 +75,7 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
 
 void DeprecationTrialURLLoaderInterceptor::HandleEnabledHttpUrlRequest(
     RequestParams& request_params,
-    bool use_worker_html) const {
+    std::optional<std::string> body_file) const {
   std::string headers =            //
       "HTTP/1.1 200 OK\n"          //
       "Content-Type: text/html\n"  //
@@ -79,11 +98,9 @@ void DeprecationTrialURLLoaderInterceptor::HandleEnabledHttpUrlRequest(
       "kxvY2FsTmV0d29ya0FjY2Vzc05vblNlY3VyZUNvbnRleHRBbGxvd2VkIiwgImV4cGlyeSI6I"
       "DE4MzkxOTU4NTZ9"
       "\n\n";
-  if (use_worker_html) {
-    URLLoaderInterceptor::WriteResponse(
-        "chrome/test/data/local_network_access/"
-        "fetch-from-worker-as-public-address.html",
-        request_params.client.get(), &headers);
+  if (body_file) {
+    URLLoaderInterceptor::WriteResponse(*body_file, request_params.client.get(),
+                                        &headers);
   } else {
     URLLoaderInterceptor::WriteResponse(headers, "",
                                         request_params.client.get());
