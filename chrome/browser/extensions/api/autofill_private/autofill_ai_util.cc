@@ -60,8 +60,8 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
   // Step 1#, get all available labels for `entity_instances`.
   const std::vector<autofill::EntityLabel> labels_for_entities =
       autofill::GetLabelsForEntities(entity_instances,
-                                     /*allow_only_disambiguating_types=*/false,
-                                     /*allow_only_disambiguating_values=*/false,
+                                     /*attribute_types_to_ignore=*/{},
+                                     /*prioritize_disambiguating_types=*/false,
                                      app_locale);
 
   // Step 2#

@@ -404,7 +404,8 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
       CreateAutofillAiFillingSuggestions(field(0));
   EXPECT_THAT(suggestions,
               SuggestionsAre(HasMainText(GetPassportNumber(passport_entity))));
-  EXPECT_THAT(suggestions, SuggestionsAre(HasLabel(u"Passport")));
+  EXPECT_THAT(suggestions,
+              SuggestionsAre(HasLabel(u"Passport · Pippi Långstrump")));
 
   const Suggestion::AutofillAiPayload* payload =
       std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
@@ -504,12 +505,14 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestions_Undo) {
               Contains(HasType(SuggestionType::kUndoOrClear)));
 }
 
+// Tests that even when labels aren't needed to disambiguate, we still add one
+// label so that the final label isn't empty.
 TEST_F(AutofillAiSuggestionGeneratorTest,
-       LabelGeneration_SingleEntity_NoLabelAdded) {
+       LabelGeneration_SingleEntity_AtLeastOneLabelAdded) {
   SetEntities({MakePassportWithRandomGuid()});
   SetForm({PASSPORT_NUMBER, NAME_FULL});
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              SuggestionsAre(HasLabel(u"Passport")));
+              SuggestionsAre(HasLabel(u"Passport · Pippi Långstrump")));
 }
 
 // Tests that the existence of an entity that does not fill the triggering field
@@ -548,19 +551,22 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                              HasLabel(u"Passport · Machado de Assis")));
 }
 
-// Note that because the main text is the top disambiguating field (and is
-// different across entities), we do not need to add a label.
+// Tests that if the main text is the top disambiguating field (and is different
+// across entities), we do not need to add a label, but we still add at least
+// one label.
 TEST_F(
     AutofillAiSuggestionGeneratorTest,
-    LabelGeneration_TwoSuggestions_MainTextIsDisambiguating_DifferentMainText_DoNotAddDifferentiatingLabel) {
-  SetEntities({MakePassportWithRandomGuid(),
-               MakePassportWithRandomGuid(
-                   {.name = u"Machado de Assis", .country = u"Brazil"})});
+    LabelGeneration_TwoSuggestions_MainTextIsDisambiguating_DifferentMainText_AtLeastOneLabel) {
+  SetEntities({MakePassportWithRandomGuid({.use_count = 0}),
+               MakePassportWithRandomGuid({.name = u"Machado de Assis",
+                                           .country = u"Brazil",
+                                           .use_count = 1})});
 
   // Note that passport name is the first at the rank of disambiguating texts.
   SetForm({NAME_FULL, PASSPORT_ISSUING_COUNTRY, PASSPORT_NUMBER});
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              SuggestionsAre(HasLabel(u"Passport"), HasLabel(u"Passport")));
+              SuggestionsAre(HasLabel(u"Passport · Brazil"),
+                             HasLabel(u"Passport · Sweden")));
 }
 
 // Note that while the main text is the top disambiguating field, we need
@@ -568,12 +574,10 @@ TEST_F(
 TEST_F(
     AutofillAiSuggestionGeneratorTest,
     LabelGeneration_TwoSuggestions_MainTextIsDisambiguating_SameMainText_AddDifferentiatingLabel) {
-  EntityInstance passport1 = MakePassportWithRandomGuid();
-  EntityInstance passport2 = MakePassportWithRandomGuid({.country = u"Brazil"});
+  EntityInstance passport1 = MakePassportWithRandomGuid({.use_count = 1});
+  EntityInstance passport2 =
+      MakePassportWithRandomGuid({.country = u"Brazil", .use_count = 0});
   SetEntities({passport1, passport2});
-  // Sets the usage such that the entities are frequency ranked as `passport1`,
-  // `passport2`.
-  edm().RecordEntityUsed(passport1.guid(), base::Time::Now());
   webdata_helper().WaitUntilIdle();
 
   // Note that passport name is the first at the rank of disambiguating texts.
@@ -589,14 +593,10 @@ TEST_F(
 TEST_F(
     AutofillAiSuggestionGeneratorTest,
     LabelGeneration_TwoSuggestions_MainTextIsNotTopDisambiguatingType_addDifferentiatingLabel) {
-  EntityInstance passport1 = MakePassportWithRandomGuid();
+  EntityInstance passport1 = MakePassportWithRandomGuid({.use_count = 1});
   EntityInstance passport2 = MakePassportWithRandomGuid(
-      {.name = u"Machado de Assis", .country = u"Brazil"});
+      {.name = u"Machado de Assis", .country = u"Brazil", .use_count = 0});
   SetEntities({passport1, passport2});
-  // Sets the usage such that the entities are frequency ranked as `passport1`,
-  // `passport2`.
-  edm().RecordEntityUsed(passport1.guid(), base::Time::Now());
-  edm().RecordEntityUsed(passport1.guid(), base::Time::Now());
   webdata_helper().WaitUntilIdle();
 
   // Passport country is a disambiguating text, meaning it can be used to
@@ -613,16 +613,12 @@ TEST_F(
 // from the possible list of labels.
 TEST_F(AutofillAiSuggestionGeneratorTest,
        LabelGeneration_ThreeSuggestions_AddDifferentiatingLabel) {
-  EntityInstance vehicle1 = MakeVehicleWithRandomGuid();
-  EntityInstance vehicle2 = MakeVehicleWithRandomGuid({.model = u"Series 3"});
+  EntityInstance vehicle1 = MakeVehicleWithRandomGuid({.use_count = 2});
+  EntityInstance vehicle2 =
+      MakeVehicleWithRandomGuid({.model = u"Series 3", .use_count = 1});
   EntityInstance vehicle3 =
-      MakeVehicleWithRandomGuid({.name = u"Diego Maradona"});
+      MakeVehicleWithRandomGuid({.name = u"Diego Maradona", .use_count = 0});
   SetEntities({vehicle1, vehicle2, vehicle3});
-  // Sets the usage such that the entities are frequency ranked as `vehicle1`,
-  // `vehicle2`, `vehicle3`.
-  edm().RecordEntityUsed(vehicle1.guid(), base::Time::Now());
-  edm().RecordEntityUsed(vehicle1.guid(), base::Time::Now());
-  edm().RecordEntityUsed(vehicle2.guid(), base::Time::Now());
   webdata_helper().WaitUntilIdle();
 
   SetForm({VEHICLE_LICENSE_PLATE, VEHICLE_MODEL, NAME_FULL});
@@ -635,38 +631,37 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 TEST_F(
     AutofillAiSuggestionGeneratorTest,
     LabelGeneration_ThreeSuggestions_WithMissingValues_AddDifferentiatingLabel) {
-  EntityInstance passport1 = MakePassportWithRandomGuid({.country = u"Brazil"});
-  // This passport can only fill the triggering name field and has no country
+  EntityInstance passport1 =
+      MakePassportWithRandomGuid({.country = u"Brazil", .use_count = 2});
+  // This passport can only fill the triggering number field and has no country
   // data label to add.
-  EntityInstance passport2 =
-      MakePassportWithRandomGuid({.number = u"9876", .country = nullptr});
-  EntityInstance passport3 = MakePassportWithRandomGuid();
+  EntityInstance passport2 = MakePassportWithRandomGuid(
+      {.number = u"9876", .country = nullptr, .use_count = 1});
+  EntityInstance passport3 = MakePassportWithRandomGuid({.use_count = 0});
   SetEntities({passport1, passport2, passport3});
-  // Sets the usage such that the entities are frequency ranked as `passport1`,
-  // `passport2`, `passport3`.
-  edm().RecordEntityUsed(passport1.guid(), base::Time::Now());
-  edm().RecordEntityUsed(passport1.guid(), base::Time::Now());
-  edm().RecordEntityUsed(passport2.guid(), base::Time::Now());
   webdata_helper().WaitUntilIdle();
 
   SetForm({PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY});
-  EXPECT_THAT(
-      CreateAutofillAiFillingSuggestions(field(0)),
-      SuggestionsAre(HasLabel(u"Passport · Brazil"), HasLabel(u"Passport"),
-                     HasLabel(u"Passport · Sweden")));
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              SuggestionsAre(HasLabel(u"Passport · Brazil"),
+                             HasLabel(u"Passport · Pippi Långstrump"),
+                             HasLabel(u"Passport · Sweden")));
 }
 
-// Test that the non-disambiguating attributes (here: the expiry dates) do not
-// occur in the labels.
+// Test that if the non-disambiguating attributes (here: the expiry dates) are
+// the only one distinguishing the suggestions, they still appear so that we
+// show at least one label.
 TEST_F(
     AutofillAiSuggestionGeneratorTest,
-    LabelGeneration_TwoSuggestions_PassportsWithDifferentExpiryDates_DoNotAddDifferentiatingLabel) {
-  SetEntities({MakePassportWithRandomGuid(),
-               MakePassportWithRandomGuid({.expiry_date = u"2018-12-29"})});
+    LabelGeneration_TwoSuggestions_PassportsWithDifferentExpiryDates_AtLeastOneLabel) {
+  SetEntities({MakePassportWithRandomGuid({.use_count = 0}),
+               MakePassportWithRandomGuid(
+                   {.expiry_date = u"2018-12-29", .use_count = 1})});
   SetForm({PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY, NAME_FULL,
            PASSPORT_EXPIRATION_DATE});
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              SuggestionsAre(HasLabel(u"Passport"), HasLabel(u"Passport")));
+              SuggestionsAre(HasLabel(u"Passport · 2018-12-29"),
+                             HasLabel(u"Passport · 2019-08-30")));
 }
 
 }  // namespace
