@@ -215,6 +215,11 @@
 
   data: [
     {
+      // crbug.com/439682405
+      name: "AbortByPlaceholderLayout",
+      status: "stable",
+    },
+    {
       name: "Accelerated2dCanvas",
       settable_from_internals: true,
       status: "stable",

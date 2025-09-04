@@ -1120,9 +1120,13 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
 #endif
 
   if (placeholder_child) {
+    PlaceholderLayoutResult offset_and_status = HandleTextControlPlaceholder(
+        placeholder_child, previous_inflow_position);
+    if (offset_and_status.status != LayoutResult::kSuccess) {
+      return container_builder_.Abort(offset_and_status.status);
+    }
     previous_inflow_position.logical_block_offset =
-        HandleTextControlPlaceholder(placeholder_child,
-                                     previous_inflow_position);
+        offset_and_status.logical_block_offset;
   }
 
   if (!child_iterator.NextChild(previous_inline_break_token).node) {
@@ -3819,7 +3823,8 @@ bool BlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes(
   return true;
 }
 
-LayoutUnit BlockLayoutAlgorithm::HandleTextControlPlaceholder(
+BlockLayoutAlgorithm::PlaceholderLayoutResult
+BlockLayoutAlgorithm::HandleTextControlPlaceholder(
     BlockNode placeholder,
     const PreviousInflowPosition& previous_inflow_position) {
   DCHECK(Node().IsTextControl()) << Node().GetLayoutBox();
@@ -3853,16 +3858,24 @@ LayoutUnit BlockLayoutAlgorithm::HandleTextControlPlaceholder(
       is_new_fc);
 
   const LayoutResult* result = placeholder.Layout(space);
+  // crbug.com/439682405 and crbug.com/440833172: The placeholder layout may
+  // fail.
+  if (RuntimeEnabledFeatures::AbortByPlaceholderLayoutEnabled() &&
+      result->Status() != LayoutResult::kSuccess) {
+    return {previous_inflow_position.logical_block_offset, result->Status()};
+  }
   LogicalOffset offset = BorderScrollbarPadding().StartOffset();
   if (Node().IsTextArea()) {
-    return FinishTextControlPlaceholder(result, offset, apply_fixed_size,
-                                        previous_inflow_position);
+    return {FinishTextControlPlaceholder(result, offset, apply_fixed_size,
+                                         previous_inflow_position),
+            result->Status()};
   }
   // Usually another child provides the baseline. However it doesn't if
   // another child is out-of-flow.
   if (!container_builder_.FirstBaseline()) {
-    return FinishTextControlPlaceholder(result, offset, apply_fixed_size,
-                                        previous_inflow_position);
+    return {FinishTextControlPlaceholder(result, offset, apply_fixed_size,
+                                         previous_inflow_position),
+            result->Status()};
   }
   LogicalBoxFragment fragment(
       GetConstraintSpace().GetWritingDirection(),
@@ -3892,8 +3905,9 @@ LayoutUnit BlockLayoutAlgorithm::HandleTextControlPlaceholder(
       offset.block_offset = border_padding_block_start;
     }
   }
-  return FinishTextControlPlaceholder(result, offset, apply_fixed_size,
-                                      previous_inflow_position);
+  return {FinishTextControlPlaceholder(result, offset, apply_fixed_size,
+                                       previous_inflow_position),
+          result->Status()};
 }
 
 LayoutUnit BlockLayoutAlgorithm::FinishTextControlPlaceholder(

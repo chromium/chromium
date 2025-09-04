@@ -470,11 +470,17 @@ class CORE_EXPORT BlockLayoutAlgorithm
     return false;
   }
 
+  // Represent the result of HandleTextControlPlaceholder().
+  struct PlaceholderLayoutResult {
+    LayoutUnit logical_block_offset;
+    LayoutResult::EStatus status;
+  };
+
   // Layout |placeholder| content, and decide the location of |placeholder|.
   // This is called only if |this| is a text control.
   // This function returns a new value for `PreviousInflowPosition::
-  // logical_block_offset`.
-  LayoutUnit HandleTextControlPlaceholder(
+  // logical_block_offset` and the status of placeholder layout.
+  PlaceholderLayoutResult HandleTextControlPlaceholder(
       BlockNode placeholder,
       const PreviousInflowPosition& previous_inflow_position);
   // A helper for HandleTextControlPlaceholder().
