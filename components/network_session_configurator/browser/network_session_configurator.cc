@@ -465,6 +465,9 @@ int GetInitialDelayForBrokenAlternativeServiceSeconds(
 
 bool DelayMainJobWithAvailableSpdySession(
     const VariationParameters& quic_trial_params) {
+  if (base::FeatureList::IsEnabled(net::features::kAdditionalDelayMainJob)) {
+    return net::features::kDelayMainJobWithAvailableSpdySession.Get();
+  }
   return base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params,
                         "delay_main_job_with_available_spdy_session"),
