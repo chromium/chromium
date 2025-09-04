@@ -64,6 +64,7 @@ class COMPONENT_EXPORT(GFX) PlatformFontMac : public PlatformFont {
   int GetStyle() const override;
   const std::string& GetFontName() const override;
   std::string GetActualFontName() const override;
+  std::vector<std::string> GetActualFontNames() const override;
   int GetFontSize() const override;
   const FontRenderParams& GetFontRenderParams() override;
   CTFontRef GetCTFont() const override;

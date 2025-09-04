@@ -37,6 +37,7 @@
 #include "build/build_config.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -5093,11 +5094,9 @@ TEST_F(RenderTextTest, StringSizeRespectsFontListMetrics) {
   // NOTE: On most platforms, kCJKFontName has different metrics than
   // kTestFontName, but on Android it does not.
   Font test_font(kTestFontName, 16);
-  ASSERT_EQ(base::ToLowerASCII(kTestFontName),
-            base::ToLowerASCII(test_font.GetActualFontName()));
+  EXPECT_THAT(test_font.GetActualFontNames(), testing::Contains(kTestFontName));
   Font cjk_font(kCJKFontName, 16);
-  ASSERT_EQ(base::ToLowerASCII(kCJKFontName),
-            base::ToLowerASCII(cjk_font.GetActualFontName()));
+  EXPECT_THAT(cjk_font.GetActualFontNames(), testing::Contains(kCJKFontName));
   Font smaller_font = test_font;
   Font larger_font = cjk_font;
   // "a" should be rendered with the test font, not with the CJK font.
@@ -7426,10 +7425,9 @@ TEST_F(RenderTextTest, HarfBuzz_FontListFallback) {
       base::StringPrintf("%s, %s, 12px", kTestFontName, kSymbolFontName));
   const std::vector<Font>& fonts = font_list.GetFonts();
   ASSERT_EQ(2u, fonts.size());
-  ASSERT_EQ(base::ToLowerASCII(kTestFontName),
-            base::ToLowerASCII(fonts[0].GetActualFontName()));
-  ASSERT_EQ(base::ToLowerASCII(kSymbolFontName),
-            base::ToLowerASCII(fonts[1].GetActualFontName()));
+  EXPECT_THAT(fonts[0].GetActualFontNames(), testing::Contains(kTestFontName));
+  EXPECT_THAT(fonts[1].GetActualFontNames(),
+              testing::Contains(kSymbolFontName));
 
   // "⊕" (U+2295, CIRCLED PLUS) should be rendered with Symbol rather than
   // falling back to some other font that's present on the system.
