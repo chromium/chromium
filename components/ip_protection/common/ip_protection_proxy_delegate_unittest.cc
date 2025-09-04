@@ -1889,7 +1889,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyBypassesWhenSet) {
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{net::features::kEnableIpProtectionProxy,
         {{"IpPrivacyEnableUserBypass", "true"},
-         {"kIpPrivacyEnableIppPanelInDevTools", "true"}}}},
+         {"IpPrivacyEnableIppPanelInDevTools", "true"}}}},
       {});
 
   std::map<std::string, std::set<std::string>> first_party_map;

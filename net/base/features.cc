@@ -474,7 +474,7 @@ const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools{
 
 const base::FeatureParam<bool> kIpPrivacyEnableIppPanelInDevTools{
     &kEnableIpProtectionProxy,
-    /*name=*/"kIpPrivacyEnableIppPanelInDevTools",
+    /*name=*/"IpPrivacyEnableIppPanelInDevTools",
     /*default_value=*/false};
 
 BASE_FEATURE(EnableIpPrivacyProxyAdvancedFallbackLogic,
