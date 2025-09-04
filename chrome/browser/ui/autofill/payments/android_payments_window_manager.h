@@ -10,8 +10,8 @@
 #include <string>
 
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ui/android/autofill/payments/autofill_payments_window_bridge.h"
-#include "chrome/browser/ui/android/autofill/payments/autofill_payments_window_delegate.h"
+#include "chrome/browser/ui/android/autofill/payments/payments_window_bridge.h"
+#include "chrome/browser/ui/android/autofill/payments/payments_window_delegate.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 
 class GURL;
@@ -28,7 +28,7 @@ class FlowState;
 // WebContents, owned by the ChromePaymentsAutofillClient associated with the
 // WebContents of the original tab that the tab is created in.
 class AndroidPaymentsWindowManager : public PaymentsWindowManager,
-                                     public AutofillPaymentsWindowDelegate {
+                                     public PaymentsWindowDelegate {
  public:
   explicit AndroidPaymentsWindowManager(ContentAutofillClient* client);
   AndroidPaymentsWindowManager(const AndroidPaymentsWindowManager&) = delete;
@@ -40,7 +40,7 @@ class AndroidPaymentsWindowManager : public PaymentsWindowManager,
   void InitBnplFlow(BnplContext context) override;
   void InitVcn3dsAuthentication(Vcn3dsContext context) override;
 
-  // AutofillPaymentsWindowDelegate:
+  // PaymentsWindowDelegate:
   void WebContentsDestroyed() override;
   void OnDidFinishNavigationForBnpl(const GURL& url) override;
 
@@ -60,8 +60,7 @@ class AndroidPaymentsWindowManager : public PaymentsWindowManager,
   const raw_ref<ContentAutofillClient> client_;
 
   // The JNI bridge for opening and closing the ephemeral tab.
-  std::unique_ptr<AutofillPaymentsWindowBridge>
-      autofill_payments_window_bridge_;
+  std::unique_ptr<PaymentsWindowBridge> payments_window_bridge_;
 };
 
 }  // namespace payments

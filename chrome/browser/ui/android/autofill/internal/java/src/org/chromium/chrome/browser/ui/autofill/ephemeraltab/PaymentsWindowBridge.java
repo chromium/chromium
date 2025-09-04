@@ -16,12 +16,12 @@ import org.chromium.url.GURL;
 @JNINamespace("autofill::payments")
 @NullMarked
 class PaymentsWindowBridge {
-    private long mNativeAutofillPaymentsWindowBridge;
+    private long mNativePaymentsWindowBridge;
     private PaymentsWindowCoordinator mPaymentsWindowCoordinator;
 
     @CalledByNative
-    PaymentsWindowBridge(long nativeAutofillPaymentsWindowBridge) {
-        mNativeAutofillPaymentsWindowBridge = nativeAutofillPaymentsWindowBridge;
+    PaymentsWindowBridge(long nativePaymentsWindowBridge) {
+        mNativePaymentsWindowBridge = nativePaymentsWindowBridge;
         mPaymentsWindowCoordinator = new PaymentsWindowCoordinator(this);
     }
 
@@ -50,9 +50,8 @@ class PaymentsWindowBridge {
      * @param clickedUrl The URL that the user initiated the navigation to.
      */
     void onNavigationFinished(GURL clickedUrl) {
-        if (mNativeAutofillPaymentsWindowBridge == 0) return;
-        PaymentsWindowBridgeJni.get()
-                .onNavigationFinished(mNativeAutofillPaymentsWindowBridge, clickedUrl);
+        if (mNativePaymentsWindowBridge == 0) return;
+        PaymentsWindowBridgeJni.get().onNavigationFinished(mNativePaymentsWindowBridge, clickedUrl);
     }
 
     /**
@@ -62,15 +61,15 @@ class PaymentsWindowBridge {
      * destroyed and the C++ counterpart deleted.
      */
     void onWebContentsDestroyed() {
-        if (mNativeAutofillPaymentsWindowBridge == 0) return;
-        PaymentsWindowBridgeJni.get().onWebContentsDestroyed(mNativeAutofillPaymentsWindowBridge);
-        mNativeAutofillPaymentsWindowBridge = 0;
+        if (mNativePaymentsWindowBridge == 0) return;
+        PaymentsWindowBridgeJni.get().onWebContentsDestroyed(mNativePaymentsWindowBridge);
+        mNativePaymentsWindowBridge = 0;
     }
 
     @NativeMethods
     interface Natives {
-        void onNavigationFinished(long nativeAutofillPaymentsWindowBridge, GURL clickedUrl);
+        void onNavigationFinished(long nativePaymentsWindowBridge, GURL clickedUrl);
 
-        void onWebContentsDestroyed(long nativeAutofillPaymentsWindowBridge);
+        void onWebContentsDestroyed(long nativePaymentsWindowBridge);
     }
 }

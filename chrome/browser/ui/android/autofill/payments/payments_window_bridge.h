@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_PAYMENTS_AUTOFILL_PAYMENTS_WINDOW_BRIDGE_H_
-#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_PAYMENTS_AUTOFILL_PAYMENTS_WINDOW_BRIDGE_H_
+#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_PAYMENTS_PAYMENTS_WINDOW_BRIDGE_H_
+#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_PAYMENTS_PAYMENTS_WINDOW_BRIDGE_H_
 
 #include <jni.h>
 
@@ -18,22 +18,19 @@ class WebContents;
 
 namespace autofill::payments {
 
-class AutofillPaymentsWindowDelegate;
+class PaymentsWindowDelegate;
 
-// TODO(crbug.com/430575808): Remove `Autofill` prefix from
-// `AutofillPaymentsWindowBridge` and `AutofillPaymentsWindowDelegate`.
 // C++ counterpart to PaymentsWindowBridge.java. Enables C++ feature code to
 // open/close the ephemeral tab with PaymentsWindowCoordinator.java.
-class AutofillPaymentsWindowBridge {
+class PaymentsWindowBridge {
  public:
-  explicit AutofillPaymentsWindowBridge(
-      AutofillPaymentsWindowDelegate* autofill_payments_window_delegate);
+  explicit PaymentsWindowBridge(
+      PaymentsWindowDelegate* payments_window_delegate);
 
-  AutofillPaymentsWindowBridge(const AutofillPaymentsWindowBridge&) = delete;
-  AutofillPaymentsWindowBridge& operator=(const AutofillPaymentsWindowBridge&) =
-      delete;
+  PaymentsWindowBridge(const PaymentsWindowBridge&) = delete;
+  PaymentsWindowBridge& operator=(const PaymentsWindowBridge&) = delete;
 
-  virtual ~AutofillPaymentsWindowBridge();
+  virtual ~PaymentsWindowBridge();
 
   // Opens an ephemeral tab with the given `url` and `title`, using the provided
   // `merchant_web_contents` associated with the merchant.
@@ -53,12 +50,10 @@ class AutofillPaymentsWindowBridge {
   void OnWebContentsDestroyed(JNIEnv* env);
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject>
-      java_autofill_payments_window_bridge_;
-  const raw_ref<AutofillPaymentsWindowDelegate>
-      autofill_payments_window_delegate_;
+  base::android::ScopedJavaGlobalRef<jobject> java_payments_window_bridge_;
+  const raw_ref<PaymentsWindowDelegate> payments_window_delegate_;
 };
 
 }  // namespace autofill::payments
 
-#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_PAYMENTS_AUTOFILL_PAYMENTS_WINDOW_BRIDGE_H_
+#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_PAYMENTS_PAYMENTS_WINDOW_BRIDGE_H_
