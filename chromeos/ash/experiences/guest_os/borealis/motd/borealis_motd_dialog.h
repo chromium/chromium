@@ -1,8 +1,8 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_BOREALIS_MOTD_BOREALIS_MOTD_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_BOREALIS_MOTD_BOREALIS_MOTD_DIALOG_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_GUEST_OS_BOREALIS_MOTD_BOREALIS_MOTD_DIALOG_H_
+#define CHROMEOS_ASH_EXPERIENCES_GUEST_OS_BOREALIS_MOTD_BOREALIS_MOTD_DIALOG_H_
 
 #include "ash/constants/url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -59,4 +59,4 @@ class BorealisMOTDDialog : public ui::WebDialogDelegate {
 
 }  // namespace borealis
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_BOREALIS_MOTD_BOREALIS_MOTD_DIALOG_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_GUEST_OS_BOREALIS_MOTD_BOREALIS_MOTD_DIALOG_H_

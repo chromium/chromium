@@ -109,6 +109,7 @@ static_library("config") {
     "//chrome/browser/ui/webui/ash/sys_internals",
     "//chrome/browser/ui/webui/ash/vm",
     "//chrome/browser/ui/webui/nearby_share",
+    "//chromeos/ash/experiences/guest_os/borealis/motd",
     "//components/cross_device/logging",
     "//ui/webui",
   ]

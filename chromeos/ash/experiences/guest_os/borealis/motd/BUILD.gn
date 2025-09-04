@@ -4,7 +4,7 @@
 
 assert(is_chromeos)
 
-static_library("borealis_motd") {
+static_library("motd") {
   sources = [
     "borealis_motd_dialog.cc",
     "borealis_motd_dialog.h",
@@ -13,7 +13,6 @@ static_library("borealis_motd") {
   deps = [
     "//ash",
     "//ash/strings:strings_grit",
-    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/experiences/guest_os/borealis:borealis_features",
     "//chromeos/ash/experiences/guest_os/borealis/motd/resources",
     "//content/public/browser",

@@ -1,7 +1,8 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/ui/webui/ash/borealis_motd/borealis_motd_dialog.h"
+
+#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_dialog.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -173,6 +174,7 @@ void BorealisMOTDDialog::Show(base::OnceCallback<void()> cb,
   // BorealisMOTDDialog is self-deleting via OnDialogClosed().
   new BorealisMOTDDialog(std::move(cb), context);
 }
+
 void BorealisMOTDDialog::OnDialogClosed(const std::string& json_retval) {
   std::move(close_callback_).Run();
   delete this;

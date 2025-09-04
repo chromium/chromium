@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/views/borealis/borealis_launch_error_dialog.h"
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_dialog.h"
-#include "chrome/browser/ui/webui/ash/borealis_motd/borealis_motd_dialog.h"
+#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_dialog.h"
 
 namespace borealis {
 BorealisAppLauncherImpl::~BorealisAppLauncherImpl() = default;
