@@ -168,8 +168,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, TestNameAndDrag) {
       Check(base::BindLambdaForTesting([&]() {
         gfx::Rect rect(p1, gfx::Size());
         rect.Inset(-1);
-        const gfx::Point point =
-            display::Screen::GetScreen()->GetCursorScreenPoint();
+        const gfx::Point point = display::Screen::Get()->GetCursorScreenPoint();
         if (!rect.Contains(point)) {
           LOG(ERROR) << "Expected cursor pos " << point.ToString()
                      << " to be roughly " << p1.ToString();
@@ -184,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, TestNameAndDrag) {
       Check(base::BindLambdaForTesting([&]() {
         gfx::Rect rect(p2, gfx::Size());
         rect.Inset(-1);
-        const gfx::Point point =
-            display::Screen::GetScreen()->GetCursorScreenPoint();
+        const gfx::Point point = display::Screen::Get()->GetCursorScreenPoint();
         if (!rect.Contains(point)) {
           LOG(ERROR) << "Expected cursor pos " << point.ToString()
                      << " to be roughly " << p2.ToString();
@@ -402,8 +400,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
             BrowserView::GetBrowserViewForBrowser(browser());
         const gfx::Rect web_contents_bounds =
             browser_view->contents_web_view()->GetBoundsInScreen();
-        const gfx::Point point =
-            display::Screen::GetScreen()->GetCursorScreenPoint();
+        const gfx::Point point = display::Screen::Get()->GetCursorScreenPoint();
         if (!web_contents_bounds.Contains(point)) {
           LOG(ERROR) << "Expected cursor pos " << point.ToString() << " to in "
                      << web_contents_bounds.ToString();

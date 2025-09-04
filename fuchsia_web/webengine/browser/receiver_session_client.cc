@@ -67,7 +67,7 @@ void ReceiverSessionClient::SetMojoEndpoints(
                                         std::move(audio_codecs));
 
   gfx::Size display_resolution =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds().size();
+      display::Screen::Get()->GetPrimaryDisplay().bounds().size();
   config.video_limits.push_back(cast_streaming::ReceiverConfig::VideoLimits{
       .max_pixels_per_second =
           static_cast<int>(display_resolution.width() *

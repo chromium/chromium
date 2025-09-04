@@ -580,9 +580,8 @@ void ReadLegacyFrameState(
     if (state->page_scale_factor) {
       float device_scale_factor = g_device_scale_factor_for_testing;
       if (!device_scale_factor) {
-        device_scale_factor = display::Screen::GetScreen()
-                                  ->GetPrimaryDisplay()
-                                  .device_scale_factor();
+        device_scale_factor =
+            display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
       }
       state->scroll_offset =
           gfx::Point(state->scroll_offset.x() / state->page_scale_factor,
