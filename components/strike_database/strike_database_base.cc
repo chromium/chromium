@@ -4,10 +4,10 @@
 
 #include "components/strike_database/strike_database_base.h"
 
-namespace autofill {
+namespace strike_database {
 
 StrikeDatabaseBase::StrikeDatabaseBase() = default;
 
 StrikeDatabaseBase::~StrikeDatabaseBase() = default;
 
-}  // namespace autofill
+}  // namespace strike_database

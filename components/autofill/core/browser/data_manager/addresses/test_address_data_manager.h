@@ -59,7 +59,7 @@ class TestAddressDataManager : public AddressDataManager {
   std::optional<AddressCountryCode> default_country_code_;
   std::optional<bool> autofill_profile_enabled_;
   std::optional<bool> eligible_for_account_storage_;
-  TestInMemoryStrikeDatabase inmemory_strike_database_;
+  strike_database::TestInMemoryStrikeDatabase inmemory_strike_database_;
 };
 
 }  // namespace autofill

@@ -15,7 +15,7 @@
 #include "components/strike_database/strike_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
+namespace strike_database {
 
 namespace {
 struct TestStrikeDatabaseTraits {
@@ -156,4 +156,4 @@ TEST_F(HistoryClearableStrikeDatabaseTest,
 
 }  // namespace
 
-}  // namespace autofill
+}  // namespace strike_database

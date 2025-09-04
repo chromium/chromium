@@ -20,6 +20,12 @@
 #include "components/strike_database/strike_database_base.h"
 
 namespace autofill {
+class FakeCreditCardServer;
+}  // namespace autofill
+
+class StrikeDatabaseTester;
+
+namespace strike_database {
 
 extern const base::FilePath::StringViewType kStrikeDatabaseFileName;
 
@@ -98,9 +104,9 @@ class StrikeDatabase : public StrikeDatabaseBase {
                            GetIdForCreditCardSaveTest);
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveStrikeDatabaseTest,
                            RemoveExpiredStrikesOnLoadTest);
-  friend class FakeCreditCardServer;
+  friend autofill::FakeCreditCardServer;
+  friend StrikeDatabaseTester;
   friend class StrikeDatabaseTest;
-  friend class StrikeDatabaseTester;
 
   void OnDatabaseInit(leveldb_proto::Enums::InitStatus status);
 
@@ -145,7 +151,7 @@ class StrikeDatabase : public StrikeDatabaseBase {
                                 bool success,
                                 std::unique_ptr<StrikeData> strike_data);
 
-  // Exposed for testing purposes.
+  // Used for testing.
   void LoadKeys(const LoadKeysCallback& callback);
 
   // Sets the entry for `key` in `strike_map_cache_` to `data`.
@@ -154,6 +160,6 @@ class StrikeDatabase : public StrikeDatabaseBase {
   base::WeakPtrFactory<StrikeDatabase> weak_ptr_factory_{this};
 };
 
-}  // namespace autofill
+}  // namespace strike_database
 
 #endif  // COMPONENTS_STRIKE_DATABASE_STRIKE_DATABASE_H_

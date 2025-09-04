@@ -59,6 +59,10 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace strike_database {
+class StrikeDatabase;
+}
+
 namespace syncer {
 class SyncService;
 }
@@ -435,7 +439,7 @@ class AutofillClient {
   // returned so check before use.
   // TODO(crbug.com/40926442): Make sure all strike database usages check for
   // the nullptr.
-  virtual StrikeDatabase* GetStrikeDatabase() = 0;
+  virtual strike_database::StrikeDatabase* GetStrikeDatabase() = 0;
 
   // Gets the UKM service associated with this client (for metrics).
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;

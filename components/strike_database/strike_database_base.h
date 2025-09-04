@@ -18,7 +18,7 @@ namespace base {
 class Time;
 }
 
-namespace autofill {
+namespace strike_database {
 
 class StrikeData;
 
@@ -84,6 +84,6 @@ class StrikeDatabaseBase : public KeyedService {
   virtual std::map<std::string, StrikeData>& GetStrikeCache() = 0;
 };
 
-}  // namespace autofill
+}  // namespace strike_database
 
 #endif  // COMPONENTS_STRIKE_DATABASE_STRIKE_DATABASE_BASE_H_

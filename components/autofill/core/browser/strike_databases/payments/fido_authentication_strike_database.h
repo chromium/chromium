@@ -27,10 +27,10 @@ struct FidoAuthenticationStrikeDatabaseTraits {
 
 // Strike database for offering FIDO authentication for card unmasking.
 class FidoAuthenticationStrikeDatabase
-    : public SimpleAutofillStrikeDatabase<
+    : public strike_database::SimpleAutofillStrikeDatabase<
           FidoAuthenticationStrikeDatabaseTraits> {
  public:
-  using SimpleAutofillStrikeDatabase<
+  using strike_database::SimpleAutofillStrikeDatabase<
       FidoAuthenticationStrikeDatabaseTraits>::SimpleAutofillStrikeDatabase;
 
   // Strikes to add when user declines opt-in offer.

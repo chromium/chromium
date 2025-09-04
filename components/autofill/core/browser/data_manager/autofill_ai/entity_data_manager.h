@@ -24,10 +24,13 @@ namespace history {
 class DeletionInfo;
 }  // namespace history
 
+namespace strike_database {
+class StrikeDatabaseBase;
+}  // namespace strike_database
+
 namespace autofill {
 
 class AutofillAiSaveStrikeDatabaseByHost;
-class StrikeDatabaseBase;
 
 // Loads, adds, updates, and removes EntityInstances. Deletes data from
 // AutofillAI strike databases on history deletion.
@@ -51,7 +54,7 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
       const signin::IdentityManager* identity_manager,
       scoped_refptr<AutofillWebDataService> profile_database,
       history::HistoryService* history_service,
-      StrikeDatabaseBase* strike_database);
+      strike_database::StrikeDatabaseBase* strike_database);
   EntityDataManager(const EntityDataManager&) = delete;
   EntityDataManager& operator=(const EntityDataManager&) = delete;
   ~EntityDataManager() override;

@@ -4,7 +4,7 @@
 
 syntax = "proto2";
 
-package autofill;
+package strike_database;
 
 option optimize_for = LITE_RUNTIME;
 

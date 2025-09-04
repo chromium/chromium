@@ -30,8 +30,8 @@ struct Suggestion;
 // class is an interface.
 class AutofillAiManager {
  public:
-  AutofillAiManager(autofill::AutofillClient* client,
-                    autofill::StrikeDatabase* strike_database);
+  AutofillAiManager(AutofillClient* client,
+                    strike_database::StrikeDatabase* strike_database);
   AutofillAiManager(const AutofillAiManager&) = delete;
   AutofillAiManager& operator=(const AutofillAiManager&) = delete;
   virtual ~AutofillAiManager();

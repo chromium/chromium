@@ -6,7 +6,7 @@
 
 #include "components/strike_database/strike_data.pb.h"
 
-namespace autofill {
+namespace strike_database {
 
 const int kMaxStrikesLimit = 6;
 
@@ -83,4 +83,4 @@ StrikeDatabaseIntegratorTestStrikeDatabase::GetRequiredDelaySinceLastStrike()
   return required_delay_since_last_strike_;
 }
 
-}  // namespace autofill
+}  // namespace strike_database

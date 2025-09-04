@@ -22,6 +22,10 @@
 #include "components/strike_database/strike_database_base.h"
 
 namespace autofill {
+class FakeCreditCardServer;
+}  // namespace autofill
+
+namespace strike_database {
 
 // Contains virtual functions for per-project implementations of StrikeDatabase
 // to interface from, as well as a pointer to StrikeDatabase. This class is
@@ -152,9 +156,8 @@ class StrikeDatabaseIntegratorBase {
                            RemoveExpiredStrikesTestLogsUMA);
   FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
                            RemoveExpiredStrikesUniqueIdTest);
-  friend class FakeCreditCardServer;
+  friend autofill::FakeCreditCardServer;
   friend class StrikeDatabaseTest;
-  friend class StrikeDatabaseTester;
 
   const raw_ptr<StrikeDatabaseBase> strike_database_;
 
@@ -202,6 +205,6 @@ class StrikeDatabaseIntegratorBase {
       const;
 };
 
-}  // namespace autofill
+}  // namespace strike_database
 
 #endif  // COMPONENTS_STRIKE_DATABASE_STRIKE_DATABASE_INTEGRATOR_BASE_H_

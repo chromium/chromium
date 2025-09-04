@@ -27,7 +27,8 @@ struct CreditCardSaveStrikeDatabaseTraits {
 
 // Strike database for credit card saves (both local and upload).
 using CreditCardSaveStrikeDatabase =
-    SimpleAutofillStrikeDatabase<CreditCardSaveStrikeDatabaseTraits>;
+    strike_database::SimpleAutofillStrikeDatabase<
+        CreditCardSaveStrikeDatabaseTraits>;
 
 }  // namespace autofill
 

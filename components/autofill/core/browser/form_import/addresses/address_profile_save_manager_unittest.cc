@@ -532,7 +532,7 @@ void AddressProfileSaveManagerTest::VerifyStrikeCounts(
 
   // Check that the strike count for profile updates is reset if a profile was
   // updated.
-  const StrikeDatabaseIntegratorBase* db =
+  const strike_database::StrikeDatabaseIntegratorBase* db =
       address_data_manager().GetProfileUpdateStrikeDatabase();
   if ((IsConfirmableMerge(test_scenario) ||
        IsHomeAndWorkSuperset(test_scenario)) &&

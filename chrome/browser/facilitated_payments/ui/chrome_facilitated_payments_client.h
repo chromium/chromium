@@ -28,7 +28,6 @@ class Origin;
 namespace autofill {
 class BankAccount;
 class Ewallet;
-class StrikeDatabase;
 }  // namespace autofill
 
 namespace content {
@@ -39,6 +38,10 @@ class RenderFrameHost;
 namespace optimization_guide {
 class OptimizationGuideDecider;
 }  // namespace optimization_guide
+
+namespace strike_database {
+class StrikeDatabase;
+}  // namespace strike_database
 
 // Chrome implementation of `FacilitatedPaymentsClient`. `WebContents` owns 1
 // instance of this class. Creates and owns
@@ -103,7 +106,7 @@ class ChromeFacilitatedPaymentsClient
   void SetUiEventListener(
       base::RepeatingCallback<void(payments::facilitated::UiEvent)>
           ui_event_listener) final;
-  autofill::StrikeDatabase* GetStrikeDatabase() final;
+  strike_database::StrikeDatabase* GetStrikeDatabase() final;
   void ShowPixAccountLinkingPrompt(
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined) final;

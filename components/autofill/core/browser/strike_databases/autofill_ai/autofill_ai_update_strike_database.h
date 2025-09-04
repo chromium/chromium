@@ -22,8 +22,9 @@ struct AutofillAiUpdateStrikeDatabaseTraits {
   static constexpr bool kUniqueIdRequired = true;
 };
 
-using AutofillAiUpdateStrikeDatabase = autofill::SimpleAutofillStrikeDatabase<
-    AutofillAiUpdateStrikeDatabaseTraits>;
+using AutofillAiUpdateStrikeDatabase =
+    strike_database::SimpleAutofillStrikeDatabase<
+        AutofillAiUpdateStrikeDatabaseTraits>;
 
 }  // namespace autofill
 

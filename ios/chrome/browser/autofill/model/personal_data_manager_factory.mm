@@ -78,8 +78,6 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
-  StrikeDatabase* strike_database =
-      StrikeDatabaseFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   AutofillImageFetcherBase* autofill_image_fetcher =
@@ -89,7 +87,8 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
       local_storage, account_storage, profile->GetPrefs(),
       GetApplicationContext()->GetLocalState(),
       IdentityManagerFactory::GetForProfile(profile), history_service,
-      sync_service, strike_database, autofill_image_fetcher,
+      sync_service, StrikeDatabaseFactory::GetForProfile(profile),
+      autofill_image_fetcher,
       /*shared_storage_handler=*/nullptr,
       GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
       GetCountryCodeFromVariations(), /*autofill_optimization_guide=*/nullptr);

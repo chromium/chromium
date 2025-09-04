@@ -21,7 +21,7 @@ EntityDataManager::EntityDataManager(
     const signin::IdentityManager* identity_manager,
     scoped_refptr<AutofillWebDataService> webdata_service,
     history::HistoryService* history_service,
-    StrikeDatabaseBase* strike_database)
+    strike_database::StrikeDatabaseBase* strike_database)
     : webdata_service_(std::move(webdata_service)) {
   CHECK(webdata_service_);
   LoadEntities();

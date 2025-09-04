@@ -18,7 +18,7 @@
 #include "components/strike_database/strike_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
+namespace strike_database {
 namespace {
 
 // Note: This class is NOT the same as test_strike_database.h. This is an
@@ -316,4 +316,4 @@ TEST_F(StrikeDatabaseTest, LastUpdateTimestamp) {
   ClearAllProtoStrikes();
 }
 
-}  // namespace autofill
+}  // namespace strike_database

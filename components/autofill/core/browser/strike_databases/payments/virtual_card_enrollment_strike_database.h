@@ -25,10 +25,10 @@ struct VirtualCardEnrollmentStrikeDatabaseTraits {
 };
 
 class VirtualCardEnrollmentStrikeDatabase
-    : public SimpleAutofillStrikeDatabase<
+    : public strike_database::SimpleAutofillStrikeDatabase<
           VirtualCardEnrollmentStrikeDatabaseTraits> {
  public:
-  using SimpleAutofillStrikeDatabase<
+  using strike_database::SimpleAutofillStrikeDatabase<
       VirtualCardEnrollmentStrikeDatabaseTraits>::SimpleAutofillStrikeDatabase;
 
   // Whether bubble to be shown is the last offer for the card with

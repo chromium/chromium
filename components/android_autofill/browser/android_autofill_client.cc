@@ -144,7 +144,7 @@ autofill::FormDataImporter* AndroidAutofillClient::GetFormDataImporter() {
   return nullptr;
 }
 
-autofill::StrikeDatabase* AndroidAutofillClient::GetStrikeDatabase() {
+strike_database::StrikeDatabase* AndroidAutofillClient::GetStrikeDatabase() {
   return nullptr;
 }
 

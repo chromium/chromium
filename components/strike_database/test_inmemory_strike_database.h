@@ -12,7 +12,7 @@
 
 #include "components/strike_database/strike_database_base.h"
 
-namespace autofill {
+namespace strike_database {
 
 class StrikeData;
 
@@ -48,6 +48,6 @@ class TestInMemoryStrikeDatabase : public StrikeDatabaseBase {
   std::map<std::string, StrikeData>& GetStrikeCache() override;
 };
 
-}  // namespace autofill
+}  // namespace strike_database
 
 #endif  // COMPONENTS_STRIKE_DATABASE_TEST_INMEMORY_STRIKE_DATABASE_H_

@@ -20,8 +20,11 @@
 
 namespace autofill {
 class PaymentsDataManager;
-class StrikeDatabase;
 }  // namespace autofill
+
+namespace strike_database {
+class StrikeDatabase;
+}  // namespace strike_database
 
 namespace payments::facilitated {
 
@@ -80,7 +83,10 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, DismissPrompt, (), (override));
-  MOCK_METHOD(autofill::StrikeDatabase*, GetStrikeDatabase, (), (override));
+  MOCK_METHOD(strike_database::StrikeDatabase*,
+              GetStrikeDatabase,
+              (),
+              (override));
   MOCK_METHOD(void,
               InitPixAccountLinkingFlow,
               (const url::Origin& pix_payment_page_origin),

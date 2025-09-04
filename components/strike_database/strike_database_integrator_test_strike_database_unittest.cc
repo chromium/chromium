@@ -21,7 +21,7 @@
 #include "components/strike_database/strike_database_integrator_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
+namespace strike_database {
 
 class StrikeDatabaseIntegratorTestStrikeDatabaseTest : public ::testing::Test {
  public:
@@ -70,8 +70,7 @@ class StrikeDatabaseIntegratorTestStrikeDatabaseTest : public ::testing::Test {
 
 class DisableStrikeDatabaseIntegratorTestStrikeDatabaseTest
     : public StrikeDatabaseIntegratorTestStrikeDatabaseTest {
-  base::test::ScopedFeatureList feature_list_{
-      strike_database::features::kDisableStrikeSystem};
+  base::test::ScopedFeatureList feature_list_{features::kDisableStrikeSystem};
 };
 
 TEST_F(DisableStrikeDatabaseIntegratorTestStrikeDatabaseTest,
@@ -490,4 +489,4 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
   EXPECT_TRUE(strike_database_->ShouldBlockFeature());
 }
 
-}  // namespace autofill
+}  // namespace strike_database

@@ -22,7 +22,8 @@ struct AutofillProfileMigrationStrikeDatabaseTraits {
 // `kLocalOrSyncable` profile to `kAccount` profile and stops prompting the user
 // to do so after reaching a strike limit.
 using AutofillProfileMigrationStrikeDatabase =
-    SimpleAutofillStrikeDatabase<AutofillProfileMigrationStrikeDatabaseTraits>;
+    strike_database::SimpleAutofillStrikeDatabase<
+        AutofillProfileMigrationStrikeDatabaseTraits>;
 
 }  // namespace autofill
 

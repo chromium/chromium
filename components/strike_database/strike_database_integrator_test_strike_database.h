@@ -13,7 +13,7 @@
 #include "components/strike_database/strike_database.h"
 #include "components/strike_database/strike_database_integrator_base.h"
 
-namespace autofill {
+namespace strike_database {
 
 // Mock per-project implementation of StrikeDatabase to test the functions in
 // StrikeDatabaseIntegrator.
@@ -58,6 +58,6 @@ class StrikeDatabaseIntegratorTestStrikeDatabase
       std::nullopt;
 };
 
-}  // namespace autofill
+}  // namespace strike_database
 
 #endif  // COMPONENTS_STRIKE_DATABASE_STRIKE_DATABASE_INTEGRATOR_TEST_STRIKE_DATABASE_H_

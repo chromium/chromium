@@ -12,15 +12,17 @@
 
 class ProfileIOS;
 
-namespace autofill {
-
+namespace strike_database {
 class StrikeDatabase;
+}  // namespace strike_database
+
+namespace autofill {
 
 // Singleton that owns all StrikeDatabases and associates them with
 // ProfileIOS.
 class StrikeDatabaseFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static StrikeDatabase* GetForProfile(ProfileIOS* profile);
+  static strike_database::StrikeDatabase* GetForProfile(ProfileIOS* profile);
   static StrikeDatabaseFactory* GetInstance();
 
  private:

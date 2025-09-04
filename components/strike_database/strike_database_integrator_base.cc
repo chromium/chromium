@@ -22,7 +22,7 @@
 #include "components/strike_database/strike_database_base.h"
 #include "components/strike_database/strike_database_features.h"
 
-namespace autofill {
+namespace strike_database {
 
 StrikeDatabaseIntegratorBase::StrikeDatabaseIntegratorBase(
     StrikeDatabaseBase* strike_database)
@@ -35,8 +35,7 @@ StrikeDatabaseIntegratorBase::GetStrikeDatabaseDecision(
     std::string_view id) const {
   CheckIdUniqueness(id);
 
-  if (base::FeatureList::IsEnabled(
-          strike_database::features::kDisableStrikeSystem)) {
+  if (base::FeatureList::IsEnabled(features::kDisableStrikeSystem)) {
     // Debug/test user has disabled the strike database.
     return StrikeDatabaseDecision::kDoNotBlock;
   }
@@ -287,4 +286,4 @@ StrikeDatabaseIntegratorBase::GetRequiredDelaySinceLastStrike() const {
   return std::nullopt;
 }
 
-}  // namespace autofill
+}  // namespace strike_database

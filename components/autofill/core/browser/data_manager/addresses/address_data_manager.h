@@ -91,7 +91,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
                      PrefService* local_state,
                      syncer::SyncService* sync_service,
                      signin::IdentityManager* identity_manager,
-                     StrikeDatabaseBase* strike_database,
+                     strike_database::StrikeDatabaseBase* strike_database,
                      GeoIpCountryCode variation_country_code,
                      std::string app_locale);
 
@@ -311,7 +311,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   friend class AddressDataManagerTestApi;
 
   void SetPrefService(PrefService* pref_service);
-  void SetStrikeDatabase(StrikeDatabaseBase* strike_database);
+  void SetStrikeDatabase(strike_database::StrikeDatabaseBase* strike_database);
 
   // Used to get a pointer to the strike database for migrating existing
   // profiles. Note, the result can be a nullptr, for example, on incognito

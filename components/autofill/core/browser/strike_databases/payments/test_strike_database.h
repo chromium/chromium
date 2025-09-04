@@ -16,7 +16,7 @@
 namespace autofill {
 
 // An in-memory-only test version of StrikeDatabase.
-class TestStrikeDatabase : public StrikeDatabase {
+class TestStrikeDatabase : public strike_database::StrikeDatabase {
  public:
   TestStrikeDatabase();
   ~TestStrikeDatabase() override;
@@ -36,7 +36,7 @@ class TestStrikeDatabase : public StrikeDatabase {
 
  private:
   // In-memory database of StrikeData.
-  std::unordered_map<std::string, StrikeData> db_;
+  std::unordered_map<std::string, strike_database::StrikeData> db_;
 };
 
 }  // namespace autofill

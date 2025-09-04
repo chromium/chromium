@@ -30,7 +30,8 @@ struct AutofillProfileSaveStrikeDatabaseTraits {
 // Records the number of times a user declines saving their Autofill profile and
 // stops prompting the user to do so after reaching a strike limit.
 using AutofillProfileSaveStrikeDatabase =
-    HistoryClearableStrikeDatabase<AutofillProfileSaveStrikeDatabaseTraits>;
+    strike_database::HistoryClearableStrikeDatabase<
+        AutofillProfileSaveStrikeDatabaseTraits>;
 
 }  // namespace autofill
 

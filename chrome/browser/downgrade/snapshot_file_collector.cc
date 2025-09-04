@@ -124,7 +124,7 @@ std::vector<SnapshotItemDetails> CollectProfileItems() {
           chrome_browsing_data_remover::DATA_TYPE_PASSWORDS |
               chrome_browsing_data_remover::DATA_TYPE_FORM_DATA),
       SnapshotItemDetails(
-          base::FilePath(autofill::kStrikeDatabaseFileName),
+          base::FilePath(strike_database::kStrikeDatabaseFileName),
           SnapshotItemDetails::ItemType::kDirectory,
           chrome_browsing_data_remover::DATA_TYPE_PASSWORDS |
               chrome_browsing_data_remover::DATA_TYPE_FORM_DATA),

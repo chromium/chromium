@@ -15,7 +15,7 @@
 #include "components/strike_database/strike_database_base.h"
 #include "components/strike_database/strike_database_integrator_base.h"
 
-namespace autofill {
+namespace strike_database {
 
 // Most strike database in Autofill don't incorporate any special logic and
 // simple want to store strikes up to a given (constexpr) limit. This class
@@ -62,6 +62,6 @@ class SimpleAutofillStrikeDatabase : public StrikeDatabaseIntegratorBase {
   bool UniqueIdsRequired() const override { return Traits::kUniqueIdRequired; }
 };
 
-}  // namespace autofill
+}  // namespace strike_database
 
 #endif  // COMPONENTS_STRIKE_DATABASE_SIMPLE_AUTOFILL_STRIKE_DATABASE_H_

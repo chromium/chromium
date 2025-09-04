@@ -10,9 +10,11 @@
 namespace autofill {
 
 // static
-StrikeDatabase* StrikeDatabaseFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<StrikeDatabase>(profile,
-                                                               /*create=*/true);
+strike_database::StrikeDatabase* StrikeDatabaseFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<strike_database::StrikeDatabase>(
+      profile,
+      /*create=*/true);
 }
 
 // static
@@ -33,8 +35,8 @@ std::unique_ptr<KeyedService> StrikeDatabaseFactory::BuildServiceInstanceFor(
   leveldb_proto::ProtoDatabaseProvider* db_provider =
       profile->GetProtoDatabaseProvider();
 
-  return std::make_unique<autofill::StrikeDatabase>(db_provider,
-                                                    profile->GetStatePath());
+  return std::make_unique<strike_database::StrikeDatabase>(
+      db_provider, profile->GetStatePath());
 }
 
 }  // namespace autofill

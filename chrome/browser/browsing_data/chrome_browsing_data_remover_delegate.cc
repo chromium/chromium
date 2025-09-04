@@ -1075,7 +1075,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       // TODO(crbug.com/40594007): Respect |delete_begin_| and |delete_end_| and
       // only clear out entries whose last strikes were created in that
       // timeframe.
-      autofill::StrikeDatabase* strike_database =
+      strike_database::StrikeDatabase* strike_database =
           autofill::StrikeDatabaseFactory::GetForProfile(profile_);
       if (strike_database)
         strike_database->ClearAllStrikes();

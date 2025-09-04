@@ -27,9 +27,10 @@ struct SaveAndFillStrikeDatabaseTraits {
 };
 
 class SaveAndFillStrikeDatabase
-    : public SimpleAutofillStrikeDatabase<SaveAndFillStrikeDatabaseTraits> {
+    : public strike_database::SimpleAutofillStrikeDatabase<
+          SaveAndFillStrikeDatabaseTraits> {
  public:
-  using SimpleAutofillStrikeDatabase<
+  using strike_database::SimpleAutofillStrikeDatabase<
       SaveAndFillStrikeDatabaseTraits>::SimpleAutofillStrikeDatabase;
 
   std::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()

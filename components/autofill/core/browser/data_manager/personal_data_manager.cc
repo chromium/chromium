@@ -27,7 +27,7 @@ PersonalDataManager::PersonalDataManager(
     signin::IdentityManager* identity_manager,
     history::HistoryService* history_service,
     syncer::SyncService* sync_service,
-    StrikeDatabaseBase* strike_database,
+    strike_database::StrikeDatabaseBase* strike_database,
     AutofillImageFetcherBase* image_fetcher,
     std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
     std::string app_locale,

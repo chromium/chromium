@@ -26,7 +26,7 @@ struct IbanSaveStrikeDatabaseTraits {
 };
 
 using IbanSaveStrikeDatabase =
-    SimpleAutofillStrikeDatabase<IbanSaveStrikeDatabaseTraits>;
+    strike_database::SimpleAutofillStrikeDatabase<IbanSaveStrikeDatabaseTraits>;
 
 }  // namespace autofill
 

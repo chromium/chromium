@@ -21,7 +21,8 @@ struct AutofillProfileUpdateStrikeDatabaseTraits {
 // Records the number of times a user declines updating their Autofill profile
 // and stops prompting the user to do so after reaching a strike limit.
 using AutofillProfileUpdateStrikeDatabase =
-    SimpleAutofillStrikeDatabase<AutofillProfileUpdateStrikeDatabaseTraits>;
+    strike_database::SimpleAutofillStrikeDatabase<
+        AutofillProfileUpdateStrikeDatabaseTraits>;
 
 }  // namespace autofill
 

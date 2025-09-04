@@ -188,7 +188,8 @@ ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsDriverForFrame(
   return &driver_factory_.GetOrCreateForFrame(render_frame_host);
 }
 
-autofill::StrikeDatabase* ChromeFacilitatedPaymentsClient::GetStrikeDatabase() {
+strike_database::StrikeDatabase*
+ChromeFacilitatedPaymentsClient::GetStrikeDatabase() {
   content::BrowserContext* context = GetWebContents().GetBrowserContext();
 
   Profile* profile = Profile::FromBrowserContext(context);

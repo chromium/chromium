@@ -121,8 +121,9 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
 
 }  // namespace
 
-AutofillAiManager::AutofillAiManager(AutofillClient* client,
-                                     StrikeDatabase* strike_database)
+AutofillAiManager::AutofillAiManager(
+    AutofillClient* client,
+    strike_database::StrikeDatabase* strike_database)
     : client_(CHECK_DEREF(client)) {
   if (strike_database) {
     save_strike_db_by_attribute_ =

@@ -24,7 +24,7 @@ struct AutofillAiSaveStrikeDatabaseByAttributeTraits {
 };
 
 using AutofillAiSaveStrikeDatabaseByAttribute =
-    autofill::SimpleAutofillStrikeDatabase<
+    strike_database::SimpleAutofillStrikeDatabase<
         AutofillAiSaveStrikeDatabaseByAttributeTraits>;
 
 }  // namespace autofill

@@ -608,7 +608,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
                                                              delete_end);
 
       // Clear out the Autofill StrikeDatabase in its entirety.
-      autofill::StrikeDatabase* strike_database =
+      strike_database::StrikeDatabase* strike_database =
           autofill::StrikeDatabaseFactory::GetForProfile(profile_);
       if (strike_database) {
         strike_database->ClearAllStrikes();

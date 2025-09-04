@@ -86,7 +86,7 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
       web::WebState* web_state,
       id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge,
       signin::IdentityManager* identity_manager,
-      StrikeDatabase* strike_database,
+      strike_database::StrikeDatabase* strike_database,
       syncer::SyncService* sync_service,
       LogRouter* log_router);
 
@@ -114,7 +114,7 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
   const signin::IdentityManager* GetIdentityManager() const override;
   FormDataImporter* GetFormDataImporter() override;
   payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
-  StrikeDatabase* GetStrikeDatabase() override;
+  strike_database::StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   AddressNormalizer* GetAddressNormalizer() override;
   const GURL& GetLastCommittedPrimaryMainFrameURL() const override;
@@ -159,7 +159,7 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
   AutocompleteHistoryManager* autocomplete_history_manager_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
-  StrikeDatabase* strike_database_;
+  strike_database::StrikeDatabase* strike_database_;
   syncer::SyncService* sync_service_ = nullptr;
   raw_ptr<LogRouter> log_router_;
   std::unique_ptr<LogManager> log_manager_;

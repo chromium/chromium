@@ -29,8 +29,9 @@ class VirtualCardEnrollmentStrikeDatabaseTest : public ::testing::Test {
     db_provider_ = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
         temp_dir_.GetPath());
 
-    strike_database_service_ = std::make_unique<StrikeDatabase>(
-        db_provider_.get(), temp_dir_.GetPath());
+    strike_database_service_ =
+        std::make_unique<strike_database::StrikeDatabase>(db_provider_.get(),
+                                                          temp_dir_.GetPath());
 
     strike_database_ = std::make_unique<VirtualCardEnrollmentStrikeDatabase>(
         strike_database_service_.get());
@@ -49,7 +50,7 @@ class VirtualCardEnrollmentStrikeDatabaseTest : public ::testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> db_provider_;
-  std::unique_ptr<StrikeDatabase> strike_database_service_;
+  std::unique_ptr<strike_database::StrikeDatabase> strike_database_service_;
   std::unique_ptr<VirtualCardEnrollmentStrikeDatabase> strike_database_;
 };
 
@@ -101,8 +102,9 @@ class VirtualCardEnrollmentStrikeOptimizationTest
     db_provider_ = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
         temp_dir_.GetPath());
 
-    strike_database_service_ = std::make_unique<StrikeDatabase>(
-        db_provider_.get(), temp_dir_.GetPath());
+    strike_database_service_ =
+        std::make_unique<strike_database::StrikeDatabase>(db_provider_.get(),
+                                                          temp_dir_.GetPath());
 
     strike_database_ = std::make_unique<VirtualCardEnrollmentStrikeDatabase>(
         strike_database_service_.get());

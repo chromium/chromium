@@ -45,7 +45,7 @@ struct AddressSuggestionStrikeDatabaseTraits {
 // Autofill popup and stops automatically showing address suggestions to the
 // user after reaching a strike limit.
 class AddressSuggestionStrikeDatabase
-    : public HistoryClearableStrikeDatabase<
+    : public strike_database::HistoryClearableStrikeDatabase<
           AddressSuggestionStrikeDatabaseTraits> {
  public:
   using HistoryClearableStrikeDatabase<

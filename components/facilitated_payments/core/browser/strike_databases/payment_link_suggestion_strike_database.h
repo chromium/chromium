@@ -28,7 +28,7 @@ struct PaymentLinkSuggestionStrikeDatabaseTraits {
 
 // Strike database for payment link suggestions.
 using PaymentLinkSuggestionStrikeDatabase =
-    autofill::SimpleAutofillStrikeDatabase<
+    strike_database::SimpleAutofillStrikeDatabase<
         PaymentLinkSuggestionStrikeDatabaseTraits>;
 
 }  // namespace payments::facilitated

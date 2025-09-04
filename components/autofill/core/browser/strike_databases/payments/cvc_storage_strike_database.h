@@ -25,7 +25,8 @@ struct CvcStorageStrikeDatabaseTraits {
 };
 
 class CvcStorageStrikeDatabase
-    : public SimpleAutofillStrikeDatabase<CvcStorageStrikeDatabaseTraits> {
+    : public strike_database::SimpleAutofillStrikeDatabase<
+          CvcStorageStrikeDatabaseTraits> {
  public:
   using SimpleAutofillStrikeDatabase<
       CvcStorageStrikeDatabaseTraits>::SimpleAutofillStrikeDatabase;

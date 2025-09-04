@@ -145,7 +145,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   const GoogleGroupsManager* GetGoogleGroupsManager() const final;
   FormDataImporter* GetFormDataImporter() final;
   payments::ChromePaymentsAutofillClient* GetPaymentsAutofillClient() final;
-  StrikeDatabase* GetStrikeDatabase() final;
+  strike_database::StrikeDatabase* GetStrikeDatabase() final;
   ukm::UkmRecorder* GetUkmRecorder() final;
   AddressNormalizer* GetAddressNormalizer() final;
   const GURL& GetLastCommittedPrimaryMainFrameURL() const final;

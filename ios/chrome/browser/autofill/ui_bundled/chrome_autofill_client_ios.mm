@@ -227,7 +227,7 @@ ChromeAutofillClientIOS::GetPaymentsAutofillClient() {
   return &payments_autofill_client_;
 }
 
-StrikeDatabase* ChromeAutofillClientIOS::GetStrikeDatabase() {
+strike_database::StrikeDatabase* ChromeAutofillClientIOS::GetStrikeDatabase() {
   return StrikeDatabaseFactory::GetForProfile(profile_->GetOriginalProfile());
 }
 

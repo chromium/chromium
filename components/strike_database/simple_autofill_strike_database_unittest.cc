@@ -15,7 +15,7 @@
 #include "components/strike_database/strike_database_integrator_test_strike_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
+namespace strike_database {
 
 namespace {
 
@@ -94,4 +94,4 @@ TEST_F(SimpleAutofillStrikeDatabaseTest, MaxEntries) {
 
 }  // namespace
 
-}  // namespace autofill
+}  // namespace strike_database

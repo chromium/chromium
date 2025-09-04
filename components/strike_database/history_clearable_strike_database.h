@@ -13,7 +13,7 @@
 #include "components/strike_database/simple_autofill_strike_database.h"
 #include "components/strike_database/strike_database_integrator_base.h"
 
-namespace autofill {
+namespace strike_database {
 
 // This class defines an interface for strike database whose keys should be
 // cleared when the user clears his personal browsing history. The key of such
@@ -83,6 +83,6 @@ class HistoryClearableStrikeDatabase
   }
 };
 
-}  // namespace autofill
+}  // namespace strike_database
 
 #endif  // COMPONENTS_STRIKE_DATABASE_HISTORY_CLEARABLE_STRIKE_DATABASE_H_

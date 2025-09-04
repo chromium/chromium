@@ -15,9 +15,10 @@
 namespace ios_web_view {
 
 // static
-autofill::StrikeDatabase* WebViewStrikeDatabaseFactory::GetForBrowserState(
+strike_database::StrikeDatabase*
+WebViewStrikeDatabaseFactory::GetForBrowserState(
     WebViewBrowserState* browser_state) {
-  return static_cast<autofill::StrikeDatabase*>(
+  return static_cast<strike_database::StrikeDatabase*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
@@ -43,7 +44,7 @@ WebViewStrikeDatabaseFactory::BuildServiceInstanceFor(
   leveldb_proto::ProtoDatabaseProvider* db_provider =
       browser_state->GetProtoDatabaseProvider();
 
-  return std::make_unique<autofill::StrikeDatabase>(
+  return std::make_unique<strike_database::StrikeDatabase>(
       db_provider, browser_state->GetStatePath());
 }
 

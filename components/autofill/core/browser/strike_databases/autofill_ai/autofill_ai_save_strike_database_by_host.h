@@ -26,10 +26,10 @@ struct AutofillAiSaveStrikeDatabaseByHostTraits {
 };
 
 class AutofillAiSaveStrikeDatabaseByHost
-    : public autofill::HistoryClearableStrikeDatabase<
+    : public strike_database::HistoryClearableStrikeDatabase<
           AutofillAiSaveStrikeDatabaseByHostTraits> {
  public:
-  using autofill::HistoryClearableStrikeDatabase<
+  using strike_database::HistoryClearableStrikeDatabase<
       AutofillAiSaveStrikeDatabaseByHostTraits>::HistoryClearableStrikeDatabase;
 
   // Returns an id for use in the strike database.

@@ -30,8 +30,11 @@ class OptimizationGuideDecider;
 namespace autofill {
 class BankAccount;
 class PaymentsDataManager;
-class StrikeDatabase;
 }  // namespace autofill
+
+namespace strike_database {
+class StrikeDatabase;
+}  // namespace strike_database
 
 namespace payments::facilitated {
 
@@ -135,7 +138,7 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.
-  virtual autofill::StrikeDatabase* GetStrikeDatabase() = 0;
+  virtual strike_database::StrikeDatabase* GetStrikeDatabase() = 0;
 
   // Virtual so it can be overridden in tests.
   virtual void InitPixAccountLinkingFlow(

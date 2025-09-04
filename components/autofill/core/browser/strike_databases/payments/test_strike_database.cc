@@ -33,7 +33,7 @@ void TestStrikeDatabase::ClearAllProtoStrikesForKey(
 
 void TestStrikeDatabase::AddEntryWithNumStrikes(const std::string& key,
                                                 int num_strikes) {
-  StrikeData strike_data;
+  strike_database::StrikeData strike_data;
   strike_data.set_num_strikes(num_strikes);
   strike_data.set_last_update_timestamp(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -41,11 +41,8 @@ void TestStrikeDatabase::AddEntryWithNumStrikes(const std::string& key,
 }
 
 int TestStrikeDatabase::GetStrikesForTesting(const std::string& key) {
-  std::unordered_map<std::string, StrikeData>::iterator it = db_.find(key);
-  if (it != db_.end()) {
-    return it->second.num_strikes();
-  }
-  return 0;
+  auto it = db_.find(key);
+  return it != db_.end() ? it->second.num_strikes() : 0;
 }
 
 }  // namespace autofill

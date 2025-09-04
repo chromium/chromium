@@ -162,7 +162,7 @@ class AddressDataManagerTest : public testing::Test {
  private:
   scoped_refptr<WebDatabaseService> profile_web_database_;
   std::unique_ptr<AddressDataManager> address_data_manager_;
-  TestInMemoryStrikeDatabase strike_database_;
+  strike_database::TestInMemoryStrikeDatabase strike_database_;
 };
 
 TEST_F(AddressDataManagerTest, AddProfile) {
