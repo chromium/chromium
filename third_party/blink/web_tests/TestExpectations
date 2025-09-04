@@ -9326,9 +9326,6 @@ crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-013.html [ F
 
 crbug.com/41493642 external/wpt/html/semantics/embedded-content/the-canvas-element/toBlob-cross-realm-callback-report-exception.html [ Failure Pass ]
 
-# Temporarily disabled to land a devtools CL
-crbug.com/436136172 http/tests/devtools/a11y-axe-core/sources/event-listener-breakpoints-a11y-test.js [ Failure Pass ]
-
 #Disable due to high frequency flakiness
 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/network/preview-searchable.js [ Failure Pass Timeout ]
 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-xhr.js [ Failure Pass Timeout ]
