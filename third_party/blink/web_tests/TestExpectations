@@ -3116,8 +3116,8 @@ crbug.com/437953151 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bou
 crbug.com/437877027 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/not-processing-user-gesture.https.window.html [ Pass Timeout ]
 crbug.com/437877027 [ Win11-arm64 ] external/wpt/bluetooth/bidi/server/connect/garbage-collection-ran-during-success.https.window.html [ Pass Timeout ]
 crbug.com/437760142 [ Mac14 ] external/wpt/digital-credentials/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Timeout ]
-crbug.com/427778335 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-custom-button.tentative.html [ Failure Timeout ]
-crbug.com/427778335 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-custom-button.tentative.html [ Failure Timeout ]
+crbug.com/427778335 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-custom-button.html [ Failure Timeout ]
+crbug.com/427778335 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-custom-button.html [ Failure Timeout ]
 crbug.com/437806804 [ Mac14 ] external/wpt/wasm/core/simd/simd_f32x4_arith.wast.js.html [ Timeout ]
 crbug.com/437806804 [ Mac14 ] external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Timeout ]
 crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wpt/fetch/content-encoding/br/big-br-body.https.any.html [ Timeout ]
@@ -3251,8 +3251,8 @@ crbug.com/431038527 [ Mac14 ] external/wpt/font-access/font_access_sorted.tentat
 crbug.com/431039947 [ Mac14 ] external/wpt/html-aam/roles-minimum.tentative.html [ Timeout ]
 crbug.com/431040245 [ Mac14 ] external/wpt/html/cross-origin-embedder-policy/shared-workers.https.html [ Timeout ]
 crbug.com/431038528 [ Mac14 ] external/wpt/html/interaction/focus/focusgroup/tentative/grid-navigation/empty-spaces.html [ Timeout ]
-crbug.com/431039948 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-optgroup-arrow-keys.tentative.html [ Timeout ]
-crbug.com/431039948 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-hover-styles.tentative.html [ Timeout ]
+crbug.com/431039948 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-optgroup-arrow-keys.optional.html [ Timeout ]
+crbug.com/431039948 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-hover-styles.html [ Timeout ]
 crbug.com/431040246 [ Mac14 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-show-stacked.html [ Timeout ]
 crbug.com/431029571 [ Mac14 ] external/wpt/html/semantics/links/downloading-resources/header-origin-no-referrer.html [ Timeout ]
 crbug.com/431034519 [ Mac14 ] external/wpt/mediacapture-record/MediaRecorder-stop.html?mimeType=video/webm;codecs=vp8,opus [ Timeout ]
@@ -6749,16 +6749,16 @@ crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/clear-site-data/storage
 crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/storage/partitioned-estimate-usage-details-indexeddb.tentative.https.sub.html [ Timeout ]
 
 # Flaky on headless_shell_wpt_tests
-crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.tentative.html [ Failure Pass ]
+crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.html [ Failure Pass ]
 
-crbug.com/366415131 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
+crbug.com/366415131 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.html [ Failure ]
 
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-in-page/customizable-select-in-page-appearance.tentative.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-in-page/customizable-select-in-page-keyboard-behavior.tentative.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-in-page/customizable-select-in-page-mouse-behavior.tentative.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-in-page/select-in-page-typeahead.tentative.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-appearance.tentative.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Failure ]
+crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/select-pseudo-light-dismiss-invalidation.tentative.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html [ Failure ]
 
@@ -6816,8 +6816,8 @@ crbug.com/362922565 html/select/select-typeahead-scroll.html [ Failure ]
 crbug.com/362922565 html/select/select-typeahead-with-spacekey.html [ Failure ]
 
 # Interesting issue with max-block-size: stretch
-crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left.tentative.html [ Failure ]
-crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right.tentative.html [ Failure ]
+crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left.html [ Failure ]
+crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right.html [ Failure ]
 
 # Temp disable MST transfer tests until Browser feature can be enabled in tests
 crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Failure Skip ]
@@ -9569,7 +9569,7 @@ crbug.com/427523525 [ Linux ] virtual/threaded-prefer-compositing/external/wpt/c
 crbug.com/426602897 external/wpt/screen-capture/delegate-request.https.sub.html [ Failure Pass ]
 
 # Gardener 2025-06-26
-crbug.com/427778335 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-button-after-text.tentative.html [ Failure Pass ]
+crbug.com/427778335 [ Linux ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-button-after-text.html [ Failure Pass ]
 
 # Gardener 2025-07-03
 crbug.com/429394126 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure Timeout ]

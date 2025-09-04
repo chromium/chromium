@@ -1730,7 +1730,7 @@
       "Linux"
     ],
     "bases": [
-      "external/wpt/html/semantics/forms/the-select-element/customizable-select/select-parsing.tentative.html"
+      "external/wpt/html/semantics/forms/the-select-element/customizable-select/select-parsing.html"
     ],
     "args": [
       "--enable-features=InputClosesSelect,SelectParserRelaxation"
