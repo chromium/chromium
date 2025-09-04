@@ -6786,6 +6786,31 @@ crbug.com/419066541 virtual/css-gap-decorations-disabled/external/wpt/web-animat
 crbug.com/419066541 virtual/css-gap-decorations-disabled/external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-001.html [ Pass ]
 ### End Of tests for CSSGapDecorations disabled
 
+### Tests failing with CSSGapDecorationOptimizedEnabled:
+# These tests are failing for flex because they are testing rule breaking behavior
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/flex/flex-gap-decorations-009.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/flex/flex-gap-decorations-022.html [ Failure ]
+# These tests are failing for grid because they are testing rule breaking behavior
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/grid-gap-decorations-006.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/grid-gap-decorations-007.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/grid-gap-decorations-009.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/grid-gap-decorations-010.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/grid-gap-decorations-013.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/grid-gap-decorations-015.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/grid-gap-decorations-030.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/grid-gap-decorations-040.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/grid-gap-decorations-38.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/subgrid/subgrid-gap-decorations-004.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/subgrid/subgrid-gap-decorations-005.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/subgrid/subgrid-gap-decorations-007.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/subgrid/subgrid-gap-decorations-012.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/subgrid/subgrid-gap-decorations-013.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/subgrid/subgrid-gap-decorations-015.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/subgrid/subgrid-gap-decorations-016.html [ Failure ]
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/grid/subgrid/subgrid-gap-decorations-017.html [ Failure ]
+# These tests are failing because multi column has not been implemented yet
+crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/multicol/* [ Failure ]
+
 # I think these are just test issues, but at least the scrollbars are related:
 crbug.com/362536387 external/wpt/html/semantics/forms/the-select-element/select-many-options.tentative.html [ Failure ]
 crbug.com/362536387 external/wpt/html/semantics/forms/the-select-element/select-popover-position-with-zoom.tentative.html [ Failure ]

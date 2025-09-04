@@ -2257,7 +2257,9 @@ class GapAccumulator {
       gap_geometry->SetGapIntersections(kForColumns,
                                         std::move(column_intersections_));
       if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
-        gap_geometry->SetCrossGaps(std::move(cross_gaps_));
+        if (!cross_gaps_.empty()) {
+          gap_geometry->SetCrossGaps(std::move(cross_gaps_));
+        }
       }
     }
 
@@ -2265,7 +2267,9 @@ class GapAccumulator {
       gap_geometry->SetGapIntersections(kForRows,
                                         std::move(row_intersections_));
       if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
-        gap_geometry->SetMainGaps(std::move(main_gaps_));
+        if (!main_gaps_.empty()) {
+          gap_geometry->SetMainGaps(std::move(main_gaps_));
+        }
       }
     }
 

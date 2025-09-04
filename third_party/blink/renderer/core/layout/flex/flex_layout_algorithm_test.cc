@@ -1373,7 +1373,7 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedColumnFlexDirection) {
 
   const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
 
-  const Vector<MainGap> expected_main_gaps = {MainGap(LayoutUnit(2))};
+  const Vector<MainGap> expected_main_gaps = {MainGap(LayoutUnit(62))};
   const Vector<CrossGap> expected_cross_gaps = {
       CrossGap(LogicalOffset(LayoutUnit(2), LayoutUnit(57)),
                CrossGap::EdgeIntersectionState::kStart),

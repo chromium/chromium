@@ -1,0 +1,149 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/core/paint/gap_decorations_painter.h"
+
+#include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/box_border_painter.h"
+#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/gap_data_list.h"
+
+namespace blink {
+
+// TODO(samomekarajr): Consider refactoring the Paint method to improve
+// modularity by ensuring each method handles a single responsibility.
+void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
+                                  const PaintInfo& paint_info,
+                                  const PhysicalRect& paint_rect,
+                                  const GapGeometry& gap_geometry) {
+  const ComputedStyle& style = box_fragment_.Style();
+  const bool is_column_gap = (track_direction == kForColumns);
+
+  GapDataList<StyleColor> rule_colors =
+      is_column_gap ? style.ColumnRuleColor() : style.RowRuleColor();
+  GapDataList<EBorderStyle> rule_styles =
+      is_column_gap ? style.ColumnRuleStyle() : style.RowRuleStyle();
+  GapDataList<int> rule_widths =
+      is_column_gap ? style.ColumnRuleWidth() : style.RowRuleWidth();
+  Length rule_outset =
+      is_column_gap ? style.ColumnRuleOutset() : style.RowRuleOutset();
+
+  WritingModeConverter converter(style.GetWritingDirection(),
+                                 box_fragment_.Size());
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
+  const BoxSide box_side =
+      CSSGapDecorationUtils::BoxSideFromDirection(style, track_direction);
+
+  const LayoutUnit cross_gutter_width = track_direction == kForRows
+                                            ? gap_geometry.GetInlineGapSize()
+                                            : gap_geometry.GetBlockGapSize();
+
+  const bool is_main = gap_geometry.IsMainDirection(track_direction);
+  const wtf_size_t gap_count = is_main ? gap_geometry.GetMainGaps().size()
+                                       : gap_geometry.GetCrossGaps().size();
+
+  auto width_iterator =
+      GapDataListIterator<int>(rule_widths.GetGapDataList(), gap_count);
+  auto style_iterator = GapDataListIterator<EBorderStyle>(
+      rule_styles.GetGapDataList(), gap_count);
+  auto color_iterator =
+      GapDataListIterator<StyleColor>(rule_colors.GetGapDataList(), gap_count);
+
+  for (wtf_size_t gap_index = 0; gap_index < gap_count; ++gap_index) {
+    const StyleColor rule_color = color_iterator.Next();
+    const Color resolved_rule_color =
+        style.VisitedDependentGapColor(rule_color, style, is_column_gap);
+    const EBorderStyle rule_style =
+        ComputedStyle::CollapsedBorderStyle(style_iterator.Next());
+    const LayoutUnit rule_thickness = LayoutUnit(width_iterator.Next());
+
+    const LayoutUnit center =
+        gap_geometry.GetGapOffset(track_direction, gap_index);
+    const Vector<LayoutUnit> intersections =
+        gap_geometry.GenerateIntersectionListForGap(track_direction, gap_index);
+    const wtf_size_t last_intersection_index = intersections.size() - 1;
+    wtf_size_t start = 0;
+    while (start < last_intersection_index) {
+      wtf_size_t end = start;
+
+      // TODO(samomekarajr): Instead of taking the last intersection, we want
+      // to move end progressively and check blocked status.
+      end = last_intersection_index;
+      if (start >= end) {
+        // Break because there's no gap segment to paint.
+        break;
+      }
+
+      // The cross gutter size is used to determine the "crossing gap width" at
+      // intersection points. The crossing gap width of an intersection point is
+      // defined as:
+      // * `0` if the intersection is at the content edge of the container.
+      // * The cross gutter size if it is an intersection with another gap.
+      // https://drafts.csswg.org/css-gaps-1/#crossing-gap-width
+      const LayoutUnit start_width =
+          gap_geometry.IsEdgeIntersection(gap_index, start,
+                                          intersections.size(), is_main)
+              ? LayoutUnit()
+              : cross_gutter_width;
+      const LayoutUnit end_width =
+          gap_geometry.IsEdgeIntersection(gap_index, end, intersections.size(),
+                                          is_main)
+              ? LayoutUnit()
+              : cross_gutter_width;
+
+      // Outset values are used to offset the end points of gap decorations.
+      // Percentage values are resolved against the crossing gap width of the
+      // intersection point.
+      // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-outset
+      const LayoutUnit start_outset = ValueForLength(rule_outset, start_width);
+      const LayoutUnit end_outset = ValueForLength(rule_outset, end_width);
+
+      // Compute the gap decorations offset as half of the `crossing_gap_width`
+      // minus the outset.
+      // https://drafts.csswg.org/css-gaps-1/#compute-the-offset
+      const LayoutUnit decoration_start_offset =
+          (start_width / 2) - start_outset;
+      const LayoutUnit decoration_end_offset = (end_width / 2) - end_outset;
+
+      // Compute the primary axis values using the gap offsets.
+      const LayoutUnit primary_start = center - (rule_thickness / 2);
+      const LayoutUnit primary_size = rule_thickness;
+
+      // Compute the secondary axis values using the intersection offsets.
+      const LayoutUnit secondary_start =
+          intersections[start] + decoration_start_offset;
+      const LayoutUnit secondary_size =
+          intersections[end] - secondary_start - decoration_end_offset;
+
+      // Columns paint a vertical strip at the center of the gap while rows
+      // paint horizontal strip at the center of the gap
+      const LayoutUnit inline_start =
+          is_column_gap ? primary_start : secondary_start;
+      const LayoutUnit inline_size =
+          is_column_gap ? primary_size : secondary_size;
+      const LayoutUnit block_start =
+          is_column_gap ? secondary_start : primary_start;
+      const LayoutUnit block_size =
+          is_column_gap ? secondary_size : primary_size;
+
+      const LogicalRect gap_logical(inline_start, block_start, inline_size,
+                                    block_size);
+      PhysicalRect gap_rect = converter.ToPhysical(gap_logical);
+      gap_rect.offset += paint_rect.offset;
+      BoxBorderPainter::DrawBoxSide(
+          paint_info.context, ToPixelSnappedRect(gap_rect), box_side,
+          resolved_rule_color, rule_style, auto_dark_mode);
+
+      start = end;
+    }
+  }
+}
+
+}  // namespace blink

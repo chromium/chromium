@@ -330,8 +330,13 @@ class GapAccumulator {
     // we can remove all the parts of this function used for the old version.
     // TODO(crbug.com/440123087): Risky since they could in theory be used after
     // moved. Clean up to not move members. Change members to unique_ptrs
-    gap_geometry->SetCrossGaps(std::move(cross_gaps_));
-    gap_geometry->SetMainGaps(std::move(main_gaps_));
+    if (!cross_gaps_.empty()) {
+      gap_geometry->SetCrossGaps(std::move(cross_gaps_));
+    }
+
+    if (!main_gaps_.empty()) {
+      gap_geometry->SetMainGaps(std::move(main_gaps_));
+    }
 
     LayoutUnit content_inline_start =
         is_column_ ? content_cross_start_.value_or(LayoutUnit())
@@ -350,6 +355,10 @@ class GapAccumulator {
                                           content_inline_end);
     gap_geometry->SetContentBlockOffsets(content_block_start,
                                          content_block_end);
+
+    if (is_column_) {
+      gap_geometry->SetMainDirection(kForColumns);
+    }
 
     return gap_geometry;
   }
@@ -775,8 +784,6 @@ class GapAccumulator {
 
     // "first" and "last" here refers to the inline direction.
     const bool is_first_item = item_index_in_line == 0;
-    const bool is_last_item =
-        item_index_in_line == flex_line.item_indices.size() - 1;
 
     if (is_first_line && !content_cross_start_.has_value()) {
       content_cross_start_ = flex_line.cross_axis_offset;
@@ -789,6 +796,20 @@ class GapAccumulator {
     // The first item in any line doesn't have any `CrossGap` associated with
     // it.
     if (is_first_item) {
+      // We only set the content end for the `GapGeometry` if it hasn't been set
+      // yet, and if there are multiple lines.
+      if (num_lines_ > 1 && !content_main_end_.has_value()) {
+        LayoutUnit border_scrollbar_padding =
+            is_column_
+                ? container_builder_->BorderScrollbarPadding().block_end
+                : container_builder_->BorderScrollbarPadding().inline_end;
+        content_main_end_ =
+            is_column_
+                ? container_builder_->InitialBorderBoxSize().block_size -
+                      border_scrollbar_padding
+                : container_builder_->InlineSize() - border_scrollbar_padding;
+      }
+
       // We set the `MainGap` start offset when we process the first item in a
       // line, and nothing else. The last line does not have any `MainGap`s
       // (number of main gaps = `num_lines_` - 1)
@@ -807,19 +828,6 @@ class GapAccumulator {
       return;
     }
 
-    // We only set the content end for the `GapGeometry` if it hasn't been set
-    // yet, and if there are multiple lines.
-    if (is_last_item && num_lines_ > 1 && !content_main_end_.has_value()) {
-      LayoutUnit border_scrollbar_padding =
-          is_column_ ? container_builder_->BorderScrollbarPadding().block_end
-                     : container_builder_->BorderScrollbarPadding().inline_end;
-      content_main_end_ =
-          is_column_
-              ? container_builder_->InitialBorderBoxSize().block_size -
-                    border_scrollbar_padding
-              : container_builder_->InlineSize() - border_scrollbar_padding;
-    }
-
     const LayoutUnit main_offset =
         is_column_ ? item_offset.block_offset : item_offset.inline_offset;
     const LayoutUnit main_intersection_offset =
@@ -832,20 +840,14 @@ class GapAccumulator {
   void PopulateMainGapForFirstItem(const FlexLine& flex_line,
                                    wtf_size_t flex_line_index) {
     CHECK_LT(flex_line_index, main_gaps_.size());
-    LayoutUnit main_intersection_offset =
-        is_column_ ? container_builder_->BorderScrollbarPadding().block_start
-                   : container_builder_->BorderScrollbarPadding().inline_start;
-    LayoutUnit cross_intersection_offset =
-        flex_line.LineCrossEnd() + (gap_between_lines_ / 2);
-
-    main_gaps_[flex_line_index].SetGapOffset(
-        is_column_ ? main_intersection_offset : cross_intersection_offset);
+    LayoutUnit gap_offset = flex_line.LineCrossEnd() + (gap_between_lines_ / 2);
+    main_gaps_[flex_line_index].SetGapOffset(gap_offset);
   }
 
   void HandleCrossGapRangesForCurrentItem(wtf_size_t flex_line_index,
                                           wtf_size_t cross_gap_index) {
     if (flex_line_index < main_gaps_.size()) {
-      main_gaps_[flex_line_index].RangeOfCrossGapsBefore().Increment(
+      main_gaps_[flex_line_index].IncrementRangeOfCrossGapsBefore(
           cross_gap_index);
     }
 
@@ -853,7 +855,7 @@ class GapAccumulator {
       CHECK_LE(flex_line_index - 1, main_gaps_.size());
       // We increment the `RangeOfCrossGapsAfter` for the previous line, since
       // the CrossGaps that start at this line fall "after" the previous line.
-      main_gaps_[flex_line_index - 1].RangeOfCrossGapsAfter().Increment(
+      main_gaps_[flex_line_index - 1].IncrementRangeOfCrossGapsAfter(
           cross_gap_index);
     }
   }

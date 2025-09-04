@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/paint/fieldset_painter.h"
 #include "third_party/blink/renderer/core/paint/fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/frame_set_painter.h"
+#include "third_party/blink/renderer/core/paint/gap_decorations_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/mathml_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
@@ -1427,13 +1428,29 @@ void BoxFragmentPainter::PaintGapDecorations(
   // rows, or the rows over the columns. The default is to paint the rows over
   // the columns.
   if (paint_order == EGapRuleOverlap::kColumnOverRow) {
-    PaintGaps(kForRows, *final_paint_info, paint_rect, *gap_geometry);
-    PaintGaps(kForColumns, *final_paint_info, paint_rect, *gap_geometry);
+    if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+      GapDecorationsPainter(box_fragment_)
+          .Paint(kForRows, *final_paint_info, paint_rect, *gap_geometry);
+      GapDecorationsPainter(box_fragment_)
+          .Paint(kForColumns, *final_paint_info, paint_rect, *gap_geometry);
+    } else {
+      PaintGaps(kForRows, *final_paint_info, paint_rect, *gap_geometry);
+      PaintGaps(kForColumns, *final_paint_info, paint_rect, *gap_geometry);
+    }
+
     return;
   }
 
-  PaintGaps(kForColumns, *final_paint_info, paint_rect, *gap_geometry);
-  PaintGaps(kForRows, *final_paint_info, paint_rect, *gap_geometry);
+  if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+    GapDecorationsPainter(box_fragment_)
+        .Paint(kForColumns, *final_paint_info, paint_rect, *gap_geometry);
+    GapDecorationsPainter(box_fragment_)
+        .Paint(kForRows, *final_paint_info, paint_rect, *gap_geometry);
+
+  } else {
+    PaintGaps(kForColumns, *final_paint_info, paint_rect, *gap_geometry);
+    PaintGaps(kForRows, *final_paint_info, paint_rect, *gap_geometry);
+  }
 }
 
 void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
@@ -1656,6 +1673,7 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
       BoxBorderPainter::DrawBoxSide(
           paint_info.context, ToPixelSnappedRect(gap_rect), box_side,
           resolved_rule_color, rule_style, auto_dark_mode);
+
       start = end;
     }
   }

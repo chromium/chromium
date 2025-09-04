@@ -77,7 +77,10 @@ using TrackRanges = std::unique_ptr<Vector<TrackRange>>;
 using GapToTrackRangesMap =
     HashMap<wtf_size_t, TrackRanges, blink::IntWithZeroKeyHashTraits<int>>;
 
-// Gap locations are used for painting gap decorations.
+// Gap geometry is used to determine gap locations for the purpose of painting
+// gap decorations.
+//
+// See third_party/blink/renderer/core/layout/gap/README.md for more.
 class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
  public:
   enum ContainerType {
@@ -130,11 +133,24 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   LayoutUnit GetContentBlockEnd() const { return content_block_end_; }
 
   void SetMainGaps(Vector<MainGap>&& main_gaps) {
+    CHECK(!main_gaps.empty());
     main_gaps_ = std::move(main_gaps);
+    main_gap_running_index_ = 0;
   }
 
   void SetCrossGaps(Vector<CrossGap>&& cross_gaps) {
+    CHECK(!cross_gaps.empty());
     cross_gaps_ = std::move(cross_gaps);
+  }
+
+  void SetMainDirection(GridTrackSizingDirection direction) {
+    main_direction_ = direction;
+  }
+
+  GridTrackSizingDirection GetMainDirection() const { return main_direction_; }
+
+  bool IsMainDirection(GridTrackSizingDirection direction) const {
+    return main_direction_ == direction;
   }
 
   void SetRowGapsToBlockedColumnRanges(
@@ -161,9 +177,64 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     return column_gaps_to_blocked_row_ranges_;
   }
 
+  // Returns the offset of the gap at the specified `gap_index` in the given
+  // `direction` (main or cross axis). For the main axis, it returns the offset
+  // directly. For the cross axis, it returns either the inline or block offset
+  // depending on the direction (columns or rows).
+  LayoutUnit GetGapOffset(GridTrackSizingDirection direction,
+                          wtf_size_t gap_index) const;
+
+  // Gap Decorations are painted relative to intersection points within a gap.
+  // This methods returns a Vector of ordered intersection offsets for the gap
+  // at `gap_index`. The general pattern is: container content-start ->
+  // MainxCross intersections -> container content-end. The middle intersections
+  // depend on the container type and direction.
+  Vector<LayoutUnit> GenerateIntersectionListForGap(
+      GridTrackSizingDirection direction,
+      wtf_size_t gap_index) const;
+
+  // Determines whether the intersection at `intersection_index` within
+  // `gap_index` lies on a container edge. Typically, the first and last
+  // intersections are edges, but for flex cross gaps, we must first check if
+  // the gap itself is an edge gap before deciding whether the first or last
+  // intersection is an edge intersection.
+  bool IsEdgeIntersection(wtf_size_t gap_index,
+                          wtf_size_t intersection_index,
+                          wtf_size_t intersection_count,
+                          bool is_main_gap) const;
+
   blink::String ToString(bool verbose = false) const;
 
  private:
+  // Returns a list of intersection offsets for a main gap at `gap_index`. This
+  // list includes:
+  // - container content start
+  // - Intersections with cross gaps (container-specific)
+  // - container content end.
+  // All offsets are in increasing order along `direction`.
+  Vector<LayoutUnit> GenerateMainIntersectionList(
+      GridTrackSizingDirection direction,
+      wtf_size_t gap_index) const;
+
+  // Returns a list of intersection offsets for a cross gap. For grid
+  // containers, this includes the container content edges and every main gap
+  // offset. For flex containers, it includes the cross-gap start offset and its
+  // computed end offset.
+  Vector<LayoutUnit> GenerateCrossIntersectionList(
+      GridTrackSizingDirection direction,
+      wtf_size_t gap_index) const;
+
+  // Computes the end offset for a flex cross gap at `cross_gap_index`. The end
+  // offset is either:
+  // - The container's content end which occurs when the cross gap is at last
+  // line, or
+  // - The offset of the main gap where this cross gap ends (tracked by
+  // `main_gap_running_index_`) which occurs when the cross gap occurs on any
+  // line but the last.
+  LayoutUnit ComputeEndOffsetForFlexCrossGap(wtf_size_t cross_gap_index,
+                                             GridTrackSizingDirection direction,
+                                             bool cross_gap_is_at_end) const;
+
   // TODO(samomekarajr): Potential optimization. This can be a single
   // Vector<GapIntersection> if we exclude intersection points at the edge of
   // the container. We can check the "blocked" status of edge intersection
@@ -206,6 +277,26 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // more sub-ranges.
   GapToTrackRangesMap row_gaps_to_blocked_column_ranges_;
   GapToTrackRangesMap column_gaps_to_blocked_row_ranges_;
+
+  // TODO(samomekarajr): Consider making this type a display agnostic type that
+  // uses inline/block rather than rows/columns.
+  GridTrackSizingDirection main_direction_ = kForRows;
+
+  // In flex, cross gaps (except those at the last flex line) terminate
+  // at a main gap. Main gaps already track their adjacent cross gaps (before
+  // and after). The `main_gap_running_index_` tracks which main gap a sequence
+  // of cross gaps belongs to. This allows us to determine the correct end
+  // offset for cross gaps in flex.
+  //
+  // This is made be mutable because GapGeometry is treated as const during
+  // Paint, but `ComputeEndOffsetForFlexCrossGap()` (called at paint time)
+  // updates this index as part of its calculation. Making this mutable allows
+  // us to maintain necessary state without breaking const-correctness for the
+  // overall GapGeometry object.
+  //
+  // TODO(samomekarajr): Explore removing this in favour of having this state
+  // live at the parent paint call and passing in as an input/output param.
+  mutable wtf_size_t main_gap_running_index_ = kNotFound;
 };
 
 }  // namespace blink

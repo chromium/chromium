@@ -24,11 +24,49 @@ class CORE_EXPORT MainGap {
   void SetGapOffset(LayoutUnit offset) { gap_offset_ = offset; }
   LayoutUnit GetGapOffset() const { return gap_offset_; }
 
-  CrossGapRange& RangeOfCrossGapsBefore() {
-    return range_of_cross_gaps_before_;
+  bool HasCrossGapsBefore() const {
+    return range_of_cross_gaps_before_.IsValid();
   }
 
-  CrossGapRange& RangeOfCrossGapsAfter() { return range_of_cross_gaps_after_; }
+  bool HasCrossGapsAfter() const {
+    return range_of_cross_gaps_after_.IsValid();
+  }
+
+  wtf_size_t GetCrossGapBeforeStart() const {
+    CHECK(HasCrossGapsBefore());
+    return range_of_cross_gaps_before_.Start();
+  }
+
+  wtf_size_t GetCrossGapBeforeEnd() const {
+    CHECK(HasCrossGapsBefore());
+    return range_of_cross_gaps_before_.End();
+  }
+
+  wtf_size_t GetCrossGapAfterStart() const {
+    CHECK(HasCrossGapsAfter());
+    return range_of_cross_gaps_after_.Start();
+  }
+
+  wtf_size_t GetCrossGapAfterEnd() const {
+    CHECK(HasCrossGapsAfter());
+    return range_of_cross_gaps_after_.End();
+  }
+
+  void IncrementRangeOfCrossGapsBefore(wtf_size_t cross_gap_index) {
+    range_of_cross_gaps_before_.Increment(cross_gap_index);
+  }
+
+  void IncrementRangeOfCrossGapsAfter(wtf_size_t cross_gap_index) {
+    range_of_cross_gaps_after_.Increment(cross_gap_index);
+  }
+
+  void SetRangeOfCrossGapsBefore(const CrossGapRange& range) {
+    range_of_cross_gaps_before_ = range;
+  }
+
+  void SetRangeOfCrossGapsAfter(const CrossGapRange& range) {
+    range_of_cross_gaps_after_ = range;
+  }
 
   blink::String ToString(bool verbose = false) const {
     blink::String str =

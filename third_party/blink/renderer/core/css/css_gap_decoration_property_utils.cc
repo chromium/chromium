@@ -8,7 +8,10 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/gap_data_list.h"
+#include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 
 namespace blink {
 
@@ -89,6 +92,17 @@ void CSSGapDecorationUtils::AddProperties(
   css_parsing_utils::AddProperty(
       rule_color_id, rule_shorthand_id, rule_colors, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+}
+
+BoxSide CSSGapDecorationUtils::BoxSideFromDirection(
+    const ComputedStyle& style,
+    GridTrackSizingDirection direction) {
+  PhysicalToLogical<BoxSide> logical_sides(style.GetWritingDirection(),
+                                           BoxSide::kTop, BoxSide::kRight,
+                                           BoxSide::kBottom, BoxSide::kLeft);
+
+  return (direction == kForColumns) ? logical_sides.InlineStart()
+                                    : logical_sides.BlockStart();
 }
 
 }  // namespace blink

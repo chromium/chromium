@@ -66,6 +66,8 @@ blink_core_sources_paint = [
   "frame_painter.h",
   "frame_set_painter.cc",
   "frame_set_painter.h",
+  "gap_decorations_painter.cc",
+  "gap_decorations_painter.h",
   "highlight_overlay.cc",
   "highlight_overlay.h",
   "highlight_painter.cc",
