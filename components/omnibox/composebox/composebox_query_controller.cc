@@ -535,10 +535,7 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   }
 
   lens::LensOverlayServerClusterInfoResponse server_response;
-  const std::string response_string = response->response;
-  bool parse_successful = server_response.ParseFromArray(
-      response_string.data(), response_string.size());
-  if (!parse_successful) {
+  if (!server_response.ParseFromString(response->response)) {
     SetQueryControllerState(QueryControllerState::kClusterInfoInvalid);
     return;
   }
