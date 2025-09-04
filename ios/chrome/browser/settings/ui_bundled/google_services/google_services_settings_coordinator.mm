@@ -167,15 +167,11 @@ using signin_metrics::PromoAction;
   // `message` in the UIAlertController, the attributed message below
   // specifically denotes the font style to apply.
   if (warning) {
-    // If `kIdentityDiscAccountMenu` is enabled, signing out may also cause tabs
-    // to be closed, see `MainControllerAuthenticationServiceDelegate::
+    // Signing out may also cause tabs to be closed, see
+    // `MainControllerAuthenticationServiceDelegate::
     //    ClearBrowsingDataForSignedinPeriod`.
-    NSString* clearDataMessage =
-        IsIdentityDiscAccountMenuEnabled()
-            ? l10n_util::GetNSString(
-                  IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT)
-            : l10n_util::GetNSString(
-                  IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT);
+    NSString* clearDataMessage = l10n_util::GetNSString(
+        IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT);
     self.signOutCoordinator.attributedMessage = [[NSAttributedString alloc]
         initWithString:clearDataMessage
             attributes:@{

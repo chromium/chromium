@@ -537,9 +537,6 @@ TEST_P(AuthenticationFlowTest,
 // Tests that the managed confirmation dialog is only show once per account,
 // when signing in from the Account Menu.
 TEST_P(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIdentityDiscAccountMenu);
-
   // First signin, show the dialog.
   SignIn(managed_identity1_, signin_metrics::AccessPoint::kAccountMenu);
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);

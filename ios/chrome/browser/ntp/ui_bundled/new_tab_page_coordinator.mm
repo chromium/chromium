@@ -930,13 +930,7 @@
     [handler
         showGoogleServicesSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
-    if (IsIdentityDiscAccountMenuEnabled()) {
-      [self showAccountMenu:identityDisc];
-    } else {
-      id<ApplicationCommands> handler = HandlerForProtocol(
-          self.browser->GetCommandDispatcher(), ApplicationCommands);
-      [handler showSettingsFromViewController:self.baseViewController];
-    }
+    [self showAccountMenu:identityDisc];
   } else {
     __weak __typeof(self) weakSelf = self;
     auto accessPoint = signin_metrics::AccessPoint::kNtpSignedOutIcon;

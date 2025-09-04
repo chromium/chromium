@@ -139,7 +139,6 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
   if ([self isRunningTest:@selector(DISABLED_testErrorBadge)]) {
     config.features_enabled.push_back(
         switches::kEnableErrorBadgeOnIdentityDisc);
-    config.features_disabled.push_back(kIdentityDiscAccountMenu);
   }
 
   if ([self isRunningTest:@selector(testNewTabShowsMIAEntryPointInline)]) {

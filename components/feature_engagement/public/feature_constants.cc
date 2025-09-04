@@ -777,8 +777,6 @@ BASE_FEATURE(kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature,
 BASE_FEATURE(kIPHiOSSafariImportFeature,
              "IPH_iOSSafariImportFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Note: This IPH will only be triggered if `kIdentityDiscAccountMenu` is
-// enabled.
 BASE_FEATURE(kIPHiOSSettingsInOverflowMenuBubbleFeature,
              "IPH_iOSSettingsInOverflowMenuBubbleFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);

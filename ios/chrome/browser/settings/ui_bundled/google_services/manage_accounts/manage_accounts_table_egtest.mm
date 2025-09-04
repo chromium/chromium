@@ -45,8 +45,6 @@ using chrome_test_util::SettingsSignInRowMatcher;
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  config.features_enabled.push_back(kIdentityDiscAccountMenu);
-
   if ([self isRunningTest:@selector
             (testReloadOnRemoveSecondaryAccountInOtherProfile)]) {
     config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);

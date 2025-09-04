@@ -129,12 +129,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  if ([self
-          isRunningTest:@selector(testToggleAllowChromeSigninForManagedUser)]) {
-    // Enable the feature because the dialog uses a slightly different string if
-    // the feature is not enabled.
-    config.features_enabled.push_back(kIdentityDiscAccountMenu);
-  }
   return config;
 }
 

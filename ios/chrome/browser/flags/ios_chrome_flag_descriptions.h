@@ -402,9 +402,6 @@ extern const char kHomeMemoryImprovementsDescription[];
 extern const char kHttpsUpgradesName[];
 extern const char kHttpsUpgradesDescription[];
 
-extern const char kIdentityDiscAccountMenuName[];
-extern const char kIdentityDiscAccountMenuDescription[];
-
 extern const char kIdentityConfirmationSnackbarName[];
 extern const char kIdentityConfirmationSnackbarDescription[];
 

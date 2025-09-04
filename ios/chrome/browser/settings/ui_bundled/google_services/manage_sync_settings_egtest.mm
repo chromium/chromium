@@ -174,16 +174,9 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
         std::string("--") + switches::kSearchEngineChoiceCountry + "=BE");
     config.features_enabled.push_back(kLinkedServicesSettingIos);
   }
-  if ([self isRunningTest:@selector(testSignOutFromManageAccountsSettings)]) {
-    // Once kIdentityDiscAccountMenu is launched, the sign out button in
-    // ManageAccountsSettings will be removed. It will be safe to remove this
-    // test at that point.
-    config.features_disabled.push_back(kIdentityDiscAccountMenu);
-  }
 
   if ([self isRunningTest:@selector(testSwitchAccountFromAccountMenu)] ||
       [self isRunningTest:@selector(testSignOutFromAccountFromAccountMenu)]) {
-    config.features_enabled.push_back(kIdentityDiscAccountMenu);
     config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
   }
 
@@ -243,59 +236,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [SigninEarlGrey verifySignedOut];
-
-  // Verify the "manage sync" view is popped.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kManageSyncTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_notVisible()];
-
-  // Verify the account settings row is not showing in the settings menu.
-  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
-      assertWithMatcher:grey_notVisible()];
-}
-
-// Tests sign out from the manage accounts on device page.
-- (void)testSignOutFromManageAccountsSettings {
-  // Signing out from the manage accounts settings is not possible unless opened
-  // from the web.
-  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
-    return;
-  }
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGreyUI openSettingsMenu];
-
-  // Open the "manage sync" view.
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
-
-  // Scroll to the bottom to view the "manage accounts" button.
-  id<GREYMatcher> scrollViewMatcher =
-      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Tap the "manage accounts on This Device" button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM))]
-      performAction:grey_tap()];
-
-  // The "manage accounts" view should be shown, tap on "Sign Out" button on
-  // that page.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kSettingsAccountsTableViewSignoutCellId)]
-      performAction:grey_tap()];
-
-  [SigninEarlGrey verifySignedOut];
-
-  // Verify the "manage accounts" view is popped.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsLegacyAccountsTableViewId)]
-      assertWithMatcher:grey_notVisible()];
 
   // Verify the "manage sync" view is popped.
   [[EarlGrey

@@ -703,11 +703,6 @@ const char kHttpsUpgradesDescription[] =
     "When enabled, eligible navigations will automatically be upgraded to "
     "HTTPS.";
 
-const char kIdentityDiscAccountMenuName[] = "Identity Disc Account Menu";
-const char kIdentityDiscAccountMenuDescription[] =
-    "When enabled, tapping the identity disc on the New Tab page shows the "
-    "account menu UI.";
-
 const char kIdentityConfirmationSnackbarName[] =
     "Identity Confirmation Snackbar";
 const char kIdentityConfirmationSnackbarDescription[] =

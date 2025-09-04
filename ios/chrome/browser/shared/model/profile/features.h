@@ -14,9 +14,6 @@
 // is enabled *and* the iOS version is >= 17 (required for multiprofile).
 bool AreSeparateProfilesForManagedAccountsEnabled();
 
-// YES if the account particle disc on the NTP should open the account menu.
-bool IsIdentityDiscAccountMenuEnabled();
-
 // YES if Profile-specific push notification handling is enabled.
 bool IsMultiProfilePushNotificationHandlingEnabled();
 

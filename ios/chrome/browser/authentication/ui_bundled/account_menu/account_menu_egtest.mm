@@ -78,13 +78,6 @@ id<GREYMatcher> identityDiscMatcher() {
   [super tearDown];
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  config.features_enabled.push_back(kIdentityDiscAccountMenu);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   // Adding the sync passphrase must be done before signin due to limitation of

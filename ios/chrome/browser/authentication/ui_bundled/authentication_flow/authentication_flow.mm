@@ -876,14 +876,12 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 - (void)didAcceptManagedConfirmationWithBrowsingDataSeparate:
     (BOOL)browsingDataSeparate {
-  if (IsIdentityDiscAccountMenuEnabled()) {
-    // Only show the dialog once per account.
-    signin::GaiaIdHash gaiaIDHash =
-        signin::GaiaIdHash::FromGaiaId(GaiaId(_identityToSignIn.gaiaID));
-    syncer::SetAccountKeyedPrefValue([self prefs],
-                                     prefs::kSigninHasAcceptedManagementDialog,
-                                     gaiaIDHash, base::Value(true));
-  }
+  // Only show the dialog once per account.
+  signin::GaiaIdHash gaiaIDHash =
+      signin::GaiaIdHash::FromGaiaId(GaiaId(_identityToSignIn.gaiaID));
+  syncer::SetAccountKeyedPrefValue([self prefs],
+                                   prefs::kSigninHasAcceptedManagementDialog,
+                                   gaiaIDHash, base::Value(true));
 
   _shouldConvertPersonalProfileToManaged =
       AreSeparateProfilesForManagedAccountsEnabled() &&

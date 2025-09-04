@@ -63,8 +63,6 @@ source_set("manage_accounts_ui") {
   sources = [
     "identity_view_item.h",
     "identity_view_item.mm",
-    "legacy_accounts_table_view_controller.h",
-    "legacy_accounts_table_view_controller.mm",
     "manage_accounts_consumer.h",
     "manage_accounts_model_identity_data_source.h",
     "manage_accounts_mutator.h",
@@ -92,7 +90,6 @@ source_set("manage_accounts_ui") {
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/model/sync/utils",
-    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/sync",
@@ -138,10 +135,7 @@ source_set("constants") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [
-    "legacy_accounts_table_egtest.mm",
-    "manage_accounts_table_egtest.mm",
-  ]
+  sources = [ "manage_accounts_table_egtest.mm" ]
   deps = [
     "//base/test:test_support",
     "//components/sync/base:features",
@@ -170,10 +164,7 @@ source_set("eg2_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "legacy_accounts_table_view_controller_unittest.mm",
-    "manage_accounts_table_view_controller_unittest.mm",
-  ]
+  sources = [ "manage_accounts_table_view_controller_unittest.mm" ]
   deps = [
     ":manage_accounts_ui",
     "//base/test:test_support",

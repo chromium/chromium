@@ -88,7 +88,6 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  config.features_enabled.push_back(kIdentityDiscAccountMenu);
   config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
 
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -964,8 +963,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   // Relaunch the browser without the managed account. This simulates the
   // situation where the managed account was removed in another Google app.
   [self relaunchWithIdentities:@[ personalIdentity ]
-               enabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}
+               enabledFeatures:{kSeparateProfilesForManagedAccounts}
               disabledFeatures:{}];
 
   // Verify that the profile was switched back to personal.
@@ -989,7 +987,6 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  config.features_enabled.push_back(kIdentityDiscAccountMenu);
   config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
   // Note: Can't use the actual feature definition, because its build target
   // depends on a bunch of stuff that mustn't make it into the EG test target.

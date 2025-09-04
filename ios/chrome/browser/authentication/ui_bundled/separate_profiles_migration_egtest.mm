@@ -52,7 +52,6 @@
 
   // The multi-profile features are initially *dis*abled for migration tests -
   // they'll be enabled later on.
-  config.features_disabled.push_back(kIdentityDiscAccountMenu);
   config.features_disabled.push_back(kSeparateProfilesForManagedAccounts);
 
   return config;
@@ -103,8 +102,7 @@
 
   // Relaunch with the multi-profile features enabled.
   [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
-               enabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}
+               enabledFeatures:{kSeparateProfilesForManagedAccounts}
               disabledFeatures:{}];
 
   // Verify that the managed account was moved into a separate profile.
@@ -147,8 +145,7 @@
 
   // Relaunch with the multi-profile features enabled.
   [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
-               enabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}
+               enabledFeatures:{kSeparateProfilesForManagedAccounts}
               disabledFeatures:{}];
 
   // Verify that the managed account remained in the personal profile, since it
@@ -217,8 +214,7 @@
 
   // Relaunch with the multi-profile features enabled.
   [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
-               enabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}
+               enabledFeatures:{kSeparateProfilesForManagedAccounts}
               disabledFeatures:{}];
 
   // Verify that the managed account remained in the personal profile, since it
@@ -249,8 +245,7 @@
 
   // Relaunch with the multi-profile features enabled.
   [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
-               enabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}
+               enabledFeatures:{kSeparateProfilesForManagedAccounts}
               disabledFeatures:{}];
 
   // Verify that the managed account remained in the personal profile.
@@ -307,8 +302,7 @@
 
   // Relaunch with the multi-profile features enabled.
   [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
-               enabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}
+               enabledFeatures:{kSeparateProfilesForManagedAccounts}
               disabledFeatures:{}];
 
   // Verify `kWaitingForMultiProfileForcedMigrationTimestamp` is not set.
@@ -359,8 +353,7 @@
 
   // Relaunch with the multi-profile features enabled.
   [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
-               enabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}
+               enabledFeatures:{kSeparateProfilesForManagedAccounts}
               disabledFeatures:{}];
 
   // Verify that the managed account remained in the personal profile, since it
@@ -388,8 +381,7 @@
   // Relaunch with the multi-profile features disabled.
   [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
                enabledFeatures:{}
-              disabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}];
+              disabledFeatures:{kSeparateProfilesForManagedAccounts}];
 
   // Verify `kWaitingForMultiProfileForcedMigrationTimestamp` is cleared.
   GREYAssertEqual(
@@ -434,8 +426,7 @@
   // Relaunch with the multi-profile features enabled.
   [self
       relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
-             enabledFeatures:{kIdentityDiscAccountMenu,
-                              kSeparateProfilesForManagedAccounts,
+             enabledFeatures:{kSeparateProfilesForManagedAccounts,
                               kSeparateProfilesForManagedAccountsForceMigration}
             disabledFeatures:{}];
 
@@ -472,8 +463,7 @@
   // Relaunch with the multi-profile features enabled.
   [self
       relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
-             enabledFeatures:{kIdentityDiscAccountMenu,
-                              kSeparateProfilesForManagedAccounts,
+             enabledFeatures:{kSeparateProfilesForManagedAccounts,
                               kSeparateProfilesForManagedAccountsForceMigration}
             disabledFeatures:{}];
 
@@ -521,8 +511,7 @@
   // again.
   [self
       relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
-             enabledFeatures:{kIdentityDiscAccountMenu,
-                              kSeparateProfilesForManagedAccounts,
+             enabledFeatures:{kSeparateProfilesForManagedAccounts,
                               kSeparateProfilesForManagedAccountsForceMigration}
             disabledFeatures:{}];
   [[EarlGrey selectElementWithMatcher:

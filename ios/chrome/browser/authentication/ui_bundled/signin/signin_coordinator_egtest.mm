@@ -143,22 +143,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [MetricsAppInterface releaseHistogramTester]);
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  if ([self isRunningTest:@selector(testOpenManageSyncSettingsFromNTP)] ||
-      [self isRunningTest:@selector
-            (FLAKY_testAccessiblityStringForSignedInUserWithoutName)]) {
-    // Once kIdentityDiscAccountMenu is launched, the ADP will open the account
-    // menu instead of settings view. It will be safe to remove this test at
-    // that point. The new flow is covered in testViewAccountMenu. Note:
-    // testOpenManageSyncSettingsFromNTPWhenSigninIsNotAllowedByPolicy should
-    // still work when kIdentityDiscAccountMenu is enabled.
-    config.features_disabled.push_back(kIdentityDiscAccountMenu);
-  }
-  return config;
-}
-
 // Tests that opening the sign-in screen from the Settings and signing in works
 // correctly when there is already an identity on the device.
 - (void)testSignInOneUser {
@@ -619,52 +603,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE);
   [[EarlGrey selectElementWithMatcher:signin_matcher]
       assertWithMatcher:grey_notVisible()];
-}
-
-// Tests that a signed-in user can open "Settings" screen from the NTP.
-- (void)testOpenManageSyncSettingsFromNTP {
-  if ([SigninEarlGrey isIdentityDiscAccountMenuEnabled]) {
-    // The identity disk will open the account menu sheet and not the settings
-    // menu.
-    return;
-  }
-  // Sign in to Chrome.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-
-  // Select the identity disc particle.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(GetNSStringF(
-                                   IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
-                                   base::SysNSStringToUTF16(
-                                       fakeIdentity.userFullName),
-                                   base::SysNSStringToUTF16(
-                                       fakeIdentity.userEmail)))]
-      performAction:grey_tap()];
-
-  // Ensure the Settings menu is displayed.
-  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests the accessibility string for a signed-in user whose name is not
-// available yet.
-// TODO(crbug.com/331928746): Test flaky.
-- (void)FLAKY_testAccessiblityStringForSignedInUserWithoutName {
-  // Sign in to Chrome.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
-
-  // Select the identity disc particle with the correct accessibility string.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSStringF(
-                                          IDS_IOS_IDENTITY_DISC_WITH_EMAIL,
-                                          base::SysNSStringToUTF16(
-                                              fakeIdentity.userEmail)))]
-      performAction:grey_tap()];
-
-  // Ensure the Settings menu is displayed.
-  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that a signed-in user can open "Settings" screen from the NTP.

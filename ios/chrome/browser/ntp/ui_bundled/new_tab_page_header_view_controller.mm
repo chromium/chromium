@@ -1137,7 +1137,7 @@ const CGFloat kIdentityDiscAvatarBackgroundSpacing = 5;
 
   if (showSignInButtonWithoutAvatar) {
     identityAvatarPadding *= kMarginMultiplier;
-  } else if (IsIdentityDiscAccountMenuEnabled()) {
+  } else {
     dimension += ntp_home::kHeaderIconMargin;
     identityAvatarPadding -= ntp_home::kHeaderIconMargin / 2;
   }
@@ -1153,42 +1153,27 @@ const CGFloat kIdentityDiscAvatarBackgroundSpacing = 5;
 - (void)updateIdentityDiscAccessibilityLabelWithName:(NSString*)name
                                                email:(NSString*)email {
   NSString* accountButtonLabel;
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
-    // _hasAccountError is only set if the feature
-    // `kEnableErrorBadgeOnIdentityDisc` is enabled, and the primary identity
-    // has an error.
-    if (name) {
-      accountButtonLabel =
-          _hasAccountError
-              ? l10n_util::GetNSStringF(
-                    IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
-                    base::SysNSStringToUTF16(name),
-                    base::SysNSStringToUTF16(email))
-              : l10n_util::GetNSStringF(
-                    IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU,
-                    base::SysNSStringToUTF16(name),
-                    base::SysNSStringToUTF16(email));
-    } else {
-      accountButtonLabel =
-          _hasAccountError
-              ? l10n_util::GetNSStringF(
-                    IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
-                    base::SysNSStringToUTF16(email))
-              : l10n_util::GetNSStringF(
-                    IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU,
-                    base::SysNSStringToUTF16(email));
-    }
+  // `_hasAccountError` is only set if the primary identity has an error.
+  if (name) {
+    accountButtonLabel =
+        _hasAccountError
+            ? l10n_util::GetNSStringF(
+                  IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
+                  base::SysNSStringToUTF16(name),
+                  base::SysNSStringToUTF16(email))
+            : l10n_util::GetNSStringF(
+                  IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU,
+                  base::SysNSStringToUTF16(name),
+                  base::SysNSStringToUTF16(email));
   } else {
-    // TODO(crbug.com/389915527): Update the following strings to reflect the
-    // error badge introduced with kEnableErrorBadgeOnIdentityDisc.
-    if (name) {
-      accountButtonLabel = l10n_util::GetNSStringF(
-          IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
-          base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
-    } else {
-      accountButtonLabel = l10n_util::GetNSStringF(
-          IDS_IOS_IDENTITY_DISC_WITH_EMAIL, base::SysNSStringToUTF16(email));
-    }
+    accountButtonLabel =
+        _hasAccountError
+            ? l10n_util::GetNSStringF(
+                  IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
+                  base::SysNSStringToUTF16(email))
+            : l10n_util::GetNSStringF(
+                  IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU,
+                  base::SysNSStringToUTF16(email));
   }
 
   self.identityDiscAccessibilityLabel = accountButtonLabel;

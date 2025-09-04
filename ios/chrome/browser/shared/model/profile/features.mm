@@ -70,13 +70,6 @@ bool AreSeparateProfilesForManagedAccountsEnabled() {
   return has_multiple_profiles;
 }
 
-bool IsIdentityDiscAccountMenuEnabled() {
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    return true;
-  }
-  return base::FeatureList::IsEnabled(kIdentityDiscAccountMenu);
-}
-
 bool IsMultiProfilePushNotificationHandlingEnabled() {
   return AreSeparateProfilesForManagedAccountsEnabled() &&
          base::FeatureList::IsEnabled(kIOSPushNotificationMultiProfile);

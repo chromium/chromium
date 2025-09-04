@@ -13,7 +13,6 @@
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #include "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
-#include "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #include "ios/chrome/browser/shared/model/profile/features.h"
 
@@ -34,12 +33,9 @@ void AuthenticationServiceDelegateImpl::ClearBrowsingDataForSignedinPeriod(
   BrowsingDataRemoveMask remove_mask =
       BrowsingDataRemoveMask::REMOVE_ALL_FOR_TIME_PERIOD;
 
-  if (IsIdentityDiscAccountMenuEnabled()) {
-    // If fast account switching via the account particle disk on the NTP is
-    // enabled, then also close any tabs that were used since the signin. This
-    // requires separately querying the tab-usage timestamps first.
-    remove_mask |= BrowsingDataRemoveMask::CLOSE_TABS;
-  }
+  // Also close any tabs that were used since the signin. This requires
+  // separately querying the tab-usage timestamps first.
+  remove_mask |= BrowsingDataRemoveMask::CLOSE_TABS;
 
   BrowsingDataRemover::RemovalParams params;
   params.keep_active_tab =

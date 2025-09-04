@@ -173,24 +173,21 @@ bool IOSChromeSyncedTabDelegate::ShouldSync(
     return false;  // This deliberately ignores a new pending entry.
   }
 
-  if (IsIdentityDiscAccountMenuEnabled()) {
-    // For managed accounts in the personal profile, only sync tabs that have
-    // been updated after the signin.
-    // TODO(crbug.com/407498240): Remove this once all managed accounts have
-    // been migrated into their own profiles.
-    ProfileIOS* profile =
-        ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-    if (ProfileHasPrimaryIdentityManaged(profile) &&
-        IsPersonalProfile(profile)) {
-      base::Time signin_time =
-          profile->GetPrefs()->GetTime(prefs::kLastSigninTimestamp);
-      // Note: Don't use GetLastActiveTime() here: (a) it only tracks when the
-      // tab was last made visible (not when it was last used), and (b) it
-      // intentionally caches outdated values for a few minutes. Instead, query
-      // the most-recent activity time from the WebState directly.
-      if (GetMostRecentActivityTime(web_state_) < signin_time) {
-        return false;
-      }
+  // For managed accounts in the personal profile, only sync tabs that have
+  // been updated after the signin.
+  // TODO(crbug.com/407498240): Remove this once all managed accounts have
+  // been migrated into their own profiles.
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (ProfileHasPrimaryIdentityManaged(profile) && IsPersonalProfile(profile)) {
+    base::Time signin_time =
+        profile->GetPrefs()->GetTime(prefs::kLastSigninTimestamp);
+    // Note: Don't use GetLastActiveTime() here: (a) it only tracks when the
+    // tab was last made visible (not when it was last used), and (b) it
+    // intentionally caches outdated values for a few minutes. Instead, query
+    // the most-recent activity time from the WebState directly.
+    if (GetMostRecentActivityTime(web_state_) < signin_time) {
+      return false;
     }
   }
 

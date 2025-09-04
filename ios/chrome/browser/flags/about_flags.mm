@@ -2082,10 +2082,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordFormClientsideClassifier)},
-    {"identity-disc-account-menu",
-     flag_descriptions::kIdentityDiscAccountMenuName,
-     flag_descriptions::kIdentityDiscAccountMenuDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIdentityDiscAccountMenu)},
     {"ios-quick-delete", flag_descriptions::kIOSQuickDeleteName,
      flag_descriptions::kIOSQuickDeleteDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSQuickDelete)},

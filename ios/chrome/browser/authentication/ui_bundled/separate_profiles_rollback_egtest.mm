@@ -45,7 +45,6 @@
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   // The multi-profile features are initially enabled.
-  config.features_enabled.push_back(kIdentityDiscAccountMenu);
   config.features_enabled.push_back(kSeparateProfilesForManagedAccounts);
 
   return config;
@@ -82,8 +81,7 @@
   // Relaunch with the multi-profile features disabled.
   [self relaunchWithIdentities:@[ personalIdentity ]
                enabledFeatures:{}
-              disabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}];
+              disabledFeatures:{kSeparateProfilesForManagedAccounts}];
 
   // After the relaunch, the separate-profiles feature should be disabled.
   GREYAssert(![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled],
@@ -109,8 +107,7 @@
   // Relaunch with the multi-profile features disabled.
   [self relaunchWithIdentities:@[ personalIdentity ]
                enabledFeatures:{}
-              disabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}];
+              disabledFeatures:{kSeparateProfilesForManagedAccounts}];
 
   // After the relaunch, the separate-profiles feature should be disabled: Even
   // though there is a managed account, the corresponding managed profile was
@@ -173,8 +170,7 @@
   // Relaunch with the multi-profile features disabled.
   [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
                enabledFeatures:{}
-              disabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}];
+              disabledFeatures:{kSeparateProfilesForManagedAccounts}];
 
   // After the relaunch, the separate-profiles feature should still be enabled
   // (even though the feature flag is off now), so that the managed profile
@@ -270,8 +266,7 @@
   // Relaunch with the multi-profile features disabled.
   [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
                enabledFeatures:{}
-              disabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}];
+              disabledFeatures:{kSeparateProfilesForManagedAccounts}];
 
   // After the relaunch, the separate-profiles feature should still be enabled
   // (even though the feature flag is off now), so that the managed profile
@@ -300,8 +295,7 @@
   // Relaunch the browser once again.
   [self relaunchWithIdentities:@[ personalIdentity ]
                enabledFeatures:{}
-              disabledFeatures:{kIdentityDiscAccountMenu,
-                                kSeparateProfilesForManagedAccounts}];
+              disabledFeatures:{kSeparateProfilesForManagedAccounts}];
 
   // Finally, the separate-profiles feature should be disabled again, since
   // there are no more managed accounts or profiles around.

@@ -238,8 +238,4 @@
   return AreSeparateProfilesForManagedAccountsEnabled();
 }
 
-+ (BOOL)isIdentityDiscAccountMenuEnabled {
-  return IsIdentityDiscAccountMenuEnabled();
-}
-
 @end

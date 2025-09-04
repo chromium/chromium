@@ -61,8 +61,6 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  // This flag also controls the identity snackbar message.
-  config.features_enabled.push_back(kIdentityDiscAccountMenu);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(
       "--enable-features=" + std::string(kStartSurface.name) + "<" +
