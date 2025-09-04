@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 
+#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_stub.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session.h"
@@ -45,8 +45,7 @@ bool MultiUserWindowManagerHelper::ShouldShowAvatar(aura::Window* window) {
   }
 
   // Show the avatar icon if the window is on a different desktop than the
-  // window's owner's desktop. The stub implementation does the right thing
-  // for single-user mode.
+  // window's owner's desktop.
   return !g_multi_user_window_manager_instance->IsWindowOnDesktopOfUser(
       window, GetWindowManager()->GetWindowOwner(window));
 }
