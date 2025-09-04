@@ -31,9 +31,13 @@ TEST(AndroidPrivateKeyTest, SupportedCreateKey) {
     // StrongBox is required for this test.
     GTEST_SKIP();
   }
+
+  std::vector<uint8_t> credential_id;
+  for (int i = 0; i < 32; ++i) {
+    credential_id.push_back(i);
+  }
   auto android_key = bk_key_store->GetOrCreateBrowserKeyForCredentialId(
-      base::ToVector(kManagedProfileAndroidKeyStoreIdentity),
-      base::ToVector(kEs256Allowed));
+      credential_id, base::ToVector(kEs256Allowed));
 
   ASSERT_TRUE(android_key);
 

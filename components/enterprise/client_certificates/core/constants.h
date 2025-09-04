@@ -25,12 +25,6 @@ extern const char kManagedBrowserIdentityName[];
 // rotation.
 extern const char kTemporaryManagedProfileIdentityName[];
 
-// The Alias of the Android KeyStore identity used for managed Profiles. This
-// identity is used to store the private key for managed Profiles.
-// TODO(crbug.com/432304139): Make this key more complex and unique.
-constexpr std::array<uint8_t, 6> kManagedProfileAndroidKeyStoreIdentity = {
-    1, 5, 3, 4, 5, 6};
-
 // Name of the temporary storage location of an identity during key pair
 // rotation for a managed browser.
 extern const char kTemporaryManagedBrowserIdentityName[];
