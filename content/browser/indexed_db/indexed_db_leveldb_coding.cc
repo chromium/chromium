@@ -858,6 +858,12 @@ IndexedDBKey DecodeSortableIDBKey(std::string_view serialized) {
     data = data.substr(1);
     switch (value_type) {
       case kOrderedArrayTypeByte:
+        // `IndexedDBKey` can own an `IndexedDBKey`, which means that
+        // destruction is recursive, which means we need to impose a depth
+        // limitation to avoid stack overflow.
+        if (key_arrays.size() >= IndexedDBKey::kMaximumDepth) {
+          return InvalidKey();
+        }
         key_arrays.emplace_back();
         continue;
 
