@@ -44,7 +44,7 @@ namespace cecPrivate {
     // This is not guaranteed to have any effect on the connected displays.
     // Displays that do not support HDMI CEC will not be affected.
     //
-    // |callback| will be run as soon as all displays have been requested to
+    // |callback|: will be run as soon as all displays have been requested to
     // change their power state.
     static void sendStandBy(
         optional ChangePowerStateCallback callback);
@@ -53,7 +53,7 @@ namespace cecPrivate {
     // HDMI CEC enabled displays connected, waking them from standby if
     // necessary.
     //
-    // |callback| will be run as soon as all displays have been requested to
+    // |callback|: will be run as soon as all displays have been requested to
     // change their power state.
     static void sendWakeUp(
         optional ChangePowerStateCallback callback);
