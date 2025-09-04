@@ -189,9 +189,6 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   // The initiator frame host may be deleted by this point. In that case, ignore
   // this navigation and drop the impression associated with it.
 
-  UMA_HISTOGRAM_BOOLEAN("Conversions.ImpressionNavigationHasDeadInitiator",
-                        initiator_frame_host == nullptr);
-
   // Look up the initiator root's origin which will be used as the impression
   // origin. This works because we won't update the origin for the initiator RFH
   // until we receive confirmation from the renderer that it has committed.

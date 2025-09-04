@@ -736,19 +736,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.ImpressionNavigationHasDeadInitiator"
-    enum="Boolean" expires_after="2026-02-22">
-  <owner>csharrison@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often impressions are ignored because the initiator frame is
-    dead by the time the navigation reaches the browser.
-
-    Warning: this histogram was expired from 2024-05-13 to 2024-09-10; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.ImpressionsDeletedInDataClearOperation"
     units="impressions" expires_after="2026-02-04">
   <owner>csharrison@chromium.org</owner>

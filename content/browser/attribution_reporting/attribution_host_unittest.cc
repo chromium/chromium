@@ -373,8 +373,6 @@ TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
   EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationRegistrationCompleted)
       .Times(1);
 
-  base::HistogramTester histograms;
-
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -383,9 +381,6 @@ TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
   navigation->SetInitiatorFrame(nullptr);
   navigation->set_impression(blink::Impression());
   navigation->Commit();
-
-  histograms.ExpectUniqueSample(
-      "Conversions.ImpressionNavigationHasDeadInitiator", true, 1);
 }
 
 TEST_F(AttributionHostTest,
