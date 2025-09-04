@@ -68,6 +68,15 @@ class ProfileKeyedServiceFactoryIOS : public BrowserStateKeyedServiceFactory {
             base::trait_helpers::NotATraitTag()) {}
 
  protected:
+  // Helper that casts the value returned by GetKeyedServiceForProfile() to the
+  // sub-class T of KeyedService.
+  template <typename T>
+    requires std::convertible_to<T*, KeyedService*>
+  T* GetServiceForProfileAs(ProfileIOS* profile, bool create) {
+    return static_cast<T*>(GetServiceForProfile(profile, create));
+  }
+
+ private:
   // Final implementation of BrowserStateKeyedServiceFactory:
   web::BrowserState* GetBrowserStateToUse(web::BrowserState* ctx) const final;
   bool ServiceIsCreatedWithBrowserState() const final;
@@ -79,15 +88,6 @@ class ProfileKeyedServiceFactoryIOS : public BrowserStateKeyedServiceFactory {
   // by any service that wants to register profile-specific preferences.
   virtual void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Helper that casts the value returned by GetKeyedServiceForProfile() to the
-  // sub-class T of KeyedService.
-  template <typename T>
-    requires std::convertible_to<T*, KeyedService*>
-  T* GetServiceForProfileAs(ProfileIOS* profile, bool create) {
-    return static_cast<T*>(GetServiceForProfile(profile, create));
-  }
-
- private:
   // Common implementation that maps `profile` to some service object. Deals
   // with incognito and testing profiles according to constructor traits. If
   // `create` is true, the service will be create using
