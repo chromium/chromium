@@ -83,9 +83,9 @@ const char kHistogramGWSConnectTimingFinalRequestSslDelay[] =
 const char kHistogramGWSAFTEnd[] = HISTOGRAM_PREFIX "PaintTiming.AFTEnd2";
 const char kHistogramGWSAFTStart[] = HISTOGRAM_PREFIX "PaintTiming.AFTStart2";
 const char kHistogramGWSHeadChunkStart[] =
-    HISTOGRAM_PREFIX "PaintTiming.HeaderChunkStart2";
+    HISTOGRAM_PREFIX "PaintTiming.HeadChunkStart";
 const char kHistogramGWSHeadChunkEnd[] =
-    HISTOGRAM_PREFIX "PaintTiming.HeaderChunkEnd2";
+    HISTOGRAM_PREFIX "PaintTiming.HeadChunkEnd";
 const char kHistogramGWSBodyChunkStart[] =
     HISTOGRAM_PREFIX "PaintTiming.BodyChunkStart2";
 const char kHistogramGWSBodyChunkEnd[] =
@@ -106,10 +106,10 @@ const char kHistogramGWSDomainLookupStart[] =
 const char kHistogramGWSDomainLookupEnd[] =
     HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupEnd2";
 
-const char kHistogramGWSHST[] = HISTOGRAM_PREFIX "CSI.HeadChunkStartTime";
-const char kHistogramGWSHCT[] = HISTOGRAM_PREFIX "CSI.HeadChunkContentTime";
-const char kHistogramGWSSCT[] = HISTOGRAM_PREFIX "CSI.SearchContentTime";
-const char kHistogramGWSSRT[] = HISTOGRAM_PREFIX "CSI.ServerResponseTime";
+const char kHistogramGWSHST[] = HISTOGRAM_PREFIX "CSI.HST";
+const char kHistogramGWSHCT[] = HISTOGRAM_PREFIX "CSI.HCT";
+const char kHistogramGWSSCT[] = HISTOGRAM_PREFIX "CSI.SCT";
+const char kHistogramGWSSRT[] = HISTOGRAM_PREFIX "CSI.SRT";
 const char kHistogramGWSTimeBetweenHCTAndSCT[] =
     HISTOGRAM_PREFIX "CSI.TimeBetweenHCTAndSCT";
 
@@ -785,16 +785,17 @@ void GWSPageLoadMetricsObserver::RecordLatencyHistograms(
   const auto track = perfetto::NamedTrack("GWSLatencyEvent", navigation_id_);
   // TODO(crbug.com/364278026): SRT starts from the time when the user submits
   // a query. Using the navigation start time may not perfect to measure SRT.
+  base::TimeDelta srt =
+      response_start_time - GetDelegate().GetNavigationStart();
   TRACE_EVENT_BEGIN("navigation", "GWSLatency:SRT", track,
                     GetDelegate().GetNavigationStart());
   TRACE_EVENT_END("navigation", /* GWSLatency:SRT */
                   track, response_start_time);
-  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSSRT,
-                      response_start_time - GetDelegate().GetNavigationStart());
+  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSSRT, srt);
 
   // Log some important CSI metrics only when related submetrics are recorded.
-  std::optional<base::TimeDelta> hct_time;
-  std::optional<base::TimeDelta> sct_time;
+  std::optional<base::TimeDelta> hct;
+  std::optional<base::TimeDelta> sct;
 
   if (aft_end_time_.has_value()) {
     // Currently `aft_start_time_` has the value of the server response time,
@@ -813,9 +814,12 @@ void GWSPageLoadMetricsObserver::RecordLatencyHistograms(
         "navigation", /* GWSLatency:SCT */
         track,
         GetDelegate().GetNavigationStart() + body_chunk_start_time_.value());
-    sct_time = GetDelegate().GetNavigationStart() +
-               body_chunk_start_time_.value() - response_start_time;
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSSCT, sct_time.value());
+    // `body_chunk_start_time_` is `base::TimeDelta` from the navigation start
+    // time. On the other hand, `response_start_time` is `base::TimeTicks`.
+    // SCT is the delta from 1) received the response header to 2) started
+    // executing body chunk, this calculates the new delta between them for SCT.
+    sct = body_chunk_start_time_.value() - srt;
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSSCT, sct.value());
   }
   if (head_chunk_end_time_.has_value()) {
     TRACE_EVENT_BEGIN("navigation", "GWSLatency:HCT", track,
@@ -824,9 +828,10 @@ void GWSPageLoadMetricsObserver::RecordLatencyHistograms(
         "navigation", /* GWSLatency:HCT */
         track,
         GetDelegate().GetNavigationStart() + head_chunk_end_time_.value());
-    hct_time = GetDelegate().GetNavigationStart() +
-               head_chunk_end_time_.value() - response_start_time;
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHCT, hct_time.value());
+    // HCT is the delta from 1) received the response header to 2) the end of
+    // the head chunk. This calculates the new delta between them for HCT.
+    hct = head_chunk_end_time_.value() - srt;
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHCT, hct.value());
   }
   if (head_chunk_start_time_.has_value()) {
     TRACE_EVENT_BEGIN("navigation", "GWSLatency:HST", track,
@@ -835,13 +840,14 @@ void GWSPageLoadMetricsObserver::RecordLatencyHistograms(
         "navigation", /* GWSLatency:HST */
         track,
         GetDelegate().GetNavigationStart() + head_chunk_start_time_.value());
+    // HST is the delta from 1) received the response header to 2) the start
+    // time of processing head chunk. This calculates the new delta between
+    // them for HST.
     PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSHST,
-                        GetDelegate().GetNavigationStart() +
-                            head_chunk_start_time_.value() -
-                            response_start_time);
+                        head_chunk_start_time_.value() - srt);
   }
-  if (sct_time.has_value() && hct_time.has_value()) {
+  if (sct.has_value() && hct.has_value()) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSTimeBetweenHCTAndSCT,
-                        sct_time.value() - hct_time.value());
+                        sct.value() - hct.value());
   }
 }
