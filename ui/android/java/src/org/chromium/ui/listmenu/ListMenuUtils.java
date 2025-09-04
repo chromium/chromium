@@ -20,7 +20,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
 
@@ -87,7 +86,6 @@ public class ListMenuUtils {
      * @param listItems The {@link ModelList} containing the items to be displayed in the menu.
      * @return A configured {@link ModelListAdapter} ready to be set on the {@link ListView}.
      */
-    @NonNull
     public static ModelListAdapter createAdapter(ModelList listItems) {
         return createAdapter(listItems, Set.of(), /* delegate= */ null);
     }
@@ -105,7 +103,6 @@ public class ListMenuUtils {
      *     the item's CLICK_LISTENER or listMenu's onMenuItemSelected method will be used.
      * @return A configured {@link ModelListAdapter} ready to be set on the {@link ListView}.
      */
-    @NonNull
     public static ListMenuItemAdapter createAdapter(
             ModelList listItems,
             Collection<Integer> disabledTypes,

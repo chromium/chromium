@@ -17,9 +17,8 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * View for a menu item with submenu (of type {@code ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU},
