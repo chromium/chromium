@@ -97,6 +97,18 @@ class AccountChooserControllerInteractiveUiTest
     });
   }
 
+  auto VerifyPopupOpened() {
+    return Steps(
+        CheckResult(
+            []() -> size_t { return BrowserList::GetInstance()->size(); }, 2u,
+            "Expect two browsers."),
+        Check(
+            []() {
+              return BrowserList::GetInstance()->get(1)->is_type_popup();
+            },
+            "Expect second browser is popup."));
+  }
+
  protected:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
@@ -126,6 +138,26 @@ IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
       GetAccount(/*on_account_selected_callback=*/base::DoNothing()),
       WaitForShow(AccountChooserView::kTopViewId),
       EnsurePresent(AccountChooserView::kTopViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
+                       ShowAddAccountPopupNoAccounts) {
+  RunTestSequence(
+      CreateAccountChooserController(),
+      GetAccount(/*on_account_selected_callback=*/base::DoNothing()),
+      VerifyPopupOpened());
+}
+
+IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
+                       ClickAddAccountButtonOpensAddAccountPopup) {
+  AccountInfo expected_account =
+      GetTestAccount("pothos", "test.com", /*gaia_id=*/1);
+  RunTestSequence(
+      CreateAccountChooserController(), MakeAccountAvailable(expected_account),
+      GetAccount(/*on_account_selected_callback=*/base::DoNothing()),
+      WaitForShow(AccountChooserView::kAddAccountButtonId),
+      PressButton(AccountChooserView::kAddAccountButtonId),
+      VerifyPopupOpened());
 }
 
 }  // namespace

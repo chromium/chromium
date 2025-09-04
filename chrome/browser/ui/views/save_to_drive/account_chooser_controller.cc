@@ -4,14 +4,50 @@
 
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_controller.h"
 
+#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_util.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_view.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "ui/display/screen.h"
 
 namespace save_to_drive {
+namespace {
+// Computes the bounds of the popup window. The popup window is centered in the
+// source window, if the source window is large enough to contain the popup
+// window. Otherwise, the popup window is centered in the screen.
+gfx::Rect ComputePopupWindowBounds(content::WebContents* source_window) {
+  gfx::Rect source_window_bounds = source_window->GetContainerBounds();
+  const int kPopupWindowWidth = 400;
+  const int kPopupWindowHeight = 484;
+  int x_coordinate;
+  int y_coordinate;
+
+  if (source_window_bounds.width() >= kPopupWindowWidth &&
+      source_window_bounds.height() >= kPopupWindowHeight) {
+    x_coordinate = source_window_bounds.x() +
+                   ((source_window_bounds.width() - kPopupWindowWidth) / 2);
+    y_coordinate = source_window_bounds.y() +
+                   ((source_window_bounds.height() - kPopupWindowHeight) / 2);
+  } else {
+    display::Screen* screen = display::Screen::Get();
+    gfx::Rect source_display_bounds =
+        screen->GetDisplayNearestView(source_window->GetNativeView())
+            .work_area();
+    x_coordinate = (source_display_bounds.width() - kPopupWindowWidth) / 2;
+    y_coordinate = (source_display_bounds.height() - kPopupWindowHeight) / 2;
+  }
+  return gfx::Rect(x_coordinate, y_coordinate, kPopupWindowWidth,
+                   kPopupWindowHeight);
+}
+}  // namespace
+
+/////////////////
+// ProfileInfo //
+/////////////////
 
 AccountChooserController::ProfileInfo::ProfileInfo() = default;
 AccountChooserController::ProfileInfo::ProfileInfo(const ProfileInfo&) =
@@ -20,6 +56,30 @@ AccountChooserController::ProfileInfo&
 AccountChooserController::ProfileInfo::operator=(const ProfileInfo&) = default;
 AccountChooserController::ProfileInfo::~ProfileInfo() = default;
 
+/////////////////////////////
+// AddAccountPopupObserver //
+/////////////////////////////
+
+class AccountChooserController::AddAccountPopupObserver
+    : public content::WebContentsObserver {
+ public:
+  explicit AddAccountPopupObserver(AccountChooserController* parent_controller)
+      : parent_controller_(parent_controller) {}
+  ~AddAccountPopupObserver() override = default;
+
+  void ObservePopup(content::WebContents* popup) { Observe(popup); }
+  void WebContentsDestroyed() override {
+    parent_controller_->OnAddAccountPopupDestroyed();
+  }
+
+ private:
+  raw_ptr<AccountChooserController> parent_controller_ = nullptr;
+};
+
+//////////////////////////////
+// AccountChooserController //
+//////////////////////////////
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AccountChooserController);
 
 AccountChooserController::AccountChooserController(
@@ -27,9 +87,12 @@ AccountChooserController::AccountChooserController(
     signin::IdentityManager* identity_manager)
     : WebContentsUserData<AccountChooserController>(*web_contents),
       tab_(tabs::TabInterface::MaybeGetFromContents(web_contents)),
-      identity_manager_(identity_manager) {}
+      identity_manager_(identity_manager),
+      add_account_popup_observer_(
+          std::make_unique<AddAccountPopupObserver>(this)) {}
 
 AccountChooserController::~AccountChooserController() {
+  CloseAddAccountPopup();
   CloseWidget();
 }
 
@@ -45,9 +108,21 @@ void AccountChooserController::OnExtendedAccountInfoUpdated(
 void AccountChooserController::OnRefreshTokenRemovedForAccount(
     const CoreAccountId& account_id) {}
 
+void AccountChooserController::OnAddAccountPopupDestroyed() {
+  // The popup window is going away, make sure we don't keep a dangling pointer.
+  // This should happen before notifying the observer, where `this` will be
+  // destroyed.
+  add_account_popup_ = nullptr;
+  if (!add_account_popup_programatically_closed_) {
+    // This means the user closed the popup window and the flow should be
+    // canceled.
+    // TODO: cancel flow.
+  }
+}
+
 void AccountChooserController::Show(ProfileInfo profile_info) {
   if (profile_info.accounts.empty()) {
-    // TODO: show add account dialog
+    ShowAddAccountDialog();
   } else {
     ShowAccountChooserDialog(std::move(profile_info));
   }
@@ -69,8 +144,26 @@ void AccountChooserController::ShowAccountChooserDialog(
           std::make_unique<tabs::TabDialogManager::Params>());
 }
 
-void AccountChooserController::ShowAddAccountDialog() {}
-void AccountChooserController::OnAddAccountButtonClicked() {}
+void AccountChooserController::ShowAddAccountDialog() {
+  if (add_account_popup_) {
+    ResizeAndFocusAddAccountPopup();
+    return;
+  }
+  content::WebContents* source_window = tab_->GetContents();
+  content::OpenURLParams params(
+      signin::GetAddAccountURLForDice("", GURL()), content::Referrer(),
+      WindowOpenDisposition::NEW_POPUP, ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+      /*is_renderer_initiated=*/false);
+  add_account_popup_ = source_window->GetDelegate()->OpenURLFromTab(
+      source_window, params, /*navigation_handle_callback=*/{});
+  ResizeAndFocusAddAccountPopup();
+  add_account_popup_observer_->ObservePopup(add_account_popup_);
+}
+
+void AccountChooserController::OnAddAccountButtonClicked() {
+  ShowAddAccountDialog();
+}
+
 void AccountChooserController::OnFlowCancelled(int32_t widget_closed_reason) {}
 void AccountChooserController::OnAccountSelected(
     const AccountInfo& account_info) {}
@@ -116,6 +209,26 @@ AccountChooserController::CreateDialogDelegate(
   dialog_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   dialog_delegate->SetContentsView(std::move(account_chooser_view));
   return dialog_delegate;
+}
+
+void AccountChooserController::ResizeAndFocusAddAccountPopup() {
+  CHECK(add_account_popup_);
+  gfx::Rect popup_window_bounds = ComputePopupWindowBounds(tab_->GetContents());
+  add_account_popup_->GetDelegate()->SetContentsBounds(add_account_popup_,
+                                                       popup_window_bounds);
+  add_account_popup_->GetDelegate()->ActivateContents(add_account_popup_);
+}
+
+void AccountChooserController::CloseAddAccountPopup() {
+  if (!add_account_popup_) {
+    return;
+  }
+  add_account_popup_programatically_closed_ = true;
+  // Store this in a local variable to avoid triggering the dangling pointer
+  // detector.
+  content::WebContents* popup = add_account_popup_;
+  add_account_popup_ = nullptr;
+  popup->Close();
 }
 
 }  // namespace save_to_drive

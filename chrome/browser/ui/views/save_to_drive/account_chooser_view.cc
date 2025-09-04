@@ -143,6 +143,8 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
           &AccountChooserViewDelegate::OnAddAccountButtonClicked,
           base::Unretained(parent_dialog_)),
       l10n_util::GetStringUTF16(IDS_ACCOUNT_CHOOSER_ADD_ACCOUNT));
+  use_other_account_button->SetProperty(views::kElementIdentifierKey,
+                                        kAddAccountButtonId);
   use_other_account_button->SetStyle(ui::ButtonStyle::kDefault);
   use_other_account_button->SetAppearDisabledInInactiveWidget(true);
   add_account_button_container->AddChildView(
@@ -304,4 +306,5 @@ BEGIN_METADATA(AccountChooserView)
 END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AccountChooserView, kTopViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AccountChooserView, kAddAccountButtonId);
 }  // namespace save_to_drive

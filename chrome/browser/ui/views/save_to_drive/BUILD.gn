@@ -28,6 +28,7 @@ source_set("save_to_drive") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/signin",
+    "//chrome/browser/signin:signin_promo",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/save_to_drive",
     "//components/omnibox/browser:vector_icons",

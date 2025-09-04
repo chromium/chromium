@@ -63,6 +63,9 @@ class AccountChooserController
     std::optional<CoreAccountId> primary_account_id = std::nullopt;
   };
 
+  // Observes the add account popup window's WebContents.
+  class AddAccountPopupObserver;
+
   friend content::WebContentsUserData<AccountChooserController>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
@@ -86,6 +89,14 @@ class AccountChooserController
   ProfileInfo GetProfileInfo();
   // Cleans up the account chooser widget.
   void CloseWidget();
+  // Resizes and focuses the add account popup.
+  void ResizeAndFocusAddAccountPopup();
+  // Closes the add account popup.
+  void CloseAddAccountPopup();
+  // Closes all dialogs.
+  void CloseDialogs();
+  // Called when the add account popup is destroyed.
+  void OnAddAccountPopupDestroyed();
   // Creates a dialog delegate for the account chooser dialog.
   std::unique_ptr<views::DialogDelegate> CreateDialogDelegate(
       std::unique_ptr<AccountChooserView> account_chooser_view);
@@ -95,14 +106,20 @@ class AccountChooserController
   // base::ScopedObservation<signin::IdentityManager,
   //                         signin::IdentityManager::Observer>
   //     scoped_identity_manager_observation_{this};
+
   // base::OnceCallback<void(std::optional<AccountInfo>)>
   //     on_account_selected_callback_;
-  // std::vector<AccountInfo> accounts_;
+
+  // Account chooser dialog related fields.
   raw_ptr<AccountChooserView> account_chooser_view_;
   std::unique_ptr<views::DialogDelegate> account_chooser_dialog_delegate_;
   std::unique_ptr<views::Widget> account_chooser_widget_;
   // std::optional<AccountInfo> selected_account_;
-  // raw_ptr<content::WebContents> add_account_popup_;
+
+  // Add account popup related fields.
+  raw_ptr<content::WebContents> add_account_popup_;
+  std::unique_ptr<AddAccountPopupObserver> add_account_popup_observer_;
+  bool add_account_popup_programatically_closed_ = false;
 };
 }  // namespace save_to_drive
 
