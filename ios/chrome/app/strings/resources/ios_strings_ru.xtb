@@ -696,7 +696,6 @@
 <translation id="3789841737615482174">Установить</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803696231112616155">Предлагать переводить этот сайт</translation>
-<translation id="3808311849069021992">Показать сведения о поисковой системе</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="381219490185664296">Расформировать группу вкладок?</translation>
 <translation id="3812308602011798782">Отзывы</translation>
@@ -1109,7 +1108,6 @@
 <translation id="537853552771686272">Управляйте темами и сайтами, которые вам интересны</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} вкладка закрыта}one{{count} вкладка закрыта}few{{count} вкладки закрыты}many{{count} вкладок закрыты}other{{count} вкладки закрыто}}</translation>
 <translation id="5394975111793637642">Скрыть карточку "Отзывы о товарах для вас"</translation>
-<translation id="5395707839134961196">Скрыть сведения о поисковой системе</translation>
 <translation id="5414763847370083940">Если на одном из сайтов появится скидка, вы получите оповещение.</translation>
 <translation id="5415289094036440596">Ключами доступа делиться нельзя</translation>
 <translation id="5416455648658732408">Переместить в группу вкладок</translation>
@@ -1347,7 +1345,6 @@
 <translation id="6232329973559504466">Поиск в режиме инкогнито</translation>
 <translation id="6234310016144827337">Проверьте подключение и повторите попытку.</translation>
 <translation id="6236952928980352967">Восстановить предупреждение</translation>
-<translation id="623755660902014047">Режим чтения</translation>
 <translation id="6241132809279377987">Пользуйтесь приложениями Google на iPhone</translation>
 <translation id="6247557882553405851">Google Менеджер паролей</translation>
 <translation id="6251835855431997163">Автозаполнение: <ph name="VALUE" /></translation>

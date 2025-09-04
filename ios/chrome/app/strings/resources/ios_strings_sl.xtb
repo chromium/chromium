@@ -696,7 +696,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3789841737615482174">Namesti</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prevod tega spletnega mesta</translation>
-<translation id="3808311849069021992">Prikaz podrobnosti o iskalniku</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="381219490185664296">Želite razdružiti skupino zavihkov?</translation>
 <translation id="3812308602011798782">Mnenja</translation>
@@ -1109,7 +1108,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="537853552771686272">Upravljanje tem in spletnih mest, ki vas zanimajo</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} zaprt}one{{count} zaprt}two{{count} zaprta}few{{count} zaprti}other{{count} zaprtih}}</translation>
 <translation id="5394975111793637642">Skrivanje kartice z mnenji o izdelkih za vas</translation>
-<translation id="5395707839134961196">Skrivanje podrobnosti o iskalniku</translation>
 <translation id="5414763847370083940">Če se cena zniža na katerem koli spletnem mestu, boste prejeli opozorilo.</translation>
 <translation id="5415289094036440596">Ključev za dostop ni mogoče deliti</translation>
 <translation id="5416455648658732408">Premakni v skupino zavihkov</translation>
@@ -1347,7 +1345,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6232329973559504466">Anonimno iskanje</translation>
 <translation id="6234310016144827337">Preverite povezavo in poskusite znova.</translation>
 <translation id="6236952928980352967">Obnovi opozorilo</translation>
-<translation id="623755660902014047">Način za branje</translation>
 <translation id="6241132809279377987">Odklenite več funkcij za iPhone z Googlovimi aplikacijami</translation>
 <translation id="6247557882553405851">Googlov upravitelj gesel</translation>
 <translation id="6251835855431997163">Samodejno izpolnjevanje »<ph name="VALUE" />«</translation>

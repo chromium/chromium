@@ -34,7 +34,7 @@
 <translation id="3732799496749320381">شهر</translation>
 <translation id="3754210790023674521">الخروج من وضع "نافذة ضمن نافذة"</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> غيغابايت</translation>
-<translation id="3822383571486410024">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت تستخدم حاليًا <ph name="CURRENT_LENGTH" /> من الحروف).</translation>
+<translation id="3822383571486410024">يُرجى إطالة هذا النص بحيث يصبح عدد الأحرف <ph name="MIN_CHARACTERS" /> على الأقلّ (عدد الأحرف الحالي هو <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">الجزء المتبوع بالعلامة "<ph name="ATSIGN" />" يجب ألا يشتمل على الرمز "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">خروج من عرض ملء الشاشة</translation>
 <translation id="4360991593054037559">يرجى إدخال قيمة صالحة. علمًا بأن أقرب قيمتين صالحتين هما <ph name="VALID_VALUE_LOW" /> و<ph name="VALID_VALUE_HIGHER" />.</translation>
@@ -76,7 +76,7 @@
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6820355525329141109">تعذر تحميل المكوّن الإضافي.</translation>
 <translation id="6919891270253167948">1.5</translation>
-<translation id="6989848892321993519">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت الآن تستخدم حرفًا واحدًا).</translation>
+<translation id="6989848892321993519">الحد الأدنى لعدد الأحرف في النص: <ph name="MIN_CHARACTERS" /> (يتم حاليًا استخدام حرف واحد).</translation>
 <translation id="709897737746224366">يُرجى مطابقة التنسيق المطلوب.</translation>
 <translation id="7263440858009898357">يُرجى اختيار عنصر من القائمة.</translation>
 <translation id="7364796246159120393">اختيار ملفّ</translation>

@@ -724,6 +724,7 @@
 <translation id="2188375229972301266">താഴെ ഒന്നിലധികം പഞ്ച് ചെയ്യുക</translation>
 <translation id="218940509700321686">കോമയാൽ വേർതിരിച്ച മൂല്യങ്ങൾ</translation>
 <translation id="2194856509914051091">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
+<translation id="2198183835992354675">'നോൺ ട്രാവലർ നമ്പർ'</translation>
 <translation id="2198215508485017216">അപ്രതീക്ഷിതമായി എന്തോ സംഭവിച്ചു. <ph name="BEGIN_LINK" />Drive അപ്‌ലോഡുകളെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">തംബ്‌സ് ഡൗൺ ബട്ടൺ, നിങ്ങൾ ഈ നിർദ്ദേശം എന്തുകൊണ്ട് ഡിസ്‌ലൈക്ക് ചെയ്യുന്നു എന്നതിനെ കുറിച്ചുള്ള വിശദമായ ഫീഡ്‌ബാക്ക് സമർപ്പിക്കാനുള്ള ഫോം തുറക്കാൻ Enter അമർത്തുക</translation>
 <translation id="2202627062836089804">നിങ്ങളുടെ കാർഡിന്റെ പുറകിൽ</translation>
@@ -1114,6 +1115,7 @@
 <translation id="2879233115503670140"><ph name="DATE" /> വരെ സാധുത.</translation>
 <translation id="2879694782644540289">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുക</translation>
 <translation id="2881276955470682203">കാർഡ് സംരക്ഷിക്കണോ?</translation>
+<translation id="2882280148032777436">'നോൺ ട്രാവലർ നമ്പർ' ഇല്ലാതാക്കുക</translation>
 <translation id="2882949212241984732">ഡബിൾ-ഗേറ്റ് മടക്ക്</translation>
 <translation id="2891963978019740012">Chrome-ലെ നിങ്ങളുടെ തിരയൽ യന്ത്രം</translation>
 <translation id="2893773853358652045">നാലാമത്തെ റോൾ</translation>
@@ -2486,7 +2488,6 @@
 <translation id="512670116361803001"><ph name="APP_NAME" /> ഉദ്ദേശിക്കുന്ന രീതിയിൽ വലുപ്പം മാറ്റാൻ കഴിഞ്ഞേക്കില്ല. പ്രശ്‌നങ്ങൾ നേരിടുന്നതിൽ നിന്ന് ആപ്പിനെ തടയാൻ പ്രീസെറ്റ് വിൻഡോ വലുപ്പങ്ങൾ ഉപയോഗിക്കുക.</translation>
 <translation id="512756860033933700">കീബോർഡ് ലോക്ക് അനുവദനീയമാണ്</translation>
 <translation id="5127934926273826089">പുഷ്‌പങ്ങൾ</translation>
-<translation id="5129094684098010260">ഉപകരണത്തിൽ മാത്രം കാർഡ് സംരക്ഷിച്ചു</translation>
 <translation id="5129534298163637277">സ്ഥിരീകരണ ഡയലോഗ്</translation>
 <translation id="5129662217315786329">പോളിഷ്</translation>
 <translation id="5135404736266831032">വിലാസങ്ങൾ മാനേജ് ചെയ്യുക...</translation>
@@ -2629,6 +2630,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"നിങ്ങളുടെ സമയം പിന്നിലാണ്" അല്ലെങ്കിൽ "നിങ്ങളുടെ സമയം മുന്നിലാണ്" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ഈ പാസ്‌വേഡ് ലഭിക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കൂ</translation>
+<translation id="5380539543938195166">'നോൺ ട്രാവലർ നമ്പർ' അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="5380953781541843508">ആരോഹണക്രമത്തിൽ</translation>
 <translation id="5381318171304904246">തുടരുകയാണെങ്കിൽ, നിങ്ങളെ ബാങ്കിന്റെ വെബ്‌സൈറ്റിലേക്ക് റീഡയറക്റ്റ് ചെയ്യും. പരിശോധിച്ചുറപ്പിച്ചതിന് ശേഷം, വാങ്ങൽ പൂർത്തിയാക്കാൻ നിങ്ങളെ സ്വയമേവ ഇവിടേക്ക് തിരികെ റീഡയറക്റ്റ് ചെയ്യും.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />,“<ph name="WEBSITE_TITLE" />” ടാബ് അപ്‌ഡേറ്റ് ചെയ്തു</translation>
@@ -3064,7 +3066,6 @@
 <translation id="6108580855199168381">സർട്ടിഫിക്കറ്റിന്റെ വിശദാംശങ്ങൾ</translation>
 <translation id="6108702513636120202">Chromium-ലെ, നിങ്ങളുടെ തിരയൽ എഞ്ചിൻ</translation>
 <translation id="6108849843016142864">ഇഴജന്തുക്കളും ഉഭയജീവികളും</translation>
-<translation id="610911394827799129">നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="611018310643025551">നിങ്ങളുടെ തിരയലുകളും മികച്ച പൊരുത്തങ്ങളും അവയുടെ പേജ് ഉള്ളടക്കങ്ങളും Google-ലേക്ക് അയയ്‌ക്കുന്നു, ഈ ഫീച്ചർ മെച്ചപ്പെടുത്തുന്നതിന് റിവ്യൂവർമാർ അത് കാണുകയും ചെയ്തേക്കാം.</translation>
 <translation id="6116338172782435947">ക്ലിപ്പ്‌ബോർഡിലേക്ക് പകർത്തിയിട്ടുള്ള ടെക്‌സ്റ്റും ചിത്രങ്ങളും കാണുക</translation>
 <translation id="6117833587752089929">ഫോട്ടോ (സാറ്റിൻ)</translation>
@@ -3231,6 +3232,7 @@
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">ചുരുട്ടിയ ഫോയിൽ</translation>
 <translation id="6383221683286411806">ഭാവിയില്‍ നിരക്കുകള്‍ ഈടാക്കാനിടയുണ്ട്.</translation>
+<translation id="6384448607821972818">വീണ്ടെടുക്കൽ പാസ്‌വേഡ് കാണിച്ചിരിക്കുന്നു</translation>
 <translation id="6385164437039878414">ബാക്ക്പാക്കുകളും യൂട്ടിലിറ്റി ബാഗുകളും</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{മറ്റൊരു നിർദ്ദേശം}other{മറ്റ് # നിർദ്ദേശങ്ങൾ}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
@@ -3339,7 +3341,6 @@
 <translation id="6529173248185917884">ഏഴാമത്തെ റോൾ</translation>
 <translation id="6529602333819889595">&amp;ഇല്ലാതാക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="6532101170117367231">Google ഡ്രൈവിൽ സംരക്ഷിക്കൂ</translation>
-<translation id="6535617236508021606">Google Account-ൽ ഈ കാർഡ് സംരക്ഷിച്ചിരിക്കുന്നതിനാൽ നിങ്ങൾക്ക് ഇത് Google സേവനങ്ങളിലുടനീളം ഉപയോഗിക്കാനാകും.</translation>
 <translation id="6536221421038631327">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിന്ന് Passpoint സബ്‌സ്ക്രിപ്ഷൻ നീക്കം ചെയ്താൽ അനുബന്ധ നെറ്റ്‌വർക്കുകളും നീക്കം ചെയ്യും. നിങ്ങളുടെ സബ്‌സ്ക്രിപ്ഷൻ പ്ലാനിൽ മാറ്റങ്ങൾ വരുത്താൻ "<ph name="FRIENDLY_NAME" />" എന്നതിനെ ബന്ധപ്പെടുക. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">താരതമ്യ പട്ടികകൾ കാണാൻ, സമന്വയിപ്പിക്കുക' ഓണാക്കുക</translation>
 <translation id="6539092367496845964">എന്തോ കുഴപ്പം സംഭവിച്ചു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -4001,6 +4002,7 @@
 <translation id="7638605456503525968">സീരിയൽ പോർട്ടുകൾ</translation>
 <translation id="7646681339175747202">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. നിങ്ങളുടെ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ മാറ്റാൻ Google Password Manager നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="7647206758853451655">പ്രിന്റ് നിലവാരം</translation>
+<translation id="7648133459447652947">നിങ്ങളുടെ കഴ്‌സർ കാണിക്കാൻ, ആപ്പുകൾ മാറുകയോ പേജ് റീലോഡ് ചെയ്യുകയോ മടങ്ങുകയോ ചെയ്യുക</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_ANDROID_SETTINGS_LINK" /> വിപുലമായ പരിരക്ഷ ഓണാക്കിയിരിക്കുന്നതിനാൽ ഈ സൈറ്റ് ബ്ലോക്ക് ചെയ്ത നിലയിൽ തുടരും. <ph name="BEGIN_LEARN_MORE_LINK" />ഈ മുന്നറിയിപ്പിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ഈ ഉപകരണത്തിൽ ഫയലുകൾ സംഭരിക്കുക</translation>
 <translation id="7653957176542370971">പേയ്മെന്റ് കൈകാര്യം ചെയ്യുന്ന ഷീറ്റ് അടച്ചു</translation>
@@ -4040,6 +4042,7 @@
 <translation id="7690647519407127574">Oufuku Hagaki പോസ്റ്റ്കാർഡ്</translation>
 <translation id="7693583928066320343">പേജ് ഓർഡർ ലഭിച്ചു</translation>
 <translation id="769424100851389104">ഇപ്പോൾ അപ്ഡേറ്റ് ചെയ്യാൻ തുടങ്ങുക</translation>
+<translation id="7696107855583699585">'നോൺ ട്രാവലർ നമ്പർ' എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="7697837508203274589">തത്സമയ സ്പോർട്‌സ് ഇവന്റുകൾ</translation>
 <translation id="7698864304447945242">Google Play Services for AR അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="7701040980221191251">ഒന്നുമില്ല</translation>
@@ -4328,6 +4331,7 @@
 <translation id="822925450938886901">ബാധകമായേക്കാവുന്ന അധിക വിവരങ്ങൾക്കും നയങ്ങൾക്കും, നിങ്ങളുടെ ബ്രൗസറിൽ chrome://management തുറക്കുക.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> മി.മീ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (വാഹന തിരിച്ചറിയൽ കാർഡ്)</translation>
 <translation id="8232343881378637145">പ്ലാറ്റ്‌ഫോം താപനില</translation>
 <translation id="8233773197406738106">ഫയൽ തയ്യാറാക്കുന്നു</translation>
 <translation id="823490921909113114">ഈ ക്രമീകരണം പ്രവർത്തനക്ഷമമാക്കുന്നതിനും നിങ്ങളുടെ Google Account-ൽ നിന്നുള്ള പേയ്‌മെന്റ് വിവരങ്ങൾ ഉപയോഗിക്കുന്നതിനും, സ്വയമേവ പൂരിപ്പിക്കൽ സേവനങ്ങളുടെ ക്രമീകരണം സന്ദർശിക്കുക.</translation>
@@ -4652,6 +4656,7 @@
 <translation id="8772387130037509473">യോഗയും പൈലേറ്റ്സും</translation>
 <translation id="877348612833018844">{0,plural, =1{രഹസ്യാത്മക ഫയൽ നീക്കണോ?}other{രഹസ്യാത്മക ഫയലുകൾ നീക്കണോ?}}</translation>
 <translation id="8775347646940100151">പേപ്പർ (ലെറ്റർഹെഡ്)</translation>
+<translation id="8776941011841875705">'നോൺ ട്രാവലർ നമ്പർ' സംരക്ഷിക്കണോ?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">'പേജ് വിവർത്തനം ചെയ്യുക' ബട്ടൺ, Google Translate ഉപയോഗിച്ച് ഈ പേജ് വിവർത്തനം ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="8785658048882205566">മോട്ടോർസൈക്കിളുകൾ</translation>
@@ -4836,6 +4841,7 @@
 <translation id="9107199998619088551"><ph name="MANAGER" />, നിങ്ങളുടെ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നു</translation>
 <translation id="9107467864910557787">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്</translation>
 <translation id="91108059142052966">രഹസ്യാത്മകമായ ഉള്ളടക്കം ദൃശ്യമാകുമ്പോൾ <ph name="APPLICATION_TITLE" /> എന്നതുമായി സ്ക്രീൻ പങ്കിടുന്നത് അഡ്‌മിൻ നയം പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
+<translation id="9114101423898634479">'നോൺ ട്രാവലർ നമ്പർ' ചേർക്കുക</translation>
 <translation id="9114524666733003316">കാർഡ് സ്ഥിരീകരിക്കുന്നു...</translation>
 <translation id="9114581008513152754">കമ്പനിയോ മറ്റേതെങ്കിലും സ്ഥാപനമോ മാനേജ് ചെയ്യുന്നതല്ല ഈ ബ്രൗസർ. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chrome-ന് പുറത്ത് മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome-ലെ പരസ്യങ്ങളെ കുറിച്ച് കൂടുതലറിയുക</translation>

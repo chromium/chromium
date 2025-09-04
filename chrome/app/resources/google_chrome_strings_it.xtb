@@ -19,6 +19,7 @@
 <translation id="1152920704813762236">Informazioni su ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Apri in Chrome</translation>
 <translation id="1157985233335035034">Lingue recenti</translation>
+<translation id="1158134713295836892">Gemini in Chrome</translation>
 <translation id="1184145431117212167">Installazione non riuscita perché la versione di Windows non è supportata.</translation>
 <translation id="1194807384646768652">Chrome ha bloccato questo download perché il tipo di file non viene scaricato comunemente e potrebbe essere pericoloso</translation>
 <translation id="1203500561924088507">L'installazione è terminata. Dovrai riavviare il browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
@@ -104,6 +105,7 @@
 <translation id="2199691482078155239">Chrome ti offre un maggiore controllo sugli annunci che vedi e limita ciò che i siti possono imparare su di te quando ti mostrano annunci personalizzati</translation>
 <translation id="2216543877350048334">Esci per rimuovere il tuo Account Google da Chrome</translation>
 <translation id="2236949375853147973">Le mie attività</translation>
+<translation id="22791603784558743">Chiudi Gemini in Chrome Dev</translation>
 <translation id="2290014774651636340">Mancano le chiavi dell'API di Google. Alcune funzionalità di Google Chrome verranno disattivate.</translation>
 <translation id="2290095356545025170">Sei sicuro di voler disinstallare Google Chrome?</translation>
 <translation id="2301513536169703857">Accedi a Chrome per trovare le password, i preferiti  e altri dati su tutti i dispositivi</translation>
@@ -137,6 +139,7 @@
 <translation id="2665296953892887393">Aiutaci a migliorare Google Chrome inviando a Google report sugli arresti anomali e <ph name="UMA_LINK" /></translation>
 <translation id="2668094785979141847">Fai clic per uscire da Google Lens</translation>
 <translation id="2681444469812712297">Apri <ph name="URL" /> in una nuova scheda in Google Chrome.</translation>
+<translation id="2699790011615497488">Apri Gemini in Chrome Beta</translation>
 <translation id="2712141162840347885">Seleziona un elemento da cercare con Google Lens o premi Esc per uscire</translation>
 <translation id="2738871930057338499">Impossibile connettersi a internet. HTTP 403 Accesso negato. Controlla la configurazione del proxy.</translation>
 <translation id="2742320827292110288">Avviso: Google Chrome non è in grado di impedire alle estensioni di registrare la tua cronologia di navigazione. Per disattivare questa estensione in modalità di navigazione in incognito, deseleziona questa opzione.</translation>
@@ -394,6 +397,7 @@
 <translation id="58431560289969279">Se hai eseguito l'accesso, puoi usare le password e altri dati del tuo Account Google in Chrome. Puoi modificare questa opzione in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="5858486459377137936">Quando chiudi tutte le finestre di Chrome, uscirai dalla maggior parte dei siti, ad eccezione del tuo Account Google se hai eseguito l'accesso a Chrome. Per consentire ai siti di memorizzare le tue informazioni, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome ti avvisa<ph name="END_LINK" /> in caso di siti e download non sicuri</translation>
+<translation id="5894164573378901688">Per usare Gemini in Chrome, accedi con un altro Account Google</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Accesso rete</translation>
 <translation id="5924017743176219022">Connessione a Internet in corso…</translation>
@@ -456,6 +460,8 @@
 <translation id="6506909944137591434">Chrome deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome per gli sviluppatori</translation>
 <translation id="6520670145826811516">Per usare la posizione, concedi l'accesso a Chrome nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" /></translation>
+<translation id="6532945796722480006">Apri Gemini in Chrome Canary</translation>
+<translation id="6585124893636629274">Chiudi Gemini in Chrome</translation>
 <translation id="659498884637196217">In Gestore delle password di Google su questo dispositivo</translation>
 <translation id="6631524303639368205">Continua da dove avevi interrotto: Chrome ha ripristinato le schede dell'ultima sessione. Puoi disattivare questa opzione in</translation>
 <translation id="6632473616050862500">La realizzazione di ChromeOS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo.</translation>
@@ -551,6 +557,7 @@
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7670287553302121848">L'account Chrome richiede la ri-autenticazione</translation>
 <translation id="769538538642757151">Chrome ti avviserà qualora fosse necessario un controllo da parte tua</translation>
+<translation id="769906121737764913">Chiudi Gemini in Chrome Beta</translation>
 <translation id="7716950018788545737">Attività terminate.</translation>
 <translation id="77283119132245232">Fornisce servizi di tracciamento del sistema per <ph name="BROWSER_NAME" />. Se questo servizio viene disattivato, le tracce delle prestazioni create dal browser non includeranno eventi a livello di sistema, ad esempio eventi di commutazione di contesto e di thread pronti.</translation>
 <translation id="7736869414036750079">La tua organizzazione richiede l'accesso a Chrome</translation>
@@ -571,6 +578,7 @@
 <translation id="7886087451482920026">Seleziona testo con Google Lens</translation>
 <translation id="7890208801193284374">Se condividi un computer, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chrome in base alle proprie esigenze.</translation>
 <translation id="7896673875602241923">Qualcuno ha già eseguito l'accesso a Chrome su questo computer come <ph name="ACCOUNT_EMAIL_LAST" />. Crea un nuovo utente Chrome per tenere separate le tue informazioni.</translation>
+<translation id="7904985524660297937">Prova Gemini in Google Chrome</translation>
 <translation id="7917876797003313048">Puoi gestire gli Account Google a cui hai eseguito l'accesso. I tuoi Account Google vengono usati per il browser Chrome, il Play Store, Gmail e altro ancora. Se vuoi aggiungere un account per qualcun altro, come un membro del gruppo Famiglia, aggiungi invece una nuova persona a <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome ha bloccato questo download perché il file è ingannevole e potrebbe apportare modifiche impreviste al tuo dispositivo</translation>
 <translation id="7951272445806340501">Per applicare l'aggiornamento è necessario riavviare ChromeOS Flex.</translation>
@@ -631,6 +639,7 @@
 <translation id="8637932705841171563">Per condividere la finestra, consenti la Registrazione dello schermo per Chrome nelle Impostazioni di sistema.</translation>
 <translation id="8641606876632989680">Chrome ti invierà una notifica quando esegui l'accesso con una password compromessa</translation>
 <translation id="8649026945479135076">È normale che i siti che visiti memorizzino argomenti di tuo interesse per personalizzare la tua esperienza. I siti possono anche memorizzare su Chrome informazioni relative ai tuoi interessi.</translation>
+<translation id="8656634243791296665">Apri Gemini in Chrome Dev</translation>
 <translation id="8669527147644353129">Supporto Google Chrome</translation>
 <translation id="8679801911857917785">Controlla anche la pagina visualizzata all'avvio di Chrome.</translation>
 <translation id="8712637175834984815">Ok</translation>
@@ -659,11 +668,13 @@
 <translation id="8948460679427074738">Per questa estensione non sono state pubblicate Norme di tutela della privacy, ad esempio la modalità di raccolta e utilizzo dei dati. Chrome consiglia di rimuoverla.</translation>
 <translation id="8958307504142971576">Ora hai a disposizione più funzionalità in Chrome</translation>
 <translation id="8989968390305463310">La cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina automaticamente i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi possono essere aggiornati.</translation>
+<translation id="8991530961471831170">Apri Gemini in Chrome</translation>
 <translation id="8992769679401294069">I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare i dati di Chrome nel tuo Account Google.</translation>
 <translation id="8999117580775242387">Quando HTTPS non è disponibile, Chrome utilizza una connessione non sicura senza avvisarti</translation>
 <translation id="8999208279178790196">{0,plural, =0{È disponibile un aggiornamento di Chrome}=1{È disponibile un aggiornamento di Chrome}other{È disponibile un aggiornamento di Chrome da # giorni}}</translation>
 <translation id="9014771989710951291">Più organizzazioni gestiscono Chrome</translation>
 <translation id="9024318700713112071">Imposta Chrome come browser predefinito</translation>
+<translation id="9066987883552592250">Chiudi Gemini in Chrome Canary</translation>
 <translation id="9090566250983691233">Scopri perché Chrome blocca alcuni file</translation>
 <translation id="9106236359747881194">Seleziona il testo da cercare</translation>
 <translation id="911206726377975832">Eliminare anche i tuoi dati di navigazione?</translation>

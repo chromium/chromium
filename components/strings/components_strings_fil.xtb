@@ -724,6 +724,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="218940509700321686">Mga Comma-Separated Value</translation>
 <translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
+<translation id="2198183835992354675">Known Traveler Number</translation>
 <translation id="2198215508485017216">May nangyaring hindi inaasahan. <ph name="BEGIN_LINK" />Matuto pa tungkol sa mga pag-upload sa Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Button na thumbs down, pindutin ang Enter para magbukas ng form para sa pagsusumite ng detalyadong feedback kung bakit mo na-dislike ang suhestyong ito</translation>
 <translation id="2202627062836089804">likod ng iyong card</translation>
@@ -1114,6 +1115,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2879233115503670140">Valid hanggang <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">gamitin ang iyong lock ng screen para sa paglalagay ng mga password</translation>
 <translation id="2881276955470682203">I-save ang card?</translation>
+<translation id="2882280148032777436">Mag-delete ng Known Traveler Number</translation>
 <translation id="2882949212241984732">Double-gate fold</translation>
 <translation id="2891963978019740012">Ang Iyong Search Engine sa Chrome</translation>
 <translation id="2893773853358652045">Ikaapat na Rolyo</translation>
@@ -2487,7 +2489,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="512670116361803001">Posibleng hindi ma-resize nang maayos ang <ph name="APP_NAME" />. Gamitin ang mga preset na laki ng window para mapigilang makaranas ng mga isyu ang app.</translation>
 <translation id="512756860033933700">Pinapayagan ang pag-lock ng keyboard</translation>
 <translation id="5127934926273826089">Mga bulaklak</translation>
-<translation id="5129094684098010260">Sa device lang na-save ang card</translation>
 <translation id="5129534298163637277">Dialog ng kumpirmasyon</translation>
 <translation id="5129662217315786329">Polish</translation>
 <translation id="5135404736266831032">Pamahalaan ang mga address...</translation>
@@ -2630,6 +2631,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Nahuhuli ang iyong orasan" o "Nauuna ang iyong orasan" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Para makuha ang password na ito sa lahat ng iyong device, i-verify na ikaw ito</translation>
+<translation id="5380539543938195166">I-update ang Known Traveler Number?</translation>
 <translation id="5380953781541843508">sa pataas na ayos</translation>
 <translation id="5381318171304904246">Kapag nagpatuloy ka, mapupunta ka sa website ng iyong bangko. Pagkatapos mong mag-verify, awtomatiko kang ibabalik para tapusin ang iyong pagbili.</translation>
 <translation id="5381952079334035181">Na-update ni <ph name="MEMBER_FIRST_NAME" /> ang tab na “<ph name="WEBSITE_TITLE" />”</translation>
@@ -3065,7 +3067,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6108580855199168381">Mga detalye ng certificate</translation>
 <translation id="6108702513636120202">Iyong Search Engine sa Chromium</translation>
 <translation id="6108849843016142864">Mga Reptile at Amphibian</translation>
-<translation id="610911394827799129">Maaaring may iba pang anyo ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Ipinapadala sa Google ang iyong mga paghahanap, pinakamahusay na tugma, at ang mga content ng page ng mga ito, at puwedeng makita ang mga ito ng mga taong tagasuri para mapahusay ang feature na ito.</translation>
 <translation id="6116338172782435947">Tingnan ang text at mga larawang kinopya sa clipboard</translation>
 <translation id="6117833587752089929">Photo (Satin)</translation>
@@ -3232,6 +3233,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Shrink Foil</translation>
 <translation id="6383221683286411806">Maaaring magkaroon ng singil.</translation>
+<translation id="6384448607821972818">Ipinapakita ang password sa pag-recover</translation>
 <translation id="6385164437039878414">Mga Backpack at Utility Bag</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 pang suhestyon}one{# pang suhestyon}other{# pang suhestyon}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
@@ -3340,7 +3342,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6529173248185917884">Ikapitong Rolyo</translation>
 <translation id="6529602333819889595">&amp;Gawing Muli ang Pagtanggal</translation>
 <translation id="6532101170117367231">I-save sa Google Drive</translation>
-<translation id="6535617236508021606">Na-save ang card na ito sa iyong Google Account, kaya magagamit mo ito sa mga serbisyo ng Google.</translation>
 <translation id="6536221421038631327">Kapag nag-alis ng subscription sa Passpoint sa iyong <ph name="DEVICE_TYPE" />, maaalis ang mga nauugnay na network. Makipag-ugnayan sa "<ph name="FRIENDLY_NAME" />" para gumawa ng mga pagbabago sa iyong plan ng subscription. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Para makakita ng mga talahanayan sa paghahambing, i-on ang pag-sync</translation>
 <translation id="6539092367496845964">Nagkaproblema. Subukan ulit sa ibang pagkakataon.</translation>
@@ -4004,6 +4005,7 @@ Mga karagdagang detalye:
 <translation id="7638605456503525968">Mga serial port</translation>
 <translation id="7646681339175747202">Nakita sa isang paglabag sa data ang password na kakagamit mo lang. Inirerekomenda ng Google Password Manager na palitan na ngayon ang password mo.</translation>
 <translation id="7647206758853451655">Kalidad ng pag-print</translation>
+<translation id="7648133459447652947">Para ipakita ang iyong cursor, lumipat ng app, i-reload ang page, o bumalik</translation>
 <translation id="7648527891719919697">Mananatiling naka-block ang site na ito dahil na-on mo ang Advanced na Proteksyon sa <ph name="BEGIN_ANDROID_SETTINGS_LINK" />mga setting ng Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa tungkol sa babalang ito<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Mag-store ng mga file sa device na ito</translation>
 <translation id="7653957176542370971">Nakasara ang sheet ng tagapangasiwa ng pagbabayad</translation>
@@ -4043,6 +4045,7 @@ Mga karagdagang detalye:
 <translation id="7690647519407127574">Oufuku Hagaki Postcard</translation>
 <translation id="7693583928066320343">Natanggap na ang pagkakasunod-sunod ng page</translation>
 <translation id="769424100851389104">Simulan ang pag-update ngayon</translation>
+<translation id="7696107855583699585">I-edit ang Known Traveler Number</translation>
 <translation id="7697837508203274589">Mga Live na Event sa Sports</translation>
 <translation id="7698864304447945242">I-update ang Google Play Services para sa AR?</translation>
 <translation id="7701040980221191251">Wala</translation>
@@ -4331,6 +4334,7 @@ Mga karagdagang detalye:
 <translation id="822925450938886901">Para sa karagdagang impormasyon at mga patakaran na posibleng malapat, buksan ang chrome://management sa iyong browser.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (Vehicle Identification Number)</translation>
 <translation id="8232343881378637145">Temperatura ng platform</translation>
 <translation id="8233773197406738106">Inihahanda ang file</translation>
 <translation id="823490921909113114">Para ma-enable ang mga setting na ito at magamit ang impormasyon sa pagbabayad mula sa iyong Google Account, bumisita sa mga setting ng mga serbisyo ng autofill.</translation>
@@ -4655,6 +4659,7 @@ Mga karagdagang detalye:
 <translation id="8772387130037509473">Yoga at Pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Ilipat ang kumpidensyal na file?}one{Ilipat ang mga kumpidensyal na file?}other{Ilipat ang mga kumpidensyal na file?}}</translation>
 <translation id="8775347646940100151">Papel (Letterhead)</translation>
+<translation id="8776941011841875705">I-save ang Known Traveler Number?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Button na Isalin ang page, i-activate para maisalin ang page na ito gamit ang Google Translate</translation>
 <translation id="8785658048882205566">Mga motorsiklo</translation>
@@ -4839,6 +4844,7 @@ Mga karagdagang detalye:
 <translation id="9107199998619088551">Pinapamahalaan ni <ph name="MANAGER" /> ang iyong profile</translation>
 <translation id="9107467864910557787">Pinapamahalaan ng <ph name="MANAGER" /> ang iyong browser</translation>
 <translation id="91108059142052966">Dini-disable ng patakaran ng administrator ang pagbabahagi ng screen sa <ph name="APPLICATION_TITLE" /> kapag may nakikitang kumpidensyal na content</translation>
+<translation id="9114101423898634479">Magdagdag ng Known Traveler Number</translation>
 <translation id="9114524666733003316">Kinukumpirma ang card...</translation>
 <translation id="9114581008513152754">Hindi pinapamahalaan ng kumpanya o iba pang organisasyon ang browser na ito. Posibleng pinapamahalaan sa labas ng Chrome ang aktibidad sa device na ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Higit pa tungkol sa mga ad sa Chrome</translation>

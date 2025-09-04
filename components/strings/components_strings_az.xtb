@@ -724,6 +724,7 @@
 <translation id="2188375229972301266">Aşağıdan çoxsaylı deşik açın</translation>
 <translation id="218940509700321686">Vergüllə ayrılmış dəyərlər</translation>
 <translation id="2194856509914051091">Nəzərə alınmalı amillər</translation>
+<translation id="2198183835992354675">Məlum səyahətçi nömrəsi</translation>
 <translation id="2198215508485017216">Gözlənilməz xəta oldu. <ph name="BEGIN_LINK" />Disk yükləmələri haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Baş barmaq aşağı düyməsi, bu təklifi niyə bəyənmədiyinizə dair ətraflı rəy göndərmək üçün Enter üzərinə basaraq formanı açın</translation>
 <translation id="2202627062836089804">kartınızın arxa tərəfi</translation>
@@ -1114,6 +1115,7 @@
 <translation id="2879233115503670140"><ph name="DATE" /> tarixinə qədər etibarlıdır.</translation>
 <translation id="2879694782644540289">parolları daxil etmək üçün ekran kilidindən istifadə edin</translation>
 <translation id="2881276955470682203">Kart yadda saxlansın?</translation>
+<translation id="2882280148032777436">Məlum səyahətçi nömrəsini silin</translation>
 <translation id="2882949212241984732">Cüt qatlayın</translation>
 <translation id="2891963978019740012">Chrome-da axtarış mexanizmi</translation>
 <translation id="2893773853358652045">Dördüncü Rulon</translation>
@@ -2483,7 +2485,6 @@
 <translation id="512670116361803001"><ph name="APP_NAME" /> ölçüsü lazımi şəkildə dəyişdirilməyə bilər. Tətbiqin problemlərlə üzləşməməsi üçün əvvəlcədən ayarlanmış pəncərə ölçülərindən istifadə edin.</translation>
 <translation id="512756860033933700">Klaviaturanın kilidlənməsinə icazə verilib</translation>
 <translation id="5127934926273826089">Güllər</translation>
-<translation id="5129094684098010260">Kart yalnız cihazda saxlanıldı</translation>
 <translation id="5129534298163637277">Təsdiq pəncərəsi</translation>
 <translation id="5129662217315786329">Polyak</translation>
 <translation id="5135404736266831032">Ünvanları idarə edin...</translation>
@@ -2626,6 +2627,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Saatınız geridədir" və ya "Saatınız qabaqdadır" və ya "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Bu parolu bütün cihazlarınızda əldə etmək üçün kimliyinizi doğrulayın</translation>
+<translation id="5380539543938195166">Məlum səyahətçi nömrəsi güncəllənsin?</translation>
 <translation id="5380953781541843508">artan sıra ilə</translation>
 <translation id="5381318171304904246">Davam etsəniz, bankın veb-saytına yönləndiriləcəksiniz. Doğruladıqdan sonra alışı başa çatdırmaq üçün avtomatik geri qayıdacaqsınız.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> "<ph name="WEBSITE_TITLE" />" tabını güncəllədi</translation>
@@ -3061,7 +3063,6 @@
 <translation id="6108580855199168381">Sertifikat detalları</translation>
 <translation id="6108702513636120202">Chromium-da axtarış mexanizminiz</translation>
 <translation id="6108849843016142864">Kərtənkələ və Amfibiyalar</translation>
-<translation id="610911394827799129"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər</translation>
 <translation id="611018310643025551">Axtarışlar, ən yaxşı uyğunluqlar və onların səhifə kontenti Google-a göndərilir. İnsan redaktorlar bu funksiyanı təkmilləşdirmək üçün onlara baxa bilər.</translation>
 <translation id="6116338172782435947">Buferə kopyalanan mətn və şəkillərə baxın</translation>
 <translation id="6117833587752089929">Foto (hamar)</translation>
@@ -3228,6 +3229,7 @@
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Büzülən folqa</translation>
 <translation id="6383221683286411806">Potensial ödəniş tutula bilər.</translation>
+<translation id="6384448607821972818">Bərpa parolu görünür</translation>
 <translation id="6385164437039878414">Bel çantası və yardımçı çantalar</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 digər təklif}other{# digər təkliflər}}</translation>
 <translation id="6386565501269869892">Zərf You 4</translation>
@@ -3336,7 +3338,6 @@
 <translation id="6529173248185917884">Yeddinci Rulon</translation>
 <translation id="6529602333819889595">Silinməni yenidən edin</translation>
 <translation id="6532101170117367231">Google Diskdə yadda saxlayın</translation>
-<translation id="6535617236508021606">Google xidmətlərində istifadə edə bilməyiniz üçün bu kart Google Hesabında yadda saxlanılır.</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> cihazından Keçid nöqtəsi abunəsini sildikdə əlaqədar şəbəkələr silinəcək. Abunə planına dəyişikliklər etmək üçün "<ph name="FRIENDLY_NAME" />" ilə əlaqə saxlayın. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Müqayisə cədvəllərinə baxmaq üçün sinxronlaşdırmanı yandırın</translation>
 <translation id="6539092367496845964">Xəta baş verdi. Sonra cəhd edin.</translation>
@@ -3999,6 +4000,7 @@
 <translation id="7638605456503525968">Seriya portları</translation>
 <translation id="7646681339175747202">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Google Parol Meneceri parolunuzu indi dəyişdirmənizi tövsiyə edir.</translation>
 <translation id="7647206758853451655">Çap keyfiyyəti</translation>
+<translation id="7648133459447652947">Kursoru göstərmək üçün tətbiqləri dəyişin, səhifəni yenidən yükləyin və ya geri qayıdın</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ayarlarında<ph name="END_ANDROID_SETTINGS_LINK" /> Qabaqcıl Qorumanı aktiv etdiyiniz üçün bu sayt blokda qalacaq. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Faylları bu cihazda saxlayın</translation>
 <translation id="7653957176542370971">Ödəniş səhifəsi bağlıdır</translation>
@@ -4038,6 +4040,7 @@
 <translation id="7690647519407127574">Oufuku Haqaki Açıqcası</translation>
 <translation id="7693583928066320343">Səhifə sırası qəbul edildi</translation>
 <translation id="769424100851389104">Güncəllənməni indi başladın</translation>
+<translation id="7696107855583699585">Məlum səyahətçi nömrəsinə düzəliş edin</translation>
 <translation id="7697837508203274589">Canlı İdman Tədbirləri</translation>
 <translation id="7698864304447945242">Google Play AR Xidmətləri güncəllənsin?</translation>
 <translation id="7701040980221191251">Heç biri</translation>
@@ -4326,6 +4329,7 @@
 <translation id="822925450938886901">Müvafiq əlavə məlumat və siyasətlər üçün brauzerdə chrome://management ünvanını açın.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (nəqliyyat vasitəsinin identifikasiya nömrəsi)</translation>
 <translation id="8232343881378637145">Platforma temperaturu</translation>
 <translation id="8233773197406738106">Fayl hazırlanır</translation>
 <translation id="823490921909113114">Bu ayarları aktivləşdirmək və Google Hesabınızdakı ödəniş məlumatlarından istifadə etmək üçün avtodoldurma xidmətləri ayarlarına daxil olun.</translation>
@@ -4650,6 +4654,7 @@
 <translation id="8772387130037509473">Yoqa və pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Məxfi fayl köçürülsün?}other{Məxfi fayllar köçürülsün?}}</translation>
 <translation id="8775347646940100151">Kağız (başlıqlı)</translation>
+<translation id="8776941011841875705">Məlum səyahətçi nömrəsi yadda saxlanılsın?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">"Səhifəni tərcümə edin" düyməsi, aktivləşdirərək Google Tərcümə ilə bu səhifəni tərcümə edin</translation>
 <translation id="8785658048882205566">Motosikllar</translation>
@@ -4834,6 +4839,7 @@
 <translation id="9107199998619088551"><ph name="MANAGER" /> profilinizi idarə edir</translation>
 <translation id="9107467864910557787">Brauzeriniz <ph name="MANAGER" /> tərəfindən idarə edilir</translation>
 <translation id="91108059142052966">Administrator suyasəti məxfi məzmun göründüyü zaman <ph name="APPLICATION_TITLE" /> ilə ekran paylaşımını deaktiv edir</translation>
+<translation id="9114101423898634479">Məlum səyahətçi nömrəsi əlavə edin</translation>
 <translation id="9114524666733003316">Kart təsdiqlənir...</translation>
 <translation id="9114581008513152754">Bu brauzer şirkət və ya başqa təşkilat tərəfindən idarə edilmir. Bu cihazdakı fəaliyyət Chrome'dan kənarda idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome'da reklamlar haqqında ətraflı</translation>

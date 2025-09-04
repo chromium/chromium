@@ -724,6 +724,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2188375229972301266">Wiele otworów na dole</translation>
 <translation id="218940509700321686">Wartości rozdzielane przecinkami</translation>
 <translation id="2194856509914051091">Istotne kwestie</translation>
+<translation id="2198183835992354675">Numer KTN</translation>
 <translation id="2198215508485017216">Wystąpił nieoczekiwany błąd. <ph name="BEGIN_LINK" />Więcej informacji o przesyłaniu na Dysk<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Przycisk Nie lubię. Naciśnij Enter, aby otworzyć formularz, w którym możesz szczegółowo wyjaśnić, dlaczego ta sugestia Ci się nie podoba</translation>
 <translation id="2202627062836089804">z tyłu karty</translation>
@@ -1114,6 +1115,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2879233115503670140">Ważny do <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">używać blokady ekranu do wypełniania haseł</translation>
 <translation id="2881276955470682203">Czy zapisać kartę?</translation>
+<translation id="2882280148032777436">Usuń numer KTN</translation>
 <translation id="2882949212241984732">Podwójne składanie do środka</translation>
 <translation id="2891963978019740012">Twoja wyszukiwarka w Chrome</translation>
 <translation id="2893773853358652045">Rolka 4</translation>
@@ -2487,7 +2489,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="512670116361803001">Zmiana rozmiaru aplikacji <ph name="APP_NAME" /> może powodować problemy. Aby uniknąć jej nieprawidłowego działania, użyj gotowych rozmiarów okna.</translation>
 <translation id="512756860033933700">Blokowanie klawiatury jest dozwolone</translation>
 <translation id="5127934926273826089">Kwiaty</translation>
-<translation id="5129094684098010260">Karta została zapisana tylko na urządzeniu</translation>
 <translation id="5129534298163637277">Okno z potwierdzeniem</translation>
 <translation id="5129662217315786329">polski</translation>
 <translation id="5135404736266831032">Zarządzaj adresami…</translation>
@@ -2630,6 +2631,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Twój zegar się spóźnia” lub „Twój zegar się śpieszy” lub „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Aby uzyskać dostęp do tego hasła na wszystkich swoich urządzeniach, potwierdź swoją tożsamość</translation>
+<translation id="5380539543938195166">Zaktualizować numer KTN?</translation>
 <translation id="5380953781541843508">rosnąco</translation>
 <translation id="5381318171304904246">Po kliknięciu Dalej nastąpi przekierowanie do witryny Twojego banku. Gdy potwierdzisz, że to Ty, automatycznie wrócisz na stronę, na której będzie można dokończyć zakup.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> zaktualizował(a) kartę „<ph name="WEBSITE_TITLE" />”</translation>
@@ -3065,7 +3067,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6108580855199168381">Szczegóły certyfikatu</translation>
 <translation id="6108702513636120202">Twoja wyszukiwarka w Chromium</translation>
 <translation id="6108849843016142864">Gady i płazy</translation>
-<translation id="610911394827799129">Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Twoje wyszukiwania, najlepsze dopasowania i zawartość stron są wysyłane do Google. Mogą je zobaczyć weryfikatorzy, którzy pracują nad ulepszaniem tej funkcji.</translation>
 <translation id="6116338172782435947">Mieć dostęp do tekstu i obrazów skopiowanych do schowka</translation>
 <translation id="6117833587752089929">Zdjęcie (satyna)</translation>
@@ -3232,6 +3233,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Folia termokurczliwa</translation>
 <translation id="6383221683286411806">Uważaj na możliwe opłaty.</translation>
+<translation id="6384448607821972818">Wyświetlono hasło przywracania</translation>
 <translation id="6385164437039878414">Plecaki i torby</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 inna podpowiedź}few{# inne podpowiedzi}many{# innych podpowiedzi}other{# innej podpowiedzi}}</translation>
 <translation id="6386565501269869892">Koperta You 4</translation>
@@ -3340,7 +3342,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6529173248185917884">Rolka 7</translation>
 <translation id="6529602333819889595">&amp;Ponów usunięcie</translation>
 <translation id="6532101170117367231">Zapisz na Dysku Google</translation>
-<translation id="6535617236508021606">Ta karta jest zapisana na Twoim koncie Google, więc możesz jej używać w różnych usługach Google.</translation>
 <translation id="6536221421038631327">Usunięcie subskrypcji Passpoint z urządzenia <ph name="DEVICE_TYPE" /> spowoduje też usunięcie powiązanych sieci. Aby wprowadzić zmiany w abonamencie, skontaktuj się z: „<ph name="FRIENDLY_NAME" />”. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Aby zobaczyć tabele porównawcze, włącz synchronizację</translation>
 <translation id="6539092367496845964">Coś poszło nie tak. Spróbuj później.</translation>
@@ -4004,6 +4005,7 @@ Dodatkowe informacje:
 <translation id="7638605456503525968">Porty szeregowe</translation>
 <translation id="7646681339175747202">Znaleźliśmy użyte właśnie hasło wśród ujawnionych w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł Google zaleca natychmiastową zmianę hasła.</translation>
 <translation id="7647206758853451655">Jakość wydruku</translation>
+<translation id="7648133459447652947">Aby wyświetlić kursor, przełącz aplikacje, odśwież stronę lub wróć do poprzedniej</translation>
 <translation id="7648527891719919697">Ta strona pozostanie zablokowana, ponieważ w <ph name="BEGIN_ANDROID_SETTINGS_LINK" />ustawieniach Androida<ph name="END_ANDROID_SETTINGS_LINK" /> masz włączoną Ochronę zaawansowaną. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Zapisywanie plików na tym urządzeniu</translation>
 <translation id="7653957176542370971">Arkusz modułu do obsługi płatności jest zamknięty</translation>
@@ -4043,6 +4045,7 @@ Dodatkowe informacje:
 <translation id="7690647519407127574">Oufuku Hagaki (pocztówka)</translation>
 <translation id="7693583928066320343">Kolejność stron – odebrane</translation>
 <translation id="769424100851389104">Rozpocznij aktualizację teraz</translation>
+<translation id="7696107855583699585">Edytuj numer KTN</translation>
 <translation id="7697837508203274589">Imprezy sportowe na żywo</translation>
 <translation id="7698864304447945242">Zaktualizować Usługi Google Play dla AR?</translation>
 <translation id="7701040980221191251">Brak</translation>
@@ -4184,7 +4187,7 @@ Dodatkowe informacje:
 <translation id="7952327717479677595">Przycisk Zarządzaj wyszukiwarkami; aktywuj, aby ustawić domyślną wyszukiwarkę i wyszukiwanie w witrynie</translation>
 <translation id="7953236668995583915">Załaduj ponownie tę stronę, aby zastosować zaktualizowane ustawienia w tej witrynie</translation>
 <translation id="7953569069500808819">Zszywanie wzdłuż górnej krawędzi</translation>
-<translation id="7955105108888461311">Zapytaj osobiście</translation>
+<translation id="7955105108888461311">Poproś osobiście</translation>
 <translation id="7956713633345437162">Zakładki na komórce</translation>
 <translation id="7961015016161918242">Nigdy</translation>
 <translation id="7962467575542381659">Platforma – urządzenie</translation>
@@ -4331,6 +4334,7 @@ Dodatkowe informacje:
 <translation id="822925450938886901">Aby uzyskać dodatkowe informacje i znajomić się z zasadami, które mogą obowiązywać, otwórz w przeglądarce stronę chrome://management.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">Numer VIN (Vehicle Identification Number)</translation>
 <translation id="8232343881378637145">Temperatura platformy</translation>
 <translation id="8233773197406738106">Przygotowuję plik</translation>
 <translation id="823490921909113114">Aby włączyć te ustawienia i korzystać z danych do płatności zapisanych na koncie Google, otwórz ustawienia usług autouzupełniania.</translation>
@@ -4655,6 +4659,7 @@ Dodatkowe informacje:
 <translation id="8772387130037509473">Joga i pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Przenieść poufny plik?}few{Przenieść poufne pliki?}many{Przenieść poufne pliki?}other{Przenieść poufne pliki?}}</translation>
 <translation id="8775347646940100151">Papier (firmowy)</translation>
+<translation id="8776941011841875705">Zapisać numer KTN?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Przycisk Przetłumacz stronę; aktywuj, aby przetłumaczyć tę stronę za pomocą Tłumacza Google</translation>
 <translation id="8785658048882205566">Motocykle</translation>
@@ -4839,6 +4844,7 @@ Dodatkowe informacje:
 <translation id="9107199998619088551">Twoim profilem zarządza <ph name="MANAGER" /></translation>
 <translation id="9107467864910557787">Twoją przeglądarką zarządza <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Zgodnie z polityką administratora udostępnianie ekranu w aplikacji <ph name="APPLICATION_TITLE" /> zostanie wyłączone, gdy wyświetlą się treści poufne</translation>
+<translation id="9114101423898634479">Dodaj numer KTN</translation>
 <translation id="9114524666733003316">Sprawdzam kartę…</translation>
 <translation id="9114581008513152754">Ta przeglądarka nie jest zarządzana przez firmę ani inną organizację. Aktywność na tym urządzeniu może być zarządzana poza Chrome. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Więcej informacji o reklamach w Chrome</translation>

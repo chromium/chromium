@@ -725,6 +725,7 @@
 <translation id="2188375229972301266">အောက်ခြေတွင် အများအပြားဖောက်ရန်</translation>
 <translation id="218940509700321686">ကော်မာဖြင့်ခြားထားသော တန်ဖိုးများ</translation>
 <translation id="2194856509914051091">စဉ်းစားရန် အချက်များ</translation>
+<translation id="2198183835992354675">သိသော ခရီးသည်နံပါတ်</translation>
 <translation id="2198215508485017216">မျှော်လင့်မထားသော တစ်ခုခုဖြစ်သွားသည်။ <ph name="BEGIN_LINK" />Drive အပ်လုဒ်များအကြောင်း ပိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">လက်မအောက်စိုက် ခလုတ်၊ ဤအကြံပြုချက်ကို သင်မကြိုက်သည့် အကြောင်းရင်းအပေါ် အသေးစိတ်တုံ့ပြန်ချက် ပေးပို့ရန်အတွက် ဖောင်ဖွင့်ရန် Enter ခလုတ်နှိပ်ပါ</translation>
 <translation id="2202627062836089804">သင့်ကတ်၏ ကျောဘက်ခြမ်း</translation>
@@ -1119,6 +1120,7 @@
 <translation id="2879233115503670140"><ph name="DATE" /> အထိ အကျုံးဝင်သည်။</translation>
 <translation id="2879694782644540289">စကားဝှက်ဖြည့်ရန်အတွက် ဖန်သားပြင်လော့ခ် သုံးလိုသည်</translation>
 <translation id="2881276955470682203">ကတ်ကို သိမ်းလိုပါသလား။</translation>
+<translation id="2882280148032777436">သိသော ခရီးသည်နံပါတ်ကို ဖျက်ပါ</translation>
 <translation id="2882949212241984732">တံခါးနှစ်ရွက်ပုံစံ ခေါက်ရန်</translation>
 <translation id="2891963978019740012">Chrome ရှိ သင်၏ ရှာဖွေရေးအင်ဂျင်</translation>
 <translation id="2893773853358652045">လေးခုမြောက်အလိပ်</translation>
@@ -2488,7 +2490,6 @@
 <translation id="512670116361803001"><ph name="APP_NAME" /> ကို ကောင်းစွာ အရွယ်အစားပြန်ပြင်နိုင်မည် မဟုတ်ပါ။ အက်ပ်တွင် ပြဿနာများ မဖြစ်စေရန် အသင့်သုံးဝင်းဒိုး အရွယ်အစားများကို သုံးပါ။</translation>
 <translation id="512756860033933700">ကီးဘုတ်လော့ခ်ချခြင်း ခွင့်ပြုလိုက်သည်</translation>
 <translation id="5127934926273826089">ပန်း</translation>
-<translation id="5129094684098010260">ကတ်ကို စက်တွင်သာ သိမ်းလိုက်သည်</translation>
 <translation id="5129534298163637277">အတည်ပြုခြင်း ဒိုင်ယာလော့</translation>
 <translation id="5129662217315786329">ပိုလန်</translation>
 <translation id="5135404736266831032">လိပ်စာများကို စီမံရန်...</translation>
@@ -2631,6 +2632,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"သင့်နာရီ နောက်ကျနေသည်" သို့မဟုတ် "သင့်နာရီ စောနေသည်" သို့မဟုတ် "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">သင့်စက်အားလုံးတွင် ဤစကားဝှက် ရယူနိုင်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
+<translation id="5380539543938195166">သိသော ခရီးသည်နံပါတ်ကို အပ်ဒိတ်လုပ်မလား</translation>
 <translation id="5380953781541843508">ငယ်စဉ်ကြီးလိုက်</translation>
 <translation id="5381318171304904246">ရှေ့ဆက်လျှင် သင့်ဘဏ်၏ဝဘ်ဆိုက် ပွင့်လာပါမည်။ အတည်ပြုပြီးပါက သင်၏ဝယ်ယူမှုကို အပြီးသတ်ရန်အတွက် အလိုအလျောက် ပြန်ရောက်လာပါမည်။</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> က တဘ် “<ph name="WEBSITE_TITLE" />” ကို အပ်ဒိတ်လုပ်လိုက်သည်</translation>
@@ -3066,7 +3068,6 @@
 <translation id="6108580855199168381">အသိအမှတ်ပြုလက်မှတ် အသေးစိတ်</translation>
 <translation id="6108702513636120202">Chromium ရှိ သင်၏ရှာဖွေရေး အင်ဂျင်</translation>
 <translation id="6108849843016142864">တွားသွားသတ္တဝါ၊ ကုန်းနေရေနေသတ္တဝါ</translation>
-<translation id="610911394827799129">သင်၏ Google အကောင့်က ဖွင့်ကြည့်ထားသော မှတ်တမ်းသည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံများဖြင့် ရှိနေနိုင်ပါသည်</translation>
 <translation id="611018310643025551">သင့်ရှာဖွေမှုများ၊ အကိုက်ညီဆုံးများ၊ သူ၏ စာမျက်နှာအကြောင်းအရာများကို Google သို့ပို့သည်။ ဤဝန်ဆောင်မှု ပိုကောင်းလာစေရန် ပြန်စစ်သည့် ပုဂ္ဂိုလ်များက ၎င်းတို့ကို ကြည့်နိုင်သည်။</translation>
 <translation id="6116338172782435947">ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည့် စာသားနှင့် ပုံများအား ကြည့်ရန်</translation>
 <translation id="6117833587752089929">ဓာတ်ပုံ (ဖဲ)</translation>
@@ -3232,6 +3233,7 @@
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">ပစ္စည်းပတ် သတ္တုလွှာပါး</translation>
 <translation id="6383221683286411806">အခကြေးငွေ ပေးရနိုင်ခြေရှိသည်။</translation>
+<translation id="6384448607821972818">ပြန်လည်ရယူရေး စကားဝှက်ကို ပြထားသည်</translation>
 <translation id="6385164437039878414">ကျောပိုးအိတ်နှင့် အသုံးအဆောင်အိတ်</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{အခြားအကြံပြုချက် ၁ ခု}other{အခြားအကြံပြုချက် # ခု}}</translation>
 <translation id="6386565501269869892">You 4 စာအိတ်</translation>
@@ -3340,7 +3342,6 @@
 <translation id="6529173248185917884">ခုနှစ်ခုမြောက်အလိပ်</translation>
 <translation id="6529602333819889595">&amp;ဖျက်ရန်ကို ပြန်လုပ်ရန်</translation>
 <translation id="6532101170117367231">Google Drive သို့ သိမ်းရန်</translation>
-<translation id="6535617236508021606">ဤကတ်ကို သင့် Google Account ၌ သိမ်းထားသဖြင့် Google ဝန်ဆောင်မှုများတွင် သုံးနိုင်သည်။</translation>
 <translation id="6536221421038631327">သင်၏ <ph name="DEVICE_TYPE" /> မှ ‘ဖြတ်သန်းခွင့်ပြုမှတ်’ စာရင်းသွင်းမှုကို ဖယ်ရှားခြင်းဖြင့် ဆက်စပ်ကွန်ရက်များကို ဖယ်ရှားပါမည်။ သင်၏စာရင်းသွင်းမှုအစီအစဉ်ကို အပြောင်းအလဲပြုလုပ်ရန် “<ph name="FRIENDLY_NAME" />” ထံသို့ ဆက်သွယ်ပါ။ <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">နှိုင်းယှဉ်မှုဇယားများ မြင်ရရန် စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
 <translation id="6539092367496845964">တစ်ခုခု မှားသွားသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
@@ -4004,6 +4005,7 @@
 <translation id="7638605456503525968">အစဉ်လိုက်ပို့တ်များ</translation>
 <translation id="7646681339175747202">သင်သုံးလိုက်သည့်စကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်။ သင့်စကားဝှက်ကို ယခုပြောင်းရန် ‘Google စကားဝှက်မန်နေဂျာ’ က အကြံပြုပါသည်။</translation>
 <translation id="7647206758853451655">ပုံနှိပ်အရည်အသွေး</translation>
+<translation id="7648133459447652947">ကာဆာကို ပြရန်၊ အက်ပ်များ ပြောင်းရန်၊ စာမျက်နှာကို ပြန်လည် စတင်ရန် (သို့) ပြန်သွားရန်</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ဆက်တင်များ<ph name="END_ANDROID_SETTINGS_LINK" /> တွင် ‘အဆင့်မြင့်ကာကွယ်ရေး’ ကို ဖွင့်ထားသောကြောင့် ဤဝဘ်ဆိုက်ကို ဆက်ပိတ်ထားပါမည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ဤသတိပေးချက်အကြောင်း ပိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">ဤစက်ကိရိယာတွင် ဖိုင်များ သိမ်းပါ</translation>
 <translation id="7653957176542370971">ငွေပေးချေမှု ကိုင်တွယ်သည့်စနစ်စာမျက်နှာကို ပိတ်ထားသည်</translation>
@@ -4043,6 +4045,7 @@
 <translation id="7690647519407127574">အိုဖုကုဟာဂကိ ပို့စ်ကတ်</translation>
 <translation id="7693583928066320343">စာမျက်နှာအစဉ် ရရှိထားသည်</translation>
 <translation id="769424100851389104">ယခု အပ်ဒိတ်စတင်ရန်</translation>
+<translation id="7696107855583699585">သိသော ခရီးသည်နံပါတ်ကို ပြင်ပါ</translation>
 <translation id="7697837508203274589">တိုက်ရိုက်လွှင့် အားကစားပွဲ</translation>
 <translation id="7698864304447945242">AR အတွက် Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်မလား။</translation>
 <translation id="7701040980221191251">မရှိ</translation>
@@ -4332,6 +4335,7 @@
 <translation id="822925450938886901">နောက်ထပ်အချက်အလက်နှင့် ကျင့်သုံးမည့် မူဝါဒများအတွက် သင့်ဘရောင်ဇာတွင် chrome://management ကိုဖွင့်ပါ။</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> မီလီမီတာ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />၊ <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (မော်တော်ယာဉ် မှတ်ပုံတင်နံပါတ်)</translation>
 <translation id="8232343881378637145">စနစ် အပူချိန်</translation>
 <translation id="8233773197406738106">ဖိုင်ကို ပြင်ဆင်နေသည်</translation>
 <translation id="823490921909113114">၎င်းဆက်တင်များကို ဖွင့်ပြီး သင့် Google Account မှ ငွေချေအချက်အလက်ကို သုံးရန် အော်တိုဖြည့် ဝန်ဆောင်မှု ဆက်တင်များသို့ ဝင်ကြည့်ပါ။</translation>
@@ -4656,6 +4660,7 @@
 <translation id="8772387130037509473">ယောဂနှင့် ပီလတိစ်</translation>
 <translation id="877348612833018844">{0,plural, =1{လျှို့ဝှက်ဖိုင်ကို ရွှေ့မလား။}other{လျှို့ဝှက်ဖိုင်များကို ရွှေ့မလား။}}</translation>
 <translation id="8775347646940100151">စာရွက် (လက်တာဟက်ဒ်)</translation>
+<translation id="8776941011841875705">သိသော ခရီးသည်နံပါတ်ကို သိမ်းမလား</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">ဤစာမျက်နှာကို Google Translate ဖြင့် ဘာသာပြန်ရန် ‘စာမျက်နှာ ဘာသာပြန်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="8785658048882205566">မော်တော်ဆိုင်ကယ်များ</translation>
@@ -4840,6 +4845,7 @@
 <translation id="9107199998619088551"><ph name="MANAGER" /> က သင့်ပရိုဖိုင်ကို စီမံသည်</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> က သင့်ဘရောင်ဇာကို စီမံခန့်ခွဲသည်</translation>
 <translation id="91108059142052966">လျှို့ဝှက်အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် <ph name="APPLICATION_TITLE" /> အား မျက်နှာပြင်မျှဝေခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
+<translation id="9114101423898634479">သိသော ခရီးသည်နံပါတ် ထည့်ပါ</translation>
 <translation id="9114524666733003316">ကတ် အတည်ပြုနေသည်...</translation>
 <translation id="9114581008513152754">ဤဘရောင်ဇာကို ကုမ္ပဏီ သို့မဟုတ် အခြားအဖွဲ့အစည်းက စီမံခန့်ခွဲမထားပါ။ ဤစက်ပေါ်ရှိ လုပ်ဆောင်ချက်ကို Chrome ပြင်ပမှ စီမံခန့်ခွဲထားခြင်း ဖြစ်နိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome ရှိကြော်ငြာများအကြောင်း ပိုမိုသိရှိရန်</translation>

@@ -568,6 +568,19 @@ atau <ph name="EXTENSION_INSTALL_FORCED_POLICY_NAME" />.</translation>
       Kebijakan ini menggantikan <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, dan preferensi pengguna.</translation>
 <translation id="1413768951234456918">Hapus Histori Penjelajahan</translation>
 <translation id="1413936351612032792">Informasi laporan tentang penggunaan aplikasi Linux</translation>
+<translation id="1417776888841750570">Kebijakan ini mengontrol perilaku browser setelah akun terkelola login ke area konten.
+
+Kebijakan ini menggantikan <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
+
+Jika kebijakan ini disetel ke Disarankan, setelah akun terkelola login, pengguna akan diminta untuk terus menggunakan profil terkelola seolah-olah kebijakan ini diterapkan. Jika pengguna menolak, pengguna dapat melanjutkan penjelajahannya di lingkungan yang tidak dikelola.
+
+Jika kebijakan ini disetel ke Diterapkan, setelah akun terkelola login, pengguna akan diwajibkan untuk terus menggunakan profil terkelola. Jika pengguna menolak, pengguna akan logout dari akunnya. Penerapan ini tidak terpengaruh oleh kebijakan <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna mungkin akan melihat balon yang meminta mereka membuat profil baru setelah akun terkelola login. Balon tersebut dapat ditutup dan pengguna dapat melanjutkan penjelajahan di lingkungan yang tidak dikelola. Balon tersebut dikontrol oleh kebijakan <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Kebijakan ini tidak berpengaruh jika disetel di tingkat perangkat.
+
+Kebijakan ini tidak berlaku atau berfungsi dalam mode Samaran.</translation>
 <translation id="1417888712677507140">Blokir dialog JavaScript yang dipicu dari subframe asal yang berbeda.</translation>
 <translation id="1418387035898607074">Lewati pemeriksaan Safe Browsing untuk file yang didownload dari sumber tepercaya</translation>
 <translation id="1419020637569060510">Menambahkan batasan pada penggunaan akun terkelola sebagai akun sekunder di ChromeOS</translation>
@@ -7129,15 +7142,6 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihu
 <translation id="5728154254076636808">Mengaktifkan pembuatan salinan roaming untuk data profil <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Sandi Kerberos. Placeholder <ph name="PASSWORD_PLACEHOLDER" /> diganti dengan sandi login.</translation>
 <translation id="5730610899971390601">Tolak permintaan penyambungan Bluetooth "Just Works"</translation>
-<translation id="5731898940174379509">Menyetel kebijakan ini akan membuat prakonfigurasi pada hingga 10 pintasan khusus di halaman Tab Baru <ph name="PRODUCT_NAME" />.
-
-Jika kebijakan ini disetel, pengguna akan melihat pintasan ini secara default dan dapat beralih antara “Pintasan saya”, “Situs yang paling sering dikunjungi”, atau “Pintasan organisasi saya” di panel “Sesuaikan Chrome”. Jika kebijakan ini disetel ke nilai kosong atau tidak disetel, pengguna hanya dapat beralih antara “Pintasan saya” atau “Situs yang paling sering dikunjungi” di panel “Sesuaikan Chrome”.
-
-URL pintasan harus unik.
-
-Jika <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> disetel ke benar (true), pengguna dapat mengubah nama pintasan. Jika disetel ke salah (false) atau tidak disetel, pengguna tidak dapat mengubah nama pintasan.
-
-Jika <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> disetel ke benar (true), pengguna dapat menghapus pintasan. Jika disetel ke salah (false) atau tidak disetel, pengguna tidak dapat menghapus pintasan.</translation>
 <translation id="5732972008943405952">Mengimpor data formulir isi-otomatis dari browser default saat pertama kali dijalankan</translation>
 <translation id="5733040281451845496">Jika kebijakan disetel ke Aktif, penundaan pengelolaan daya dan batas durasi sesi tidak akan dimulai hingga aktivitas pengguna pertama terjadi dalam suatu sesi.
 
@@ -8963,7 +8967,6 @@ Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna hanya akan l
 Jika kebijakan ini disetel ke salah (false) atau tidak disetel, tata letak tidak akan tersedia. Perlu mulai ulang agar dapat diterapkan.</translation>
 <translation id="685769593149966548">Terapkan Mode Terbatas Ketat untuk YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 atau lebih baru</translation>
-<translation id="6863927303509860338">Menyetel pintasan di Halaman Tab Baru</translation>
 <translation id="6866755486434471318">Mengizinkan <ph name="PEPPER_NAME" /> menggunakan gambar yang dibagikan untuk decoding video.</translation>
 <translation id="6878757724611298427">Izinkan pengguna menggunakan aplikasi Android di perangkat yang tidak terafiliasi</translation>
 <translation id="6881397131210596522">Jika kebijakan ini disetel ke 2, situs akan otomatis diblokir agar tidak menggunakan WebPrinting API.

@@ -696,7 +696,6 @@
 <translation id="3789841737615482174">​ຕິດ​ຕັ້ງ</translation>
 <translation id="380329542618494757">ຊື່</translation>
 <translation id="3803696231112616155">ສະເໜີແປເວັບໄຊນີ້</translation>
-<translation id="3808311849069021992">ສະແດງລາຍລະອຽດໂປຣແກຣມຊອກຫາ</translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
 <translation id="381219490185664296">ຍົກເລີກການຈັດກຸ່ມແຖບບໍ?</translation>
 <translation id="3812308602011798782">ຄຳຕິຊົມ</translation>
@@ -1109,7 +1108,6 @@
 <translation id="537853552771686272">ຈັດການຫົວຂໍ້ ແລະ ເວັບໄຊທີ່ທ່ານສົນໃຈ</translation>
 <translation id="5390458669633674385">{count,plural, =1{ປິດ {count} ແລ້ວ}other{ປິດ {count} ແລ້ວ}}</translation>
 <translation id="5394975111793637642">ເຊື່ອງຄຳຕິຊົມສິນຄ້າສໍາລັບບັດຂອງທ່ານ</translation>
-<translation id="5395707839134961196">ເຊື່ອງລາຍລະອຽດໂປຣແກຣມຊອກຫາ</translation>
 <translation id="5414763847370083940">ທ່ານຈະໄດ້ຮັບແຈ້ງເຕືອນຫາກລາຄາຫຼຸດລົງຢູ່ເວັບໄຊໃດກໍຕາມ.</translation>
 <translation id="5415289094036440596">ບໍ່ສາມາດແບ່ງປັນກະແຈຜ່ານໄດ້</translation>
 <translation id="5416455648658732408">ຍ້າຍໄປໃສ່ກຸ່ມແຖບ</translation>
@@ -1347,7 +1345,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6232329973559504466">ການຊອກຫາແບບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="6234310016144827337">ກວດສອບການເຊື່ອມຕໍ່ຂອງທ່ານແລ້ວລອງໃໝ່</translation>
 <translation id="6236952928980352967">ກູ້ຄຳເຕືອນຄືນ</translation>
-<translation id="623755660902014047">ໂໝດການອ່ານ</translation>
 <translation id="6241132809279377987">ປົດລັອກຄຸນສົມບັດເພີ່ມເຕີມສຳລັບ iPhone ຂອງທ່ານດ້ວຍແອັບຕ່າງໆຂອງ Google</translation>
 <translation id="6247557882553405851">ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="6251835855431997163">ຕື່ມຂໍ້ມູນ <ph name="VALUE" /> ອັດຕະໂນມັດ</translation>

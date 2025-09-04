@@ -724,6 +724,7 @@
 <translation id="2188375229972301266">Некалькі дзірак знізу</translation>
 <translation id="218940509700321686">Раздзеленыя коскамі значэнні</translation>
 <translation id="2194856509914051091">Інфармацыя для разгляду</translation>
+<translation id="2198183835992354675">Нумар вядомага падарожніка</translation>
 <translation id="2198215508485017216">Адбылася нечаканая памылка. <ph name="BEGIN_LINK" />Даведацца больш пра запампоўванне на Дыск.<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Кнопка "Не падабаецца": націсніце Увод, каб адкрыць форму адпраўкі падрабязнага водгуку пра тое, чаму вам не спадабалася гэта прапанова</translation>
 <translation id="2202627062836089804">адваротным баку карткі</translation>
@@ -1115,6 +1116,7 @@
 <translation id="2879233115503670140">Дзейнічае да <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">выкарыстоўваць блакіроўку экрана для ўводу пароляў</translation>
 <translation id="2881276955470682203">Захаваць картку?</translation>
+<translation id="2882280148032777436">Выдаленне нумара вядомага падарожніка</translation>
 <translation id="2882949212241984732">Згіб "двайныя вароты"</translation>
 <translation id="2891963978019740012">Ваша пошукавая сістэма ў Chrome</translation>
 <translation id="2893773853358652045">Чацвёрты рулон</translation>
@@ -2487,7 +2489,6 @@
 <translation id="512670116361803001">Змяненне памеру праграмы "<ph name="APP_NAME" />" можа выклікаць памылкі. Каб пазбегнуць іх, выкарыстоўвайце загадзя зададзеныя памеры вокнаў.</translation>
 <translation id="512756860033933700">Блакіроўка клавіятуры дазволена</translation>
 <translation id="5127934926273826089">Кветкі</translation>
-<translation id="5129094684098010260">Картка захавана толькі на прыладзе</translation>
 <translation id="5129534298163637277">Дыялогавае акно пацвярджэння</translation>
 <translation id="5129662217315786329">Польская</translation>
 <translation id="5135404736266831032">Кіраваць адрасамі...</translation>
@@ -2629,6 +2630,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Ваш гадзіннік спазняецца", або "Ваш гадзіннік спяшаецца", або "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Каб атрымаць гэты пароль на ўсіх прыладах, пацвердзіце сваю асобу</translation>
+<translation id="5380539543938195166">Змяніць нумар вядомага падарожніка?</translation>
 <translation id="5380953781541843508">па ўзрастанні</translation>
 <translation id="5381318171304904246">Калі вы націснеце "Працягнуць", то будзеце перанакіраваны на вэб-сайт банка. Пасля спраўджання вы аўтаматычна вернецеся сюды, каб завяршыць куплю.</translation>
 <translation id="5381952079334035181">Карыстальнік <ph name="MEMBER_FIRST_NAME" /> змяніў укладку "<ph name="WEBSITE_TITLE" />"</translation>
@@ -3064,7 +3066,6 @@
 <translation id="6108580855199168381">Падрабязныя звесткі пра сертыфікат</translation>
 <translation id="6108702513636120202">Пошукавая сістэма ў Chromium</translation>
 <translation id="6108849843016142864">Рэптыліі і земнаводныя</translation>
-<translation id="610911394827799129">На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> могуць быць іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google</translation>
 <translation id="611018310643025551">Для паляпшэння гэтай функцыі пошукавыя запыты, найлепшыя супадзенні і змесціва іх старонак адпраўляюцца ў Google і могуць праглядацца спецыялістамі.</translation>
 <translation id="6116338172782435947">Праглядаць тэкст і відарысы, скапіраваныя ў буфер абмену</translation>
 <translation id="6117833587752089929">Сацініраваная фотапапера</translation>
@@ -3231,6 +3232,7 @@
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Тэрмаўсадачная плёнка</translation>
 <translation id="6383221683286411806">На сайце, на які вы збіраецеся перайсці, магчыма спагнанне сродкаў.</translation>
+<translation id="6384448607821972818">Паказаны пароль для аднаўлення</translation>
 <translation id="6385164437039878414">Рукзакі і гаспадарчыя сумкі</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{яшчэ 1 прапанова}one{яшчэ # прапанова}few{яшчэ # прапановы}many{яшчэ # прапаноў}other{яшчэ # прапановы}}</translation>
 <translation id="6386565501269869892">Канверт You 4</translation>
@@ -3339,7 +3341,6 @@
 <translation id="6529173248185917884">Сёмы рулон</translation>
 <translation id="6529602333819889595">&amp;Узнавіць выдаленне</translation>
 <translation id="6532101170117367231">Захаваць на Google Дыск</translation>
-<translation id="6535617236508021606">Гэта картка захавана ў вашым Уліковым запісе Google, таму вы можаце выкарыстоўваць яе ў розных сэрвісах Google.</translation>
 <translation id="6536221421038631327">Калі вы скасуеце падпіску Passpoint на прыладзе <ph name="DEVICE_TYPE" />, даныя пра звязаныя сеткі будуць выдалены. Каб унесці змяненні ў падпіску, звяжыцеся з кампаніяй "<ph name="FRIENDLY_NAME" />". <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Каб убачыць табліцы параўнання, уключыце сінхранізацыю</translation>
 <translation id="6539092367496845964">Нешта пайшло не так. Паўтарыце спробу пазней.</translation>
@@ -4003,6 +4004,7 @@
 <translation id="7638605456503525968">Паслядоўныя парты</translation>
 <translation id="7646681339175747202">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Рэкамендуем змяніць яго зараз жа ў Менеджары пароляў Google.</translation>
 <translation id="7647206758853451655">Якасць друку</translation>
+<translation id="7648133459447652947">Каб паказаць курсор, змяніце праграмы, перазагрузіце старонку ці вярніцеся на папярэднюю</translation>
 <translation id="7648527891719919697">Гэты сайт застанецца заблакіраваным, бо вы ўключылі Палепшаную абарону ў <ph name="BEGIN_ANDROID_SETTINGS_LINK" />наладах Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне.<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Захоўваць файлы на гэтай прыладзе</translation>
 <translation id="7653957176542370971">Аркуш апрацоўшчыка плацяжоў закрыты</translation>
@@ -4042,6 +4044,7 @@
 <translation id="7690647519407127574">Паштоўка Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Атрыманы парадак старонак</translation>
 <translation id="769424100851389104">Пачаць абнаўленне</translation>
+<translation id="7696107855583699585">Змяненне нумара вядомага падарожніка</translation>
 <translation id="7697837508203274589">Удзел у спартыўных мерапрыемствах</translation>
 <translation id="7698864304447945242">Абнавіць сэрвісы Google Play для AR?</translation>
 <translation id="7701040980221191251">Няма</translation>
@@ -4330,6 +4333,7 @@
 <translation id="822925450938886901">Каб азнаёміцца з дадатковай інфармацыяй і дзеючымі палітыкамі, адкрыйце ў браўзеры chrome://management.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (ідэнтыфікацыйны нумар транспартнага сродку)</translation>
 <translation id="8232343881378637145">Тэмпература платформы</translation>
 <translation id="8233773197406738106">Ідзе падрыхтоўка файла</translation>
 <translation id="823490921909113114">Каб уключыць гэтыя налады і выкарыстоўваць плацежную інфармацыю са свайго Уліковага запісу Google, перайдзіце ў налады службаў аўтазапаўнення.</translation>
@@ -4654,6 +4658,7 @@
 <translation id="8772387130037509473">Ёга і пілатэс</translation>
 <translation id="877348612833018844">{0,plural, =1{Перамясціць канфідэнцыяльны файл?}one{Перамясціць канфідэнцыяльныя файлы?}few{Перамясціць канфідэнцыяльныя файлы?}many{Перамясціць канфідэнцыяльныя файлы?}other{Перамясціць канфідэнцыяльныя файлы?}}</translation>
 <translation id="8775347646940100151">Папяровы бланк</translation>
+<translation id="8776941011841875705">Захаваць нумар вядомага падарожніка?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Кнопка "Перакласці старонку". Каб перакласці гэту старонку ў Google Перакладчыку, націсніце яе.</translation>
 <translation id="8785658048882205566">Матацыклы</translation>
@@ -4838,6 +4843,7 @@
 <translation id="9107199998619088551">Арганізацыя "<ph name="MANAGER" />" кіруе вашым профілем</translation>
 <translation id="9107467864910557787">Браўзерам кіруе <ph name="MANAGER" />.</translation>
 <translation id="91108059142052966">Згодна з палітыкай, зададзенай адміністратарам, <ph name="APPLICATION_TITLE" /> не можа выкарыстоўвацца для абагульвання экрана, калі на ім паказваецца прыватнае змесціва.</translation>
+<translation id="9114101423898634479">Дадаванне нумара вядомага падарожніка</translation>
 <translation id="9114524666733003316">Пацвярджаюцца даныя карткі...</translation>
 <translation id="9114581008513152754">Гэты браўзер не знаходзіцца пад кіраваннем кампаніі або іншай арганізацыі. Аднак сама прылада можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Падрабязней пра рэкламу ў браўзеры Chrome</translation>

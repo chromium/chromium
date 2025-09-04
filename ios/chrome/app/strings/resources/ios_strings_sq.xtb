@@ -696,7 +696,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="380329542618494757">Emri</translation>
 <translation id="3803696231112616155">Ofro përkthimin për këtë sajt</translation>
-<translation id="3808311849069021992">Shfaq detajet e motorit të kërkimit</translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="381219490185664296">Të anulohet grupimi për grupin e skedave?</translation>
 <translation id="3812308602011798782">Komentet</translation>
@@ -1109,7 +1108,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="537853552771686272">Menaxho temat dhe sajtet që të interesojnë</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} u mbyll}other{{count} u mbyllën}}</translation>
 <translation id="5394975111793637642">Fshih kartën "Komentet e produktit për ty"</translation>
-<translation id="5395707839134961196">Fshih detajet e motorit të kërkimit</translation>
 <translation id="5414763847370083940">Do të marrësh një sinjalizim nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="5415289094036440596">Çelësat e kalimit nuk mund të ndahen</translation>
 <translation id="5416455648658732408">Zhvendose te grupi i skedave</translation>
@@ -1347,7 +1345,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6232329973559504466">Kërkimi "i fshehtë"</translation>
 <translation id="6234310016144827337">Kontrollo lidhjen tënde dhe provo përsëri</translation>
 <translation id="6236952928980352967">Restauro paralajmërimin</translation>
-<translation id="623755660902014047">Modaliteti i leximit</translation>
 <translation id="6241132809279377987">Shkyç më shumë veçori për iPhone me aplikacionet e Google</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
 <translation id="6251835855431997163">Plotëso automatikisht: <ph name="VALUE" /></translation>

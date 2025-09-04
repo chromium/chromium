@@ -548,6 +548,19 @@ Uzantının <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXT
       Bu politika <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> ve kullanıcının tercihlerini geçersiz kılar.</translation>
 <translation id="1413768951234456918">Göz Atma Geçmişini Temizle</translation>
 <translation id="1413936351612032792">Linux uygulamalarının kullanımıyla ilgili bilgileri raporla</translation>
+<translation id="1417776888841750570">Bu politika, yönetilen bir hesap, içerik alanında oturum açtıktan sonra tarayıcının davranışını kontrol eder.
+
+Bu politika, <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> politikasını geçersiz kılar.
+
+Bu politika Önerilen değerine ayarlanırsa yönetilen bir hesap oturum açtıktan sonra kullanıcıdan yönetilen bir profili zorunlu kılınmış gibi kullanmaya devam etmesi istenir. Kullanıcı bu isteği reddederse yönetilmeyen bir ortamda göz atmaya devam edebilir.
+
+Bu politika Zorunlu Kılındı değerine ayarlanırsa yönetilen bir hesap oturum açtıktan sonra kullanıcının yönetilen bir profil kullanmaya devam etmesi gerekir. Kullanıcı bu isteği reddederse hesabının oturumu kapatılır. Bu zorunlu kılma işlemi, <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> politikasından etkilenmez.
+
+Bu politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa yönetilen bir hesap oturum açtıktan sonra kullanıcı, kendisinden yeni profil oluşturmasını isteyen bir balon görebilir. Kullanıcı bu balonu kapatabilir ve yönetilmeyen bir ortamda göz atmaya devam edebilir. Bu balon, <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> politikası ile kontrol edilir.
+
+Makine düzeyinde ayarlanmışsa bu politikanın etkisi olmaz.
+
+Bu politika, Gizli modda geçerli değildir veya çalışmaz.</translation>
 <translation id="1417888712677507140">Farklı kaynaklı alt çerçevelerden tetiklenen JavaScript iletişim kutuları engellenir</translation>
 <translation id="1418387035898607074">Güvenilir kaynaklardan indirilen dosyalar için Güvenli Tarama kontrollerini atla</translation>
 <translation id="1419020637569060510">Yönetilen bir hesabın ChromeOS'te ikincil hesap olarak kullanılmasını kısıtla</translation>
@@ -6959,15 +6972,6 @@ Politika ayarlanmadan bırakılırsa başlangıçta Yeni Sekme sayfası açılı
 <translation id="5728154254076636808"><ph name="PRODUCT_NAME" /> profil verileri için dolaşım kopyalarının oluşturulmasını etkinleştir</translation>
 <translation id="5729308727912841256">Kerberos şifresi. <ph name="PASSWORD_PLACEHOLDER" /> yer tutucusunun yerine giriş şifresi gelir.</translation>
 <translation id="5730610899971390601">"Just Works" Bluetooth eşleme isteklerini reddet</translation>
-<translation id="5731898940174379509">Politika ayarlandığında <ph name="PRODUCT_NAME" /> Yeni Sekme sayfasında 10 adede kadar özel kısayol önceden yapılandırılır.
-
-Bu politika ayarlanırsa kullanıcılar varsayılan olarak bu kısayolları görür ve "Chrome'u özelleştir" panelinde "Kısayollarım", "En çok ziyaret edilen siteler" veya "Kuruluşumun kısayolları" arasında geçiş yapabilir. Boş bırakılır veya ayarlanmazsa kullanıcı, "Chrome'u özelleştir" panelinde yalnızca "Kısayollarım" veya "En çok ziyaret edilen siteler" arasında geçiş yapabilir.
-
-Kısayol URL'leri benzersiz olmalıdır.
-
-<ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" />, doğru değerine ayarlanırsa kullanıcılar kısayolun adını değiştirebilir. Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar adı düzenleyemez.
-
-<ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />, doğru değerine ayarlanırsa kullanıcılar kısayolu kaldırabilir. Politika, yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar kısayolu kaldıramaz.</translation>
 <translation id="5732972008943405952">İlk çalıştırmada, otomatik doldurma formu verilerini varsayılan tarayıcıdan içe aktar</translation>
 <translation id="5733040281451845496">Politika, Etkin değerine ayarlandığında güç yönetimi gecikmeleri ve oturum süresi sınırları oturumdaki ilk kullanıcı etkinliğine kadar çalışmaya başlamaz.
 
@@ -8713,7 +8717,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ya
 Politika, yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa bu düzen kullanılamaz. Geçerli olması için yeniden başlatma gerekir.</translation>
 <translation id="685769593149966548">YouTube için Yüksek Düzey Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="686079137349561371">Microsoft Windows 7 veya sonraki sürümler</translation>
-<translation id="6863927303509860338">Yeni Sekme Sayfası'nda kısayollar ayarlama</translation>
 <translation id="6866755486434471318">Video kodu çözmek için paylaşılan resimlerin <ph name="PEPPER_NAME" /> tarafından kullanılmasına izin ver.</translation>
 <translation id="6878757724611298427">Kullanıcıların, ilişkili olmayan cihazlarda Android uygulamalarını kullanmasına izin ver</translation>
 <translation id="6881397131210596522">Politika 2 değerine ayarlanırsa sitelerin WebPrinting API'yi kullanması otomatik olarak engellenir.

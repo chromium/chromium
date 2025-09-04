@@ -464,7 +464,7 @@
 <translation id="4697043402264950621">파일 목록이 <ph name="COLUMN_NAME" /> 기준 오름차순으로 정렬되어 있습니다.</translation>
 <translation id="469897186246626197">이 파일은 Windows 소프트웨어를 사용하는 PC용으로 설계되었습니다. 따라서 ChromeOS를 실행하는 기기와는 호환되지 않습니다. ChromeOS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
 <translation id="4706042980341760088">타밀어(타자기 키보드)</translation>
-<translation id="4711094779914110278">터키어</translation>
+<translation id="4711094779914110278">튀르키예어</translation>
 <translation id="4712283082407695269">‘<ph name="PATH" />’ 여는 중</translation>
 <translation id="4720185134442950733">모바일 데이터 네트워크</translation>
 <translation id="4725096204469550614">올해 초</translation>
@@ -779,7 +779,7 @@
 <translation id="7009985720488544166">관리자 정책에 의해 파일 <ph name="COUNT" />개의 이동이 차단되었습니다.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />(<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">설치에 실패했습니다.</translation>
-<translation id="7031639531908619281">터키어</translation>
+<translation id="7031639531908619281">튀르키예어</translation>
 <translation id="7037472120706603960">타밀어(음역)</translation>
 <translation id="7040138676081995583">연결 프로그램...</translation>
 <translation id="7048024426273850086">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 연결</translation>

@@ -723,6 +723,7 @@
 <translation id="2188375229972301266">多孔 (底部)</translation>
 <translation id="218940509700321686">逗號分隔值</translation>
 <translation id="2194856509914051091">注意事項</translation>
+<translation id="2198183835992354675">已知旅客號碼</translation>
 <translation id="2198215508485017216">發生未預期的錯誤。<ph name="BEGIN_LINK" />進一步瞭解雲端硬碟上傳功能<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">「不喜歡」按鈕，按下 Enter 鍵即可開啟意見回饋表單，詳細說明為何不喜歡這項建議</translation>
 <translation id="2202627062836089804">卡片背面</translation>
@@ -1113,6 +1114,7 @@
 <translation id="2879233115503670140">有效期限：<ph name="DATE" />。</translation>
 <translation id="2879694782644540289">使用螢幕鎖定功能填入密碼</translation>
 <translation id="2881276955470682203">要儲存卡片嗎？</translation>
+<translation id="2882280148032777436">刪除已知旅客號碼</translation>
 <translation id="2882949212241984732">觀音摺</translation>
 <translation id="2891963978019740012">在 Chrome 中使用的搜尋引擎</translation>
 <translation id="2893773853358652045">第四卷</translation>
@@ -2485,7 +2487,6 @@
 <translation id="512670116361803001">「<ph name="APP_NAME" />」的大小可能未妥善調整。請採用預設的視窗大小，以免應用程式發生問題。</translation>
 <translation id="512756860033933700">允許鎖定鍵盤</translation>
 <translation id="5127934926273826089">花卉</translation>
-<translation id="5129094684098010260">卡片只會儲存到這部裝置</translation>
 <translation id="5129534298163637277">確認對話方塊</translation>
 <translation id="5129662217315786329">波蘭文</translation>
 <translation id="5135404736266831032">管理地址...</translation>
@@ -2628,6 +2629,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">「你的時鐘時間過慢」、「你的時鐘時間過快」或 「&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;」</translation>
 <translation id="5379618281582508161">如要在所有裝置上使用這個密碼，請驗證身分</translation>
+<translation id="5380539543938195166">要更新已知旅客號碼嗎？</translation>
 <translation id="5380953781541843508">依遞增順序排列</translation>
 <translation id="5381318171304904246">如果繼續操作，系統會將你導向銀行網站。驗證後會自動返回，完成購買程序。</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />已更新「<ph name="WEBSITE_TITLE" />」分頁</translation>
@@ -3063,7 +3065,6 @@
 <translation id="6108580855199168381">憑證詳細資訊</translation>
 <translation id="6108702513636120202">你在 Chromium 中的搜尋引擎</translation>
 <translation id="6108849843016142864">爬蟲類與兩棲類</translation>
-<translation id="610911394827799129">你的 Google 帳戶仍可能保留了其他類型的瀏覽記錄 (可前往 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 查詢)。</translation>
 <translation id="611018310643025551">你的搜尋字詞、最相符的搜尋結果和相關網頁內容會傳送給 Google，也可能由人工審查員查看，以改善這項功能。</translation>
 <translation id="6116338172782435947">讀取已複製到剪貼簿的文字和圖片</translation>
 <translation id="6117833587752089929">相紙 (光滑)</translation>
@@ -3230,6 +3231,7 @@
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">收縮膜</translation>
 <translation id="6383221683286411806">你要造訪的網站可能會誘導使用者支付額外額外費用。</translation>
+<translation id="6384448607821972818">已顯示備援密碼</translation>
 <translation id="6385164437039878414">背包與萬用包</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{以及另外 1 個建議項目}other{以及另外 # 個建議項目}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
@@ -3338,7 +3340,6 @@
 <translation id="6529173248185917884">第七卷</translation>
 <translation id="6529602333819889595">重做刪除(&amp;R)</translation>
 <translation id="6532101170117367231">儲存至 Google 雲端硬碟</translation>
-<translation id="6535617236508021606">這張卡片已儲存到 Google 帳戶，你可以在各項 Google 服務中使用。</translation>
 <translation id="6536221421038631327">從 <ph name="DEVICE_TYPE" /> 移除 Passpoint 訂閱後，相關聯的網路也會一併移除。如要變更訂閱方案，請聯絡「<ph name="FRIENDLY_NAME" />」。<ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">如要查看比較表，請開啟同步功能</translation>
 <translation id="6539092367496845964">發生錯誤，請稍後再試。</translation>
@@ -4002,6 +4003,7 @@
 <translation id="7638605456503525968">序列埠</translation>
 <translation id="7646681339175747202">你剛剛使用的密碼已在資料侵害事件中外洩，Google 密碼管理工具建議你立即變更密碼。</translation>
 <translation id="7647206758853451655">列印品質</translation>
+<translation id="7648133459447652947">如要顯示游標，請切換應用程式、重新載入頁面或返回</translation>
 <translation id="7648527891719919697">你已在 <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android 設定<ph name="END_ANDROID_SETTINGS_LINK" />中開啟進階保護功能，因此這個網站將維持封鎖狀態。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">在這個裝置上儲存檔案</translation>
 <translation id="7653957176542370971">已關閉付款處理常式工作表</translation>
@@ -4041,6 +4043,7 @@
 <translation id="7690647519407127574">Oufuku Hagaki (回郵明信片)</translation>
 <translation id="7693583928066320343">收到的頁面順序</translation>
 <translation id="769424100851389104">立即開始更新</translation>
+<translation id="7696107855583699585">編輯已知旅客號碼</translation>
 <translation id="7697837508203274589">實況運動賽事</translation>
 <translation id="7698864304447945242">更新「Google Play 服務 - AR 適用」？</translation>
 <translation id="7701040980221191251">無</translation>
@@ -4329,6 +4332,7 @@
 <translation id="822925450938886901">如需其他資訊與可能適用的政策，請使用瀏覽器開啟 chrome://management。</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 公釐</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (車輛識別碼)</translation>
 <translation id="8232343881378637145">平台溫度</translation>
 <translation id="8233773197406738106">檔案準備中</translation>
 <translation id="823490921909113114">如要啟用這些設定並使用 Google 帳戶中的付款資訊，請前往自動填入服務設定。</translation>
@@ -4653,6 +4657,7 @@
 <translation id="8772387130037509473">瑜珈與彼拉提斯</translation>
 <translation id="877348612833018844">{0,plural, =1{要移動機密檔案嗎？}other{要移動機密檔案嗎？}}</translation>
 <translation id="8775347646940100151">紙 (印頭)</translation>
+<translation id="8776941011841875705">要儲存已知旅客號碼嗎？</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">「翻譯網頁」按鈕，啟動後即可使用 Google 翻譯來翻譯這個網頁</translation>
 <translation id="8785658048882205566">摩托車</translation>
@@ -4837,6 +4842,7 @@
 <translation id="9107199998619088551">你的個人資料由「<ph name="MANAGER" />」管理</translation>
 <translation id="9107467864910557787">你的瀏覽器是由 <ph name="MANAGER" /> 管理</translation>
 <translation id="91108059142052966">當畫面上出現機密內容，系統管理員政策就會停用與「<ph name="APPLICATION_TITLE" />」分享螢幕畫面的功能</translation>
+<translation id="9114101423898634479">新增已知旅客號碼</translation>
 <translation id="9114524666733003316">正在驗證信用卡...</translation>
 <translation id="9114581008513152754">這個瀏覽器未受到任何公司或其他機構管理。這部裝置上的活動可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">進一步瞭解 Chrome 中的廣告</translation>

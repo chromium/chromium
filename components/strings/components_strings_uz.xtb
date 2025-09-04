@@ -723,6 +723,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2188375229972301266">Quyidan bir nechta teshik ochish</translation>
 <translation id="218940509700321686">Vergul bilan ajratilgan qiymatlar (CSV)</translation>
 <translation id="2194856509914051091">Bularni hisobga olish kerak</translation>
+<translation id="2198183835992354675">Tanish sayohatchi raqami (KTN)</translation>
 <translation id="2198215508485017216">Nimadir xato ketdi. <ph name="BEGIN_LINK" />Drive xizmatiga fayl yuklash haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Salbiy baho tugmasi, bu taklif nega yoqmagani haqida batafsil fikr-mulohaza yuborish shaklini ochish uchun Enter tugmasini bosing</translation>
 <translation id="2202627062836089804">kartangiz orqasidagi</translation>
@@ -1113,6 +1114,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2879233115503670140">Muddati: <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">parollarni kiritish uchun ekran qulfidan foydalanmoqchi</translation>
 <translation id="2881276955470682203">Karta eslab qolinsinmi?</translation>
+<translation id="2882280148032777436">Tanish sayohatchi raqamini (KTN) oʻchirish</translation>
 <translation id="2882949212241984732">Darvozasimon shaklida taxlash</translation>
 <translation id="2891963978019740012">Chrome brauzerida qidiruv vositasi</translation>
 <translation id="2893773853358652045">Toʻrtinchi oʻram</translation>
@@ -2482,7 +2484,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="512670116361803001"><ph name="APP_NAME" /> oʻlchami xato oʻzgarishi mumkin. Ilova bexato ishlashi uchun oyna oʻlchami andozalaridan foydalaning.</translation>
 <translation id="512756860033933700">Klaviaturani qulflash taqiqlangan</translation>
 <translation id="5127934926273826089">Gullar</translation>
-<translation id="5129094684098010260">Karta faqat qurilmaga saqlandi</translation>
 <translation id="5129534298163637277">Tasdiqlash oynasi</translation>
 <translation id="5129662217315786329">Polyak tili</translation>
 <translation id="5135404736266831032">Manzillar...</translation>
@@ -2625,6 +2626,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">“Soatingiz orqada” yoki “Soatingiz oldinda” yoki “&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Bu paroldan barcha qurilmalarda foydalanish uchun shaxsingizni tasdiqlang</translation>
+<translation id="5380539543938195166">Tanish sayohatchi raqami (KTN) yangilansinmi?</translation>
 <translation id="5380953781541843508">oshish tartibida</translation>
 <translation id="5381318171304904246">Davom etsangiz, bank saytiga oʻtasiz. Tasdiqdan keyin xaridni yakunlash sahifasiga avtomatik qaytasiz.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> varaqni (“<ph name="WEBSITE_TITLE" />”) yangiladi</translation>
@@ -3060,7 +3062,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6108580855199168381">Sertifikat tafsilotlari</translation>
 <translation id="6108702513636120202">Chromium asosiy qidiruv tizimi</translation>
 <translation id="6108849843016142864">Sudralib yuruvchilar va amfibiyalar</translation>
-<translation id="610911394827799129">Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali ko‘rishingiz mumkin.</translation>
 <translation id="611018310643025551">Soʻrovlar, eng mos natijalar hamda topilgan sahifalardagi kontent Googlega yuboriladi. Xodimlarimiz bu funksiyani yaxshilash maqsadida mazkur maʼlumotlarni koʻrishi mumkin.</translation>
 <translation id="6116338172782435947">Klipbordga nusxalangan matn va rasmlarni ko‘rish</translation>
 <translation id="6117833587752089929">Fotosurat (satin)</translation>
@@ -3226,6 +3227,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Issiqlikka chidamli plyonka</translation>
 <translation id="6383221683286411806">Trafik uchun haq olinishi mumkin.</translation>
+<translation id="6384448607821972818">Zaxiraviy parol chiqarildi</translation>
 <translation id="6385164437039878414">Ryukzak va yordamchi sumkalar</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{yana 1 ta tavsiya}other{yana # ta tavsiya}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
@@ -3334,7 +3336,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6529173248185917884">Yettinchi oʻram</translation>
 <translation id="6529602333819889595">&amp;O‘chirishni qaytarish</translation>
 <translation id="6532101170117367231">Google Drive omboriga saqlash</translation>
-<translation id="6535617236508021606">Bu karta Google hisobingizga saqlangan va undan Google xizmatlarida foydalanish mumkin.</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> qurilmasidan Passpoint ilovasi olib tashlansa, biriktirilgan kanallar ham olib tashlanadi. Obuna tarif rejasiga oʻzgartirish kiritish uchun “<ph name="FRIENDLY_NAME" />” bilan bogʻlaning. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Taqqoslash jadvallarini koʻrish uchun sinxronizatsiyani yoqing</translation>
 <translation id="6539092367496845964">Xatolik yuz berdi. Keyinroq qaytadan urining.</translation>
@@ -3997,6 +3998,7 @@ Batafsil axborot:
 <translation id="7638605456503525968">Ketma-ket portlar</translation>
 <translation id="7646681339175747202">Hozirgina siz foydalangan parol oshkor qilingan. Google Parollar menejeri bu parolni hoziroq almashtirishni tavsiya etadi.</translation>
 <translation id="7647206758853451655">Bosma sifati</translation>
+<translation id="7648133459447652947">Kursorni chiqarish uchun ilovalarni almashtiring, sahifani qayta yuklang yoki orqaga qayting</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android sozlamalarida<ph name="END_ANDROID_SETTINGS_LINK" /> Google Kuchaytirilgan himoya yoqilgani uchun bu sayt bloklangan holatda qoladi. <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Fayllarni bu qurilmada saqlash</translation>
 <translation id="7653957176542370971">Toʻlovlarni qayta ishlash vositasi yopildi</translation>
@@ -4036,6 +4038,7 @@ Batafsil axborot:
 <translation id="7690647519407127574">Oufuku Hagaki (Ochiq xat)</translation>
 <translation id="7693583928066320343">Sahifalar tartibi olindi</translation>
 <translation id="769424100851389104">Yangilanishni boshlash</translation>
+<translation id="7696107855583699585">Tanish sayohatchi raqamini (KTN) tahrirlash</translation>
 <translation id="7697837508203274589">Jonli sport tadbirlari</translation>
 <translation id="7698864304447945242">AR uchun Google Play xizmatlari yangilansinmi?</translation>
 <translation id="7701040980221191251">Hech qanday</translation>
@@ -4324,6 +4327,7 @@ Batafsil axborot:
 <translation id="822925450938886901">Batafsil axborot va amal qilishi mumkin qoidalar bilan tanishish uchun brauzerda chrome://management sahifasini oching.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (avtomobil identifikatsiya raqami)</translation>
 <translation id="8232343881378637145">Platforma harorati</translation>
 <translation id="8233773197406738106">Fayl tayyorlanmoqda</translation>
 <translation id="823490921909113114">Bu sozlamalarni yoqib, Google hisobingizdagi toʻlov axborotidan foydalanish uchun avtomatik kiritish xizmati sozlamalariga kiring.</translation>
@@ -4648,6 +4652,7 @@ Batafsil axborot:
 <translation id="8772387130037509473">Yoga va Pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Maxfiy fayl koʻchirilsinmi?}other{Maxfiy fayllar koʻchirilsinmi?}}</translation>
 <translation id="8775347646940100151">Qogʻoz (blanka)</translation>
+<translation id="8776941011841875705">Tanish sayohatchi raqami (KTN) saqlansinmi?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Sahifani tarjima qilish tugmasi, bu sahifani Google Tarjima orqali tarjima qilish uchun faollashtiring</translation>
 <translation id="8785658048882205566">Mototsikllar</translation>
@@ -4832,6 +4837,7 @@ Batafsil axborot:
 <translation id="9107199998619088551">Profilingiz <ph name="MANAGER" /> boshqaruvida</translation>
 <translation id="9107467864910557787">Brauzeringiz <ph name="MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="91108059142052966">Maxfiy axborotlar koʻrinib turganda administrator ekran namoyishini <ph name="APPLICATION_TITLE" /> uchun taqiqlagan</translation>
+<translation id="9114101423898634479">Tanish sayohatchi raqamini (KTN) kiritish</translation>
 <translation id="9114524666733003316">Karta tasdiqlanmoqda...</translation>
 <translation id="9114581008513152754">Bu brauzer kompaniya yoki tashkilot boshqaruvida emas. Bu qurilmadagi amallar Chromedan tashqarida boshqarilishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome ichidagi reklamalar haqida batafsil</translation>

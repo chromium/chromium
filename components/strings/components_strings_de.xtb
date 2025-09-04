@@ -724,6 +724,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2188375229972301266">Mehrfache Lochung unten</translation>
 <translation id="218940509700321686">CSV</translation>
 <translation id="2194856509914051091">Wichtige Punkte</translation>
+<translation id="2198183835992354675">Known Traveler Number</translation>
 <translation id="2198215508485017216">Ein unerwarteter Fehler ist aufgetreten. <ph name="BEGIN_LINK" />Weitere Informationen zu Drive-Uploads<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Schaltfläche „Mag ich nicht“ – Eingabetaste drücken, um ein Formular zu öffnen, über das du detailliertes Feedback dazu geben kannst, warum dir dieser Vorschlag nicht gefällt</translation>
 <translation id="2202627062836089804">Rückseite deiner Karte</translation>
@@ -1114,6 +1115,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2879233115503670140">Gültig bis <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">die Displaysperre zum Ausfüllen von Passwörtern zu verwenden</translation>
 <translation id="2881276955470682203">Karte speichern?</translation>
+<translation id="2882280148032777436">Known Traveler Number löschen</translation>
 <translation id="2882949212241984732">Doppelte Fensterfaltung</translation>
 <translation id="2891963978019740012">Deine Suchmaschine in Chrome</translation>
 <translation id="2893773853358652045">Vierte Rolle</translation>
@@ -2485,7 +2487,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="512670116361803001">Die Größe von <ph name="APP_NAME" /> kann eventuell nicht richtig angepasst werden. Verwende voreingestellte Fenstergrößen, damit die App ordnungsgemäß funktioniert.</translation>
 <translation id="512756860033933700">Tastatursperre zulässig</translation>
 <translation id="5127934926273826089">Blumen</translation>
-<translation id="5129094684098010260">Karte nur auf Gerät gespeichert</translation>
 <translation id="5129534298163637277">Bestätigungsdialogfeld</translation>
 <translation id="5129662217315786329">Polnisch</translation>
 <translation id="5135404736266831032">Adressen verwalten…</translation>
@@ -2628,6 +2629,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Deine Uhr geht nach", "Deine Uhr geht vor" oder "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Wenn du dieses Passwort auf allen deinen Geräten verwenden möchtest, bestätige deine Identität</translation>
+<translation id="5380539543938195166">Known Traveler Number aktualisieren?</translation>
 <translation id="5380953781541843508">in aufsteigender Reihenfolge</translation>
 <translation id="5381318171304904246">Wenn du fortfährst, wirst du auf die Website deiner Bank weitergeleitet. Nach der Bestätigung kehrst du automatisch zu dieser Seite zurück, um den Kauf abzuschließen.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> hat den Tab „<ph name="WEBSITE_TITLE" />“ aktualisiert</translation>
@@ -3063,7 +3065,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6108580855199168381">Zertifikatdetails</translation>
 <translation id="6108702513636120202">Deine Suchmaschine in Chromium</translation>
 <translation id="6108849843016142864">Reptilien und Amphibien</translation>
-<translation id="610911394827799129">Unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert</translation>
 <translation id="611018310643025551">Deine Suchanfragen, die besten Ergebnisse und die zugehörigen Seiteninhalte werden an Google gesendet und möglicherweise von Prüfern gelesen, um diese Funktion zu verbessern.</translation>
 <translation id="6116338172782435947">Texte und Bilder aus der Zwischenablage abrufen</translation>
 <translation id="6117833587752089929">Foto (Satin)</translation>
@@ -3230,6 +3231,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Schrumpffolie</translation>
 <translation id="6383221683286411806">Warnung vor möglichen Kosten.</translation>
+<translation id="6384448607821972818">Wiederherstellungspasswort wird angezeigt</translation>
 <translation id="6385164437039878414">Rucksäcke und Universaltaschen</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 weiterer Vorschlag}other{# weitere Vorschläge}}</translation>
 <translation id="6386565501269869892">Umschlag You 4</translation>
@@ -3338,7 +3340,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6529173248185917884">Siebte Rolle</translation>
 <translation id="6529602333819889595">&amp;Löschen wiederholen</translation>
 <translation id="6532101170117367231">In Google Drive speichern</translation>
-<translation id="6535617236508021606">Diese Karte wurde in deinem Google-Konto gespeichert, damit du sie auch in anderen Google-Diensten verwenden kannst.</translation>
 <translation id="6536221421038631327">Wenn du ein Passpoint-Abo von deinem <ph name="DEVICE_TYPE" /> entfernst, werden auch die zugehörigen Netzwerke entfernt. Wende dich an „<ph name="FRIENDLY_NAME" />“, um Änderungen an deinem Abo vorzunehmen. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Wenn du Vergleichstabellen sehen möchtest, aktiviere die Synchronisierung</translation>
 <translation id="6539092367496845964">Ein Fehler ist aufgetreten. Versuche es später noch einmal.</translation>
@@ -4002,6 +4003,7 @@ Weitere Details:
 <translation id="7638605456503525968">Serielle Schnittstellen</translation>
 <translation id="7646681339175747202">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="7647206758853451655">Druckqualität</translation>
+<translation id="7648133459447652947">Zum Einblenden des Cursors wechsle zu einer anderen App, lade die Seite neu oder gehe zurück</translation>
 <translation id="7648527891719919697">Diese Website bleibt gesperrt, weil du das erweiterte Sicherheitsprogramm in den <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android-Einstellungen<ph name="END_ANDROID_SETTINGS_LINK" /> aktiviert hast. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Dateien auf diesem Gerät speichern</translation>
 <translation id="7653957176542370971">Das Dokument zur Zahlungsabwicklung ist geschlossen</translation>
@@ -4041,6 +4043,7 @@ Weitere Details:
 <translation id="7690647519407127574">Oufuku Hagaki (Postkarte)</translation>
 <translation id="7693583928066320343">Empfangene Seitenreihenfolge</translation>
 <translation id="769424100851389104">Update jetzt starten</translation>
+<translation id="7696107855583699585">Known Traveler Number bearbeiten</translation>
 <translation id="7697837508203274589">Live-Sportereignisse</translation>
 <translation id="7698864304447945242">Google Play-Dienste für AR aktualisieren?</translation>
 <translation id="7701040980221191251">Keine</translation>
@@ -4329,6 +4332,7 @@ Weitere Details:
 <translation id="822925450938886901">Für weitere Informationen und Richtlinien, die möglicherweise anwendbar sind, rufe in deinem Browser „chrome://management“ auf.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> mm × <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">FIN (Fahrzeugidentifikationsnummer)</translation>
 <translation id="8232343881378637145">Plattformtemperatur</translation>
 <translation id="8233773197406738106">Datei wird vorbereitet</translation>
 <translation id="823490921909113114">Wenn du diese Einstellungen aktivieren und Zahlungsinformationen aus deinem Google-Konto verwenden möchtest, rufe die Einstellungen für Autofill-Services auf.</translation>
@@ -4654,6 +4658,7 @@ Weitere Details:
 <translation id="8772387130037509473">Yoga und Pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Vertrauliche Datei verschieben?}other{Vertrauliche Dateien verschieben?}}</translation>
 <translation id="8775347646940100151">Papier (Briefbogen)</translation>
+<translation id="8776941011841875705">Known Traveler Number speichern?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Schaltfläche „Seite übersetzen“ – aktivieren, um diese Seite mit Google Übersetzer übersetzen zu lassen</translation>
 <translation id="8785658048882205566">Motorräder</translation>
@@ -4839,6 +4844,7 @@ Weitere Details:
 <translation id="9107199998619088551">Dein Profil wird von <ph name="MANAGER" /> verwaltet</translation>
 <translation id="9107467864910557787">Der Browser wird von <ph name="MANAGER" /> verwaltet</translation>
 <translation id="91108059142052966">Die Administratorrichtlinie blockiert die Bildschirmfreigabe mit <ph name="APPLICATION_TITLE" />, wenn vertrauliche Inhalte sichtbar sind</translation>
+<translation id="9114101423898634479">Known Traveler Number hinzufügen</translation>
 <translation id="9114524666733003316">Karte wird bestätigt…</translation>
 <translation id="9114581008513152754">Dieser Browser wird nicht von einem Unternehmen oder einer anderen Organisation verwaltet. Aktivitäten auf diesem Gerät werden eventuell außerhalb von Chrome verwaltet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Weitere Informationen zu Werbung in Chrome</translation>

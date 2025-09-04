@@ -241,7 +241,7 @@
 <translation id="1902277226107477495">地址检测已关闭。您可以在“设置”中重新开启此功能。</translation>
 <translation id="1904580727789512086">系统会将您访问的网址保存到您的 Google 账号中</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
-<translation id="1925706052394657380">在 iOS 中打开<ph name="BEGIN_BOLD" />默认应用<ph name="END_BOLD" />设置</translation>
+<translation id="1925706052394657380">在 iOS 中打开<ph name="BEGIN_BOLD" />默认 App<ph name="END_BOLD" /> 设置</translation>
 <translation id="1941314575388338491">点按两次即可复制。</translation>
 <translation id="1943478190258551035">菜单 → 设置</translation>
 <translation id="1952728750904661634">登录受管理的账号</translation>
@@ -251,7 +251,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" />与您分享了登录 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="1962969542251276847">锁定屏幕</translation>
 <translation id="1963976881984600709">标准保护</translation>
-<translation id="1964507856799750384">点按<ph name="BEGIN_BOLD" />浏览器应用<ph name="END_BOLD" /></translation>
+<translation id="1964507856799750384">点按<ph name="BEGIN_BOLD" />浏览器 App<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">网站数据</translation>
 <translation id="1967461193809857427">{count,plural, =1{要继续使用之前在 Android 设备上打开的标签页吗？}other{要继续使用之前在 Android 设备上打开的标签页吗？}}</translation>
 <translation id="1972325230031091483">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
@@ -696,7 +696,6 @@
 <translation id="3789841737615482174">安装</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">主动询问是否翻译此网站</translation>
-<translation id="3808311849069021992">显示搜索引擎详细信息</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="381219490185664296">要取消标签页分组吗？</translation>
 <translation id="3812308602011798782">评价</translation>
@@ -1109,7 +1108,6 @@
 <translation id="537853552771686272">管理您感兴趣的主题和网站</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} 个已关闭}other{{count} 个已关闭}}</translation>
 <translation id="5394975111793637642">隐藏“为您推荐的商品评价”卡片</translation>
-<translation id="5395707839134961196">隐藏搜索引擎详细信息</translation>
 <translation id="5414763847370083940">当相应商品在所跟踪的任何网站上降价时，您都会收到提醒。</translation>
 <translation id="5415289094036440596">无法分享通行密钥</translation>
 <translation id="5416455648658732408">移至标签页分组</translation>
@@ -1347,7 +1345,6 @@
 <translation id="6232329973559504466">无痕搜索</translation>
 <translation id="6234310016144827337">请检查网络连接，然后重试</translation>
 <translation id="6236952928980352967">恢复警告</translation>
-<translation id="623755660902014047">朗读模式</translation>
 <translation id="6241132809279377987">在 iPhone 上使用 Google 应用，解锁更多精彩功能</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
 <translation id="6251835855431997163">自动填充<ph name="VALUE" /></translation>

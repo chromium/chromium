@@ -4,7 +4,7 @@
 <translation id="1173075331199604451">Menu Voce</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1246424317317450637">Grassetto</translation>
-<translation id="1357114957607379632">Generazione della riproduzione AI in corso…</translation>
+<translation id="1357114957607379632">Generazione della riproduzione AI…</translation>
 <translation id="1483137792530497944">Fiume</translation>
 <translation id="1586836055630070874">Riposante</translation>
 <translation id="1639239467298939599">Caricamento</translation>
@@ -15,11 +15,11 @@
 <translation id="1984328900355667246">Riproduzione non disponibile</translation>
 <translation id="2019727681730021602">Riproduzione standard</translation>
 <translation id="2224347680315897176">Seria</translation>
-<translation id="2575502321843437554">Coinvolgimento insufficiente</translation>
+<translation id="2575502321843437554">Non è abbastanza coinvolgente</translation>
 <translation id="2611765907167846862">Serena</translation>
 <translation id="3023502830214299618">Purtroppo al momento la riproduzione di questa pagina non è disponibile. Riprova più tardi.</translation>
 <translation id="3493899379487634969">Qual è stato il problema?</translation>
-<translation id="3730775656877876887">Generazione della riproduzione AI in corso…</translation>
+<translation id="3730775656877876887">Generazione della riproduzione AI…</translation>
 <translation id="3778044272390020426">Menu opzioni di feedback negativo</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3936324432406465283">Velocità di riproduzione</translation>
@@ -57,6 +57,7 @@
 <translation id="7221920857098237570">Dolce</translation>
 <translation id="7237590978482584900">Vivace</translation>
 <translation id="7282547042039404307">Fluido</translation>
+<translation id="7514257690823355037">Vai al successivo</translation>
 <translation id="8004767876552422827">Campo</translation>
 <translation id="8136852699834914183">Riproduzione non disponibile per questa pagina.</translation>
 <translation id="8198036737896977997">Aria</translation>
@@ -68,5 +69,6 @@
 <translation id="8756370108715456837">Contiene informazioni errate</translation>
 <translation id="8953618380150219653">Player "Ascolta questa pagina" aperto a schermo intero.</translation>
 <translation id="9087782179025630211">Cursore. Tempo trascorso: <ph name="ELAPSED" /> su <ph name="TOTAL" />.</translation>
+<translation id="9193673272519126093">Vai al precedente</translation>
 <translation id="978117257931832348">Tonalità bassa</translation>
 </translationbundle>

@@ -696,7 +696,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3789841737615482174">Setja upp</translation>
 <translation id="380329542618494757">Nafn</translation>
 <translation id="3803696231112616155">Bjóðast til að þýða þetta vefsvæði</translation>
-<translation id="3808311849069021992">Sýna upplýsingar um leitarvéla</translation>
 <translation id="3810973564298564668">Stjórna</translation>
 <translation id="381219490185664296">Fjarlægja flipa úr hóp?</translation>
 <translation id="3812308602011798782">Umsagnir</translation>
@@ -1109,7 +1108,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="537853552771686272">Stjórnaðu umfjöllunarefnunum og vefsvæðunum sem þú hefur áhuga á</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} lokað}one{{count} lokað}other{{count} lokað}}</translation>
 <translation id="5394975111793637642">Fela spjaldið „Umsagnir um vörur fyrir þig“</translation>
-<translation id="5395707839134961196">Fela upplýsingar um leitarvél</translation>
 <translation id="5414763847370083940">Þú færð tilkynningu ef verð lækkar á einhverju vefsvæði.</translation>
 <translation id="5415289094036440596">Ekki er hægt að deila aðgangslyklum</translation>
 <translation id="5416455648658732408">Flyta yfir í flipahóp</translation>
@@ -1347,7 +1345,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6232329973559504466">Leit í huliðsstillingu</translation>
 <translation id="6234310016144827337">Athugaðu nettenginguna og reyndu aftur</translation>
 <translation id="6236952928980352967">Endurheimta viðvörun</translation>
-<translation id="623755660902014047">Lesstilling</translation>
 <translation id="6241132809279377987">Fáðu fleiri eiginleika fyrir iPhone með Google-forritum</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
 <translation id="6251835855431997163">Sjálfvirk útfylling fyrir <ph name="VALUE" /></translation>

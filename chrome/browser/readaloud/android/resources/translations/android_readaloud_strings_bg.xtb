@@ -57,6 +57,7 @@
 <translation id="7221920857098237570">Нежен</translation>
 <translation id="7237590978482584900">Лек</translation>
 <translation id="7282547042039404307">Плавно</translation>
+<translation id="7514257690823355037">Преминаване към следващата</translation>
 <translation id="8004767876552422827">Поле</translation>
 <translation id="8136852699834914183">Възпроизвеждането не е възможно за тази страница.</translation>
 <translation id="8198036737896977997">Въздух</translation>
@@ -68,5 +69,6 @@
 <translation id="8756370108715456837">Неправилни факти</translation>
 <translation id="8953618380150219653">Плейърът „Слушане на тази страница“ е отворен на пълната височина.</translation>
 <translation id="9087782179025630211">Контрола плъзгач. Изминало време: <ph name="ELAPSED" /> от <ph name="TOTAL" />.</translation>
+<translation id="9193673272519126093">Придвижване към предишната</translation>
 <translation id="978117257931832348">Нисък</translation>
 </translationbundle>

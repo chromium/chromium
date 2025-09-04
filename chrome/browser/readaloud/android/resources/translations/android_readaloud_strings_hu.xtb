@@ -57,6 +57,7 @@
 <translation id="7221920857098237570">Nyájas</translation>
 <translation id="7237590978482584900">Fesztelen</translation>
 <translation id="7282547042039404307">Folyamatos</translation>
+<translation id="7514257690823355037">Ugrás a következőre</translation>
 <translation id="8004767876552422827">Mező</translation>
 <translation id="8136852699834914183">A lejátszás nem áll rendelkezésre ehhez az oldalhoz.</translation>
 <translation id="8198036737896977997">Levegő</translation>
@@ -68,5 +69,6 @@
 <translation id="8756370108715456837">Tényszerűen nem pontos</translation>
 <translation id="8953618380150219653">Az „Oldal meghallgatása” lejátszó teljes magasságban van megnyitva.</translation>
 <translation id="9087782179025630211">Keresősáv. <ph name="TOTAL" />/<ph name="ELAPSED" /> telt el.</translation>
+<translation id="9193673272519126093">Ugrás az előzőre</translation>
 <translation id="978117257931832348">Mély hangmagasság</translation>
 </translationbundle>

@@ -332,6 +332,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2083190527011054446">Bonne nuit <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Ouvrir le sélecteur d'émoji</translation>
 <translation id="2088116547584365419">jeux</translation>
+<translation id="2093792000875799555">Actualités Steam pour Chromebook</translation>
 <translation id="209965399369889474">Aucune connexion réseau</translation>
 <translation id="2107581415810719320">Autre bouton <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Votre câble USB-C ne prend pas en charge la norme Thunderbolt. La performance de l'appareil peut être limitée.</translation>
@@ -1588,6 +1589,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="612734058257491180">L'Assistant Google n'est pas accessible dans une session d'invité.</translation>
 <translation id="6127395413317891856">Vous êtes hors ligne. Vérifiez votre connexion, puis réessayez.</translation>
 <translation id="6129953537138746214">Espace</translation>
+<translation id="6136872094979134163">Impossible de récupérer les actualités Steam pour Chromebook.</translation>
 <translation id="6137566720514957455">Ouvrir la boîte de dialogue de retrait pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Sur quoi aimeriez-vous vous concentrer?</translation>
 <translation id="6141988275892716286">Confirmer le téléchargement</translation>

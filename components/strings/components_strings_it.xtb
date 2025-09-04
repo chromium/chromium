@@ -724,6 +724,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2188375229972301266">Perforatura multipla in basso</translation>
 <translation id="218940509700321686">Valori separati da virgola</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
+<translation id="2198183835992354675">Known Traveler Number</translation>
 <translation id="2198215508485017216">Si è verificato un problema. <ph name="BEGIN_LINK" />Scopri di più sui caricamenti di Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Pulsante Non mi piace, premi Invio per aprire un modulo per inviare un feedback dettagliato sul motivo per cui non ti piace questo suggerimento</translation>
 <translation id="2202627062836089804">parte posteriore della carta</translation>
@@ -1114,6 +1115,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2879233115503670140">Sconto valido fino al giorno <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">usare il blocco schermo per inserire le password</translation>
 <translation id="2881276955470682203">Salvare la carta?</translation>
+<translation id="2882280148032777436">Elimina Known Traveler Number</translation>
 <translation id="2882949212241984732">Piegatura a doppia finestra</translation>
 <translation id="2891963978019740012">Il tuo motore di ricerca in Chrome</translation>
 <translation id="2893773853358652045">Quarto rullo</translation>
@@ -1357,7 +1359,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3268451620468152448">Schede aperte</translation>
 <translation id="3270041629388773465">Puoi pagare più velocemente se salvi i CVC</translation>
 <translation id="3270847123878663523">&amp;Annulla ridisposizione</translation>
-<translation id="3271648667212143903">Il sito <ph name="ORIGIN" /> desidera collegarsi</translation>
+<translation id="3271648667212143903"><ph name="ORIGIN" /> desidera collegarsi</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Inserisci il codice di verifica di <ph name="NUMBER_OF_DIGITS" /> cifre</translation>
 <translation id="3272643614306383237">Meno di 1 MB. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
@@ -2484,7 +2486,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="512670116361803001">Il ridimensionamento dell'app <ph name="APP_NAME" /> potrebbe non avvenire correttamente. Utilizza le dimensioni di finestra preimpostate per evitare problemi relativi all'app.</translation>
 <translation id="512756860033933700">Blocco della tastiera consentito</translation>
 <translation id="5127934926273826089">Fiori</translation>
-<translation id="5129094684098010260">Carta salvata solo sul dispositivo</translation>
 <translation id="5129534298163637277">Finestra di dialogo di conferma</translation>
 <translation id="5129662217315786329">Polacco</translation>
 <translation id="5135404736266831032">Gestisci indirizzi…</translation>
@@ -2627,6 +2628,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"L'orologio è indietro", "L'orologio è avanti" oppure "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Per avere questa password su tutti i tuoi dispositivi, verifica la tua identità</translation>
+<translation id="5380539543938195166">Aggiornare Known Traveler Number?</translation>
 <translation id="5380953781541843508">in ordine crescente</translation>
 <translation id="5381318171304904246">Se continui, si aprirà il sito web della tua banca. Dopo la verifica, ti reindirizzeremo automaticamente alla pagina per completare l'acquisto.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ha aggiornato la scheda "<ph name="WEBSITE_TITLE" />"</translation>
@@ -3062,7 +3064,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6108580855199168381">Dettagli certificato</translation>
 <translation id="6108702513636120202">Il tuo motore di ricerca in Chromium</translation>
 <translation id="6108849843016142864">Rettili e anfibi</translation>
-<translation id="610911394827799129">Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Le tue ricerche, i risultati più pertinenti e i contenuti delle pagine corrispondenti vengono inviati a Google e potrebbero essere esaminati da revisori per migliorare questa funzionalità.</translation>
 <translation id="6116338172782435947">Leggere testi e immagini copiati negli appunti</translation>
 <translation id="6117833587752089929">Foto (satinata)</translation>
@@ -3228,6 +3229,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Pellicola termoretraibile</translation>
 <translation id="6383221683286411806">Potrebbe essere applicato un addebito.</translation>
+<translation id="6384448607821972818">Password di recupero mostrata</translation>
 <translation id="6385164437039878414">Zaini e borse portaoggetti</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 altro suggerimento}other{# altri suggerimenti}}</translation>
 <translation id="6386565501269869892">Busta You 4</translation>
@@ -3336,7 +3338,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6529173248185917884">Settimo rullo</translation>
 <translation id="6529602333819889595">&amp;Ripeti eliminazione</translation>
 <translation id="6532101170117367231">Salva in Google Drive</translation>
-<translation id="6535617236508021606">La carta è salvata nel tuo Account Google così potrai usarla sui servizi Google.</translation>
 <translation id="6536221421038631327">Se rimuovi un abbonamento Passpoint da <ph name="DEVICE_TYPE" />, verranno rimosse le reti associate. Contatta "<ph name="FRIENDLY_NAME" />" per apportare modifiche al piano di abbonamento. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Per visualizzare le tabelle di confronto, attiva la sincronizzazione</translation>
 <translation id="6539092367496845964">Si è verificato un problema. Riprova più tardi.</translation>
@@ -4000,6 +4001,7 @@ Ulteriori dettagli:
 <translation id="7638605456503525968">Porte seriali</translation>
 <translation id="7646681339175747202">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Gestore delle password di Google consiglia di cambiarla subito.</translation>
 <translation id="7647206758853451655">Qualità di stampa</translation>
+<translation id="7648133459447652947">Per mostrare il cursore, cambia app, ricarica la pagina o torna indietro</translation>
 <translation id="7648527891719919697">Questo sito rimarrà bloccato perché hai attivato la protezione avanzata nelle <ph name="BEGIN_ANDROID_SETTINGS_LINK" />impostazioni di Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più su questo avviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Memorizzare file sul dispositivo</translation>
 <translation id="7653957176542370971">Il foglio per la gestione dei pagamenti è chiuso</translation>
@@ -4039,6 +4041,7 @@ Ulteriori dettagli:
 <translation id="7690647519407127574">Oufuku Hagaki (cartolina)</translation>
 <translation id="7693583928066320343">Ordine pagine ricevuto</translation>
 <translation id="769424100851389104">Avvia subito l'aggiornamento</translation>
+<translation id="7696107855583699585">Modifica Known Traveler Number</translation>
 <translation id="7697837508203274589">Eventi sportivi in diretta</translation>
 <translation id="7698864304447945242">Vuoi aggiornare Google Play Services per AR?</translation>
 <translation id="7701040980221191251">Nessun dato</translation>
@@ -4327,6 +4330,7 @@ Ulteriori dettagli:
 <translation id="822925450938886901">Per scoprire ulteriori informazioni e policy eventualmente applicabili, apri chrome://management nel browser.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">Numero telaio</translation>
 <translation id="8232343881378637145">Temperatura della piattaforma</translation>
 <translation id="8233773197406738106">Preparazione file in corso…</translation>
 <translation id="823490921909113114">Per attivare queste impostazioni e utilizzare i dati di pagamento del tuo Account Google, visita le impostazioni dei servizi di compilazione automatica.</translation>
@@ -4651,6 +4655,7 @@ Ulteriori dettagli:
 <translation id="8772387130037509473">Yoga e pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Spostare il file riservato?}other{Spostare i file riservati?}}</translation>
 <translation id="8775347646940100151">Carta (intestata)</translation>
+<translation id="8776941011841875705">Salvare Known Traveler Number?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Pulsante Traduci pagina, attiva per tradurre questa pagina con Google Traduttore</translation>
 <translation id="8785658048882205566">Motocicli</translation>
@@ -4835,6 +4840,7 @@ Ulteriori dettagli:
 <translation id="9107199998619088551"><ph name="MANAGER" /> gestisce il tuo profilo</translation>
 <translation id="9107467864910557787">Il browser in uso è gestito da <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">La policy dell'amministratore disattiva la condivisione dello schermo con <ph name="APPLICATION_TITLE" /> quando sono visibili contenuti riservati</translation>
+<translation id="9114101423898634479">Aggiungi Known Traveler Number</translation>
 <translation id="9114524666733003316">Conferma della carta...</translation>
 <translation id="9114581008513152754">Questo browser non è gestito da un'azienda o da un'altra organizzazione. L'attività svolta su questo dispositivo potrebbe essere gestita al di fuori di Chrome. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Scopri di più sugli annunci in Chrome</translation>

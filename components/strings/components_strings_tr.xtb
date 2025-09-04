@@ -724,6 +724,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2188375229972301266">Altta çoklu zımba</translation>
 <translation id="218940509700321686">Virgülle Ayrılmış Değerler</translation>
 <translation id="2194856509914051091">Dikkate alınması gereken noktalar</translation>
+<translation id="2198183835992354675">Known Traveler Number</translation>
 <translation id="2198215508485017216">Beklenmeyen bir hata oluştu. <ph name="BEGIN_LINK" />Drive'a yükleme hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="2200678913752027654">Beğenmeme düğmesi, bu öneriyi neden beğenmediğinize dair ayrıntılı geri bildirim gönderebileceğiniz formu açmak için Enter tuşuna basın</translation>
 <translation id="2202627062836089804">kartınızın arkasında</translation>
@@ -1114,6 +1115,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2879233115503670140"><ph name="DATE" /> tarihine kadar geçerli.</translation>
 <translation id="2879694782644540289">şifreleri doldurmak için ekran kilidinizi kullanmak</translation>
 <translation id="2881276955470682203">Kart kaydedilsin mi?</translation>
+<translation id="2882280148032777436">"Known Traveler Number"ı sil</translation>
 <translation id="2882949212241984732">İki kırımlı katlama</translation>
 <translation id="2891963978019740012">Chrome'daki Arama Motorunuz</translation>
 <translation id="2893773853358652045">Dördüncü Rulo</translation>
@@ -2487,7 +2489,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="512670116361803001"><ph name="APP_NAME" /> uygulaması düzgün bir şekilde yeniden boyutlandırılamayabilir. Uygulamanın sorun çıkarmasını önlemek için hazır ayar pencere boyutlarını kullanın.</translation>
 <translation id="512756860033933700">Klavye kilidine izin veriliyor</translation>
 <translation id="5127934926273826089">Çiçekler</translation>
-<translation id="5129094684098010260">Kart yalnızca cihaza kaydedildi</translation>
 <translation id="5129534298163637277">Onay iletişim kutusu</translation>
 <translation id="5129662217315786329">Lehçe</translation>
 <translation id="5135404736266831032">Adresleri yönet...</translation>
@@ -2630,6 +2631,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Saatiniz geri", "Saatiniz ileri" veya "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Bu şifreyi tüm cihazlarınızda kullanmak için kimliğinizi doğrulayın</translation>
+<translation id="5380539543938195166">Known Traveler Number güncellensin mi?</translation>
 <translation id="5380953781541843508">artan sırada</translation>
 <translation id="5381318171304904246">İşleme devam ederseniz bankanızın web sitesine yönlendirileceksiniz. Kimliğinizi doğruladıktan sonra satın alma işlemini tamamlamanız için otomatik olarak buraya döneceksiniz.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />, "<ph name="WEBSITE_TITLE" />" sekmesini güncelledi</translation>
@@ -3065,7 +3067,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6108580855199168381">Sertifika bilgileri</translation>
 <translation id="6108702513636120202">Chromium'daki Arama Motorunuz</translation>
 <translation id="6108849843016142864">Sürüngenler ve Amfibi Hayvanlar</translation>
-<translation id="610911394827799129">Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir</translation>
 <translation id="611018310643025551">Aramalarınız, en iyi eşleşmeler ve sayfa içerikleri Google'a gönderilerek bu özelliğin geliştirilmesi için inceleme uzmanları tarafından görüntülenebilir.</translation>
 <translation id="6116338172782435947">Panoya kopyalanan metin ve resimleri görme</translation>
 <translation id="6117833587752089929">Fotoğraf (Saten)</translation>
@@ -3232,6 +3233,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Shrink Folyo</translation>
 <translation id="6383221683286411806">Devam etmeniz halinde ödeme yapmanız gerekebilir.</translation>
+<translation id="6384448607821972818">Kurtarma şifresi gösteriliyor</translation>
 <translation id="6385164437039878414">Sırt Çantaları ve Omuz Çantaları</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 öneri daha}other{# öneri daha}}</translation>
 <translation id="6386565501269869892">Zarf You 4</translation>
@@ -3340,7 +3342,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6529173248185917884">Yedinci Rulo</translation>
 <translation id="6529602333819889595">Silmeyi &amp;Yeniden Yap</translation>
 <translation id="6532101170117367231">Google Drive'a Kaydet</translation>
-<translation id="6535617236508021606">Bu kart, diğer Google hizmetlerinde kullanabilmeniz için Google Hesabınıza kaydedildi.</translation>
 <translation id="6536221421038631327">Bir Passpoint aboneliği <ph name="DEVICE_TYPE" /> cihazınızdan kaldırdığınızda ilişkili ağlar da kaldırılır. Abonelik planınızda değişiklik yapmak için "<ph name="FRIENDLY_NAME" />" ile iletişime geçin. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Karşılaştırma tablolarını görmek için senkronizasyonu etkinleştirin</translation>
 <translation id="6539092367496845964">Bir sorun oldu. Daha sonra tekrar deneyin.</translation>
@@ -4004,6 +4005,7 @@ Ek ayrıntılar:
 <translation id="7638605456503525968">Seri bağlantı noktaları</translation>
 <translation id="7646681339175747202">Az önce kullandığınız şifrenin bir veri ihlali sonucunda açığa çıktığı anlaşıldı. Google Şifre Yöneticisi şifrenizi hemen değiştirmenizi öneriyor.</translation>
 <translation id="7647206758853451655">Yazdırma kalitesi</translation>
+<translation id="7648133459447652947">İmlecinizi göstermek için uygulamalar arasında geçiş yapın, sayfayı yeniden yükleyin veya geri gidin</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android ayarlarında<ph name="END_ANDROID_SETTINGS_LINK" /> Gelişmiş Koruma etkin olduğu için bu site engellenmeye devam edecek. <ph name="BEGIN_LEARN_MORE_LINK" />Bu uyarı hakkında daha fazla bilgi edinin<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7648992873808071793">Dosyaları bu cihazda depolama</translation>
 <translation id="7653957176542370971">Ödeme işleyici sayfası kapatıldı</translation>
@@ -4043,6 +4045,7 @@ Ek ayrıntılar:
 <translation id="7690647519407127574">Oufuku Hagaki Kartpostal</translation>
 <translation id="7693583928066320343">Sayfa sırası alındı</translation>
 <translation id="769424100851389104">Güncellemeyi şimdi başlat</translation>
+<translation id="7696107855583699585">Known Traveler Number'ı düzenle</translation>
 <translation id="7697837508203274589">Canlı Spor Etkinlikleri</translation>
 <translation id="7698864304447945242">AR için Google Play Hizmetleri güncellensin mi?</translation>
 <translation id="7701040980221191251">Yok</translation>
@@ -4331,6 +4334,7 @@ Ek ayrıntılar:
 <translation id="822925450938886901">Ek bilgiler ve geçerli olabilecek politikalar için tarayıcınızda chrome://management adresini açın.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (Araç Şasi Numarası)</translation>
 <translation id="8232343881378637145">Platform sıcaklığı</translation>
 <translation id="8233773197406738106">Dosya hazırlanıyor</translation>
 <translation id="823490921909113114">Bu ayarları etkinleştirmek ve Google Hesabınızdaki ödeme bilgilerini kullanmak için otomatik doldurma hizmetleriyle ilgili ayarlar bölümünü ziyaret edin.</translation>
@@ -4656,6 +4660,7 @@ Ek ayrıntılar:
 <translation id="8772387130037509473">Yoga ve Pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Gizli dosya taşınsın mı?}other{Gizli dosyalar taşınsın mı?}}</translation>
 <translation id="8775347646940100151">Kağıt (Antetli Kağıt)</translation>
+<translation id="8776941011841875705">Known Traveler Number kaydedilsin mi?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Sayfayı çevir düğmesi, bu sayfayı Google Çeviri'yle çevirmek için etkinleştirin</translation>
 <translation id="8785658048882205566">Motosikletler</translation>
@@ -4840,6 +4845,7 @@ Ek ayrıntılar:
 <translation id="9107199998619088551">Profilinizi <ph name="MANAGER" /> yönetiyor</translation>
 <translation id="9107467864910557787">Tarayıcınız <ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="91108059142052966">Yönetici politikası, gizli içerik görünür haldeyken <ph name="APPLICATION_TITLE" /> ile ekran paylaşımını devre dışı bırakır</translation>
+<translation id="9114101423898634479">Known Traveler Number ekle</translation>
 <translation id="9114524666733003316">Kart onaylanıyor...</translation>
 <translation id="9114581008513152754">Bu tarayıcı bir şirket veya başka bir kuruluş tarafından yönetilmemektedir. Bu cihazdaki etkinlikler Chrome dışında yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome'daki reklamlar hakkında daha fazla bilgi</translation>

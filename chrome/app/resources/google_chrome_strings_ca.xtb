@@ -19,6 +19,7 @@
 <translation id="1152920704813762236">Sobre ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Obre a Chrome</translation>
 <translation id="1157985233335035034">Idiomes recents</translation>
+<translation id="1158134713295836892">Gemini a Chrome</translation>
 <translation id="1184145431117212167">La instal·lació ha fallat perquè la versió de Windows del dispositiu no s'admet.</translation>
 <translation id="1194807384646768652">Chrome ha bloquejat aquesta baixada perquè el tipus de fitxer no se sol baixar i pot ser perillós</translation>
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
@@ -104,6 +105,7 @@
 <translation id="2199691482078155239">Chrome et proporciona més control sobre els anuncis que veus i limita la informació que els llocs web poden obtenir sobre tu quan et mostren anuncis personalitzats</translation>
 <translation id="2216543877350048334">Per suprimir de Chrome el teu Compte de Google, tanca la sessió</translation>
 <translation id="2236949375853147973">La meva activitat</translation>
+<translation id="22791603784558743">Tanca Gemini a Chrome Dev</translation>
 <translation id="2290014774651636340">Falten les claus de l'API de Google. Es desactivaran algunes de les funcionalitats de Google Chrome.</translation>
 <translation id="2290095356545025170">Confirmeu que voleu desinstal·lar Google Chrome?</translation>
 <translation id="2301513536169703857">Per obtenir les teves contrasenyes, adreces d'interès i altres dades en tots els teus dispositius, inicia la sessió a Chrome</translation>
@@ -137,6 +139,7 @@
 <translation id="2665296953892887393">Ajudeu a millorar Google Chrome; envieu informes d'error i <ph name="UMA_LINK" /> a Google.</translation>
 <translation id="2668094785979141847">Fes clic per sortir de Google Lens</translation>
 <translation id="2681444469812712297">Obre <ph name="URL" /> en una pestanya nova a Google Chrome.</translation>
+<translation id="2699790011615497488">Obre Gemini a Chrome Beta</translation>
 <translation id="2712141162840347885">Selecciona el que vulguis per cercar-ho amb Google Lens o prem Esc per sortir de Google Lens</translation>
 <translation id="2738871930057338499">No es pot connectar a Internet. Error d'HTTP "403 Forbidden". Comprova la configuració del servidor intermediari.</translation>
 <translation id="2742320827292110288">Advertiment: Google Chrome no pot evitar que les extensions registrin l'historial de navegació. Per desactivar aquesta extensió en mode d'incògnit, desselecciona aquesta opció.</translation>
@@ -395,6 +398,7 @@
 <translation id="58431560289969279">Mentre tinguis la sessió iniciada, podràs utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chrome. Pots canviar-ho en qualsevol moment a la configuració.</translation>
 <translation id="5858486459377137936">Quan tanquis totes les finestres de Chrome, se't tancarà la sessió de la majoria de llocs web, tret del teu Compte de Google si tens la sessió iniciada a Chrome. Perquè els llocs web et recordin, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome t'avisa<ph name="END_LINK" /> sobre baixades i llocs web que no són segurs</translation>
+<translation id="5894164573378901688">Per utilitzar Gemini a Chrome, inicia la sessió amb un altre Compte de Google</translation>
 <translation id="5895138241574237353">Reinicia</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Inici de sessió a la xarxa</translation>
 <translation id="5924017743176219022">S'està connectant a Internet...</translation>
@@ -457,6 +461,8 @@
 <translation id="6506909944137591434">Chrome necessita permís d'accés a la càmera per poder crear un mapa en 3D del teu entorn</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Per poder utilitzar la ubicació, dona accés a Chrome des de la <ph name="BEGIN_LINK" />configuració del sistema<ph name="END_LINK" /></translation>
+<translation id="6532945796722480006">Obre Gemini a Chrome Canary</translation>
+<translation id="6585124893636629274">Tanca Gemini a Chrome</translation>
 <translation id="659498884637196217">Al gestor de contrasenyes de Google en aquest dispositiu</translation>
 <translation id="6631524303639368205">Continua des d'on ho vas deixar: Chrome ha restaurat les pestanyes de la darrera sessió. Pots desactivar-ho a</translation>
 <translation id="6632473616050862500">ChromeOS Flex és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional.</translation>
@@ -552,6 +558,7 @@
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7670287553302121848">El compte de Chrome requereix una reautenticació</translation>
 <translation id="769538538642757151">Chrome t'avisarà si hi ha res que hagis de revisar</translation>
+<translation id="769906121737764913">Tanca Gemini a Chrome Beta</translation>
 <translation id="7716950018788545737">Les tasques s'han finalitzat.</translation>
 <translation id="77283119132245232">Proporciona serveis de traçabilitat del sistema per a <ph name="BROWSER_NAME" />. Si aquest servei es desactiva, les traces de rendiment creades pel navegador no inclouran esdeveniments de tot el sistema, com ara els esdeveniments de canvi de context i de fils preparats.</translation>
 <translation id="7736869414036750079">La teva organització requereix que iniciïs la sessió a Chrome</translation>
@@ -572,6 +579,7 @@
 <translation id="7886087451482920026">Selecciona text amb Google Lens</translation>
 <translation id="7890208801193284374">Si compartiu un ordinador, els amics i els familiars poden navegar de manera independent i configurar Chrome com vulguin.</translation>
 <translation id="7896673875602241923">Algú ha iniciat anteriorment la sessió a Chrome en aquest ordinador com a <ph name="ACCOUNT_EMAIL_LAST" />. Crea un usuari de Chrome per mantenir la informació separada.</translation>
+<translation id="7904985524660297937">Prova Gemini a Google Chrome</translation>
 <translation id="7917876797003313048">Pots gestionar els Comptes de Google en què tens la sessió iniciada. Els Comptes de Google s'utilitzen per al navegador Chrome, Play Store, Gmail i més. Si vols afegir un compte per a algú altre, com ara un membre de la família, afegeix una persona nova al teu dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome ha bloquejat aquesta baixada perquè el fitxer és enganyós i és possible que faci canvis inesperats al dispositiu</translation>
 <translation id="7951272445806340501">Cal reiniciar ChromeOS Flex per aplicar l'actualització.</translation>
@@ -632,6 +640,7 @@
 <translation id="8637932705841171563">Per compartir la finestra, permet que Chrome gravi la pantalla a Configuració del sistema</translation>
 <translation id="8641606876632989680">Chrome t'enviarà una notificació quan iniciïs la sessió amb una contrasenya en perill</translation>
 <translation id="8649026945479135076">És habitual que els llocs web que visites recordin coses que t'interessen per personalitzar la teva experiència. Els llocs web també poden emmagatzemar informació a Chrome sobre els teus interessos.</translation>
+<translation id="8656634243791296665">Obre Gemini a Chrome Dev</translation>
 <translation id="8669527147644353129">Aplicació d'ajuda de Google Chrome</translation>
 <translation id="8679801911857917785">També controla la pàgina que es mostra quan inicieu Chrome.</translation>
 <translation id="8712637175834984815">Entesos</translation>
@@ -660,11 +669,13 @@
 <translation id="8948460679427074738">Aquesta extensió no ha publicat les seves pràctiques de privadesa, per exemple, la manera com recull i utilitza les dades. Chrome et recomana que la suprimeixis.</translation>
 <translation id="8958307504142971576">Ara tens més funcions disponibles a Chrome</translation>
 <translation id="8989968390305463310">El teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix automàticament els interessos de manera contínua cada mes, i es poden actualitzar tret que els suprimeixis.</translation>
+<translation id="8991530961471831170">Obre Gemini a Chrome</translation>
 <translation id="8992769679401294069">Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i desar les dades de Chrome al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="8999117580775242387">Quan l'HTTPS no estigui disponible, Chrome utilitzarà una connexió no segura sense avisar-te</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hi ha una actualització de Chrome disponible}=1{Hi ha una actualització de Chrome disponible}other{Fa # dies que hi ha una actualització de Chrome disponible}}</translation>
 <translation id="9014771989710951291">Diverses organitzacions gestionen Chrome</translation>
 <translation id="9024318700713112071">Defineix Chrome com a navegador predeterminat</translation>
+<translation id="9066987883552592250">Tanca Gemini a Chrome Canary</translation>
 <translation id="9090566250983691233">Descobreix per què Chrome bloqueja alguns fitxers</translation>
 <translation id="9106236359747881194">Selecciona text per cercar</translation>
 <translation id="911206726377975832">També voleu suprimir les dades de navegació?</translation>

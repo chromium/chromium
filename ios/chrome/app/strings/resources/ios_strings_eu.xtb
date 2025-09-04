@@ -696,7 +696,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3789841737615482174">Instalatu</translation>
 <translation id="380329542618494757">Izena</translation>
 <translation id="3803696231112616155">Eskaini webgunea itzultzea</translation>
-<translation id="3808311849069021992">Erakutsi bilatzailearen xehetasunak</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
 <translation id="381219490185664296">Fitxa taldea desegin nahi duzu?</translation>
 <translation id="3812308602011798782">Iritziak</translation>
@@ -1109,7 +1108,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="537853552771686272">Kudeatu zer gai eta webgune interesatzen zaizkizun</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} itxi da}other{{count} itxi dira}}</translation>
 <translation id="5394975111793637642">Ezkutatu produktuen iritziak zure txartelean</translation>
-<translation id="5395707839134961196">Ezkutatu bilatzailearen xehetasunak</translation>
 <translation id="5414763847370083940">Webgune bateko produktu baten prezioa jaisten bada, alerta bat jasoko duzu.</translation>
 <translation id="5415289094036440596">Pasahitzak ezin dira partekatu</translation>
 <translation id="5416455648658732408">Eraman fitxa taldera</translation>
@@ -1347,7 +1345,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="6232329973559504466">Ezkutuko moduko bilaketa</translation>
 <translation id="6234310016144827337">Egiaztatu konektatuta zaudela eta saiatu berriro</translation>
 <translation id="6236952928980352967">Leheneratu abisua</translation>
-<translation id="623755660902014047">Irakurtzeko modua</translation>
 <translation id="6241132809279377987">Desblokeatu iPhone-rako eginbide gehiago Google-ren aplikazioekin</translation>
 <translation id="6247557882553405851">Google-ren Pasahitz-kudeatzailea</translation>
 <translation id="6251835855431997163">Bete <ph name="VALUE" /> automatikoki</translation>

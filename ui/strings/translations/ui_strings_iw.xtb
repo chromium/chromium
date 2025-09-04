@@ -55,7 +55,7 @@
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2388990488038464401">להתקשר למספר הזה מהטלפון שלך?</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
-<translation id="24452542372838207">הרחבת ההודעה</translation>
+<translation id="24452542372838207">הרחבת ההתראה</translation>
 <translation id="2445449901874883781">שימוש בדחיסות גבוהה</translation>
 <translation id="2448407890032181691">משטח המגע הועבר לפינה הימנית התחתונה. יש ללחוץ כאן.</translation>
 <translation id="2482878487686419369">התראות</translation>
@@ -65,7 +65,7 @@
 <translation id="252373100621549798">תצוגה לא ידועה</translation>
 <translation id="2545651323591713692">השהיה</translation>
 <translation id="2573731672208488250">{HOURS,plural, =1{עוד שעה}one{עוד שעה}two{עוד 2 שעות}other{עוד # שעות}}</translation>
-<translation id="2583543531130364912">כיול מסך המגע</translation>
+<translation id="2583543531130364912">כיול של מסך המגע</translation>
 <translation id="2586657967955657006">לוח</translation>
 <translation id="2653844658857826081">חדש</translation>
 <translation id="2666092431469916601">למעלה</translation>
@@ -162,20 +162,20 @@
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
 <translation id="6237461503717005873">נבחרה השורה <ph name="ROW_NAME" />.</translation>
-<translation id="6264365405983206840">בחירת &amp;הכול</translation>
+<translation id="6264365405983206840">לבחור &amp;הכל</translation>
 <translation id="6346952829206698721">הדבקה מהלוח</translation>
 <translation id="6364916375976753737">גלילה שמאלה</translation>
 <translation id="63712816010840859">‏אם המסך הנוכחי הוא לא מסך מגע, צריך ללחוץ על Esc.</translation>
 <translation id="6394627529324717982">פסיק</translation>
-<translation id="6397363302884558537">יש להפסיק לדבר</translation>
+<translation id="6397363302884558537">‏Stop Speaking (עצירת ההקראה)</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{לפני שנ‘ אחת}one{לפני # שנ‘}two{לפני # שנ‘}other{לפני # שנ‘}}</translation>
 <translation id="6430678249303439055">חסימת כל ההודעות מהאפליקציה הזו</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{לפני שנייה אחת}one{לפני # שניות}two{לפני # שניות}other{לפני # שניות}}</translation>
 <translation id="6503257047630241175">‏תוכן בפורמט RTF</translation>
 <translation id="6539092367496845964">משהו השתבש. צריך לנסות שוב אחר כך.</translation>
 <translation id="654149438358937226">חסימת כל ההודעות</translation>
-<translation id="6612467943526193239">‏יש להקיש על Esc כדי לצאת מהכיול.</translation>
-<translation id="6620110761915583480">שמירת קובץ</translation>
+<translation id="6612467943526193239">‏כדי לצאת מהכיול, צריך ללחוץ על Esc.</translation>
+<translation id="6620110761915583480">שמירת הקובץ</translation>
 <translation id="6699343763173986273">הרצועה הבאה במדיה</translation>
 <translation id="6738856801552481343">‏אם המסך הזה הוא לא מסך מגע, צריך להקיש על Esc.</translation>
 <translation id="6807086321996342431">העמודה <ph name="COLUMN_NAME" /></translation>

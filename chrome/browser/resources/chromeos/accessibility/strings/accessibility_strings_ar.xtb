@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
-<translation id="100421257800558142">اضغط على مفتاح السهم المتّجه لليمين</translation>
+<translation id="100421257800558142">عليك الضغط على مفتاح السهم المتّجه لليمين</translation>
 <translation id="100506692671054486">ما مِن طلب سابق.</translation>
 <translation id="1009046985747440431">‏اضغط على السهم المتجه للأعلى أو للأسفل للتنقل، واضغط على Enter للتفعيل.</translation>
 <translation id="1011903154582639569">يمكنك العثور على لوحة المفاتيح المراد استخدامها، ثم النقر عليها للكتابة.</translation>
@@ -198,8 +198,8 @@
 <translation id="2216790501338699346">‏عنوان URL للرابط: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">نقل للخلف بمقدار حرف واحد</translation>
 <translation id="2220529011494928058">الإبلاغ عن مشكلة</translation>
-<translation id="2239819015858077439">اضغط على مفتاح السهم المتّجه للأسفل</translation>
-<translation id="2243633977138166243">‏للتنقُّل، اضغط على السهم المتّجه لليسار أو السهم المتّجه لليمين، ويمكنك الضغط على مفتاح Enter للتفعيل.</translation>
+<translation id="2239819015858077439">الضغط على مفتاح السهم المتّجه للأسفل</translation>
+<translation id="2243633977138166243">‏للتنقُّل، عليك الضغط على السهم المتّجه لليسار أو السهم المتّجه لليمين، ويمكنك الضغط على مفتاح Enter للتفعيل.</translation>
 <translation id="224426591676115802">لا يتوفّر صوت للغة: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">جارٍ إيقاف "وضع التعلُّم"</translation>
 <translation id="225732394367814946">زيادة تقييم النطق</translation>
@@ -215,12 +215,12 @@
 <translation id="2329324941084714723">لوحة علامة التبويب</translation>
 <translation id="2347456970887948350">رابط</translation>
 <translation id="2363753371702255035">رمز نقطي</translation>
-<translation id="2365384324219615024">‏يمكنك أيضًا الضغط على مفتاح Enter لتنشيط العناصر. على سبيل المثال، يمكن استخدام مفتاح Enter لإرسال نص في نموذج. للمواصلة، اضغط على مفتاح Enter.</translation>
+<translation id="2365384324219615024">‏يمكنك أيضًا الضغط على مفتاح Enter لتنشيط العناصر. على سبيل المثال، يمكن استخدام مفتاح Enter لإرسال نص في نموذج. للمواصلة، يجب الضغط على مفتاح Enter.</translation>
 <translation id="2371402123699727805">ميزة "الإملاء" مفعَّلة، ويمكنك <ph name="GESTURE" /> لإيقافها. الإيماءات الأخرى غير متوفّرة مؤقتًا.</translation>
-<translation id="2381733276052567791">تفعيل ميزة تحويل النص إلى كلام أو إيقافها</translation>
+<translation id="2381733276052567791">تفعيل أو إيقاف ميزة تحويل النص إلى كلام</translation>
 <translation id="2390264819538553347">‏للتقدم، اضغط على Enter، وللرجوع للخلف، اضغط على Backspace.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
-<translation id="2398579267367951220">‏اكتب للبحث في الصفحة. اضغط على enter للحصول على النتيجة سريعًا، أو اضغط على السهم المتّجه للأسفل أو للأعلى لتصفّح النتائج، أو استمر بالكتابة لتغيير البحث، أو اضغط على escape للإلغاء.</translation>
+<translation id="2398579267367951220">‏يمكنك الكتابة للبحث في الصفحة. يُرجى الضغط على مفتاح Enter للانتقال إلى النتيجة، أو الضغط على السهم المتّجه للأسفل أو للأعلى لتصفّح النتائج، أو الاستمرار في الكتابة لتغيير طلب البحث، أو الضغط على مفتاح escape للإلغاء.</translation>
 <translation id="240709722712693803">بنفسجي مزرق</translation>
 <translation id="2416512023405990736">مربع اختيار غير محدد</translation>
 <translation id="2417569100218200841">معلومات المحتوى</translation>
@@ -244,7 +244,7 @@
 <translation id="2523609930580546572">‏برنامج ChromeVox التعليمي</translation>
 <translation id="2525706221823668172">‏اختصارات لوحة المفاتيح لـ Chromebook</translation>
 <translation id="2553108862507765288">خطأ نحوي</translation>
-<translation id="2556326187583116255">انقر بإصبعين لإيقاف الكلام.</translation>
+<translation id="2556326187583116255">النقر بإصبعين لإيقاف الكلام</translation>
 <translation id="2573256689920773241">التنقُّل الأساسي</translation>
 <translation id="257674075312929031">جمع</translation>
 <translation id="2577127557293415225">أغلِق عينيك لفترة وجيزة</translation>
@@ -253,19 +253,19 @@
 <translation id="2598495320872286378">خطأ في قاعدة نحوية</translation>
 <translation id="2603828437139726540">نقل للأمام بمقدار حرف واحد</translation>
 <translation id="2619052155095999743">إدخال</translation>
-<translation id="2619344480613750862">‏يمكنك أيضًا التنقّل بين أقسام الشاشة. على سبيل المثال، يمكنك التنقّل بين مشغّل التطبيقات والرف وعلامات تبويب Chrome. للانتقال إلى القسم التالي، مرِّر سريعًا من اليمين إلى اليسار بأربعة أصابع. جرِّب ذلك الآن للمتابعة.</translation>
+<translation id="2619344480613750862">‏يمكن أيضًا التنقّل بين أقسام الشاشة. على سبيل المثال، يمكنك التنقّل بين مشغّل التطبيقات والرف وعلامات تبويب Chrome. للانتقال إلى القسم التالي، يُرجى التمرير سريعًا من اليمين إلى اليسار بأربعة أصابع. يُرجى تجربة ذلك الآن للمتابعة.</translation>
 <translation id="2624431853467395961">فتح وضع التعلّم</translation>
 <translation id="2626530649491650971">قابل للنقر</translation>
-<translation id="263637551280112393">‏اضغط على مفتاح "البحث" + Shift + مفتاح المسافة.</translation>
+<translation id="263637551280112393">‏عليك الضغط على مفتاح البحث + Shift + مفتاح المسافة.</translation>
 <translation id="2637227747952042642">رياضيات</translation>
 <translation id="2638785836053527382">تم استئناف تنزيل <ph name="FILE_NAME" />.</translation>
 <translation id="2639750663247012216">‏مفتاح تعديل ChromeVox</translation>
 <translation id="2644542693584024604">misspelled</translation>
 <translation id="2651441758640020174">جرِّب اختيار الفصل المفضَّل لديك من القائمة.</translation>
-<translation id="2654172656519784359">نقل للأمام بمقدار كلمة واحدة</translation>
+<translation id="2654172656519784359">الانتقال إلى الأمام بمقدار كلمة واحدة</translation>
 <translation id="2661530546602071611">ملاحظة</translation>
 <translation id="2673280813984708147">جارٍ التعديل</translation>
-<translation id="267442004702508783">تحديث</translation>
+<translation id="267442004702508783">إعادة تحميل</translation>
 <translation id="2675533876313964202">أخضر مصفر</translation>
 <translation id="2684412629217766642">‏إغلاق برنامج ChromeVox التعليمي</translation>
 <translation id="2692503699962701720">تغيير درجة الصوت عند ذكر أنواع العناصر والنصوص المنسَّقة</translation>
@@ -281,16 +281,16 @@
 <translation id="2737898226590637227">‏ليس هناك مَعلم ARIA تالٍ.</translation>
 <translation id="2749275490991666823">محدد</translation>
 <translation id="2751454300227269244">تحريك الفم لليمين</translation>
-<translation id="27527859628328957">الانتقال إلى العنصر التالي القابل للتركيز</translation>
-<translation id="2756452585631602151">أدخِل تصنيفًا مخصّصًا.</translation>
+<translation id="27527859628328957">الانتقال إلى العنصر التالي الذي يمكن التركيز عليه</translation>
+<translation id="2756452585631602151">إدخال تصنيف مخصص</translation>
 <translation id="2766299274563946262">ليست هناك خلية في اليسار.</translation>
 <translation id="2770947749427257887">تفعيل وضع التمرير</translation>
-<translation id="2792200646155001340">يمكنك أيضًا تمرير إصبع واحد من اليسار إلى اليمين للانتقال إلى العنصر السابق. جرِّب ذلك الآن.</translation>
+<translation id="2792200646155001340">يمكنك أيضًا تمرير إصبع واحد سريعًا من اليسار إلى اليمين للعودة إلى العنصر السابق. ما رأيك بتجربة ذلك الآن؟</translation>
 <translation id="280499067616661124">‏البحث في صفحة ChromeVox</translation>
 <translation id="2811204574343810641">صف</translation>
 <translation id="2816868829355607410">التدريب العملي: طلبات الانتقال السريع</translation>
 <translation id="2841013758207633010">الوقت</translation>
-<translation id="284171465644749950">يمكنك التمرير سريعًا جهة اليمين أو اليسار بإصبع واحد للتنقّل بين المواضيع.</translation>
+<translation id="284171465644749950">يمكنك التمرير سريعًا جهة اليمين أو اليسار بإصبع واحد للتنقّل بين المواضيع</translation>
 <translation id="2843432675592278677">‏ليس هناك مَعلم ARIA سابق.</translation>
 <translation id="2843814945404750166">أخضر زيتوني داكن</translation>
 <translation id="2843837985843789981">المجموعة السابقة</translation>
@@ -302,7 +302,7 @@
 <translation id="287383510823843610">برتقالي داكن</translation>
 <translation id="2876760662374103627">ميزة "التحكّم بالوجه" مفعَّلة</translation>
 <translation id="2879867157561757640">التمرير السريع بثلاثة أصابع إلى الأسفل</translation>
-<translation id="288178314850623291">‏استخدم أوامر الانتقال السريع للتخطي إلى أنواع محددة من العناصر. للانتقال السريع للأمام بين العناوين، اضغط على بحث + H، أو للانتقال السريع للخلف، اضغط على بحث + Shift + H.</translation>
+<translation id="288178314850623291">‏يمكنك استخدام أوامر الانتقال السريع للانتقال إلى أنواع محددة من العناصر. للانتقال السريع للأمام بين العناوين، يمكنك الضغط على بحث + H، أما للانتقال السريع للخلف، فيمكنك الضغط على بحث + Shift + H.</translation>
 <translation id="2894654529758326923">المعلومات</translation>
 <translation id="2909584066358367921">ليس هناك زر تالٍ.</translation>
 <translation id="2911433807131383493">‏فتح برنامج ChromeVox التعليمي</translation>
@@ -335,7 +335,7 @@
 <translation id="3082249673510793544">التمرير للخلف</translation>
 <translation id="3084806535845658316">ليس هناك صدى للكتابة</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">يساعد هذا الأمر في تحسين مستوى الخصوصية من خلال إيقاف الشاشة لكي لا يرى الآخرون المحتوى المعروض عليها. ويمكنك متى شئت إعادة تشغيلها بالضغط على زرَّي "بحث" + "رفع مستوى السطوع".</translation>
+<translation id="308736057934395497">يحسّن هذا الخيار مستوى الخصوصية من خلال إطفاء الشاشة لكي لا يراها الآخرون. ويمكنك متى شئت إعادة تشغيلها بالضغط على مفتاح "البحث" + مفتاح "رفع مستوى السطوع".</translation>
 <translation id="3090227230165225418">الإعلان عن تنزيل الإشعارات</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">المَعلم التالي</translation>
@@ -345,8 +345,8 @@
 <translation id="3103579948980282461">أحمر بنفسجي متوسط</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">مصغّر</translation>
-<translation id="311015743332597320">مرِّر سريعًا بأربعة أصابع إلى يسار الشاشة.</translation>
-<translation id="3112457281078985179">‏لتفعيل ChromeVox أو إيقاف تشغيله، استخدم Control+Alt+Z.</translation>
+<translation id="311015743332597320">يُرحى التمرير سريعًا بأربعة أصابع إلى يسار الشاشة.</translation>
+<translation id="3112457281078985179">‏لتفعيل ChromeVox أو إيقاف تشغيله، يرجى استخدام Control+Alt+Z.</translation>
 <translation id="3115800313647508384">هل تريد إيقاف الشاشة؟</translation>
 <translation id="3131002934070407451">طريقة قراءة الأرقام:</translation>
 <translation id="3134461040845705080">rdonly</translation>
@@ -362,7 +362,7 @@
 <translation id="3179119189286472195">ليس رابطًا</translation>
 <translation id="3180990259147710757">تحريك الفك إلى اليسار</translation>
 <translation id="320041337977930740">تغيير نمط العرض إلى تضمين النص</translation>
-<translation id="3206698050650195442">الخروج من البرنامج التعليمي</translation>
+<translation id="3206698050650195442">الخروج من الدليل التوجيهي</translation>
 <translation id="3208346789712025453">ليس هناك عنصر تحكّم تالٍ.</translation>
 <translation id="321072937702597574">أرجواني خفيف</translation>
 <translation id="3218691001991391708">لصق <ph name="TEXT" />.</translation>
@@ -390,16 +390,16 @@
 <translation id="3322936298410871309">عنوان المستوى الأول السابق</translation>
 <translation id="3323447499041942178">مربع نص</translation>
 <translation id="3324983252691184275">قرمزي</translation>
-<translation id="334252345105450327">التقاط لقطة شاشة</translation>
+<translation id="334252345105450327">أخذ لقطة شاشة</translation>
 <translation id="335581015389089642">الحديث</translation>
 <translation id="3356951775008366684">الإعلان عن النطق الصوتي للكلمة</translation>
 <translation id="3359142382821736686">seprtr</translation>
-<translation id="3363015957057974366">‏يمكنك أيضًا استخدام مفتاح التبويب (Tab) للانتقال إلى العنصر التفاعلي التالي على الشاشة. ابحث عن مفتاح التبويب (Tab) الموجود فوق مفتاح البحث مباشرةً. للمواصلة، اضغط على مفتاح التبويب (Tab).</translation>
+<translation id="3363015957057974366">‏يمكنك أيضًا استخدام مفتاح التبويب (Tab) للانتقال إلى العنصر التفاعلي التالي على الشاشة. يرجى البحث عن مفتاح التبويب (Tab) الموجود فوق مفتاح البحث مباشرةً. للمواصلة، يمكنك الضغط على مفتاح التبويب (Tab).</translation>
 <translation id="3366946046494222386">برنامج <ph name="TOPIC" /> التعليمي، <ph name="LESSONS" /> درس</translation>
 <translation id="338583716107319301">فاصل</translation>
 <translation id="3389259863310851658">حقل النموذج السابق</translation>
 <translation id="3390740059150071453">النظر جهة اليسار</translation>
-<translation id="3393605254399152980">السحب بإصبع واحد لسماع التعليقات عند لمس الشاشة</translation>
+<translation id="3393605254399152980">السحب بإصبع واحد لسماع المحتوى عند لمس الشاشة</translation>
 <translation id="3406283310380167331">عرض قائمة النماذج</translation>
 <translation id="3407726812456125464">الاستماع إلى النص المحدَّد</translation>
 <translation id="3414400929511680526">أزرق أليس</translation>
@@ -408,7 +408,7 @@
 <translation id="3435494200763325275">التنقُّل بين علامات التبويب (يُتبع)</translation>
 <translation id="344800400831402066">بيرو</translation>
 <translation id="3457000393508828486">مضغوط جزئيًا</translation>
-<translation id="3458865416877308321"><ph name="NAME" />، في وضع إيقاف التشغيل</translation>
+<translation id="3458865416877308321">إيقاف <ph name="NAME" /></translation>
 <translation id="3466530247399808663">الضغط على مفتاح غير صالح</translation>
 <translation id="3468959318854349468">بلا عنوان</translation>
 <translation id="3469413619751135069">أخضر باهت</translation>
@@ -430,7 +430,7 @@
 <translation id="3594207934078151302">أخضر بحري متوسط</translation>
 <translation id="3599054940393788245">ليس داخل الرياضيات</translation>
 <translation id="360241989769010433">شكر وتقدير</translation>
-<translation id="3616016838842055984">إذا وصلت إلى عنصر وتريد النقر عليه، اضغط على مفتاح البحث + مفتاح المسافة. جرِّب الضغط عليهما الآن للمواصلة.</translation>
+<translation id="3616016838842055984">إذا وصلت إلى عنصر وأردت النقر عليه، يرجى الضغط على مفتاح البحث + مفتاح المسافة. يرجى محاولة الضغط عليهما الآن للمواصلة.</translation>
 <translation id="3616113530831147358">المقاطع الصوتية</translation>
 <translation id="3622350485154495700">النقر مرَّتين بإصبع واحد</translation>
 <translation id="3650317109285159359">chkmnuitm</translation>
@@ -440,7 +440,7 @@
 <translation id="3681531118904532409">أصفر باهت</translation>
 <translation id="3692274950075847560">بحث:<ph name="RESULT" /></translation>
 <translation id="370367311675896712">يتوسّطه خط</translation>
-<translation id="3704037000573066734">‏اضغط على "Search+A، J" للانتقال سريعًا إلى التفاصيل.</translation>
+<translation id="3704037000573066734">‏الضغط على Search+A ثم J للانتقال سريعًا إلى التفاصيل</translation>
 <translation id="3712520970944678024">التحكم في النطق</translation>
 <translation id="371302509916403935">تحته خط</translation>
 <translation id="3716845769494773620">متعدد الأسطر</translation>
@@ -489,11 +489,11 @@
 <translation id="4035381225449278841">فصل الربيع</translation>
 <translation id="4038098586530338813">إعادة</translation>
 <translation id="4047216625641135770">علامة</translation>
-<translation id="4047910800766704982">‏يمكنك استخدام صوت طبيعي مماثل لصوت البشر عندما يكون الجهاز متصلاً بالإنترنت. سيتم إرسال النص إلى Google لإجراء عمليّة المعالجة. يمكنك إيقاف هذه الميزة في أي وقت من "الإعدادات".</translation>
+<translation id="4047910800766704982">‏يمكنك استخدام صوت طبيعي مماثل لصوت البشر عندما يكون الجهاز متصلاً بالإنترنت. سيتم إرسال النص إلى Google لمعالجته. يمكنك إيقاف هذه الميزة في أي وقت من "الإعدادات".</translation>
 <translation id="4053520724192563562">أخضر ليموني</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">تحميل صفحة قيد التقدم</translation>
-<translation id="4065205963140826639">جرّب استخدام بحث + السهم الأيمن للعثور على زر التالي، ثم اضغط على بحث + مسافة للنقر عليه.</translation>
+<translation id="4065205963140826639">عليك استخدام مفتاح البحث + السهم المتّجه لليمين للعثور على زر "التالي"، ثم الضغط على مفتاح البحث + مفتاح المسافة للنقر عليه.</translation>
 <translation id="4079553331137067698">.input {$$COUNT :number} .match $$COUNT 1{{caret}} *{{{$$COUNT} carets}}</translation>
 <translation id="409334809956508737">الكائن السابق</translation>
 <translation id="4096952912560611353">.input {$$COUNT :number} .match $$COUNT 1{{plus}} *{{{$$COUNT} plus signs}}</translation>
@@ -506,11 +506,11 @@
 <translation id="4159784952369912983">أرجواني</translation>
 <translation id="4161663686871496107">‏تعليقات ChromeVox المنطوقة جاهزة</translation>
 <translation id="4176463684765177261">غير مفعّلة</translation>
-<translation id="4187322598335821254">التمرير سريعًا للأعلى أو الأسفل للانتقال حسب السطر</translation>
+<translation id="4187322598335821254">يمكنك التمرير سريعًا للأعلى أو الأسفل للانتقال حسب السطر</translation>
 <translation id="4188530942454211480">الجملة السابقة</translation>
 <translation id="4191918948604314587">زر</translation>
-<translation id="419265409837491189">انتقِل إلى العمود السابق.</translation>
-<translation id="4202186506458631436">الانتقال يمينًا</translation>
+<translation id="419265409837491189">الانتقال إلى العمود السابق</translation>
+<translation id="4202186506458631436">نقل لليمين</translation>
 <translation id="4204126831294769023">أزرق سماوي</translation>
 <translation id="4204864733111726379">أبيض زهري</translation>
 <translation id="42164919740161077">أزرق رمادي</translation>
@@ -526,7 +526,7 @@
 <translation id="4253168017788158739">ملاحظة</translation>
 <translation id="4254798249533888099">متفرع</translation>
 <translation id="4255016471934258618">فتح الفم</translation>
-<translation id="4259220820964911921">‏هل تريد تفعيل التحكّم في ميزة FaceGaze؟</translation>
+<translation id="4259220820964911921">تفعيل ميزة "التحكّم بالوجه"؟</translation>
 <translation id="4271220233568730077">التعبير الرياضي التالي</translation>
 <translation id="4275397969489577657">تفعيل ميزة تسجيل بث الحدث</translation>
 <translation id="4278486392851938658">ليس هناك رابط سابق تم الانتقال إليه.</translation>
@@ -552,9 +552,9 @@
 <translation id="4423525817792153232">إظهار كل أسنانك</translation>
 <translation id="4432457053224379116">أحمر هندي</translation>
 <translation id="4432896207833262240">محتوى مميز</translation>
-<translation id="4437615272777527928">اكتب للبحث في القائمة. واستخدِم السهمَين المتّجِهين للأعلى وللأسفل للتنقّل بين النتائج. واستخدِم السهمَين الأيمن والأيسر لضبط علامة إقحام النص والتنقّل بين القوائم.</translation>
+<translation id="4437615272777527928">يمكنك الكتابة للبحث في القوائم. ويمكنك استخدام السهمَين المتّجِهين للأعلى وللأسفل للتنقّل بين النتائج والسهمَين الأيمن والأيسر لضبط علامة إقحام النص والتنقّل بين القوائم.</translation>
 <translation id="4441677939526091190">اضغط على مفتاح السهم المتّجه للأعلى</translation>
-<translation id="4453530046591759283">‏للانتقال سريعًا إلى أجزاء أخرى من الشاشة، مثل أشرطة الأدوات أو لوحة النظام، اضغط على مفتاحَي Control+F1. المفتاح F1 هو المفتاح الأول على يمين مفتاح Escape.</translation>
+<translation id="4453530046591759283">‏للانتقال سريعًا إلى أجزاء أخرى من الشاشة، مثل أشرطة الأدوات أو لوحة النظام، يُرجى الضغط على مفتاحَي Control+F1. المفتاح F1 هو المفتاح الأول على يمين مفتاح Escape.</translation>
 <translation id="4457472090507035117">تحديد الصوت الحالي:</translation>
 <translation id="4476183483923481720">سطر جديد</translation>
 <translation id="4479068155583208887">أحمر قرميدي ناري</translation>
@@ -577,7 +577,7 @@
 <translation id="4623097797855662355">إشارة ناشر</translation>
 <translation id="4624970070706497034">‏لم تعُد ميزة TalkBack توفّر إمكانية التخصيص لأجهزة Chromebook. سيظل بإمكانك استخدام هذه الميزة، إلا أنّه سيكون عليك استخدام اختصارات لوحة المفاتيح التلقائية التي توفّرها TalkBack. يُرجى الضغط على مفتاح البحث + A ثم K للاطّلاع على الاختصارات المتاحة. لمواصلة استخدام TalkBack، يمكنك الضغط على الأمر مرة أخرى.</translation>
 <translation id="4636816104159717853">.input {$$COUNT :number} .match $$COUNT 1{{bullet}} *{{{$$COUNT} bullets}}</translation>
-<translation id="4649220074413114917">‏يمكنك النقر على الشاشة بإصبعين لإيقاف الكلام. يمكنك استخدام هذا الإجراء إذا كنت تريد من ChromeVox التوقف عن قراءة أي جزء. للمتابعة، انقر على الشاشة بإصبعين.</translation>
+<translation id="4649220074413114917">‏يمكنك النقر على الشاشة بإصبعين لإيقاف الكلام. ويمكن استخدام هذا الإجراء إذا كان يُراد من ChromeVox التوقف عن قراءة أي جزء. للمتابعة، يُرجى النقر على الشاشة بإصبعين.</translation>
 <translation id="4661075872484491155">متفرع</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4677535310137735442">انتقِل إلى العمود التالي.</translation>
@@ -601,12 +601,12 @@
 <translation id="4815668758102003883">فيروزي باهت</translation>
 <translation id="4826415162591436065">التنقل للأمام</translation>
 <translation id="4827410568042294688">تم إلغاء الاختيار</translation>
-<translation id="4835598628985424375">تصغير الشفاه عن طريق ضمّها معًا</translation>
+<translation id="4835598628985424375">ضمّ الشفاه معًا</translation>
 <translation id="4838490795649708173">النقر بأربعة أصابع</translation>
-<translation id="4839925464551908214">انتقِل إلى الصف السابق.</translation>
+<translation id="4839925464551908214">الانتقال إلى الصف السابق.</translation>
 <translation id="4841614409681890122">وردي غامق</translation>
 <translation id="4844625982113518938">‏اضغط على أي مفتاح للتعرُّف على اسمه. يؤدي الضغط على Ctrl+W إلى إغلاق وضع التعلم.</translation>
-<translation id="4846428657345567687">‏مرحبًا بكم في ChromeVox!</translation>
+<translation id="4846428657345567687">‏مرحبًا بك في ChromeVox!</translation>
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">ما من تطبيق مصغَّر سابق للوسائط.</translation>
 <translation id="4855927945655956315">‏مفاتيح مهمّة على لوحة المفاتيح: Control</translation>
@@ -621,7 +621,7 @@
 <translation id="489907760999452556">رابط داخلي</translation>
 <translation id="4909019435900810068">نقل للخلف بمقدار كلمة واحدة</translation>
 <translation id="4911349081560453449">ليس هناك مربع اختيار سابق.</translation>
-<translation id="4919186071145887492">يتعذّر تنفيذ <ph name="COMMAND" />، يُرجى إعادة المحاولة.</translation>
+<translation id="4919186071145887492">يتعذّر تنفيذ <ph name="COMMAND" />. يُرجى إعادة المحاولة.</translation>
 <translation id="492295894462528572">مقدمة</translation>
 <translation id="495046168593986294">التمرير لأعلى</translation>
 <translation id="495170559598752135">إجراءات</translation>
@@ -642,9 +642,9 @@
 <translation id="5014131807708055994">يتعذّر تنفيذ <ph name="COMMAND" />. السبب: <ph name="REASON" />.</translation>
 <translation id="5020651427400641814">تفعيل تسجيل الكلام</translation>
 <translation id="5041394372352067729">نقل جهاز العرض بلغة برايل إلى أعلى الصفحة</translation>
-<translation id="5042770794184672516">زيادة مستوى صوت النطق</translation>
+<translation id="5042770794184672516">يمكنك زيادة مستوى صوت النطق</translation>
 <translation id="5042992464904238023">محتوى الويب</translation>
-<translation id="5045870649377683106">‏الآن، ابحث عن مفتاح Shift الموجود فوق مفتاح Control مباشرةً. للمواصلة، اضغط على مفتاح Shift الأيسر.</translation>
+<translation id="5045870649377683106">‏الآن، ابحث عن مفتاح Shift الموجود فوق مفتاح Control مباشرةً. للمتابعة، اضغط على مفتاح Shift الأيسر.</translation>
 <translation id="5050015258024679800">عنوان المستوى الرابع السابق</translation>
 <translation id="5054047268577924192">عنصر القائمة السابق</translation>
 <translation id="5085453135206054947">أحمر بنفسجي باهت</translation>
@@ -661,14 +661,14 @@
 <translation id="5142101052131610456">جميع الدروس</translation>
 <translation id="514387318601895731">النظر للأسفل</translation>
 <translation id="5158275234811857234">غلاف</translation>
-<translation id="516076699907426116">للمتابعة، استكشِف باللمس للعثور على زر "الدرس التالي". وانقر مرّتين للمتابعة.</translation>
+<translation id="516076699907426116">للمتابعة، يمكنك الاستكشاف باللمس للعثور على زر "الدرس التالي". ويمكنك النقر مرّتين للمتابعة.</translation>
 <translation id="5170206230005240598">تم تفعيل تسميات برايل التوضيحية.</translation>
 <translation id="5183440668879371625">السطر السابق بطريقة برايل</translation>
 <translation id="5189244881767082992">خط</translation>
 <translation id="5263034204789987535">أصفر باهت</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">إنهاء</translation>
-<translation id="5290220123487191192">لنبدأ ببعض الإيماءات التي ستستخدمها بانتظام. إذا وصلت إلى عنصر تريد تفعيله، انقر مرّتين على الشاشة بإصبع واحد. للمتابعة، انقر مرّتين الآن.</translation>
+<translation id="5290220123487191192">لنبدأ ببعض الإيماءات التي يتمّ استخدامها بانتظام. لتفعيل أيّ عنصر، عليك النقر مرّتين على الشاشة بإصبع واحد. للمتابعة، يُرجى النقر مرّتين الآن.</translation>
 <translation id="5291860916305032607">استئناف ميزة "التحكّم بالوجه"</translation>
 <translation id="5302089807023311274">مرجع قائمة مراجع</translation>
 <translation id="530391007967514163">يمكنك الانتقال بسرعة بين العناوين للتنقُّل بين النصوص أدناه.</translation>
@@ -721,7 +721,7 @@
 <translation id="5585044216466955529">تعديل النص، إدخال البريد الإلكتروني</translation>
 <translation id="5597170376237141345">مربع الاختيار التالي</translation>
 <translation id="5598905979683743333">تم إلغاء اختيار زر الاختيار <ph name="NAME" /></translation>
-<translation id="5601172225407283979">تنفيذ إجراء تلقائي</translation>
+<translation id="5601172225407283979">تنفيذ الإجراء التلقائي</translation>
 <translation id="5608798115546226984">إكمال تلقائي مضمن</translation>
 <translation id="5616029807486814372">الدرس التالي</translation>
 <translation id="561939826962581046">الوقت</translation>
@@ -731,11 +731,11 @@
 <translation id="5632083598315326067">رمز رسومي</translation>
 <translation id="5648939288050772726">‏تهانينا! لقد تعلمت أساسيات استخدام ChromeVox بنجاح. يمكنك فتح قائمة أوامر ChromeVox في أي وقت من خلال الضغط على مفتاح البحث + مفتاح النقطة. لمعرفة المزيد حول ChromeVox ونظام التشغيل Chrome، يُرجى الاطّلاع على المقالات التالية.
     بعد الانتهاء من مشاهدة البرنامج التعليمي، يمكنك استخدام ChromeVox للانتقال إلى الزر "إغلاق" وانقر عليه.</translation>
-<translation id="5653397561111110475">‏استخدام ميزات إمكانية الوصول في شاشة لمس Chromebook</translation>
+<translation id="5653397561111110475">‏كيف يمكن الاستفادة من ميزات تسهيل الاستخدام في شاشة لمس Chromebook؟</translation>
 <translation id="5655682562155942719">أوامر الانتقال السريع</translation>
 <translation id="56637627897541303">منطقة النص</translation>
-<translation id="5666746275818170484">اضغط على مفتاح السهم المتّجه لليسار</translation>
-<translation id="5669637233317991674">للتنقّل في هذا الدرس، اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين أو لليسار.</translation>
+<translation id="5666746275818170484">يمكنك الضغط على مفتاح السهم المتّجه لليسار</translation>
+<translation id="5669637233317991674">للتنقّل في هذا الدرس، عليك الضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين أو لليسار.</translation>
 <translation id="5677240841070992068">الموقع الحالي</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5678971933640285754">.input {$$COUNT :number} .match $$COUNT 1{{right brace}} *{{{$$COUNT} right braces}}</translation>
@@ -751,7 +751,7 @@
 <translation id="5732189279857692565">‏هذا هو العنوان الثاني. يمكنك الاستمرار في الانتقال؛ إما بالضغط على "Search+H" أو "Search+Shift+H"</translation>
 <translation id="5748623122140342504">عنوان المستوى الخامس السابق</translation>
 <translation id="5760594853119905566">ملحق</translation>
-<translation id="5761219715606611783">‏أحسنت. لقد تعلمت أساسيات استخدام ChromeVox. يمكنك الاطّلاع على البرنامج التعليمي مجددًا أو الخروج منه عن طريق استخدام أحد الأزرار الواردة أدناه.</translation>
+<translation id="5761219715606611783">‏أحسنت. لقد تعلّمت أساسيات استخدام ChromeVox. يمكنك الاطّلاع على البرنامج التعليمي مجددًا أو الخروج منه عن طريق استخدام أحد الأزرار الموجودة أدناه.</translation>
 <translation id="5776001898637896684">‏الإضافة "تحويل النص إلى كلام" في Google Enhanced Network</translation>
 <translation id="5783252477644995371">‏يتيح لك التحكّم في ميزة FaceGaze توجيه المؤشر من خلال الإشارة بالوجه بالإضافة إلى إمكانية تنفيذ بعض الإجراءات، مثل النقر بزر الماوس الأيسر باستخدام إيماءات الوجه مثل الابتسامة</translation>
 <translation id="5805940204952508776">النقر بإصبعين</translation>
@@ -768,10 +768,10 @@
 <translation id="5850707923114094062">لقطة استعراضية إلى الوراء</translation>
 <translation id="5851548754964597211">قائمة علامات التبويب</translation>
 <translation id="5866042630553435010">محدد جزئيًا</translation>
-<translation id="5866210856231860256">لتصفُّح دروس حول هذا الموضوع، اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين أو لليسار.</translation>
+<translation id="5866210856231860256">لتصفُّح دروس حول هذا الموضوع، عليك الضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين أو لليسار.</translation>
 <translation id="5867591286054666064">أثناء هذا البرنامج التعليمي، يُرجى الضغط على أي مفتاح لسماع اسمه.</translation>
 <translation id="5869546221129391014">شبكة</translation>
-<translation id="5876817486144482042">خفض مستوى صوت النطق</translation>
+<translation id="5876817486144482042">خفض مستوى صوت الكلام</translation>
 <translation id="5878206664863390311">لتصفُّح المواضيع، اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين أو لليسار.</translation>
 <translation id="5878908838135392163">أزرق فاتح</translation>
 <translation id="588108970619830498">إعادة ضبط إعدادات "تحويل النص إلى كلام" على القيم التلقائية</translation>
@@ -782,7 +782,7 @@
 <translation id="5911156080308275026">.input {$$COUNT :number} .match $$COUNT 1{{semicolon}} *{{{$$COUNT} semicolons}}</translation>
 <translation id="5921587111466148855">فصل</translation>
 <translation id="5923780477617566089">التاريخ الحالي</translation>
-<translation id="5926889058434275234">للحصول على قائمة كاملة بالإيماءات، انتقِل إلى مركز المساعدة.</translation>
+<translation id="5926889058434275234">للحصول على قائمة كاملة بالإيماءات، يُرجى الانتقال إلى مركز المساعدة.</translation>
 <translation id="5947651424015173580">يمكنك النقر مرّتين على الماوس</translation>
 <translation id="5948123859135882163">تبديل تفسير مصطلحات الرياضيات بين البنيوية والدلالية</translation>
 <translation id="5955304353782037793">app</translation>
@@ -827,7 +827,7 @@
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">مفاتيح مهمّة على لوحة المفاتيح: مفتاح البحث</translation>
 <translation id="6305702903308659374">‏التشغيل بصوت عادي حتى أثناء تحدُّث ChromeVox</translation>
-<translation id="6307969636681130414">مضغوط</translation>
+<translation id="6307969636681130414">يتم الضغط عليه</translation>
 <translation id="6315652249189065725">فتح قائمة اختصارات لوحة المفاتيح</translation>
 <translation id="6320690422100602757">ليس هناك عنصر قائمة تالٍ.</translation>
 <translation id="6322856989298155004">الأصوات</translation>
@@ -852,7 +852,7 @@
 <translation id="646954774886932461">فهرس</translation>
 <translation id="6493991254603208962">سطوع منخفض</translation>
 <translation id="6501595918865591267">فيروزي</translation>
-<translation id="6508059270146105198">نقل عرض برايل إلى أسفل الصفحة</translation>
+<translation id="6508059270146105198">نقل جهاز العرض بلغة برايل إلى أسفل الصفحة</translation>
 <translation id="6511611327412641506">.input {$$COUNT :number} .match $$COUNT 1{{open paren}} *{{{$$COUNT} open parens}}</translation>
 <translation id="6521550811716689390">بنفسجي داكن</translation>
 <translation id="6536157907112457272">كتّاني</translation>
@@ -863,11 +863,11 @@
 <translation id="6563126228219321999">ما مِن عناصر غير صالحة</translation>
 <translation id="6579990219486187401">وردي فاتح</translation>
 <translation id="6583174818554398774">الانتقال إلى التالي بدقة</translation>
-<translation id="6584162722998608255">ستتعرّف في الدرس التالي على كيفية التنقّل داخل الشاشة. يمكنك التمرير سريعًا بإصبع واحد من اليمين إلى اليسار للانتقال إلى العنصر التالي. جرِّب ذلك الآن للانتقال إلى الخطوة التالية.</translation>
+<translation id="6584162722998608255">سنشرح لك في الدرس التالي على كيفية التنقّل داخل الشاشة. يمكنك التمرير سريعًا بإصبع واحد من اليمين إلى اليسار للانتقال إلى العنصر التالي. يُرجى تجربة ذلك الآن للانتقال إلى الخطوة التالية.</translation>
 <translation id="6609828810966525877">‏استكشاف المزيد من الإيماءات في "وضع التعلّم" و"مركز مساعدة Chromebook"</translation>
 <translation id="6628427060004938651">جزء</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
-<translation id="6637586476836377253">log</translation>
+<translation id="6637586476836377253">سجّل</translation>
 <translation id="6657128831881431364">شريط التقدم</translation>
 <translation id="667999046851023355">مستند</translation>
 <translation id="6688209025607531203">تنبيه غير نمطي</translation>
@@ -893,7 +893,7 @@
 <translation id="6858047746862060282">فاتحة</translation>
 <translation id="6859876496651143278">التمرير السريع بإصبع واحد إلى يمين الشاشة</translation>
 <translation id="6865519907510167493">خطأ إملائي</translation>
-<translation id="6873188295213080042">معلومة: اضغط مع الاستمرار على مفتاح البحث مع الضغط على مفاتيح الأسهم للتنقُّل بين النصوص.</translation>
+<translation id="6873188295213080042">معلومة: عليك الضغط مع الاستمرار على مفتاح البحث مع الضغط على مفاتيح الأسهم للتنقُّل بين النصوص.</translation>
 <translation id="6889949222685321250">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}</translation>
 <translation id="6894148351896207544">قول الوقت والتاريخ الحاليين</translation>
 <translation id="6896758677409633944">نسخ</translation>
@@ -1001,7 +1001,7 @@
 <translation id="7564773684901619629">.input {$$COUNT :number} .match $$COUNT 1{{apostrophe}} *{{{$$COUNT} apostrophes}}</translation>
 <translation id="7569983096843329377">أسود</translation>
 <translation id="7579911500627256166">نقطة <ph name="DOT" /></translation>
-<translation id="7592060599656252486">بعض</translation>
+<translation id="7592060599656252486">بعضها</translation>
 <translation id="7595446402663080101">ليس هناك جدول سابق.</translation>
 <translation id="7596131838331109045">برتقالي وردي فاتح</translation>
 <translation id="7604026522577407655">الانتقال إلى بداية العمود الحالي</translation>
@@ -1032,14 +1032,14 @@
 <translation id="7731002461127710752">.input {$$COUNT :number} .match $$COUNT 1{{backtick}} *{{{$$COUNT} backticks}}</translation>
 <translation id="7731785449856576010">ما من تطبيق مصغَّر تالٍ للوسائط.</translation>
 <translation id="7735498529470878067">تساعدك ميزة "الاستكشاف باللمس" في التعرّف سريعًا على ما يتم عرضه على الشاشة.</translation>
-<translation id="773906353055481349">‏اضغط على Search+Ctrl+Alt مع استخدام الأسهم للتنقل بين الخلايا.</translation>
+<translation id="773906353055481349">‏اضغط على مفتاح البحث+Ctrl+‏Alt مع استخدام الأسهم للتنقل بين الخلايا.</translation>
 <translation id="7746976083433980639"><ph name="ACTION" /> من أجل <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">بدأ تنزيل <ph name="FILE_NAME" />.</translation>
 <translation id="7768784765476638775">الاختيار والاستماع</translation>
 <translation id="7776293189010177726">‏فتح قوائم ChromeVox</translation>
 <translation id="7799302833060027366">اضغط على السهم المتجه للأعلى أو للأسفل أو لليمين أو لليسار لاستكشاف محتوى الرياضيات.</translation>
 <translation id="7800558923657349506">تتِّمة</translation>
-<translation id="7801768143868631306">تلميح: مرِّر سريعًا بإصبع واحد إلى اليمين أو اليسار للتنقّل.</translation>
+<translation id="7801768143868631306">تلميح: يمكنك التمرير سريعًا بإصبع واحد إلى اليمين أو اليسار للتنقّل.</translation>
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7810781339813764006">المجموعة التالية</translation>
 <translation id="7813616274030162878">قائمة الوصول عبر مفتاح التحويل</translation>
@@ -1077,7 +1077,7 @@
 <translation id="8058636807889143711">ليس هناك تعبير رياضي تالٍ.</translation>
 <translation id="8066678206530322333">بانر</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
-<translation id="8083115023881784332">‏ما مِن تركيز حالي على ChromeVox. للانتقال إلى مشغّل التطبيقات، اضغط على Alt+Shift+L.</translation>
+<translation id="8083115023881784332">‏ما مِن تركيز مُحدّد على ChromeVox. للانتقال إلى مشغّل التطبيقات، يُرجى الضغط على Alt+Shift+L.</translation>
 <translation id="8091452896542422286">المسافة</translation>
 <translation id="8096975275316362544">زبدي</translation>
 <translation id="8098587210054821856">رمادي مائل إلى الأزرق</translation>
@@ -1092,7 +1092,7 @@
 <translation id="8146613869421949343">‏في الدرس التالي، سيتم التعرف على مزيد من المعلومات عن مفتاح البحث. يُستخدَم مفتاح البحث بالتزامن مع مفاتيح أخرى في طلبات ChromeVox. يوجد مفتاح البحث فوق مفتاح Shift الأيسر مباشرةً. للمواصلة، يرجى الضغط على مفتاح البحث.</translation>
 <translation id="8153361283127969411">.input {$$COUNT :number} .match $$COUNT 1{{right bracket}} *{{{$$COUNT} right brackets}}</translation>
 <translation id="8158033275290782295">اختيار الكل</translation>
-<translation id="816818801578874684">‏هذا هو العنوان الأول. اضغط على مفتاح البحث + حرف H للانتقال إلى العنوان التالي.</translation>
+<translation id="816818801578874684">‏هذا هو العنوان الأول. عليك الضغط على مفتاح البحث + H للانتقال إلى العنوان التالي.</translation>
 <translation id="8173092779156526980">التمرير السريع بأربعة أصابع إلى يمين الشاشة</translation>
 <translation id="817529114347680055">تفعيل الشاشة</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1142,14 +1142,14 @@
 <translation id="8548973727659841685">حرف</translation>
 <translation id="8561322612995434619">له نافذة منبثقة</translation>
 <translation id="8571096049907249734">multsel</translation>
-<translation id="858006550102277544">تعليق</translation>
+<translation id="858006550102277544">التعليق</translation>
 <translation id="8584721346566392021">h5</translation>
 <translation id="8587549812518406253">عنصر القائمة التالي</translation>
 <translation id="8591343418134616947">ليس هناك عنوان سابق من المستوى السادس.</translation>
 <translation id="8603071050456974042">‏لوحة ChromeVox</translation>
 <translation id="8606621670302093223">التحكم في التاريخ</translation>
 <translation id="8613709718990529335">أصفر حاد</translation>
-<translation id="8614129468475308349">‏أحسنت. لقد تعلمت أساسيات استخدام ChromeVox بنجاح. يمكنك الاطّلاع على البرنامج التعليمي مجددًا أو الخروج منه عن طريق النقر على أحد الأزرار الواردة أدناه.</translation>
+<translation id="8614129468475308349">‏أحسنت. لقد تعلّمت أساسيات استخدام ChromeVox بنجاح. يمكنك الاطّلاع على البرنامج التعليمي مجددًا أو الخروج منه عن طريق النقر على أحد الأزرار الموجودة أدناه.</translation>
 <translation id="8625173877182443267">ليس هناك عنوان تالٍ من المستوى السادس.</translation>
 <translation id="8628186274519446680">أحمر بلون الطماطم</translation>
 <translation id="8638532244051952400">إعلان إحداثيات الخلية الحالية</translation>
@@ -1162,7 +1162,7 @@
 <translation id="867187640362843212">العنوان الخامس</translation>
 <translation id="8693391540059827073">الفصل المفضَّل لديّ</translation>
 <translation id="8696284982970258155">شمّامي</translation>
-<translation id="8741370088760768424">معلومة: اضغط على مفتاح البحث + مفتاح المسافة لتنشيط العنصر الحالي.</translation>
+<translation id="8741370088760768424">معلومة: يمكنكَ الضغط على مفتاح البحث + مفتاح المسافة لتنشيط العنصر الحالي.</translation>
 <translation id="8743786158317878347">الوصول إلى المحتوى المنظم، مثل الجداول</translation>
 <translation id="8746846427395705317">الانتقال إلى الكلمة السابقة</translation>
 <translation id="8747966237988593539">قائمة مرتبة</translation>
@@ -1224,14 +1224,14 @@
 <translation id="9173115498289768110">مستوى الصوت بنسبة <ph name="PERCENT" /> في المائة</translation>
 <translation id="9185200690645120087">‏برنامج تعليمي للتنقّل باللمس على ChromeVox</translation>
 <translation id="9192904702577636854">Marquee</translation>
-<translation id="9205282956404529648">اكتب للإكمال التلقائي.</translation>
+<translation id="9205282956404529648">يُرجى الكتابة للإكمال التلقائي</translation>
 <translation id="9208241857935108694">أبيض عتيق</translation>
 <translation id="9220679313820249046">أحمر برتقالي</translation>
 <translation id="9223032053830369045">أحمر داكن</translation>
 <translation id="93384979447910801">أخضر بحري داكن</translation>
 <translation id="937605981140327129">‏ميزة TalkBack غير مُثبّتة حاليًا. يُرجى تثبيت "خدمات تسهيل استخدام Android" عن طريق "متجر Play" والمحاولة لاحقًا.</translation>
 <translation id="948171205378458592">خفض تقييم النطق</translation>
-<translation id="957570623732056069">يمكنك التمرير سريعًا جهة اليمين أو اليسار بإصبع واحد للتنقّل في هذا الدرس.</translation>
+<translation id="957570623732056069">يمكنك التمرير سريعًا جهة اليمين أو اليسار بإصبع واحد للتنقّل في هذا الدرس</translation>
 <translation id="958854023026327378">يُرجى التمرير سريعًا بإصبع واحد إلى الأسفل</translation>
 <translation id="962913030769097253">عنوان المستوى الأول التالي</translation>
 <translation id="966588271015727539">اختيار عرض البلوتوث بلغة برايل</translation>

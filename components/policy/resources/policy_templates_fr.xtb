@@ -547,6 +547,19 @@ Les règles Chrome prévaudront sur cette règle, par exemple si l'extension se 
       Elle remplace <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> et les préférences de l'utilisateur.</translation>
 <translation id="1413768951234456918">Effacer l'historique de navigation</translation>
 <translation id="1413936351612032792">Transmettre des informations sur l'utilisation des applications Linux</translation>
+<translation id="1417776888841750570">Cette règle détermine le comportement du navigateur une fois l'utilisateur connecté à un compte géré dans la zone de contenu.
+
+Cette règle remplace <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
+
+Si cette règle est suggérée, une fois l'utilisateur connecté à un compte géré, il est invité à continuer d'utiliser un profil géré comme si la règle était appliquée. S'il refuse, il peut poursuivre sa navigation dans un environnement non géré.
+
+Si cette règle est appliquée, une fois l'utilisateur connecté à un compte géré, il doit continuer d'utiliser un profil géré. S'il refuse, il sera déconnecté du compte. L'application de cette règle n'est pas affectée par la règle <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Si cette règle est désactivée ou n'est pas configurée, une fois l'utilisateur connecté à un compte géré, une info-bulle peut lui demander de créer un profil. Il peut l'ignorer et continuer à naviguer dans un environnement non géré. L'info-bulle est contrôlée par la règle <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Cette règle n'a aucun effet quand elle est définie au niveau de l'ordinateur.
+
+Cette règle ne s'applique pas au mode navigation privée et ne fonctionne pas dans ce mode.</translation>
 <translation id="1417888712677507140">Bloquer les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente.</translation>
 <translation id="1418387035898607074">Ignorer les vérifications de la navigation sécurisée visant à autoriser ou non le téléchargement de fichiers provenant d'une source fiable</translation>
 <translation id="1419020637569060510">Ajouter des restrictions à l'utilisation d'un compte géré comme compte secondaire sur Chrome OS</translation>
@@ -6854,15 +6867,6 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="5728154254076636808">Permet de créer des copies itinérantes pour les données de profil <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Mot de passe Kerberos. L'espace réservé <ph name="PASSWORD_PLACEHOLDER" /> est remplacé par le mot de passe de connexion.</translation>
 <translation id="5730610899971390601">Refuser les demandes d'association Bluetooth "Just Works"</translation>
-<translation id="5731898940174379509">Cette règle permet de préconfigurer jusqu'à 10 raccourcis personnalisés sur la page "Nouvel onglet" de <ph name="PRODUCT_NAME" />.
-
-Si elle est configurée, les utilisateurs verront ces raccourcis par défaut. Ils pourront passer de "Mes raccourcis" à "Sites les plus consultés" ou "Raccourcis de mon organisation" dans le panneau "Personnaliser Chrome". Si elle est vide ou n'est pas définie, l'utilisateur ne pourra basculer qu'entre "Mes raccourcis" et "Sites les plus consultés" dans le panneau "Personnaliser Chrome".
-
-Les URL de raccourci doivent être uniques.
-
-Si <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> est défini sur "True", les utilisateurs peuvent modifier le nom du raccourci. Si la valeur est définie sur "False" ou n'est pas configurée, les utilisateurs ne peuvent pas modifier le nom.
-
-Si <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> est défini sur "True", les utilisateurs peuvent supprimer le raccourci. Si la valeur est définie sur "False" ou n'est pas configurée, les utilisateurs ne peuvent pas supprimer le raccourci.</translation>
 <translation id="5732972008943405952">Importer les données de saisie automatique du navigateur par défaut à la première exécution</translation>
 <translation id="5733040281451845496">Si cette règle est activée, les délais liés à la gestion de l'alimentation et les limites relatives à la durée de session ne sont activés que lorsque l'utilisateur a effectué une première activité au cours d'une session.
 
@@ -8572,7 +8576,6 @@ Si elle est désactivée ou n'est pas configurée, l'utilisateur est déconnect�
 Si la règle est définie sur "false" ou si elle n'est pas configurée, cette disposition de clavier n'est pas disponible. Un redémarrage est nécessaire pour que la règle soit prise en compte.</translation>
 <translation id="685769593149966548">Appliquer le mode restreint strict sur YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
-<translation id="6863927303509860338">Définir des raccourcis sur la page "Nouvel onglet"</translation>
 <translation id="6866755486434471318">Autorise <ph name="PEPPER_NAME" /> à utiliser des images partagées pour le décodage vidéo.</translation>
 <translation id="6878757724611298427">Autoriser les utilisateurs à se servir d'applis Android sur des appareils non affiliés</translation>
 <translation id="6881397131210596522">Si cette règle est définie sur "2", cela empêche automatiquement les sites d'utiliser l'API WebPrinting.

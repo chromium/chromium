@@ -332,6 +332,7 @@
 <translation id="2083190527011054446">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">इमोजी पिकर खोल्नुहोस्</translation>
 <translation id="2088116547584365419">गेमहरू</translation>
+<translation id="2093792000875799555">Steam को Chromebook मा चल्ने संस्करणसम्बन्धी समाचार</translation>
 <translation id="209965399369889474">नेटवर्कमा जोडिएको छैन</translation>
 <translation id="2107581415810719320">अन्य बटन <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">तपाईंको USB-C केबल Thunderbolt मा जोड्न मिल्दैन। डिभाइस राम्ररी नचल्न सक्छ।</translation>
@@ -1371,6 +1372,7 @@
 <translation id="5429993543155113935">इन्कोग्निटो विन्डो हाल प्रयोग गर्न मिल्दैन</translation>
 <translation id="5431318178759467895">रङ्ग</translation>
 <translation id="5433020815079095860">अडियो इनपुट</translation>
+<translation id="543584294741034249">तपाईं बढीमा <ph name="DISPLAY_LIMIT" /> वटा बाह्य डिस्प्लेमा कनेक्ट गर्न सक्नुहुन्छ।</translation>
 <translation id="544691375626129091">सबै उपलब्ध प्रयोगकर्ताहरू यस सत्रमा पहिले नै थपिएका छन्।</translation>
 <translation id="54609108002486618">व्यवस्थापन गरिएको</translation>
 <translation id="5460938382730614333">मार्कर अन छ।</translation>
@@ -1588,6 +1590,7 @@
 <translation id="612734058257491180">Google सहायक अतिथिको सत्रमा उपलब्ध हुँदैन।</translation>
 <translation id="6127395413317891856">तपाईं अफलाइन हुनुहुन्छ। इन्टरनेट जाँचेर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6129953537138746214">क्षेत्र</translation>
+<translation id="6136872094979134163">Steam को Chromebook मा चल्ने संस्करणसम्बन्धी समाचार प्राप्त गर्न सकिएन।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> को खाता हटाउने कार्यसम्बन्धी डायलग खोल्नुहोस्</translation>
 <translation id="6141205840878048728">तपाईं कुन कार्यमा फोकस गर्न चाहनुहुन्छ?</translation>
 <translation id="6141988275892716286">डाउनलोड गर्ने पुष्टि गर्नुहोस्</translation>

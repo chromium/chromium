@@ -696,7 +696,6 @@
 <translation id="3789841737615482174">Установити</translation>
 <translation id="380329542618494757">Повне ім’я</translation>
 <translation id="3803696231112616155">Пропонувати переклад для цього сайту</translation>
-<translation id="3808311849069021992">Показати відомості про пошукову систему</translation>
 <translation id="3810973564298564668">Керувати</translation>
 <translation id="381219490185664296">Розгрупувати вкладки?</translation>
 <translation id="3812308602011798782">Відгуки</translation>
@@ -1109,7 +1108,6 @@
 <translation id="537853552771686272">Керуйте темами й сайтами, які вас цікавлять</translation>
 <translation id="5390458669633674385">{count,plural, =1{Закрито {count} вкладку}one{Закрито {count} вкладку}few{Закрито {count} вкладки}many{Закрито {count} вкладок}other{Закрито {count} вкладки}}</translation>
 <translation id="5394975111793637642">Сховати картку "Вибрані відгуки про товари"</translation>
-<translation id="5395707839134961196">Сховати відомості про пошукову систему</translation>
 <translation id="5414763847370083940">Ви отримаєте сповіщення, коли на якомусь сайті знизиться ціна.</translation>
 <translation id="5415289094036440596">Ключами доступу не можна ділитися</translation>
 <translation id="5416455648658732408">Перемістити в групу вкладок</translation>
@@ -1347,7 +1345,6 @@
 <translation id="6232329973559504466">Пошук в анонімному режимі</translation>
 <translation id="6234310016144827337">Перевірте з’єднання й повторіть спробу</translation>
 <translation id="6236952928980352967">Відновити попередження</translation>
-<translation id="623755660902014047">Режим читання</translation>
 <translation id="6241132809279377987">Спробуйте більше функцій iPhone завдяки додаткам Google</translation>
 <translation id="6247557882553405851">Google Менеджер паролів</translation>
 <translation id="6251835855431997163">Автоматично заповнити значення "<ph name="VALUE" />"</translation>

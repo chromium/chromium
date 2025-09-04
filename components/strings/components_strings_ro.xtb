@@ -724,6 +724,7 @@
 <translation id="2188375229972301266">Perforare multiplă în partea de jos</translation>
 <translation id="218940509700321686">Valori separate prin virgulă</translation>
 <translation id="2194856509914051091">De reținut</translation>
+<translation id="2198183835992354675">Numărul de călător cunoscut</translation>
 <translation id="2198215508485017216">A apărut o eroare neașteptată. <ph name="BEGIN_LINK" />Află mai multe despre încărcările în Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Butonul Nu îmi place; apasă pe Enter pentru a deschide un formular și a trimite feedback detaliat despre motivul pentru care nu îți place această sugestie</translation>
 <translation id="2202627062836089804">spatele cardului</translation>
@@ -1114,6 +1115,7 @@
 <translation id="2879233115503670140">Valabilă până pe <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">folosește blocarea ecranului pentru completarea parolelor</translation>
 <translation id="2881276955470682203">Salvezi cardul?</translation>
+<translation id="2882280148032777436">Șterge numărul de călător cunoscut</translation>
 <translation id="2882949212241984732">Îndoire tip fereastră dublă</translation>
 <translation id="2891963978019740012">Motorul tău de căutare în Chrome</translation>
 <translation id="2893773853358652045">A patra rolă</translation>
@@ -2487,7 +2489,6 @@
 <translation id="512670116361803001"><ph name="APP_NAME" /> poate să nu fie redimensionată corect. Folosește dimensiunile de fereastră presetate pentru a evita eventualele erori ale aplicației.</translation>
 <translation id="512756860033933700">Blocarea tastaturii este permisă</translation>
 <translation id="5127934926273826089">Flori</translation>
-<translation id="5129094684098010260">Cardul a fost salvat numai pe dispozitiv</translation>
 <translation id="5129534298163637277">Dialog de confirmare</translation>
 <translation id="5129662217315786329">Poloneză</translation>
 <translation id="5135404736266831032">Gestionează adresele...</translation>
@@ -2630,6 +2631,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Ora este setată în trecut”, „Ora este setată în viitor” sau „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Confirmă-ți identitatea ca să folosești această parolă pe toate dispozitivele</translation>
+<translation id="5380539543938195166">Actualizezi numărul de călător cunoscut?</translation>
 <translation id="5380953781541843508">în ordine crescătoare</translation>
 <translation id="5381318171304904246">Dacă alegi să continui, te vom direcționa către site-ul băncii. După ce confirmi, vei reveni automat pentru a finaliza achiziția.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> a actualizat fila <ph name="WEBSITE_TITLE" /></translation>
@@ -3065,7 +3067,6 @@
 <translation id="6108580855199168381">Detaliile certificatului</translation>
 <translation id="6108702513636120202">Motorul tău de căutare în Chromium</translation>
 <translation id="6108849843016142864">Reptile și amfibieni</translation>
-<translation id="610911394827799129">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Căutările tale, cele mai bune potriviri și conținutul paginilor acestora sunt trimise la Google și pot fi văzute de evaluatori umani pentru a îmbunătăți această funcție.</translation>
 <translation id="6116338172782435947">să afișeze textul și imaginile copiate în clipboard</translation>
 <translation id="6117833587752089929">Foto (satin)</translation>
@@ -3232,6 +3233,7 @@
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Folie termocontractibilă</translation>
 <translation id="6383221683286411806">Urmează costuri potențiale.</translation>
+<translation id="6384448607821972818">S-a afișat parola de recuperare</translation>
 <translation id="6385164437039878414">Rucsacuri și genți</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{o altă sugestie}few{alte # sugestii}other{alte # de sugestii}}</translation>
 <translation id="6386565501269869892">Plic personal 4</translation>
@@ -3340,7 +3342,6 @@
 <translation id="6529173248185917884">A șaptea rolă</translation>
 <translation id="6529602333819889595">&amp;Repetați ștergerea</translation>
 <translation id="6532101170117367231">Salvați în Google Drive</translation>
-<translation id="6535617236508021606">Cardul s-a salvat în Contul Google ca să îl poți folosi în toate serviciile Google.</translation>
 <translation id="6536221421038631327">Dacă elimini un abonament Passpoint din <ph name="DEVICE_TYPE" />, rețelele asociate se vor elimina. Contactează <ph name="FRIENDLY_NAME" /> pentru a modifica planul de abonament. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Pentru a vedea tabelele de comparație, activează sincronizarea</translation>
 <translation id="6539092367496845964">A apărut o eroare. Încearcă din nou mai târziu.</translation>
@@ -4004,6 +4005,7 @@ Detalii suplimentare:
 <translation id="7638605456503525968">Porturi seriale</translation>
 <translation id="7646681339175747202">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Managerul de parole Google recomandă să schimbi parola acum.</translation>
 <translation id="7647206758853451655">Calitatea printării</translation>
+<translation id="7648133459447652947">Pentru a afișa cursorul, a schimba aplicații, a reîncărca pagina sau a reveni</translation>
 <translation id="7648527891719919697">Site-ul va rămâne blocat deoarece ai activat Protecția avansată în <ph name="BEGIN_ANDROID_SETTINGS_LINK" />setările Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Stocheze fișiere pe acest dispozitiv</translation>
 <translation id="7653957176542370971">Foaia handlerului pentru plăți este închisă</translation>
@@ -4043,6 +4045,7 @@ Detalii suplimentare:
 <translation id="7690647519407127574">Carte poștală Oufuku Hagaki</translation>
 <translation id="7693583928066320343">S-a recepționat ordinea paginilor</translation>
 <translation id="769424100851389104">Începe actualizarea acum</translation>
+<translation id="7696107855583699585">Editează numărul de călător cunoscut</translation>
 <translation id="7697837508203274589">Evenimente sportive în direct</translation>
 <translation id="7698864304447945242">Actualizezi Serviciile Google Play pentru realitate augmentată?</translation>
 <translation id="7701040980221191251">Niciuna</translation>
@@ -4331,6 +4334,7 @@ Detalii suplimentare:
 <translation id="822925450938886901">Pentru informații suplimentare și politicile care se pot aplica, deschide chrome://management în browser.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (numărul de identificare a vehiculului)</translation>
 <translation id="8232343881378637145">Temperatura platformei</translation>
 <translation id="8233773197406738106">Se pregătește fișierul</translation>
 <translation id="823490921909113114">Pentru a activa aceste setări și a folosi informațiile de plată din Contul Google, accesează Setările serviciilor de completare automată.</translation>
@@ -4656,6 +4660,7 @@ Detalii suplimentare:
 <translation id="8772387130037509473">Yoga și Pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Muți fișierul confidențial?}few{Muți fișierele confidențiale?}other{Muți fișierele confidențiale?}}</translation>
 <translation id="8775347646940100151">Hârtie (cu antet)</translation>
+<translation id="8776941011841875705">Salvezi numărul de călător cunoscut?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Butonul Tradu pagina, activează pentru a traduce această pagină cu Google Traducere</translation>
 <translation id="8785658048882205566">Motociclete</translation>
@@ -4840,6 +4845,7 @@ Detalii suplimentare:
 <translation id="9107199998619088551"><ph name="MANAGER" /> îți gestionează profilul</translation>
 <translation id="9107467864910557787">Browserul este gestionat de <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Politica implementată de administrator dezactivează permiterea accesului la ecran pentru <ph name="APPLICATION_TITLE" /> atunci când este vizibil conținut confidențial</translation>
+<translation id="9114101423898634479">Adaugă numărul de călător cunoscut</translation>
 <translation id="9114524666733003316">Se confirmă cardul…</translation>
 <translation id="9114581008513152754">Browserul nu este gestionat de o companie sau o altă organizație. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată în afara Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Mai multe despre anunțurile din Chrome</translation>

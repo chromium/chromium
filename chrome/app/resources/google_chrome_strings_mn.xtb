@@ -21,6 +21,7 @@
 <translation id="1152920704813762236">ChromeOS-н тухай</translation>
 <translation id="1154147086299354128">&amp;Chrome-д нээх</translation>
 <translation id="1157985233335035034">Саяхан сонгосон хэлнүүд</translation>
+<translation id="1158134713295836892">Chrome дахь Gemini</translation>
 <translation id="1184145431117212167">Таны Windows-н хувилбарыг дэмждэггүй тул суулгаж чадсангүй.</translation>
 <translation id="1194807384646768652">Файлын төрлийг ихэвчлэн татдаггүй бөгөөд энэ нь аюултай байж магадгүй тул Chrome энэ таталтыг блоклосон</translation>
 <translation id="1203500561924088507">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө хөтчөө дахин эхлүүлэх ёстой.</translation>
@@ -108,6 +109,7 @@
 <translation id="2199691482078155239">Chrome танд хардаг заруудаа илүү сайн хянах илүү их хяналтыг өгдөг бөгөөд сайтуудыг танд хувийн болгосон зар харуулах үедээ таны талаар юу мэдэж авч болохыг хязгаарладаг</translation>
 <translation id="2216543877350048334">Google Бүртгэлээ Chrome-с хасахын тулд гарна уу</translation>
 <translation id="2236949375853147973">Миний үйл ажиллагаа</translation>
+<translation id="22791603784558743">Chrome Dev дэх Gemini-г хаах</translation>
 <translation id="2290014774651636340">Google-ийн API түлхүүр байхгүй байна. Google Chrome-ийн зарим функц идэвхгүй болно.</translation>
 <translation id="2290095356545025170">Та Google Chrome-ыг устгах гэж байгаадаа итгэлтэй байна уу?</translation>
 <translation id="2301513536169703857">Нууц үг, хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
@@ -141,6 +143,7 @@
 <translation id="2665296953892887393">Google рүү эвдрэлийн тайлан болон <ph name="UMA_LINK" />-ыг илгээх замаар Google Chrome-ыг сайжруулахад туслаач</translation>
 <translation id="2668094785979141847">Google Lens-с гарахын тулд товшино уу</translation>
 <translation id="2681444469812712297"><ph name="URL" />-г Google Chrome-д шинэ табд нээнэ үү.</translation>
+<translation id="2699790011615497488">Chrome Бета дахь Gemini-г нээх</translation>
 <translation id="2712141162840347885">Google Lens-р хайхыг хүссэн зүйлээ сонгох эсвэл Google Lens-с гарахын тулд escape дээр дарна уу</translation>
 <translation id="2738871930057338499">Интернэтэд холбогдох боломжгүй байна. HTTP 403 хориотой. Прокси тохируулгаа шалгана уу.</translation>
 <translation id="2742320827292110288">Анхааруулга: Google Chrome өргөтгөлүүдийг таны хөтчийн түүхийг бичихээс хамгаалж чадахгүй. Энэ өргөтгөлийг Нууцлалтай горимд идэвхгүй болгохын тулд энэ сонголтыг болиулна уу.</translation>
@@ -403,6 +406,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="58431560289969279">Та нэвтэрсэн байхдаа Chrome-д Google Бүртгэлээсээ нууц үг болон бусад зүйлээ ашиглах боломжтой. Та үүнийг тохиргоонд хүссэн үедээ өөрчлөх боломжтой.</translation>
 <translation id="5858486459377137936">Хэрэв та Chrome-д нэвтэрсэн бол таныг Chrome-н бүх цонхыг хаах үед Google Бүртгэлээс тань бусад ихэнх сайтаас гаргана. Сайтад таныг санахыг зөвшөөрөхийн тулд <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563">Аюултай сайт болон татаж авсан файлын талаар <ph name="BEGIN_LINK" />Chrome танд сануулна<ph name="END_LINK" /></translation>
+<translation id="5894164573378901688">Chrome дахь Gemini-г ашиглахын тулд өөр Google Бүртгэлээр нэвтэрнэ үү</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх</translation>
 <translation id="5924017743176219022">Интернэтэд холбогдож байна...</translation>
@@ -465,6 +469,8 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6506909944137591434">Таны эргэн тойрны 3D газрын зургийг үүсгэхийн тулд Chrome-д камерын зөвшөөрөл шаардлагатай</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Дев</translation>
 <translation id="6520670145826811516">Байршлаа ашиглахын тулд <ph name="BEGIN_LINK" />системийн тохиргоонд<ph name="END_LINK" /> Chrome-д хандах эрх өгнө үү</translation>
+<translation id="6532945796722480006">Chrome Канар дахь Gemini-г нээх</translation>
+<translation id="6585124893636629274">Chrome дахь Gemini-г хаах</translation>
 <translation id="659498884637196217">Энэ төхөөрөмжийн Google-н Нууц үгний менежерт байна</translation>
 <translation id="6631524303639368205">Орхисон газраасаа үргэлжлүүлнэ үү: Chrome таны сүүлийн харилцан үйлдлийн табуудыг сэргээсэн. Та үүнийг дараахаас унтрааж болно</translation>
 <translation id="6632473616050862500">ChromeOS Flex-г нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
@@ -560,6 +566,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7670287553302121848">Chrome бүртгэл дахин баталгаажуулахыг шаарддаг</translation>
 <translation id="769538538642757151">Та ямар нэг зүйлийг шалгах шаардлагатай бол Chrome танд мэдэгдэнэ</translation>
+<translation id="769906121737764913">Chrome Beta дахь Gemini-г хаах</translation>
 <translation id="7716950018788545737">Ажил(ууд) дууссан.</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" />-д зориулж системийн ул мөрийн үйлчилгээгээр хангадаг. Хэрэв энэ үйлчилгээг идэвхгүй болгосон бол хөтчийн үүсгэсэн гүйцэтгэлийн ул мөрд хам сэдэв сэлгэх болон дэд процессыг бэлдэх үйл явдал зэрэг систем дээрх үйл явдлуудыг оруулахгүй.</translation>
 <translation id="7736869414036750079">Танай байгууллага таныг Chrome-д нэвтрэхийг шаардаж байна</translation>
@@ -580,6 +587,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7886087451482920026">Google Lens-р текст сонгох</translation>
 <translation id="7890208801193284374">Нэг компьютерыг олон хэрэглэгч хуваан хэрэглэж байгаа тохиолдолд хэрэглэгч бүр өөрийн хүссэнээр Chrome-ыг тохируулж, хайлт хийх боломжтой.</translation>
 <translation id="7896673875602241923">Өмнө нь хэн нэгэн энэ компьютероос Chrome-д <ph name="ACCOUNT_EMAIL_LAST" /> бүртгэлээр нэвтэрсэн байна. Мэдээллээ тусaд нь байлгахын тулд Chrome-н шинэ хэрэглэгч үүсгэнэ үү.</translation>
+<translation id="7904985524660297937">Google Chrome дахь Gemini-г туршиж үзээрэй</translation>
 <translation id="7917876797003313048">Та нэвтэрсэн Google Бүртгэлүүдээ удирдах боломжтой. Таны Google Бүртгэлүүдийг Chrome хөтөч, Play Store, Gmail болон бусад дээр ашигладаг. Хэрэв та гэр бүлийн гишүүн зэрэг өөр хэн нэгний бүртгэлийг нэмэхийг хүсвэл оронд нь өөрийн <ph name="DEVICE_TYPE" />-д шинэ хүн нэмнэ үү. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Файл нь хуурамч бөгөөд таны төхөөрөмжид гэнэтийн өөрчлөлт хийж магадгүй тул Chrome энэ таталтыг блоклосон</translation>
 <translation id="7951272445806340501">Шинэчлэлтийг хэрэгжүүлэхийн тулд ChromeOS Flex-г дахин эхлүүлэх шаардлагатай.</translation>
@@ -640,6 +648,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8637932705841171563">Цонхоо хуваалцахын тулд Системийн тохиргоонд Chrome-д дэлгэцийн үйлдэл бичихийг зөвшөөрнө үү</translation>
 <translation id="8641606876632989680">Chrome нь таныг алдагдсан нууц үгээр нэвтрэх үед танд мэдэгдэнэ</translation>
 <translation id="8649026945479135076">Таны зочилсон сайтууд таны сонирхдог зүйлсийг таны туршлагыг хувийн болгохын тулд санах нь түгээмэл юм. Сайтууд мөн Chrome-р таны сонирхлын талаарх мэдээллийг хадгалах боломжтой.</translation>
+<translation id="8656634243791296665">Chrome Dev дэх Gemini-г нээх</translation>
 <translation id="8669527147644353129">Google Chrome Туслагч</translation>
 <translation id="8679801911857917785">Энэ нь мөн таныг Chrome-ыг эхлүүлэх үед гарч ирдэг хуудсыг хянадаг.</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
@@ -668,11 +677,13 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8948460679427074738">Энэ өргөтгөл өгөгдлийг хэрхэн цуглуулж, ашигладаг гэх мэт нууцлалын практикаа нийтлээгүй байна. Chrome танд үүнийг хасахыг зөвлөж байна.</translation>
 <translation id="8958307504142971576">Та одоо Chrome-н бусад онцлогийг ашиглах боломжтой боллоо</translation>
 <translation id="8989968390305463310">Таны хөтчийн түүх таны хардаг зар болон доор тооцоолсны дагуу сонирхолд нөлөөлнө. Таны нууцлалыг хамгаалахын тулд Chrome тодорхойгүй хугацаанд сар бүр таны сонирхлыг автоматаар устгана. Та сонирхлыг хасаагүй бол сэргээх боломжтой.</translation>
+<translation id="8991530961471831170">Chrome дахь Gemini-г нээх</translation>
 <translation id="8992769679401294069">Таны өгөгдлийг нэвтрэх үгээр тань шифрлэсэн. Google Бүртгэлийнхээ Chrome-н өгөгдлийг ашиглах болон хадгалахын тулд үүнийг оруулна уу.</translation>
 <translation id="8999117580775242387">HTTPS боломжгүй үед Chrome танд сануулалгүйгээр аюултай холболт ашиглана</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-н шинэчлэлт боломжтой байна}=1{Chrome-н шинэчлэлт боломжтой байна}other{Chromium-н шинэчлэлт # хоногийн турш боломжтой байсаар байна}}</translation>
 <translation id="9014771989710951291">Олон байгууллага Chrome-г удирддаг</translation>
 <translation id="9024318700713112071">Chrome-г өгөгдмөлөөрөө тохируулна уу</translation>
+<translation id="9066987883552592250">Chrome Канар дахь Gemini-г хаах</translation>
 <translation id="9090566250983691233">Chrome зарим файлыг яагаад блоклодог болохыг мэдэж авах</translation>
 <translation id="9106236359747881194">Хайх текстийг сонгоно уу</translation>
 <translation id="911206726377975832">Хайлтын мэдээллээ бас устгамаар байна уу?</translation>

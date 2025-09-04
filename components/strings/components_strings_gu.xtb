@@ -724,6 +724,7 @@
 <translation id="2188375229972301266">નીચેની બાજુએ એકથી વધુ કાણાં પાડો</translation>
 <translation id="218940509700321686">અલ્પવિરામથી વિભાજિત મૂલ્યો</translation>
 <translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
+<translation id="2198183835992354675">નોન ટ્રાવેલર નંબર</translation>
 <translation id="2198215508485017216">કંઈક અનપેક્ષિત થયું. <ph name="BEGIN_LINK" />Drive અપલોડ વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">થમ્બ્સ ડાઉન બટન, તમે કેમ આ સૂચન નાપસંદ કરો છો તે વિશેનો વિગતવાર પ્રતિસાદ સબમિટ કરવા ફોર્મ ખોલવા માટે Enter કી દબાવો</translation>
 <translation id="2202627062836089804">તમારા કાર્ડની પાછળનો ભાગ</translation>
@@ -1114,6 +1115,7 @@
 <translation id="2879233115503670140"><ph name="DATE" /> સુધી માન્ય.</translation>
 <translation id="2879694782644540289">પાસવર્ડ ભરવા માટે તમારા સ્ક્રીન લૉકનો ઉપયોગ કરો</translation>
 <translation id="2881276955470682203">કાર્ડ સાચવીએ?</translation>
+<translation id="2882280148032777436">નોન ટ્રાવેલર નંબર ડિલીટ કરો</translation>
 <translation id="2882949212241984732">ડબલ-ગેટ ફોલ્ડ</translation>
 <translation id="2891963978019740012">Chromeમાંનું તમારું શોધ એન્જિન</translation>
 <translation id="2893773853358652045">ચોથો રોલ</translation>
@@ -2487,7 +2489,6 @@
 <translation id="512670116361803001"><ph name="APP_NAME" /> કદાચ યોગ્ય રીતે કદ બદલી શકશે નહીં. ઍપમાં અનુભવાતી સમસ્યા અટકાવવા માટે, વિન્ડોના પ્રીસેટ કરેલા કદનો ઉપયોગ કરો.</translation>
 <translation id="512756860033933700">કીબોર્ડ લૉક કરવાની મંજૂરી છે</translation>
 <translation id="5127934926273826089">ફૂલો</translation>
-<translation id="5129094684098010260">કાર્ડ ફક્ત ડિવાઇસ પર સચવાયું</translation>
 <translation id="5129534298163637277">કન્ફર્મેશન માટેનો સંવાદ</translation>
 <translation id="5129662217315786329">પોલીશ</translation>
 <translation id="5135404736266831032">સરનામા મેનેજ કરો…</translation>
@@ -2630,6 +2631,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"તમારી ઘડિયાળ પાછળ છે" અથવા "તમારી ઘડિયાળ આગળ છે" અથવા "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">તમારા બધા ડિવાઇસ પર આ પાસવર્ડ મેળવવા માટે, આ તમે જ હોવાની ચકાસણી કરો</translation>
+<translation id="5380539543938195166">નોન ટ્રાવેલર નંબર અપડેટ કરવો છે?</translation>
 <translation id="5380953781541843508">ચઢતા ક્રમમાં</translation>
 <translation id="5381318171304904246">જ્યારે તમે ચાલુ રાખશો, તમને તમારી બેંકની વેબસાઇટ પર લઈ જવામાં આવશે. તમે ચકાસણી કરો પછી, તમે ઑટોમૅટિક રીતે તમારી ખરીદી પૂર્ણ કરવા માટે પાછા ફરશો.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" />એ ટૅબ “<ph name="WEBSITE_TITLE" />” અપડેટ કરી</translation>
@@ -3065,7 +3067,6 @@
 <translation id="6108580855199168381">સર્ટિફિકેટની વિગતો</translation>
 <translation id="6108702513636120202">Chromiumમાં તમારું શોધ એન્જિન</translation>
 <translation id="6108849843016142864">સરિસૃપ અને ઉભયજીવી પ્રાણીઓ</translation>
-<translation id="610911394827799129">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે છે</translation>
 <translation id="611018310643025551">તમારી શોધો, શ્રેષ્ઠ મેળ ખાતા પરિણામો અને તેના પેજ કન્ટેન્ટ Googleને મોકલવામાં આવે છે તેમજ માનવ રિવ્યૂઅર દ્વારા જોવામાં આવે એમ બની શકે છે, જેથી આ સુવિધાને બહેતર બનાવી શકાય.</translation>
 <translation id="6116338172782435947">ક્લિપબોર્ડ પર કૉપિ કરેલી ટેક્સ્ટ અને છબીઓને જુઓ</translation>
 <translation id="6117833587752089929">ફોટો (સાટિન)</translation>
@@ -3232,6 +3233,7 @@
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">ફૉઇલ સંકોચો</translation>
 <translation id="6383221683286411806">આગળ ઉપર શુલ્ક લાગવાની શક્યતા.</translation>
+<translation id="6384448607821972818">રિકવરી પાસવર્ડ બતાવવામાં આવ્યો</translation>
 <translation id="6385164437039878414">બૅકઅપ અને યુટિલિટી બૅગ</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 અન્ય સૂચન}one{# અન્ય સૂચન}other{# અન્ય સૂચન}}</translation>
 <translation id="6386565501269869892">એન્વલપ યુ 4</translation>
@@ -3340,7 +3342,6 @@
 <translation id="6529173248185917884">સાતમો રોલ</translation>
 <translation id="6529602333819889595">&amp;ફરી કરો ડિલીટ કરો</translation>
 <translation id="6532101170117367231">Google ડ્રાઇવ પર સાચવો</translation>
-<translation id="6535617236508021606">આ કાર્ડને તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે, જેથી તમે સમગ્ર Googleની સેવાઓ પર તેનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="6536221421038631327">તમારા <ph name="DEVICE_TYPE" />માંથી કોઈ Passpoint સબ્સ્ક્રિપ્શન કાઢી નાખવાથી, સંકળાયેલા નેટવર્કની માહિતી પણ નીકળી જશે. તમારા સબ્સ્ક્રિપ્શન પ્લાનમાં ફેરફારો કરવા માટે, "<ph name="FRIENDLY_NAME" />"નો સંપર્ક કરો. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">તુલનાત્મક ટેબલ માટે, સિંક કરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="6539092367496845964">કંઈક ખોટું થયું હતું. થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
@@ -4004,6 +4005,7 @@
 <translation id="7638605456503525968">સીરિયલ પોર્ટ</translation>
 <translation id="7646681339175747202">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ કોઈ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. Google Password Manager હમણાં જ તમારો પાસવર્ડ બદલવાનો સુઝાવ આપે છે.</translation>
 <translation id="7647206758853451655">પ્રિન્ટની ક્વૉલિટી</translation>
+<translation id="7648133459447652947">તમારું કર્સર બતાવવા માટે ઍપ સ્વિચ કરો, પેજ ફરીથી લોડ કરો અથવા પાછા જાઓ</translation>
 <translation id="7648527891719919697">તમે <ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android સેટિંગ<ph name="END_ANDROID_SETTINGS_LINK" />માં અદ્યતન સુરક્ષા ચાલુ કરી હોવાથી આ સાઇટ બ્લૉક કરેલી રહેશે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">આ ડિવાઇસ પર ફાઇલો સાચવો</translation>
 <translation id="7653957176542370971">ચુકવણી માટેની હૅન્ડલર શીટ બંધ છે</translation>
@@ -4043,6 +4045,7 @@
 <translation id="7690647519407127574">Oufuku Hagaki પોસ્ટકાર્ડ</translation>
 <translation id="7693583928066320343">પેજનો ક્રમ મળ્યો છે</translation>
 <translation id="769424100851389104">અપડેટ હમણાં શરૂ કરો</translation>
+<translation id="7696107855583699585">નોન ટ્રાવેલર નંબરમાં ફેરફાર કરો</translation>
 <translation id="7697837508203274589">રમતગમતની લાઇવ ઇવેન્ટ</translation>
 <translation id="7698864304447945242">શું Google Play Services for AR અપડેટ કરીએ?</translation>
 <translation id="7701040980221191251">કોઈ નથી</translation>
@@ -4331,6 +4334,7 @@
 <translation id="822925450938886901">લાગુ થઈ શકતી હોય એવી વધારાની માહિતી અને પૉલિસીઓ માટે, તમારા બ્રાઉઝરમાં chrome://management ખોલો.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> મિલીમીટર</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (વાહનનો ઓળખ નંબર)</translation>
 <translation id="8232343881378637145">પ્લૅટફૉર્મનું તાપમાન</translation>
 <translation id="8233773197406738106">ફાઇલ તૈયાર કરી રહ્યાં છીએ</translation>
 <translation id="823490921909113114">આ સેટિંગ ચાલુ કરવા અને તમારા Google એકાઉન્ટમાંની ચુકવણીની માહિતીનો ઉપયોગ કરવા માટે, ઑટોમૅટિક રીતે ભરવાની સુવિધાઓના સેટિંગની મુલાકાત લો.</translation>
@@ -4655,6 +4659,7 @@
 <translation id="8772387130037509473">યોગા અને પાઇલેટ</translation>
 <translation id="877348612833018844">{0,plural, =1{શું ગોપનીય ફાઇલ ખસેડીએ?}one{શું ગોપનીય ફાઇલ ખસેડીએ?}other{શું ગોપનીય ફાઇલો ખસેડીએ?}}</translation>
 <translation id="8775347646940100151">પેપર (લેટરહેડ)</translation>
+<translation id="8776941011841875705">નોન ટ્રાવેલર નંબર સાચવવો છે?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">'પેજનો અનુવાદ કરો' બટન, Google Translate વડે આ પેજનો અનુવાદ કરવા માટે સક્રિય કરો</translation>
 <translation id="8785658048882205566">મોટરસાઇકલ</translation>
@@ -4839,6 +4844,7 @@
 <translation id="9107199998619088551"><ph name="MANAGER" /> તમારી પ્રોફાઇલને મેનેજ કરે છે</translation>
 <translation id="9107467864910557787">તમારું બ્રાઉઝર <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="91108059142052966">ગોપનીય કન્ટેન્ટ દેખાય ત્યારે વ્યવસ્થાપક પૉલિસી <ph name="APPLICATION_TITLE" /> સાથે સ્ક્રીન શેરિંગની સુવિધા બંધ કરે છે</translation>
+<translation id="9114101423898634479">નોન ટ્રાવેલર નંબર ઉમેરો</translation>
 <translation id="9114524666733003316">કાર્ડ કન્ફર્મ કરી રહ્યાં છીએ...</translation>
 <translation id="9114581008513152754">આ બ્રાઉઝર કંપની દ્વારા અથવા અન્ય સંસ્થા દ્વારા મેનેજ કરવામાં આવતું નથી. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromeની બહાર મેનેજ કરી શકાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chromeમાં જાહેરાતો વિશે વધુ</translation>

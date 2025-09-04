@@ -19,6 +19,7 @@
 <translation id="1152920704813762236">关于 ChromeOS</translation>
 <translation id="1154147086299354128">在 Chrome 中打开(&amp;O)</translation>
 <translation id="1157985233335035034">最近选择过的语言</translation>
+<translation id="1158134713295836892">Chrome 中的 Gemini</translation>
 <translation id="1184145431117212167">安装失败，因为您的 Windows 版本不受支持。</translation>
 <translation id="1194807384646768652">Chrome 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
@@ -104,6 +105,7 @@
 <translation id="2199691482078155239">在 Chrome 中，您可以更有效地控制自己看到的广告，并限制网站能根据哪些个人信息向您展示个性化广告</translation>
 <translation id="2216543877350048334">若要从 Chrome 中移除您的 Google 账号，请退出账号</translation>
 <translation id="2236949375853147973">我的活动记录</translation>
+<translation id="22791603784558743">关闭 Chrome 开发者版中的 Gemini</translation>
 <translation id="2290014774651636340">缺少 Google API 密钥，因此 Google Chrome 的部分功能将无法使用。</translation>
 <translation id="2290095356545025170">确定要卸载 Google Chrome 浏览器吗？</translation>
 <translation id="2301513536169703857">如需在您的所有设备上获取密码、书签等信息，请登录 Chrome</translation>
@@ -137,6 +139,7 @@
 <translation id="2665296953892887393">将崩溃报告和<ph name="UMA_LINK" />发送给Google，帮助我们完善Google Chrome。</translation>
 <translation id="2668094785979141847">点击即可退出 Google 智能镜头</translation>
 <translation id="2681444469812712297">在 Google Chrome 的新标签页中打开 <ph name="URL" />。</translation>
+<translation id="2699790011615497488">打开 Chrome Beta 版中的 Gemini</translation>
 <translation id="2712141162840347885">选择任意内容即可使用 Google 智能镜头进行搜索，按 Esc 键可退出 Google 智能镜头</translation>
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 无法阻止扩展程序记录您的浏览活动。若要在无痕模式下停用该扩展程序，请取消选中此选项。</translation>
@@ -394,6 +397,7 @@
 <translation id="58431560289969279">登录后，您可以在 Chrome 中使用 Google 账号中的密码等信息。您随时可在“设置”中更改此设置。</translation>
 <translation id="5858486459377137936">关闭所有 Chrome 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chrome，则您的 Google 账号不会退出。若要让网站记住您，请<ph name="SETTINGS_LINK" />。</translation>
 <translation id="586971344380992563">在检测到不安全的网站和下载内容时，<ph name="BEGIN_LINK" />Chrome 会向您发出警告<ph name="END_LINK" /></translation>
+<translation id="5894164573378901688">如需使用 Chrome 中的 Gemini，请使用其他 Google 账号登录</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 网络登录</translation>
 <translation id="5924017743176219022">正在连接到互联网…</translation>
@@ -456,6 +460,8 @@
 <translation id="6506909944137591434">Chrome 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 开发者版</translation>
 <translation id="6520670145826811516">如需使用位置信息，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
+<translation id="6532945796722480006">打开 Chrome Canary 版中的 Gemini</translation>
+<translation id="6585124893636629274">关闭 Chrome 中的 Gemini</translation>
 <translation id="659498884637196217">在此设备上的 Google 密码管理工具中</translation>
 <translation id="6631524303639368205">从上次停下的地方继续：Chrome 已恢复您上次会话中的标签页。如需关闭此功能，请前往</translation>
 <translation id="6632473616050862500">ChromeOS Flex 是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开放源代码软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
@@ -551,6 +557,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670287553302121848">Chrome 账号需要重新验证身份</translation>
 <translation id="769538538642757151">如有任何事项需要您审核，Chrome 会通知您</translation>
+<translation id="769906121737764913">关闭 Chrome Beta 版中的 Gemini</translation>
 <translation id="7716950018788545737">任务已结束。</translation>
 <translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
 <translation id="7736869414036750079">贵组织要求您登录 Chrome</translation>
@@ -571,6 +578,7 @@
 <translation id="7886087451482920026">选择要使用 Google 智能镜头搜索的文字</translation>
 <translation id="7890208801193284374">如果您与亲朋好友共用计算机，他们将能够使用单独的账号进行浏览，并可随心所欲地设置Chrome。</translation>
 <translation id="7896673875602241923">之前已有人在此计算机上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身份登录了 Chrome。请新建一个 Chrome 用户来单独保存您的信息。</translation>
+<translation id="7904985524660297937">试用 Google Chrome 中的 Gemini</translation>
 <translation id="7917876797003313048">您可以管理您已登录的 Google 账号。您可通过登录自己的 Google 账号使用 Chrome 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的账号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
 <translation id="7951272445806340501">需要重启 ChromeOS Flex 以应用更新。</translation>
@@ -631,6 +639,7 @@
 <translation id="8637932705841171563">若要共享窗口，请在“系统设置”中为 Chrome 启用屏幕录制功能</translation>
 <translation id="8641606876632989680">当您使用已泄露的密码登录时，Chrome 会通知您</translation>
 <translation id="8649026945479135076">您访问的网站经常会记住您感兴趣的内容，以便为您提供个性化体验。网站还可以将您的兴趣信息存储在 Chrome 中。</translation>
+<translation id="8656634243791296665">打开 Chrome 开发者版中的 Gemini</translation>
 <translation id="8669527147644353129">Google Chrome 浏览器帮助程序</translation>
 <translation id="8679801911857917785">它还能够控制Chrome启动后显示的页面。</translation>
 <translation id="8712637175834984815">知道了</translation>
@@ -659,11 +668,13 @@
 <translation id="8948460679427074738">此扩展程序尚未发布隐私权规范，例如如何收集和使用数据。Chrome 建议您移除它。</translation>
 <translation id="8958307504142971576">您现在可以在 Chrome 中使用更多功能了</translation>
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
+<translation id="8991530961471831170">打开 Chrome 中的 Gemini</translation>
 <translation id="8992769679401294069">系统将使用您的口令加密您的数据。请输入该口令，以便将 Chrome 数据保存在您的 Google 账号中并使用这些数据。</translation>
 <translation id="8999117580775242387">如果 HTTPS 不可用，Chrome 会在不向您发出警告的情况下使用不安全的连接</translation>
 <translation id="8999208279178790196">{0,plural, =0{有一项可用的 Chrome 更新}=1{有一项可用的 Chrome 更新}other{有一项可用的 Chrome 更新（已发布 # 天）}}</translation>
 <translation id="9014771989710951291">多个组织负责管理 Chrome</translation>
 <translation id="9024318700713112071">将 Chrome 设为默认浏览器</translation>
+<translation id="9066987883552592250">关闭 Chrome Canary 版中的 Gemini</translation>
 <translation id="9090566250983691233">了解 Chrome 为何屏蔽某些文件</translation>
 <translation id="9106236359747881194">选择文字即可搜索</translation>
 <translation id="911206726377975832">同时删除您的浏览数据吗？</translation>

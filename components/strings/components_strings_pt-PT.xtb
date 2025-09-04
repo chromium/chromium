@@ -724,6 +724,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="218940509700321686">Valores separados por vírgulas</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
+<translation id="2198183835992354675">Número de viajante conhecido</translation>
 <translation id="2198215508485017216">Ocorreu um erro inesperado. <ph name="BEGIN_LINK" />Saiba mais sobre os carregamentos para o Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Botão Não gosto, prima Enter para abrir um formulário e enviar feedback detalhado sobre o motivo pelo qual não gosta desta sugestão</translation>
 <translation id="2202627062836089804">no verso do cartão</translation>
@@ -1114,6 +1115,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2879233115503670140">Válido até <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">usar o bloqueio de ecrã para preencher palavras-passe</translation>
 <translation id="2881276955470682203">Guardar o cartão?</translation>
+<translation id="2882280148032777436">Elimine o número de viajante conhecido</translation>
 <translation id="2882949212241984732">Dobra simétrica dupla</translation>
 <translation id="2891963978019740012">O seu motor de pesquisa no Chrome</translation>
 <translation id="2893773853358652045">Quarto rolo</translation>
@@ -2487,7 +2489,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="512670116361803001">A app <ph name="APP_NAME" /> pode não ser redimensionada corretamente. Utilize os tamanhos da janela predefinidos para impedir que a app tenha problemas.</translation>
 <translation id="512756860033933700">Bloqueio do teclado permitido</translation>
 <translation id="5127934926273826089">Flores</translation>
-<translation id="5129094684098010260">Cartão guardado apenas no dispositivo</translation>
 <translation id="5129534298163637277">Caixa de diálogo de confirmação</translation>
 <translation id="5129662217315786329">Polaco</translation>
 <translation id="5135404736266831032">Gerir endereços…</translation>
@@ -2630,6 +2631,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"O seu relógio está atrasado" ou "O seu relógio está adiantado" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Para ter esta palavra-passe em todos os seus dispositivos, valide a sua identidade</translation>
+<translation id="5380539543938195166">Atualizar o número de viajante conhecido?</translation>
 <translation id="5380953781541843508">por ordem ascendente</translation>
 <translation id="5381318171304904246">Se continuar, vai aceder ao Website do seu banco. Após a validação, regressa automaticamente a esta página para concluir a compra.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> atualizou o separador "<ph name="WEBSITE_TITLE" />"</translation>
@@ -3065,7 +3067,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6108580855199168381">Detalhes do certificado</translation>
 <translation id="6108702513636120202">O seu motor de pesquisa no Chromium</translation>
 <translation id="6108849843016142864">Répteis e anfíbios</translation>
-<translation id="610911394827799129">A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="611018310643025551">As suas pesquisas, as melhores correspondências e o respetivo conteúdo da página são enviados para a Google e podem ser vistos por revisores humanos para melhorar esta funcionalidade.</translation>
 <translation id="6116338172782435947">Ver o texto e as imagens copiados para a área de transferência</translation>
 <translation id="6117833587752089929">Foto (acetinado)</translation>
@@ -3232,6 +3233,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Filme retrátil</translation>
 <translation id="6383221683286411806">Possíveis cobranças se prosseguir.</translation>
+<translation id="6384448607821972818">Palavra-passe de recuperação apresentada</translation>
 <translation id="6385164437039878414">Mochilas e sacos</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 outra sugestão}other{# outras sugestões}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
@@ -3340,7 +3342,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6529173248185917884">Sétimo rolo</translation>
 <translation id="6529602333819889595">&amp;Refazer eliminação</translation>
 <translation id="6532101170117367231">Guardar no Google Drive</translation>
-<translation id="6535617236508021606">Este cartão está guardado na sua Conta Google para que o possa usar nos serviços Google.</translation>
 <translation id="6536221421038631327">Se remover uma subscrição do Passpoint do seu dispositivo <ph name="DEVICE_TYPE" />, as redes associadas são removidas. Contacte "<ph name="FRIENDLY_NAME" />" para alterar o seu plano de subscrição. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Para ver tabelas de comparação, ative a sincronização</translation>
 <translation id="6539092367496845964">Ocorreu um erro. Tente mais tarde.</translation>
@@ -4003,6 +4004,7 @@ Detalhes adicionais:
 <translation id="7638605456503525968">Portas de série</translation>
 <translation id="7646681339175747202">A palavra-passe que acabou de usar foi encontrada numa violação de dados. O Gestor de Palavras-passe da Google recomenda que altere a palavra-passe agora.</translation>
 <translation id="7647206758853451655">Qualidade de impressão</translation>
+<translation id="7648133459447652947">Para mostrar o cursor, mude de app, atualize a página ou retroceda</translation>
 <translation id="7648527891719919697">Este site vai permanecer bloqueado porque tem a Proteção avançada ativada nas <ph name="BEGIN_ANDROID_SETTINGS_LINK" />definições do Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Armazenar ficheiros neste dispositivo</translation>
 <translation id="7653957176542370971">A página do controlador do pagamento está fechada.</translation>
@@ -4042,6 +4044,7 @@ Detalhes adicionais:
 <translation id="7690647519407127574">Postal Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Ordem da página recebida</translation>
 <translation id="769424100851389104">Iniciar atualização agora</translation>
+<translation id="7696107855583699585">Edite o número de viajante conhecido</translation>
 <translation id="7697837508203274589">Eventos desportivos ao vivo</translation>
 <translation id="7698864304447945242">Atualizar os Serviços do Google Play para realidade aumentada?</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
@@ -4330,6 +4333,7 @@ Detalhes adicionais:
 <translation id="822925450938886901">Para ver informações adicionais e políticas que possam ser aplicáveis, abra chrome://management no navegador.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (número de identificação de veículo)</translation>
 <translation id="8232343881378637145">Temperatura da plataforma</translation>
 <translation id="8233773197406738106">A preparar o ficheiro</translation>
 <translation id="823490921909113114">Para ativar estas definições e usar as informações de pagamento da sua Conta Google, aceda às definições dos serviços de preenchimento automático.</translation>
@@ -4655,6 +4659,7 @@ Detalhes adicionais:
 <translation id="8772387130037509473">Ioga e pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Mover o ficheiro confidencial?}other{Mover os ficheiros confidenciais?}}</translation>
 <translation id="8775347646940100151">Papel (timbrado)</translation>
+<translation id="8776941011841875705">Guardar o número de viajante conhecido?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Botão Traduzir página; ative para traduzir esta página com o Google Tradutor</translation>
 <translation id="8785658048882205566">Motos</translation>
@@ -4839,6 +4844,7 @@ Detalhes adicionais:
 <translation id="9107199998619088551">A <ph name="MANAGER" /> gere o seu perfil</translation>
 <translation id="9107467864910557787">O navegador é gerido por <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">A política do administrador desativa a partilha de ecrã com <ph name="APPLICATION_TITLE" /> quando existe conteúdo confidencial visível.</translation>
+<translation id="9114101423898634479">Adicione o número de viajante conhecido</translation>
 <translation id="9114524666733003316">A confirmar o cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerido por uma empresa ou outra entidade. A atividade neste dispositivo pode ser gerida fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Mais sobre os anúncios no Chrome</translation>

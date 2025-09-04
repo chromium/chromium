@@ -549,6 +549,19 @@ Các chính sách của Chrome sẽ được ưu tiên hơn chính sách này, c
       Chính sách này ghi đè <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> và các lựa chọn ưu tiên của người dùng.</translation>
 <translation id="1413768951234456918">Xoá nhật ký duyệt web</translation>
 <translation id="1413936351612032792">Báo cáo thông tin về việc sử dụng các ứng dụng Linux</translation>
+<translation id="1417776888841750570">Chính sách này kiểm soát hành vi của trình duyệt sau khi người dùng đăng nhập vào tài khoản được quản lý trong vùng nội dung.
+
+Chính sách này ghi đè <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
+
+Nếu bạn đặt chính sách này thành Đề xuất, thì sau khi đăng nhập vào tài khoản được quản lý, người dùng sẽ được yêu cầu tiếp tục sử dụng hồ sơ được quản lý như thể đây là quy tắc bắt buộc. Nếu từ chối, người dùng có thể tiếp tục duyệt web trong môi trường không được quản lý.
+
+Nếu bạn đặt chính sách này thành Bắt buộc, thì sau khi đăng nhập vào tài khoản được quản lý, người dùng sẽ được yêu cầu tiếp tục sử dụng hồ sơ được quản lý. Nếu từ chối, người dùng sẽ bị đăng xuất khỏi tài khoản của mình. Chính sách <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> không ảnh hưởng đến quy tắc bắt buộc này.
+
+Nếu bạn đặt chính sách này thành Tắt hoặc không đặt, thì sau khi đăng nhập vào tài khoản được quản lý, người dùng có thể thấy một bong bóng yêu cầu họ tạo hồ sơ mới. Họ có thể đóng bong bóng này và tiếp tục duyệt web trong môi trường không được quản lý. Bong bóng này được kiểm soát theo chính sách <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Chính sách này không có hiệu lực khi đặt ở cấp độ thiết bị.
+
+Chính sách này không áp dụng hoặc không hoạt động trong chế độ ẩn danh.</translation>
 <translation id="1417888712677507140">Chặn các hộp thoại JavaScript được kích hoạt từ một khung phụ có nguồn gốc khác.</translation>
 <translation id="1418387035898607074">Bỏ qua quá trình kiểm tra của tính năng Duyệt web an toàn đối với các tệp tải xuống từ nguồn đáng tin cậy</translation>
 <translation id="1419020637569060510">Thêm các hạn chế trên một tài khoản được quản lý được sử dụng làm tài khoản phụ trên ChromeOS.</translation>
@@ -6972,15 +6985,6 @@ Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="5728154254076636808">Bật tạo bản sao chuyển vùng cho dữ liệu hồ sơ của <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Mật khẩu Kerberos. Phần giữ chỗ <ph name="PASSWORD_PLACEHOLDER" /> được thay bằng mật khẩu đăng nhập.</translation>
 <translation id="5730610899971390601">Từ chối yêu cầu ghép nối Bluetooth "Just Works"</translation>
-<translation id="5731898940174379509">Nếu bạn đặt chính sách này, hệ thống sẽ định cấu hình trước tối đa 10 lối tắt tuỳ chỉnh trên trang Thẻ mới của <ph name="PRODUCT_NAME" />.
-
-Nếu bạn đặt chính sách này, người dùng sẽ thấy các lối tắt này theo mặc định và có thể chuyển đổi giữa "Các lối tắt của tôi", "Các trang web truy cập nhiều nhất " hoặc "Lối tắt của tổ chức tôi" trên bảng điều khiển "Tuỳ chỉnh Chrome". Nếu bạn không đặt hoặc để trống chính sách này, người dùng sẽ chỉ có thể chuyển đổi giữa "Các lối tắt của tôi" hoặc "Các trang web truy cập nhiều nhất" trên bảng điều khiển "Tuỳ chỉnh Chrome".
-
-URL lối tắt phải không được trùng lặp.
-
-Nếu bạn đặt <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> thành true, thì người dùng có thể thay đổi tên của lối tắt. Nếu bạn đặt thành false hoặc không đặt, thì người dùng sẽ không thể chỉnh sửa tên.
-
-Nếu bạn đặt <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> thành true, thì người dùng có thể xoá lối tắt này. Nếu bạn đặt thành false hoặc không đặt, thì người dùng không thể xoá lối tắt.</translation>
 <translation id="5732972008943405952">Nhập dữ liệu tự động điền vào biểu mẫu trên trình duyệt mặc định trong lần chạy đầu tiên</translation>
 <translation id="5733040281451845496">Nếu bạn đặt chính sách này thành Bật, thì thời gian trì hoãn của chính sách quản lý điện và giới hạn thời lượng phiên hoạt động sẽ chỉ bắt đầu sau khi hoạt động đầu tiên của người dùng xảy ra trong một phiên hoạt động.
 
@@ -8749,7 +8753,6 @@ Nếu bạn đặt chính sách này thành Disabled (Tắt) hoặc không đặ
 Nếu bạn đặt chính sách này thành sai hoặc không đặt thì bố cục này sẽ không được áp dụng. Bạn cần khởi động lại để chính sách có hiệu lực.</translation>
 <translation id="685769593149966548">Buộc sử dụng Chế độ hạn chế nghiêm ngặt cho YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 trở lên</translation>
-<translation id="6863927303509860338">Thiết lập các lối tắt trên trang Thẻ mới</translation>
 <translation id="6866755486434471318">Cho phép <ph name="PEPPER_NAME" /> sử dụng hình ảnh được chia sẻ để giải mã video.</translation>
 <translation id="6878757724611298427">Cho phép người dùng sử dụng ứng dụng Android trên thiết bị chưa liên kết</translation>
 <translation id="6881397131210596522">Nếu bạn đặt chính sách này thành 2 thì hệ thống sẽ tự động ngăn các trang web sử dụng API WebPrinting.

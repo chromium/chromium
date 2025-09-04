@@ -332,6 +332,7 @@
 <translation id="2083190527011054446">శుభరాత్రి <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">ఎమోజి పికర్‌ను తెరవండి</translation>
 <translation id="2088116547584365419">గేమ్‌లు</translation>
+<translation id="2093792000875799555">Chromebook కోసం Steam వార్తలు</translation>
 <translation id="209965399369889474">నెట్‌వర్క్‌కు కనెక్ట్ కాలేదు</translation>
 <translation id="2107581415810719320">వేరే బటన్ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">మీ USB-C కేబుల్ Thunderboltను సపోర్ట్ చేయదు. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
@@ -1106,7 +1107,7 @@
 <translation id="4611292653554630842">లాగిన్ చేయండి</translation>
 <translation id="462160925400706389"><ph name="NAME" /> కనెక్ట్ అయింది</translation>
 <translation id="4623167406982293031">ఖాతాను వెరిఫై చేయండి</translation>
-<translation id="4628757576491864469">పరికరాలు</translation>
+<translation id="4628757576491864469">డివైజ్‌లు</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, నక్షత్ర రేటింగ్ <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">తొలగించడానికి Ctrl + Wను నొక్కండి</translation>
 <translation id="4635501805800894201">{0,plural, =0{ఇప్పుడే పరికరాన్ని మునుపటి వెర్షన్‌కు అప్‌డేట్ చేయండి}=1{1 సెకను లోపు పరికరాన్ని మునపటి వెర్షన్‌కు అప్‌డేట్ చేయండి}other{# సెకన్ల లోపు పరికరాన్ని మునపటి వెర్షన్‌కు అప్‌డేట్ చేయండి}}</translation>
@@ -1590,6 +1591,7 @@
 <translation id="612734058257491180">గెస్ట్ సెషన్‌లో Google Assistant పని చేయదు.</translation>
 <translation id="6127395413317891856">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. మీ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6129953537138746214">స్పేస్</translation>
+<translation id="6136872094979134163">Chromebook కోసం Steam వార్తలను తిరిగి పొందడం సాధ్యం కాలేదు.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> కోసం 'డైలాగ్‌ను తీసివేయండి'ని తెరవండి</translation>
 <translation id="6141205840878048728">మీరు దేనిపై ఫోకస్ చేయాలనుకుంటున్నారు?</translation>
 <translation id="6141988275892716286">డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>

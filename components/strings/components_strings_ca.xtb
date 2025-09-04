@@ -724,6 +724,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2188375229972301266">Encunyació múltiple a la part inferior</translation>
 <translation id="218940509700321686">Valors separats per comes</translation>
 <translation id="2194856509914051091">Aspectes que cal tenir en compte</translation>
+<translation id="2198183835992354675">Número de viatger conegut</translation>
 <translation id="2198215508485017216">Hi ha hagut un error inesperat. <ph name="BEGIN_LINK" />Més informació sobre les pujades de Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Botó No m'agrada: prem Retorn per obrir un formulari i enviar comentaris detallats sobre per què indiques que no t'agrada aquest suggeriment</translation>
 <translation id="2202627062836089804">al revers de la targeta</translation>
@@ -1114,6 +1115,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2879233115503670140">Vàlid fins al dia <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">utilitzar el bloqueig de pantalla per emplenar contrasenyes</translation>
 <translation id="2881276955470682203">Vols desar la targeta?</translation>
+<translation id="2882280148032777436">Suprimeix el número de viatger conegut</translation>
 <translation id="2882949212241984732">Plegat en finestra doble</translation>
 <translation id="2891963978019740012">El teu motor de cerca a Chrome</translation>
 <translation id="2893773853358652045">Quart corró</translation>
@@ -2487,7 +2489,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="512670116361803001">És possible que l'aplicació <ph name="APP_NAME" /> no canviï de mida correctament. Utilitza les mides de la finestra predefinides per evitar que l'aplicació tingui problemes.</translation>
 <translation id="512756860033933700">S'ha permès el bloqueig del teclat</translation>
 <translation id="5127934926273826089">Flors</translation>
-<translation id="5129094684098010260">La targeta s'ha desat només al dispositiu</translation>
 <translation id="5129534298163637277">Quadre de diàleg de confirmació</translation>
 <translation id="5129662217315786329">Polonès</translation>
 <translation id="5135404736266831032">Gestiona les adreces...</translation>
@@ -2630,6 +2631,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"El rellotge està endarrerit", "El rellotge està avançat" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Per obtenir aquesta contrasenya en tots els teus dispositius, verifica la teva identitat</translation>
+<translation id="5380539543938195166">Vols actualitzar el número de viatger conegut?</translation>
 <translation id="5380953781541843508">en ordre ascendent</translation>
 <translation id="5381318171304904246">En continuar, se't dirigirà al lloc web del teu banc. Un cop hagis verificat la teva identitat, tornaràs automàticament a aquesta pàgina per finalitzar la compra.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> ha actualitzat la pestanya "<ph name="WEBSITE_TITLE" />"</translation>
@@ -3065,7 +3067,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6108580855199168381">Detalls del certificat</translation>
 <translation id="6108702513636120202">El teu motor de cerca a Chromium</translation>
 <translation id="6108849843016142864">Rèptils i amfibis</translation>
-<translation id="610911394827799129">A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google</translation>
 <translation id="611018310643025551">Les teves cerques, les millors coincidències i el contingut de les seves pàgines s'envien a Google i és possible que els revisors humans els vegin per millorar aquesta funció.</translation>
 <translation id="6116338172782435947">Veure el text i les imatges copiats al porta-retalls</translation>
 <translation id="6117833587752089929">Foto (setinada)</translation>
@@ -3232,6 +3233,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Làmina de degoteig reduïda</translation>
 <translation id="6383221683286411806">Aquest lloc web et pot fer càrrecs.</translation>
+<translation id="6384448607821972818">S'ha mostrat la contrasenya de recuperació</translation>
 <translation id="6385164437039878414">Motxilles i bosses d'esports</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 suggeriment més}other{# suggeriments més}}</translation>
 <translation id="6386565501269869892">Sobre You 4</translation>
@@ -3340,7 +3342,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6529173248185917884">Setè corró</translation>
 <translation id="6529602333819889595">&amp;Refés la supressió</translation>
 <translation id="6532101170117367231">Desa a Google Drive</translation>
-<translation id="6535617236508021606">Aquesta targeta s'ha desat al teu Compte de Google perquè la puguis utilitzar en tots els serveis de Google.</translation>
 <translation id="6536221421038631327">En suprimir una subscripció de Passpoint del teu <ph name="DEVICE_TYPE" />, se suprimiran les xarxes associades. Contacta amb <ph name="FRIENDLY_NAME" /> per fer canvis al pla de subscripció. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Per veure les taules de comparació, activa la sincronització</translation>
 <translation id="6539092367496845964">S'ha produït un error. Torna-ho a provar més tard.</translation>
@@ -4004,6 +4005,7 @@ Detalls addicionals:
 <translation id="7638605456503525968">Ports en sèrie</translation>
 <translation id="7646681339175747202">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. El gestor de contrasenyes de Google et recomana que la canviïs ara.</translation>
 <translation id="7647206758853451655">Qualitat d'impressió</translation>
+<translation id="7648133459447652947">Per mostrar el cursor, canvia d'aplicació, torna a carregar la pàgina o torna enrere</translation>
 <translation id="7648527891719919697">Aquest lloc web es mantindrà bloquejat perquè tens activada la Protecció avançada a la <ph name="BEGIN_ANDROID_SETTINGS_LINK" />configuració d'Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació sobre aquest advertiment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Emmagatzema fitxers en aquest dispositiu</translation>
 <translation id="7653957176542370971">El full del gestor de pagaments està tancat</translation>
@@ -4043,6 +4045,7 @@ Detalls addicionals:
 <translation id="7690647519407127574">Postal Oufuku Hagaki</translation>
 <translation id="7693583928066320343">S'ha rebut l'ordre de la pàgina</translation>
 <translation id="769424100851389104">Inicia l'actualització ara</translation>
+<translation id="7696107855583699585">Edita el número de viatger conegut</translation>
 <translation id="7697837508203274589">Esdeveniments esportius en directe</translation>
 <translation id="7698864304447945242">Vols actualitzar Serveis de Google Play per a RA?</translation>
 <translation id="7701040980221191251">Cap</translation>
@@ -4331,6 +4334,7 @@ Detalls addicionals:
 <translation id="822925450938886901">Per obtenir més informació i veure les polítiques que s'hi podrien aplicar, obre chrome://management al navegador.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (número d'identificació de vehicle)</translation>
 <translation id="8232343881378637145">Temperatura de la plataforma</translation>
 <translation id="8233773197406738106">S'està preparant el fitxer</translation>
 <translation id="823490921909113114">Per activar aquestes opcions de configuració i utilitzar la informació de pagament del teu Compte de Google, ves a la configuració dels serveis d'emplenament automàtic.</translation>
@@ -4655,6 +4659,7 @@ Detalls addicionals:
 <translation id="8772387130037509473">Ioga i pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Vols moure el fitxer confidencial?}other{Vols moure els fitxers confidencials?}}</translation>
 <translation id="8775347646940100151">Paper (carta)</translation>
+<translation id="8776941011841875705">Vols desar el número de viatger conegut?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Botó Tradueix la pàgina: activa'l per traduir aquesta pàgina amb el Traductor de Google</translation>
 <translation id="8785658048882205566">Motocicletes</translation>
@@ -4839,6 +4844,7 @@ Detalls addicionals:
 <translation id="9107199998619088551"><ph name="MANAGER" /> gestiona el teu perfil</translation>
 <translation id="9107467864910557787">El navegador està gestionat per <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">La política de l'administrador desactiva la compartició de pantalla amb <ph name="APPLICATION_TITLE" /> quan es mostra contingut confidencial</translation>
+<translation id="9114101423898634479">Afegeix el número de viatger conegut</translation>
 <translation id="9114524666733003316">S'està confirmant la targeta...</translation>
 <translation id="9114581008513152754">Cap empresa ni cap altra organització no gestiona aquest navegador. És possible que l'activitat d'aquest dispositiu es gestioni fora de Chrome. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Més informació sobre els anuncis a Chrome</translation>

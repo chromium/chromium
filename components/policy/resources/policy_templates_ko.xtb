@@ -549,6 +549,19 @@ PromptInTab으로 설정하면, 사용자의 인증이 만료되는 즉시 Googl
       이 정책은 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, 사용자의 환경설정에 우선하여 적용됩니다.</translation>
 <translation id="1413768951234456918">방문 기록 삭제</translation>
 <translation id="1413936351612032792">Linux 앱 사용에 관한 정보 보고</translation>
+<translation id="1417776888841750570">이 정책은 관리 계정으로 콘텐츠 영역에 로그인한 후의 브라우저 동작을 제어합니다.
+
+이 정책은 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />보다 우선 적용됩니다.
+
+이 정책을 권장으로 설정하면 관리 계정에 로그인한 후 사용자에게 정책이 시행된 것처럼 관리 프로필을 계속 사용하라는 메시지가 표시됩니다. 사용자가 거부하면 관리되지 않는 환경에서 계속 탐색할 수 있습니다.
+
+정책을 시행으로 설정하면 관리 계정에 로그인한 후 사용자에게 관리 프로필을 계속 사용하라는 메시지가 표시됩니다. 사용자가 거부하면 계정에서 로그아웃됩니다. 이 시행은 <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> 정책의 영향을 받지 않습니다.
+
+정책을 사용 안함으로 설정하거나 설정하지 않으면, 관리 계정에 로그인한 후 사용자에게 새 프로필을 만들라는 도움말 풍선이 표시될 수도 있습니다. 도움말 풍선은 닫을 수 있으며, 사용자는 관리되지 않는 환경에서 계속 탐색할 수 있습니다. 도움말 풍선은 <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> 정책에 따라 제어됩니다.
+
+이 정책은 머신 수준에서 설정될 경우 아무런 영향을 미치지 않습니다.
+
+이 정책은 시크릿 모드에 적용되지 않으며 시크릿 모드에서 작동하지 않습니다.</translation>
 <translation id="1417888712677507140">다른 출처 서브프레임에서 실행된 자바스크립트 대화상자 차단</translation>
 <translation id="1418387035898607074">신뢰할 수 있는 출처의 파일 다운로드에 대한 세이프 브라우징 확인 건너뛰기</translation>
 <translation id="1419020637569060510">ChromeOS에서 관리 계정의 보조 계정 사용 제한 추가</translation>
@@ -6937,15 +6950,6 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_P
 <translation id="5728154254076636808"><ph name="PRODUCT_NAME" /> 프로필 데이터 로밍 사본 생성을 사용 설정합니다.</translation>
 <translation id="5729308727912841256">Kerberos 비밀번호입니다. <ph name="PASSWORD_PLACEHOLDER" /> 자리표시자는 로그인 비밀번호로 교체됩니다.</translation>
 <translation id="5730610899971390601">'Just Works' 블루투스 페어링 요청 거부</translation>
-<translation id="5731898940174379509">정책을 설정하면 <ph name="PRODUCT_NAME" /> 새 탭 페이지에 최대 10개의 맞춤 단축키가 미리 구성됩니다.
-
-설정하면 기본적으로 사용자에게 이러한 단축키가 표시되며 'Chrome 맞춤설정' 패널에서 '내 바로가기', '가장 많이 방문한 사이트' 또는 '내 조직의 바로가기' 간에 전환할 수 있습니다. 비어 있거나 설정되지 않은 경우 사용자는 'Chrome 맞춤설정' 패널에서 '내 바로가기' 또는 '가장 많이 방문한 사이트' 간에만 전환할 수 있습니다.
-
-단축키 URL은 고유해야 합니다.
-
-<ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" />이(가) true로 설정되면 사용자가 단축키의 이름을 변경할 수 있습니다. false로 설정하거나 설정하지 않으면 사용자가 이름을 변경할 수 없습니다.
-
-<ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />이(가) true로 설정되면 사용자가 단축키를 삭제할 수 있습니다. false로 설정하거나 설정하지 않으면, 사용자가 바로가기를 삭제할 수 없습니다.</translation>
 <translation id="5732972008943405952">처음 실행할 때 기본 브라우저에서 양식 자동 완성 데이터 가져오기</translation>
 <translation id="5733040281451845496">정책을 사용 설정하면 세션에서 첫 사용자 활동이 발생하기 전까지는 전원 관리 지연 및 세션 길이 제한이 시작되지 않습니다.
 
@@ -8677,7 +8681,6 @@ false로 설정되면 Crostini 컨테이너로 포트 전달이 사용 중지됩
 False로 설정하거나 설정하지 않으면 레이아웃을 사용할 수 없습니다. 설정을 적용하려면 재부팅해야 합니다.</translation>
 <translation id="685769593149966548">YouTube에 강력 제한 모드 사용</translation>
 <translation id="686079137349561371">Microsoft Windows 7 이상</translation>
-<translation id="6863927303509860338">새 탭 페이지에서 단축키 설정</translation>
 <translation id="6866755486434471318"><ph name="PEPPER_NAME" />에서 동영상 디코딩에 공유 이미지를 사용하도록 허용합니다.</translation>
 <translation id="6878757724611298427">사용자가 연결되지 않은 기기에서 Android 앱을 사용하도록 허용</translation>
 <translation id="6881397131210596522">정책을 2로 설정하면 사이트에서 WebPrinting API를 사용하지 못하도록 자동으로 차단됩니다.

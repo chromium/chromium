@@ -724,6 +724,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="218940509700321686">Valores separados por vírgula</translation>
 <translation id="2194856509914051091">Considerações</translation>
+<translation id="2198183835992354675">Número de passageiro conhecido</translation>
 <translation id="2198215508485017216">Ocorreu um erro inesperado. <ph name="BEGIN_LINK" />Saiba mais sobre os uploads do Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Botão "Não gostei": pressione Enter para abrir um formulário e enviar um feedback detalhado sobre o motivo de você não ter gostado dessa sugestão</translation>
 <translation id="2202627062836089804">parte de trás do cartão</translation>
@@ -1114,6 +1115,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2879233115503670140">Válido até <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">usar o bloqueio de tela para preencher senhas</translation>
 <translation id="2881276955470682203">Salvar cartão?</translation>
+<translation id="2882280148032777436">Excluir o número de passageiro conhecido</translation>
 <translation id="2882949212241984732">Dobra janela dupla</translation>
 <translation id="2891963978019740012">Seu mecanismo de pesquisa no Chrome</translation>
 <translation id="2893773853358652045">Quarto rolo</translation>
@@ -2487,7 +2489,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="512670116361803001">O <ph name="APP_NAME" /> pode não ser redimensionado corretamente. Use os tamanhos de janela predefinidos para evitar problemas.</translation>
 <translation id="512756860033933700">Bloqueio do teclado permitido</translation>
 <translation id="5127934926273826089">Flores</translation>
-<translation id="5129094684098010260">Cartão salvo apenas no dispositivo</translation>
 <translation id="5129534298163637277">Caixa de diálogo de confirmação</translation>
 <translation id="5129662217315786329">Polonês</translation>
 <translation id="5135404736266831032">Gerenciar endereços…</translation>
@@ -2630,6 +2631,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Seu relógio está atrasado", "Seu relógio está adiantado" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Para acessar essa senha em todos os seus dispositivos, confirme sua identidade</translation>
+<translation id="5380539543938195166">Atualizar o número de passageiro conhecido?</translation>
 <translation id="5380953781541843508">em ordem crescente</translation>
 <translation id="5381318171304904246">Ao continuar, vamos abrir o site do seu banco. Após a verificação, você vai retornar automaticamente para concluir a compra.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> atualizou a guia "<ph name="WEBSITE_TITLE" />"</translation>
@@ -3065,7 +3067,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6108580855199168381">Detalhes do certificado</translation>
 <translation id="6108702513636120202">Seu mecanismo de pesquisa no Chromium</translation>
 <translation id="6108849843016142864">Répteis e anfíbios</translation>
-<translation id="610911394827799129">Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Suas pesquisas, as melhores correspondências e o conteúdo das páginas são enviados ao Google e podem ser acessados por revisores humanos para melhorar esse recurso.</translation>
 <translation id="6116338172782435947">Ver os textos e imagens copiados para a área de transferência</translation>
 <translation id="6117833587752089929">Foto (acetinada)</translation>
@@ -3232,6 +3233,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Laminado termo retrátil</translation>
 <translation id="6383221683286411806">Acesso sujeito a cobranças.</translation>
+<translation id="6384448607821972818">Senha de recuperação exibida</translation>
 <translation id="6385164437039878414">Mochilas</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 outra sugestão}one{# outra sugestão}other{# outras sugestões}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
@@ -3340,7 +3342,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6529173248185917884">Sétimo rolo</translation>
 <translation id="6529602333819889595">&amp;Refazer excluir</translation>
 <translation id="6532101170117367231">Salvar no Google Drive</translation>
-<translation id="6535617236508021606">O cartão foi salvo na sua Conta do Google. Agora ele poderá ser usado em todos os Serviços do Google.</translation>
 <translation id="6536221421038631327">A remoção de uma assinatura do Passpoint do <ph name="DEVICE_TYPE" /> também remove as redes associadas. Entre em contato com "<ph name="FRIENDLY_NAME" />" para fazer mudanças no seu plano de assinatura. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Para ver as tabelas de comparação, ative a sincronização</translation>
 <translation id="6539092367496845964">Algo deu errado. Tente novamente mais tarde.</translation>
@@ -4004,6 +4005,7 @@ Mais detalhes:
 <translation id="7638605456503525968">Portas seriais</translation>
 <translation id="7646681339175747202">A senha que você usou foi encontrada em um vazamento de dados. O Gerenciador de senhas do Google recomenda que você mude essa senha imediatamente.</translation>
 <translation id="7647206758853451655">Qualidade de impressão</translation>
+<translation id="7648133459447652947">Para mostrar o cursor, mude de app, recarregue a página ou volte</translation>
 <translation id="7648527891719919697">Este site vai continuar bloqueado porque a Proteção Avançada está ativada nas suas <ph name="BEGIN_ANDROID_SETTINGS_LINK" />configurações do Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Armazenar arquivos neste dispositivo</translation>
 <translation id="7653957176542370971">A página do gerenciador de pagamento está fechada</translation>
@@ -4043,6 +4045,7 @@ Mais detalhes:
 <translation id="7690647519407127574">Cartão postal Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Ordem de páginas recebida</translation>
 <translation id="769424100851389104">Iniciar atualização agora</translation>
+<translation id="7696107855583699585">Editar o número de passageiro conhecido</translation>
 <translation id="7697837508203274589">Eventos esportivos ao vivo</translation>
 <translation id="7698864304447945242">Atualizar o Google Play Services para RA?</translation>
 <translation id="7701040980221191251">Nenhum</translation>
@@ -4331,6 +4334,7 @@ Mais detalhes:
 <translation id="822925450938886901">Para ver mais informações e políticas que podem ser aplicadas, abra chrome://management no navegador.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">Chassi (número de identificação do veículo)</translation>
 <translation id="8232343881378637145">Temperatura da plataforma</translation>
 <translation id="8233773197406738106">Preparando o arquivo</translation>
 <translation id="823490921909113114">Para ativar essas configurações e usar as informações de pagamento da sua Conta do Google, acesse as configurações do preenchimento automático.</translation>
@@ -4656,6 +4660,7 @@ Mais detalhes:
 <translation id="8772387130037509473">Ioga e pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Mover o arquivo confidencial?}one{Mover o arquivo confidencial?}other{Mover os arquivos confidenciais?}}</translation>
 <translation id="8775347646940100151">Papel (timbrado)</translation>
+<translation id="8776941011841875705">Salvar o número de passageiro conhecido?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Botão "Traduzir página". Ative para traduzir esta página com o Google Tradutor</translation>
 <translation id="8785658048882205566">Motos</translation>
@@ -4841,6 +4846,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9107199998619088551"><ph name="MANAGER" /> gerencia seu perfil</translation>
 <translation id="9107467864910557787">Seu navegador é gerenciado por <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">A política do administrador desativará o compartilhamento de tela com <ph name="APPLICATION_TITLE" /> quando houver conteúdo confidencial visível</translation>
+<translation id="9114101423898634479">Adicionar número de passageiro conhecido</translation>
 <translation id="9114524666733003316">Confirmando cartão…</translation>
 <translation id="9114581008513152754">Este navegador não é gerenciado por uma empresa ou outra organização. A atividade deste dispositivo pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Mais informações sobre anúncios no Chrome</translation>

@@ -724,6 +724,7 @@
 <translation id="2188375229972301266">Няколко перфорации в долната част</translation>
 <translation id="218940509700321686">Стойности, разделени със запетая</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
+<translation id="2198183835992354675">Известен номер на пътника</translation>
 <translation id="2198215508485017216">Възникна неочакван проблем. <ph name="BEGIN_LINK" />Научете повече за качванията в Диск<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Бутон „Не ми харесва“. Натиснете Enter, за да отворите формуляр за изпращане на подробни отзиви за причината, поради която не харесвате това предложение</translation>
 <translation id="2202627062836089804">задната страна на картата ви</translation>
@@ -1114,6 +1115,7 @@
 <translation id="2879233115503670140">Дата на валидност: <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">използва опцията ви за заключване на екрана при попълване на пароли</translation>
 <translation id="2881276955470682203">Да се запази ли картата?</translation>
+<translation id="2882280148032777436">Изтриване на известния номер на пътника</translation>
 <translation id="2882949212241984732">Сгъване на двата края навътре и прегъване в средата</translation>
 <translation id="2891963978019740012">Вашата търсеща машина в Chrome</translation>
 <translation id="2893773853358652045">Четвърта ролка</translation>
@@ -2487,7 +2489,6 @@
 <translation id="512670116361803001">Възможно е приложението <ph name="APP_NAME" /> да не функционира правилно след преоразмеряване. За да предотвратите възникване на проблеми, използвайте предварително зададените размери за прозорците.</translation>
 <translation id="512756860033933700">Заключването на клавиатурата е разрешено</translation>
 <translation id="5127934926273826089">Цветя</translation>
-<translation id="5129094684098010260">Картата е запазена само на устройството</translation>
 <translation id="5129534298163637277">Диалогов прозорец за потвърждаване</translation>
 <translation id="5129662217315786329">полски</translation>
 <translation id="5135404736266831032">Управление на адресите...</translation>
@@ -2630,6 +2631,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Часовникът ви е назад“, „Часовникът ви е напред“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">Потвърдете самоличността си, за да получите тази парола на всичките си устройства</translation>
+<translation id="5380539543938195166">Да се актуализира ли известният номер на пътника?</translation>
 <translation id="5380953781541843508">във възходящ ред</translation>
 <translation id="5381318171304904246">Ако продължите, ще бъдете пренасочени към уебсайта на банката ви. След като потвърдите, ще бъдете автоматично върнати, за да завършите покупката си.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> актуализира раздела „<ph name="WEBSITE_TITLE" />“</translation>
@@ -3065,7 +3067,6 @@
 <translation id="6108580855199168381">Подробности за сертификата</translation>
 <translation id="6108702513636120202">Вашата търсеща машина в Chromium</translation>
 <translation id="6108849843016142864">Влечуги и земноводни</translation>
-<translation id="610911394827799129">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Търсенията ви, най-добрите съответствия и съдържанието на страниците се изпращат до Google и може да бъдат видени от проверяващи лица с цел подобряване на тази функция.</translation>
 <translation id="6116338172782435947">Да преглежда текста и изображенията, копирани в буферната памет</translation>
 <translation id="6117833587752089929">Снимка (сатен)</translation>
@@ -3232,6 +3233,7 @@
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Термосвиваемо фолио</translation>
 <translation id="6383221683286411806">Възможно е таксуване.</translation>
+<translation id="6384448607821972818">Паролата за възстановяване е показана</translation>
 <translation id="6385164437039878414">Раници и практични чанти</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{още 1 предложение}other{още # предложения}}</translation>
 <translation id="6386565501269869892">Плик You 4</translation>
@@ -3340,7 +3342,6 @@
 <translation id="6529173248185917884">Седма ролка</translation>
 <translation id="6529602333819889595">&amp;Възстановяване на изтриването</translation>
 <translation id="6532101170117367231">Запазване в Google Диск</translation>
-<translation id="6535617236508021606">Тази карта е запазена в профила ви в Google, за да можете да я използвате в услугите ни.</translation>
 <translation id="6536221421038631327">Премахването на абонамент за Passpoint от <ph name="DEVICE_TYPE" /> ще премахне свързаните мрежи. Свържете се с(ъс) <ph name="FRIENDLY_NAME" />, за да направите промени в абонаментния си план. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">За да видите таблиците за сравнения, включете синхронизирането</translation>
 <translation id="6539092367496845964">Нещо се обърка. Опитайте пак по-късно.</translation>
@@ -4004,6 +4005,7 @@
 <translation id="7638605456503525968">Серийни портове</translation>
 <translation id="7646681339175747202">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. Google Мениджър на пароли ви препоръчва да я промените сега.</translation>
 <translation id="7647206758853451655">Качество на отпечатване</translation>
+<translation id="7648133459447652947">За да се покаже курсорът, превключете между приложенията, презаредете страницата или се върнете назад</translation>
 <translation id="7648527891719919697">Този сайт ще остане блокиран, защото сте включили „Разширена защита“ от <ph name="BEGIN_ANDROID_SETTINGS_LINK" />настройките на Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Да съхранява файлове на това устройство.</translation>
 <translation id="7653957176542370971">Листът на инструмента за обработване на плащания е затворен</translation>
@@ -4043,6 +4045,7 @@
 <translation id="7690647519407127574">Oufuku Hagaki Postcard</translation>
 <translation id="7693583928066320343">Редът на страниците е получен</translation>
 <translation id="769424100851389104">Стартиране на актуализирането сега</translation>
+<translation id="7696107855583699585">Редактиране на известния номер на пътника</translation>
 <translation id="7697837508203274589">Спортни събития на живо</translation>
 <translation id="7698864304447945242">Да се актуализират ли услугите за Google Play за AR?</translation>
 <translation id="7701040980221191251">Няма</translation>
@@ -4331,6 +4334,7 @@
 <translation id="822925450938886901">За допълнителна информация и правила, които може да са приложими, отворете chrome://management в браузъра си.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> и <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (идентификационен номер на превозното средство)</translation>
 <translation id="8232343881378637145">Температура на платформата</translation>
 <translation id="8233773197406738106">Файлът се подготвя</translation>
 <translation id="823490921909113114">За да активирате тези настройки и да използвате данните за плащане от профила си в Google, отворете настройките за услугите за автоматично попълване.</translation>
@@ -4655,6 +4659,7 @@
 <translation id="8772387130037509473">Йога и пилатес</translation>
 <translation id="877348612833018844">{0,plural, =1{Да се премести ли поверителният файл?}other{Да се преместят ли поверителните файлове?}}</translation>
 <translation id="8775347646940100151">Хартия (бланка)</translation>
+<translation id="8776941011841875705">Да се запази ли известният номер на пътника?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Бутон „Превод на страницата“. Активирайте, за да се преведе страницата с Google Преводач</translation>
 <translation id="8785658048882205566">Мотоциклети</translation>
@@ -4839,6 +4844,7 @@
 <translation id="9107199998619088551"><ph name="MANAGER" /> управлява потребителския ви профил</translation>
 <translation id="9107467864910557787">Браузърът ви се управлява от <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Споделянето на екрана с(ъс) <ph name="APPLICATION_TITLE" />, когато се вижда поверително съдържание, е деактивирано от администраторски правила</translation>
+<translation id="9114101423898634479">Добавяне на известен номер на пътника</translation>
 <translation id="9114524666733003316">Картата се потвърждава...</translation>
 <translation id="9114581008513152754">Този браузър не се управлява от дружество или друга организация. Възможно е активността на устройството да се управлява извън Chrome. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Повече за рекламите в Chrome</translation>

@@ -547,6 +547,19 @@ Chrome-Richtlinien haben Vorrang vor dieser Richtlinie, z. B. wenn die Erweiter
       Diese Richtlinie überschreibt <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> und die Nutzereinstellungen.</translation>
 <translation id="1413768951234456918">Browserverlauf löschen</translation>
 <translation id="1413936351612032792">Informationen zur Nutzung von Linux-Apps senden</translation>
+<translation id="1417776888841750570">Mit dieser Richtlinie wird festgelegt, wie sich der Browser verhält, wenn sich Nutzer mit einem verwalteten Konto im Inhaltsbereich anmelden.
+
+Diese Richtlinie überschreibt „<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />“.
+
+Wenn diese Richtlinie auf „Vorgeschlagen“ gesetzt ist, wird der Nutzer nach der Anmeldung in einem verwalteten Konto aufgefordert, ein verwaltetes Profil so zu verwenden, als wäre die Nutzung erzwungen. Wenn der Nutzer dies ablehnt, kann er in einer nicht verwalteten Umgebung weitersurfen.
+
+Wenn diese Richtlinie erzwungen wird, muss der Nutzer nach der Anmeldung in einem verwalteten Konto weiterhin ein verwaltetes Profil verwenden. Wenn der Nutzer dies ablehnt, wird er aus seinem Konto abgemeldet. Die Richtlinie „<ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />“ hat keine Auswirkungen auf die Erzwingung dieser Richtlinie.
+
+Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, kann der Nutzer nach der Anmeldung in einem verwalteten Konto über ein Infofeld aufgefordert werden, ein neues Profil zu erstellen. Das Infofeld lässt sich schließen und der Nutzer kann dann in einer nicht verwalteten Umgebung weiter im Internet surfen. Das Infofeld wird über die Richtlinie „<ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />“ gesteuert.
+
+Diese Richtlinie hat keine Auswirkungen, wenn sie auf Geräteebene konfiguriert wird.
+
+Diese Richtlinie gilt nicht für den Inkognitomodus und funktioniert darin auch nicht.</translation>
 <translation id="1417888712677507140">JavaScript-Dialogfelder blockieren, die von einem anderen Quell-Subframe ausgelöst wurden</translation>
 <translation id="1418387035898607074">Safe Browsing-Überprüfung für den Dateidownload von vertrauenswürdigen Quellen überspringen</translation>
 <translation id="1419020637569060510">Einschränkungen zur Nutzung eines verwalteten Kontos als sekundäres Konto in Chrome OS hinzufügen</translation>
@@ -6849,15 +6862,6 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="5728154254076636808">Erstellung von Roaming-Kopien für <ph name="PRODUCT_NAME" />-Profildaten aktivieren</translation>
 <translation id="5729308727912841256">Kerberos-Passwort. Der Platzhalter „<ph name="PASSWORD_PLACEHOLDER" />“ wird durch das Anmeldepasswort ersetzt.</translation>
 <translation id="5730610899971390601">„Just Works“-Bluetooth-Kopplungsanfragen ablehnen</translation>
-<translation id="5731898940174379509">Über diese Richtlinie werden auf der Seite „Neuer Tab“ von <ph name="PRODUCT_NAME" /> bis zu 10 benutzerdefinierte Verknüpfungen vorkonfiguriert.
-
-Wenn diese Richtlinie konfiguriert ist, sehen Nutzer diese Verknüpfungen standardmäßig. Sie können im Bereich „Chrome anpassen“ zwischen „Meine Verknüpfungen“, „Am häufigsten besuchte Websites“ und „Verknüpfungen meiner Organisation“ wechseln. Wenn diese Richtlinie leer oder nicht konfiguriert ist, können Nutzer im Bereich „Chrome anpassen“ nur zwischen „Meine Verknüpfungen“ und „Am häufigsten besuchte Websites“ wechseln.
-
-URL-Verknüpfungen müssen eindeutig sein.
-
-Wenn „<ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" />“ auf „true“ festgelegt ist, können Nutzer den Namen der Verknüpfung ändern. Bei „false“ oder einer fehlenden Konfiguration können Nutzer den Namen nicht bearbeiten.
-
-Wenn „<ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />“ auf „true“ festgelegt ist, können Nutzer die Verknüpfung entfernen. Bei „false“ oder einer fehlenden Konfiguration können Nutzer die Verknüpfung nicht entfernen.</translation>
 <translation id="5732972008943405952">Bei erstmaliger Ausführung Autofill-Formulardaten aus Standardbrowser importieren</translation>
 <translation id="5733040281451845496">Wenn die Richtlinie aktiviert ist, wird die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen bei der Energieverwaltung und Begrenzungen der Sitzungslänge verwendet.
 
@@ -8560,7 +8564,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird der Nutzer nur
 Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verfügbar. Damit die Änderungen wirksam werden, ist ein Neustart erforderlich.</translation>
 <translation id="685769593149966548">Strikt eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 oder höher</translation>
-<translation id="6863927303509860338">Verknüpfungen auf der Seite „Neuer Tab“ einrichten</translation>
 <translation id="6866755486434471318">Zulassen, dass <ph name="PEPPER_NAME" /> freigegebene Bilder für die Videodecodierung verwendet.</translation>
 <translation id="6878757724611298427">Nutzern erlauben, Android-Apps auf nicht verbundenen Geräten zu verwenden</translation>
 <translation id="6881397131210596522">Wenn die Richtlinie auf „2“ gesetzt ist, wird die Verwendung der WebPrinting API automatisch blockiert.

@@ -18,7 +18,7 @@
 <translation id="2575502321843437554">あまり興味を引かなかった</translation>
 <translation id="2611765907167846862">うららか</translation>
 <translation id="3023502830214299618">現在このページでは再生できません。しばらくしてからもう一度お試しください。</translation>
-<translation id="3493899379487634969">どのような問題がありましたか。</translation>
+<translation id="3493899379487634969">問題点の選択</translation>
 <translation id="3730775656877876887">AI 再生を生成しています</translation>
 <translation id="3778044272390020426">低評価のオプション メニュー</translation>
 <translation id="385051799172605136">戻る</translation>
@@ -57,6 +57,7 @@
 <translation id="7221920857098237570">優しい</translation>
 <translation id="7237590978482584900">爽やか</translation>
 <translation id="7282547042039404307">滑らか</translation>
+<translation id="7514257690823355037">次に移動</translation>
 <translation id="8004767876552422827">フィールド</translation>
 <translation id="8136852699834914183">このページは再生できません。</translation>
 <translation id="8198036737896977997">空気</translation>
@@ -68,5 +69,6 @@
 <translation id="8756370108715456837">事実と異なる</translation>
 <translation id="8953618380150219653">「このページを読み上げ」プレーヤーが画面全体に表示されています。</translation>
 <translation id="9087782179025630211">スライダー。<ph name="TOTAL" /> のうち <ph name="ELAPSED" /> 経過。</translation>
+<translation id="9193673272519126093">前に移動</translation>
 <translation id="978117257931832348">低ピッチ</translation>
 </translationbundle>

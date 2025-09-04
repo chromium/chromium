@@ -564,6 +564,19 @@ ou <ph name="EXTENSION_INSTALL_FORCED_POLICY_NAME" />.</translation>
       Esta política substitui <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e as preferências do usuário.</translation>
 <translation id="1413768951234456918">Limpar histórico de navegação</translation>
 <translation id="1413936351612032792">Enviar informações sobre o uso de apps Linux</translation>
+<translation id="1417776888841750570">Esta política controla o comportamento do navegador após o login de uma conta gerenciada na área de conteúdo.
+
+Ela substitui a <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
+
+Se a política for definida como "Sugerida", após o login de uma conta gerenciada, o usuário precisará continuar usando um perfil gerenciado como se ele tivesse sido aplicado. Se ela for recusada, o usuário poderá continuar navegando em um ambiente não gerenciado.
+
+Se esta política for aplicada, o usuário precisará continuar usando um perfil gerenciado após o login em uma conta gerenciada. Se ela for recusada, a conta será desconectada. Essa aplicação não é afetada pela política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Se a política for desativada ou deixada sem definição, após o login em uma conta gerenciada, o usuário vai encontrar um balão solicitando a criação de um perfil. O balão pode ser dispensado, e o usuário pode continuar navegando em um ambiente não gerenciado. O balão é controlado pela política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
+
+Esta política não terá efeito se for definida no nível da máquina.
+
+Esta política não se aplica nem funciona no modo de navegação anônima.</translation>
 <translation id="1417888712677507140">Bloquear caixas de diálogo de JavaScript acionadas por um subframe de origem diferente.</translation>
 <translation id="1418387035898607074">Pular as verificações do "Navegação segura" para arquivos baixados de fontes confiáveis</translation>
 <translation id="1419020637569060510">Adiciona restrições ao uso de uma conta gerenciada como conta secundária no ChromeOS</translation>
@@ -7115,15 +7128,6 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 <translation id="5728154254076636808">Permite a criação de cópias em roaming dos dados de perfil do <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Senha do Kerberos. O marcador <ph name="PASSWORD_PLACEHOLDER" /> é substituído pela senha de login.</translation>
 <translation id="5730610899971390601">Recusar solicitações de pareamento Bluetooth "Just Works"</translation>
-<translation id="5731898940174379509">A definição da política pré-configura até 10 atalhos personalizados na página "Nova guia" do <ph name="PRODUCT_NAME" />.
-
-Se essa opção for definida, os usuários vão ver esses atalhos por padrão e poderão alternar entre "Meus atalhos", "Sites mais visitados " ou "Atalhos da minha organização" no painel "Personalizar o Chrome". Se for deixada vazia ou sem definição, o usuário só poderá alternar entre "Meus atalhos" ou "Sites mais visitados" no painel "Personalizar o Chrome".
-
-Os URLs de atalho precisam ser exclusivos.
-
-Se a opção <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> for definida como verdadeira, os usuários poderão mudar o nome do atalho. Se for definida como falsa ou não for definida, os usuários não poderão editar o nome.
-
-Se a opção <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> for definida como verdadeira, os usuários poderão remover o atalho. Se for definida como falsa ou deixada sem definição, os usuários não poderão remover o atalho.</translation>
 <translation id="5732972008943405952">Importar dados de preenchimento automático de formulários do navegador padrão na primeira execução</translation>
 <translation id="5733040281451845496">Se a política for definida como "Ativada", os intervalos de gerenciamento de energia e os limites de duração da sessão não começarão a ser contados até a primeira atividade do usuário em uma sessão.
 
@@ -8942,7 +8946,6 @@ Se a política for desativada ou deixada sem definição, o usuário será desco
 Se ela for definida como "false" ou deixada sem definição, o layout não ficará disponível. É necessário reiniciar para que a mudança seja aplicada.</translation>
 <translation id="685769593149966548">Aplicar o Modo restrito rigoroso para o YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou versão posterior</translation>
-<translation id="6863927303509860338">Definir atalhos na página "Nova guia"</translation>
 <translation id="6866755486434471318">Permitir que <ph name="PEPPER_NAME" /> use imagens compartilhadas para decodificar vídeos.</translation>
 <translation id="6878757724611298427">Permite que os usuários usem apps Android em dispositivos não afiliados</translation>
 <translation id="6881397131210596522">Se a política for definida como 2, os sites não poderão usar a API WebPrinting automaticamente.

@@ -696,7 +696,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3789841737615482174">Installer</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803696231112616155">Proposer de traduire ce site</translation>
-<translation id="3808311849069021992">Afficher les informations sur le moteur de recherche</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="381219490185664296">Dégrouper le groupe d'onglets ?</translation>
 <translation id="3812308602011798782">Avis</translation>
@@ -1109,7 +1108,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="537853552771686272">Gérez les thèmes et les sites qui vous intéressent</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} fermé}one{{count} fermé}other{{count} fermés}}</translation>
 <translation id="5394975111793637642">Masquer la carte "Avis sur les produits pour vous"</translation>
-<translation id="5395707839134961196">Masquer les informations sur le moteur de recherche</translation>
 <translation id="5414763847370083940">Vous recevrez une alerte si le prix baisse sur un site.</translation>
 <translation id="5415289094036440596">Impossible de partager les clés d'accès</translation>
 <translation id="5416455648658732408">Déplacer vers un groupe d'onglets</translation>
@@ -1347,7 +1345,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6232329973559504466">Recherche en navigation privée</translation>
 <translation id="6234310016144827337">Vérifiez la connexion, puis réessayez</translation>
 <translation id="6236952928980352967">Restaurer l'avertissement</translation>
-<translation id="623755660902014047">Mode Lecture</translation>
 <translation id="6241132809279377987">Profitez de plus de fonctionnalités sur votre iPhone avec les applis Google</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6251835855431997163">Saisir automatiquement <ph name="VALUE" /></translation>

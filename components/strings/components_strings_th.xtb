@@ -724,6 +724,7 @@
 <translation id="2188375229972301266">เจาะรูด้านล่างหลายรู</translation>
 <translation id="218940509700321686">ค่าที่คั่นด้วยคอมมา</translation>
 <translation id="2194856509914051091">สิ่งที่ควรพิจารณา</translation>
+<translation id="2198183835992354675">หมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN)</translation>
 <translation id="2198215508485017216">เกิดข้อผิดพลาดที่ไม่คาดคิด <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการอัปโหลดไปยังไดรฟ์<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">ปุ่มไม่ชอบ กด Enter เพื่อเปิดแบบฟอร์มสำหรับส่งความคิดเห็นโดยละเอียดเกี่ยวกับสาเหตุที่คุณไม่ชอบคำแนะนำนี้</translation>
 <translation id="2202627062836089804">ด้านหลังบัตร</translation>
@@ -1114,6 +1115,7 @@
 <translation id="2879233115503670140">ใช้ได้ถึง <ph name="DATE" /></translation>
 <translation id="2879694782644540289">ใช้การล็อกหน้าจอเพื่อป้อนรหัสผ่าน</translation>
 <translation id="2881276955470682203">บันทึกบัตรไหม</translation>
+<translation id="2882280148032777436">ลบหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN)</translation>
 <translation id="2882949212241984732">พับทบ 4 ตอน</translation>
 <translation id="2891963978019740012">เครื่องมือค้นหาใน Chrome</translation>
 <translation id="2893773853358652045">ม้วนกระดาษ 4</translation>
@@ -2486,7 +2488,6 @@
 <translation id="512670116361803001"><ph name="APP_NAME" /> อาจไม่เหมาะกับการปรับขนาด ใช้ขนาดหน้าต่างที่กำหนดล่วงหน้าเพื่อป้องกันไม่ให้แอปเกิดปัญหา</translation>
 <translation id="512756860033933700">อนุญาตให้ล็อกแป้นพิมพ์</translation>
 <translation id="5127934926273826089">ดอกไม้</translation>
-<translation id="5129094684098010260">บันทึกบัตรลงในอุปกรณ์เท่านั้น</translation>
 <translation id="5129534298163637277">กล่องโต้ตอบการยืนยัน</translation>
 <translation id="5129662217315786329">โปแลนด์</translation>
 <translation id="5135404736266831032">จัดการที่อยู่...</translation>
@@ -2629,6 +2630,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"นาฬิกาของคุณช้ากว่าปัจจุบัน" หรือ "นาฬิกาของคุณเร็วกว่าปัจจุบัน" หรือ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">หากต้องการรับรหัสผ่านนี้ในอุปกรณ์ทุกเครื่อง โปรดยืนยันว่าเป็นคุณ</translation>
+<translation id="5380539543938195166">อัปเดตหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN) ไหม</translation>
 <translation id="5380953781541843508">ตามลำดับจากน้อยไปมาก</translation>
 <translation id="5381318171304904246">เมื่อคุณดำเนินการต่อ ระบบจะนำคุณไปยังเว็บไซต์ของธนาคาร หลังจากยืนยันแล้ว ระบบจะนำคุณกลับมาโดยอัตโนมัติเพื่อทำการซื้อให้เสร็จสิ้น</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> อัปเดตแท็บ "<ph name="WEBSITE_TITLE" />" แล้ว</translation>
@@ -3064,7 +3066,6 @@
 <translation id="6108580855199168381">รายละเอียดใบรับรอง</translation>
 <translation id="6108702513636120202">เครื่องมือค้นหาของคุณใน Chromium</translation>
 <translation id="6108849843016142864">สัตว์เลื้อยคลานและสัตว์ครึ่งบกครึ่งน้ำ</translation>
-<translation id="610911394827799129">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">ระบบจะส่งการค้นหาของคุณ ผลลัพธ์ที่ตรงที่สุด และเนื้อหาในหน้าไปยัง Google และเจ้าหน้าที่ตรวจสอบอาจเห็นข้อมูลดังกล่าวเพื่อนำไปใช้ปรับปรุงฟีเจอร์นี้</translation>
 <translation id="6116338172782435947">ดูข้อความและรูปภาพที่คัดลอกไปที่คลิปบอร์ด</translation>
 <translation id="6117833587752089929">รูปภาพ (ซาติน)</translation>
@@ -3231,6 +3232,7 @@
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">ฟอยล์หด</translation>
 <translation id="6383221683286411806">อาจมีการเรียกเก็บเงิน</translation>
+<translation id="6384448607821972818">แสดงรหัสผ่านสำหรับการกู้คืนแล้ว</translation>
 <translation id="6385164437039878414">กระเป๋าเป้สะพายหลังและกระเป๋าใส่สัมภาระ</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{อีก 1 คำแนะนำ}other{อีก # คำแนะนำ}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
@@ -3339,7 +3341,6 @@
 <translation id="6529173248185917884">ม้วนกระดาษ 7</translation>
 <translation id="6529602333819889595">&amp;ทำซ้ำการนำออก</translation>
 <translation id="6532101170117367231">บันทึกไปยัง Google ไดรฟ์</translation>
-<translation id="6535617236508021606">ระบบบันทึกบัตรนี้ไว้ในบัญชี Google เพื่อให้คุณใช้ในบริการต่างๆ ของ Google ได้</translation>
 <translation id="6536221421038631327">การนำการสมัครใช้บริการ Passpoint ออกจาก <ph name="DEVICE_TYPE" /> จะเป็นการนำเครือข่ายที่เกี่ยวข้องออกด้วย โปรดติดต่อ "<ph name="FRIENDLY_NAME" />" เพื่อเปลี่ยนแปลงแพ็กเกจการสมัครใช้บริการ <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">เปิดการซิงค์เพื่อดูตารางเปรียบเทียบ</translation>
 <translation id="6539092367496845964">เกิดข้อผิดพลาด ลองอีกครั้งภายหลัง</translation>
@@ -4003,6 +4004,7 @@
 <translation id="7638605456503525968">พอร์ตอนุกรม</translation>
 <translation id="7646681339175747202">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลจากการละเมิดข้อมูล เครื่องมือจัดการรหัสผ่านบน Google แนะนำให้เปลี่ยนรหัสผ่านทันที</translation>
 <translation id="7647206758853451655">คุณภาพการพิมพ์</translation>
+<translation id="7648133459447652947">หากต้องการแสดงเคอร์เซอร์ ให้สลับแอป โหลดหน้าเว็บซ้ำ หรือย้อนกลับ</translation>
 <translation id="7648527891719919697">เว็บไซต์นี้จะยังคงถูกบล็อกเนื่องจากคุณเปิดการปกป้องขั้นสูงใน<ph name="BEGIN_ANDROID_SETTINGS_LINK" />การตั้งค่า Android<ph name="END_ANDROID_SETTINGS_LINK" /> <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">จัดเก็บไฟล์บนอุปกรณ์นี้</translation>
 <translation id="7653957176542370971">แผ่นงานของเครื่องจัดการการชำระเงินปิดอยู่</translation>
@@ -4042,6 +4044,7 @@
 <translation id="7690647519407127574">ไปรษณียบัตร Oufuku Hagaki</translation>
 <translation id="7693583928066320343">ลำดับหน้าที่ได้รับ</translation>
 <translation id="769424100851389104">เริ่มอัปเดตเลย</translation>
+<translation id="7696107855583699585">แก้ไขหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN)</translation>
 <translation id="7697837508203274589">การแข่งขันกีฬา</translation>
 <translation id="7698864304447945242">อัปเดตบริการ Google Play สำหรับ AR ไหม</translation>
 <translation id="7701040980221191251">ไม่มี</translation>
@@ -4330,6 +4333,7 @@
 <translation id="822925450938886901">หากต้องการดูข้อมูลเพิ่มเติมและนโยบายที่อาจใช้อยู่ ให้เปิด chrome://management ในเบราว์เซอร์</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> มม.</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (หมายเลขประจำยานพาหนะ)</translation>
 <translation id="8232343881378637145">อุณหภูมิของแพลตฟอร์ม</translation>
 <translation id="8233773197406738106">กำลังเตรียมไฟล์</translation>
 <translation id="823490921909113114">หากต้องการเปิดใช้การตั้งค่าเหล่านี้และใช้ข้อมูลการชำระเงินจากบัญชี Google ของคุณ ให้ไปที่การตั้งค่าบริการป้อนข้อความอัตโนมัติ</translation>
@@ -4655,6 +4659,7 @@
 <translation id="8772387130037509473">โยคะและพิลาทิส</translation>
 <translation id="877348612833018844">{0,plural, =1{ย้ายไฟล์ลับใช่ไหม}other{ย้ายไฟล์ลับใช่ไหม}}</translation>
 <translation id="8775347646940100151">กระดาษ (หัวจดหมาย)</translation>
+<translation id="8776941011841875705">บันทึกหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN) ไหม</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">ปุ่มแปลหน้าเว็บ เปิดใช้งานเพื่อแปลหน้านี้ด้วย Google แปลภาษา</translation>
 <translation id="8785658048882205566">จักรยานยนต์</translation>
@@ -4839,6 +4844,7 @@
 <translation id="9107199998619088551"><ph name="MANAGER" /> จัดการโปรไฟล์ของคุณ</translation>
 <translation id="9107467864910557787">เบราว์เซอร์ของคุณจัดการโดย <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">นโยบายของผู้ดูแลระบบปิดใช้การแชร์หน้าจอกับ <ph name="APPLICATION_TITLE" /> เมื่อมีเนื้อหาลับแสดงอยู่</translation>
+<translation id="9114101423898634479">เพิ่มหมายเลขประจำตัวผู้เดินทางที่ตรวจสอบแล้ว (KTN)</translation>
 <translation id="9114524666733003316">กำลังยืนยันบัตร…</translation>
 <translation id="9114581008513152754">เบราว์เซอร์นี้ไม่ได้จัดการโดยบริษัทหรือองค์กรอื่นๆ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">ข้อมูลเพิ่มเติมเกี่ยวกับโฆษณาใน Chrome</translation>

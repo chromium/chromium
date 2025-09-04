@@ -724,6 +724,7 @@
 <translation id="2188375229972301266">多穴パンチ（下）</translation>
 <translation id="218940509700321686">カンマ区切り値</translation>
 <translation id="2194856509914051091">留意事項</translation>
+<translation id="2198183835992354675">Known Traveler 番号</translation>
 <translation id="2198215508485017216">予期しないエラーが発生しました。<ph name="BEGIN_LINK" />ドライブへのアップロードの詳細<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">低評価ボタンです。Enter キーを押すとフィードバック フォームが開き、この提案を気に入らない理由を記入して送信できます</translation>
 <translation id="2202627062836089804">カードの裏面</translation>
@@ -1114,6 +1115,7 @@
 <translation id="2879233115503670140">有効期限: <ph name="DATE" />。</translation>
 <translation id="2879694782644540289">パスワード入力で画面ロックを使用しようとしています</translation>
 <translation id="2881276955470682203">カードを保存しますか？</translation>
+<translation id="2882280148032777436">Known Traveler 番号の削除</translation>
 <translation id="2882949212241984732">両観音折り</translation>
 <translation id="2891963978019740012">Chrome で使用する検索エンジン</translation>
 <translation id="2893773853358652045">ロール 4</translation>
@@ -1960,7 +1962,7 @@
 <translation id="422722221769396062">出前、デリバリー サービス</translation>
 <translation id="4230204356098880324">カメラの使用と移動を要求できる</translation>
 <translation id="4231448684371260244">8x13 インチ</translation>
-<translation id="4233220688695460165">Chrome では、30 日以内に複数の広告を提案するトピックおよびウェブサイトは自動削除されます。また、提案してほしくないトピックやウェブサイトをユーザーがブロックすることもできます。</translation>
+<translation id="4233220688695460165">Chrome では、複数の広告を提案するトピックやウェブサイトが 30 日以内に自動削除されます。また、提案してほしくないトピックやウェブサイトをご自身でブロックすることもできます。</translation>
 <translation id="4235360514405112390">有効</translation>
 <translation id="4239799716689808527">ラベル</translation>
 <translation id="4241830393007970744">アクセスしようとしたサイトでは、攻撃者がユーザーを騙してソフトウェアをインストールさせたり、パスワード、電話番号、クレジット カード番号などを開示させたりする可能性があります。</translation>
@@ -2385,7 +2387,7 @@
 <translation id="4957080528849277028">[Chrome 履歴を表示] ボタンです。実行すると、Chrome の設定で閲覧履歴を表示、管理できます</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{と 1 件のサイト}other{と # 件のサイト}}</translation>
 <translation id="4958444002117714549">リストを展開する</translation>
-<translation id="4960068118612257147">Chrome の広告プライバシー設定で変更できます</translation>
+<translation id="4960068118612257147">Chrome の広告プライバシー設定はご自身で変更できます</translation>
 <translation id="4960203958361543136">検索エンジンの選択</translation>
 <translation id="4961708452830821006">マイクを使用するには、<ph name="LINK" /> で Chrome にアクセスを許可してください。</translation>
 <translation id="4963413887558778009">造園設計</translation>
@@ -2487,7 +2489,6 @@
 <translation id="512670116361803001"><ph name="APP_NAME" /> は適切にサイズ変更されない可能性があります。アプリに問題が生じないようにするには、プリセットのウィンドウ サイズを使用してください。</translation>
 <translation id="512756860033933700">キーボードのロックを許可しました</translation>
 <translation id="5127934926273826089">花</translation>
-<translation id="5129094684098010260">カードをデバイスのみに保存しました</translation>
 <translation id="5129534298163637277">確認ダイアログ</translation>
 <translation id="5129662217315786329">ポーランド語</translation>
 <translation id="5135404736266831032">住所を管理...</translation>
@@ -2630,6 +2631,7 @@
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">「時計が遅れています」、「時計が進んでいます」、「&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;」</translation>
 <translation id="5379618281582508161">このパスワードをすべてのデバイスで使用するには、本人確認を行ってください</translation>
+<translation id="5380539543938195166">Known Traveler 番号を更新しますか？</translation>
 <translation id="5380953781541843508">昇順</translation>
 <translation id="5381318171304904246">続行すると、銀行のウェブサイトに移動します。確認が完了すると、自動的に戻って購入手続きが完了します。</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> さんがタブ「<ph name="WEBSITE_TITLE" />」を更新しました</translation>
@@ -3065,7 +3067,6 @@
 <translation id="6108580855199168381">証明書の詳細</translation>
 <translation id="6108702513636120202">Chromium で使用する検索エンジン</translation>
 <translation id="6108849843016142864">爬虫類、両生類</translation>
-<translation id="610911394827799129">お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります</translation>
 <translation id="611018310643025551">検索語句、最も一致した結果とそのページの内容が Google に送信され、この機能の改善のために人間のレビュアーによる確認が行われる場合があります。</translation>
 <translation id="6116338172782435947">クリップボードにコピーしたテキストや画像へのアクセス</translation>
 <translation id="6117833587752089929">写真（サテン）</translation>
@@ -3232,6 +3233,7 @@
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">ホイル（シュリンク）</translation>
 <translation id="6383221683286411806">続行すると料金が請求される可能性があります。</translation>
+<translation id="6384448607821972818">再設定用のパスワードが表示されました</translation>
 <translation id="6385164437039878414">リュック、バックパック、ユーティリティ バッグ</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{他 1 件の候補}other{他 # 件の候補}}</translation>
 <translation id="6386565501269869892">洋形 4 号封筒</translation>
@@ -3340,7 +3342,6 @@
 <translation id="6529173248185917884">ロール 7</translation>
 <translation id="6529602333819889595">削除のやり直し（&amp;R）</translation>
 <translation id="6532101170117367231">Google ドライブに保存</translation>
-<translation id="6535617236508021606">このカードは Google アカウントに保存されるため、Google サービス全体で使用できます。</translation>
 <translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> から Passpoint の登録を削除すると、関連付けられているネットワークが削除されます。登録プランを変更するには「<ph name="FRIENDLY_NAME" />」にお問い合わせください。<ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">比較表を表示するには、同期をオンにしてください</translation>
 <translation id="6539092367496845964">エラーが発生しました。しばらくしてからもう一度お試しください。</translation>
@@ -4005,6 +4006,7 @@
 <translation id="7638605456503525968">シリアルポート</translation>
 <translation id="7646681339175747202">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、パスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="7647206758853451655">印刷画質</translation>
+<translation id="7648133459447652947">カーソルを表示するには、アプリを切り替えるか、ページを再読み込みするか、前に戻ります</translation>
 <translation id="7648527891719919697"><ph name="BEGIN_ANDROID_SETTINGS_LINK" />Android の設定<ph name="END_ANDROID_SETTINGS_LINK" />で高度な保護機能を有効にしているため、このサイトはブロックされたままになります。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">このデバイスのファイルの保存</translation>
 <translation id="7653957176542370971">支払いハンドラのシートは閉じています</translation>
@@ -4044,6 +4046,7 @@
 <translation id="7690647519407127574">往復はがき</translation>
 <translation id="7693583928066320343">受信したページ順序</translation>
 <translation id="769424100851389104">今すぐ更新を開始</translation>
+<translation id="7696107855583699585">Known Traveler 番号の編集</translation>
 <translation id="7697837508203274589">スポーツ観戦</translation>
 <translation id="7698864304447945242">Google Play 開発者サービス（AR）を更新しますか？</translation>
 <translation id="7701040980221191251">なし</translation>
@@ -4101,7 +4104,7 @@
 <translation id="7791543448312431591">追加</translation>
 <translation id="7798389633136518089">ポリシーがクラウドソースによって設定されていないため、無視されました。</translation>
 <translation id="7800304661137206267">この接続は <ph name="CIPHER" /> で暗号化されており、メッセージ認証には <ph name="MAC" />、鍵交換メカニズムには <ph name="KX" /> が使用されています。</translation>
-<translation id="7800977246388195491">Chrome は、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。また、アクセスしたウェブサイトの情報からユーザーの好みを判断します。それ以降、ユーザーが訪れた別のウェブサイトでパーソナライズド広告を表示させるためにこれらの情報が求められます。ユーザーは、その際に提供するトピックやウェブサイトの情報を選ぶことができます。</translation>
+<translation id="7800977246388195491">Chrome は、最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。また、アクセスしたウェブサイトの情報からユーザーの好みを判断します。それ以降に訪れる他のウェブサイトは、パーソナライズド広告を表示させるためにこれらの情報をリクエストすることができます。リクエストされた際に提供するトピックやウェブサイトの情報はご自身で選べます。</translation>
 <translation id="7802523362929240268">正規のサイトです</translation>
 <translation id="7802989406998618639">カード発行会社による本人確認のため、<ph name="SIDE_OF_CARD" />に記載されている <ph name="NUMBER_OF_DIGITS" /> 桁のセキュリティ コードを入力してください</translation>
 <translation id="780301667611848630">キャンセル</translation>
@@ -4332,6 +4335,7 @@
 <translation id="822925450938886901">詳細と適用される可能性のあるポリシーについては、ブラウザで chrome://management を開いてください。</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">車両識別番号（VIN）</translation>
 <translation id="8232343881378637145">プラットフォームの温度</translation>
 <translation id="8233773197406738106">ファイルを準備しています</translation>
 <translation id="823490921909113114">これらの設定を有効にして Google アカウントのお支払い情報を使用するには、自動入力サービスの設定にアクセスしてください。</translation>
@@ -4615,7 +4619,7 @@
 <translation id="8706806585855470492">タブグループの共有、参加、共同作業を行うことができます</translation>
 <translation id="8708134712139312373">Bluetooth デバイスへの接続を要求できる</translation>
 <translation id="8710842507289500830">フォント スタイル</translation>
-<translation id="8712637175834984815">理解した</translation>
+<translation id="8712637175834984815">理解しました</translation>
 <translation id="8713438021996895321">詩</translation>
 <translation id="8718314106902482036">支払い処理を完了できませんでした</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />、<ph name="DESCRIPTION" />、検索候補</translation>
@@ -4657,6 +4661,7 @@
 <translation id="8772387130037509473">ヨガ、ピラティス</translation>
 <translation id="877348612833018844">{0,plural, =1{機密ファイルを移動しますか？}other{機密ファイルを移動しますか？}}</translation>
 <translation id="8775347646940100151">紙（レターヘッド）</translation>
+<translation id="8776941011841875705">Known Traveler 番号を保存しますか？</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">[ページを翻訳] ボタンです。実行すると、Google 翻訳を使用してこのページを翻訳できます</translation>
 <translation id="8785658048882205566">オートバイ</translation>
@@ -4841,6 +4846,7 @@
 <translation id="9107199998619088551">プロファイルは <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="9107467864910557787">ご使用のブラウザは <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="91108059142052966">管理者のポリシーによって、機密コンテンツが表示されているときは、<ph name="APPLICATION_TITLE" /> との画面共有が無効になります</translation>
+<translation id="9114101423898634479">Known Traveler 番号の追加</translation>
 <translation id="9114524666733003316">カードを確認しています…</translation>
 <translation id="9114581008513152754">このブラウザは、会社またはその他の組織によって管理されていません。このデバイスでのアクティビティは、Chrome 以外で管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome で表示される広告の詳細</translation>
