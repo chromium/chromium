@@ -112,7 +112,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -1111,6 +1110,8 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
                                        syncer::SHARING_MESSAGE,
                                        syncer::USER_CONSENTS};
   allowed_types.PutAll(syncer::ControlTypes());
+  allowed_types.Put(syncer::CONTACT_INFO);
+  allowed_types.Put(syncer::PASSWORDS);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // OS sync types run in transport mode.
@@ -1118,8 +1119,6 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
                         syncer::OS_PREFERENCES,
                         syncer::OS_PRIORITY_PREFERENCES});
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  allowed_types.Put(syncer::CONTACT_INFO);
 
   if (base::FeatureList::IsEnabled(
           switches::kEnablePreferencesAccountStorage)) {
@@ -1181,16 +1180,6 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
     allowed_types.Put(syncer::AUTOFILL_VALUABLE);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, PASSWORDS require that Google Play Services is present.
-  password_manager_android_util::PasswordManagerUtilBridge util_bridge;
-  if (util_bridge.IsInternalBackendPresent()) {
-    allowed_types.Put(syncer::PASSWORDS);
-  }
-#else   // BUILDFLAG(IS_ANDROID)
-  allowed_types.Put(syncer::PASSWORDS);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {

@@ -31,10 +31,6 @@
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "content/public/browser/storage_partition.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
@@ -49,15 +45,6 @@ network::mojom::NetworkContext* GetNetworkContext(Profile* profile) {
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     content::BrowserContext* context) {
-#if BUILDFLAG(IS_ANDROID)
-  password_manager_android_util::PasswordManagerUtilBridge util_bridge;
-  if (!util_bridge.IsInternalBackendPresent()) {
-    LOG(ERROR)
-        << "Password store not supported: Chrome's internal backend missing";
-    return nullptr;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
   Profile* profile = Profile::FromBrowserContext(context);
   DCHECK(!profile->IsOffTheRecord());
   scoped_refptr<PasswordStore> ps =
