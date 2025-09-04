@@ -26,7 +26,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/test_file_util.h"
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -107,6 +106,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/test/test_file_util.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
 #include "components/version_info/version_info.h"
@@ -371,6 +371,10 @@ void InProcessBrowserTest::Initialize() {
   launch_browser_for_testing_ =
       std::make_unique<ash::full_restore::ScopedLaunchBrowserForTesting>();
 #endif
+#if BUILDFLAG(IS_WIN)
+  base::GetPathsAllowedToLeak() = {L"\\Sync Data", L"\\Local Storage\\leveldb",
+                                   L"\\DataSharing", L"\\Collaboration"};
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 InProcessBrowserTest::~InProcessBrowserTest() {

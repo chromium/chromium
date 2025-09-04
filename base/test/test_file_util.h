@@ -39,6 +39,17 @@ bool DieFileDie(const FilePath& file, bool recurse);
 // `base::FilePath`.
 FilePath GetTempDirForTesting();
 
+#if BUILDFLAG(IS_WIN)
+// Returns the collection of sub-paths that, if found within the path to files
+// that cannot be deleted at test end, do not trigger test failure.
+// The goal is get rid of the leaking paths one by one, and ultimately the need
+// for this function, but allows us to get back our test coverage for the many
+// browser and interactive_ui_tests that have been disabled because of leaking
+// files, while still catching new leaks.  See crbug.com/410751413 for more
+// details. Note that the sub-path name comparisons are case-sensitive.
+std::vector<std::wstring>& GetPathsAllowedToLeak();
+#endif  // BUILDFLAG(IS_WIN)
+
 // Creates a a new unique directory and returns the generated path. The
 // directory will be automatically deleted when the test completes. Failure
 // upon creation or deletion will cause a test failure.
