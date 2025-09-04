@@ -58,14 +58,8 @@ void InitializeScrollbarFadeAndDelay(cc::LayerTreeSettings& settings) {
 #if !BUILDFLAG(IS_ANDROID)
   if (ui::IsOverlayScrollbarEnabled()) {
     settings.idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
-    if (ui::IsFluentOverlayScrollbarEnabled()) {
-      settings.scrollbar_fade_delay = ui::kFluentOverlayScrollbarFadeDelay;
-      settings.scrollbar_fade_duration =
-          ui::kFluentOverlayScrollbarFadeDuration;
-    } else {
-      settings.scrollbar_fade_delay = ui::kOverlayScrollbarFadeDelay;
-      settings.scrollbar_fade_duration = ui::kOverlayScrollbarFadeDuration;
-    }
+    settings.scrollbar_fade_delay = ui::GetOverlayScrollbarFadeDelay();
+    settings.scrollbar_fade_duration = ui::GetOverlayScrollbarFadeDuration();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -486,7 +480,10 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   if (ui::IsOverlayScrollbarEnabled()) {
     settings.scrollbar_animator = cc::LayerTreeSettings::AURA_OVERLAY;
     settings.scrollbar_thinning_duration =
-        ui::kOverlayScrollbarThinningDuration;
+        settings.enable_fluent_overlay_scrollbar
+            ? base::Milliseconds(100)
+            // TODO(crbug.com/40487528): This value is still undetermined.
+            : base::Milliseconds(200);
     if (!settings.enable_fluent_overlay_scrollbar) {
       // Set scrollbar flash behavior based on feature flags
       const bool flash_once_enabled = base::FeatureList::IsEnabled(
@@ -499,14 +496,10 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
           ::features::kOverlayScrollbarFlashWhenMouseEnter);
     }
     // Avoid animating in web tests to improve reliability.
-    if (settings.enable_fluent_overlay_scrollbar) {
-      settings.scrollbar_thinning_duration =
-          ui::kFluentOverlayScrollbarThinningDuration;
-      if (WebTestSupport::IsRunningWebTest()) {
-        settings.scrollbar_thinning_duration = base::Milliseconds(0);
-        settings.scrollbar_fade_delay = base::TimeDelta::Max();
-        settings.scrollbar_fade_duration = base::Milliseconds(0);
-      }
+    if (WebTestSupport::IsRunningWebTest()) {
+      settings.scrollbar_thinning_duration = base::Milliseconds(0);
+      settings.scrollbar_fade_delay = base::TimeDelta::Max();
+      settings.scrollbar_fade_duration = base::Milliseconds(0);
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)

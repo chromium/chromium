@@ -279,12 +279,9 @@ void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
   if (!base::FeatureList::IsEnabled(features::kScrollbarAnimations)) {
     style->fade_out_delay = base::TimeDelta::Max();
     style->fade_out_duration = base::TimeDelta();
-  } else if (IsFluentOverlayScrollbarEnabled()) {
-    style->fade_out_delay = ui::kFluentOverlayScrollbarFadeDelay;
-    style->fade_out_duration = ui::kFluentOverlayScrollbarFadeDuration;
   } else {
-    style->fade_out_delay = ui::kOverlayScrollbarFadeDelay;
-    style->fade_out_duration = ui::kOverlayScrollbarFadeDuration;
+    style->fade_out_delay = ui::GetOverlayScrollbarFadeDelay();
+    style->fade_out_duration = ui::GetOverlayScrollbarFadeDuration();
   }
   style->idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
   // The other fields in this struct are used only on Android to draw solid

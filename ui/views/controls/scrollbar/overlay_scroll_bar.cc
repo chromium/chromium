@@ -190,7 +190,7 @@ void OverlayScrollBar::Show() {
 
 void OverlayScrollBar::Hide() {
   ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
-  settings.SetTransitionDuration(ui::kOverlayScrollbarFadeDuration);
+  settings.SetTransitionDuration(ui::GetOverlayScrollbarFadeDuration());
   layer()->SetOpacity(0.0f);
 }
 
@@ -199,7 +199,7 @@ void OverlayScrollBar::StartHideCountdown() {
     return;
   }
   hide_timer_.Start(
-      FROM_HERE, ui::kOverlayScrollbarFadeDelay,
+      FROM_HERE, ui::GetOverlayScrollbarFadeDelay(),
       base::BindOnce(&OverlayScrollBar::Hide, base::Unretained(this)));
 }
 
