@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -236,15 +237,15 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
     }
 
     protected boolean isTabGroupDrop() {
-        return ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(
-                        getDragDropGlobalState(/* dragEvent= */ null))
-                != null;
+        DragDropGlobalState globalState = getDragDropGlobalState(/* dragEvent= */ null);
+        assertNonNull(globalState);
+        return ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(globalState) != null;
     }
 
     protected boolean isMultiTabDrop() {
-        return ChromeDragDropUtils.getTabsFromGlobalState(
-                        getDragDropGlobalState(/* dragEvent= */ null))
-                != null;
+        DragDropGlobalState globalState = getDragDropGlobalState(/* dragEvent= */ null);
+        assertNonNull(globalState);
+        return ChromeDragDropUtils.getTabsFromGlobalState(globalState) != null;
     }
 
     protected boolean doesBelongToCurrentModel(boolean draggedIncognito) {

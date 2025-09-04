@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -422,8 +423,9 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     }
 
     private boolean handleTabDrop(DragEvent dropEvent, StripLayoutHelper helper) {
-        Tab tabBeingDragged =
-                ChromeDragDropUtils.getTabFromGlobalState(getDragDropGlobalState(dropEvent));
+        DragDropGlobalState globalState = getDragDropGlobalState(dropEvent);
+        assertNonNull(globalState);
+        Tab tabBeingDragged = ChromeDragDropUtils.getTabFromGlobalState(globalState);
         if (tabBeingDragged == null) {
             return false;
         }
@@ -462,8 +464,9 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     // TODO(crbug.com/437417213): Handle pinned tab.
     private boolean handleMultiTabDrop(DragEvent dropEvent, StripLayoutHelper helper) {
-        List<Tab> tabsBeingDragged =
-                ChromeDragDropUtils.getTabsFromGlobalState(getDragDropGlobalState(dropEvent));
+        DragDropGlobalState globalState = getDragDropGlobalState(dropEvent);
+        assertNonNull(globalState);
+        List<Tab> tabsBeingDragged = ChromeDragDropUtils.getTabsFromGlobalState(globalState);
         if (tabsBeingDragged == null || tabsBeingDragged.isEmpty()) {
             return false;
         }
@@ -481,7 +484,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         } else {
             // Reparent tabs at drop index.
             int tabIndex =
-                    helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp, isDraggedItemPinned());
+                    helper.getTabIndexForTabDrop(
+                            dropEvent.getX() * mPxToDp, isDraggingPinnedItem());
             mMultiInstanceManager.moveTabsToWindow(getActivity(), tabsBeingDragged, tabIndex);
             List<Integer> tabsBeingDraggedIds = new ArrayList<>();
             for (Tab tab : tabsBeingDragged) {
@@ -498,9 +502,10 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     }
 
     private boolean handleGroupDrop(DragEvent dropEvent, StripLayoutHelper helper) {
+        DragDropGlobalState globalState = getDragDropGlobalState(dropEvent);
+        assertNonNull(globalState);
         @Nullable TabGroupMetadata tabGroupMetadata =
-                ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(
-                        getDragDropGlobalState(dropEvent));
+                ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(globalState);
         if (tabGroupMetadata == null) {
             return false;
         }
@@ -592,24 +597,25 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         builder.update(show);
     }
 
-    public static boolean canMergeIntoGroupOnDrop() {
-        @Nullable Tab tab =
-                ChromeDragDropUtils.getTabFromGlobalState(
-                        getDragDropGlobalState(/* dragEvent= */ null));
-        return tab != null && !tab.getIsPinned();
+    public static boolean isDraggingUnpinnedTab() {
+        DragDropGlobalState globalState = getDragDropGlobalState(/* dragEvent= */ null);
+        assertNonNull(globalState);
+
+        Tab tab = ChromeDragDropUtils.getTabFromGlobalState(globalState);
+        if (tab != null && !tab.getIsPinned()) return true;
+
+        Tab primaryTab = ChromeDragDropUtils.getPrimaryTabFromGlobalState(globalState);
+        return primaryTab != null && !primaryTab.getIsPinned();
     }
 
-    public static boolean isDraggedItemPinned() {
-        if (!ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) return false;
+    public static boolean isDraggingPinnedItem() {
+        DragDropGlobalState globalState = getDragDropGlobalState(/* dragEvent= */ null);
+        if (!ChromeFeatureList.sAndroidPinnedTabs.isEnabled() || globalState == null) return false;
 
-        @Nullable Tab tab =
-                ChromeDragDropUtils.getTabFromGlobalState(
-                        getDragDropGlobalState(/* dragEvent= */ null));
+        Tab tab = ChromeDragDropUtils.getTabFromGlobalState(globalState);
         if (tab != null && tab.getIsPinned()) return true;
 
-        @Nullable Tab primaryTab =
-                ChromeDragDropUtils.getPrimaryTabFromGlobalState(
-                        getDragDropGlobalState(/* dragEvent= */ null));
+        Tab primaryTab = ChromeDragDropUtils.getPrimaryTabFromGlobalState(globalState);
         return primaryTab != null && primaryTab.getIsPinned();
     }
 

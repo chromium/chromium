@@ -102,7 +102,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             float deltaX,
             @ReorderType int reorderType) {
         // 1. Adjust by a half tab-width so that we target the nearest tab gap.
-        boolean isDraggedItemPinned = TabStripDragHandler.isDraggedItemPinned();
+        boolean isDraggedItemPinned = TabStripDragHandler.isDraggingPinnedItem();
         float adjustedXForDrop =
                 StripLayoutUtils.adjustXForTabDrop(endX, mTabWidthSupplier, isDraggedItemPinned);
 
@@ -198,7 +198,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
     public boolean shouldAllowAutoScroll() {
         // Do not allow auto-scroll when a pinned tab is dragged over unpinned tabs; pinned tabs can
         // only be dropped into the pinned section.
-        return !TabStripDragHandler.isDraggedItemPinned();
+        return !TabStripDragHandler.isDraggingPinnedItem();
     }
 
     /** Merges dropped tabs to interacting view's tab group, if one exists. */
@@ -274,11 +274,12 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             StripLayoutTab[] stripTabs, StripLayoutView interactingView, boolean isInteracting) {
         if (!isInteracting) return false;
 
-        if (TabStripDragHandler.isDraggedItemPinned() != isHoveredViewPinned(interactingView)) {
+        if (TabStripDragHandler.isDraggingPinnedItem() != isHoveredViewPinned(interactingView)) {
             return StripLayoutUtils.isLastPinnedTab(stripTabs, interactingView);
         }
 
-        if (TabStripDragHandler.canMergeIntoGroupOnDrop()) return true;
+        // If the dragged item is a tab (not a group) and it’s unpinned, allow merge into a group.
+        if (TabStripDragHandler.isDraggingUnpinnedTab()) return true;
 
         // Skip applying trailing margin for grouped views (like expanded group titles or tabs) when
         // merging on drop is not allowed.

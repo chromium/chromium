@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.ClipDescription;
@@ -145,6 +146,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
 
     private boolean handleTabDrop(DragEvent dragEvent, boolean isInDesktopWindow) {
         DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
+        assertNonNull(globalState);
         Tab draggedTab = ChromeDragDropUtils.getTabFromGlobalState(globalState);
         if (!validDragEvent(
                 globalState,
@@ -183,6 +185,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
 
     private boolean handleMultiTabDrop(DragEvent dragEvent, boolean isInDesktopWindow) {
         DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
+        assertNonNull(globalState);
         List<Tab> draggedTabs = ChromeDragDropUtils.getTabsFromGlobalState(globalState);
         if (!validDragEvent(
                 globalState,
@@ -214,6 +217,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
 
     private boolean handleGroupDrop(DragEvent dragEvent, boolean isInDesktopWindow) {
         DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
+        assertNonNull(globalState);
         TabGroupMetadata tabGroupMetadata =
                 ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(globalState);
 

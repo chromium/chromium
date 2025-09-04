@@ -5438,7 +5438,7 @@ public class StripLayoutHelper
                     StripLayoutUtils.adjustXForTabDrop(
                             currX,
                             mCachedTabWidthSupplier,
-                            TabStripDragHandler.isDraggedItemPinned());
+                            TabStripDragHandler.isDraggingPinnedItem());
 
             // 3. Mark the "interacting" view. This is not the DnD dragged view, but rather the view
             // in the strip that is currently being hovered by the DnD drag.
