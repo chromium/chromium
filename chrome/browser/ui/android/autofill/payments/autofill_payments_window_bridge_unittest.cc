@@ -36,8 +36,7 @@ class AutofillPaymentsWindowBridgeTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     autofill_payments_window_bridge_ =
-        std::make_unique<AutofillPaymentsWindowBridge>(*web_contents(),
-                                                       &mock_delegate_);
+        std::make_unique<AutofillPaymentsWindowBridge>(&mock_delegate_);
   }
 
   TestContentAutofillClient* client() {

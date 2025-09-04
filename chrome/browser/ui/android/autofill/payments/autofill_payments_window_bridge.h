@@ -26,8 +26,7 @@ class AutofillPaymentsWindowDelegate;
 // open/close the ephemeral tab with PaymentsWindowCoordinator.java.
 class AutofillPaymentsWindowBridge {
  public:
-  AutofillPaymentsWindowBridge(
-      content::WebContents& contents,
+  explicit AutofillPaymentsWindowBridge(
       AutofillPaymentsWindowDelegate* autofill_payments_window_delegate);
 
   AutofillPaymentsWindowBridge(const AutofillPaymentsWindowBridge&) = delete;
@@ -36,8 +35,11 @@ class AutofillPaymentsWindowBridge {
 
   virtual ~AutofillPaymentsWindowBridge();
 
-  // Opens an ephemeral tab with the given `url` and `title`.
-  virtual void OpenEphemeralTab(const GURL& url, const std::u16string& title);
+  // Opens an ephemeral tab with the given `url` and `title`, using the provided
+  // `merchant_web_contents` associated with the merchant.
+  virtual void OpenEphemeralTab(const GURL& url,
+                                const std::u16string& title,
+                                content::WebContents& merchant_web_contents);
 
   // Closes the ephemeral tab.
   virtual void CloseEphemeralTab();

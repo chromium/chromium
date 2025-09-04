@@ -17,6 +17,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -48,13 +49,13 @@ class MockAutofillPaymentsWindowDelegate
 
 class MockAutofillPaymentsWindowBridge : public AutofillPaymentsWindowBridge {
  public:
-  MockAutofillPaymentsWindowBridge(content::WebContents& web_contents,
-                                   AutofillPaymentsWindowDelegate* delegate)
-      : AutofillPaymentsWindowBridge(web_contents, delegate) {}
+  explicit MockAutofillPaymentsWindowBridge(
+      AutofillPaymentsWindowDelegate* delegate)
+      : AutofillPaymentsWindowBridge(delegate) {}
 
   MOCK_METHOD(void,
               OpenEphemeralTab,
-              (const GURL&, const std::u16string&),
+              (const GURL&, const std::u16string&, content::WebContents&),
               (override));
   MOCK_METHOD(void, CloseEphemeralTab, (), (override));
 };
@@ -92,8 +93,7 @@ class AndroidPaymentsWindowManagerTest
     MockAutofillPaymentsWindowDelegate mock_delegate;
     std::unique_ptr<MockAutofillPaymentsWindowBridge>
         autofill_payments_window_bridge_ptr =
-            std::make_unique<MockAutofillPaymentsWindowBridge>(*web_contents(),
-                                                               &mock_delegate);
+            std::make_unique<MockAutofillPaymentsWindowBridge>(&mock_delegate);
     test_api(window_manager())
         .SetAutofillPaymentsWindowBridge(
             std::move(autofill_payments_window_bridge_ptr));
@@ -118,7 +118,8 @@ TEST_F(AndroidPaymentsWindowManagerTest, InitBnplFlow) {
                   test_api(window_manager()).GetAutofillPaymentsWindowBridge()),
               OpenEphemeralTab(
                   GURL(kBnplInitialUrl),
-                  BnplIssuerIdToDisplayName(BnplIssuer::IssuerId::kBnplAffirm)))
+                  BnplIssuerIdToDisplayName(BnplIssuer::IssuerId::kBnplAffirm),
+                  testing::A<content::WebContents&>()))
       .Times(1);
 
   InitBnplFlowForTest();

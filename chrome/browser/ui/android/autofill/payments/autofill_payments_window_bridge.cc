@@ -21,25 +21,25 @@ using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
 
 AutofillPaymentsWindowBridge::AutofillPaymentsWindowBridge(
-    content::WebContents& web_contents,
     AutofillPaymentsWindowDelegate* autofill_payments_window_delegate)
     : autofill_payments_window_delegate_(
           CHECK_DEREF(autofill_payments_window_delegate)) {
   java_autofill_payments_window_bridge_ = Java_PaymentsWindowBridge_Constructor(
-      base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this),
-      web_contents.GetJavaWebContents());
+      base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this));
 }
 
 AutofillPaymentsWindowBridge::~AutofillPaymentsWindowBridge() = default;
 
 void AutofillPaymentsWindowBridge::OpenEphemeralTab(
     const GURL& url,
-    const std::u16string& title) {
+    const std::u16string& title,
+    content::WebContents& merchant_web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PaymentsWindowBridge_openEphemeralTab(
       env, java_autofill_payments_window_bridge_,
       url::GURLAndroid::FromNativeGURL(env, url),
-      ConvertUTF16ToJavaString(env, title));
+      ConvertUTF16ToJavaString(env, title),
+      merchant_web_contents.GetJavaWebContents());
 }
 
 void AutofillPaymentsWindowBridge::CloseEphemeralTab() {

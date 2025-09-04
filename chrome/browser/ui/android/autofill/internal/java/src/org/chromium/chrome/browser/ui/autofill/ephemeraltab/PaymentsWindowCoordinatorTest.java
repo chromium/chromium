@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.autofill.ephemeraltab;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -41,7 +40,7 @@ public class PaymentsWindowCoordinatorTest {
     private static final GURL ISSUER_URL = new GURL("https://www.example.com/");
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
-    @Mock private WebContents mWebContents;
+    @Mock private WebContents mMerchantWebContents;
     @Mock private EphemeralTabCoordinator mEphemeralTabCoordinator;
     @Mock private EphemeralTabObserver mEphemeralTabObserver;
     @Mock private Profile mProfile;
@@ -54,7 +53,7 @@ public class PaymentsWindowCoordinatorTest {
 
     @Before
     public void setUp() {
-        mCoordinator = new PaymentsWindowCoordinator(mWebContents, mPaymentsWindowBridge);
+        mCoordinator = new PaymentsWindowCoordinator(mPaymentsWindowBridge);
     }
 
     @After
@@ -64,27 +63,22 @@ public class PaymentsWindowCoordinatorTest {
     }
 
     private void setUpForEphemeralTabObserverTest() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        when(mMerchantWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         EphemeralTabCoordinatorSupplier.setInstanceForTesting(mEphemeralTabCoordinator);
         ProfileJni.setInstanceForTesting(mProfileNatives);
-        when(mProfileNatives.fromWebContents(eq(mWebContents))).thenReturn(mProfile);
-        mCoordinator.openEphemeralTab(ISSUER_URL, TAB_TITLE);
-    }
-
-    @Test
-    public void testWebContents() {
-        assertEquals(mCoordinator.getWebContentsForTesting(), mWebContents);
+        when(mProfileNatives.fromWebContents(eq(mMerchantWebContents))).thenReturn(mProfile);
+        mCoordinator.openEphemeralTab(ISSUER_URL, TAB_TITLE, mMerchantWebContents);
     }
 
     @Test
     public void testOpenEphemeralTab_whenSuccess_thenRequestsToOpenSheet() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        when(mMerchantWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         EphemeralTabCoordinatorSupplier.setInstanceForTesting(mEphemeralTabCoordinator);
         doNothing().when(mEphemeralTabCoordinator).addObserver(mEphemeralTabObserver);
         ProfileJni.setInstanceForTesting(mProfileNatives);
-        when(mProfileNatives.fromWebContents(eq(mWebContents))).thenReturn(mProfile);
+        when(mProfileNatives.fromWebContents(eq(mMerchantWebContents))).thenReturn(mProfile);
 
-        mCoordinator.openEphemeralTab(ISSUER_URL, TAB_TITLE);
+        mCoordinator.openEphemeralTab(ISSUER_URL, TAB_TITLE, mMerchantWebContents);
 
         verify(mEphemeralTabCoordinator)
                 .requestOpenSheet(
@@ -98,9 +92,9 @@ public class PaymentsWindowCoordinatorTest {
 
     @Test
     public void testOpenEphemeralTab_whenInvalidWindowAndroid_thenDoesNotRequestToOpenSheet() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(/* windowAndroid= */ null);
+        when(mMerchantWebContents.getTopLevelNativeWindow()).thenReturn(/* windowAndroid= */ null);
 
-        mCoordinator.openEphemeralTab(ISSUER_URL, TAB_TITLE);
+        mCoordinator.openEphemeralTab(ISSUER_URL, TAB_TITLE, mMerchantWebContents);
 
         verify(mEphemeralTabCoordinator, never())
                 .requestOpenSheet(
@@ -114,9 +108,9 @@ public class PaymentsWindowCoordinatorTest {
 
     @Test
     public void testOpenEphemeralTab_whenInvalidCoordinator_thenDoesNotRequestToOpenSheet() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        when(mMerchantWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
 
-        mCoordinator.openEphemeralTab(ISSUER_URL, TAB_TITLE);
+        mCoordinator.openEphemeralTab(ISSUER_URL, TAB_TITLE, mMerchantWebContents);
 
         verify(mEphemeralTabCoordinator, never())
                 .requestOpenSheet(

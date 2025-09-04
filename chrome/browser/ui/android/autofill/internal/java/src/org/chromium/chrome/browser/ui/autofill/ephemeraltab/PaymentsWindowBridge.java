@@ -20,14 +20,14 @@ class PaymentsWindowBridge {
     private PaymentsWindowCoordinator mPaymentsWindowCoordinator;
 
     @CalledByNative
-    PaymentsWindowBridge(long nativeAutofillPaymentsWindowBridge, WebContents webContents) {
+    PaymentsWindowBridge(long nativeAutofillPaymentsWindowBridge) {
         mNativeAutofillPaymentsWindowBridge = nativeAutofillPaymentsWindowBridge;
-        mPaymentsWindowCoordinator = new PaymentsWindowCoordinator(webContents, this);
+        mPaymentsWindowCoordinator = new PaymentsWindowCoordinator(this);
     }
 
     @CalledByNative
-    public void openEphemeralTab(GURL url, String title) {
-        mPaymentsWindowCoordinator.openEphemeralTab(url, title);
+    public void openEphemeralTab(GURL url, String title, WebContents merchantWebContents) {
+        mPaymentsWindowCoordinator.openEphemeralTab(url, title, merchantWebContents);
     }
 
     @CalledByNative
