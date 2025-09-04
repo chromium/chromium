@@ -33,6 +33,7 @@ def _ParseDepGraph(jar_path: str):
   output = jar_utils.run_jdeps(pathlib.Path(jar_path))
   assert output is not None, f'Unable to parse jdep for {jar_path}'
   dep_graph = collections.defaultdict(set)
+  # pylint: disable=line-too-long
   # Example output:
   # java.javac.jar -> java.base
   # java.javac.jar -> not found
@@ -40,6 +41,7 @@ def _ParseDepGraph(jar_path: str):
   #    org.chromium.chrome.browser.tabmodel.TabWindowManagerImpl -> org.chromium.base.ApplicationStatus not found
   #    org.chromium.chrome.browser.tabmodel.TabWindowManagerImpl -> org.chromium.base.ApplicationStatus$ActivityStateListener not found
   #    org.chromium.chrome.browser.tabmodel.TabWindowManagerImpl -> org.chromium.chrome.browser.tab.Tab not found
+  # pylint: enable=line-too-long
   for line in output.splitlines():
     parsed = line.split()
     # E.g. java.javac.jar -> java.base
@@ -180,7 +182,7 @@ def _DisambiguateMissingDeps(
   for (potential_targets,
        missing_classes) in potential_targets_to_missing_classes.items():
     # Dict for ordered dict.
-    potential_targets = {t: True for t in potential_targets}
+    potential_targets_dict = {t: True for t in potential_targets}
     # Rather than just picking any of the potential targets, we want to use
     # dep_utils.ClassLookupIndex to ensure we respect the preferred dep if any
     # exists for the missing deps. It is necessary to obtain the preferred dep
@@ -196,14 +198,22 @@ def _DisambiguateMissingDeps(
         target_name_to_class_entry[class_entry.target] = class_entry
         # Ensure preferred deps are always included in the options.
         if (class_entry.preferred_dep
-            and class_entry.target not in potential_targets):
-          potential_targets[class_entry.target] = True
+            and class_entry.target not in potential_targets_dict):
+          potential_targets_dict[class_entry.target] = True
     potential_class_entries = [
-        target_name_to_class_entry[t] for t in potential_targets
+        target_name_to_class_entry[t] for t in potential_targets_dict
+        if t in target_name_to_class_entry
     ]
     potential_class_entries = dep_utils.DisambiguateDeps(
         potential_class_entries)
-    deps_to_add_programatically.add(potential_class_entries[0].target)
+    if potential_class_entries:
+      deps_to_add_programatically.add(potential_class_entries[0].target)
+    else:
+      # For some missing classes like R.java, the actual file is not in the
+      # ClassLookupIndex as it's not listed in the target's sources file. In
+      # these corner cases, we can just go with whatever jdeps found as a
+      # potential target. See https://crbug.com/437121440 for context.
+      deps_to_add_programatically.add(potential_targets[0])
   return deps_to_add_programatically
 
 
