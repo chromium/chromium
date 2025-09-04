@@ -101,7 +101,7 @@ method = urlParams.get('method');
           await focusOn(el);
           break;
         default:
-          assert_notreached();
+          assert_unreached();
       }
       assert_equals(loseInterestCount, 0, 'Lose interest should not be fired yet');
       if (cancelTrigger) {
@@ -125,7 +125,7 @@ method = urlParams.get('method');
           await focusOn(otherbutton);
           break;
         default:
-          assert_notreached();
+          assert_unreached();
       }
       assert_equals(interestCount, 0, 'No new interest event should be fired');
       if (cancelTrigger || cancelLose) {
