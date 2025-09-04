@@ -1658,12 +1658,6 @@ TEST_F(AutofillStructuredAddressAddressComponent,
   TestCompoundNameMerging(not_superset_substring, superset,
                           not_superset_substring, false,
                           MergeMode::kUseMostRecentSubstring);
-
-  // Test taking the newer component.
-  TestCompoundNameMerging(superset, not_a_subset, not_a_subset, true,
-                          MergeMode::kUseNewerIfDifferent);
-  TestCompoundNameMerging(not_a_subset, superset, superset, true,
-                          MergeMode::kUseNewerIfDifferent);
 }
 
 TEST_F(AutofillStructuredAddressAddressComponent, MergeChildsAndReformatRoot) {

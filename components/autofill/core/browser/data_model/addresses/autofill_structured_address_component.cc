@@ -986,10 +986,6 @@ bool AddressComponent::IsMergeableWithComponent(
     return true;
   }
 
-  if (merge_mode_ & kUseNewerIfDifferent) {
-    return true;
-  }
-
   if ((merge_mode_ & kReplaceEmpty) &&
       (older_comparison_value.empty() || newer_comparison_value.empty())) {
     return true;
@@ -1161,13 +1157,6 @@ bool AddressComponent::MergeWithComponent(
         newer_component_has_better_or_equal_status) {
       CopyFrom(newer_component);
     }
-    return true;
-  }
-
-  // Replace the older value with the newer one if the corresponding mode is
-  // active.
-  if (merge_mode_ & kUseNewerIfDifferent) {
-    CopyFrom(newer_component);
     return true;
   }
 
