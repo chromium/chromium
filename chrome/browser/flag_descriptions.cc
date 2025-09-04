@@ -3078,6 +3078,12 @@ const char kContextualSuggestionsAblateOthersWhenPresentName[] =
 const char kContextualSuggestionsAblateOthersWhenPresentDescription[] =
     "Makes contextual search suggestions exclusive in zero suggest.";
 
+const char kContextualSuggestionsUiImprovementsName[] =
+    "Contextual suggestions UI improvements";
+const char kContextualSuggestionsUiImprovementsDescription[] =
+    "Enables UI improvements for contextual suggestions (e.g. icon and "
+    "animation).";
+
 const char kOmniboxContextualSearchOnFocusSuggestionsName[] =
     "Omnibox contextual search on focus suggestions";
 const char kOmniboxContextualSearchOnFocusSuggestionsDescription[] =
