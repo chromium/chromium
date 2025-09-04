@@ -1545,8 +1545,8 @@ crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/sem
 crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-anchor-scroll-display.tentative.html [ Failure ]
 
 # Interestfor related tests
-crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-for/interestfor-svg-a-event-dispatch.tentative.html [ Failure ]
-crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-for/interestfor-pseudo-element-appearance.tentative.html [ Failure Pass ]
+crbug.com/326681249 external/wpt/html/semantics/interestfor/interestfor-svg-a-event-dispatch.tentative.html [ Failure ]
+crbug.com/326681249 external/wpt/html/semantics/interestfor/interestfor-pseudo-element-appearance.tentative.html [ Failure Pass ]
 
 crbug.com/421119389 external/wpt/pointerevents/crashtests/longpress-crash.html [ Crash ]
 
@@ -3168,7 +3168,7 @@ crbug.com/431611657 [ Linux ] external/wpt/css/filter-effects/crashtests/filter-
 crbug.com/431611657 [ Win ] external/wpt/css/filter-effects/crashtests/filter-primitive-crash.html [ Crash ]
 crbug.com/431728899 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-none.https.tentative.window.html?service_worker [ Crash ]
 crbug.com/431728899 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-cache-storage-from-require-corp.https.tentative.window.html?service_worker [ Crash ]
-crbug.com/431445601 [ Mac14 ] external/wpt/html/semantics/the-button-element/interest-for/interestfor-keyboard-invalidation.tentative.html [ Failure ]
+crbug.com/431445601 [ Mac14 ] external/wpt/html/semantics/interestfor/interestfor-keyboard-invalidation.tentative.html [ Failure ]
 crbug.com/431445601 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigator_user_agent.tentative.html [ Timeout ]
 crbug.com/431445601 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-query.https.html [ Crash ]
 [ Win11-arm64 ] external/wpt/notifications/shownotification.https.window.html [ Crash ]
