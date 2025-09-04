@@ -35,6 +35,7 @@ export interface PageElementTypes {
   microphoneSwitch: HTMLInputElement;
   geolocationSwitch: HTMLInputElement;
   tabContextSwitch: HTMLInputElement;
+  defaultTabContextSwitch: HTMLInputElement;
   newtabbn: HTMLButtonElement;
   reloadpage: HTMLButtonElement;
   getpagecontext: HTMLButtonElement;

@@ -1317,6 +1317,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
         settings_api::PrefType::kBoolean;
     (*s_allowlist)[glic::prefs::kGlicTabContextEnabled] =
         settings_api::PrefType::kBoolean;
+    (*s_allowlist)[glic::prefs::kGlicDefaultTabContextEnabled] =
+        settings_api::PrefType::kBoolean;
     (*s_allowlist)[glic::prefs::kGlicUserStatus] =
         settings_api::PrefType::kDictionary;
     (*s_allowlist)[prefs::kGeminiSettings] =

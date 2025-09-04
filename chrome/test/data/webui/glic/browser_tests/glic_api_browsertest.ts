@@ -567,6 +567,23 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(await tabContextState.next());
   }
 
+  async testDefaultTabContextApiIsUndefinedWhenFeatureDisabled() {
+    assertTrue(this.host.getDefaultTabContextPermissionState === undefined);
+  }
+
+  async testGetDefaultTabContextPermissionState() {
+    assertDefined(this.host.getDefaultTabContextPermissionState);
+
+    const defaultTabContextState =
+        observeSequence(this.host.getDefaultTabContextPermissionState());
+
+    assertFalse(await defaultTabContextState.next());
+
+    await this.advanceToNextStep();
+
+    assertTrue(await defaultTabContextState.next());
+  }
+
   async testGetOsHotkeyState() {
     assertDefined(this.host.getOsHotkeyState);
     const osHotkeyState = observeSequence(this.host.getOsHotkeyState());

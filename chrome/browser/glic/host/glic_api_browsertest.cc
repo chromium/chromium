@@ -39,6 +39,7 @@
 #include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -71,6 +72,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/variations/synthetic_trial_registry.h"
@@ -114,6 +116,8 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestUserStatusCheckTest",
       "GlicApiTestWithOneTabMoreDebounceDelay",
       "GlicGetHostCapabilityApiTest",
+      "GlicApiTestWithDefaultTabContextDisabled",
+      "GlicApiTestWithDefaultTabContextEnabled",
   };
 }
 
@@ -186,6 +190,28 @@ class GlicApiTestWithOneTab : public GlicApiTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class GlicApiTestWithDefaultTabContextEnabled : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithDefaultTabContextEnabled() {
+    feature_list_.InitWithFeatures({features::kGlicDefaultTabContextSetting},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class GlicApiTestWithDefaultTabContextDisabled : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithDefaultTabContextDisabled() {
+    feature_list_.InitWithFeatures({},
+                                   {features::kGlicDefaultTabContextSetting});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test fixture that preloads the web client before starting the test.
@@ -401,6 +427,22 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitializeFailsWindowOpen) {
       .params = base::Value(base::Value::Dict().Set("failWith", "none")),
   });
   WaitForWebUiState(mojom::WebUiState::kReady);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithDefaultTabContextDisabled,
+                       testDefaultTabContextApiIsUndefinedWhenFeatureDisabled) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithDefaultTabContextEnabled,
+                       testGetDefaultTabContextPermissionState) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kGlicDefaultTabContextEnabled, false);
+  ExecuteJsTest();
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kGlicDefaultTabContextEnabled, true);
+  ContinueJsTest();
 }
 
 // TODO(crbug.com/409042450): This is a flaky on MSAN.
