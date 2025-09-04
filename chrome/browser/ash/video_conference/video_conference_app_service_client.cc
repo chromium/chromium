@@ -8,6 +8,7 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,8 +16,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,7 +55,8 @@ bool IsPermissionAsked(const apps::PermissionPtr& permission) {
 
 }  // namespace
 
-VideoConferenceAppServiceClient::VideoConferenceAppServiceClient()
+VideoConferenceAppServiceClient::VideoConferenceAppServiceClient(
+    VideoConferenceManagerAsh* video_conference_manager_ash)
     : client_id_(base::UnguessableToken::Create()),
       status_(crosapi::mojom::VideoConferenceMediaUsageStatus::New(
           /*client_id=*/client_id_,
@@ -65,11 +65,9 @@ VideoConferenceAppServiceClient::VideoConferenceAppServiceClient()
           /*has_microphone_permission=*/false,
           /*is_capturing_camera=*/false,
           /*is_capturing_microphone=*/false,
-          /*is_capturing_screen=*/false)) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->RegisterCppClient(this, client_id_);
+          /*is_capturing_screen=*/false)),
+      video_conference_manager_ash_(CHECK_DEREF(video_conference_manager_ash)) {
+  video_conference_manager_ash_->RegisterCppClient(this, client_id_);
 
   session_observation_.Observe(Shell::Get()->session_controller());
 
@@ -82,10 +80,7 @@ VideoConferenceAppServiceClient::VideoConferenceAppServiceClient()
 VideoConferenceAppServiceClient::~VideoConferenceAppServiceClient() {
   // C++ clients are responsible for manually calling |UnregisterClient| on the
   // manager when disconnecting.
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->UnregisterClient(client_id_);
+  video_conference_manager_ash_->UnregisterClient(client_id_);
 
   g_client_instance = nullptr;
 }
@@ -235,22 +230,16 @@ void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(
   // visible; so we have to call this after HandleMediaUsageUpdate.
   if (update.CameraChanged() && is_capturing_camera &&
       camera_system_disabled_) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->video_conference_manager_ash()
-        ->NotifyDeviceUsedWhileDisabled(
-            crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-            base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());
+    video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
+        crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+        base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());
   }
 
   if (update.MicrophoneChanged() && is_capturing_microphone &&
       microphone_system_disabled_) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->video_conference_manager_ash()
-        ->NotifyDeviceUsedWhileDisabled(
-            crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-            base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());
+    video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
+        crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+        base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());
   }
 }
 
@@ -440,10 +429,8 @@ void VideoConferenceAppServiceClient::HandleMediaUsageUpdate() {
           << "VideoConferenceManager::NotifyMediaUsageUpdate did not succeed.";
     }
   });
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->NotifyMediaUsageUpdate(std::move(new_status), std::move(callback));
+  video_conference_manager_ash_->NotifyMediaUsageUpdate(std::move(new_status),
+                                                        std::move(callback));
 }
 
 }  // namespace ash

@@ -86,6 +86,10 @@ class VpnListForwarder;
 class WallpaperAsh;
 class WallpaperControllerClientImpl;
 
+namespace ash {
+class VideoConferenceManagerAsh;
+}  // namespace ash
+
 namespace internal {
 class ChromeShelfControllerInitializer;
 }
@@ -207,6 +211,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   // Callback invoked at the end of PostBrowserStart().
   base::OnceClosure post_browser_start_callback_;
+
+  std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
 
   // Once Sanitize is completed, ash is restarted. After ash has restarted, we
   // should check if the restart has happened right after a sanitize. If that is

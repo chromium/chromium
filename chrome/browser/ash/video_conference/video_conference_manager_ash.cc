@@ -29,13 +29,28 @@
 
 namespace ash {
 
+namespace {
+VideoConferenceManagerAsh* g_instance = nullptr;
+}  // namespace
+
+// static
+VideoConferenceManagerAsh* VideoConferenceManagerAsh::Get() {
+  return g_instance;
+}
+
 VideoConferenceManagerAsh::VideoConferenceManagerAsh() {
+  CHECK(!g_instance);
+  g_instance = this;
+
   if (ash::features::IsVideoConferenceEnabled()) {
     GetTrayController()->Initialize(this);
   }
 }
 
-VideoConferenceManagerAsh::~VideoConferenceManagerAsh() = default;
+VideoConferenceManagerAsh::~VideoConferenceManagerAsh() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 void VideoConferenceManagerAsh::RegisterCppClient(
     crosapi::mojom::VideoConferenceManagerClient* client,

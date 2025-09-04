@@ -3,9 +3,7 @@ include_rules = [
 
   "+chromeos/ash/components/mojo_service_manager",
   "+chromeos/ash/components/scheduler_config",
-
   "+chrome/browser/ash/main_parts",
-
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/ambient",
   "+chrome/browser/ash/app_mode",

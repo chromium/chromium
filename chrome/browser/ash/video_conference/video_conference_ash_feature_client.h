@@ -12,6 +12,8 @@
 
 namespace ash {
 
+class VideoConferenceManagerAsh;
+
 // VideoConferenceAshFeatureClient is a client class for CrOS
 // videoconferencing.
 // It covers the individual features that are not covered by the browser or the
@@ -34,7 +36,9 @@ class VideoConferenceAshFeatureClient
     bool is_capturing_camera = false;
   };
 
-  VideoConferenceAshFeatureClient();
+  // The passed `video_conference_manager_ash` must outlive this instance.
+  explicit VideoConferenceAshFeatureClient(
+      VideoConferenceManagerAsh* video_conference_manager_ash);
 
   VideoConferenceAshFeatureClient(const VideoConferenceAshFeatureClient&) =
       delete;
@@ -98,6 +102,8 @@ class VideoConferenceAshFeatureClient
 
   // This records a list of AppState; each represents a video conference app.
   std::map<AppIdString, AppState> id_to_app_state_;
+
+  const raw_ref<VideoConferenceManagerAsh> video_conference_manager_ash_;
 };
 
 }  // namespace ash

@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc/arc_open_url_delegate_impl.h"
+#include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/graduation/graduation_manager_impl.h"
@@ -233,6 +234,14 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   ash_shell_init_ = std::make_unique<AshShellInit>(
       CHECK_DEREF(g_browser_process->local_state()));
+
+  if (ash::features::IsVideoConferenceEnabled()) {
+    video_conference_manager_ash_ =
+        std::make_unique<ash::VideoConferenceManagerAsh>();
+    ChromeCaptureModeDelegate::Get()->set_video_conference_manager_ash(
+        video_conference_manager_ash_.get());
+  }
+
   ash::Shell::Get()
       ->login_unlock_throughput_recorder()
       ->post_login_deferred_task_runner()
@@ -572,6 +581,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 
   // These instances must be destructed after `ash_shell_init_`.
   video_conference_tray_controller_.reset();
+  video_conference_manager_ash_.reset();
   read_write_cards_manager_.reset();
 
   // Must be destructed after `read_write_cards_manager_`.

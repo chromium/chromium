@@ -14,6 +14,10 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/web_contents.h"
 
+namespace ash {
+class VideoConferenceManagerAsh;
+}  // namespace ash
+
 namespace video_conference {
 
 class VideoConferenceMediaListener;
@@ -30,7 +34,9 @@ struct VideoConferencePermissions;
 class VideoConferenceManagerClientImpl
     : public crosapi::mojom::VideoConferenceManagerClient {
  public:
-  VideoConferenceManagerClientImpl();
+  // The passed `video_conference_manager_ash` must outlive this instance.
+  explicit VideoConferenceManagerClientImpl(
+      ash::VideoConferenceManagerAsh* video_conference_manager_ash);
 
   VideoConferenceManagerClientImpl(const VideoConferenceManagerClientImpl&) =
       delete;
@@ -101,6 +107,8 @@ class VideoConferenceManagerClientImpl
   //    2. A `PrimaryPageChanged` event occurs for that webcontents.
   std::map<base::UnguessableToken, raw_ptr<content::WebContents>>
       id_to_webcontents_;
+
+  const raw_ref<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
 
   // Any `VideoConferenceWebApp` created by the client gets passed a callback
   // bound to `RemoveMediaApp`. In order to guard against situations where that

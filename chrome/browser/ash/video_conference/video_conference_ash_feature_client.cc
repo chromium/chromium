@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
@@ -40,7 +39,8 @@ std::string ToVideoConferenceAppId(VmCameraMicManager::VmType vm_type) {
 
 }  // namespace
 
-VideoConferenceAshFeatureClient::VideoConferenceAshFeatureClient()
+VideoConferenceAshFeatureClient::VideoConferenceAshFeatureClient(
+    VideoConferenceManagerAsh* video_conference_manager_ash)
     : client_id_(base::UnguessableToken::Create()),
       status_(crosapi::mojom::VideoConferenceMediaUsageStatus::New(
           /*client_id=*/client_id_,
@@ -49,11 +49,9 @@ VideoConferenceAshFeatureClient::VideoConferenceAshFeatureClient()
           /*has_microphone_permission=*/false,
           /*is_capturing_camera=*/false,
           /*is_capturing_microphone=*/false,
-          /*is_capturing_screen=*/false)) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->RegisterCppClient(this, client_id_);
+          /*is_capturing_screen=*/false)),
+      video_conference_manager_ash_(CHECK_DEREF(video_conference_manager_ash)) {
+  video_conference_manager_ash_->RegisterCppClient(this, client_id_);
 
   CHECK(!g_client_instance);
   g_client_instance = this;
@@ -84,10 +82,7 @@ VideoConferenceAshFeatureClient::VideoConferenceAshFeatureClient()
 VideoConferenceAshFeatureClient::~VideoConferenceAshFeatureClient() {
   // C++ clients are responsible for manually calling |UnregisterClient| on the
   // manager when disconnecting.
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->UnregisterClient(client_id_);
+  video_conference_manager_ash_->UnregisterClient(client_id_);
 
   g_client_instance = nullptr;
 }
@@ -174,22 +169,16 @@ void VideoConferenceAshFeatureClient::OnVmDeviceUpdated(
   // visible; so we have to call this after HandleMediaUsageUpdate.
   if (device_type == VmCameraMicManager::DeviceType::kCamera && is_capturing &&
       camera_system_disabled_) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->video_conference_manager_ash()
-        ->NotifyDeviceUsedWhileDisabled(
-            crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-            base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());
+    video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
+        crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+        base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());
   }
 
   if (device_type == VmCameraMicManager::DeviceType::kMic && is_capturing &&
       microphone_system_disabled_) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->video_conference_manager_ash()
-        ->NotifyDeviceUsedWhileDisabled(
-            crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-            base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());
+    video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
+        crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+        base::UTF8ToUTF16(app_name), base::DoNothingAs<void(bool)>());
   }
 }
 
@@ -290,10 +279,8 @@ void VideoConferenceAshFeatureClient::HandleMediaUsageUpdate() {
           << "VideoConferenceManager::NotifyMediaUsageUpdate did not succeed.";
     }
   });
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->NotifyMediaUsageUpdate(std::move(new_status), std::move(callback));
+  video_conference_manager_ash_->NotifyMediaUsageUpdate(std::move(new_status),
+                                                        std::move(callback));
 }
 
 }  // namespace ash

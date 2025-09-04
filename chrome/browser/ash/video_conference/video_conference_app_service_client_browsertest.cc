@@ -26,8 +26,6 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
@@ -239,10 +237,7 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
 
   // Returns current VideoConferenceMediaState in the VideoConferenceManagerAsh
   VideoConferenceMediaState GetMediaStateInVideoConferenceManagerAsh() {
-    return crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->video_conference_manager_ash()
-        ->GetAggregatedState();
+    return ash::VideoConferenceManagerAsh::Get()->GetAggregatedState();
   }
 
  protected:
@@ -662,18 +657,12 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
                        HandleDeviceUsedWhileDisabled) {
   // Notify disabling state of camera and microphone from
   // video_conference_manager_ash.
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->SetSystemMediaDeviceStatus(
-          crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-          /*disabled=*/true);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->SetSystemMediaDeviceStatus(
-          crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-          /*disabled=*/true);
+  ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+      /*disabled=*/true);
+  ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+      /*disabled=*/true);
 
   FakeVideoConferenceTrayController* fake_try_controller =
       static_cast<FakeVideoConferenceTrayController*>(
@@ -715,18 +704,12 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
 
   // Notify enabling state of camera and microphone from
   // video_conference_manager_ash.
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->SetSystemMediaDeviceStatus(
-          crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-          /*disabled=*/false);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->SetSystemMediaDeviceStatus(
-          crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-          /*disabled=*/false);
+  ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+      /*disabled=*/false);
+  ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+      /*disabled=*/false);
 
   // Accessing camera should not trigger NotifyDeviceUsedWhileDisabled because
   // camera is not disabled.

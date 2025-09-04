@@ -37,8 +37,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -684,37 +682,30 @@ bool ChromeCaptureModeDelegate::IsAudioCaptureDisabledByPolicy() const {
 void ChromeCaptureModeDelegate::RegisterVideoConferenceManagerClient(
     crosapi::mojom::VideoConferenceManagerClient* client,
     const base::UnguessableToken& client_id) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->RegisterCppClient(client, client_id);
+  video_conference_manager_ash_->RegisterCppClient(client, client_id);
 }
 
 void ChromeCaptureModeDelegate::UnregisterVideoConferenceManagerClient(
     const base::UnguessableToken& client_id) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->UnregisterClient(client_id);
+  video_conference_manager_ash_->UnregisterClient(client_id);
 }
 
 void ChromeCaptureModeDelegate::UpdateVideoConferenceManager(
     crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->NotifyMediaUsageUpdate(std::move(status), base::DoNothing());
+  video_conference_manager_ash_->NotifyMediaUsageUpdate(std::move(status),
+                                                        base::DoNothing());
 }
 
 void ChromeCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->NotifyDeviceUsedWhileDisabled(
-          device,
-          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
-          base::DoNothing());
+  video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
+      device, l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
+      base::DoNothing());
+}
+
+void ChromeCaptureModeDelegate::set_video_conference_manager_ash(
+    ash::VideoConferenceManagerAsh* video_conference_manager_ash) {
+  video_conference_manager_ash_ = video_conference_manager_ash;
 }
 
 void ChromeCaptureModeDelegate::FinalizeSavedFile(

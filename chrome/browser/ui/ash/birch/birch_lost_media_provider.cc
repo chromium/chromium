@@ -20,7 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
 #include "ui/base/models/image_model.h"

@@ -25,8 +25,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
@@ -972,10 +970,7 @@ class CaptureModeVideoConferenceBrowserTests
   }
 
   ash::VideoConferenceMediaState GetMediaStateInVideoConferenceManager() {
-    return crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->video_conference_manager_ash()
-        ->GetAggregatedState();
+    return ash::VideoConferenceManagerAsh::Get()->GetAggregatedState();
   }
 
  protected:

@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
-#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -94,8 +93,6 @@ CrosapiAsh::CrosapiAsh()
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       print_preview_webcontents_adapter_ash_(
           std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
-      video_conference_manager_ash_(
-          std::make_unique<ash::VideoConferenceManagerAsh>()),
       vpn_service_ash_(std::make_unique<VpnServiceAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));

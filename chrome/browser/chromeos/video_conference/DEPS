@@ -13,7 +13,6 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/video_conference",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/ui/browser_finder.h",
@@ -23,3 +22,12 @@ include_rules = [
   "+chrome/browser/ui/web_applications/app_browser_controller.h",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "video_conference_manager_client_browsertest\\.cc": [
+    "+chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h",
+  ],
+  "video_conference_media_listener_browsertest\\.cc": [
+    "+chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h",
+  ],
+}

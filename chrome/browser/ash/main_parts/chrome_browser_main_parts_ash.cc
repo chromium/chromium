@@ -163,6 +163,7 @@
 #include "chrome/browser/ash/usb/cros_usb_detector.h"
 #include "chrome/browser/ash/video_conference/video_conference_app_service_client.h"
 #include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_webcontents_manager.h"
@@ -1529,12 +1530,20 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   }
 
   if (features::IsVideoConferenceEnabled()) {
+    auto* vc_manager = ash::VideoConferenceManagerAsh::Get();
+
+    // TODO(crbug.com/354710097): Move VCM client initialization to
+    // ChromeBrowserMainExtraPartsAsh. This is currently not straightforward
+    // because the clients have dependencies on other services that are also
+    // initialized here in ChromeBrowserMainPartsAsh. Co-locating the clients
+    // with their dependencies is the current design.
     video_conference_manager_client_ =
-        std::make_unique<video_conference::VideoConferenceManagerClientImpl>();
+        std::make_unique<video_conference::VideoConferenceManagerClientImpl>(
+            vc_manager);
     vc_app_service_client_ =
-        std::make_unique<VideoConferenceAppServiceClient>();
+        std::make_unique<VideoConferenceAppServiceClient>(vc_manager);
     vc_ash_feature_client_ =
-        std::make_unique<VideoConferenceAshFeatureClient>();
+        std::make_unique<VideoConferenceAshFeatureClient>(vc_manager);
   }
 
   apn_migrator_ = std::make_unique<ApnMigrator>(

@@ -35,6 +35,8 @@ class VideoConferenceUkmHelper;
 
 namespace ash {
 
+class VideoConferenceManagerAsh;
+
 // VideoConferenceAppServiceClient is a client class for CrOS
 // videoconferencing. It detects the launching/closing/media-capturing actions
 // from apps through AppService and notifies VideoConferenceManagerAsh.
@@ -58,7 +60,9 @@ class VideoConferenceAppServiceClient
     bool is_capturing_camera = false;
   };
 
-  VideoConferenceAppServiceClient();
+  // The passed `video_conference_manager_ash` must outlive this instance.
+  explicit VideoConferenceAppServiceClient(
+      VideoConferenceManagerAsh* video_conference_manager_ash);
 
   VideoConferenceAppServiceClient(const VideoConferenceAppServiceClient&) =
       delete;
@@ -154,6 +158,8 @@ class VideoConferenceAppServiceClient
   base::ScopedObservation<apps::AppCapabilityAccessCache,
                           apps::AppCapabilityAccessCache::Observer>
       app_capability_observation_{this};
+
+  const raw_ref<VideoConferenceManagerAsh> video_conference_manager_ash_;
 
   base::WeakPtrFactory<VideoConferenceAppServiceClient> weak_ptr_factory_{this};
 };

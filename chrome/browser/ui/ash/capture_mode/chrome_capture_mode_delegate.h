@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
@@ -141,6 +142,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
           optical_character_recognizer) {
     optical_character_recognizer_ = std::move(optical_character_recognizer);
   }
+
+  void set_video_conference_manager_ash(
+      ash::VideoConferenceManagerAsh* video_conference_manager_ash);
 
  private:
   // TODO(b/362363034): See if we can remove these. May be needed for text
@@ -280,6 +284,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // URLLoaderFactory used for network requests. May be null initially if the
   // creation is delayed.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  raw_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_ =
+      nullptr;
 
   base::WeakPtrFactory<ChromeCaptureModeDelegate> weak_ptr_factory_{this};
 };

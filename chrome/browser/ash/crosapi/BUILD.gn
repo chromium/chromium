@@ -97,11 +97,9 @@ static_library("crosapi") {
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/ash/video_conference",
     "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/chromeos/printing/print_preview",
-    "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/extensions",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/webrtc",
@@ -248,11 +246,9 @@ static_library("crosapi") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/ash/video_conference",
     "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/chromeos/printing/print_preview",
-    "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/extensions",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui",
@@ -384,7 +380,6 @@ source_set("browser_tests") {
     "magic_boost_ash_browsertest.cc",
     "power_ash_apitest.cc",
     "print_preview_ash_browsertest.cc",
-    "video_conference_ash_browsertest.cc",
   ]
 
   deps = [
@@ -403,7 +398,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/printing/print_preview",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
-    "//chrome/browser/ash/video_conference",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support",
