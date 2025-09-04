@@ -12371,6 +12371,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLocalNetworkAccessChecksWebRTCName,
      flag_descriptions::kLocalNetworkAccessChecksWebRTCDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kLocalNetworkAccessChecksWebRTC)},
+    {"local-network-access-check-websockets",
+     flag_descriptions::kLocalNetworkAccessChecksWebSocketsName,
+     flag_descriptions::kLocalNetworkAccessChecksWebSocketsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         network::features::kLocalNetworkAccessChecksWebSockets)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"notebook-lm-app-preinstall",

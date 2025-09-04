@@ -6614,7 +6614,16 @@
     ],
     "expiry_milestone": 144
   },
-    {
+  {
+    "name": "local-network-access-check-websockets",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-security-web-and-net@chromium.org"
+    ],
+    "expiry_milestone": 148
+  },
+  {
     "name": "lock-controls-on-tablets",
     "owners": [
       "twellington@chromium.org",

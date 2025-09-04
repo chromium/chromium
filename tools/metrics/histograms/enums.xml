@@ -11328,6 +11328,7 @@ from previous Chrome versions.
   <int value="-1053198238" label="kScrollableTabStripWithDragging:enabled"/>
   <int value="-1052980318"
       label="ExposeOutOfProcessVideoDecodingToLacros:enabled"/>
+  <int value="-1052935077" label="LocalNetworkAccessChecksWebSockets:enabled"/>
   <int value="-1052831253" label="ChromeKioskEnableLacros:enabled"/>
   <int value="-1052782474" label="enable-cloud-devices"/>
   <int value="-1052415111" label="malware-interstitial-v2"/>
@@ -12498,6 +12499,7 @@ from previous Chrome versions.
   <int value="-630452160"
       label="OmniboxContextualSearchSingleLensAction:enabled"/>
   <int value="-630256330" label="EnableDrDc:enabled"/>
+  <int value="-630241131" label="LocalNetworkAccessChecksWebSockets:disabled"/>
   <int value="-629084845" label="UseToastManager:disabled"/>
   <int value="-629041881" label="MuteNotificationsDuringScreenShare:disabled"/>
   <int value="-628535358"

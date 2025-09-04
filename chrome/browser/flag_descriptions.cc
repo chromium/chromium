@@ -8140,6 +8140,13 @@ const char kLocalNetworkAccessChecksWebRTCDescription[] =
     "#local-network-access-check flag to also be enabled "
     "See: https://chromestatus.com/feature/5065884686876672";
 
+const char kLocalNetworkAccessChecksWebSocketsName[] =
+    "Local Network Access Checks for WebSockets";
+const char kLocalNetworkAccessChecksWebSocketsDescription[] =
+    "Enable Local Network Access checks for WebSockets. Requires the "
+    "#local-network-access-check flag to also be enabled "
+    "See: https://chromestatus.com/feature/5197681148428288";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kTaskManagerClankName[] = "Task Manager on Clank";
 const char kTaskManagerClankDescription[] =
