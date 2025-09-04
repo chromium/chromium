@@ -63,35 +63,33 @@ struct DinoGameWidgetEntryView: View {
     if entry.deleted && !entry.isPreview {
       SmallWidgetDeletedAccountView()
     } else {
-      // We wrap this widget in a link on top of using `widgetUrl` so that the voice over will treat
-      // the widget as one tap target. Without the wrapping, voice over treats the content within
-      // the widget as multiple tap targets.
-      Link(destination: destinationURL) {
-        ZStack {
-          Image(redactionReasons.isEmpty ? background : backgroundPlaceholder)
-            .resizable()
-            .unredacted()
-          VStack(alignment: .leading, spacing: 0) {
+      ZStack {
+        Image(redactionReasons.isEmpty ? background : backgroundPlaceholder)
+          .resizable()
+          .unredacted()
+          // This is needed so that the voice over will see the widget as a button and not as
+          // an image.
+          .accessibilityAddTraits(.isButton)
+          .accessibilityRemoveTraits(.isImage)
+          .accessibilityLabel(Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL"))
+        VStack(alignment: .leading, spacing: 0) {
+          Spacer()
+            .frame(minWidth: 0, maxWidth: .infinity)
+          HStack {
+            Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE")
+              .foregroundColor(Color("widget_text_color"))
+              .fontWeight(.semibold)
+              .font(.subheadline)
+              .accessibilityHidden(true)
             Spacer()
-              .frame(minWidth: 0, maxWidth: .infinity)
-            HStack {
-              Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE")
-                .foregroundColor(Color("widget_text_color"))
-                .fontWeight(.semibold)
-                .font(.subheadline)
-              Spacer()
-              #if IOS_ENABLE_WIDGETS_FOR_MIM
-                AvatarForDinoGame(entry: entry)
-              #endif
-            }
-            .padding([.leading, .bottom], 16)
+            #if IOS_ENABLE_WIDGETS_FOR_MIM
+              AvatarForDinoGame(entry: entry)
+            #endif
           }
+          .padding([.leading, .bottom], 16)
         }
       }
       .widgetURL(destinationURL)
-      .accessibility(
-        label: Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL")
-      )
       // Background is not used as the image takes the whole widget.
       .crContainerBackground(Color("widget_background_color").unredacted())
     }
@@ -108,10 +106,15 @@ struct DinoGameWidgetEntryView: View {
           .opacity(0.2)
           .frame(width: 25, height: 25)
           .padding(.trailing, 16)
-      } else if let avatar = entry.avatar {
+      } else if let avatar = entry.avatar,
+        let email = entry.email
+      {
         avatar
           .resizable()
           .clipShape(Circle())
+          .accessibilityLabel(
+            String(localized: "IDS_IOS_WIDGET_KIT_EXTENSION_AVATAR_A11Y_LABEL") + email
+          )
           .unredacted()
           .scaledToFill()
           .frame(width: 25, height: 25)
