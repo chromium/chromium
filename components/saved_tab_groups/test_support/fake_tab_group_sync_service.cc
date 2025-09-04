@@ -340,7 +340,7 @@ std::vector<LocalTabGroupID> FakeTabGroupSyncService::GetDeletedGroupIds()
 
 std::optional<std::u16string>
 FakeTabGroupSyncService::GetTitleForPreviouslyExistingSharedTabGroup(
-    const CollaborationId& collaboration_id) const {
+    const syncer::CollaborationId& collaboration_id) const {
   return std::nullopt;
 }
 

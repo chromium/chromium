@@ -68,8 +68,9 @@ std::string CreateClientTagForSharedTab(const SavedTabGroup& group,
          group.collaboration_id().value().value();
 }
 
-std::string CreateClientTagForSharedTab(const CollaborationId& collaboration_id,
-                                        const base::Uuid& tab_guid) {
+std::string CreateClientTagForSharedTab(
+    const syncer::CollaborationId& collaboration_id,
+    const base::Uuid& tab_guid) {
   return tab_guid.AsLowercaseString() + "|" + collaboration_id.value();
 }
 

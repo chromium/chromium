@@ -35,7 +35,7 @@ int kInvalidTabPosition = -1;
 // not present, null is returned.
 ScopedJavaLocalRef<jstring> ToJavaCollaborationId(
     JNIEnv* env,
-    const std::optional<CollaborationId>& collaboration_id) {
+    const std::optional<syncer::CollaborationId>& collaboration_id) {
   return collaboration_id.has_value()
              ? ConvertUTF8ToJavaString(env, collaboration_id->value())
              : ScopedJavaLocalRef<jstring>();

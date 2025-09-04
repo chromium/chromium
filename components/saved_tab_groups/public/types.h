@@ -33,10 +33,6 @@ using LocalTabGroupID = tab_groups::TabGroupId;
 typedef std::variant<base::Uuid, LocalTabGroupID> EitherGroupID;
 typedef std::variant<base::Uuid, LocalTabID> EitherTabID;
 
-// TODO(crbug.com/380406615): migrate to syncer::CollaborationId all the call
-// sites.
-using CollaborationId = syncer::CollaborationId;
-
 // Base context for tab group actions. Platforms can subclass this to pass
 // additional context such as a browser window.
 struct TabGroupActionContext {

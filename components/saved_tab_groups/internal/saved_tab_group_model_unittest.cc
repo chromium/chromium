@@ -412,7 +412,7 @@ TEST_F(SavedTabGroupModelTest, RemoveTabFromGroup) {
 TEST_F(SavedTabGroupModelTest, RemoveSharedTabFromGroup) {
   SavedTabGroup shared_group =
       saved_tab_group_model_->Get(id_2_)->CloneAsSharedTabGroup(
-          CollaborationId("collaboration"));
+          syncer::CollaborationId("collaboration"));
   ASSERT_THAT(shared_group.saved_tabs(), SizeIs(2));
   ASSERT_THAT(shared_group.last_removed_tabs_metadata(), IsEmpty());
   saved_tab_group_model_->AddedLocally(shared_group);
@@ -601,7 +601,7 @@ TEST_F(SavedTabGroupModelTest, MoveElement) {
 TEST_F(SavedTabGroupModelTest, ShouldDistinguishSavedAndSharedGroups) {
   SavedTabGroup shared_group =
       saved_tab_group_model_->Get(id_1_)->CloneAsSharedTabGroup(
-          CollaborationId("collaboration"));
+          syncer::CollaborationId("collaboration"));
   saved_tab_group_model_->AddedLocally(shared_group);
 
   ASSERT_TRUE(shared_group.is_shared_tab_group());
@@ -710,7 +710,7 @@ TEST_F(SavedTabGroupModelTest, MergeSharedTabGroupAttribution) {
 
   SavedTabGroup group(u"Title", tab_groups::TabGroupColorId::kPink, /*urls=*/{},
                       /*position=*/std::nullopt);
-  group.SetCollaborationId(CollaborationId("collaboration"));
+  group.SetCollaborationId(syncer::CollaborationId("collaboration"));
   group.SetUpdatedByAttribution(kCreator);
   saved_tab_group_model_->AddedLocally(group);
 
@@ -983,7 +983,7 @@ TEST_F(SavedTabGroupModelTest, GroupsWithNoPositionInsertedAtEnd) {
 TEST_F(SavedTabGroupModelTest, UpdateTabLastSeenTimeFromLocal) {
   // Start test with no navigation time and no seen time set.
   SavedTabGroup saved_group = test::CreateTestSavedTabGroup();
-  saved_group.SetCollaborationId(tab_groups::CollaborationId("collab_id"));
+  saved_group.SetCollaborationId(syncer::CollaborationId("collab_id"));
   saved_tab_group_model_->AddedLocally(saved_group);
   const base::Uuid group_id = saved_group.saved_guid();
 
@@ -1361,8 +1361,8 @@ TEST_F(SavedTabGroupModelObserverTest,
   SavedTabGroup saved_group = test::CreateTestSavedTabGroup();
   saved_tab_group_model_->AddedLocally(saved_group);
 
-  SavedTabGroup shared_group =
-      saved_group.CloneAsSharedTabGroup(CollaborationId("collaboration"));
+  SavedTabGroup shared_group = saved_group.CloneAsSharedTabGroup(
+      syncer::CollaborationId("collaboration"));
   saved_tab_group_model_->AddedLocally(shared_group);
   ASSERT_TRUE(saved_tab_group_model_->Get(shared_group.saved_guid())
                   ->is_transitioning_to_shared());
@@ -1379,7 +1379,7 @@ TEST_F(SavedTabGroupModelObserverTest,
 
 TEST_F(SavedTabGroupModelObserverTest, UpdateTabLastSeenTimeFromSync) {
   SavedTabGroup saved_group = test::CreateTestSavedTabGroup();
-  saved_group.SetCollaborationId(tab_groups::CollaborationId("collab_id"));
+  saved_group.SetCollaborationId(syncer::CollaborationId("collab_id"));
   saved_tab_group_model_->AddedLocally(saved_group);
   const base::Uuid group_id = saved_group.saved_guid();
 
@@ -1433,10 +1433,10 @@ TEST_F(SavedTabGroupModelTest, UpdatePositionForSharedGroupFromSyncFromSync) {
   SavedTabGroup group_4(u"Group 4", tab_groups::TabGroupColorId::kGreen, {},
                         std::nullopt);
 
-  group_1.SetCollaborationId(CollaborationId("collaboration"));
-  group_2.SetCollaborationId(CollaborationId("collaboration"));
-  group_3.SetCollaborationId(CollaborationId("collaboration"));
-  group_4.SetCollaborationId(CollaborationId("collaboration"));
+  group_1.SetCollaborationId(syncer::CollaborationId("collaboration"));
+  group_2.SetCollaborationId(syncer::CollaborationId("collaboration"));
+  group_3.SetCollaborationId(syncer::CollaborationId("collaboration"));
+  group_4.SetCollaborationId(syncer::CollaborationId("collaboration"));
 
   // This is the order we expect the groups in the model to be.
   std::vector<SavedTabGroup> groups = {group_3, group_2, group_4, group_1};

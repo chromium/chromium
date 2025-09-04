@@ -95,7 +95,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(std::vector<LocalTabGroupID>, GetDeletedGroupIds, (), (const));
   MOCK_METHOD(std::optional<std::u16string>,
               GetTitleForPreviouslyExistingSharedTabGroup,
-              (const CollaborationId&),
+              (const syncer::CollaborationId&),
               (const));
 
   MOCK_METHOD(std::optional<LocalTabGroupID>,

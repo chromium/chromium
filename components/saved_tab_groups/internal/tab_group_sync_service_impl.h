@@ -145,7 +145,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const EitherGroupID& either_id) const override;
   std::vector<LocalTabGroupID> GetDeletedGroupIds() const override;
   std::optional<std::u16string> GetTitleForPreviouslyExistingSharedTabGroup(
-      const CollaborationId& collaboration_id) const override;
+      const syncer::CollaborationId& collaboration_id) const override;
 
   std::optional<LocalTabGroupID> OpenTabGroup(
       const base::Uuid& sync_group_id,
@@ -457,7 +457,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // Temporary in-memory mapping from collaboration ID to title for tab groups
   // that we/ have previously known about. This is to facilitate displaying of
   // tab group titles in the UI when a user is removed from a tab group.
-  std::unordered_map<CollaborationId, std::u16string>
+  std::unordered_map<syncer::CollaborationId, std::u16string>
       titles_for_previously_existing_shared_tab_groups_;
 
   // Keeps track of API calls received before the service is initialized.

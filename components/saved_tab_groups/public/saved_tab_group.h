@@ -15,6 +15,7 @@
 #include "base/uuid.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -90,7 +91,7 @@ class SavedTabGroup {
     return saved_tabs_;
   }
   std::optional<size_t> position() const { return position_; }
-  const std::optional<CollaborationId>& collaboration_id() const {
+  const std::optional<syncer::CollaborationId>& collaboration_id() const {
     return collaboration_id_;
   }
   const SharedAttribution& shared_attribution() const {
@@ -162,7 +163,7 @@ class SavedTabGroup {
   SavedTabGroup& SetPinned(bool pinned);
   SavedTabGroup& SetBookmarkNodeId(std::optional<base::Uuid> bookmark_node_id);
   SavedTabGroup& SetCollaborationId(
-      std::optional<CollaborationId> collaboration_id);
+      std::optional<syncer::CollaborationId> collaboration_id);
   SavedTabGroup& SetSharedGroupStatus(SharedGroupStatus shared_group_status);
   SavedTabGroup& SetOriginatingTabGroupGuid(
       std::optional<base::Uuid> originating_tab_group_guid,
@@ -244,7 +245,8 @@ class SavedTabGroup {
   // Creates a copy of this group and converts it to a shared tab group. The new
   // group and new tabs will have new UUIDs. Local tab and group IDs are not
   // copied.
-  SavedTabGroup CloneAsSharedTabGroup(CollaborationId collaboration_id) const;
+  SavedTabGroup CloneAsSharedTabGroup(
+      syncer::CollaborationId collaboration_id) const;
 
   // Creates a copy of this group and converts it to a saved tab group. The new
   // group and new tabs will have new UUIDs. Local tab and group IDs are not
@@ -349,7 +351,7 @@ class SavedTabGroup {
   // Fields below are only used for shared tab groups.
 
   // Collaboration ID in case if the group is shared.
-  std::optional<CollaborationId> collaboration_id_;
+  std::optional<syncer::CollaborationId> collaboration_id_;
 
   // Atribution data for the shared tab group.
   SharedAttribution shared_attribution_;

@@ -233,7 +233,7 @@ SavedTabGroup& SavedTabGroup::SetBookmarkNodeId(
 }
 
 SavedTabGroup& SavedTabGroup::SetCollaborationId(
-    std::optional<CollaborationId> collaboration_id) {
+    std::optional<syncer::CollaborationId> collaboration_id) {
   collaboration_id_ = std::move(collaboration_id);
   SetUpdateTime(base::Time::Now());
   return *this;
@@ -457,7 +457,7 @@ bool SavedTabGroup::IsSyncEquivalent(const SavedTabGroup& other) const {
 }
 
 SavedTabGroup SavedTabGroup::CloneAsSharedTabGroup(
-    CollaborationId collaboration_id) const {
+    syncer::CollaborationId collaboration_id) const {
   SavedTabGroup shared_group = CopyBaseFieldsWithTabs();
   shared_group.is_transitioning_to_shared_ = true;
   shared_group.SetCollaborationId(std::move(collaboration_id));

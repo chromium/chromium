@@ -83,7 +83,7 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
       const EitherGroupID& either_id) const override;
   std::vector<LocalTabGroupID> GetDeletedGroupIds() const override;
   std::optional<std::u16string> GetTitleForPreviouslyExistingSharedTabGroup(
-      const CollaborationId& collaboration_id) const override;
+      const syncer::CollaborationId& collaboration_id) const override;
   std::optional<LocalTabGroupID> OpenTabGroup(
       const base::Uuid& sync_group_id,
       std::unique_ptr<TabGroupActionContext> context) override;

@@ -290,7 +290,7 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual std::vector<LocalTabGroupID> GetDeletedGroupIds() const = 0;
   virtual std::optional<std::u16string>
   GetTitleForPreviouslyExistingSharedTabGroup(
-      const CollaborationId& collaboration_id) const = 0;
+      const syncer::CollaborationId& collaboration_id) const = 0;
 
   // Method invoked from UI to open a remote tab group in the local tab model.
   virtual std::optional<LocalTabGroupID> OpenTabGroup(

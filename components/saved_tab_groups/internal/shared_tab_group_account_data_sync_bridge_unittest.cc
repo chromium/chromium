@@ -28,6 +28,7 @@ namespace tab_groups {
 namespace {
 
 using base::test::EqualsProto;
+using syncer::CollaborationId;
 using testing::_;
 using testing::DefaultValue;
 using testing::Eq;

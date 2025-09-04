@@ -63,7 +63,8 @@ class VersioningMessageControllerImplTest : public testing::Test {
 
   void SetTabGroupSyncServiceCurrentExpectation(bool has_shared_tab_groups) {
     if (has_shared_tab_groups) {
-      tab_group1_.SetCollaborationId(CollaborationId("collaboration_id"));
+      tab_group1_.SetCollaborationId(
+          syncer::CollaborationId("collaboration_id"));
     }
     EXPECT_CALL(mock_tab_group_sync_service_, ReadAllGroups())
         .WillRepeatedly(
@@ -72,7 +73,8 @@ class VersioningMessageControllerImplTest : public testing::Test {
 
   void MimicTabGroupAdded(bool is_shared_group) {
     if (is_shared_group) {
-      tab_group1_.SetCollaborationId(CollaborationId("collaboration_id"));
+      tab_group1_.SetCollaborationId(
+          syncer::CollaborationId("collaboration_id"));
     }
     SetTabGroupSyncServiceCurrentExpectation(is_shared_group);
     controller_->OnTabGroupAdded(tab_group1_, TriggerSource::REMOTE);

@@ -144,7 +144,7 @@ SavedTabGroup SpecificsToSharedTabGroup(
                       /*created_before_syncing_tab_groups=*/false,
                       creation_time);
   group.SetCollaborationId(
-      CollaborationId(collaboration_metadata.collaboration_id()));
+      syncer::CollaborationId(collaboration_metadata.collaboration_id()));
   group.SetCreatedByAttribution(collaboration_metadata.created_by());
   group.SetUpdatedByAttribution(collaboration_metadata.last_updated_by());
   if (originating_tab_group_guid.is_valid()) {
@@ -222,7 +222,7 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
 
 void AddEntryToBatch(syncer::MutableDataBatch* batch,
                      sync_pb::SharedTabGroupDataSpecifics specifics,
-                     const CollaborationId& collaboration_id,
+                     const syncer::CollaborationId& collaboration_id,
                      base::Time creation_time,
                      const GaiaId& changed_by) {
   std::unique_ptr<syncer::EntityData> entity_data =
@@ -1303,7 +1303,7 @@ SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
   }
 
   if (existing_group->collaboration_id() !=
-      CollaborationId(collaboration_metadata.collaboration_id())) {
+      syncer::CollaborationId(collaboration_metadata.collaboration_id())) {
     // Shared tabs must have the same collaboration ID as their group.
     return syncer::ModelError(
         FROM_HERE, syncer::ModelError::Type::

@@ -63,6 +63,7 @@ void PrintTo(const SavedTabGroupTab& tab, std::ostream* os) {
 namespace {
 
 using base::test::EqualsProto;
+using syncer::CollaborationId;
 using tab_groups::test::HasSharedGroupMetadata;
 using tab_groups::test::HasTabMetadata;
 using testing::_;

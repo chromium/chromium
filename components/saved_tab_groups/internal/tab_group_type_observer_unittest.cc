@@ -83,7 +83,7 @@ TEST_F(TabGroupTypeObserverTest,
 
 TEST_F(TabGroupTypeObserverTest,
        SharedTabGroupAvailableOnServiceInitialization) {
-  group_1_.SetCollaborationId(CollaborationId(std::string(kGroupId)));
+  group_1_.SetCollaborationId(syncer::CollaborationId(std::string(kGroupId)));
   EXPECT_CALL(*service_.get(), ReadAllGroups())
       .WillOnce(Return(std::vector<const SavedTabGroup*>{&group_1_}));
   EXPECT_CALL(synthetic_field_trial_helper_,
@@ -105,7 +105,7 @@ TEST_F(TabGroupTypeObserverTest, OnTabGroupAdded) {
   EXPECT_CALL(synthetic_field_trial_helper_,
               UpdateHadSharedTabGroupIfNeeded(true))
       .Times(2);
-  group_1_.SetCollaborationId(CollaborationId(std::string(kGroupId)));
+  group_1_.SetCollaborationId(syncer::CollaborationId(std::string(kGroupId)));
   observer_->OnTabGroupAdded(group_1_, TriggerSource::REMOTE);
   observer_->OnTabGroupAdded(group_1_, TriggerSource::REMOTE);
 }
@@ -119,7 +119,7 @@ TEST_F(TabGroupTypeObserverTest, OnTabGroupMigrated) {
   EXPECT_CALL(synthetic_field_trial_helper_,
               UpdateHadSharedTabGroupIfNeeded(true))
       .Times(2);
-  group_1_.SetCollaborationId(CollaborationId(std::string(kGroupId)));
+  group_1_.SetCollaborationId(syncer::CollaborationId(std::string(kGroupId)));
   observer_->OnTabGroupMigrated(group_1_, base::Uuid::GenerateRandomV4(),
                                 TriggerSource::LOCAL);
   observer_->OnTabGroupMigrated(group_1_, base::Uuid::GenerateRandomV4(),

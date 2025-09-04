@@ -29,8 +29,8 @@ TEST_F(UtilsUnitTest, NullGroup) {
 TEST_F(UtilsUnitTest, IdsOnly) {
   base::Uuid uuid1 =
       base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
-  auto log1 = TabGroupIdsToShortLogString("prefix", uuid1,
-                                          std::optional<CollaborationId>());
+  auto log1 = TabGroupIdsToShortLogString(
+      "prefix", uuid1, std::optional<syncer::CollaborationId>());
   EXPECT_EQ(
       "prefix\n"
       "  ID: 21abd97f-73e8-4b88-9389-a9fee6abda5e\n"
@@ -39,7 +39,7 @@ TEST_F(UtilsUnitTest, IdsOnly) {
 
   base::Uuid uuid2 =
       base::Uuid::ParseLowercase("31abd97f-73e8-4b88-9389-a9fee6abda5e");
-  std::optional<CollaborationId> collab_id2("/?-group_id");
+  std::optional<syncer::CollaborationId> collab_id2("/?-group_id");
   auto log2 = TabGroupIdsToShortLogString("prefix", uuid2, collab_id2);
   EXPECT_EQ(
       "prefix\n"
@@ -85,7 +85,7 @@ TEST_F(UtilsUnitTest, TestValidGroups) {
   SavedTabGroup g2(u"title1", tab_groups::TabGroupColorId::kBlue,
                    /*tabs=*/{tab},
                    /*position=*/std::nullopt, id2, local_id2);
-  g2.SetCollaborationId(CollaborationId("/?-group_id"));
+  g2.SetCollaborationId(syncer::CollaborationId("/?-group_id"));
   g2.SetIsHidden(true);
   g2.SetIsTransitioningToSaved(true);
   g2.MarkTransitioningToSharedForTesting();

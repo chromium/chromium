@@ -142,7 +142,7 @@ std::string TabGroupToShortLogString(const std::string_view& prefix,
 std::string TabGroupIdsToShortLogString(
     const std::string_view& prefix,
     base::Uuid group_id,
-    const std::optional<CollaborationId> collaboration_id) {
+    const std::optional<syncer::CollaborationId> collaboration_id) {
   std::string collab_id_str =
       collaboration_id.has_value() ? collaboration_id->value() : "N/A";
 

@@ -214,7 +214,7 @@ void SavedTabGroupModel::UpdateVisualDataLocally(
 
 void SavedTabGroupModel::MakeTabGroupSharedForTesting(
     const LocalTabGroupID& local_group_id,
-    CollaborationId collaboration_id) {
+    syncer::CollaborationId collaboration_id) {
   SavedTabGroup* const group = GetMutableGroup(local_group_id);
   group->SetCollaborationId(std::move(collaboration_id));
 }

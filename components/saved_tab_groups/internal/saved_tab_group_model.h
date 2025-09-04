@@ -19,6 +19,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -96,7 +97,7 @@ class SavedTabGroupModel {
   // the collaboration_id on the group. It is up to callers to ensure the
   // updated group is retrieved from the service before use.
   void MakeTabGroupSharedForTesting(const LocalTabGroupID& local_group_id,
-                                    CollaborationId collaboration_id);
+                                    syncer::CollaborationId collaboration_id);
   void MakeTabGroupUnsharedForTesting(const LocalTabGroupID& local_group_id);
 
   // Mark whether the tab group identified by `local_group_id` is transitioning
