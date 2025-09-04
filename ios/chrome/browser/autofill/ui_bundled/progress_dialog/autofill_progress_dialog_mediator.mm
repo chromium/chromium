@@ -23,11 +23,11 @@
 #import "ui/base/l10n/l10n_util.h"
 
 AutofillProgressDialogMediator::AutofillProgressDialogMediator(
-    autofill::AutofillProgressDialogControllerImpl* model_controller,
+    autofill::AutofillProgressDialogController* model_controller,
     id<AutofillProgressDialogMediatorDelegate> delegate)
     : delegate_(delegate) {
   if (model_controller) {
-    model_controller_ = model_controller->GetImplWeakPtr();
+    model_controller_ = model_controller->GetWeakPtr();
   }
 }
 

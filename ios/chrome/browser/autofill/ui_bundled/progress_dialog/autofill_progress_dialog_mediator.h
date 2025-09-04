@@ -14,7 +14,7 @@
 @protocol AutofillProgressDialogMediatorDelegate;
 
 namespace autofill {
-class AutofillProgressDialogControllerImpl;
+class AutofillProgressDialogController;
 }  // namespace autofill
 
 // Bridge class used to connect Autofill progress dialog components with the
@@ -23,7 +23,7 @@ class AutofillProgressDialogMediator
     : public autofill::AutofillProgressDialogView {
  public:
   AutofillProgressDialogMediator(
-      autofill::AutofillProgressDialogControllerImpl* model_controller,
+      autofill::AutofillProgressDialogController* model_controller,
       id<AutofillProgressDialogMediatorDelegate> delegate);
   AutofillProgressDialogMediator(const AutofillProgressDialogMediator&) =
       delete;
@@ -46,8 +46,7 @@ class AutofillProgressDialogMediator
   void DismissDialog();
 
   // The model to provide data to be shown in the IOS view implementation.
-  base::WeakPtr<autofill::AutofillProgressDialogControllerImpl>
-      model_controller_;
+  base::WeakPtr<autofill::AutofillProgressDialogController> model_controller_;
 
   __weak id<AlertConsumer> consumer_;
 

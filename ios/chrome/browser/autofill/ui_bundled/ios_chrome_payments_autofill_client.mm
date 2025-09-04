@@ -32,8 +32,12 @@
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
@@ -426,17 +430,17 @@ PaymentsDataManager& IOSChromePaymentsAutofillClient::GetPaymentsDataManager() {
   return client_->GetPersonalDataManager().payments_data_manager();
 }
 
-std::unique_ptr<AutofillProgressDialogControllerImpl>
-IOSChromePaymentsAutofillClient::GetProgressDialogModel() {
+std::unique_ptr<AutofillProgressDialogController>
+IOSChromePaymentsAutofillClient::ExtractProgressDialogModel() {
   return std::move(progress_dialog_controller_);
 }
 
-std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
-IOSChromePaymentsAutofillClient::GetOtpInputDialogModel() {
+std::unique_ptr<CardUnmaskOtpInputDialogController>
+IOSChromePaymentsAutofillClient::ExtractOtpInputDialogModel() {
   return std::move(otp_input_dialog_controller_);
 }
 
-CardUnmaskPromptControllerImpl*
+CardUnmaskPromptController*
 IOSChromePaymentsAutofillClient::GetCardUnmaskPromptModel() {
   return unmask_controller_.get();
 }

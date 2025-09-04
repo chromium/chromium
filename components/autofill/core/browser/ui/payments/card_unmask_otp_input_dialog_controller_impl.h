@@ -30,15 +30,13 @@ class CardUnmaskOtpInputDialogControllerImpl
       const CardUnmaskOtpInputDialogControllerImpl&) = delete;
   ~CardUnmaskOtpInputDialogControllerImpl() override;
 
-  // Show the dialog for users to type in OTPs.
-  void ShowDialog(
-      base::OnceCallback<base::WeakPtr<CardUnmaskOtpInputDialogView>()>
-          create_and_show_view_callback);
-
   // Invoked when the OTP verification is completed.
   void OnOtpVerificationResult(OtpUnmaskResult result);
 
   // CardUnmaskOtpInputDialogController:
+  void ShowDialog(
+      base::OnceCallback<base::WeakPtr<CardUnmaskOtpInputDialogView>()>
+          create_and_show_view_callback) override;
   void OnDialogClosed(bool user_closed_dialog,
                       bool server_request_succeeded) override;
   void OnOkButtonClicked(const std::u16string& otp) override;

@@ -8,7 +8,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_content.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_mediator_delegate.h"
@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_mutator_bridge_target.h"
 
 OtpInputDialogMediator::OtpInputDialogMediator(
-    base::WeakPtr<autofill::CardUnmaskOtpInputDialogControllerImpl>
+    base::WeakPtr<autofill::CardUnmaskOtpInputDialogController>
         model_controller,
     id<OtpInputDialogMediatorDelegate> delegate)
     : model_controller_(model_controller), delegate_(delegate) {

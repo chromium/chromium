@@ -16,11 +16,8 @@
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
-#import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
-#import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
-#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #import "components/infobars/core/infobar_manager.h"
 
 class GURL;
@@ -32,8 +29,14 @@ class WebState;
 namespace autofill {
 
 struct AutofillErrorDialogContext;
+class AutofillProgressDialogController;
+class AutofillProgressDialogControllerImpl;
 struct CardUnmaskChallengeOption;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
+class CardUnmaskOtpInputDialogController;
+class CardUnmaskOtpInputDialogControllerImpl;
+class CardUnmaskPromptController;
+class CardUnmaskPromptControllerImpl;
 class ChromeAutofillClientIOS;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
@@ -132,11 +135,11 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       override;
   PaymentsDataManager& GetPaymentsDataManager() final;
 
-  std::unique_ptr<AutofillProgressDialogControllerImpl> GetProgressDialogModel()
+  std::unique_ptr<AutofillProgressDialogController> ExtractProgressDialogModel()
       override;
-  std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
-  GetOtpInputDialogModel() override;
-  CardUnmaskPromptControllerImpl* GetCardUnmaskPromptModel() override;
+  std::unique_ptr<CardUnmaskOtpInputDialogController>
+  ExtractOtpInputDialogModel() override;
+  CardUnmaskPromptController* GetCardUnmaskPromptModel() override;
 
  private:
   // Shows save card UI offering upload or local save.

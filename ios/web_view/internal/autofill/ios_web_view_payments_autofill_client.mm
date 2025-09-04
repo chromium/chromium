@@ -12,6 +12,9 @@
 #import "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
+#import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -113,17 +116,17 @@ IOSWebViewPaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
 }
 
 #if BUILDFLAG(IS_IOS)
-std::unique_ptr<AutofillProgressDialogControllerImpl>
-IOSWebViewPaymentsAutofillClient::GetProgressDialogModel() {
+std::unique_ptr<AutofillProgressDialogController>
+IOSWebViewPaymentsAutofillClient::ExtractProgressDialogModel() {
   return nullptr;
 }
 
-std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
-IOSWebViewPaymentsAutofillClient::GetOtpInputDialogModel() {
+std::unique_ptr<CardUnmaskOtpInputDialogController>
+IOSWebViewPaymentsAutofillClient::ExtractOtpInputDialogModel() {
   return nullptr;
 }
 
-CardUnmaskPromptControllerImpl*
+CardUnmaskPromptController*
 IOSWebViewPaymentsAutofillClient::GetCardUnmaskPromptModel() {
   return nullptr;
 }

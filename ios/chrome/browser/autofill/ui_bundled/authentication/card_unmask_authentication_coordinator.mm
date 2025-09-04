@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_coordinator.h"
 
+#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_selection_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_coordinator.h"
@@ -68,7 +69,7 @@
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          BrowserCoordinatorCommands);
 
-  autofill::CardUnmaskPromptControllerImpl* cvcInputModelController =
+  autofill::CardUnmaskPromptController* cvcInputModelController =
       paymentsClient->GetCardUnmaskPromptModel();
   _cvcInputViewBridge = std::make_unique<autofill::CardUnmaskPromptViewBridge>(
       cvcInputModelController, _navigationController,

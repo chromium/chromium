@@ -8,7 +8,7 @@
 
 #import <memory>
 
-#import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_mediator_delegate.h"
@@ -29,7 +29,7 @@
 
   // The model layer controller. This model controller provide access to model
   // data and also handles interactions.
-  std::unique_ptr<autofill::CardUnmaskOtpInputDialogControllerImpl>
+  std::unique_ptr<autofill::CardUnmaskOtpInputDialogController>
       _modelController;
 
   // The C++ bridge class to connect Autofill model controller with the view
@@ -54,9 +54,9 @@
     CHECK(client);
     auto* paymentsClient = client->GetPaymentsAutofillClient();
     CHECK(paymentsClient);
-    _modelController = paymentsClient->GetOtpInputDialogModel();
+    _modelController = paymentsClient->ExtractOtpInputDialogModel();
     _mediator = std::make_unique<OtpInputDialogMediator>(
-        _modelController->GetImplWeakPtr(), self);
+        _modelController->GetWeakPtr(), self);
   }
   return self;
 }
