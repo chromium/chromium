@@ -22,7 +22,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace content {
