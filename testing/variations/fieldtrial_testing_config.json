@@ -11377,27 +11377,6 @@
             ]
         }
     ],
-    "GlicResetPanelPositionOnNewThread": [
-        {
-            "platforms": [
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "glic-panel-reset-session-timeout-delay-h": "1"
-                    },
-                    "enable_features": [
-                        "GlicPanelResetOnSessionTimeout",
-                        "GlicPanelResetOnStart",
-                        "GlicPanelSetPositionOnDrag"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicResetPanelSizeAndLocationOnOpen": [
         {
             "platforms": [

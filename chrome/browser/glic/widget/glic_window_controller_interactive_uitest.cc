@@ -770,7 +770,8 @@ class GlicWindowControllerWithPreviousPostionUiTest
     features_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{features::kGlicPanelResetOnSessionTimeout,
-                               features::kGlicPanelResetSizeAndLocationOnOpen});
+                               features::kGlicPanelResetSizeAndLocationOnOpen,
+                               features::kGlicPanelResetOnStart});
   }
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {

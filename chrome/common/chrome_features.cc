@@ -608,12 +608,12 @@ BASE_FEATURE(GlicExplicitBackgroundColor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(GlicPanelResetTopChromeButton, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGlicPanelResetTopChromeButtonDelayMs{
     &kGlicPanelResetTopChromeButton, "glic-panel-reset-delay-ms", 2500};
-BASE_FEATURE(GlicPanelResetOnStart, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(GlicPanelSetPositionOnDrag, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(GlicPanelResetOnSessionTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(GlicPanelResetOnStart, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(GlicPanelSetPositionOnDrag, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(GlicPanelResetOnSessionTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<double> kGlicPanelResetOnSessionTimeoutDelayH{
     &kGlicPanelResetOnSessionTimeout,
-    "glic-panel-reset-session-timeout-delay-h", 0};
+    "glic-panel-reset-session-timeout-delay-h", 1};
 BASE_FEATURE(GlicPanelResetSizeAndLocationOnOpen,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
