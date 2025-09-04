@@ -48,6 +48,7 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import './site_favicon.js';
 import './dialogs/password_preview_item.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -64,6 +65,7 @@ import {Page, Router} from './router.js';
 export interface PasswordsImporterElement {
   $: {
     linkRow: CrLinkRowElement,
+    selectFileButtonLinkRow: CrButtonElement,
   };
 }
 
@@ -294,8 +296,17 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   private closeDialog_() {
     this.dialogState_ = DialogState.NO_DIALOG;
-    // TODO(crbug.com/40264206): Make sure that focus behaves correctly when the
-    // dialog is closed.
+    // When the dialog closes, restore focus to the element that opened it.
+    // For account-store users, this is the entire link-row. For other users,
+    // it's the "Select file" button. A timeout is needed to ensure that focus
+    // is restored only after the dialog has completely closed.
+    setTimeout(() => {
+      if (this.shouldHideSelectFileButton_()) {
+        this.$.linkRow.focus();
+      } else {
+        this.$.selectFileButtonLinkRow.focus();
+      }
+    });
   }
 
   private async resetImporter() {
@@ -537,8 +548,8 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     return !this.isAccountStoreUser || this.isState_(DialogState.IN_PROGRESS);
   }
 
-  private shouldShowSelectFileButton_(): boolean {
-    return !this.isAccountStoreUser && !this.isState_(DialogState.IN_PROGRESS);
+  private shouldHideSelectFileButton_(): boolean {
+    return this.isAccountStoreUser || this.isState_(DialogState.IN_PROGRESS);
   }
 
   private shouldHideDeleteFileOption_(): boolean {

@@ -818,4 +818,59 @@ suite('PasswordsImporterTest', function() {
 
     await closeDialogHelper(importer, passwordManager, dialog, '#closeButton');
   });
+
+  test(
+      'for account user, dialog close restores focus to link row',
+      async function() {
+        const importer = createPasswordsImporter(
+            /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
+            /*accountEmail=*/ 'test@test.com');
+
+        importer.$.linkRow.click();
+        flush();
+
+        const dialog =
+            importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        await closeDialogHelper(
+            importer, passwordManager, dialog, '#cancelButton');
+        await flushTasks();
+
+        // Focus should be restored to the link row.
+        assertEquals(importer.shadowRoot!.activeElement, importer.$.linkRow);
+      });
+
+  test(
+      'for non-account user, dialog close restores focus to select file button',
+      async function() {
+        const importer = createPasswordsImporter(
+            /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ false,
+            /*accountEmail=*/ 'test@test.com');
+
+        passwordManager.setImportResults({
+          status:
+              chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE,
+          numberImported: 0,
+          displayedEntries: [],
+          fileName: '',
+        });
+
+        await triggerImportHelper(
+            importer, passwordManager, '#selectFileButtonLinkRow');
+
+        const dialog =
+            importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        await closeDialogHelper(
+            importer, passwordManager, dialog, '#closeButton');
+        await flushTasks();
+        // Focus should be restored to the select file button.
+        assertEquals(
+            importer.shadowRoot!.activeElement,
+            importer.$.selectFileButtonLinkRow);
+      });
 });
