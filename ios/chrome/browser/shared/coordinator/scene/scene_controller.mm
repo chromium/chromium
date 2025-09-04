@@ -1073,7 +1073,7 @@ void OnListFamilyMembersResponse(
       continue;
     }
 
-    if ([newGaiaID isEqualToString:app_group::kNoAccount] && gaiaInApp) {
+    if ([newGaiaID isEqualToString:app_group::kNoAccount] && gaiaInApp.length) {
       return
           [[WidgetContext alloc] initWithContext:context
                                           gaiaID:newGaiaID
