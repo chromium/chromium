@@ -120,8 +120,12 @@ std::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
       }
     }
     const FieldType type = TypeNameToFieldType(key);
-    if (type == UNKNOWN_TYPE || !IsAddressType(type)) {
-      LOG(ERROR) << "Unknown or non-address type " << key << ".";
+    // For phone numbers, only the PHONE_HOME_WHOLE_NUMBER is stored internally
+    // and as a result, setting partial phone number is prohibited.
+    if (!IsAddressType(type) ||
+        (GroupTypeOfFieldType(type) == FieldTypeGroup::kPhone &&
+         type != PHONE_HOME_WHOLE_NUMBER)) {
+      LOG(ERROR) << "Invalid address type " << key << ".";
       return std::nullopt;
     }
     profile.SetRawInfoWithVerificationStatus(
@@ -144,9 +148,8 @@ std::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
       continue;
     }
     const FieldType type = TypeNameToFieldType(key);
-    if (type == UNKNOWN_TYPE ||
-        GroupTypeOfFieldType(type) != FieldTypeGroup::kCreditCard) {
-      LOG(ERROR) << "Unknown or non-credit card type " << key << ".";
+    if (GroupTypeOfFieldType(type) != FieldTypeGroup::kCreditCard) {
+      LOG(ERROR) << "Non-credit card type " << key << ".";
       return std::nullopt;
     }
     card.SetRawInfo(type, base::UTF8ToUTF16(value.GetString()));
