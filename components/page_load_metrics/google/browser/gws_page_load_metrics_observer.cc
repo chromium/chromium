@@ -61,9 +61,9 @@ const char kHistogramGWSNavigationStartToOnComplete[] =
 const char kHistogramGWSFirstFetchStartToFirstRequestStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.FirstFetchStartToFirstRequestStart";
 const char kHistogramGWSCreateStreamDelay[] =
-    HISTOGRAM_PREFIX "NavigationTiming.CreateStreamDelay";
+    HISTOGRAM_PREFIX "NavigationTiming.CreateStreamDelay2";
 const char kHistogramGWSConnectedCallbackDelay[] =
-    HISTOGRAM_PREFIX "NavigationTiming.ConnectedCallbackDelay";
+    HISTOGRAM_PREFIX "NavigationTiming.ConnectedCallbackDelay2";
 const char kHistogramGWSInitializeStreamDelay[] =
     HISTOGRAM_PREFIX "NavigationTiming.InitializeStreamDelay";
 

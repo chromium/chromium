@@ -37,6 +37,12 @@ bool StructTraits<network::mojom::LoadTimingInternalInfoDataView,
                   net::LoadTimingInternalInfo>::
     Read(network::mojom::LoadTimingInternalInfoDataView data,
          net::LoadTimingInternalInfo* info) {
+  if (!data.ReadCreateStreamDelay(&info->create_stream_delay)) {
+    return false;
+  }
+  if (!data.ReadConnectedCallbackDelay(&info->connected_callback_delay)) {
+    return false;
+  }
   if (!data.ReadInitializeStreamDelay(&info->initialize_stream_delay)) {
     return false;
   }

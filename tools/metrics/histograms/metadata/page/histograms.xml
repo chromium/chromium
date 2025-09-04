@@ -1355,7 +1355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.NavigationTiming.ConnectedCallbackDelay"
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.ConnectedCallbackDelay2"
     units="ms" expires_after="2026-02-01">
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1369,7 +1369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.NavigationTiming.CreateStreamDelay"
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.CreateStreamDelay2"
     units="ms" expires_after="2026-02-01">
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
