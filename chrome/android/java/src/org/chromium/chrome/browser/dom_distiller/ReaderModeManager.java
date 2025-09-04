@@ -752,7 +752,9 @@ public class ReaderModeManager extends EmptyTabObserver
                                             Snackbar.UMA_UNKNOWN)
                                     .setAction(
                                             mTab.getContext().getString(R.string.chrome_dismiss),
-                                            null));
+                                            null)
+                                    // Important to get the full message displayed to the user.
+                                    .setSingleLine(false));
                 });
     }
 
