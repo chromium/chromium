@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 
 #include <algorithm>
@@ -325,7 +323,7 @@ bool IsImmersiveArAllowedBySettings(LocalDOMWindow* window) {
 // When enabled, accessing the navigator.xr attribute does not prevent the
 // frame from entering the back forward cache.
 // Kill switch for https://crbug.com/392087591
-BASE_FEATURE(WebXrAttributeAllowsBackForwardCache,
+BASE_FEATURE(kWebXrAttributeAllowsBackForwardCache,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

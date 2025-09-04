@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 
 #include <inttypes.h>
@@ -65,7 +63,7 @@ namespace {
 // image backed CanvasResources so that they can be imported into WebGPU without
 // an intermediate copy. This could cause a different shared image backing type
 // to be used in the GPU process based on the OS platform.
-BASE_FEATURE(CanvasResourceIsWebGPUCompatible,
+BASE_FEATURE(kCanvasResourceIsWebGPUCompatible,
 #if BUILDFLAG(IS_APPLE)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

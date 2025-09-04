@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 
 #include <atomic>
@@ -28,7 +26,7 @@
 namespace blink {
 
 // TODO(crbug.com/420150619): Re-enable this feature.
-BASE_FEATURE(DelayStopForMediaElementSourceNode,
+BASE_FEATURE(kDelayStopForMediaElementSourceNode,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TeeFilter is a RenderCallback implementation that allows for a client to get

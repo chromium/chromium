@@ -20,8 +20,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
 #include <iterator>
@@ -123,7 +121,7 @@ static constexpr base::TimeDelta kDefaultStrongReferencePruneDelay =
 
 // Feature to control the duration for which a strong reference may remain
 // in the MemoryCache after its last access.
-BASE_FEATURE(MemoryCacheChangeStrongReferencePruneDelay,
+BASE_FEATURE(kMemoryCacheChangeStrongReferencePruneDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Parameter defining the delay after which a strong reference is removed

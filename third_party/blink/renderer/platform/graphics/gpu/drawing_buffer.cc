@@ -28,8 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 
 #include <algorithm>
@@ -87,7 +85,7 @@ namespace {
 // only on Windows but it's *compiled* on all platforms, so the feature must
 // also be defined on al platforms even though it also will be used only on
 // Windows.
-BASE_FEATURE(UseSingleSIForLowLatencyWebGLOnWindows,
+BASE_FEATURE(kUseSingleSIForLowLatencyWebGLOnWindows,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const float kResourceAdjustedRatio = 0.5;

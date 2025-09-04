@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_settings.h"
 
 #include <algorithm>
@@ -42,7 +40,7 @@ namespace {
 // When enabled, scrollbar fade animations' delay and duration are scaled
 // according to `kFadeDelayScalingFactor` and `kFadeDurationScalingFactor`
 // below, respectively. For more context, please see https://crbug.com/1245964.
-BASE_FEATURE(ScaleScrollbarAnimationTiming, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kScaleScrollbarAnimationTiming, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<double> kFadeDelayScalingFactor{
     &kScaleScrollbarAnimationTiming, "fade_delay_scaling_factor",
@@ -111,7 +109,7 @@ std::pair<int, int> GetTilingInterestAreaSizes() {
 #if !BUILDFLAG(IS_ANDROID)
 // Adjusting tile memory size in case a lot more websites need more tile
 // memory than the current calculation.
-BASE_FEATURE(AdjustTileGpuMemorySize, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAdjustTileGpuMemorySize, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr size_t kLargeResolutionMemoryMB = 1152;
 constexpr size_t kDefaultMemoryMB = 512;

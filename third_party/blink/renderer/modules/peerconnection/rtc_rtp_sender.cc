@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender.h"
 
 #include <inttypes.h>
@@ -72,7 +70,7 @@ namespace features {
 
 // Killswitch for requesting key frames via setParameterOptions.
 // TODO(crbug.com/1354101): remove after rollout.
-BASE_FEATURE(WebRtcRequestKeyFrameViaSetParameterOptions,
+BASE_FEATURE(kWebRtcRequestKeyFrameViaSetParameterOptions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/scheduler/main_thread/memory_purge_manager.h"
 
 #include "build/build_config.h"
@@ -26,7 +24,7 @@ namespace blink {
 
 namespace {
 
-BASE_FEATURE(MemoryPurgeInBackground, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMemoryPurgeInBackground, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The delay for the first purge after a renderer is backgrounded. The value was
 // initially set to 30 minutes, but it was reduced to 1 minute because this

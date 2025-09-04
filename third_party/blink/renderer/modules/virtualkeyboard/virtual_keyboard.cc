@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/virtualkeyboard/virtual_keyboard.h"
 
 #include "base/trace_event/trace_event.h"
@@ -29,7 +27,7 @@ namespace {
 
 // Kill switch for allowing `virtualKeyboard.show()` if this page was navigated
 // from a same-site page that had user gesture.
-BASE_FEATURE(ShowKeyboardIfLastPageHadGesture,
+BASE_FEATURE(kShowKeyboardIfLastPageHadGesture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

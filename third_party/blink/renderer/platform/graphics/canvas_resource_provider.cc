@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 
 #include <inttypes.h>
@@ -1581,14 +1579,15 @@ bool CanvasResourceProvider::CanvasImageProvider::IsHardwareDecodeCache()
 }
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(UseCRPSIForLowLatencyOnWindows, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseCRPSIForLowLatencyOnWindows, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(Canvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCanvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, unused resources (ready to be recycled) are reclaimed after a
 // delay.
-BASE_FEATURE(Canvas2DReclaimUnusedResources, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCanvas2DReclaimUnusedResources,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The following parameters attempt to reach a compromise between not flushing
 // too often, and not accumulating an unreasonable backlog. Flushing too

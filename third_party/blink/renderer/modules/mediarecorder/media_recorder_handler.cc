@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 
 #include <algorithm>
@@ -71,7 +69,7 @@ using base::TimeTicks;
 
 namespace blink {
 
-BASE_FEATURE(MediaRecorderSeekableWebm, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMediaRecorderSeekableWebm, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 

@@ -29,8 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
 #include <algorithm>
@@ -345,7 +343,7 @@ MemoryInfo* WindowPerformance::memory(ScriptState* script_state) const {
 
 namespace {
 
-BASE_FEATURE(AdjustNavigationalPrefetchTiming,
+BASE_FEATURE(kAdjustNavigationalPrefetchTiming,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 enum class AdjustNavigationalPrefetchTimingBehavior {

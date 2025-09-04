@@ -23,8 +23,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 
 #include <algorithm>
@@ -60,7 +58,7 @@
 
 namespace blink {
 
-BASE_FEATURE(TaskAttributionInfrastructureDisabledForTesting,
+BASE_FEATURE(kTaskAttributionInfrastructureDisabledForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

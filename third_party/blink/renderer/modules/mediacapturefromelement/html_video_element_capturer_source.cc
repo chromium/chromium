@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/mediacapturefromelement/html_video_element_capturer_source.h"
 
 #include "base/feature_list.h"
@@ -24,7 +22,8 @@
 namespace {
 constexpr float kMinFramesPerSecond = 1.0;
 
-BASE_FEATURE(UseVideoFrameRateForCaptureRate, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseVideoFrameRateForCaptureRate,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // anonymous namespace
 

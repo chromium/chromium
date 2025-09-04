@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
 
 #include <inttypes.h>
@@ -606,7 +604,7 @@ void CachedStorageArea::MaybeApplyNonLocalMutationForKey(
 // There are 2 parameters that influence how long the delay is, `factor` and
 // `offset`. If the actual time taken is `time_to_prime` then the delay will be
 // `time_to_prime * factor + offset`.
-BASE_FEATURE(DomStorageAblation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDomStorageAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(double,
                    kDomStorageAblationDelayFactor,
                    &kDomStorageAblation,

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 
 #include <optional>
@@ -35,7 +33,7 @@ namespace blink {
 
 namespace {
 
-BASE_FEATURE(ConfigurableV8CodeCacheHotHours,
+BASE_FEATURE(kConfigurableV8CodeCacheHotHours,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 MIRACLE_PARAMETER_FOR_INT(GetV8CodeCacheHotHours,

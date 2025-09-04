@@ -28,8 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/encoding/text_encoder.h"
 
 #include "base/feature_list.h"
@@ -44,7 +42,8 @@ namespace blink {
 
 // Controls if TextEncode will throw an exception when failed to allocate
 // buffer.
-BASE_FEATURE(ThrowExceptionWhenTextEncodeOOM, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kThrowExceptionWhenTextEncodeOOM,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 TextEncoder* TextEncoder::Create(ExecutionContext* context,
                                  ExceptionState& exception_state) {

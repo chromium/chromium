@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 
 #include "base/feature_list.h"
@@ -14,7 +12,7 @@ namespace blink {
 // encoded_audio_transformer_'s transform callback to directly call the new
 // underlying source rather than bouncing via the RTCRtpSender or
 // RTCRtpReceiver.
-BASE_FEATURE(WebRtcEncodedTransformDirectCallback,
+BASE_FEATURE(kWebRtcEncodedTransformDirectCallback,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Keep the metadata of RTC encoded frames after they are neutered.
@@ -32,7 +30,7 @@ BASE_FEATURE(kWebRtcEncodedTransformRememberVideoFrameType,
 // This feature enables encrypting RTP header extensions using RFC 6904, if
 // requested. Requesting should be done using the RTP header extension API;
 // doing it via SDP munging is possible, but not recommended.
-BASE_FEATURE(WebRtcEncryptedRtpHeaderExtensions,
+BASE_FEATURE(kWebRtcEncryptedRtpHeaderExtensions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This features enables the restriction that frames sent to an
@@ -40,12 +38,12 @@ BASE_FEATURE(WebRtcEncryptedRtpHeaderExtensions,
 // and must be written in the same order in which they are read. This feature
 // does not affect streams created with the createEncodedStreams() method, which
 // never applies this restriction.
-BASE_FEATURE(WebRtcRtpScriptTransformerFrameRestrictions,
+BASE_FEATURE(kWebRtcRtpScriptTransformerFrameRestrictions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Rollout killswitch for unumuting a track when a packet arrives instead of
 // after setRemoteDescription.
-BASE_FEATURE(WebRtcUnmuteTracksWhenPacketArrives,
+BASE_FEATURE(kWebRtcUnmuteTracksWhenPacketArrives,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace blink

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 
 #include "base/debug/alias.h"
@@ -86,7 +84,7 @@ void UpdateMaxIdleTasksCrashKey(size_t num_pending_idle_tasks) {
 
 }  // namespace
 
-BASE_FEATURE(RemoveCancelledScriptedIdleTasks,
+BASE_FEATURE(kRemoveCancelledScriptedIdleTasks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 IdleTask::~IdleTask() {

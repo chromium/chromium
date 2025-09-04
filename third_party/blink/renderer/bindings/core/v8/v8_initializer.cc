@@ -23,8 +23,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 
 #include <algorithm>
@@ -576,7 +574,7 @@ void ThrowRangeException(v8::Isolate* isolate, const char* message) {
   isolate->ThrowException(NewRangeException(isolate, message));
 }
 
-BASE_FEATURE(WebAssemblyUnlimitedSyncCompilation,
+BASE_FEATURE(kWebAssemblyUnlimitedSyncCompilation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool WasmModuleOverride(const v8::FunctionCallbackInfo<v8::Value>& args) {

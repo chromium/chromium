@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/mediastream/media_devices.h"
 
 #include <algorithm>
@@ -77,7 +75,7 @@
 
 namespace blink {
 
-BASE_FEATURE(EnumerateDevicesRequestAudioCapabilities,
+BASE_FEATURE(kEnumerateDevicesRequestAudioCapabilities,
 #if BUILDFLAG(IS_MAC)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/webcodecs/image_decoder_core.h"
 
 #include "base/feature_list.h"
@@ -28,7 +26,7 @@ namespace blink {
 namespace {
 
 // TODO(crbug.com/40215121): Remove this after M144.
-BASE_FEATURE(WebCodecsImageDecoderHighBitDepthYUV,
+BASE_FEATURE(kWebCodecsImageDecoderHighBitDepthYUV,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 media::VideoPixelFormat YUVSubsamplingToMediaPixelFormat(

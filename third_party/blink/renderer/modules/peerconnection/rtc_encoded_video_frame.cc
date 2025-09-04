@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
 
 #include <utility>
@@ -25,7 +23,7 @@
 namespace blink {
 
 // Allow all fields to be set when calling RTCEncodedVideoFrame.setMetadata.
-BASE_FEATURE(AllowRTCEncodedVideoFrameSetMetadataAllFields,
+BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataAllFields,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_sink.h"
 
 #include "base/feature_list.h"
@@ -32,14 +30,14 @@ namespace blink {
 namespace {
 // Enables conversion of input frames in RGB format to NV12 GMB-backed format
 // if GMB readback from texture is supported.
-BASE_FEATURE(BreakoutBoxEagerConversion, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBreakoutBoxEagerConversion, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If BreakoutBoxEagerConversion is enabled, this feature enables frame
 // conversion even if the sinks connected to the track backed by the
 // MediaStreamVideoTrackUnderlyingSink have not sent the RequireMappedFrame
 // signal.
 // This feature has no effect if BreakoutBoxEagerConversion is disabled.
-BASE_FEATURE(BreakoutBoxConversionWithoutSinkSignal,
+BASE_FEATURE(kBreakoutBoxConversionWithoutSinkSignal,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If BreakoutBoxWriteVideoFrameCaptureTimestamp is enabled, the timestamp from
@@ -47,7 +45,7 @@ BASE_FEATURE(BreakoutBoxConversionWithoutSinkSignal,
 // set as the capture timestamp for its underlying media::VideoFrame.
 // TODO(crbug.com/343870500): Remove this feature once WebCodec VideoFrames
 // expose the capture time as metadata.
-BASE_FEATURE(BreakoutBoxWriteVideoFrameCaptureTimestamp,
+BASE_FEATURE(kBreakoutBoxWriteVideoFrameCaptureTimestamp,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 class TransferringOptimizer : public WritableStreamTransferringOptimizer {

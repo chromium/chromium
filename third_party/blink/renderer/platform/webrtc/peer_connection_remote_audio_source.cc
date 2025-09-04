@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/webrtc/peer_connection_remote_audio_source.h"
 
 #include <string>
@@ -22,7 +20,7 @@
 
 namespace blink {
 
-BASE_FEATURE(PropagateEnabledEventForWebRtcAudioTrack,
+BASE_FEATURE(kPropagateEnabledEventForWebRtcAudioTrack,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 
 #include <memory>
@@ -70,7 +68,7 @@ struct PendingPaintTimingRecord {
 
 // When enabled, `PaintTiming::MarkPaintTimingInternal()` is only called from
 // `PaintTiming::NotifyPaintFinished()`.
-BASE_FEATURE(MarkPaintTimingInternalOnlyOnFinish,
+BASE_FEATURE(kMarkPaintTimingInternalOnlyOnFinish,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

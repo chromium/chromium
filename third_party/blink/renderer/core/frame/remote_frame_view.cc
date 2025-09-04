@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 
 #include <algorithm>
@@ -40,7 +38,7 @@
 
 namespace blink {
 
-BASE_FEATURE(SkipUnnecessaryRemoteFrameGeometryPropagation,
+BASE_FEATURE(kSkipUnnecessaryRemoteFrameGeometryPropagation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 RemoteFrameView::RemoteFrameView(RemoteFrame* remote_frame)

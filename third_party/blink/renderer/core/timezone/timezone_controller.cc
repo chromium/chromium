@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/core/timezone/timezone_controller.h"
 
 #include "base/feature_list.h"
@@ -35,7 +33,7 @@ namespace {
 // When enabled, the host timezone id is evaluated only when needed.
 // TODO(crbug.com/40287434): Cleanup the feature after running the experiment,
 // no later than January 2025.
-BASE_FEATURE(LazyBlinkTimezoneInit, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLazyBlinkTimezoneInit, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Notify V8 that the date/time configuration of the system might have changed.
 void NotifyTimezoneChangeToV8(v8::Isolate* isolate) {

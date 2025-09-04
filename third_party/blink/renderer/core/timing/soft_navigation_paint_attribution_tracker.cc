@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 
 #include "base/check_deref.h"
@@ -28,7 +26,7 @@ bool IsImageType(const LayoutObject& object) {
 // When enabled, text aggregator nodes are marked as needing repaint in the
 // `TextPaintTimingDetector` when the `SoftNavigationContext` associated with
 // the node changes.
-BASE_FEATURE(MarkTextNodesForRepaintOnContextChange,
+BASE_FEATURE(kMarkTextNodesForRepaintOnContextChange,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

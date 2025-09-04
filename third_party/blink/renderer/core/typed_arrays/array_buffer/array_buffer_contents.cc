@@ -24,8 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 
 #include <cstring>
@@ -53,7 +51,7 @@ namespace {
 //
 // TODO(crbug.com/371904440): Clean up the feature after running the experiment,
 // no later than in M136.
-BASE_FEATURE(GCOnArrayBufferAllocationFailure,
+BASE_FEATURE(kGCOnArrayBufferAllocationFailure,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

@@ -25,8 +25,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 
 #include <math.h>
@@ -147,7 +145,7 @@ constexpr unsigned kMaxCanvasAnimationBacklog = 2;
 constexpr unsigned kDisableAccelerationThreshold = 100;
 constexpr unsigned kDisableAccelerationPercent = 95;
 
-BASE_FEATURE(OneCopyCanvasCapture,
+BASE_FEATURE(kOneCopyCanvasCapture,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -156,7 +154,7 @@ BASE_FEATURE(OneCopyCanvasCapture,
 );
 
 // Kill switch for not requesting continuous begin frame for low latency canvas.
-BASE_FEATURE(LowLatencyCanvasNoBeginFrameKillSwitch,
+BASE_FEATURE(kLowLatencyCanvasNoBeginFrameKillSwitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // These values come from the WhatWG spec.

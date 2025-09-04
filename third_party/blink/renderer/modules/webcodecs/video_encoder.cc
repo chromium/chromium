@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 
 #include <algorithm>
@@ -123,7 +121,7 @@ namespace {
 constexpr const char kCategory[] = "media";
 // Controls if VideoEncoder will use timestamp from blink::VideoFrame
 // instead of media::VideoFrame.
-BASE_FEATURE(UseBlinkTimestampForEncoding, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseBlinkTimestampForEncoding, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/40215121): This is very similar to the method in
 // video_frame.cc. It should probably be a function in video_types.cc.

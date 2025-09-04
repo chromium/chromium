@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_video_track_source.h"
 
 #include <optional>
@@ -29,7 +27,7 @@ namespace {
 // Enables premapping of GMBs if the consumer wants mapped frames.
 // This helps with webrtc encode time measurements reducing unnecessary
 // adaptations.
-BASE_FEATURE(WebrtcVideoTrackSourcePremap, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebrtcVideoTrackSourcePremap, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr int kMaxPendingFrames = 5;
 

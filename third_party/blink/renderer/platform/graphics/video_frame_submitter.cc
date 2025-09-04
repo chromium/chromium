@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/graphics/video_frame_submitter.h"
 
 #include <optional>
@@ -50,11 +48,11 @@ namespace {
 // other VideoFrameSubmitter living on the same thread with the same parent
 // FrameSinkId. This is used to aggregate Viz communication and substantially
 // reduce IPC traffic when many VideoFrameSubmitters are active within a frame.
-BASE_FEATURE(UseVideoFrameSinkBundle, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUseVideoFrameSinkBundle, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When VideoFrameSubmitter::ReclaimResources() is called in background,
 // trigger a clean of recycled video frames.
-BASE_FEATURE(ClearVideoFrameResourcesInBackground,
+BASE_FEATURE(kClearVideoFrameResourcesInBackground,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Builds a cc::FrameInfo representing a video frame, which is considered

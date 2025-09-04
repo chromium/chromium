@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 #include "base/check.h"
@@ -20,7 +18,7 @@ namespace {
 // https://www.w3.org/TR/screen-capture/#dfn-restrictownaudio.
 // Note: The implementation of this kill switch is inverted, meaning that the
 // kill switch is active when the feature is enabled.
-BASE_FEATURE(DisplayAudioCaptureKillSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDisplayAudioCaptureKillSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 bool IsAudioInputMediaType(mojom::MediaStreamType type) {

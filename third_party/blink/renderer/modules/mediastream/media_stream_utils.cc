@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 
 #include "base/feature_list.h"
@@ -31,7 +29,7 @@ namespace blink {
 
 // Makes getDisplayMedia take into account the device's scale factor
 // to compute screen sizes in calls without size constraints.
-BASE_FEATURE(GetDisplayMediaScreenScaleFactor,
+BASE_FEATURE(kGetDisplayMediaScreenScaleFactor,
 #if BUILDFLAG(IS_CHROMEOS)
              // Causes crash/timeouts on some ChromeOS devices.
              // See https://issuetracker.google.com/issues/284804471

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_factory.h"
 
 #include <array>
@@ -41,7 +39,7 @@ namespace blink {
 namespace {
 
 // Kill-switch for HW AV1 decoding.
-BASE_FEATURE(WebRtcHwAv1Decoding, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebRtcHwAv1Decoding, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The default fps and default size are used when querying gpu_factories_ to see
 // if a codec profile is supported. 1280x720 at 30 fps corresponds to level 3.1

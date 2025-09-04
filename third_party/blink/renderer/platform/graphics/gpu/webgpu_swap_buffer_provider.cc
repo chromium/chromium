@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 
 #include "base/feature_list.h"
@@ -403,7 +401,7 @@ WebGPUSwapBufferProvider::SwapBuffer::~SwapBuffer() = default;
 
 #if BUILDFLAG(IS_CHROMEOS)
 // This feature is only used as a possible killswitch.
-BASE_FEATURE(WebGPUSwapBufferProviderAllowScanout,
+BASE_FEATURE(kWebGPUSwapBufferProviderAllowScanout,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 

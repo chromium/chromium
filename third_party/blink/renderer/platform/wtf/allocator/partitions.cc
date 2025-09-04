@@ -28,8 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 #include "base/allocator/partition_alloc_features.h"
@@ -55,7 +53,7 @@ namespace blink {
 const char* const Partitions::kAllocatedObjectPoolName =
     "partition_alloc/allocated_objects";
 
-BASE_FEATURE(BlinkUseLargeEmptySlotSpanRingForBufferRoot,
+BASE_FEATURE(kBlinkUseLargeEmptySlotSpanRingForBufferRoot,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else

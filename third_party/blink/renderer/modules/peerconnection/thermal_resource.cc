@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
 
 #include "base/time/time.h"
@@ -21,7 +19,7 @@ const int kReportIntervalSeconds = 10;
 
 }  // namespace
 
-BASE_FEATURE(WebRtcThermalResource,
+BASE_FEATURE(kWebRtcThermalResource,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
