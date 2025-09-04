@@ -1971,8 +1971,6 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     }
   }
 
-  must_paint_to_canvas_ = false;
-
   CanvasResourceProvider* resource_provider =
       GetOrCreateCanvasResourceProvider();
   if (!resource_provider) {
@@ -1986,6 +1984,11 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
       cached_snapshot_ = CopyRenderingResultsToUnacceleratedStaticBitmapImage(
           source_buffer, viz::SharedImageFormat::N32Format(),
           kPremul_SkAlphaType, kTopLeft_GrSurfaceOrigin);
+    }
+
+    if (cached_snapshot_) {
+      // We successfully painted the canvas' contents.
+      must_paint_to_canvas_ = false;
     }
 
     // Whether the snapshot was successfully created or not, there is nothing
@@ -2011,6 +2014,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     return nullptr;
   }
 
+  // We successfully painted the canvas' contents.
+  must_paint_to_canvas_ = false;
   return resource_provider->Snapshot(reason);
 }
 
@@ -2155,8 +2160,6 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     return resource_provider_.get();
   }
 
-  must_paint_to_canvas_ = false;
-
   CanvasResourceProvider* resource_provider =
       GetOrCreateCanvasResourceProvider();
   if (!resource_provider)
@@ -2182,6 +2185,9 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   if (resource_provider_was_updated != nullptr) {
     *resource_provider_was_updated = true;
   }
+
+  // We successfully painted the contents to the resource provider.
+  must_paint_to_canvas_ = false;
   return resource_provider;
 }
 
