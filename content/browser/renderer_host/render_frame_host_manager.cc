@@ -474,12 +474,11 @@ void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
   if (base::FeatureList::IsEnabled(
           features::kProcessPerSiteUpToMainFrameThreshold)) {
     site_instance->set_process_reuse_policy(
-        ProcessReusePolicy::
-            REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD);
+        ProcessReusePolicy::kReusePendingOrCommittedSiteWithMainFrameThreshold);
   } else if (base::FeatureList::IsEnabled(
                  features::kReusePrerenderingProcessForMainFrames)) {
     site_instance->set_process_reuse_policy(
-        ProcessReusePolicy::REUSE_PRERENDERING_PROCESS_FOR_MAIN_FRAME);
+        ProcessReusePolicy::kReusePrerenderingProcessForMainFrame);
   }
 }
 
@@ -3147,7 +3146,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
                 frame_tree_node_->GetParentOrOuterDocument()
                     ->GetOutermostMainFrame())) {
       new_instance->set_process_reuse_policy(
-          ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
+          ProcessReusePolicy::kReusePendingOrCommittedSiteSubframe);
     }
   }
 
@@ -3278,7 +3277,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // share the same default process when they don't need a dedicated process.
   // With sites that do require a dedicated process, we reuse processes via the
   // subframe reuse policy (we set the reuse policy to
-  // REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME).
+  // kReusePendingOrCommittedSiteSubframe).
   if (!current_frame_host()->IsOutermostMainFrame() &&
       !new_instance->HasProcess() &&
       !new_instance->RequiresDedicatedProcess()) {
