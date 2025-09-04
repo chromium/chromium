@@ -988,8 +988,7 @@ bool AddressComponent::IsMergeableWithComponent(
     return true;
   }
 
-  if (merge_mode_ & kUseNewerIfDifferent ||
-      merge_mode_ & kUseBetterOrMostRecentIfDifferent) {
+  if (merge_mode_ & kUseNewerIfDifferent) {
     return true;
   }
 
@@ -1239,14 +1238,6 @@ bool AddressComponent::MergeWithComponent(
         !IsLessSignificantVerificationStatus(
             newer_component.GetVerificationStatus(), GetVerificationStatus())) {
       CopyFrom(newer_component);
-    }
-    return true;
-  }
-
-  if (merge_mode_ & kUseBetterOrMostRecentIfDifferent) {
-    if (HasNewerValuePrecedenceInMerging(newer_component)) {
-      SetValue(newer_component.GetValue(),
-               newer_component.GetVerificationStatus());
     }
     return true;
   }

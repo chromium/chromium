@@ -1793,50 +1793,6 @@ TEST_F(AutofillStructuredAddressAddressComponent,
                                            VerificationStatus::kUserVerified));
 }
 
-// Tests merging using the MergeMode::KUseBetterOrMoreRecentIfDifferent|
-TEST_F(AutofillStructuredAddressAddressComponent,
-       TestUseBetterOfMoreRecentIfDifferentMergeStrategy) {
-  AddressComponentTestValues old_values = {
-      {.type = NAME_FIRST,
-       .value = "first value",
-       .status = VerificationStatus::kObserved}};
-  AddressComponentTestValues newer_values = {
-      {.type = NAME_FIRST,
-       .value = "second value",
-       .status = VerificationStatus::kObserved}};
-  AddressComponentTestValues better_values = {
-      {.type = NAME_FIRST,
-       .value = "second value",
-       .status = VerificationStatus::kUserVerified}};
-  AddressComponentTestValues not_better_values = {
-      {.type = NAME_FIRST,
-       .value = "second value",
-       .status = VerificationStatus::kParsed}};
-
-  // Test that the newer values are used.
-  TestAtomMerging(NAME_FIRST, old_values, newer_values, newer_values,
-                  /*is_mergeable=*/true,
-                  MergeMode::kUseBetterOrMostRecentIfDifferent);
-
-  // Test that the better values are used.
-  TestAtomMerging(NAME_FIRST, old_values, better_values, better_values,
-                  /*is_mergeable=*/true,
-                  MergeMode::kUseBetterOrMostRecentIfDifferent);
-  // Should work equally in both directions.
-  TestAtomMerging(NAME_FIRST, better_values, old_values, better_values,
-                  /*is_mergeable=*/true,
-                  MergeMode::kUseBetterOrMostRecentIfDifferent);
-
-  // Test that the not better values are not used.
-  TestAtomMerging(NAME_FIRST, old_values, not_better_values, old_values,
-                  /*is_mergeable=*/true,
-                  MergeMode::kUseBetterOrMostRecentIfDifferent);
-  // Should work equally in both directions.
-  TestAtomMerging(NAME_FIRST, not_better_values, old_values, old_values,
-                  /*is_mergeable=*/true,
-                  MergeMode::kUseBetterOrMostRecentIfDifferent);
-}
-
 TEST_F(AutofillStructuredAddressAddressComponent, TestFillTreeGaps) {
   NameFull name;
 

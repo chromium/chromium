@@ -91,14 +91,11 @@ enum MergeMode {
   kUseMostRecentSubstring = 1 << 6,
   // If the tokens match or one is a subset of the other, pick the shorter one.
   kPickShorterIfOneContainsTheOther = 1 << 7,
-  // If the normalized values are different, use the better one in terms
-  // of verification score or the most recent one if both scores are the same.
-  kUseBetterOrMostRecentIfDifferent = 1 << 8,
   // Merge the child nodes and reformat the node from its children after merge
   // if the value has changed.
-  kMergeChildrenAndReformatIfNeeded = 1 << 9,
+  kMergeChildrenAndReformatIfNeeded = 1 << 8,
   // Make a merge decision based on canonicalized values.
-  kMergeBasedOnCanonicalizedValues = 1 << 10,
+  kMergeBasedOnCanonicalizedValues = 1 << 9,
   // Defines the default merging behavior.
   kDefault = kRecursivelyMergeTokenEquivalentValues
 };
