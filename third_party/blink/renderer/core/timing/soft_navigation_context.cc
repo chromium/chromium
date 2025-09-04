@@ -80,8 +80,11 @@ bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
   uint64_t painted_area = rect.size().GetArea();
 
   Node* node = record->GetNode();
-  // Node should not be null if we've painted it.
-  CHECK(node);
+  // TODO(crbug.com/441914208): `node` can be null here, which is unexpected.
+  // Change this back to a CHECK when the root cause is understood and fixed.
+  if (!node) {
+    return false;
+  }
 
   if (paint_attribution_mode_ !=
       features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution) {
