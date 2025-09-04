@@ -251,7 +251,7 @@ class CONTENT_EXPORT PrefetchRequest final {
   // field is non-null if and only if this is created by SpeculationRules
   // prefech. These are assumed to have been validated by the time this is
   // constructed.
-  std::optional<SpeculationRulesTags> speculation_rules_tags_;
+  const std::optional<SpeculationRulesTags> speculation_rules_tags_;
 
   // -------- Parameters that can have non-default values only for
   // -------- browser-initiated prefetches:
@@ -264,7 +264,7 @@ class CONTENT_EXPORT PrefetchRequest final {
   // Time-to-live (TTL) for this prefetched data. Currently, this is configured
   // for browser-initiated prefetch that doesn't depend on web content.
   // Default value is `PrefetchContainerDefaultTtlInPrefetchService()`.
-  base::TimeDelta ttl_;
+  const base::TimeDelta ttl_;
 
   // If set, this value is used to override holdback status derived by the
   // normal process. It is set to `attempt_` on
