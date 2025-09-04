@@ -87,17 +87,17 @@ enum XRReflectionFormat {
   [RuntimeEnabled=WebXRImageTracking, CallWith=ScriptState, MeasureAs=XRSessionGetTrackedImageScores, RaisesException]
   Promise<FrozenArray<XRImageTrackingScore>> getTrackedImageScores();
 
-  [RuntimeEnabled=WebXRDepthPerformance, RaisesException]
+  [RaisesException]
   undefined pauseDepthSensing();
-  [RuntimeEnabled=WebXRDepthPerformance, RaisesException]
+  [RaisesException]
   undefined resumeDepthSensing();
 
   [RaisesException]
   readonly attribute XRDepthUsage? depthUsage;
   [RaisesException]
   readonly attribute XRDepthDataFormat? depthDataFormat;
-  [RuntimeEnabled=WebXRDepthPerformance, RaisesException]
+  [RaisesException]
   readonly attribute XRDepthType? depthType;
-  [RuntimeEnabled=WebXRDepthPerformance, RaisesException]
+  [RaisesException]
   readonly attribute boolean? depthActive;
 };

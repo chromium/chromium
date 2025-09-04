@@ -1346,16 +1346,13 @@ ScriptPromise<XRSession> XRSystem::requestSession(
     // `match_depth_view` is true if it is not set.
     bool match_depth_view = true;
     Vector<device::mojom::XRDepthType> type_request;
-    if (RuntimeEnabledFeatures::WebXRDepthPerformanceEnabled()) {
-      if (session_init->depthSensing()->hasMatchDepthView()) {
-        match_depth_view = session_init->depthSensing()->matchDepthView();
-      }
+    if (session_init->depthSensing()->hasMatchDepthView()) {
+      match_depth_view = session_init->depthSensing()->matchDepthView();
+    }
 
-      if (session_init->depthSensing()->hasDepthTypeRequest()) {
-        std::ranges::transform(session_init->depthSensing()->depthTypeRequest(),
-                               std::back_inserter(type_request),
-                               ParseDepthType);
-      }
+    if (session_init->depthSensing()->hasDepthTypeRequest()) {
+      std::ranges::transform(session_init->depthSensing()->depthTypeRequest(),
+                             std::back_inserter(type_request), ParseDepthType);
     }
 
     query->SetDepthSensingConfiguration(preferred_usage, preferred_format,
