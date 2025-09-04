@@ -1007,6 +1007,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         Integer[] expectedItems = {
             R.id.new_tab_menu_id,
+            R.id.new_window_menu_id,
             R.id.new_incognito_window_menu_id,
             R.id.close_all_tabs_menu_id,
             R.id.menu_select_tabs,
@@ -1067,6 +1068,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Integer[] expectedItems = {
             R.id.new_incognito_tab_menu_id,
             R.id.new_window_menu_id,
+            R.id.new_incognito_window_menu_id,
             R.id.close_all_incognito_tabs_menu_id,
             R.id.menu_select_tabs,
             R.id.preferences_id
