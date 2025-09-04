@@ -11,7 +11,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_observer.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -29,7 +28,7 @@ class PageColorsController : public KeyedService,
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // ui::NativeThemeObserver:
-  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+  void OnPreferredContrastChanged() override;
 
  private:
   // Handles when page colors preferences change.

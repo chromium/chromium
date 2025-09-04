@@ -470,6 +470,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Notify observers of caption style changes.
   virtual void NotifyOnCaptionStyleUpdated();
 
+  // Notify observers of preferred contrast changes.
+  virtual void NotifyOnPreferredContrastUpdated();
+
   // Returns whether we are in forced colors mode, controlled by system
   // accessibility settings. Currently, Windows high contrast is the only system
   // setting that triggers forced colors mode.
