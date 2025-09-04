@@ -870,7 +870,9 @@ void FidoDeviceAuthenticator::RunOperation(
       base::BindOnce(&FidoDeviceAuthenticator::OperationClearProxy<
                          CtapDeviceResponseCode, std::optional<Response>>,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
-      std::move(parser), string_fixup_predicate);
+      std::move(parser), string_fixup_predicate,
+      /*cbor_response_redacter=*/
+      base::BindOnce([](const cbor::Value& cbor) { return cbor.Clone(); }));
   operation_->Start();
 }
 

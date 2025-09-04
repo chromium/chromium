@@ -57,6 +57,11 @@ std::optional<cbor::Value> FixInvalidUTF8(
 // Converts |in| to the equivalent |PINUVAuthProtocol|.
 std::optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in);
 
+// Returns a copy of a CTAP get assertion response with its sensitive fields
+// redacted.
+COMPONENT_EXPORT(DEVICE_FIDO)
+cbor::Value RedactCtapGetAssertionResponse(const cbor::Value& cbor);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_DEVICE_RESPONSE_CONVERTER_H_

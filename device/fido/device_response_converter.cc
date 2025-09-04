@@ -1013,4 +1013,15 @@ std::optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in) {
   return static_cast<PINUVAuthProtocol>(in);
 }
 
+cbor::Value RedactCtapGetAssertionResponse(const cbor::Value& cbor) {
+  using fido_parsing_utils::ToCborVector;
+  constexpr int kSignature = 0x03;
+  constexpr int kLargeBlobKey = 0x07;
+  constexpr int kExtension = 0x08;
+  return fido_parsing_utils::RedactCbor(
+      cbor, std::array{ToCborVector(kSignature), ToCborVector(kLargeBlobKey),
+                       ToCborVector(kExtension, kExtensionPRF, "results"),
+                       ToCborVector(kExtension, kExtensionLargeBlob)});
+}
+
 }  // namespace device
