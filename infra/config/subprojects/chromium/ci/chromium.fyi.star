@@ -1491,7 +1491,14 @@ ci.builder(
         "test id uploads."
     ),
     builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                # This is necessary due to child builders running the
+                # telemetry_perf_unittests suite.
+                "chromium_with_telemetry_dependencies",
+            ],
+        ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
@@ -1502,9 +1509,10 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
+            "gpu_tests",
             "release_builder",
             "remoteexec",
-            "minimal_symbols",
+            "devtools_do_typecheck",
             "linux",
             "x64",
         ],
@@ -1513,6 +1521,7 @@ ci.builder(
         targets = [
             "chromium_linux_gtests",
             "chromium_linux_rel_isolated_scripts_once",
+            "chromium_linux_scripts",
             "gtests_once",
             "variations_smoke_tests",  # single module scheme
             "mojo_python_unittests",  # pyunit scheme
