@@ -52,7 +52,6 @@ class PageTool : public Tool {
                               InvokeCallback callback) const override;
 
  private:
-  void OnRenderFrameHostChanged();
   void FinishInvoke(mojom::ActionResultPtr result);
 
   void PostFinishInvoke(mojom::ActionResultCode result_code);
