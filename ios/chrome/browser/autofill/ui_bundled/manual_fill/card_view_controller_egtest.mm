@@ -724,6 +724,10 @@ void DismissPaymentBottomSheet() {
   if (base::ios::IsRunningOnIOS17OrLater() && [ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iOS 17 iPad simulator.");
   }
+  // TODO(crbug.com/443204278): Fails on iOS 26 simulator.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
