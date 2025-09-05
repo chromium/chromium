@@ -1067,9 +1067,11 @@ base::expected<bool, HRESULT> LoadAllImportsForDll(
   } __except (HRESULT_FACILITY(::GetExceptionCode()) == FACILITY_VISUALCPP
                   ? EXCEPTION_EXECUTE_HANDLER
                   : EXCEPTION_CONTINUE_SEARCH) {
-    // Resolution of all imports failed; possibly because the module failed
-    // to load or because one or more imports was not found.
-    hr = HRESULT_FROM_WIN32(::GetExceptionCode());
+    // Resolution of all imports failed; possibly because the module failed to
+    // load or because one or more imports was not found. Note that the filter
+    // expression above matches exceptions where the code is an HRESULT with the
+    // facility bits set to FACILITY_VISUALCPP, so the following cast is safe.
+    hr = static_cast<HRESULT>(::GetExceptionCode());
   }
   if (FAILED(hr)) {
     return base::unexpected(hr);

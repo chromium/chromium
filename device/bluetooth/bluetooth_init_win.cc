@@ -23,7 +23,7 @@ bool HasBluetoothStack() {
         base::win::LoadAllImportsForDll("bthprops.cpl").value_or(false);
   }
 
-  return has_bluetooth_stack.value_or(false);
+  return *has_bluetooth_stack;
 }
 
 }  // namespace device::bluetooth_init_win
