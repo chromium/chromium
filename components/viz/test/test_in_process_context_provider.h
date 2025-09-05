@@ -30,10 +30,6 @@ class GrShaderCache;
 }
 }  // namespace gpu
 
-namespace skia_bindings {
-class GrContextForGLES2Interface;
-}
-
 namespace viz {
 class GpuServiceImpl;
 
@@ -96,7 +92,6 @@ class TestInProcessContextProvider
 
   // Used for GLES2 contexts only.
   std::unique_ptr<gpu::GLInProcessContext> gles2_context_;
-  std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
 
   // Used for raster contexts only.
   std::unique_ptr<gpu::RasterInProcessContext> raster_context_;

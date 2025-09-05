@@ -108,24 +108,7 @@ gpu::ContextSupport* TestInProcessContextProvider::ContextSupport() {
 }
 
 class GrDirectContext* TestInProcessContextProvider::GrContext() {
-  CheckValidThreadOrLockAcquired();
-  if (gr_context_) {
-    return gr_context_->get();
-  }
-
-  if (!gles2_context_) {
-    return nullptr;
-  }
-
-  size_t max_resource_cache_bytes;
-  size_t max_glyph_cache_texture_bytes;
-  gpu::DefaultGrCacheLimitsForTests(&max_resource_cache_bytes,
-                                    &max_glyph_cache_texture_bytes);
-  gr_context_ = std::make_unique<skia_bindings::GrContextForGLES2Interface>(
-      ContextGL(), ContextSupport(), ContextCapabilities(),
-      max_resource_cache_bytes, max_glyph_cache_texture_bytes);
-  cache_controller_->SetGrContext(gr_context_->get());
-  return gr_context_->get();
+  return nullptr;
 }
 
 gpu::SharedImageInterface*
