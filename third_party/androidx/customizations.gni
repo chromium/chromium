@@ -41,6 +41,7 @@ template("_androidx_prebuilt") {
       jar_excluded_patterns = [
         "androidx/core/os/BuildCompat*",
         "androidx/core/content/res/TypedArrayUtils*",
+        "androidx/core/view/accessibility/AccessibilityNodeInfoCompat*",
       ]
       public_deps = [ "//third_party/androidx/local_modifications/buildcompat:buildcompat_java" ]
 

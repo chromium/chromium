@@ -50,11 +50,15 @@ template("define_override_androidx_targets") {
   }
 
   android_library("core_overrides_java") {
+    resources_package = "androidx.core"
     visibility = [
       ":*",
       "//third_party/androidx:*",
     ]
-    sources = [ "local_modifications/core/java/androidx/core/content/res/TypedArrayUtils.java" ]
+    sources = [
+      "local_modifications/core/java/androidx/core/content/res/TypedArrayUtils.java",
+      "local_modifications/core/java/androidx/core/view/accessibility/AccessibilityNodeInfoCompat.java",
+    ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
       ":androidx_annotation_annotation_jvm_java",
