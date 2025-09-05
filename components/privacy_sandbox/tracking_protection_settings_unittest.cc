@@ -51,15 +51,17 @@ class TrackingProtectionSettingsTest : public testing::Test {
 
   GURL GetTestUrl() { return GURL("http://cool.things.com"); }
 
+  virtual std::vector<base::test::FeatureRef> EnabledFeatures() {
+    return {privacy_sandbox::kIpProtectionUx,
+            privacy_sandbox::kFingerprintingProtectionUx};
+  }
+
   void SetUp() override {
     host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         prefs(), /*is_off_the_record=*/false, /*store_last_modified=*/false,
         /*restore_session=*/false,
         /*should_record_metrics=*/false);
-    feature_list_.InitWithFeatures(
-        {privacy_sandbox::kIpProtectionUx,
-         privacy_sandbox::kFingerprintingProtectionUx},
-        {});
+    feature_list_.InitWithFeatures(EnabledFeatures(), {});
     management_service_ = std::make_unique<policy::ManagementService>(
         std::vector<std::unique_ptr<policy::ManagementStatusProvider>>());
     tracking_protection_settings_ =
@@ -341,6 +343,52 @@ TEST_F(TrackingProtectionSettingsTest,
       ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_ALLOW);
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
+
+// Rollback does not apply to iOS.
+#if !BUILDFLAG(IS_IOS)
+
+class TrackingProtectionSettingsRollbackTest
+    : public TrackingProtectionSettingsTest {
+ public:
+  std::vector<base::test::FeatureRef> EnabledFeatures() override {
+    return {privacy_sandbox::kRollBackModeB};
+  }
+};
+
+TEST_F(TrackingProtectionSettingsRollbackTest,
+       Allowed3pcsDisables3pcdPrefAndEnablesRollbackUi) {
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  TrackingProtectionSettings tps(prefs(), host_content_settings_map(),
+                                 management_service(),
+                                 /*is_incognito=*/false);
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kShowRollbackUiModeB));
+}
+
+TEST_F(TrackingProtectionSettingsRollbackTest,
+       Blocked3pcsIn3pcdDisables3pcdPrefAndRollbackUi) {
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
+  TrackingProtectionSettings tps(prefs(), host_content_settings_map(),
+                                 management_service(),
+                                 /*is_incognito=*/false);
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kShowRollbackUiModeB));
+}
+
+TEST_F(TrackingProtectionSettingsRollbackTest,
+       Blocked3pcsDisables3pcdPrefAndRollbackUi) {
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  prefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  TrackingProtectionSettings tps(prefs(), host_content_settings_map(),
+                                 management_service(),
+                                 /*is_incognito=*/false);
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kShowRollbackUiModeB));
+}
+#endif
 
 }  // namespace
 }  // namespace privacy_sandbox

@@ -170,6 +170,10 @@ BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingFor3pcb);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kRelatedWebsiteSetsUi);
 
+// Feature for rolling back Mode B.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kRollBackModeB);
+
 // Privacy UX features end
 
 #if BUILDFLAG(IS_ANDROID)

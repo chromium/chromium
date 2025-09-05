@@ -23,6 +23,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   // TODO(https://b/333527273): The following prefs should be deprecated.
   // Still in use for Mode B.
+  registry->RegisterBooleanPref(prefs::kShowRollbackUiModeB, false);
   registry->RegisterBooleanPref(
       prefs::kBlockAll3pcToggleEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
