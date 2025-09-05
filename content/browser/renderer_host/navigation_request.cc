@@ -7082,6 +7082,8 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
         response_head_->load_timing_internal_info->connected_callback_delay;
     navigation_handle_timing_.initialize_stream_delay =
         response_head_->load_timing_internal_info->initialize_stream_delay;
+    navigation_handle_timing_.session_source =
+        response_head_->load_timing_internal_info->session_source;
     // Reset `load_timing_internal_info` to make sure that isn't exposed.
     response_head_->load_timing_internal_info.reset();
   }

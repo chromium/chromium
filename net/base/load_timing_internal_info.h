@@ -15,12 +15,17 @@
 namespace net {
 
 // Indicates whether a request used an existing H2/H3 session or not.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SessionSource)
 enum class SessionSource {
   // Used a newly established session.
   kNew = 0,
   // Used an existing session.
   kExisting = 1,
+  kMaxValue = kExisting,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:SessionSource)
 
 // Structure containing internal load timing information. This is similar to
 // LoadTimingInfo, but contains extra information which shouldn't be exposed to

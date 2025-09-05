@@ -130,6 +130,8 @@ const char kHistogramGWSConnectionReuseStatus[] =
 const char kHistogramIncognitoSuffix[] = ".Incognito";
 const char kHistogramSyntheticResponseSuffix[] = ".SyntheticResponse";
 
+const char kHistogramGWSSessionSource[] = HISTOGRAM_PREFIX "SessionSource";
+
 // Prerender related histograms.
 const char kHistogramPrerenderHostReused[] =
     HISTOGRAM_PREFIX "Prerender.HostReused";
@@ -665,6 +667,14 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
                             timing.connected_callback_delay);
   PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSInitializeStreamDelay,
                             timing.initialize_stream_delay);
+
+  if (http_connection_info_ == net::HttpConnectionInfoCoarse::kHTTP2 ||
+      http_connection_info_ == net::HttpConnectionInfoCoarse::kQUIC) {
+    CHECK(timing.session_source.has_value());
+    base::UmaHistogramEnumeration(
+        base::StrCat({internal::kHistogramGWSSessionSource, protocol}),
+        *timing.session_source);
+  }
 
   // Record latency trace events.
   RecordLatencyHistograms(timing.non_redirect_response_start_time);

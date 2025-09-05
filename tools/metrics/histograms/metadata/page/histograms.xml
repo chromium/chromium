@@ -1646,6 +1646,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.SessionSource{ConnectionProtocolType}"
+    enum="SessionSource" expires_after="2025-12-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures whether a navigation for Google search uses a new session or an
+    existing session with {ConnectionProtocolType}. This is only recorded for
+    Search navigations and is recorded once after navigation commit. Note that
+    this is only recorded for HTTP/2 and HTTP/3.
+  </summary>
+  <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch{Granularity}.PaintTiming.NavigationToLargestContentfulPaint"
     units="ms" expires_after="2026-02-22">
   <owner>spelchat@chromium.org</owner>

@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "net/base/load_timing_internal_info.h"
 
 namespace content {
 
@@ -156,6 +157,9 @@ struct CONTENT_EXPORT NavigationHandleTiming {
 
   // InitializeStream related delay information.
   base::TimeDelta initialize_stream_delay;
+
+  // Session source information.
+  std::optional<net::SessionSource> session_source;
 };
 
 }  // namespace content

@@ -5,12 +5,23 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_LOAD_TIMING_INTERNAL_INFO_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_LOAD_TIMING_INTERNAL_INFO_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/load_timing_internal_info.h"
 #include "services/network/public/mojom/load_timing_internal_info.mojom-shared.h"
 
 namespace mojo {
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    EnumTraits<network::mojom::SessionSource, net::SessionSource> {
+  static network::mojom::SessionSource ToMojom(
+      net::SessionSource session_source);
+  static bool FromMojom(network::mojom::SessionSource in,
+                        net::SessionSource* out);
+};
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
@@ -21,6 +32,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const base::TimeDelta& connected_callback_delay(
       const net::LoadTimingInternalInfo& info);
   static const base::TimeDelta& initialize_stream_delay(
+      const net::LoadTimingInternalInfo& info);
+  static std::optional<net::SessionSource> session_source(
       const net::LoadTimingInternalInfo& info);
   static bool Read(network::mojom::LoadTimingInternalInfoDataView data,
                    net::LoadTimingInternalInfo* info);
