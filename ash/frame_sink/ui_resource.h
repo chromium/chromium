@@ -64,9 +64,6 @@ class ASH_EXPORT UiResource {
   // generating the resourse. It must be a non-zero number.
   UiSourceId ui_source_id = kInvalidUiSourceId;
 
-  // Unique id to identify the resource.
-  viz::ResourceId resource_id = viz::kInvalidResourceId;
-
   // If the candidate should be promoted to use hw overlays.
   bool is_overlay_candidate = false;
 

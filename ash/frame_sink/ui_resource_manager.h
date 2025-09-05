@@ -62,26 +62,6 @@ class ASH_EXPORT UiResourceManager {
   void OfferResourceForTesting(std::unique_ptr<UiResource> resource);
 
  private:
-  // Returns the resource_id of an available resource of given `size`,
-  // `format` and `ui_source_id`. If there is no matching resource available, we
-  // return `viz::kInvalidResourceId`.
-  viz::ResourceId FindResourceToReuse(const gfx::Size& size,
-                                      viz::SharedImageFormat format,
-                                      UiSourceId ui_source_id) const;
-
-  std::unique_ptr<UiResource> ReleaseAvailableResource(
-      viz::ResourceId resource_id);
-
-  // Give the `resourse` to be managed by the manager. The resource is
-  // immediately available for use and can be exported.
-  viz::ResourceId OfferResource(std::unique_ptr<UiResource> resource);
-
-  // We take the available resource identified by `resource_id`, map it to a
-  // transferable resource and mark it as an exported resource. Only a resource
-  // that is currently being managed can be exported.
-  viz::TransferableResource PrepareResourceForExport(
-      viz::ResourceId resource_id);
-
   // TODO(zoraiznaeem): If a feature ends up growing the size of pool past 40,
   // use a fixed size circular list as a pool and get rid of least recently used
   // resources.
