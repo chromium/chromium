@@ -425,7 +425,7 @@ chromium-metrics-reviews@google.com.
       label="Skipped by using a choice persisted across guest sessions"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/search_engines/search_engine_choice/search_engine_choice_utils.h:SearchEngineChoiceScreenConditions) -->
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:SearchEngineChoiceScreenConditions) -->
 
 <!-- LINT.IfChange(SearchEngineChoiceScreenEvents) -->
 

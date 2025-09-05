@@ -56,6 +56,7 @@ bool ShouldDisplaySearchEngineChoiceScreen(
   if (triggering_service) {
     condition = triggering_service->EvaluateTriggeringConditions(
         is_first_run_entrypoint, app_started_via_external_intent);
+    search_engine_choice_service->RecordTriggeringEligibility(condition);
   } else {
     // TODO(crbug.com/438717568): This branch is added only to record the legacy
     // histograms. Investigate whether we need to keep it, or if we're fine with
@@ -78,7 +79,7 @@ bool ShouldDisplaySearchEngineChoiceScreen(
   // This is today recording a combination of the static & dynamic
   // eligibilities.
   // TODO(crbug.com/426533078): Split this.
-  search_engine_choice_service->RecordStaticEligibility(condition);
+  search_engine_choice_service->RecordLegacyStaticEligibility(condition);
   return condition ==
          search_engines::SearchEngineChoiceScreenConditions::kEligible;
 }

@@ -62,6 +62,7 @@ SearchEngineChoiceTriggeringServiceFactory::BuildServiceInstanceFor(
       CHECK_DEREF(ios::TemplateURLServiceFactory::GetForProfile(profile));
   auto condition = search_engine_choice_service.GetStaticChoiceScreenConditions(
       policy_service, template_url_service);
+  search_engine_choice_service.RecordProfileLoadEligibility(condition);
   if (condition !=
       search_engines::SearchEngineChoiceScreenConditions::kEligible) {
     return nullptr;

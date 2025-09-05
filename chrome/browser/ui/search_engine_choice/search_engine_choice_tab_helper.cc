@@ -99,7 +99,7 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
       search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
           browser->profile());
-  search_engine_choice_service->RecordDynamicEligibility(conditions);
+  search_engine_choice_service->RecordTriggeringEligibility(conditions);
 
   if (conditions !=
       search_engines::SearchEngineChoiceScreenConditions::kEligible) {
