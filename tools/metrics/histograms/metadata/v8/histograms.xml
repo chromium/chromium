@@ -474,7 +474,7 @@ chromium-metrics-reviews@google.com.
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The percentage of managed C++ memory that survived after a {Priority}
+    The percentage of managed C++ memory that was freed after a {Priority}
     garbage collection of the {Heap}. Reported at the end of the garbage
     collection cycle.
   </summary>
