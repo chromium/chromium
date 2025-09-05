@@ -171,4 +171,17 @@ public interface AccountManagerDelegate {
      */
     @WorkerThread
     default void invalidateAccessTokenForPlatformAccount(String authToken) throws AuthException {}
+
+    /**
+     * Returns a {@link CapabilityResponse} that indicates whether the account has the requested
+     * capability or has an exception.
+     *
+     * <p>TODO(crbug.com/429143376): This method is currently a no-op and will be implemented in
+     * following Cls.
+     */
+    @WorkerThread
+    @CapabilityResponse
+    default int fetchCapability(PlatformAccount account, String capability) {
+        return CapabilityResponse.EXCEPTION;
+    }
 }

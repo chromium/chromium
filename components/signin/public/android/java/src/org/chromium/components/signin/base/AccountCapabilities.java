@@ -256,7 +256,7 @@ public class AccountCapabilities {
      * @return the capability value associated to the name.
      */
     @CalledByNative
-    private @Tribool int getCapabilityByName(String capabilityName) {
+    public @Tribool int getCapabilityByName(String capabilityName) {
         if (!mAccountCapabilities.containsKey(capabilityName)) {
             return Tribool.UNKNOWN;
         }

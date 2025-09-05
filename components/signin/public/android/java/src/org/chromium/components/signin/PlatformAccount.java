@@ -24,8 +24,13 @@ public interface PlatformAccount {
     /**
      * Returns a {@link CapabilityResponse} that indicates whether the account has the requested
      * capability or has an exception.
+     *
+     * <p>TODO(crbug.com/429143376): Remove after moving fetchCapability to AccountManagerDelegate.
      */
     @WorkerThread
     @CapabilityResponse
-    int fetchCapability(String capability);
+    @Deprecated
+    default int fetchCapability(String capability) {
+        return CapabilityResponse.EXCEPTION;
+    }
 }

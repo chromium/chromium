@@ -57,8 +57,10 @@ import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusLis
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 import org.chromium.components.signin.test.util.FakePlatformAccount;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
 
@@ -81,6 +83,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AccountManagerFacadeImplTest {
     private static final AccountInfo TEST_ACCOUNT =
             new AccountInfo.Builder("test@gmail.com", new GaiaId("testGaiaId")).build();
+
+    public static final AccountInfo TEST_ACCOUNT_NOT_SUBJECT_TO_PARENTAL_CONTROLS =
+            new AccountInfo.Builder("test@gmail.com", new GaiaId("testGaiaId"))
+                    .accountCapabilities(
+                            new AccountCapabilitiesBuilder()
+                                    .setIsSubjectToParentalControls(false)
+                                    .build())
+                    .build();
 
     private static class ShadowPostTaskImpl implements ShadowPostTask.TestImpl {
         private final List<Runnable> mRunnables = new ArrayList<>();
@@ -516,6 +526,71 @@ public class AccountManagerFacadeImplTest {
 
     @Test
     @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testCheckIsSubjectToParentalControls_migrateAccountManagerDelegateEnabled() {
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        mDelegate.addAccount(TestAccounts.CHILD_ACCOUNT);
+
+        facade.checkIsSubjectToParentalControls(
+                TestAccounts.CHILD_ACCOUNT, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(true, TestAccounts.CHILD_ACCOUNT);
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testCheckNotIsSubjectToParentalControls_migrateAccountManagerDelegateEnabled() {
+        FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(delegate);
+        delegate.addAccount(TEST_ACCOUNT_NOT_SUBJECT_TO_PARENTAL_CONTROLS);
+
+        facade.checkIsSubjectToParentalControls(
+                TEST_ACCOUNT_NOT_SUBJECT_TO_PARENTAL_CONTROLS, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void
+            testCheckIsSubjectToParentalControlsWithException_migrateAccountManagerDelegateEnabled() {
+        FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(delegate);
+        delegate.addAccount(TEST_ACCOUNT);
+
+        facade.checkIsSubjectToParentalControls(TEST_ACCOUNT, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testGetAccountCapabilitiesResponse_migrateAccountManagerDelegateEnabled()
+            throws Exception {
+        FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(delegate);
+
+        delegate.addAccount(TestAccounts.CHILD_ACCOUNT);
+        AccountCapabilities capabilities =
+                facade.getAccountCapabilities(TestAccounts.CHILD_ACCOUNT).getResult();
+
+        Assert.assertEquals(Tribool.TRUE, capabilities.isSubjectToParentalControls());
+        Assert.assertEquals(
+                Tribool.FALSE, capabilities.canShowHistorySyncOptInsWithoutMinorModeRestrictions());
+        Assert.assertEquals(Tribool.UNKNOWN, capabilities.canRunChromePrivacySandboxTrials());
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testGetAccountCapabilitiesAccountMismatch_migrateAccountManagerDelegateEnabled() {
+        // Do not crash if a corresponding PlatformAccount is not found for the given
+        // CoreAccountInfo.
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+
+        assertTrue(facade.getAccountCapabilities(TEST_ACCOUNT).isPending());
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testCountOfAccountLoggedAfterAccountsFetched_migrateAccountManagerDelegateEnabled()
             throws Exception {
         HistogramWatcher numberOfAccountsHistogram =
@@ -780,7 +855,6 @@ public class AccountManagerFacadeImplTest {
     }
 
     private CoreAccountInfo addTestAccount(String accountEmail) {
-        SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
         AccountInfo accountInfo =
                 new AccountInfo.Builder(
                                 accountEmail, FakeAccountManagerDelegate.toGaiaId(accountEmail))

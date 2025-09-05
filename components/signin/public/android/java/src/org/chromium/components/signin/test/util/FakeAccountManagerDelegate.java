@@ -19,6 +19,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.PlatformAccount;
 import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
@@ -42,6 +43,9 @@ import java.util.Set;
  * (including confirming them), and handling of placeholder auth tokens.
  */
 public class FakeAccountManagerDelegate implements AccountManagerDelegate {
+    // Prefix used to define the capability name for querying Identity services.
+    private static final String ACCOUNT_CAPABILITY_NAME_PREFIX = "accountcapabilities/";
+
     /** Converts an email to a fake gaia Id. */
     public static GaiaId toGaiaId(String email) {
         return new GaiaId("gaia-id-" + email.replace("@", "_at_"));
@@ -78,15 +82,17 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     /** Adds an AccountHolder. */
-    public void addAccount(AccountInfo accountInfo) {
+    public PlatformAccount addAccount(AccountInfo accountInfo) {
         boolean added = false;
+        PlatformAccount account = new FakePlatformAccount(accountInfo);
         if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
-            added = mPlatformAccounts.add(new FakePlatformAccount(accountInfo));
+            added = mPlatformAccounts.add(account);
         } else {
             added = mAccounts.add(new AccountHolder(accountInfo));
         }
         assert added : "Account already added";
         callOnCoreAccountInfoChanged();
+        return account;
     }
 
     /** Removes an AccountHolder. */
@@ -203,12 +209,36 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         }
     }
 
+    /** Returns the PlatformAccounts associated with specified CoreAccountId. */
     private @Nullable PlatformAccount tryGetPlatformAccount(CoreAccountId accountId) {
         synchronized (mPlatformAccounts) {
             return mPlatformAccounts.stream()
                     .filter(account -> Objects.equals(account.getId(), accountId.getId()))
                     .findFirst()
                     .orElse(null);
+        }
+    }
+
+    @Override
+    @CapabilityResponse
+    public int fetchCapability(PlatformAccount account, String capability) {
+        FakePlatformAccount platformAccount = (FakePlatformAccount) account;
+
+        @Tribool
+        int hasCapability =
+                platformAccount
+                        .getAccountInfo()
+                        .getAccountCapabilities()
+                        .getCapabilityByName(ACCOUNT_CAPABILITY_NAME_PREFIX + capability);
+
+        switch (hasCapability) {
+            case Tribool.TRUE:
+                return CapabilityResponse.YES;
+            case Tribool.FALSE:
+                return CapabilityResponse.NO;
+            case Tribool.UNKNOWN:
+            default:
+                return CapabilityResponse.EXCEPTION;
         }
     }
 }

@@ -31,6 +31,11 @@ public class FakePlatformAccount implements PlatformAccount {
         return mAccount.getEmail();
     }
 
+    /** Returns AccountInfo of the PlatformAccount. */
+    public AccountInfo getAccountInfo() {
+        return mAccount;
+    }
+
     /**
      * Returns a {@link AccountManagerDelegate.CapabilityResponse} that indicates whether the
      * account has the requested capability or has an exception.
