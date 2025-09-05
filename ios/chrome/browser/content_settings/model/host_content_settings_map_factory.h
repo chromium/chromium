@@ -27,10 +27,10 @@ class HostContentSettingsMapFactory
   HostContentSettingsMapFactory();
   ~HostContentSettingsMapFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // RefcountedProfileKeyedServiceFactoryIOS implementation.
   bool ServiceIsRequiredForContextInitialization() const override;
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios
