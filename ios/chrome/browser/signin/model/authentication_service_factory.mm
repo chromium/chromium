@@ -32,8 +32,7 @@ BuildAuthenticationServiceDelegate(ProfileIOS* profile) {
 
 std::unique_ptr<KeyedService> BuildAuthenticationService(
     DelegateFactory delegate_factory,
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) {
   auto service = std::make_unique<AuthenticationService>(
       profile->GetPrefs(),
       ChromeAccountManagerServiceFactory::GetForProfile(profile),
@@ -60,7 +59,7 @@ AuthenticationServiceFactory* AuthenticationServiceFactory::GetInstance() {
 }
 
 // static
-AuthenticationServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 AuthenticationServiceFactory::GetFactoryWithDelegate(
     std::unique_ptr<AuthenticationServiceDelegate> delegate) {
   return GetFactoryWithDelegateFactory(base::IgnoreArgs<ProfileIOS*>(
@@ -68,7 +67,7 @@ AuthenticationServiceFactory::GetFactoryWithDelegate(
 }
 
 // static
-AuthenticationServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 AuthenticationServiceFactory::GetFactoryWithDelegateFactory(
     AuthenticationServiceDelegateFactory delegate_factory) {
   return base::BindOnce(&BuildAuthenticationService,
@@ -89,9 +88,9 @@ AuthenticationServiceFactory::~AuthenticationServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 AuthenticationServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return BuildAuthenticationService(
-      base::BindOnce(&BuildAuthenticationServiceDelegate), context);
+      base::BindOnce(&BuildAuthenticationServiceDelegate), profile);
 }
 
 void AuthenticationServiceFactory::RegisterProfilePrefs(

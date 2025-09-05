@@ -50,9 +50,7 @@ IdentityManagerFactory* IdentityManagerFactory::GetInstance() {
 }
 
 std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   signin::IdentityManagerBuildParams params;
   params.account_consistency = signin::AccountConsistencyMethod::kMirror;
   params.device_accounts_provider =

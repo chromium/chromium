@@ -19,7 +19,7 @@ class IdentityTestEnvironmentBrowserStateAdaptor {
   // used in testing. This manager will be attached to the given browser
   // context.
   static std::unique_ptr<KeyedService> BuildIdentityManagerForTests(
-      web::BrowserState* context);
+      ProfileIOS* profile);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_IDENTITY_TEST_ENVIRONMENT_BROWSER_STATE_ADAPTOR_H_

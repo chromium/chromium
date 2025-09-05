@@ -11,8 +11,7 @@
 // static
 std::unique_ptr<KeyedService>
 IdentityTestEnvironmentBrowserStateAdaptor::BuildIdentityManagerForTests(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) {
   return signin::IdentityTestEnvironment::BuildIdentityManagerForTests(
       SigninClientFactory::GetForProfile(profile), profile->GetPrefs(),
       profile->GetStatePath());

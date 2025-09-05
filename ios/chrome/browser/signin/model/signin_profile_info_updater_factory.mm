@@ -36,8 +36,7 @@ SigninProfileInfoUpdaterFactory::~SigninProfileInfoUpdaterFactory() = default;
 
 std::unique_ptr<KeyedService>
 SigninProfileInfoUpdaterFactory::BuildServiceInstanceFor(
-    web::BrowserState* state) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(state);
+    ProfileIOS* profile) const {
   return std::make_unique<SigninProfileInfoUpdater>(
       IdentityManagerFactory::GetForProfile(profile),
       ios::SigninErrorControllerFactory::GetForProfile(profile),

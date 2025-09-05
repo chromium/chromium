@@ -39,9 +39,7 @@ AccountConsistencyServiceFactory::GetInstance() {
 
 std::unique_ptr<KeyedService>
 AccountConsistencyServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   // The base::Unretained(profile) is safe since the callback is only called
   // from the returned AccountConsistencyService instance which is owned by
   // the Profile object (as it is a KeyedService).

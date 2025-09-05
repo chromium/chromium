@@ -34,12 +34,12 @@ class AuthenticationServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns a factory that builds an AuthenticationService using a custom
   // delegate instance (needs to be constructible before the profile).
-  static TestingFactory GetFactoryWithDelegate(
+  static ProfileTestingFactory GetFactoryWithDelegate(
       std::unique_ptr<AuthenticationServiceDelegate> delegate);
 
   // Returns a factory that builds an AuthenticationService using a custom
   // delegate factory.
-  static TestingFactory GetFactoryWithDelegateFactory(
+  static ProfileTestingFactory GetFactoryWithDelegateFactory(
       AuthenticationServiceDelegateFactory delegate_factory);
 
  private:
@@ -48,9 +48,9 @@ class AuthenticationServiceFactory : public ProfileKeyedServiceFactoryIOS {
   AuthenticationServiceFactory();
   ~AuthenticationServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };

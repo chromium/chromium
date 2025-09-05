@@ -39,8 +39,7 @@ AboutSigninInternalsFactory* AboutSigninInternalsFactory::GetInstance() {
 
 std::unique_ptr<KeyedService>
 AboutSigninInternalsFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   std::unique_ptr<AboutSigninInternals> service(new AboutSigninInternals(
       IdentityManagerFactory::GetForProfile(profile),
       SigninErrorControllerFactory::GetForProfile(profile),
