@@ -91,8 +91,6 @@ class SyncErrorBrowserAgent
   __weak id<SyncPresenter> sync_presenter_provider_;
   // Used to observe the ProfileState.
   __strong SyncErrorBrowserAgentProfileStateObserver* profile_state_observer_;
-
-  base::WeakPtrFactory<SyncErrorBrowserAgent> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_SYNC_ERROR_BROWSER_AGENT_H_

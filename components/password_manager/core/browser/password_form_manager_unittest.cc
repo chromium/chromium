@@ -4777,7 +4777,6 @@ TEST_P(PasswordFormManagerTest, SetCreditCardFieldsAsBanned) {
 
 #endif
 
-#if !BUILDFLAG(IS_IOS)
 TEST_P(PasswordFormManagerTest, NotifiesObservers) {
   MockPasswordFormManagerObserver observer;
   MockPasswordFormManagerObserver observer_2;
@@ -4805,32 +4804,6 @@ TEST_P(PasswordFormManagerTest, DoesNotNotifyAfterObserverRemoved) {
 
   task_environment_.FastForwardUntilNoTasksRemain();
 }
-#else
-TEST_P(PasswordFormManagerTest, NotifiesObserver) {
-  MockPasswordFormManagerObserver observer;
-
-  CreateFormManager(observed_form_);
-  form_manager_->SetObserver(observer.GetWeakPtr());
-
-  EXPECT_CALL(observer, OnPasswordFormParsed(form_manager_.get()));
-  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
-
-  task_environment_.FastForwardUntilNoTasksRemain();
-}
-
-TEST_P(PasswordFormManagerTest, DoesNotNotifyAfterObserverRemoved) {
-  MockPasswordFormManagerObserver observer;
-
-  CreateFormManager(observed_form_);
-  form_manager_->SetObserver(observer.GetWeakPtr());
-  form_manager_->ResetObserver();
-
-  EXPECT_CALL(observer, OnPasswordFormParsed).Times(0);
-  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
-
-  task_environment_.FastForwardUntilNoTasksRemain();
-}
-#endif
 
 INSTANTIATE_TEST_SUITE_P(All, PasswordFormManagerTest, testing::Bool());
 
