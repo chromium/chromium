@@ -1445,6 +1445,8 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   bool had_earliest_gesture_scroll = false;
   bool had_latest_gesture_scroll = false;
   bool is_scroll_start = false;
+  float total_raw_delta_pixels = 0;
+  float max_abs_inertial_raw_delta_pixels = 0;
 
   // This handles cases when we have multiple scroll events. Events for dropped
   // frames are reported by the reporter for next presented frame which could
@@ -1462,6 +1464,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
       continue;
     }
     total_predicted_delta += scroll_update->predicted_delta();
+    total_raw_delta_pixels += scroll_update->delta();
     base::TimeTicks generation_ts = scroll_update->GetDispatchStageTimestamp(
         EventMetrics::DispatchStage::kGenerated);
     // Earliest is always applied, event when the scroll update failed to
@@ -1484,6 +1487,9 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
         break;
       case EventMetrics::EventType::kInertialGestureScrollUpdate:
         fling_input_count += scroll_update->coalesced_event_count();
+        max_abs_inertial_raw_delta_pixels =
+            std::max(max_abs_inertial_raw_delta_pixels,
+                     std::abs(scroll_update->delta()));
         break;
       default:
         NOTREACHED();
@@ -1532,9 +1538,11 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   }
   if (global_trackers_.scroll_jank_dropped_frame_tracker) {
     global_trackers_.scroll_jank_dropped_frame_tracker
-        ->ReportLatestPresentationData(*earliest_event, *latest_event,
-                                       last_coalesced_ts, end_timestamp,
-                                       args_.interval);
+        ->ReportLatestPresentationData(
+            *earliest_event, *latest_event, last_coalesced_ts, end_timestamp,
+            args_.interval, /* has_inertial_input= */ fling_input_count > 0,
+            std::abs(total_raw_delta_pixels),
+            max_abs_inertial_raw_delta_pixels);
   }
   if (global_trackers_.scroll_jank_ukm_reporter) {
     global_trackers_.scroll_jank_ukm_reporter

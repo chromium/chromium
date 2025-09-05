@@ -222,6 +222,20 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(
 // A kill switch in case skipping finish causes unexpected issues.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSkipFinishDuringReleaseLayerTreeFrameSink);
 
+// When enabled, the V4 scroll jank metric will be emitted.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollJankV4Metric);
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kScrollJankV4MetricStabilityCorrection);
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
+                                          kScrollJankV4MetricDiscountFactor);
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kScrollJankV4MetricFastScrollContinuityThreshold);
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kScrollJankV4MetricFlingContinuityThreshold);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

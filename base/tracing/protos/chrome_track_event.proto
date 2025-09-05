@@ -873,15 +873,88 @@ message EventLatency {
   // aggregation) in which the input was first presented. See also
   // ChromeGraphicsPipeline.display_trace_id.
   optional int64 display_trace_id = 8;
-  // This is set only for scroll updates and is based on the
-  // Event.ScrollJank.DelayedFramesPercentage.FixedWindow3 metric.
-  // NOTE: This field is a new experimental version of is_janky_scrolled_frame.
-  // This field aims to address the old field's shortcomings and eventually
-  // replace it. For now, we recommend you still use the old field
-  // (is_janky_scrolled_frame). See the
-  // Event.ScrollJank.DelayedFramesPercentage.FixedWindow3 histogram's
-  // documentation for more details.
-  optional bool is_janky_scrolled_frame_v3 = 9;
+
+  // Deprecated in favor of `scroll_jank_v4.is_janky`. Not filled
+  // anymore in newer versions of Chrome.
+  optional bool is_janky_scrolled_frame_v3 = 9 [deprecated = true];
+
+  // Result of the Scroll Jank V4 Metric for a scroll update. This is set only
+  // for scroll updates. See
+  // cc::ScrollUpdateEventMetrics::ScrollJankV4MetricResults,
+  // https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
+  // and the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow histogram's
+  // documentation for more information.
+  message ScrollJankV4Result {
+    // This field is a new version of `EventLatency.is_janky_scrolled_frame`
+    // based on the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow
+    // metric. This field aims to address the old field's shortcomings and
+    // eventually replace it.
+    optional bool is_janky = 1;
+
+    // Reason why Chrome's scroll jank v4 metric marked a scroll update as
+    // janky. A single scroll update can be janky for more than one reason.
+    // LINT.IfChange(JankReason)
+    enum JankReason {
+      JANK_REASON_UNSPECIFIED = 0;
+
+      // Chrome's input→frame delivery slowed down to the point that it missed
+      // one or more VSyncs.
+      MISSED_VSYNC_DUE_TO_DECELERATING_INPUT_FRAME_DELIVERY = 1;
+
+      // Chrome missed one or more VSyncs in the middle of a fast regular
+      // scroll.
+      MISSED_VSYNC_DURING_FAST_SCROLL = 2;
+
+      // Chrome missed one or more VSyncs during the transition from a fast
+      // regular scroll to a fling.
+      MISSED_VSYNC_AT_START_OF_FLING = 3;
+
+      // Chrome missed one or more VSyncs in the middle of a fling.
+      MISSED_VSYNC_DURING_FLING = 4;
+    }
+    // LINT.ThenChange(//cc/metrics/event_metrics.h:JankReason,//tools/metrics/histograms/metadata/event/histograms.xml:ScrollJankReasonV4)
+
+    // Number of VSyncs that that Chrome missed before presenting the scroll
+    // update for each reason. Essentially a map<JankReason, int32>.
+    message MissedVsyncsForJankReason {
+      optional JankReason jank_reason = 1;
+      optional int32 missed_vsyncs = 2;
+    }
+    repeated MissedVsyncsForJankReason missed_vsyncs_per_jank_reason = 2;
+
+    // The absolute total raw (unpredicted) delta of all scroll updates included
+    // in the frame in which the scroll update was presented (in pixels).
+    optional float abs_total_raw_delta_pixels = 3;
+
+    // The maximum absolute raw (unpredicted) delta out of all inertial (fling)
+    // scroll updates included in the frame in which the scroll update was
+    // presented (in pixels). Zero if there were no inertial scroll updates in
+    // the frame.
+    optional float max_abs_inertial_raw_delta_pixels = 4;
+
+    // How many VSync were between (A) the frame in which the scroll update was
+    // presented and (B) the previous frame. If this value is greater than one,
+    // then Chrome potentially missed one or more VSyncs (i.e. might have been
+    // able to present this scroll update earlier). Empty if this scroll update
+    // was presented in the first scroll update of a scroll.
+    optional int32 vsyncs_since_previous_frame = 5;
+
+    // The running delivery cut-off based on frames preceding the frame in which
+    // the scroll update was presented. Empty if this scroll update was
+    // presented in the first scroll update of a scroll.
+    optional int64 running_delivery_cutoff_us = 6;
+
+    // The running delivery cut-off adjusted for the frame that the scroll
+    // update was presented in. Empty if this scroll update was presented in the
+    // first scroll update of a scroll or if `vsyncs_since_previous_frame` is
+    // one.
+    optional int64 adjusted_delivery_cutoff_us = 7;
+
+    // The delivery cut-off of the frame that the scroll update was presented
+    // in.
+    optional int64 current_delivery_cutoff_us = 8;
+  }
+  optional ScrollJankV4Result scroll_jank_v4 = 10;
 }
 
 message ProcessSingleton {

@@ -253,4 +253,32 @@ BASE_FEATURE(kOverscrollBehaviorRespectedOnAllScrollContainers,
 BASE_FEATURE(kSkipFinishDuringReleaseLayerTreeFrameSink,
              "SkipFinishDuringReleaseLayerTreeFrameSink",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kScrollJankV4Metric,
+             "ScrollJankV4Metric",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(double,
+                   kScrollJankV4MetricStabilityCorrection,
+                   &kScrollJankV4Metric,
+                   "stability_correction",
+                   0.05);
+
+BASE_FEATURE_PARAM(double,
+                   kScrollJankV4MetricDiscountFactor,
+                   &kScrollJankV4Metric,
+                   "discount_factor",
+                   0.01);
+
+BASE_FEATURE_PARAM(double,
+                   kScrollJankV4MetricFastScrollContinuityThreshold,
+                   &kScrollJankV4Metric,
+                   "fast_scroll_continuity_threshold_pixels",
+                   3.0);
+
+BASE_FEATURE_PARAM(double,
+                   kScrollJankV4MetricFlingContinuityThreshold,
+                   &kScrollJankV4Metric,
+                   "fling_continuity_threshold_pixels",
+                   0.2);
 }  // namespace features
