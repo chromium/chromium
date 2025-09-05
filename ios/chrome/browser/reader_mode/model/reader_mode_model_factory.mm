@@ -26,6 +26,6 @@ ReaderModeModelFactory::ReaderModeModelFactory()
 ReaderModeModelFactory::~ReaderModeModelFactory() = default;
 
 std::unique_ptr<KeyedService> ReaderModeModelFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<ReaderModeModel>();
 }
