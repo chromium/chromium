@@ -13,8 +13,6 @@
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/browser_sync/common_controller_builder.h"
 #import "components/collaboration/public/collaboration_service.h"
-#import "components/history/core/browser/features.h"
-#import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -29,10 +27,6 @@
 #import "components/sync/engine/net/http_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_impl.h"
-#import "components/sync_device_info/device_info.h"
-#import "components/sync_device_info/device_info_sync_service.h"
-#import "components/sync_device_info/device_info_tracker.h"
-#import "components/sync_device_info/local_device_info_provider.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/variations/service/google_groups_manager.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
@@ -55,7 +49,6 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
@@ -160,10 +153,6 @@ syncer::DataTypeController::TypeVector CreateControllers(
   return controllers;
 }
 
-// The maximum number of New Tab Page displays to show with synced segments
-// data.
-constexpr int kMaxSyncedNewTabPageDisplays = 5;
-
 std::unique_ptr<syncer::SyncClient> BuildSyncClient(ProfileIOS* profile) {
   CHECK(profile);
 
@@ -208,30 +197,6 @@ std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS* profile) {
   auto sync_service =
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
   sync_service->Initialize(CreateControllers(profile, sync_service.get()));
-
-  // TODO(crbug.com/40250371): Remove the workaround below once
-  // PrivacySandboxSettingsFactory correctly declares its KeyedServices
-  // dependencies.
-  history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
-
-  syncer::DeviceInfoSyncService* device_info_sync_service =
-      DeviceInfoSyncServiceFactory::GetForProfile(profile);
-
-  if (history_service && device_info_sync_service) {
-    PrefService* pref_service = profile->GetPrefs();
-
-    const int display_count =
-        pref_service->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount);
-
-    history_service->SetCanAddForeignVisitsToSegmentsOnBackend(
-        display_count < kMaxSyncedNewTabPageDisplays);
-
-    history_service->SetDeviceInfoServices(
-        device_info_sync_service->GetDeviceInfoTracker(),
-        device_info_sync_service->GetLocalDeviceInfoProvider());
-  }
 
   password_manager::PasswordReceiverService* password_receiver_service =
       IOSChromePasswordReceiverServiceFactory::GetForProfile(profile);
