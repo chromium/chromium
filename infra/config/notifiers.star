@@ -374,3 +374,15 @@ luci.builder_health_notifier(
     ignore_buckets = ["try"],
     notify_all_healthy = False,
 )
+
+luci.builder_health_notifier(
+    owner_email = "clank-build@google.com",
+    ignore_buckets = ["try"],
+    notify_all_healthy = False,
+)
+
+luci.builder_health_notifier(
+    owner_email = "clank-engprod@google.com",
+    ignore_buckets = ["try"],
+    notify_all_healthy = False,
+)
