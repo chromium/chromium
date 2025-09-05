@@ -885,6 +885,8 @@ crbug.com/angleproject/7904 [ chromeos chromeos-board-amd64-generic passthrough 
 # New extension tests failing on ChromeOS VM
 crbug.com/angleproject/8315 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_EXT_render_snorm [ Failure ]
 
+crbug.com/angleproject/431097618 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_draw_instanced_base_vertex_base_instance [ Failure ]
+crbug.com/angleproject/431097618 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_multi_draw_instanced_base_vertex_base_instance [ Failure ]
 
 
 ##############################
