@@ -2112,7 +2112,7 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
   overflow_button_->SetImageModel(
       views::Button::STATE_DISABLED,
       ui::GetDefaultDisabledIconFromImageModel(overflow_button_icon,
-                                               GetColorProvider()));
+                                               color_provider));
 
   // Redraw the background.
   SchedulePaint();

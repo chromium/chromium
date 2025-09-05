@@ -14,8 +14,9 @@
 namespace ui {
 
 // TODO(dpenning) consider parameterizing color choices for disabled defaults.
-ImageModel GetDefaultDisabledIconFromImageModel(ImageModel icon_model,
-                                                ColorProvider* color_provider) {
+ImageModel GetDefaultDisabledIconFromImageModel(
+    ImageModel icon_model,
+    const ColorProvider* color_provider) {
   if (icon_model.IsEmpty()) {
     return icon_model;
   }
