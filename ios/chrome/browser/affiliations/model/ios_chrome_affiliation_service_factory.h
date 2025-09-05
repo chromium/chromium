@@ -25,7 +25,7 @@ class IOSChromeAffiliationServiceFactory
   ~IOSChromeAffiliationServiceFactory() override;
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_AFFILIATIONS_MODEL_IOS_CHROME_AFFILIATION_SERVICE_FACTORY_H_
