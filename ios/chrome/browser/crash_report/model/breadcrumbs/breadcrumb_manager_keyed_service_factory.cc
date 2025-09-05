@@ -32,7 +32,7 @@ BreadcrumbManagerKeyedServiceFactory::~BreadcrumbManagerKeyedServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 BreadcrumbManagerKeyedServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
+    ProfileIOS* profile) const {
   return std::make_unique<breadcrumbs::BreadcrumbManagerKeyedService>(
-      browser_state->IsOffTheRecord());
+      profile->IsOffTheRecord());
 }
