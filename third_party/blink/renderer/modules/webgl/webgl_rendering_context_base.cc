@@ -1917,6 +1917,11 @@ WebGLRenderingContextBase::ExportLowLatencyCanvasResource(
   }
 
   ClearIfComposited(kClearCallerOther);
+
+  // Given that we are in low-latency mode and directly writing to the
+  // SharedImage that we will export below, at this point we have successfully
+  // painted the canvas' contents by doing any necessary clearing in the above
+  // call.
   must_paint_to_canvas_ = false;
 
   return GetDrawingBuffer()->ExportLowLatencyCanvasResource();
