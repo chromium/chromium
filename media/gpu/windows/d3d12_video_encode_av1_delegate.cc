@@ -4,6 +4,7 @@
 
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 
+#include <algorithm>
 #include <bit>
 
 #include "base/containers/fixed_flat_map.h"
@@ -170,6 +171,8 @@ AV1BitstreamBuilder::FrameHeader FillAV1BuilderFrameHeader(
   frame_header.allow_screen_content_tools =
       picture_ctrl.allow_screen_content_tools;
   frame_header.allow_intrabc = picture_ctrl.allow_intrabc;
+  frame_header.interpolation_filter =
+      static_cast<libgav1::InterpolationFilter>(pic_params.InterpolationFilter);
 
   // When loop restoration is enabled, updates frame header with loop
   // restoration parameters submitted to driver.
@@ -400,8 +403,10 @@ aom::AV1RateControlRtcConfig ConvertToRateControlConfig(
 
 EncoderStatus::Or<D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS> GetEnabledAV1Features(
     bool is_screen,
-    const D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS supported_features,
-    const D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS required_features) {
+    const D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT&
+        config_support_limit) {
+  const auto& supported_features = config_support_limit.SupportedFeatureFlags;
+  const auto& required_features = config_support_limit.RequiredFeatureFlags;
   if ((supported_features & required_features) != required_features) {
     return {EncoderStatus::Codes::kEncoderHardwareDriverError,
             base::StringPrintf(" d3d12 driver doesn't support %x .",
@@ -430,6 +435,122 @@ EncoderStatus::Or<D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS> GetEnabledAV1Features(
     }
   }
   return enabled_features;
+}
+
+std::pair<D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE,
+          D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE>
+SelectBestRestoration(
+    base::span<const D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAGS>
+        supported_per_type) {
+  // Prefer WIENER, then SGRPROJ, finally SWITCHABLE.
+  // For each, prefer the largest supported restoration tile size.
+  static constexpr std::array<D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE, 3>
+      restoration_type_preferences = {
+          D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_WIENER,
+          D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_SGRPROJ,
+          D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_SWITCHABLE};
+  static constexpr std::array<
+      std::pair<D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAGS,
+                D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE>,
+      4>
+      restoration_tile_size_preferences = {{
+          {D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_256x256,
+           D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_256x256},
+          {D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_128x128,
+           D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_128x128},
+          {D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_64x64,
+           D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_64x64},
+          {D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_32x32,
+           D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_32x32},
+      }};
+  // supported_per_type[0]=>SWITCHABLE's masks, [1]=>WIENER's masks,
+  // [2]=>SGRPROJ's masks.
+  for (const auto& type : restoration_type_preferences) {
+    uint32_t mask =
+        supported_per_type[type -
+                           D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_SWITCHABLE];
+    for (const auto& pref : restoration_tile_size_preferences) {
+      if (mask & pref.first) {
+        return std::make_pair(type, pref.second);
+      }
+    }
+  }
+  return std::make_pair(D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_DISABLED,
+                        D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_DISABLED);
+}
+
+EncoderStatus::Or<D3D12VideoEncodeAV1Delegate::D3D12EncodingCapabilities>
+GetAV1EncodingCapabilities(
+    const D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS enabled_features,
+    const D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT&
+        config_support_limit) {
+  D3D12VideoEncodeAV1Delegate::D3D12EncodingCapabilities encoding_caps{};
+  encoding_caps.post_value_flags = config_support_limit.PostEncodeValuesFlags;
+
+  static constexpr std::array kInterpolationFilters = {
+      D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_EIGHTTAP,
+      D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_EIGHTTAP_SMOOTH,
+      D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_EIGHTTAP_SHARP,
+      D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_BILINEAR,
+      D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_SWITCHABLE,
+  };
+  auto interpolation_filter_it = std::ranges::find_if(
+      kInterpolationFilters, [config_support_limit](int filter) {
+        return config_support_limit.SupportedInterpolationFilters &
+               (1u << filter);
+      });
+  if (interpolation_filter_it == kInterpolationFilters.end()) {
+    return {EncoderStatus::Codes::kEncoderInitializationError,
+            "No interpolation filters available."};
+  }
+  encoding_caps.interpolation_filter = *interpolation_filter_it;
+
+  const base::span supported_tx_modes = config_support_limit.SupportedTxModes;
+  for (int i = 0; i < 2; ++i) {
+    if (supported_tx_modes[i] & D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAG_SELECT) {
+      encoding_caps.tx_modes[i] = D3D12_VIDEO_ENCODER_AV1_TX_MODE_SELECT;
+    } else {
+      encoding_caps.tx_modes[i] = D3D12_VIDEO_ENCODER_AV1_TX_MODE_LARGEST;
+    }
+  }
+
+  base::span restoration_type =
+      encoding_caps.loop_restoration.FrameRestorationType;
+  base::span restoration_pixel_size =
+      encoding_caps.loop_restoration.LoopRestorationPixelSize;
+  if (enabled_features &
+      D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER) {
+    // Layout of SupportedRestorationParams:
+    // SupportedRestorationParams[restoration_type][plane]
+    // restoration_type: 0=SWITCHABLE, 1=WIENER, 2=SGRPROJ
+    // plane: 0=Y, 1=U, 2=V
+    for (int plane = 0; plane < 3; ++plane) {
+      const std::array<D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAGS, 3>
+          supported_per_type = {
+              // SAFETY: `config_support_limit.SupportedRestorationParams` is
+              // a 3x3 2D array the AV1 delegte creates as part of initializing
+              // `config_support_limit`, and is later filled in by driver
+              // during encoder feature check, so accessing through [0..2][0..2]
+              // is safe.
+              UNSAFE_BUFFERS(
+                  config_support_limit.SupportedRestorationParams[0][plane]),
+              UNSAFE_BUFFERS(
+                  config_support_limit.SupportedRestorationParams[1][plane]),
+              UNSAFE_BUFFERS(
+                  config_support_limit.SupportedRestorationParams[2][plane])};
+      const auto& [type, tile_size] =
+          SelectBestRestoration(base::span(supported_per_type));
+      restoration_type[plane] = type;
+      restoration_pixel_size[plane] = tile_size;
+    }
+  } else {
+    std::ranges::fill(restoration_type,
+                      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_DISABLED);
+    std::ranges::fill(restoration_pixel_size,
+                      D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_DISABLED);
+  }
+
+  return encoding_caps;
 }
 
 D3D12VideoEncodeAV1Delegate::PictureControlFlags GetAV1PictureControl(
@@ -557,13 +678,14 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
   }
   D3D12_VIDEO_ENCODER_AV1_PROFILE profile =
       kVideoCodecProfileToD3D12Profile.at(config.output_profile);
+  D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT config_support_limit{};
   D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT
   codec_config_support{
       .Codec = D3D12_VIDEO_ENCODER_CODEC_AV1,
       .Profile = {.DataSize = sizeof(profile), .pAV1Profile = &profile},
       .CodecSupportLimits /*output*/ = {
-          .DataSize = sizeof(config_support_limit_),
-          .pAV1Support = &config_support_limit_}};
+          .DataSize = sizeof(config_support_limit),
+          .pAV1Support = &config_support_limit}};
   status = CheckD3D12VideoEncoderCodecConfigurationSupport(
       video_device_.Get(), &codec_config_support);
   if (!status.is_ok()) {
@@ -572,15 +694,21 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
 
   is_screen_ = config.content_type ==
                VideoEncodeAccelerator::Config::ContentType::kDisplay;
-  auto features_or_error = GetEnabledAV1Features(
-      is_screen_, config_support_limit_.SupportedFeatureFlags,
-      config_support_limit_.RequiredFeatureFlags);
+  auto features_or_error =
+      GetEnabledAV1Features(is_screen_, config_support_limit);
   if (!features_or_error.has_value()) {
     return std::move(features_or_error).error();
   }
   enabled_features_ = std::move(features_or_error).value();
   DVLOG(3) << base::StringPrintf("Enabled d3d12 encoding feature : %x.",
                                  enabled_features_);
+
+  auto enc_caps_or_error =
+      GetAV1EncodingCapabilities(enabled_features_, config_support_limit);
+  if (!enc_caps_or_error.has_value()) {
+    return std::move(enc_caps_or_error).error();
+  }
+  enc_caps_ = std::move(enc_caps_or_error).value();
 
   D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION codec_config = {
       .FeatureFlags = enabled_features_,
@@ -747,89 +875,9 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
                        : D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_INTER_FRAME;
   picture_params_.CompoundPredictionType =
       D3D12_VIDEO_ENCODER_AV1_COMP_PREDICTION_TYPE_SINGLE_REFERENCE;
-  picture_params_.InterpolationFilter =
-      D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_EIGHTTAP;
-
-  D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAGS supported_tx_modes =
-      D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAG_NONE;
-  if (request_keyframe) {
-    supported_tx_modes = config_support_limit_.SupportedTxModes[0];
-  } else {
-    supported_tx_modes = config_support_limit_.SupportedTxModes[1];
-  }
-  if (supported_tx_modes & D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAG_SELECT) {
-    picture_params_.TxMode = D3D12_VIDEO_ENCODER_AV1_TX_MODE_SELECT;
-  } else {
-    picture_params_.TxMode = D3D12_VIDEO_ENCODER_AV1_TX_MODE_LARGEST;
-  }
-
-  if (enabled_features_ &
-      D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER) {
-    auto& loop_restoration = picture_params_.FrameRestorationConfig;
-    auto select_best_restoration =
-        [](base::span<const D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAGS>
-               supported_per_type) {
-          // Prefer WIENER, then SGRPROJ, finally SWITCHABLE.
-          // For each, prefer the largest supported restoration tile size.
-          static constexpr std::array<D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE,
-                                      3>
-              restoration_type_preferences = {
-                  D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_WIENER,
-                  D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_SGRPROJ,
-                  D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_SWITCHABLE};
-          static constexpr std::array<
-              std::pair<D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAGS,
-                        D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE>,
-              4>
-              restoration_tile_size_preferences = {{
-                  {D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_256x256,
-                   D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_256x256},
-                  {D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_128x128,
-                   D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_128x128},
-                  {D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_64x64,
-                   D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_64x64},
-                  {D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_32x32,
-                   D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_32x32},
-              }};
-          // supported_per_type[0]=>SWITCHABLE's masks, [1]=>WIENER's masks,
-          // [2]=>SGRPROJ's masks.
-          for (const auto& type : restoration_type_preferences) {
-            uint32_t mask = supported_per_type
-                [type - D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_SWITCHABLE];
-            for (const auto& pref : restoration_tile_size_preferences) {
-              if (mask & pref.first) {
-                return std::make_pair(type, pref.second);
-              }
-            }
-          }
-          return std::make_pair(
-              D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_DISABLED,
-              D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_DISABLED);
-        };
-    // Layout of SupportedRestorationParams:
-    // SupportedRestorationParams[restoration_type][plane]
-    // restoration_type: 0=SWITCHABLE, 1=WIENER, 2=SGRPROJ
-    // plane: 0=Y, 1=U, 2=V
-    for (int plane = 0; plane < 3; ++plane) {
-      const std::array<D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAGS, 3>
-          supported_per_type = {
-              // SAFETY: `config_support_limit_.SupportedRestorationParams` is
-              // a 3x3 2D array the AV1 delegte creates as part of initializing
-              // `config_support_limit_`, and is later filled in by driver
-              // during encoder feature check, so accessing through [0..2][0..2]
-              // is safe.
-              UNSAFE_BUFFERS(
-                  config_support_limit_.SupportedRestorationParams[0][plane]),
-              UNSAFE_BUFFERS(
-                  config_support_limit_.SupportedRestorationParams[1][plane]),
-              UNSAFE_BUFFERS(
-                  config_support_limit_.SupportedRestorationParams[2][plane])};
-      const auto& [type, tile_size] =
-          select_best_restoration(base::span(supported_per_type));
-      base::span(loop_restoration.FrameRestorationType)[plane] = type;
-      base::span(loop_restoration.LoopRestorationPixelSize)[plane] = tile_size;
-    }
-  }
+  picture_params_.InterpolationFilter = enc_caps_.interpolation_filter;
+  picture_params_.TxMode = enc_caps_.tx_modes[request_keyframe ? 0 : 1];
+  picture_params_.FrameRestorationConfig = enc_caps_.loop_restoration;
 
   picture_params_.SuperResDenominator = 8 /*SUPERRES_NUM*/;
   picture_params_.OrderHint =
@@ -1165,7 +1213,7 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeAV1Delegate::ReadbackBitstream(
 
   auto frame_header = FillAV1BuilderFrameHeader(picture_ctrl_, picture_params_,
                                                 sequence_header_);
-  if (!UpdateFrameHeaderPostEncode(config_support_limit_.PostEncodeValuesFlags,
+  if (!UpdateFrameHeaderPostEncode(enc_caps_.post_value_flags,
                                    post_encode_values, frame_header)) {
     return {EncoderStatus::Codes::kEncoderHardwareDriverError,
             "D3D12VideoEncodeAV1Delegate: invalid post encode values."};

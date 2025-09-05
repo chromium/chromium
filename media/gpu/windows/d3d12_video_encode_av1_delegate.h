@@ -26,6 +26,13 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
     bool enable_auto_segmentation = false;
   };
 
+  struct D3D12EncodingCapabilities {
+    D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS interpolation_filter;
+    D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG loop_restoration;
+    std::array<D3D12_VIDEO_ENCODER_AV1_TX_MODE, 2> tx_modes;
+    D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS post_value_flags;
+  };
+
   static std::vector<
       std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
   GetSupportedProfiles(ID3D12VideoDevice3* video_device);
@@ -99,11 +106,12 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   // Bitrate allocation in bps.
   VideoBitrateAllocation bitrate_allocation_{Bitrate::Mode::kConstant};
 
+  // The `enc_caps_` is populated based on the capability of d3d12
+  // driver in `InitializeVideoEncoder()` and remains constant afterwards.
+  D3D12EncodingCapabilities enc_caps_{};
+
   // Enabled features for creating D3D12 AV1 encoder.
   D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS enabled_features_{};
-
-  // Codec configuration support limits of D3D12 AV1 encoder.
-  D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT config_support_limit_{};
 
   // Picture control flags for each Encoding frame.
   PictureControlFlags picture_ctrl_{};

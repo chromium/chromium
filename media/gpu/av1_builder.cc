@@ -147,8 +147,13 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     }
     ret.WriteBool(false);  // Render and frame size are the same.
     ret.WriteBool(false);  // No allow high precision MV.
-    ret.WriteBool(false);  // Filter not switchable.
-    ret.Write(0, 2);       // Set interpolation filter to 0.
+    bool is_switchable_interp =
+        pic_hdr.interpolation_filter ==
+        libgav1::InterpolationFilter::kInterpolationFilterSwitchable;
+    ret.WriteBool(is_switchable_interp);
+    if (!is_switchable_interp) {
+      ret.Write(pic_hdr.interpolation_filter, 2);
+    }
     ret.WriteBool(false);  // Motion not switchable.
     if (seq_hdr.enable_ref_frame_mvs) {
       ret.WriteBool(false);  // Do not use ref frame MVs.

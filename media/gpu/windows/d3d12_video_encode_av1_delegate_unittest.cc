@@ -96,6 +96,8 @@ class D3D12VideoEncodeAV1DelegateTest
             CHECK_EQ(*feature_data->Profile.pAV1Profile,
                      D3D12_VIDEO_ENCODER_AV1_PROFILE_MAIN);
             auto* av1_support = feature_data->CodecSupportLimits.pAV1Support;
+            av1_support->SupportedInterpolationFilters =
+                D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAG_EIGHTTAP;
             av1_support->SupportedFeatureFlags =
                 D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CDEF_FILTERING |
                 D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_ORDER_HINT_TOOLS |
