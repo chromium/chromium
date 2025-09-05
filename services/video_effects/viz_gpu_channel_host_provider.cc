@@ -33,45 +33,6 @@ namespace {
 // want to impact the rest of the browser.
 constexpr int kMaxNumOfContextLosses = 5;
 
-scoped_refptr<viz::ContextProviderCommandBuffer> CreateAndBindContextProvider(
-    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
-    gpu::ContextType context_type) {
-  CHECK(gpu_channel_host);
-  CHECK(!gpu_channel_host->IsLost());
-  CHECK(context_type == gpu::CONTEXT_TYPE_WEBGPU ||
-        context_type == gpu::CONTEXT_TYPE_OPENGLES2);
-
-  auto context_creation_attribs = gpu::ContextCreationAttribs();
-  context_creation_attribs.context_type = context_type;
-  context_creation_attribs.enable_gles2_interface = false;
-  context_creation_attribs.enable_raster_interface =
-      context_type == gpu::CONTEXT_TYPE_OPENGLES2;
-
-  // TODO(bialpio): replace `gpu::SharedMemoryLimits::ForOOPRasterContext()`
-  // with something better suited or explain why it's appropriate the way it is
-  // now.
-  scoped_refptr<viz::ContextProviderCommandBuffer> context_provider =
-      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          std::move(gpu_channel_host), content::kGpuStreamIdDefault,
-          gpu::SchedulingPriority::kNormal, GURL("chrome://gpu/VideoEffects"),
-          true /* automatic flushes */, false /* support locking */,
-          context_type == gpu::CONTEXT_TYPE_WEBGPU
-              ? gpu::SharedMemoryLimits::ForWebGPUContext()
-              : gpu::SharedMemoryLimits::ForOOPRasterContext(),
-          context_creation_attribs,
-          viz::command_buffer_metrics::ContextType::VIDEO_CAPTURE);
-
-  const gpu::ContextResult context_result =
-      context_provider->BindToCurrentSequence();
-  if (context_result != gpu::ContextResult::kSuccess) {
-    LOG(ERROR) << "Bind context provider failed. context_result: "
-               << base::to_underlying(context_result);
-    return nullptr;
-  }
-
-  return context_provider;
-}
-
 void GpuChannelHostAddObserver(scoped_refptr<gpu::GpuChannelHost> host,
                                gpu::GpuChannelLostObserver* observer) {
   if (host) {
@@ -102,11 +63,21 @@ VizGpuChannelHostProvider::GetWebGpuContextProvider() {
   }
 
   if (!webgpu_context_provider_) {
-    webgpu_context_provider_ = CreateAndBindContextProvider(
-        GetGpuChannelHost(), gpu::CONTEXT_TYPE_WEBGPU);
+    auto context_provider = viz::ContextProviderCommandBuffer::CreateForWebGPU(
+        GetGpuChannelHost(), GURL("chrome://gpu/VideoEffects"),
+        viz::command_buffer_metrics::ContextType::VIDEO_CAPTURE,
+        /*buffer_mapper=*/nullptr);
+    const gpu::ContextResult context_result =
+        context_provider->BindToCurrentSequence();
+    if (context_result != gpu::ContextResult::kSuccess) {
+      LOG(ERROR) << "Bind context provider failed. context_result: "
+                 << base::to_underlying(context_result);
+      return nullptr;
+    }
+
+    webgpu_context_provider_ = context_provider;
     webgpu_context_provider_->AddObserver(this);
   }
-
   return webgpu_context_provider_;
 }
 
@@ -118,8 +89,27 @@ VizGpuChannelHostProvider::GetRasterInterfaceContextProvider() {
   }
 
   if (!raster_interface_context_provider_) {
-    raster_interface_context_provider_ = CreateAndBindContextProvider(
-        GetGpuChannelHost(), gpu::CONTEXT_TYPE_OPENGLES2);
+    // TODO(bialpio): replace `gpu::SharedMemoryLimits::ForOOPRasterContext()`
+    // with something better suited or explain why it's appropriate the way it
+    // is now.
+    auto context_provider = viz::ContextProviderCommandBuffer::CreateForRaster(
+        GetGpuChannelHost(), content::kGpuStreamIdDefault,
+        gpu::SchedulingPriority::kNormal, GURL("chrome://gpu/VideoEffects"),
+        /*automatic_flushes=*/true, /*support_locking=*/false,
+        gpu::SharedMemoryLimits::ForOOPRasterContext(),
+        viz::command_buffer_metrics::ContextType::VIDEO_CAPTURE,
+        /*enable_gpu_rasterization=*/false,
+        /*lose_context_when_out_of_memory=*/false);
+
+    const gpu::ContextResult context_result =
+        context_provider->BindToCurrentSequence();
+    if (context_result != gpu::ContextResult::kSuccess) {
+      LOG(ERROR) << "Bind context provider failed. context_result: "
+                 << base::to_underlying(context_result);
+      return nullptr;
+    }
+
+    raster_interface_context_provider_ = context_provider;
     raster_interface_context_provider_->AddObserver(this);
   }
 
