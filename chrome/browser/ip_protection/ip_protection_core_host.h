@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
@@ -32,7 +33,6 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
 class Profile;
@@ -57,8 +57,8 @@ class IpProtectionCoreHost
  public:
   // A map from proxy layer to a list of tokens.
   using IpProtectionTokenCache =
-      absl::flat_hash_map<ip_protection::ProxyLayer,
-                          std::vector<ip_protection::BlindSignedAuthToken>>;
+      base::flat_map<ip_protection::ProxyLayer,
+                     std::vector<ip_protection::BlindSignedAuthToken>>;
 
   IpProtectionCoreHost(
       signin::IdentityManager* identity_manager,

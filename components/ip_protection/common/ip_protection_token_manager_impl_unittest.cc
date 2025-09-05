@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -256,16 +257,18 @@ class IpProtectionTokenManagerImplTest : public testing::Test {
           }
         });
 
-    auto core_host_remote = base::MakeRefCounted<IpProtectionCoreHostRemote>(
+    core_host_remote_ = base::MakeRefCounted<IpProtectionCoreHostRemote>(
         core_host_receiver_.BindNewPipeAndPassRemote());
 
     ipp_proxy_a_token_manager_ = std::make_unique<IpProtectionTokenManagerImpl>(
-        &mock_core_, core_host_remote, std::move(ipp_proxy_a_token_fetcher),
+        &mock_core_, core_host_remote_, std::move(ipp_proxy_a_token_fetcher),
         ProxyLayer::kProxyA,
+        /*initial_tokens=*/std::vector<BlindSignedAuthToken>(),
         /* disable_cache_management_for_testing=*/true);
     ipp_proxy_b_token_manager_ = std::make_unique<IpProtectionTokenManagerImpl>(
-        &mock_core_, core_host_remote, std::move(ipp_proxy_b_token_fetcher),
+        &mock_core_, core_host_remote_, std::move(ipp_proxy_b_token_fetcher),
         ProxyLayer::kProxyB,
+        /*initial_tokens=*/std::vector<BlindSignedAuthToken>(),
         /* disable_cache_management_for_testing=*/true);
 
     // Default to disabling token expiration fuzzing.
@@ -338,6 +341,7 @@ class IpProtectionTokenManagerImplTest : public testing::Test {
   FakeCoreHost fake_core_host_;
   mojo::Receiver<ip_protection::mojom::CoreHost> core_host_receiver_{
       &fake_core_host_};
+  scoped_refptr<IpProtectionCoreHostRemote> core_host_remote_;
 
   std::unique_ptr<IpProtectionTokenManagerImpl> ipp_proxy_a_token_manager_;
   std::unique_ptr<IpProtectionTokenManagerImpl> ipp_proxy_b_token_manager_;
@@ -622,7 +626,7 @@ TEST_F(IpProtectionTokenManagerImplTest, NullGetter) {
   MockIpProtectionCore core;
   auto ipp_token_manager = IpProtectionTokenManagerImpl(
       &core, /*core_host_remote=*/nullptr, /*fetcher=*/nullptr,
-      ProxyLayer::kProxyA,
+      ProxyLayer::kProxyA, /*initial_tokens=*/{},
       /*disable_cache_management_for_testing=*/true);
 
   EXPECT_FALSE(ipp_token_manager.IsAuthTokenAvailable(kMountainViewGeoId));
@@ -1354,6 +1358,79 @@ TEST_F(IpProtectionTokenManagerImplTest, TokenCountMultipleEvents) {
   histogram_tester_.ExpectUniqueSample(
       kProxyATokenCountExpiredHistogram, /*sample=*/2,
       /*expected_bucket_count=*/1);  // 2 expired tokens removed
+}
+
+TEST_F(IpProtectionTokenManagerImplTest, InitialTokens) {
+  std::vector<BlindSignedAuthToken> initial_tokens;
+  initial_tokens.push_back(BlindSignedAuthToken{.token = "good-token",
+                                                .expiration = kFutureExpiration,
+                                                .geo_hint = kMountainViewGeo});
+  initial_tokens.push_back(BlindSignedAuthToken{.token = "expired-token",
+                                                .expiration = kPastExpiration,
+                                                .geo_hint = kMountainViewGeo});
+
+  auto token_manager = std::make_unique<IpProtectionTokenManagerImpl>(
+      &mock_core_, core_host_remote_,
+      std::make_unique<MockIpProtectionTokenFetcher>(), ProxyLayer::kProxyA,
+      std::move(initial_tokens),
+      /*disable_cache_management_for_testing=*/true);
+
+  EXPECT_TRUE(token_manager->WasTokenCacheEverFilled());
+  EXPECT_TRUE(token_manager->IsAuthTokenAvailable(kMountainViewGeoId));
+  auto token = token_manager->GetAuthToken(kMountainViewGeoId);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(token->token, "good-token");
+  EXPECT_EQ(token->geo_hint, kMountainViewGeo);
+
+  EXPECT_FALSE(token_manager->GetAuthToken(kMountainViewGeoId));
+}
+
+TEST_F(IpProtectionTokenManagerImplTest, InitialTokensAllExpired) {
+  std::vector<BlindSignedAuthToken> initial_tokens =
+      TokenBatch(2, kPastExpiration, kMountainViewGeo);
+
+  auto token_manager = std::make_unique<IpProtectionTokenManagerImpl>(
+      &mock_core_, core_host_remote_,
+      std::make_unique<MockIpProtectionTokenFetcher>(), ProxyLayer::kProxyA,
+      std::move(initial_tokens),
+      /*disable_cache_management_for_testing=*/true);
+
+  EXPECT_FALSE(token_manager->WasTokenCacheEverFilled());
+  EXPECT_FALSE(token_manager->IsAuthTokenAvailable(kMountainViewGeoId));
+}
+
+TEST_F(IpProtectionTokenManagerImplTest, InitialTokensSkipsPrefill) {
+  std::vector<BlindSignedAuthToken> initial_tokens;
+  initial_tokens.push_back(
+      BlindSignedAuthToken{.token = "good-token",
+                           .expiration = base::Time::Now() + base::Minutes(1),
+                           .geo_hint = kMountainViewGeo});
+  auto unique_token_fetcher = std::make_unique<MockIpProtectionTokenFetcher>();
+  raw_ptr<MockIpProtectionTokenFetcher> token_fetcher =
+      unique_token_fetcher.get();
+  auto token_manager = std::make_unique<IpProtectionTokenManagerImpl>(
+      &mock_core_, core_host_remote_, std::move(unique_token_fetcher),
+      ProxyLayer::kProxyA, std::move(initial_tokens),
+      /*disable_cache_management_for_testing=*/true);
+
+  // Enable cache management, then fast-forward to ensure TryGetAuthTokens does
+  // not get called.
+  token_manager->SetOnTryGetAuthTokensCompletedForTesting(
+      base::MakeExpectedNotRunClosure(FROM_HERE));
+  token_manager->EnableCacheManagementForTesting();
+  task_environment_.FastForwardBy(base::Minutes(2));
+
+  // Later, a geo change should trigger TryGetAuthTokens.
+  token_fetcher->ExpectTryGetAuthTokensCall(
+      expected_batch_size_,
+      TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
+  token_manager->SetOnTryGetAuthTokensCompletedForTesting(
+      task_environment_.QuitClosure());
+  token_manager->SetCurrentGeo(kMountainViewGeoId);
+  task_environment_.RunUntilQuit();
+  EXPECT_TRUE(token_fetcher->GotAllExpectedMockCalls());
+  EXPECT_TRUE(token_manager->IsAuthTokenAvailable(kMountainViewGeoId));
+  token_fetcher = nullptr;
 }
 
 }  // namespace

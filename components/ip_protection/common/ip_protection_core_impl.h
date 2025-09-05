@@ -46,6 +46,8 @@ class IpProtectionCoreImpl
   using ProxyTokenManagerMap =
       absl::flat_hash_map<ProxyLayer,
                           std::unique_ptr<IpProtectionTokenManager>>;
+  using InitialTokensMap =
+      base::flat_map<ProxyLayer, std::vector<BlindSignedAuthToken>>;
 
   IpProtectionCoreImpl(
       MaskedDomainListManager* masked_domain_list_manager,

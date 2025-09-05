@@ -55,6 +55,7 @@ IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
     scoped_refptr<IpProtectionCoreHostRemote> core_host_remote,
     std::unique_ptr<IpProtectionTokenFetcher> fetcher,
     ProxyLayer proxy_layer,
+    std::vector<BlindSignedAuthToken> initial_tokens,
     bool disable_cache_management_for_testing)
     : batch_size_(net::features::kIpPrivacyAuthTokenCacheBatchSize.Get()),
       cache_low_water_mark_(
@@ -65,6 +66,7 @@ IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
       core_host_remote_(std::move(core_host_remote)),
       disable_cache_management_for_testing_(
           disable_cache_management_for_testing) {
+  ProcessInitialTokens(std::move(initial_tokens));
   last_token_rate_measurement_ = base::TimeTicks::Now();
   // Start the timer. The timer is owned by `this` and thus cannot outlive it.
   measurement_timer_.Start(FROM_HERE, kTokenRateMeasurementInterval, this,
@@ -90,6 +92,33 @@ IpProtectionTokenManagerImpl::~IpProtectionTokenManagerImpl() {
     CHECK(core_host_remote_);
     core_host_remote_->core_host()->RecycleTokens(proxy_layer_,
                                                   std::move(tokens));
+  }
+}
+
+void IpProtectionTokenManagerImpl::ProcessInitialTokens(
+    std::vector<BlindSignedAuthToken> initial_tokens) {
+  if (initial_tokens.empty()) {
+    return;
+  }
+
+  for (auto& token : initial_tokens) {
+    std::string geo_id = GetGeoIdFromGeoHint(token.geo_hint);
+    cache_by_geo_[geo_id].push_back(std::move(token));
+  }
+
+  // Sort the tokens by expiration time, then prune expired tokens.
+  for (auto& [_, cache] : cache_by_geo_) {
+    std::sort(cache.begin(), cache.end(),
+              [](const BlindSignedAuthToken& a, const BlindSignedAuthToken& b) {
+                return a.expiration < b.expiration;
+              });
+  }
+  RemoveExpiredTokens();
+  for (const auto& [_, cache] : cache_by_geo_) {
+    if (!cache.empty()) {
+      cache_has_been_filled_ = true;
+      break;
+    }
   }
 }
 
@@ -171,9 +200,7 @@ void IpProtectionTokenManagerImpl::SetCurrentGeo(const std::string& geo_id) {
   // "GeoChangeTokenPresence" metric should be taken.
   emitted_geo_presence_histogram_before_refill_ = true;
 
-  if (NeedsRefill(current_geo_id_) && !fetching_auth_tokens_) {
-    MaybeRefillCache();
-  }
+  MaybeRefillCache();
 }
 
 // Schedule the next timed call to `MaybeRefillCache()`. This method is
@@ -200,8 +227,18 @@ void IpProtectionTokenManagerImpl::ScheduleMaybeRefillCache() {
       delay = try_get_auth_tokens_after_ - now;
     }
   } else {
-    // Delay refill to when the next token expires.
-    delay = cache_by_geo_[current_geo_id_].front().expiration - now;
+    auto it = cache_by_geo_.find(current_geo_id_);
+    if (it != cache_by_geo_.end() && !it->second.empty()) {
+      // Delay refill to when the next token expires.
+      delay = it->second.front().expiration - now;
+    } else {
+      // NeedsRefill returned false, and there are no tokens for the current
+      // geo. This happens when current_geo_id_ has not been set yet.
+      // Wait for the geo ID to change before attempting to refill again.
+      CHECK_EQ(current_geo_id_, "");
+      next_maybe_refill_cache_.Stop();
+      return;
+    }
   }
 
   if (delay.is_negative()) {
@@ -223,8 +260,8 @@ bool IpProtectionTokenManagerImpl::NeedsRefill(
   }
 
   // There are two states where geo id can be "":
-  // 1. The token cache manager was just initialized and has not retrieved any
-  // tokens yet but the condition above should not allow this to be reached.
+  // 1. The token cache manager was just initialized and has not yet received a
+  //    call to SetCurrentGeo.
   // 2. The current geo has been set to "" because there is no available proxy
   //    list and we are falling back to DIRECT. In this case we should not
   //    refill tokens.
@@ -300,8 +337,6 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
     }
   }
 
-  // TODO(crbug.com/357439021): Refactor so that each TryAuthTokensCallback
-  // contains a single `geo_hint`.
   std::string geo_id_from_token = GetGeoIdFromGeoHint(tokens->front().geo_hint);
 
   // Metric should only be recorded under the following conditions:

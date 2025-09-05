@@ -1575,6 +1575,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         ipp_core_host->IsIpProtectionEnabled();
     network_context_params->ip_protection_incognito =
         profile_->IsIncognitoProfile();
+    if (profile_->IsIncognitoProfile()) {
+      network_context_params->initial_ip_protection_tokens =
+          ipp_core_host->TakeRecycledTokens();
+    }
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             network::switches::kStoreProbabilisticRevealTokens)) {
       network_context_params->ip_protection_data_directory =

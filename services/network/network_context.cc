@@ -2716,6 +2716,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             std::move(params_->ip_protection_control), core_host_remote,
             mdl_manager, prt_registry, params_->enable_ip_protection,
             params_->ip_protection_incognito,
+            std::move(params_->initial_ip_protection_tokens),
             params_->ip_protection_data_directory);
     builder.set_proxy_delegate(
         std::make_unique<ip_protection::IpProtectionProxyDelegate>(

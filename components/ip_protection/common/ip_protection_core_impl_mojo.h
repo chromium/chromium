@@ -37,6 +37,7 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       bool is_ip_protection_enabled,
       bool ip_protection_incognito,
+      InitialTokensMap initial_tokens,
       std::optional<base::FilePath> data_directory);
   ~IpProtectionCoreImplMojo() override;
 

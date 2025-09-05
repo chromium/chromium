@@ -42,15 +42,21 @@ namespace {
 // Make a map-by-layer of token managers. This is a utility for the constructor.
 IpProtectionCoreImpl::ProxyTokenManagerMap MakeTokenManagerMap(
     IpProtectionCore* ip_protection_core,
-    scoped_refptr<IpProtectionCoreHostRemote> core_host_remote) {
+    scoped_refptr<IpProtectionCoreHostRemote> core_host_remote,
+    IpProtectionCoreImpl::InitialTokensMap initial_tokens) {
   IpProtectionCoreImpl::ProxyTokenManagerMap managers;
   for (ProxyLayer proxy_layer : {ProxyLayer::kProxyA, ProxyLayer::kProxyB}) {
+    std::vector<BlindSignedAuthToken> initial_tokens_for_layer;
+    if (auto it = initial_tokens.find(proxy_layer);
+        it != initial_tokens.end()) {
+      initial_tokens_for_layer = std::move(it->second);
+    }
     managers.insert(
         {proxy_layer,
          std::make_unique<IpProtectionTokenManagerImpl>(
              ip_protection_core, core_host_remote,
              std::make_unique<IpProtectionTokenMojoFetcher>(core_host_remote),
-             proxy_layer)});
+             proxy_layer, std::move(initial_tokens_for_layer))});
   }
   return managers;
 }
@@ -64,6 +70,7 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
     ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
     bool is_ip_protection_enabled,
     bool ip_protection_incognito,
+    InitialTokensMap initial_tokens,
     std::optional<base::FilePath> data_directory)
     : IpProtectionCoreImpl(
           masked_domain_list_manager,
@@ -73,7 +80,9 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
                     std::make_unique<IpProtectionProxyConfigMojoFetcher>(
                         core_host_remote))
               : nullptr,
-          core_host_remote ? MakeTokenManagerMap(this, core_host_remote)
+          core_host_remote ? MakeTokenManagerMap(this,
+                                                 core_host_remote,
+                                                 std::move(initial_tokens))
                            : IpProtectionCoreImpl::ProxyTokenManagerMap(),
           probabilistic_reveal_token_registry,
           (core_host_remote &&

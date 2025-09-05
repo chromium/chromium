@@ -7,16 +7,17 @@ module network.mojom;
 import "components/content_settings/core/common/content_settings.mojom";
 import "components/ip_protection/mojom/core.mojom";
 import "components/ip_protection/mojom/data_types.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
-import "mojo/public/mojom/base/big_buffer.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/clear_data_filter.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
+import "services/network/public/mojom/connection_change_observer_client.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
 import "services/network/public/mojom/cookie_encryption_provider.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
@@ -50,7 +51,6 @@ import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/proxy_config_with_annotation.mojom";
 import "services/network/public/mojom/proxy_lookup_client.mojom";
 import "services/network/public/mojom/proxy_resolving_socket.mojom";
-import "services/network/public/mojom/connection_change_observer_client.mojom";
 import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/restricted_udp_socket.mojom";
@@ -460,6 +460,13 @@ struct NetworkContextParams {
 
   // Signals to IP Protection if this is an incognito network context.
   bool ip_protection_incognito = false;
+
+  // Contains unused IP Protection auth tokens recycled from a previous
+  // Incognito session, used to "pre-warm" the token cache for this
+  // NetworkContext.
+  map<ip_protection.mojom.ProxyLayer,
+      array<ip_protection.mojom.BlindSignedAuthToken>>
+          initial_ip_protection_tokens;
 
   // Points to the user-data directory of the active profile, where
   // Probabilistic Reveal Tokens will be stored if the
@@ -951,13 +958,13 @@ struct URLLoaderFactoryParams {
 
 // Represents a Durable Message Collector instance tied to a throttling profile.
 interface DurableMessageCollector {
-    // Configures the collector instance.
-    Configure(NetworkDurableMessageConfig config);
+  // Configures the collector instance.
+  Configure(NetworkDurableMessageConfig config);
 
-    // Retrieve a collected Durable Message for the given DevTools request ID,
-    // if one is available.
-    Retrieve(string devtools_request_id) =>
-        (mojo_base.mojom.BigBuffer? message);
+  // Retrieve a collected Durable Message for the given DevTools request ID,
+  // if one is available.
+  Retrieve(string devtools_request_id)
+      => (mojo_base.mojom.BigBuffer? message);
 };
 
 // Represents a distinct context for making network requests, with its own
@@ -1313,8 +1320,8 @@ interface NetworkContext {
 
   // Enables network level storage of HTTP request/response bodies.
   EnableDurableMessageCollector(
-        mojo_base.mojom.UnguessableToken throttling_profile_id,
-        pending_receiver<DurableMessageCollector> receiver);
+      mojo_base.mojom.UnguessableToken throttling_profile_id,
+      pending_receiver<DurableMessageCollector> receiver);
 
   // Updates the Accept-Language header to be used for requests.
   SetAcceptLanguage(string new_accept_language);
@@ -1615,9 +1622,8 @@ interface NetworkContext {
   // Performs 2-QWAC verification. Returns the verified 2-QWAC certificate
   // chain if `binding` is a valid 2-QWAC binding for `hostname` which binds
   // `tls_certificate`.
-  Verify2QwacCertBinding(string binding,
-                         string hostname,
-                         X509Certificate tls_certificate)
+  Verify2QwacCertBinding(
+      string binding, string hostname, X509Certificate tls_certificate)
       => (X509Certificate verified_cert);
 
   // Adds explicitly-specified data as if it was processed from an
