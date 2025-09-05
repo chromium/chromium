@@ -121,5 +121,6 @@ schema:
         type: object
       type: array
   type: object
+sensitive: true
 tags: []
 type: dict

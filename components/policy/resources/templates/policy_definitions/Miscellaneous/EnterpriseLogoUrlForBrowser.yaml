@@ -21,5 +21,6 @@ owners:
 - esalma@google.com
 schema:
   type: string
+sensitive: true
 tags: []
 type: string

@@ -107,6 +107,12 @@ deprecated: false
 # Device policy only exists on ChromeOS.
 device_only: false
 
+# Optional field that is `false` by default.
+# When set to true, this policy is considered only if the user is part of a an
+# an Active Directory domain on Windows, managed on the Mac, or enrolled in
+# Chrome Enterprise Core.
+sensitive: false
+
 features:
   # Optional field that is `true` by default.
   # Set to `false` tells the admin they must mark the policy as

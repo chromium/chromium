@@ -46,6 +46,7 @@ schema:
   - 4
   - 5
   type: integer
+sensitive: true
 supported_on:
 - chrome.*:8-
 - chrome_os:11-

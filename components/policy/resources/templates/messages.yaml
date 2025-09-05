@@ -183,6 +183,11 @@ doc_schema_description_link:
     containing the information about schema and formatting.
   text: See <ph name="REFERENCE_URL">$6<ex>https://cloud.google.com/docs/chrome-enterprise/policies/?policy=WallpaperImage</ex></ph>
     for more information about schema and formatting.
+doc_sensitive:
+  desc: A flag that indicates that this policy is only supported for users that
+    are part of an Active Directory domain on Windows, managed on the Mac, or
+    enrolled in Chrome Enterprise Core.
+  text: Sensitive
 doc_since_version:
   desc: Text in the summary chart of a policy that specifies the version number in
     which the policy was introduced.

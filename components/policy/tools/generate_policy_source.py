@@ -92,6 +92,7 @@ class PolicyDetails:
     self.metapolicy_type = features.get('metapolicy_type', '')
     self.is_deprecated = policy.get('deprecated', False)
     self.is_device_only = policy.get('device_only', False)
+    self.is_sensitive = policy.get('sensitive', False)
     self.per_profile = features.get('per_profile', False)
     self.is_user_only = features.get('user_only', False)
     self.schema = policy['schema']
@@ -536,6 +537,8 @@ const internal::SchemaData* GetChromeSchemaData();
           len(_GetMetapoliciesOfType(policies, METAPOLICY_TYPE['precedence'])))
   f.write('}  // namespace metapolicy\n\n')
 
+  _WriteSensitivePoliciesHeader(f)
+
   f.write('enum class StringPolicyType {\n'
           '  STRING,\n'
           '  JSON,\n'
@@ -579,6 +582,18 @@ def _ComputeTotalDevicePolicyExternalDataMaxSize(policies):
       total_device_policy_external_data_max_size += policy.max_size
   return total_device_policy_external_data_max_size
 
+
+def _WriteSensitivePoliciesHeader(f):
+  """Writes the extern declaration for sensitive policies.
+
+  Note that this 'sensitive' flag is different from the 'sensitiveValue' flag
+  in schemas, which is used to mask values in the chrome://policy UI.
+  """
+  f.write(
+      '// The policies that are considered only if the user is part of an AD\n'
+      '// domain on Windows, managed on Mac, or enrolled in Chrome Enterprise'
+      ' Core.\n'
+      'base::span<const char* const> GetSensitivePolicies();\n\n')
 
 #------------------ policy constants source ------------------------#
 
@@ -1103,6 +1118,8 @@ namespace policy {
                policy.id, policy.max_size, risk_tags.ToInitString(policy.tags)))
   f.write('};\n\n')
 
+  _WriteSensitivePoliciesSource(f, policies)
+
   schema_generator = SchemaNodesGenerator(shared_strings)
   schema_generator.GenerateAndCollectID(chrome_schema, 'root node')
 
@@ -1345,6 +1362,23 @@ def _WriteChromePolicyAccessSource(policies, f, protobuf_type, chunking):
             '  },\n' % (name, str(policy.per_profile).lower(), has_proto,
                         protobuf_type, get_proto, extra_args))
   f.write('}};\n\n')
+
+
+def _WriteSensitivePoliciesSource(f, policies):
+  """Writes the list of sensitive policies.
+
+  Note that this 'sensitive' flag is different from the 'sensitiveValue' flag
+  in schemas, which is used to mask values in the chrome://policy UI.
+  """
+  f.write('const char* const kSensitivePolicies[] = {\n')
+  sensitive_policies = sorted([p for p in policies if p.is_sensitive],
+                              key=lambda p: p.name)
+  for p in sensitive_policies:
+    f.write('    key::k%s,\n' % p.name)
+  f.write('};\n\n')
+  f.write('base::span<const char* const> GetSensitivePolicies() {\n')
+  f.write('  return kSensitivePolicies;\n')
+  f.write('}\n\n')
 
 
 #------------------ policy risk tag header -------------------------#

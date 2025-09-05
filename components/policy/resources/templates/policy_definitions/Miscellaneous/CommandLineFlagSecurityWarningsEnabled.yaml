@@ -25,6 +25,7 @@ owners:
 - proberge@chromium.org
 schema:
   type: boolean
+sensitive: true
 supported_on:
 - chrome.*:76-
 tags:

@@ -24,6 +24,7 @@ owners:
 - chrome-desktop-ntp@google.com
 schema:
   type: string
+sensitive: true
 supported_on:
 - chrome.*:58-
 - chrome_os:58-

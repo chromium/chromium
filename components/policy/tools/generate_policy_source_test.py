@@ -202,11 +202,64 @@ class PolicyGenerationTest(unittest.TestCase):
           "tags": [],
           "caption": "ChunkTwoLastFieldStringPolicy caption",
           "desc": "ChunkTwoLastFieldStringPolicy desc"
+      }, {
+          "name": "SensitivePolicyForMultiplePlatforms",
+          "type": "main",
+          "schema": { "type": "boolean" },
+          "sensitive": True,
+          "supported_on":
+          ["chrome_os:1-", "chrome.*:1-"],
+          "id": 2643,
+          "tags": [],
+          "caption": "SensitivePolicyForMultiplePlatforms caption",
+          "desc": "SensitivePolicyForMultiplePlatforms desc"
+      }, {
+          "name": "SensitivePolicyForChromeOSOnly",
+          "type": "main",
+          "schema": { "type": "boolean" },
+          "sensitive": True,
+          "supported_on": ["chrome_os:1-"],
+          "id": 2644,
+          "tags": [],
+          "caption": "SensitivePolicyForChromeOSOnly caption",
+          "desc": "SensitivePolicyForChromeOSOnly desc"
+      }, {
+          "name": "SensitivePolicyForUnsupportedPlatform",
+          "type": "main",
+          "schema": { "type": "boolean" },
+          "supported_on": ["chrome.win:61-"],
+          "sensitive": True,
+          "id": 2645,
+          "tags": [],
+          "caption": "SensitivePolicyForUnsupportedPlatform caption",
+          "desc": "It should neither be generated nor listed as sensitive."
+      }, {
+          "name": "SensitivePolicyForChromeOSFuture",
+          "type": "main",
+          "schema": { "type": "boolean" },
+          "future_on": ["chrome_os"],
+          "sensitive": True,
+          "id": 2646,
+          "tags": [],
+          "caption": "SensitivePolicyForChromeOSFuture caption",
+          "desc": "SensitivePolicyForChromeOSFuture desc"
+      }, {
+          "name": "SensitivePolicyForChromeOSDeprecated",
+          "type": "main",
+          "schema": { "type": "boolean" },
+          "supported_on": ["chrome_os:1-"],
+          "deprecated": True,
+          "sensitive": True,
+          "id": 2647,
+          "tags": [],
+          "caption": "SensitivePolicyForChromeOSDeprecated caption",
+          "desc": "SensitivePolicyForChromeOSDeprecated desc"
       }],
       "policy_atomic_group_definitions": []
   }
 
   def setUp(self):
+    self.maxDiff = None  # See the full diff in the test output.
     self.chrome_major_version = 94
     self.target_platform = 'chrome_os'
     self.all_target_platforms = ['win', 'mac', 'linux', 'chromeos', 'fuchsia']
@@ -383,6 +436,17 @@ class PolicyGenerationTest(unittest.TestCase):
     invalid_metapolicies = generate_policy_source._GetMetapoliciesOfType(
         self.policies, "invalid")
     self.assertEqual(0, len(invalid_metapolicies))
+
+  def testGetSensitivePolicies(self):
+    sensitive_policies = sorted([
+        p.name for p in self.policies if p.is_sensitive and p.is_supported
+    ])
+    self.assertListEqual([
+        "SensitivePolicyForChromeOSDeprecated",
+        "SensitivePolicyForChromeOSFuture",
+        "SensitivePolicyForChromeOSOnly",
+        "SensitivePolicyForMultiplePlatforms",
+    ], sensitive_policies)
 
   def testWritePolicyConstantHeader(self):
     output_path = 'mock_policy_constants_h'

@@ -38,45 +38,6 @@ const char kUpdateUrl[] = "update_url";
 // String to be prepended to each blocked entry.
 const char kBlockedExtensionPrefix[] = "[BLOCKED]";
 #endif
-// List of policies that are considered only if the user is part of a AD domain
-// on Windows or managed on the Mac. Please document any new additions in the
-// policy definition file.
-// Please keep the list in alphabetical order!
-const char* kSensitivePolicies[] = {
-    key::kDefaultSearchProviderEnabled,
-    key::kSafeBrowsingEnabled,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    key::kAutoOpenFileTypes,
-    key::kEnterpriseSearchAggregatorSettings,
-    key::kHomepageIsNewTabPage,
-    key::kPasswordProtectionChangePasswordURL,
-    key::kPasswordProtectionLoginURLs,
-    key::kRestoreOnStartup,
-    key::kRestoreOnStartupURLs,
-    key::kSafeBrowsingAllowlistDomains,
-    key::kSiteSearchSettings,
-#endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    key::kCommandLineFlagSecurityWarningsEnabled,
-    key::kEnterpriseCustomLabelForBrowser,
-    key::kEnterpriseLogoUrlForBrowser,
-    key::kNTPFooterManagementNoticeEnabled,
-#endif
-#if !BUILDFLAG(IS_IOS)
-    key::kFirstPartySetsOverrides,
-    key::kHomepageLocation,
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-    key::kNewTabPageLocation,
-#endif
-#if !BUILDFLAG(IS_CHROMEOS)
-    key::kMetricsReportingEnabled,
-#endif
-#if BUILDFLAG(IS_WIN)
-    key::kSafeBrowsingForTrustedSourcesEnabled,
-#endif
-};
 
 void RecordInvalidPolicies(const std::string& policy_name) {
   const PolicyDetails* details = GetChromePolicyDetails(policy_name);
@@ -193,7 +154,7 @@ void FilterSensitivePolicies(PolicyMap* policy) {
     invalid_policies++;
   }
 #endif
-  for (const char* sensitive_policy : kSensitivePolicies) {
+  for (const char* sensitive_policy : GetSensitivePolicies()) {
     if (policy->Get(sensitive_policy)) {
       policy->GetMutable(sensitive_policy)->SetBlocked();
       invalid_policies++;
@@ -206,7 +167,7 @@ void FilterSensitivePolicies(PolicyMap* policy) {
 }
 
 bool IsPolicyNameSensitive(const std::string& policy_name) {
-  for (const char* sensitive_policy : kSensitivePolicies) {
+  for (const char* sensitive_policy : GetSensitivePolicies()) {
     if (sensitive_policy == policy_name) {
       return true;
     }

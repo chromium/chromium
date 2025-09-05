@@ -57,6 +57,7 @@ schema:
   - shortcut
   - suggest_url
   - search_url
+sensitive: true
 supported_on:
 - chrome.*:135-
 - chrome_os:135-

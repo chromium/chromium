@@ -879,6 +879,7 @@ class PolicyTemplateChecker(object):
           'default_policy_level',
           'arc_support',
           'generate_device_proto',
+          'sensitive',
       ):
         self._PolicyError(f'Unknown key: {key}', policy, key)
 
@@ -916,6 +917,9 @@ class PolicyTemplateChecker(object):
 
     # If 'generate_device_proto' is present, it must be a bool.
     self._CheckContains(policy, 'generate_device_proto', bool, True)
+
+    # If 'sensitive' is present, it must be a bool.
+    self._CheckContains(policy, 'sensitive', bool, True)
 
     if policy_type == 'group':
       # Each policy group must have a list of policies.

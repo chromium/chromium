@@ -28,5 +28,6 @@ owners:
 - esalma@google.com
 schema:
   type: boolean
+sensitive: true
 tags: []
 type: main
