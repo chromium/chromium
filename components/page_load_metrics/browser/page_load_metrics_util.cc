@@ -368,4 +368,24 @@ bool IsServiceWorkerControlled(
               kLoadingBehaviorServiceWorkerControlled) != 0;
 }
 
+bool IsServiceWorkerSyntheticResponseEnabled(
+    const PageLoadMetricsObserverDelegate& delegate) {
+  if ((delegate.GetMainFrameMetadata().behavior_flags &
+       blink::LoadingBehaviorFlag::
+           kLoadingBehaviorServiceWorkerSyntheticResponse) != 0) {
+    // TODO(crbug.com/40240298): This is added to ensure the tests correctly set
+    // expected loading behaviors. Remove this CHECK once
+    // `ControllerServiceWorkerMode` is updated.
+    CHECK(!IsServiceWorkerControlled(delegate));
+    return true;
+  }
+  return false;
+}
+
+bool IsServiceWorkerControlledOrSyntheticResponseEnabled(
+    const PageLoadMetricsObserverDelegate& delegate) {
+  return IsServiceWorkerControlled(delegate) ||
+         IsServiceWorkerSyntheticResponseEnabled(delegate);
+}
+
 }  // namespace page_load_metrics

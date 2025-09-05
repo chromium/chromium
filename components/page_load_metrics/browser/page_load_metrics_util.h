@@ -269,6 +269,16 @@ std::optional<uint32_t> GetCategoryIdFromUrl(const GURL& url);
 // Returns true if the page is controlled by a service worker.
 bool IsServiceWorkerControlled(const PageLoadMetricsObserverDelegate& delegate);
 
+// Returns true if the page is returned by a service worker synthetic response.
+//
+// TODO(crbug.com/40240298): Remove this once `ControllerServiceWorkerMode` is
+// updated. Conceptually `IsServiceWorkerControlled()` should return true when
+// the synthetic response is used. We don't need a dedicated method.
+bool IsServiceWorkerSyntheticResponseEnabled(
+    const PageLoadMetricsObserverDelegate& delegate);
+bool IsServiceWorkerControlledOrSyntheticResponseEnabled(
+    const PageLoadMetricsObserverDelegate& delegate);
+
 }  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_UTIL_H_
