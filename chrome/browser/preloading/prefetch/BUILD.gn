@@ -4,17 +4,41 @@
 
 import("//build/config/features.gni")
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "search_prefetch/search_preload_test_response_utils.cc",
+    "search_prefetch/search_preload_test_response_utils.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//net:test_support",
+  ]
+
+  deps = [ "//content/public/browser" ]
+}
+
 source_set("platform_browser_tests") {
   testonly = true
 
-  sources = [ "prefetch_browsertest.cc" ]
+  sources = [
+    "prefetch_browsertest.cc",
+    "search_prefetch/search_preload_unified_browsertest.cc",
+  ]
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
-    "//base/test:test_support",
+    ":test_support",
+    "//chrome/browser/autocomplete",
     "//chrome/browser/preloading:test_support",
+    "//chrome/browser/search_engines",
     "//chrome/test:test_support",
+    "//components/omnibox/browser",
   ]
+
   if (use_blink) {
     deps += [ "//third_party/blink/public/common:preloading_headers" ]
   }

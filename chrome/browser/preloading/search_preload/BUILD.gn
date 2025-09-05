@@ -45,6 +45,7 @@ source_set("browser_tests") {
     ":search_preload",
     "//base/test:test_support",
     "//chrome/browser/autocomplete",
+    "//chrome/browser/preloading/prefetch:test_support",
     "//chrome/browser/search_engines",
     "//chrome/test:platform_browser_tests",
     "//chrome/test:test_support",
