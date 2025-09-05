@@ -404,6 +404,7 @@ void InputRouterImpl::SetTouchActionFromMain(cc::TouchAction touch_action) {
   touch_event_queue_.StopTimeoutMonitor();
   ProcessDeferredGestureEventQueue();
   UpdateTouchAckTimeoutEnabled();
+  touch_event_queue_.OnTouchActionFromMain();
 }
 
 void InputRouterImpl::SetPanAction(blink::mojom::PanAction pan_action) {

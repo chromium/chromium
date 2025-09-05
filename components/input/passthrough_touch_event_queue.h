@@ -136,6 +136,8 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
   // events being sent to the renderer.
   void FlushQueue();
 
+  void OnTouchActionFromMain();
+
  protected:
   void SendTouchCancelEventForTouchEvent(
       const TouchEventWithLatencyInfo& event_to_cancel);
