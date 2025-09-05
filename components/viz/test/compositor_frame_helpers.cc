@@ -533,7 +533,8 @@ CompositorFrameBuilder& CompositorFrameBuilder::AddOffsetTagDefinition(
 CompositorFrameBuilder& CompositorFrameBuilder::SetValidTreesInVizTimestamps(
     base::TimeTicks now) {
   frame_->metadata.trees_in_viz_timing_details = {
-      now, now + base::Milliseconds(1), now + base::Milliseconds(2)};
+      now, now + base::Milliseconds(1), now + base::Milliseconds(2),
+      now + base::Milliseconds(3)};
   return *this;
 }
 

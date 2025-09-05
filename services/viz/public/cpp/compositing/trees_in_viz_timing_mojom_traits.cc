@@ -15,7 +15,8 @@ bool Traits::Read(viz::mojom::TreesInVizTimingDataView data,
                   viz::TreesInVizTiming* out) {
   return data.ReadStartUpdateDisplayTree(&out->start_update_display_tree) &&
          data.ReadStartPrepareToDraw(&out->start_prepare_to_draw) &&
-         data.ReadStartDrawLayers(&out->start_draw_layers);
+         data.ReadStartDrawLayers(&out->start_draw_layers) &&
+         data.ReadSubmitCompositorFrame(&out->submit_compositor_frame);
 }
 
 }  // namespace mojo

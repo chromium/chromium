@@ -2426,6 +2426,10 @@ TEST_P(CompositorFrameSinkSupportTest,
                   .at(token)
                   .start_draw_layers,
               Eq(frame_time + base::Milliseconds(2)));
+  EXPECT_THAT(fake_support_client_.all_frame_timing_details()
+                  .at(token)
+                  .submit_compositor_frame,
+              Eq(frame_time + base::Milliseconds(3)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

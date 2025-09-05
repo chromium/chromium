@@ -1036,6 +1036,8 @@ void CompositorFrameSinkSupport::DidPresentCompositorFrame(
       received_frame_timestamp->second->start_prepare_to_draw();
   details.start_draw_layers =
       received_frame_timestamp->second->start_draw_layers();
+  details.submit_compositor_frame =
+      received_frame_timestamp->second->submit_compositor_frame();
 
   pending_received_frame_times_.erase(received_frame_timestamp);
 

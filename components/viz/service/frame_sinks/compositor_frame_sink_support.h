@@ -466,6 +466,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     base::TimeTicks start_draw_layers() const {
       return trees_in_viz_timing_details_.start_draw_layers;
     }
+    base::TimeTicks submit_compositor_frame() const {
+      return trees_in_viz_timing_details_.submit_compositor_frame;
+    }
     base::TimeTicks frame_embed_timestamp() const {
       return frame_embed_timestamp_;
     }

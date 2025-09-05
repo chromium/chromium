@@ -36,6 +36,7 @@ class VIZ_COMMON_EXPORT FrameTimingDetails {
   base::TimeTicks start_update_display_tree;
   base::TimeTicks start_prepare_to_draw;
   base::TimeTicks start_draw_layers;
+  base::TimeTicks submit_compositor_frame;
 };
 
 }  // namespace viz

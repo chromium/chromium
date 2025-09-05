@@ -28,6 +28,11 @@ struct StructTraits<viz::mojom::TreesInVizTimingDataView,
     return frame_timing_details.start_draw_layers;
   }
 
+  static base::TimeTicks submit_compositor_frame(
+      const viz::TreesInVizTiming& frame_timing_details) {
+    return frame_timing_details.submit_compositor_frame;
+  }
+
   static bool Read(viz::mojom::TreesInVizTimingDataView data,
                    viz::TreesInVizTiming* out);
 };

@@ -17262,7 +17262,8 @@ TEST_P(TreesInVizServerLayerTreeHostImplTest,
   TestFrameData frame;
   frame.set_trees_in_viz_timestamps(
       {base::TimeTicks::Now(), base::TimeTicks::Now() + base::Milliseconds(1),
-       base::TimeTicks::Now() + base::Milliseconds(2)});
+       base::TimeTicks::Now() + base::Milliseconds(2),
+       base::TimeTicks::Now() + base::Milliseconds(3)});
   auto args = viz::CreateBeginFrameArgsForTesting(
       BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
       base::TimeTicks() + base::Milliseconds(1));
@@ -17287,6 +17288,8 @@ TEST_P(TreesInVizServerLayerTreeHostImplTest,
             metadata.trees_in_viz_timing_details.start_prepare_to_draw);
   EXPECT_EQ(frame.trees_in_viz_timing_details->start_draw_layers,
             metadata.trees_in_viz_timing_details.start_draw_layers);
+  EXPECT_EQ(frame.trees_in_viz_timing_details->submit_compositor_frame,
+            metadata.trees_in_viz_timing_details.submit_compositor_frame);
 }
 
 // Tests ScrollUpdate() to see if the method sets the scroll tree's currently

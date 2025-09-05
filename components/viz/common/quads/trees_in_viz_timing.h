@@ -20,6 +20,8 @@ struct VIZ_COMMON_EXPORT TreesInVizTiming {
   base::TimeTicks start_prepare_to_draw;
   // The time at which Viz has started to draw the active tree.
   base::TimeTicks start_draw_layers;
+  // The time at which Viz submitted a compositor frame to itself.
+  base::TimeTicks submit_compositor_frame;
 };
 
 }  // namespace viz

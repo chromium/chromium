@@ -1938,8 +1938,12 @@ void LayerContextImpl::DoDraw(const BeginFrameArgs& begin_frame_args,
       stage_breakdown.start_prepare_to_draw = base::TimeTicks::Now();
       host_impl_->PrepareToDraw(&frame);
       stage_breakdown.start_draw_layers = base::TimeTicks::Now();
+      std::optional<cc::SubmitInfo> submit_info =
+          host_impl_->DrawLayers(&frame);
+      if (submit_info.has_value()) {
+        stage_breakdown.submit_compositor_frame = submit_info->time;
+      }
       frame.set_trees_in_viz_timestamps(std::move(stage_breakdown));
-      host_impl_->DrawLayers(&frame);
       host_impl_->DidDrawAllLayers(frame);
       host_impl_->DidFinishImplFrame(begin_frame_args);
     }
