@@ -303,6 +303,10 @@ class WebUIBrowserWindow : public BrowserWindow,
   // Load accelerators into |accelerator_table_| and |accelerator_manager_|.
   void LoadAccelerators();
 
+  // Returns the appropriate ThemeInitializerSupplier based on the window type.
+  ui::ColorProviderKey::ThemeInitializerSupplier* GetThemeInitializerSupplier()
+      const;
+
   void OnWindowCloseRequested(views::Widget::ClosedReason close_reason);
   WebUIBrowserUI* GetWebUIBrowserUI() const;
 

@@ -93,6 +93,10 @@ source_set("impl") {
     "//ui/webui/tracked_element",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ui/ash/system_web_apps" ]
+  }
+
   if (is_mac) {
     deps += [
       "//chrome/browser/apps/app_shim",

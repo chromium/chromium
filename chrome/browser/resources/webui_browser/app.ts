@@ -11,6 +11,7 @@ import './tab_strip.js';
 import './webview.js';
 import 'chrome://resources/cr_components/searchbox/searchbox.js';
 
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {Tab} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
@@ -72,6 +73,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
 
   constructor() {
     super();
+    ColorChangeUpdater.forDocument().start();
 
     this.bookmarkBarController_ = new BookmarkBarController();
     this.tabStripController_ =

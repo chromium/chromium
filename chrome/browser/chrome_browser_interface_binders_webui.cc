@@ -1459,6 +1459,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 
   if (webui_browser::IsWebUIBrowserEnabled()) {
     registry.ForWebUI<WebUIBrowserUI>()
+        .Add<color_change_listener::mojom::PageHandler>()
         .Add<webui_browser::mojom::PageHandlerFactory>()
         .Add<bookmark_bar::mojom::PageHandlerFactory>()
         .Add<searchbox::mojom::PageHandler>()
