@@ -42,20 +42,3 @@ TEST(BrowserNonClientFrameViewMacTest, GetCenteredTitleBounds) {
     index++;
   }
 }
-
-TEST(BrowserNonClientFrameViewMacTest, GetCaptionButtonPlaceholderBounds) {
-  const gfx::Rect frame(0, 0, 800, 40);
-  const int width = 85;  // 75 + 10 (padding)
-
-  const gfx::Rect leading_bounds =
-      BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
-          frame, gfx::Insets::TLBR(0, width, 0, 0));
-  const gfx::Rect expected_leading_bounds = gfx::Rect(0, 0, 85, 40);
-  EXPECT_EQ(leading_bounds, expected_leading_bounds);
-
-  const gfx::Rect trailing_bounds =
-      BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
-          frame, gfx::Insets::TLBR(0, 0, 0, width));
-  const gfx::Rect expected_trailing_bounds = gfx::Rect(715, 0, 85, 40);
-  EXPECT_EQ(trailing_bounds, expected_trailing_bounds);
-}

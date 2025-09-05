@@ -231,7 +231,8 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
 gfx::Insets ImmersiveModeControllerMac::GetTabStripRegionViewInsets() {
   // TODO(crbug.com/40892148): Get this dynamically. Unfortunately the
   // values in BrowserNonClientFrameViewMac::GetCaptionButtonInsets don't
-  // account for a window with an NSToolbar.
+  // account for a window with an NSToolbar. (This is now done for
+  // the Mac browser frame view, but not yet here.)
   int right_left_inset = 0;
   if (@available(macOS 26, *)) {
     right_left_inset = 74;

@@ -80,11 +80,17 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   void OnPaint(gfx::Canvas* canvas) override;
   void Layout(PassKey) override;
 
+  // BrowserNonClientFrameView:
+  BoundsAndMargins GetCaptionButtonBounds() const override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewMacTest,
                            GetCenteredTitleBounds);
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewMacTest,
                            GetCaptionButtonPlaceholderBounds);
+
+  // Fetches the caption button bounds from the buttons themselves.
+  BoundsAndMargins GetCaptionButtonBoundsNative() const;
 
   // Creates an inset from the caption button size which controls for which edge
   // the captions buttons exists on. Used to position elements like the tabstrip
@@ -96,16 +102,9 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   // of the first tab. In most cases this will be zero.
   gfx::Insets GetCaptionButtonInsets(int visual_overlap = 0) const;
 
-  // Populates `bounds` with a region determined from the actual caption
-  // buttons, or returns false if the buttons cannot be retrieved.
-  bool GetCaptionButtonRegion(gfx::RectF& bounds) const;
-
   static gfx::Rect GetCenteredTitleBounds(gfx::Rect frame,
                                           gfx::Rect available_space,
                                           int preferred_title_width);
-  static gfx::Rect GetCaptionButtonPlaceholderBounds(
-      const gfx::Rect& frame,
-      const gfx::Insets& caption_button_insets);
 
   // Calculate the y offset the top UI needs to shift down due to showing the
   // slide down menu bar at the very top in full screen.

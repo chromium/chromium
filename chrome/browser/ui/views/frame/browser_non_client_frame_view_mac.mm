@@ -401,11 +401,23 @@ void BrowserNonClientFrameViewMac::PaintChildren(const views::PaintInfo& info) {
   }
 }
 
-bool BrowserNonClientFrameViewMac::GetCaptionButtonRegion(
-    gfx::RectF& bounds) const {
-  NSWindow* ns_window = GetWidget()->GetNativeWindow().GetNativeNSWindow();
+BrowserNonClientFrameViewMac::BoundsAndMargins
+BrowserNonClientFrameViewMac::GetCaptionButtonBoundsNative() const {
+  BoundsAndMargins result;
+
+  // Verify that this is not an out-of-process window.
+  const auto native_window = GetWidget()->GetNativeWindow();
+  if (auto* const host =
+          views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+              native_window);
+      host && host->application_host()) {
+    return result;
+  }
+
+  // Verify that there is a valid NSWindow.
+  NSWindow* ns_window = native_window.GetNativeNSWindow();
   if (!ns_window) {
-    return false;
+    return result;
   }
 
   // Build a list of caption button bounds.
@@ -417,7 +429,8 @@ bool BrowserNonClientFrameViewMac::GetCaptionButtonRegion(
   float max_x = 0;
   float min_y = height();
 
-  // Chrome coordinates are reversed in RTL but
+  // Chrome coordinates are reversed in RTL but not in the Mac API, so we might
+  // have to flip them.
   const bool is_rtl = base::i18n::IsRTL();
 
   // Build the list. If any of the buttons are not present or are zero size,
@@ -427,7 +440,7 @@ bool BrowserNonClientFrameViewMac::GetCaptionButtonRegion(
         [ns_window standardWindowButton:NSWindowMiniaturizeButton],
         [ns_window standardWindowButton:NSWindowZoomButton]}) {
     if (!button) {
-      return false;
+      return result;
     }
     NSRect ns_rect = [button convertRect:[button bounds] toView:nil];
 
@@ -442,7 +455,7 @@ bool BrowserNonClientFrameViewMac::GetCaptionButtonRegion(
                    ns_rect.size.width, ns_rect.size.height));
     const auto& rect = button_rects.back();
     if (rect.IsEmpty()) {
-      return false;
+      return result;
     }
     min_x = std::min(min_x, rect.x());
     max_x = std::max(max_x, rect.right());
@@ -455,41 +468,48 @@ bool BrowserNonClientFrameViewMac::GetCaptionButtonRegion(
       CaptionButtonsOnLeadingEdge() ? min_x : width() - max_x;
 
   // Accumulate the button bounds.
-  bounds = gfx::RectF();
   for (const auto& rect : button_rects) {
-    bounds.Union(rect);
+    result.bounds.Union(rect);
   }
 
   // Apply the margins on the exterior of the region, so that the padding around
   // the buttons appears visually symmetrical.
-  bounds.Outset(gfx::OutsetsF::VH(block_margin, inline_margin));
+  result.margins = gfx::OutsetsF::VH(block_margin, inline_margin);
 
-  return true;
+  return result;
+}
+
+BrowserNonClientFrameViewMac::BoundsAndMargins
+BrowserNonClientFrameViewMac::GetCaptionButtonBounds() const {
+  BoundsAndMargins result = GetCaptionButtonBoundsNative();
+  if (!result.bounds.IsEmpty()) {
+    return result;
+  }
+
+  // If that doesn't work, fall back to some hard-coded constants.
+  //
+  // These are empirically determined; feel free to change them if they're
+  // not precise.
+  if (@available(macOS 26, *)) {
+    result.bounds = gfx::RectF(12, 11.5f, 62, 18);
+    result.margins = gfx::OutsetsF::VH(11.5f, 12);
+  } else {
+    result.bounds = gfx::RectF(20, 12.5f, 54, 16);
+    result.margins = gfx::OutsetsF::VH(12.5f, 20);
+  }
+
+  return result;
 }
 
 // LINT.IfChange(MacTabStripInsets)
 gfx::Insets BrowserNonClientFrameViewMac::GetCaptionButtonInsets(
     int visual_overlap) const {
-  int button_total_width;
-
-  // Attempt to get bounds from the buttons themselves.
-  gfx::RectF button_extents;
-  if (GetCaptionButtonRegion(button_extents)) {
-    // This only works because the caption button region is always aligned with
-    // the edge of the container.
-    button_total_width = base::ClampRound(button_extents.width());
-  } else {
-    // If that doesn't work, fall back to some hard-coded constants.
-    if (@available(macOS 26, *)) {
-      button_total_width = 86;
-    } else {
-      button_total_width = 92;
-    }
-  }
+  const gfx::Rect bounds = GetCaptionButtonBounds().ToEnclosingRect();
+  int caption_button_inset =
+      CaptionButtonsOnLeadingEdge() ? bounds.right() : width() - bounds.x();
 
   // Subtract out the overlap, if any.
-  const int caption_button_inset =
-      std::max(0, button_total_width - visual_overlap);
+  caption_button_inset = std::max(0, caption_button_inset - visual_overlap);
 
   // Which side the inset goes on depends on which side the caption buttons are
   // on.
@@ -526,7 +546,7 @@ void BrowserNonClientFrameViewMac::Layout(PassKey) {
   if (browser_view()->IsWindowControlsOverlayEnabled()) {
     LayoutWindowControlsOverlay();
   }
-  LayoutSuperclass<NonClientFrameView>(this);
+  LayoutSuperclass<BrowserNonClientFrameView>(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -589,35 +609,16 @@ int BrowserNonClientFrameViewMac::TopUIFullscreenYOffset() const {
          (menu_bar_height + title_bar_height);
 }
 
-gfx::Rect BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
-    const gfx::Rect& frame,
-    const gfx::Insets& caption_button_insets) {
-  DCHECK(caption_button_insets.left() == 0 ||
-         caption_button_insets.right() == 0);
-  gfx::Rect non_caption_bounds = frame;
-  non_caption_bounds.Inset(caption_button_insets);
-  gfx::Rect bounds = frame;
-  bounds.Subtract(non_caption_bounds);
-  return bounds;
-}
-
 void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
-  int frame_available_height =
+  const int frame_available_height =
       browser_view()->GetWebAppFrameToolbarPreferredSize().height() +
       2 * kWebAppMenuMargin;
-  gfx::Rect frame_available_bounds(0, 0, width(), frame_available_height);
-
-  // Pad the width of caption_button_placeholder_container so the button on the
-  // inner edge doesn't look like it's touching the overlay, but rather has a
-  // little bit of space between them.
-  gfx::Insets caption_button_insets = GetCaptionButtonInsets();
-  gfx::Rect caption_button_container_bounds = GetCaptionButtonPlaceholderBounds(
-      frame_available_bounds, caption_button_insets);
+  gfx::Rect container_bounds = GetCaptionButtonBounds().ToEnclosingRect();
+  container_bounds.set_height(frame_available_height);
 
   // Layout CaptionButtonPlaceholderContainer which would have the traffic
   // lights.
-  caption_button_placeholder_container_->SetBoundsRect(
-      caption_button_container_bounds);
+  caption_button_placeholder_container_->SetBoundsRect(container_bounds);
 }
 
 void BrowserNonClientFrameViewMac::

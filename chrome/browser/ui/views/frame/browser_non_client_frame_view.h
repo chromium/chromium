@@ -273,6 +273,9 @@ class BrowserNonClientFrameView : public views::NonClientFrameView {
     gfx::RectF bounds;
     // The preferred margins around `bounds`.
     gfx::OutsetsF margins;
+
+    // Returns the rectangle that contains `bounds` with `margins`.
+    gfx::Rect ToEnclosingRect() const;
   };
 
   // Gets the bounds of the caption buttons, and their required margins if any.

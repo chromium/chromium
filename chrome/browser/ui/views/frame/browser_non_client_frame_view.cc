@@ -33,6 +33,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -105,6 +106,12 @@ class ShowBrowserFrameRegionsView : public views::View {
 BEGIN_METADATA(ShowBrowserFrameRegionsView)
 END_METADATA
 }  // namespace
+
+gfx::Rect BrowserNonClientFrameView::BoundsAndMargins::ToEnclosingRect() const {
+  gfx::RectF temp = bounds;
+  temp.Outset(margins);
+  return gfx::ToEnclosingRect(temp);
+}
 
 BrowserNonClientFrameView::BrowserNonClientFrameView(BrowserFrame* frame,
                                                      BrowserView* browser_view)
