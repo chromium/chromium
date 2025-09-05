@@ -30,6 +30,6 @@ IOSChromeLargeIconCacheFactory::~IOSChromeLargeIconCacheFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSChromeLargeIconCacheFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<LargeIconCache>();
 }

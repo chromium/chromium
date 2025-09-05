@@ -25,7 +25,7 @@ class IOSChromeLargeIconServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the default factory used to build LargeIconServices. Can be
   // registered with AddTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<IOSChromeLargeIconServiceFactory>;
@@ -33,9 +33,9 @@ class IOSChromeLargeIconServiceFactory : public ProfileKeyedServiceFactoryIOS {
   IOSChromeLargeIconServiceFactory();
   ~IOSChromeLargeIconServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_LARGE_ICON_SERVICE_FACTORY_H_

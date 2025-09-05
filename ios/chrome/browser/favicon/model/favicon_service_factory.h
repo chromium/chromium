@@ -25,7 +25,7 @@ class FaviconServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static FaviconServiceFactory* GetInstance();
   // Returns the default factory used to build FaviconService. Can be
   // registered with AddTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<FaviconServiceFactory>;
@@ -33,9 +33,9 @@ class FaviconServiceFactory : public ProfileKeyedServiceFactoryIOS {
   FaviconServiceFactory();
   ~FaviconServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

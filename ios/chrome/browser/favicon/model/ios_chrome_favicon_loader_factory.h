@@ -21,7 +21,7 @@ class IOSChromeFaviconLoaderFactory : public ProfileKeyedServiceFactoryIOS {
   static IOSChromeFaviconLoaderFactory* GetInstance();
   // Returns the default factory used to build FaviconLoader. Can be registered
   // with SetTestingFactory to use the FaviconService instance during testing.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<IOSChromeFaviconLoaderFactory>;
@@ -29,9 +29,9 @@ class IOSChromeFaviconLoaderFactory : public ProfileKeyedServiceFactoryIOS {
   IOSChromeFaviconLoaderFactory();
   ~IOSChromeFaviconLoaderFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_FAVICON_LOADER_FACTORY_H_
