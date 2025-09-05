@@ -3546,10 +3546,6 @@ const char kRcapsDynamicProfileCountryDescription[] =
     "When enabled, Chrome updates the country associated with "
     "the profile on open";
 
-const char kRustyPngName[] = "Rust-based PNG image handling";
-const char kRustyPngDescription[] =
-    "When enabled, uses Rust `png` crate to decode and encode PNG images.";
-
 const char kQuicName[] = "Experimental QUIC protocol";
 const char kQuicDescription[] = "Enable experimental QUIC protocol support.";
 

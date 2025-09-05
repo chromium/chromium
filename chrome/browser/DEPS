@@ -591,7 +591,6 @@ specific_include_rules = {
     "+components/stylus_handwriting/win/features.h",
     "+mojo/core/embedder/features.h",
     "+sandbox/policy/features.h",
-    "+skia/rusty_png_feature.h",
   ],
   r"dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
     "+dbus",

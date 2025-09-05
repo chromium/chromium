@@ -20,27 +20,20 @@ struct Options;
 
 namespace skia {
 
-// Exposing the feature so that chrome://flags and tests can inspect it and turn
-// it on/off, but product code should instead just call `IsRustyPngEnabled`.
-SK_API BASE_DECLARE_FEATURE(kRustyPngFeature);
-
 // Returns true if Rust should be used for PNG decoding.
 //
 // See also  https://crbug.com/40278281 and the "Rollout plan" in
 // https://docs.google.com/document/d/1glx5ue5JDlCld5WzWgTOGK3wsMErQFnkY5N5Dsbi91Y
 inline bool IsRustyPngEnabled() {
-  return base::FeatureList::IsEnabled(kRustyPngFeature);
+  return true;
 }
 
-// A helper that will encode a PNG image using either the `libpng`-based
-// `SkPngEncoder::Encode` API, or (if `kRustyPngFeature` is built and enabled)
-// the Rust-based `SkPngRustEncoder::Encode` API.
+// A helper that will encode a PNG image.
 SK_API bool EncodePng(SkWStream* dst,
                       const SkPixmap& src,
                       const SkPngEncoder::Options& options);
 
-// A helper that will create either a `libpng`-based, or a Rust-based PNG
-// encoder (depending on whether the `kRustyPngFeature` is built and enabled).
+// A helper that will create a PNG encoder.
 SK_API std::unique_ptr<SkEncoder> MakePngEncoder(
     SkWStream* dst,
     const SkPixmap& src,

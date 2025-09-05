@@ -912,8 +912,6 @@ public final class ProductionSupportedFlagList {
                 "Ignore duplicate navigations, keeping the older navigations instead."),
         Flag.baseFeature("OverrideAPIKey"),
         Flag.baseFeature(
-                "RustyPng", "When enabled, uses Rust `png` crate to decode and encode PNG images."),
-        Flag.baseFeature(
                 BlinkFeatures.ESCAPE_LT_GT_IN_ATTRIBUTES,
                 "When enabled, less-than and greater-than characters in attributes are escaped."),
         Flag.baseFeature("CacheStylusSettings", "Cache stylus related settings."),

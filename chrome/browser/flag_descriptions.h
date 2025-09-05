@@ -2040,9 +2040,6 @@ extern const char kDeviceBoundSessionAccessObserverSharedRemoteDescription[];
 extern const char kRcapsDynamicProfileCountryName[];
 extern const char kRcapsDynamicProfileCountryDescription[];
 
-extern const char kRustyPngName[];
-extern const char kRustyPngDescription[];
-
 extern const char kQuicName[];
 extern const char kQuicDescription[];
 
