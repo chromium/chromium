@@ -75,25 +75,12 @@ class ConsentAuditor : public KeyedService {
       const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::SyncConsent& consent) = 0;
 
-  // Records the Assistant activity control |consent| for the signed-in GAIA
-  // account with the ID |gaia_id| (as defined in Account Info).
-  virtual void RecordAssistantActivityControlConsent(
-      const GaiaId& gaia_id,
-      const sync_pb::UserConsentTypes::AssistantActivityControlConsent&
-          consent) = 0;
-
   // Records the Recorder app speaker label |consent| for the signed-in GAIA
   // account with the ID |gaia_id| (as defined in Account Info).
   virtual void RecordRecorderSpeakerLabelConsent(
       const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent&
           consent) = 0;
-
-  // Records the |consent| to download and use passwords from the signed-in GAIA
-  // account with the ID |gaia_id| (as defined in AccountInfo).
-  virtual void RecordAccountPasswordsConsent(
-      const GaiaId& gaia_id,
-      const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) = 0;
 
   // Returns the underlying Sync integration point.
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>

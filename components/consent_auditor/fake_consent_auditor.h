@@ -43,14 +43,6 @@ class FakeConsentAuditor : public ConsentAuditor {
       RecordArcGoogleLocationServiceConsent,
       void(const GaiaId&,
            const sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent&));
-  void RecordAssistantActivityControlConsent(
-      const GaiaId& gaia_id,
-      const sync_pb::UserConsentTypes::AssistantActivityControlConsent& consent)
-      override;
-  void RecordAccountPasswordsConsent(
-      const GaiaId& gaia_id,
-      const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent)
-      override;
   MOCK_METHOD2(
       RecordRecorderSpeakerLabelConsent,
       void(const GaiaId&,

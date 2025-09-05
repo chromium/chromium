@@ -56,9 +56,10 @@ message UserConsentSpecifics {
     UserConsentTypes.UnifiedConsent unified_consent = 13 [deprecated = true];
 
     UserConsentTypes.AssistantActivityControlConsent
-        assistant_activity_control_consent = 14;
+        assistant_activity_control_consent = 14 [deprecated = true];
 
-    UserConsentTypes.AccountPasswordsConsent account_passwords_consent = 15;
+    UserConsentTypes.AccountPasswordsConsent account_passwords_consent = 15
+        [deprecated = true];
 
     UserConsentTypes.RecorderSpeakerLabelConsent
         recorder_speaker_label_consent = 17;
