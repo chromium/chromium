@@ -134,7 +134,7 @@ typedef int            FcBool;
 #define FC_NAMED_INSTANCE       "namedinstance"  /* Bool - true if font is named instance */
 #define FC_FONT_WRAPPER         "fontwrapper"    /* String */
 
-#define FC_CACHE_SUFFIX         ".cache-" FC_CACHE_VERSION
+#define FC_CACHE_SUFFIX         ".cache-reindex1-" FC_CACHE_VERSION
 #define FC_DIR_CACHE_FILE       "fonts.cache-" FC_CACHE_VERSION
 #define FC_USER_CACHE_FILE      ".fonts.cache-" FC_CACHE_VERSION
 
