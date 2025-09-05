@@ -45,6 +45,7 @@ def add_to_zip_hermetic(zip_file,
                         src_path=None,
                         data=None,
                         compress=None,
+                        compress_level=1,
                         alignment=None,
                         timestamp=None):
   """Adds a file to the given ZipFile with a hard-coded modified time.
@@ -56,6 +57,7 @@ def add_to_zip_hermetic(zip_file,
     data: File data as a string.
     compress: Whether to enable compression. Default is taken from ZipFile
         constructor.
+    compress_level: When compress=True, level of compression.
     alignment: If set, align the data of the entry to this many bytes.
     timestamp: The last modification date and time for the archive member.
   """
@@ -109,7 +111,7 @@ def add_to_zip_hermetic(zip_file,
   compress_type = zip_file.compression
   if compress is not None:
     compress_type = zipfile.ZIP_DEFLATED if compress else zipfile.ZIP_STORED
-  zip_file.writestr(zipinfo, data, compress_type)
+  zip_file.writestr(zipinfo, data, compress_type, compresslevel=compress_level)
 
 
 def add_files_to_zip(inputs,
@@ -118,6 +120,7 @@ def add_files_to_zip(inputs,
                      base_dir=None,
                      path_transform=None,
                      compress=None,
+                     compress_level=1,
                      zip_prefix_path=None,
                      timestamp=None):
   """Creates a zip file from a list of files.
@@ -129,6 +132,7 @@ def add_files_to_zip(inputs,
     path_transform: Called for each entry path. Returns a new zip path, or None
         to skip the file.
     compress: Whether to compress
+    compress_level: When compress=True, level of compression.
     zip_prefix_path: Path prepended to file path in zip file.
     timestamp: Unix timestamp to use for files in the archive.
   """
@@ -164,6 +168,7 @@ def add_files_to_zip(inputs,
                           zip_path,
                           src_path=fs_path,
                           compress=compress,
+                          compress_level=compress_level,
                           timestamp=timestamp)
   finally:
     if output is not out_zip:
@@ -180,7 +185,11 @@ def zip_directory(output, base_dir, **kwargs):
   add_files_to_zip(inputs, output, base_dir=base_dir, **kwargs)
 
 
-def merge_zips(output, input_zips, path_transform=None, compress=None):
+def merge_zips(output,
+               input_zips,
+               path_transform=None,
+               compress=None,
+               compress_level=1):
   """Combines all files from |input_zips| into |output|.
 
   Args:
@@ -189,6 +198,7 @@ def merge_zips(output, input_zips, path_transform=None, compress=None):
     path_transform: Called for each entry path. Returns a new zip path, or None
         to skip the file.
     compress: Overrides compression setting from origin zip entries.
+    compress_level: When compress=True, level of compression.
   """
   assert not isinstance(input_zips, str)  # Easy mistake to make.
   if isinstance(output, zipfile.ZipFile):
@@ -238,7 +248,8 @@ Input2: {in_file}"""
           add_to_zip_hermetic(out_zip,
                               dst_name,
                               data=data,
-                              compress=compress_entry)
+                              compress=compress_entry,
+                              compress_level=compress_level)
           crc_by_name[dst_name] = (in_file, out_zip.getinfo(dst_name).CRC)
   finally:
     if output is not out_zip:

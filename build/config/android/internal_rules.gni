@@ -2740,7 +2740,6 @@ if (enable_java_templates) {
     }
     if (!_is_robolectric_apk) {
       _apksigner = "$android_sdk_build_tools/lib/apksigner.jar"
-      _zipalign = "$android_sdk_build_tools/zipalign"
       _keystore_path = android_keystore_path
       _keystore_name = android_keystore_name
       _keystore_password = android_keystore_password
@@ -2753,14 +2752,11 @@ if (enable_java_templates) {
 
       _inputs += [
         _apksigner,
-        _zipalign,
         _keystore_path,
       ]
       _args += [
         "--apksigner-jar",
         rebase_path(_apksigner, root_build_dir),
-        "--zipalign-path",
-        rebase_path(_zipalign, root_build_dir),
         "--key-path",
         rebase_path(_keystore_path, root_build_dir),
         "--key-name",
@@ -4487,12 +4483,11 @@ template("create_android_app_bundle_module") {
   _script = "//build/android/gyp/apkbuilder.py"
 
   # NOTE: Compared to the inputs of the "package_apk" template action,
-  #       this list is much smaller, since finalize_apk is never called
-  #       by apkbuild.py --format=bundle-module. This means not using
-  #       apksigner and zipalign as well, nor the keystore. Other
-  #       dependencies like extra native libraries are all pulled from the
-  #       .build_config.json through @FileArg() references (see below) and
-  #       will be listed in the generated depfile instead.
+  #       this list is much smaller, since ApkSigner is never called
+  #       by apkbuilder.py --format=bundle-module. Other dependencies like
+  #       extra native libraries are all pulled from the .build_config.json
+  #       through @FileArg() references (see below) and will be listed in the
+  #       generated depfile instead.
   _inputs = [
     invoker.build_config,
     invoker.app_bundle_build_config,
