@@ -569,6 +569,10 @@ void ThemeService::SetBrowserColorScheme(
     ThemeService::BrowserColorScheme color_scheme) {
   {
     base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
+    if (UsingSystemTheme() &&
+        color_scheme != ThemeService::BrowserColorScheme::kSystem) {
+      SwapThemeSupplier(nullptr);
+    }
     profile_->GetPrefs()->SetInteger(prefs::kBrowserColorScheme,
                                      static_cast<int>(color_scheme));
   }
