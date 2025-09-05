@@ -504,4 +504,20 @@ TEST_F(TileDisplayLayerImplTest, AppendsQuadsFromIdealResolutionTiling) {
   EXPECT_EQ(render_pass->quad_list.front()->resource_id, low_res_resource_id);
 }
 
+// Verifies that RemoveTiling correctly removes a tiling.
+TEST_F(TileDisplayLayerImplTest, RemoveTilingRemovesTiling) {
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  // Add a tiling.
+  raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  EXPECT_NE(raw_layer->GetTilingForTesting(1.0), nullptr);
+
+  // Remove the tiling.
+  raw_layer->RemoveTiling(1.0);
+  EXPECT_EQ(raw_layer->GetTilingForTesting(1.0), nullptr);
+}
+
 }  // namespace cc
