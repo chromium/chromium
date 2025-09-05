@@ -92,6 +92,7 @@ public class BookmarkBarCoordinator
     // to setting visibility directly on |mView| because we need to differentiate the Android
     // widgets from the bookmark bar in general.
     private boolean mShouldBookmarkBarBeShown;
+    private boolean mIsInFullscreenMode;
 
     /**
      * Constructs the bookmark bar coordinator.
@@ -132,6 +133,7 @@ public class BookmarkBarCoordinator
         mResourceManager = resourceManager;
         mFullscreenManager = fullscreenManager;
         mFullscreenManager.addObserver(this);
+        mIsInFullscreenMode = false;
 
         mView = (BookmarkBar) viewStub.inflate();
         mViewResourceFrameLayout = mView.findViewById(R.id.bookmark_bar_view_resource_frame_layout);
@@ -330,8 +332,19 @@ public class BookmarkBarCoordinator
      */
     public void setVisibility(boolean isVisible) {
         mShouldBookmarkBarBeShown = isVisible;
-        mMediator.setVisibility(isVisible);
-        mBookmarkBarSceneLayer.setVisibility(isVisible);
+
+        // We only set the visibility to true when the bookmark bar should be visible to the user,
+        // and when the top controls have not been scrolled offscreen, otherwise the user will see
+        // the bookmark bar if they enabled it while scrolled offscreen or in fullscreen mode.
+        mMediator.setVisibility(
+                mShouldBookmarkBarBeShown
+                        && !mIsInFullscreenMode
+                        && mBrowserControlsStateProvider.getTopControlOffset() == 0);
+        mBookmarkBarSceneLayer.setVisibility(
+                mShouldBookmarkBarBeShown
+                        && !mIsInFullscreenMode
+                        && mBrowserControlsStateProvider.getTopControlOffset() == 0);
+
         if (!isVisible) {
             unregisterResource();
         } else {
@@ -372,11 +385,13 @@ public class BookmarkBarCoordinator
 
     @Override
     public int getTopControlVisibility() {
-        // This could always return TopControlVisibility.VISIBLE assuming that on all visibility
-        // changes {@link TabbedRootUiCoordinator#destroyBookmarkBarIfNecessary} is called,
-        // but for correctness we will check view visibility just in case.
+        // We always want the bookmark bar to contribute to total height if it exists, otherwise
+        // we can end up in a state where we have not taken it into account (e.g. the bookmark bar
+        // is toggled on while top controls are scrolled off screen, so the view is still not
+        // visible, but we need an updated top controls height for when the top controls are
+        // scrolled back on screen).
         // TODO(crbug.com/417238089): Possibly add way to notify stacker of visibility changes.
-        return mView != null && mView.getVisibility() == VISIBLE
+        return mShouldBookmarkBarBeShown
                 ? TopControlVisibility.VISIBLE
                 : TopControlVisibility.HIDDEN;
     }
@@ -451,11 +466,15 @@ public class BookmarkBarCoordinator
             boolean isVisibilityForced) {
         // When the top controls offset has changed to a non-zero value, it means that the top
         // controls are scrolling offscreen (or still coming back onscreen). When in this state,
-        // we want to hide the Android widgets (which are controlled by the Mediator). We do not
-        // also set the sceneLayer visibility here because we want that to be what is shown.
+        // we want to hide the Android widgets (which are controlled by the Mediator). We can always
+        // make the SceneLayer visible, except when in full screen, which will account for cases
+        // when the bookmark bar is enabled while top controls are offscreen. A change in either the
+        // top or bottom controls heights may require resizing the anchored pop-up view if it is
+        // visible, so we provide those updated values as well.
         mMediator.setVisibility(
                 mShouldBookmarkBarBeShown
                         && mBrowserControlsStateProvider.getTopControlOffset() == 0);
+        mBookmarkBarSceneLayer.setVisibility(mShouldBookmarkBarBeShown && !mIsInFullscreenMode);
         mMediator.onBrowserControlsChanged(
                 mBrowserControlsStateProvider.getTopControlsHeight(),
                 mBrowserControlsStateProvider.getBottomControlsHeight());
@@ -498,6 +517,7 @@ public class BookmarkBarCoordinator
     @Override
     public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
         // When fullscreen mode is entered, we need to hide the scene layer.
+        mIsInFullscreenMode = true;
         mBookmarkBarSceneLayer.setVisibility(false);
     }
 
@@ -506,6 +526,7 @@ public class BookmarkBarCoordinator
         // When fullscreen mode is exited, we need to make the scene layer visible again, if needed.
         // It is possible that the bookmarks bar was turned off while in fullscreen mode, so we
         // don't force this to true, but use the current state instead.
+        mIsInFullscreenMode = false;
         mBookmarkBarSceneLayer.setVisibility(mShouldBookmarkBarBeShown);
     }
 
@@ -560,7 +581,7 @@ public class BookmarkBarCoordinator
     private static class BookmarkButtonItemAnimator extends DefaultItemAnimator {
         private final Runnable mPostAnimationRunnable;
 
-        public BookmarkButtonItemAnimator(Runnable mPostAnimationRunnable) {
+        BookmarkButtonItemAnimator(Runnable mPostAnimationRunnable) {
             this.mPostAnimationRunnable = mPostAnimationRunnable;
         }
 
