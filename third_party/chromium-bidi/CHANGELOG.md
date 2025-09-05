@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v8.0.0...chromium-bidi-v8.1.0) (2025-09-03)
+
+
+### Features
+
+* do not dispose request until all the collectors are gone ([#3669](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3669)) ([909176c](https://github.com/GoogleChromeLabs/chromium-bidi/commit/909176cb4bbc763524ae8efb6458ed005f5a9487))
+
+
+### Bug Fixes
+
+* support network.getData on OOPiF ([#3674](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3674)) ([403dc7c](https://github.com/GoogleChromeLabs/chromium-bidi/commit/403dc7cacf59aecede1e68e6fae61b6edeaacdaa))
+
 ## [8.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v7.3.2...chromium-bidi-v8.0.0) (2025-08-13)
 
 
