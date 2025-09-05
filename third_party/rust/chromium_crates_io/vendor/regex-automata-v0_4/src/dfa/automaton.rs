@@ -2202,7 +2202,7 @@ where
 ///
 /// Specifically, this tries to succinctly distinguish the different types of
 /// states: dead states, quit states, accelerated states, start states and
-/// match states. It even accounts for the possible overlappings of different
+/// match states. It even accounts for the possible overlapping of different
 /// state types.
 pub(crate) fn fmt_state_indicator<A: Automaton>(
     f: &mut core::fmt::Formatter<'_>,

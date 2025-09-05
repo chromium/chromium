@@ -926,7 +926,7 @@ impl<'a> InternalBuilder<'a> {
 ///
 /// A one-pass DFA can be built from an NFA that is one-pass. An NFA is
 /// one-pass when there is never any ambiguity about how to continue a search.
-/// For example, `a*a` is not one-pass becuase during a search, it's not
+/// For example, `a*a` is not one-pass because during a search, it's not
 /// possible to know whether to continue matching the `a*` or to move on to
 /// the single `a`. However, `a*b` is one-pass, because for every byte in the
 /// input, it's always clear when to move on from `a*` to `b`.

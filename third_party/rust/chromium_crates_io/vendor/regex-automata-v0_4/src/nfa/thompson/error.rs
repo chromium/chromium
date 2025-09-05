@@ -13,7 +13,7 @@ use crate::util::{
 /// method via the `std::error::Error` trait. This error only occurs when using
 /// convenience routines for building an NFA directly from a pattern string.
 ///
-/// Otherwise, errors typically occur when a limit has been breeched. For
+/// Otherwise, errors typically occur when a limit has been breached. For
 /// example, if the total heap usage of the compiled NFA exceeds the limit
 /// set by [`Config::nfa_size_limit`](crate::nfa::thompson::Config), then
 /// building the NFA will fail.

@@ -466,7 +466,7 @@ impl<'a> Runner<'a> {
     ) -> Result<(StateID, bool), BuildError> {
         // Compute the look-behind assertions that are true in this starting
         // configuration, and the determine the epsilon closure. While
-        // computing the epsilon closure, we only follow condiional epsilon
+        // computing the epsilon closure, we only follow conditional epsilon
         // transitions that satisfy the look-behind assertions in 'look_have'.
         let mut builder_matches = self.get_state_builder().into_matches();
         util::determinize::set_lookbehind_from_start(

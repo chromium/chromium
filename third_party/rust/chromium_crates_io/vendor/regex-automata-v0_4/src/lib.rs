@@ -451,6 +451,10 @@ useful in trying to understand what the meta regex engine is doing.
 
 ### Performance features
 
+**Note**:
+  To get performance benefits offered by the SIMD, `std` must be enabled.
+  None of the `perf-*` features will enable `std` implicitly.
+
 * **perf** - Enables all of the below features.
 * **perf-inline** - When enabled, `inline(always)` is used in (many) strategic
 locations to help performance at the expense of longer compile times and

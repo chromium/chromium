@@ -1,10 +1,11 @@
 [package]
 name = "regex-automata"
-version = "0.4.9"  #:version
+version = "0.4.10"  #:version
 authors = ["The Rust Project Developers", "Andrew Gallant <jamslam@gmail.com>"]
 description = "Automata construction and matching using regular expressions."
 documentation = "https://docs.rs/regex-automata"
-repository = "https://github.com/rust-lang/regex/tree/master/regex-automata"
+homepage = "https://github.com/rust-lang/regex/tree/master/regex-automata"
+repository = "https://github.com/rust-lang/regex"
 readme = "README.md"
 keywords = ["regex", "dfa", "automata", "automaton", "nfa"]
 license = "MIT OR Apache-2.0"
@@ -44,7 +45,7 @@ perf = ["perf-inline", "perf-literal"]
 perf-inline = []
 perf-literal = ["perf-literal-substring", "perf-literal-multisubstring"]
 perf-literal-substring = ["aho-corasick?/perf-literal", "dep:memchr"]
-perf-literal-multisubstring = ["std", "dep:aho-corasick"]
+perf-literal-multisubstring = ["dep:aho-corasick"]
 
 # Enables all Unicode features. This expands if new Unicode features are added.
 unicode = [

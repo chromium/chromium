@@ -115,7 +115,7 @@ pub(crate) struct State(Arc<[u8]>);
 /// without having to convert it into a State first.
 impl core::borrow::Borrow<[u8]> for State {
     fn borrow(&self) -> &[u8] {
-        &*self.0
+        &self.0
     }
 }
 
@@ -177,7 +177,7 @@ impl State {
     }
 
     fn repr(&self) -> Repr<'_> {
-        Repr(&*self.0)
+        Repr(&self.0)
     }
 }
 
@@ -461,7 +461,7 @@ impl<'a> Repr<'a> {
     /// If this state is not a match state, then this always returns 0.
     fn match_len(&self) -> usize {
         if !self.is_match() {
-            return 0;
+            0
         } else if !self.has_pattern_ids() {
             1
         } else {
@@ -772,7 +772,7 @@ fn write_varu32(data: &mut Vec<u8>, mut n: u32) {
 ///
 /// https://developers.google.com/protocol-buffers/docs/encoding#varints
 fn read_varu32(data: &[u8]) -> (u32, usize) {
-    // N.B. We can assume correctness here since we know that all varuints are
+    // N.B. We can assume correctness here since we know that all var-u32 are
     // written with write_varu32. Hence, the 'as' uses and unchecked arithmetic
     // is all okay.
     let mut n: u32 = 0;

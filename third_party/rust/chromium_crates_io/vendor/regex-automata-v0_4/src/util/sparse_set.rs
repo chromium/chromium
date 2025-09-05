@@ -19,7 +19,7 @@ use alloc::{vec, vec::Vec};
 
 use crate::util::primitives::StateID;
 
-/// A pairse of sparse sets.
+/// A pair of sparse sets.
 ///
 /// This is useful when one needs to compute NFA epsilon closures from a
 /// previous set of states derived from an epsilon closure. One set can be the
@@ -85,7 +85,7 @@ impl SparseSets {
 ///
 /// The data structure is based on: https://research.swtch.com/sparse
 /// Note though that we don't actually use uninitialized memory. We generally
-/// reuse sparse sets, so the initial allocation cost is bareable. However, its
+/// reuse sparse sets, so the initial allocation cost is bearable. However, its
 /// other properties listed above are extremely useful.
 #[derive(Clone)]
 pub(crate) struct SparseSet {
@@ -129,7 +129,7 @@ impl SparseSet {
     pub(crate) fn resize(&mut self, new_capacity: usize) {
         assert!(
             new_capacity <= StateID::LIMIT,
-            "sparse set capacity cannot excced {:?}",
+            "sparse set capacity cannot exceed {:?}",
             StateID::LIMIT
         );
         self.clear();
@@ -234,6 +234,6 @@ impl<'a> Iterator for SparseSetIter<'a> {
 
     #[cfg_attr(feature = "perf-inline", inline(always))]
     fn next(&mut self) -> Option<StateID> {
-        self.0.next().map(|&id| id)
+        self.0.next().copied()
     }
 }

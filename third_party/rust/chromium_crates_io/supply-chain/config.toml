@@ -317,7 +317,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."read-fonts:0.34.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."regex-automata:0.4.9"]
+[policy."regex-automata:0.4.10"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."regex-syntax:0.8.5"]

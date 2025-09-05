@@ -2469,6 +2469,19 @@ impl<'a> DFA<&'a [u32]> {
     }
 }
 
+/// Other routines that work for all `T`.
+impl<T> DFA<T> {
+    /// Set or unset the prefilter attached to this DFA.
+    ///
+    /// This is useful when one has deserialized a DFA from `&[u8]`.
+    /// Deserialization does not currently include prefilters, so if you
+    /// want prefilter acceleration, you'll need to rebuild it and attach
+    /// it here.
+    pub fn set_prefilter(&mut self, prefilter: Option<Prefilter>) {
+        self.pre = prefilter
+    }
+}
+
 // The following methods implement mutable routines on the internal
 // representation of a DFA. As such, we must fix the first type parameter to a
 // `Vec<u32>` since a generic `T: AsRef<[u32]>` does not permit mutation. We
@@ -2810,7 +2823,7 @@ impl OwnedDFA {
         }
 
         // Collect all our non-DEAD start states into a convenient set and
-        // confirm there is no overlap with match states. In the classicl DFA
+        // confirm there is no overlap with match states. In the classical DFA
         // construction, start states can be match states. But because of
         // look-around, we delay all matches by a byte, which prevents start
         // states from being match states.
@@ -3461,7 +3474,7 @@ impl TransitionTable<Vec<u32>> {
         // Normally, to get a fresh state identifier, we would just
         // take the index of the next state added to the transition
         // table. However, we actually perform an optimization here
-        // that premultiplies state IDs by the stride, such that they
+        // that pre-multiplies state IDs by the stride, such that they
         // point immediately at the beginning of their transitions in
         // the transition table. This avoids an extra multiplication
         // instruction for state lookup at search time.
@@ -4515,7 +4528,7 @@ impl<T: AsRef<[u32]>> MatchStates<T> {
         + (self.pattern_ids().len() * PatternID::SIZE)
     }
 
-    /// Valides that the match state info is itself internally consistent and
+    /// Validates that the match state info is itself internally consistent and
     /// consistent with the recorded match state region in the given DFA.
     fn validate(&self, dfa: &DFA<T>) -> Result<(), DeserializeError> {
         if self.len() != dfa.special.match_len(dfa.stride()) {
@@ -4773,7 +4786,7 @@ impl<'a, T: AsRef<[u32]>> Iterator for StateIter<'a, T> {
 
 /// An immutable representation of a single DFA state.
 ///
-/// `'a` correspondings to the lifetime of a DFA's transition table.
+/// `'a` corresponding to the lifetime of a DFA's transition table.
 pub(crate) struct State<'a> {
     id: StateID,
     stride2: usize,

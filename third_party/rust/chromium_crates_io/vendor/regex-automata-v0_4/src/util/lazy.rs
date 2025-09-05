@@ -122,7 +122,7 @@ mod lazy {
         create: F,
         // This indicates to the compiler that this type can drop T. It's not
         // totally clear how the absence of this marker could lead to trouble,
-        // but putting here doesn't have any downsides so we hedge until somone
+        // but putting here doesn't have any downsides so we hedge until someone
         // can from the Unsafe Working Group can tell us definitively that we
         // don't need it.
         //

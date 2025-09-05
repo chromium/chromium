@@ -271,7 +271,7 @@ memory.) Conversely, compiling the same regex without Unicode support, e.g.,
 `(?-u)\w{50}`, takes under 1 millisecond and about 15KB of memory. For this
 reason, you should only use Unicode character classes if you absolutely need
 them! (They are enabled by default though.)
-* This module does not support Unicode word boundaries. ASCII word bondaries
+* This module does not support Unicode word boundaries. ASCII word boundaries
 may be used though by disabling Unicode or selectively doing so in the syntax,
 e.g., `(?-u:\b)`. There is also an option to
 [heuristically enable Unicode word boundaries](crate::dfa::dense::Config::unicode_word_boundary),

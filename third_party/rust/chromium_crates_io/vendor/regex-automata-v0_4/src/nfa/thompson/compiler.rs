@@ -230,9 +230,9 @@ impl Config {
     /// # if cfg!(miri) { return Ok(()); } // miri takes too long
     /// use regex_automata::nfa::thompson::NFA;
     ///
-    /// // 400KB isn't enough!
+    /// // 300KB isn't enough!
     /// NFA::compiler()
-    ///     .configure(NFA::config().nfa_size_limit(Some(400_000)))
+    ///     .configure(NFA::config().nfa_size_limit(Some(300_000)))
     ///     .build(r"\w{20}")
     ///     .unwrap_err();
     ///
@@ -1041,7 +1041,7 @@ impl Compiler {
     /// Compile an alternation of the given HIR values.
     ///
     /// This is like 'c_alt_iter', but it accepts a slice of HIR values instead
-    /// of an iterator of compiled NFA subgraphs. The point of accepting a
+    /// of an iterator of compiled NFA sub-graphs. The point of accepting a
     /// slice here is that it opens up some optimization opportunities. For
     /// example, if all of the HIR values are literals, then this routine might
     /// re-shuffle them to make NFA epsilon closures substantially faster.
@@ -1500,7 +1500,7 @@ impl Compiler {
     ///
     /// A more comprehensive compression scheme can be accomplished by using
     /// a range trie to efficiently sort a reverse sequence of UTF-8 byte
-    /// rqanges, and then use Daciuk's algorithm via `Utf8Compiler`.
+    /// ranges, and then use Daciuk's algorithm via `Utf8Compiler`.
     ///
     /// This is the technique used when "NFA shrinking" is disabled.
     ///
@@ -1665,7 +1665,7 @@ impl Compiler {
         capture_index: u32,
         name: Option<&str>,
     ) -> Result<StateID, BuildError> {
-        let name = name.map(|n| Arc::from(n));
+        let name = name.map(Arc::from);
         self.builder.borrow_mut().add_capture_start(
             StateID::ZERO,
             capture_index,
@@ -1702,7 +1702,7 @@ pub(crate) struct ThompsonRef {
     pub(crate) end: StateID,
 }
 
-/// A UTF-8 compiler based on Daciuk's algorithm for compilining minimal DFAs
+/// A UTF-8 compiler based on Daciuk's algorithm for compiling minimal DFAs
 /// from a lexicographically sorted sequence of strings in linear time.
 ///
 /// The trick here is that any Unicode codepoint range can be converted to

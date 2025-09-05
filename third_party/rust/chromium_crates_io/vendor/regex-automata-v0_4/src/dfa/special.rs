@@ -43,7 +43,7 @@ macro_rules! err {
 //   some other match state, even when searching an empty string.)
 //
 // These are not mutually exclusive categories. Namely, the following
-// overlappings can occur:
+// overlapping can occur:
 //
 // * {dead, start} - If a DFA can never lead to a match and it is minimized,
 //   then it will typically compile to something where all starting IDs point
@@ -62,7 +62,7 @@ macro_rules! err {
 // though from the perspective of the DFA, they are equivalent. (Indeed,
 // minimization special cases them to ensure they don't get merged.) The
 // purpose of keeping them distinct is to use the quit state as a sentinel to
-// distguish between whether a search finished successfully without finding
+// distinguish between whether a search finished successfully without finding
 // anything or whether it gave up before finishing.
 //
 // So the main problem we want to solve here is the *fast* detection of whether

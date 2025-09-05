@@ -1247,7 +1247,7 @@ impl DFA {
     /// the unknown transition. Otherwise, trying to use the "unknown" state
     /// ID will just result in transitioning back to itself, and thus never
     /// terminating. (This is technically a special exemption to the state ID
-    /// validity rules, but is permissible since this routine is guarateed to
+    /// validity rules, but is permissible since this routine is guaranteed to
     /// never mutate the given `cache`, and thus the identifier is guaranteed
     /// to remain valid.)
     ///
@@ -1371,7 +1371,7 @@ impl DFA {
     /// the unknown transition. Otherwise, trying to use the "unknown" state
     /// ID will just result in transitioning back to itself, and thus never
     /// terminating. (This is technically a special exemption to the state ID
-    /// validity rules, but is permissible since this routine is guarateed to
+    /// validity rules, but is permissible since this routine is guaranteed to
     /// never mutate the given `cache`, and thus the identifier is guaranteed
     /// to remain valid.)
     ///
@@ -1857,7 +1857,7 @@ pub struct Cache {
     bytes_searched: usize,
     /// The progress of the current search.
     ///
-    /// This is only non-`None` when callers utlize the `Cache::search_start`,
+    /// This is only non-`None` when callers utilize the `Cache::search_start`,
     /// `Cache::search_update` and `Cache::search_finish` APIs.
     ///
     /// The purpose of recording search progress is to be able to make a

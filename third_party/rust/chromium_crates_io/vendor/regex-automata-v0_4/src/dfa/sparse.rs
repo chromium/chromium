@@ -1071,6 +1071,19 @@ impl<'a> DFA<&'a [u8]> {
     }
 }
 
+/// Other routines that work for all `T`.
+impl<T> DFA<T> {
+    /// Set or unset the prefilter attached to this DFA.
+    ///
+    /// This is useful when one has deserialized a DFA from `&[u8]`.
+    /// Deserialization does not currently include prefilters, so if you
+    /// want prefilter acceleration, you'll need to rebuild it and attach
+    /// it here.
+    pub fn set_prefilter(&mut self, prefilter: Option<Prefilter>) {
+        self.pre = prefilter
+    }
+}
+
 impl<T: AsRef<[u8]>> fmt::Debug for DFA<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "sparse::DFA(")?;
