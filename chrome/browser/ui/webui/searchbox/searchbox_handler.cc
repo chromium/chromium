@@ -100,7 +100,7 @@ constexpr char kGoogleKeepNoteIconResourceName[] =
 constexpr char kGoogleSitesIconResourceName[] =
     "//resources/cr_components/searchbox/icons/sites.svg";
 constexpr char kGoogleLensMonochromeLogoIcon[] =
-    "//resources/cr_components/searchbox/icons/lens.svg";
+    "//resources/cr_components/searchbox/icons/camera.svg";
 #endif
 const char* kHistoryIconResourceName = "//resources/images/icon_history.svg";
 const char* kIncognitoIconResourceName =

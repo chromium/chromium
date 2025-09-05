@@ -83,15 +83,15 @@ if (is_chrome_branded) {
     resource_path_prefix = "cr_components/searchbox/icons"
     out_grd = "$target_gen_dir/chrome_branded_resources.grdp"
     input_files = [
-      "realbox/camera.svg",
-      "realbox/google_agentspace_logo.svg",
-      "realbox/google_g.svg",
-      "realbox/google_g_gradient.svg",
-      "realbox/google_g_cr23.svg",
-      "realbox/google_logo.svg",
-      "realbox/mic.svg",
-      "lens/lens.svg",
+      "camera.svg",
+      "google_agentspace_logo.svg",
+      "google_g.svg",
+      "google_g_gradient.svg",
+      "google_g_cr23.svg",
+      "google_logo.svg",
+      "mic.svg",
     ]
-    input_files_base_dir = rebase_path("//chrome/app/theme/google_chrome", "//")
+    input_files_base_dir =
+        rebase_path("//chrome/app/theme/google_chrome/realbox", "//")
   }
 }
