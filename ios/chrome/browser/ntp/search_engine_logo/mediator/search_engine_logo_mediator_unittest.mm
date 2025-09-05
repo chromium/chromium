@@ -40,14 +40,11 @@ class MockGoogleLogoService : public GoogleLogoService {
   MOCK_METHOD2(GetLogo, void(search_provider_logos::LogoCallbacks, bool));
 };
 
-std::unique_ptr<KeyedService> BuildMockGoogleLogoService(
-    web::BrowserState* context) {
-  ProfileIOS* profile_ios = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildMockGoogleLogoService(ProfileIOS* profile) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_ios);
+      IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<MockGoogleLogoService>(
-      ios::TemplateURLServiceFactory::GetForProfile(profile_ios),
-      identity_manager);
+      ios::TemplateURLServiceFactory::GetForProfile(profile), identity_manager);
 }
 
 class SearchEngineLogoMediatorTest : public PlatformTest {
@@ -60,7 +57,7 @@ class SearchEngineLogoMediatorTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         GoogleLogoServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockGoogleLogoService));
+        base::BindOnce(&BuildMockGoogleLogoService));
     profile_ = std::move(test_profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
