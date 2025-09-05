@@ -51,8 +51,7 @@ UnifiedConsentServiceFactory* UnifiedConsentServiceFactory::GetInstance() {
 
 std::unique_ptr<KeyedService>
 UnifiedConsentServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   sync_preferences::PrefServiceSyncable* user_pref_service =
       profile->GetSyncablePrefs();
 
