@@ -35,12 +35,14 @@ public final class ContextMenuUtils {
         private final CharSequence mTitle;
         private final GURL mUrl;
         private final GURL mSecondaryUrl;
+        private final GURL mTertiaryUrl;
 
         private HeaderInfo(Builder builder) {
             mTitle = (builder.mTitle != null) ? builder.mTitle : "";
             mUrl = (builder.mUrl != null) ? builder.mUrl : GURL.emptyGURL();
             mSecondaryUrl =
                     (builder.mSecondaryUrl != null) ? builder.mSecondaryUrl : GURL.emptyGURL();
+            mTertiaryUrl = (builder.mTertiaryUrl != null) ? builder.mTertiaryUrl : GURL.emptyGURL();
         }
 
         /**
@@ -64,11 +66,19 @@ public final class ContextMenuUtils {
             return mSecondaryUrl;
         }
 
+        /**
+         * @return The tertiary URL.
+         */
+        public GURL getTertiaryUrl() {
+            return mTertiaryUrl;
+        }
+
         /** Builder for creating {@link HeaderInfo} instances. */
         public static final class Builder {
             @Nullable private CharSequence mTitle;
             @Nullable private GURL mUrl;
             @Nullable private GURL mSecondaryUrl;
+            @Nullable private GURL mTertiaryUrl;
 
             /**
              * Sets the title to be displayed.
@@ -104,6 +114,17 @@ public final class ContextMenuUtils {
             }
 
             /**
+             * Sets the optional tertiary URL.
+             *
+             * @param tertiaryUrl The tertiary URL.
+             * @return This Builder instance for chaining.
+             */
+            public Builder setTertiaryUrl(GURL tertiaryUrl) {
+                mTertiaryUrl = tertiaryUrl;
+                return this;
+            }
+
+            /**
              * Creates a new {@link HeaderInfo} instance. Any fields not set in the builder will be
              * empty strings in the final object.
              *
@@ -123,14 +144,14 @@ public final class ContextMenuUtils {
         CharSequence title = getTitle(params);
         GURL url = params.getLinkUrl();
         GURL secondaryUrl = GURL.emptyGURL();
+        GURL tertiaryUrl = GURL.emptyGURL();
 
         if (isCustomContextMenuItemPresent) {
             if (params.isImage()) {
                 url = params.getSrcUrl();
+                secondaryUrl = params.getPageUrl();
                 if (params.isAnchor()) {
-                    secondaryUrl = params.getLinkUrl();
-                } else {
-                    secondaryUrl = params.getPageUrl();
+                    tertiaryUrl = params.getLinkUrl();
                 }
             }
         }
@@ -139,6 +160,7 @@ public final class ContextMenuUtils {
                 .setTitle(title)
                 .setUrl(url)
                 .setSecondaryUrl(secondaryUrl)
+                .setTertiaryUrl(tertiaryUrl)
                 .build();
     }
 

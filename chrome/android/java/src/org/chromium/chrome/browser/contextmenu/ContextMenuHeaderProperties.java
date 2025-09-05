@@ -25,10 +25,14 @@ class ContextMenuHeaderProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<CharSequence> SECONDARY_URL =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<CharSequence> TERTIARY_URL =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View.OnClickListener>
             TITLE_AND_URL_CLICK_LISTENER = new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey URL_MAX_LINES = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey SECONDARY_URL_MAX_LINES =
+            new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey TERTIARY_URL_MAX_LINES =
             new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<Bitmap> IMAGE = new WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableBooleanPropertyKey CIRCLE_BG_VISIBLE =
@@ -64,9 +68,11 @@ class ContextMenuHeaderProperties {
         TITLE_MAX_LINES,
         URL,
         SECONDARY_URL,
+        TERTIARY_URL,
         TITLE_AND_URL_CLICK_LISTENER,
         URL_MAX_LINES,
         SECONDARY_URL_MAX_LINES,
+        TERTIARY_URL_MAX_LINES,
         IMAGE,
         CIRCLE_BG_VISIBLE,
         MONOGRAM_SIZE_PIXEL,

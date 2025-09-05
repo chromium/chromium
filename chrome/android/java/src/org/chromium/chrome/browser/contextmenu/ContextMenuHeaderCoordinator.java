@@ -53,24 +53,34 @@ class ContextMenuHeaderCoordinator {
         HeaderInfo headerInfo = ContextMenuUtils.getHeaderInfo(params, isCustomItemPresent);
         String title = headerInfo.getTitle().toString();
         CharSequence url = getUrl(headerInfo.getUrl(), activity, params, profile);
-        if (!GURL.isEmptyOrInvalid(headerInfo.getSecondaryUrl())) {
-            CharSequence secondaryUrl =
-                    getUrl(headerInfo.getSecondaryUrl(), activity, params, profile);
-            mModel = buildModel(activity, title, url, secondaryUrl);
-        } else {
-            mModel = buildModel(activity, title, url);
-        }
+        boolean hasSecondary = !GURL.isEmptyOrInvalid(headerInfo.getSecondaryUrl());
+        boolean hasTertiary = !GURL.isEmptyOrInvalid(headerInfo.getTertiaryUrl());
+
+        CharSequence secondaryUrl =
+                hasSecondary ? getUrl(headerInfo.getSecondaryUrl(), activity, params, profile) : "";
+
+        // A tertiary URL is only shown if a secondary one is also present.
+        CharSequence tertiaryUrl =
+                hasSecondary && hasTertiary
+                        ? getUrl(headerInfo.getTertiaryUrl(), activity, params, profile)
+                        : "";
+
+        mModel = buildModel(activity, title, url, secondaryUrl, tertiaryUrl);
         new ContextMenuHeaderMediator(activity, mModel, params, profile, nativeDelegate);
     }
 
     @VisibleForTesting
     static PropertyModel buildModel(Context context, String title, CharSequence url) {
-        return buildModel(context, title, url, /* secondaryUrl= */ "");
+        return buildModel(context, title, url, /* secondaryUrl= */ "", /* tertiaryUrl= */ "");
     }
 
     @VisibleForTesting
     static PropertyModel buildModel(
-            Context context, String title, CharSequence url, CharSequence secondaryUrl) {
+            Context context,
+            String title,
+            CharSequence url,
+            CharSequence secondaryUrl,
+            CharSequence tertiaryUrl) {
         boolean usePopupContextMenu = ContextMenuUtils.isPopupSupported(context);
 
         int monogramSizeDimen =
@@ -98,19 +108,44 @@ class ContextMenuHeaderCoordinator {
         // custom context menu items.
         if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()
                 && !TextUtils.isEmpty(secondaryUrl)) {
-            // The properties could take up a total of 3 lines. We already know that the secondary
-            // url is present. So each other property could go up to 2 lines if the other property
-            // is not present. If both properties are absent, the secondary url takes up all 3
-            // lines.
-            int maxSecondaryUrlLines = 1;
-            if (TextUtils.isEmpty(title) && TextUtils.isEmpty(url)) {
-                maxSecondaryUrlLines = 3;
+            // The secondary URL is guaranteed to be visible in this flow.
+            int visibleProperties = 1;
+            if (!TextUtils.isEmpty(title)) visibleProperties++;
+            if (!TextUtils.isEmpty(url)) visibleProperties++;
+
+            boolean isTertiaryUrlPresent = !TextUtils.isEmpty(tertiaryUrl);
+            if (isTertiaryUrlPresent) {
+                visibleProperties++;
             }
+
+            int maxSecondaryUrlLines = 1;
+            int maxTertiaryUrlLines = 1;
+
+            // If there are few enough items, they can expand to take up more space.
+            if (visibleProperties == 1) {
+                // Should only happen if title, url, and tertiaryUrl are all empty.
+                maxSecondaryUrlLines = 3;
+            } else if (visibleProperties == 2) {
+                // Two items are visible (e.g., secondary + tertiary, or secondary + title).
+                // We give the secondary URL priority with more lines.
+                maxSecondaryUrlLines = 2;
+                // The other item (tertiary, title, or url) implicitly gets 1 line.
+            }
+            // If visibleProperties is 3 or more, all items get 1 line each (the default).
+
             modelBuilder
                     .with(ContextMenuHeaderProperties.SECONDARY_URL, secondaryUrl)
                     .with(
                             ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES,
                             maxSecondaryUrlLines);
+
+            if (isTertiaryUrlPresent) {
+                modelBuilder
+                        .with(ContextMenuHeaderProperties.TERTIARY_URL, tertiaryUrl)
+                        .with(
+                                ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES,
+                                maxTertiaryUrlLines);
+            }
         }
         PropertyModel model = modelBuilder.build();
 

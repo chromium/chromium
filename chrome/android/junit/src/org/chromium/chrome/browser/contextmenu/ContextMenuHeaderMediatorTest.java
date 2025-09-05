@@ -415,6 +415,127 @@ public class ContextMenuHeaderMediatorTest {
                 model.get(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES));
     }
 
+    @Test
+    public void testOnClick_ExpandWithTertiaryUrl() {
+        PropertyModel model =
+                new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
+                        .with(ContextMenuHeaderProperties.URL, JUnitTestGURLs.URL_1.getSpec())
+                        .with(ListMenuItemProperties.TITLE, "Some Title")
+                        .with(
+                                ContextMenuHeaderProperties.SECONDARY_URL,
+                                JUnitTestGURLs.URL_2.getSpec())
+                        .with(
+                                ContextMenuHeaderProperties.TERTIARY_URL,
+                                JUnitTestGURLs.URL_3.getSpec())
+                        .with(ContextMenuHeaderProperties.URL_MAX_LINES, 1)
+                        .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1)
+                        .with(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES, 1)
+                        .with(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES, 1)
+                        .build();
+
+        final ContextMenuHeaderMediator mediator = createMediatorWithDefaultParams(model);
+        mediator.onClick(null);
+
+        Assert.assertEquals(
+                "URL max lines should be expanded.",
+                Integer.MAX_VALUE,
+                model.get(ContextMenuHeaderProperties.URL_MAX_LINES));
+        Assert.assertEquals(
+                "Title max lines should be expanded.",
+                Integer.MAX_VALUE,
+                model.get(ContextMenuHeaderProperties.TITLE_MAX_LINES));
+        Assert.assertEquals(
+                "Secondary URL max lines should be expanded.",
+                Integer.MAX_VALUE,
+                model.get(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES));
+        Assert.assertEquals(
+                "Tertiary URL max lines should be expanded.",
+                Integer.MAX_VALUE,
+                model.get(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES));
+    }
+
+    @Test
+    public void testOnClick_CollapseWithTertiaryUrl() {
+        PropertyModel model =
+                new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
+                        .with(ContextMenuHeaderProperties.URL, JUnitTestGURLs.URL_1.getSpec())
+                        .with(ListMenuItemProperties.TITLE, "Some Title")
+                        .with(
+                                ContextMenuHeaderProperties.SECONDARY_URL,
+                                JUnitTestGURLs.URL_2.getSpec())
+                        .with(
+                                ContextMenuHeaderProperties.TERTIARY_URL,
+                                JUnitTestGURLs.URL_3.getSpec())
+                        .with(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE)
+                        .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, Integer.MAX_VALUE)
+                        .with(
+                                ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES,
+                                Integer.MAX_VALUE)
+                        .with(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES, Integer.MAX_VALUE)
+                        .build();
+
+        final ContextMenuHeaderMediator mediator = createMediatorWithDefaultParams(model);
+        mediator.onClick(null);
+
+        Assert.assertEquals(
+                "URL max lines should be collapsed to 1.",
+                1,
+                model.get(ContextMenuHeaderProperties.URL_MAX_LINES));
+        Assert.assertEquals(
+                "Title max lines should be collapsed to 1.",
+                1,
+                model.get(ContextMenuHeaderProperties.TITLE_MAX_LINES));
+        Assert.assertEquals(
+                "Secondary URL max lines should be collapsed to 1.",
+                1,
+                model.get(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES));
+        Assert.assertEquals(
+                "Tertiary URL max lines should be collapsed to 1.",
+                1,
+                model.get(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES));
+    }
+
+    @Test
+    public void testOnClick_CollapseWithTertiaryUrl_SecondaryAndTertiaryOnly() {
+        PropertyModel model =
+                new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
+                        .with(ContextMenuHeaderProperties.URL, "")
+                        .with(ListMenuItemProperties.TITLE, "")
+                        .with(
+                                ContextMenuHeaderProperties.SECONDARY_URL,
+                                JUnitTestGURLs.URL_2.getSpec())
+                        .with(
+                                ContextMenuHeaderProperties.TERTIARY_URL,
+                                JUnitTestGURLs.URL_3.getSpec())
+                        .with(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE)
+                        .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, Integer.MAX_VALUE)
+                        .with(
+                                ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES,
+                                Integer.MAX_VALUE)
+                        .with(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES, Integer.MAX_VALUE)
+                        .build();
+
+        final ContextMenuHeaderMediator mediator = createMediatorWithDefaultParams(model);
+        mediator.onClick(null);
+
+        Assert.assertEquals(
+                "URL is empty, its line count should be 1.",
+                1,
+                model.get(ContextMenuHeaderProperties.URL_MAX_LINES));
+        Assert.assertEquals(
+                "Title is empty, its line count should be 1.",
+                1,
+                model.get(ContextMenuHeaderProperties.TITLE_MAX_LINES));
+        Assert.assertEquals(
+                "Secondary URL should get 2 lines since only one other URL is visible.",
+                2,
+                model.get(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES));
+        Assert.assertEquals(
+                "Tertiary URL should get 1 line.",
+                1,
+                model.get(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES));
+    }
+
     private ContextMenuHeaderMediator createMediatorWithDefaultParams(PropertyModel model) {
         final ContextMenuParams params =
                 new ContextMenuParams(

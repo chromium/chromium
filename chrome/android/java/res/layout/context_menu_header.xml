@@ -85,5 +85,17 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             app:leading="@dimen/text_size_small_leading"
             android:visibility="gone" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/menu_header_tertiary_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
+            android:textDirection="ltr"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            app:leading="@dimen/text_size_small_leading"
+            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

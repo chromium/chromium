@@ -113,6 +113,8 @@ public class ContextMenuUtilsUnitTest {
         assertEquals("URL should be the link URL.", sLinkGUrl, headerInfo.getUrl());
         assertEquals(
                 "Secondary URL should be empty.", GURL.emptyGURL(), headerInfo.getSecondaryUrl());
+        assertEquals(
+                "Tertiary URL should be empty.", GURL.emptyGURL(), headerInfo.getTertiaryUrl());
     }
 
     @Test
@@ -153,6 +155,10 @@ public class ContextMenuUtilsUnitTest {
                 "Secondary URL should be empty as it's not an image.",
                 GURL.emptyGURL(),
                 headerInfo.getSecondaryUrl());
+        assertEquals(
+                "Tertiary URL should be empty as it's not an image.",
+                GURL.emptyGURL(),
+                headerInfo.getTertiaryUrl());
     }
 
     @Test
@@ -189,7 +195,9 @@ public class ContextMenuUtilsUnitTest {
         assertEquals("Title should be the default title.", sTitleText, headerInfo.getTitle());
         assertEquals("URL should be the src URL.", sSrcGUrl, headerInfo.getUrl());
         assertEquals(
-                "Secondary URL should be the link URL.", sLinkGUrl, headerInfo.getSecondaryUrl());
+                "Secondary URL should be the page URL.", sPageGUrl, headerInfo.getSecondaryUrl());
+        assertEquals(
+                "Tertiary URL should be the link URL.", sLinkGUrl, headerInfo.getTertiaryUrl());
     }
 
     @Test
@@ -227,6 +235,8 @@ public class ContextMenuUtilsUnitTest {
         assertEquals("URL should be the src URL.", sSrcGUrl, headerInfo.getUrl());
         assertEquals(
                 "Secondary URL should be the page URL.", sPageGUrl, headerInfo.getSecondaryUrl());
+        assertEquals(
+                "Tertiary URL should be empty.", GURL.emptyGURL(), headerInfo.getTertiaryUrl());
     }
 
     @Test

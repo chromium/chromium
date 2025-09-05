@@ -2342,8 +2342,10 @@ public class ChromeContextMenuPopulatorTest {
                 .send(eq(mockPendingIntent), any(Context.class), eq(0), intentCaptor.capture());
 
         Intent capturedIntent = intentCaptor.getValue();
-        assertNull(
-                "The page uri should not be set for image-link items.", capturedIntent.getData());
+        assertEquals(
+                "The page uri should be set for image-link items.",
+                PAGE_URL,
+                capturedIntent.getData().toString());
     }
 
     @Test

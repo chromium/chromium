@@ -106,42 +106,68 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
     }
 
     /**
-     * This is called when the url text is clicked. So, we can expand or shrink the url here.
+     * This is called when the header is clicked. It toggles between an expanded state (all text
+     * fields show their full content) and a collapsed state (text fields are truncated to fit
+     * within a set number of lines).
      *
      * @param v The url text view.
      */
     @Override
     public void onClick(View v) {
-        boolean isSecondaryUrlPresent =
+        // 1. Determine the current state and what properties are visible.
+        final boolean isCurrentlyExpanded =
+                mModel.get(ContextMenuHeaderProperties.URL_MAX_LINES) == Integer.MAX_VALUE;
+        final boolean isTitleEmpty = TextUtils.isEmpty(mModel.get(ListMenuItemProperties.TITLE));
+        final boolean isUrlEmpty = TextUtils.isEmpty(mModel.get(ContextMenuHeaderProperties.URL));
+        final boolean isSecondaryUrlPresent =
                 !TextUtils.isEmpty(mModel.get(ContextMenuHeaderProperties.SECONDARY_URL));
-        if (!isSecondaryUrlPresent) {
-            mModel.set(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES, 0);
-        }
-        if (mModel.get(ContextMenuHeaderProperties.URL_MAX_LINES) == Integer.MAX_VALUE) {
-            // URL and title should both be expanded.
-            assert mModel.get(ContextMenuHeaderProperties.TITLE_MAX_LINES) == Integer.MAX_VALUE;
+        final boolean isTertiaryUrlPresent =
+                !TextUtils.isEmpty(mModel.get(ContextMenuHeaderProperties.TERTIARY_URL));
 
-            final boolean isTitleEmpty =
-                    TextUtils.isEmpty(mModel.get(ListMenuItemProperties.TITLE));
-            final boolean isUrlEmpty =
-                    TextUtils.isEmpty(mModel.get(ContextMenuHeaderProperties.URL));
-            if (isSecondaryUrlPresent) {
-                mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, 1);
-                mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1);
-                mModel.set(
-                        ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES,
-                        isUrlEmpty && isTitleEmpty ? 3 : 1);
-            } else {
-                mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, isTitleEmpty ? 2 : 1);
-                mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, isUrlEmpty ? 2 : 1);
-            }
-        } else {
-            mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE);
+        // 2. Handle the "expand" action. This is the simple case.
+        if (!isCurrentlyExpanded) {
             mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, Integer.MAX_VALUE);
+            mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, Integer.MAX_VALUE);
             if (isSecondaryUrlPresent) {
                 mModel.set(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES, Integer.MAX_VALUE);
             }
+            if (isTertiaryUrlPresent) {
+                mModel.set(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES, Integer.MAX_VALUE);
+            }
+            return;
         }
+
+        // 3. Handle the "collapse" action. This logic distributes a total of 2 or 3 lines.
+
+        // Case A: No secondary/tertiary URLs. Distribute 2 lines between Title and URL.
+        if (!isSecondaryUrlPresent) {
+            mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, isTitleEmpty ? 2 : 1);
+            mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, isUrlEmpty ? 2 : 1);
+            // Reset secondary/tertiary lines for consistency, though they are not visible.
+            mModel.set(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES, 1);
+            mModel.set(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES, 1);
+            return;
+        }
+
+        // Case B: Secondary URL is present. Distribute 3 lines among all visible properties.
+        int visibleProperties = 0;
+        if (!isTitleEmpty) visibleProperties++;
+        if (!isUrlEmpty) visibleProperties++;
+        visibleProperties++; // Secondary is guaranteed present here.
+        if (isTertiaryUrlPresent) visibleProperties++;
+
+        int secondaryLines = 1;
+        if (visibleProperties == 1) { // Only secondary URL is visible
+            secondaryLines = 3;
+        } else if (visibleProperties == 2) { // Secondary + one other property
+            secondaryLines = 2;
+        }
+        // If 3 or more properties are visible, they all get 1 line.
+
+        mModel.set(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1);
+        mModel.set(ContextMenuHeaderProperties.URL_MAX_LINES, 1);
+        mModel.set(ContextMenuHeaderProperties.SECONDARY_URL_MAX_LINES, secondaryLines);
+        mModel.set(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES, 1);
     }
 
     /**

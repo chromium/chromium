@@ -43,6 +43,7 @@ public class ContextMenuHeaderViewTest {
     private static final String TITLE_STRING = "Some Very Cool Title";
     private static final String URL_STRING = "www.website.com";
     private static final String SECONDARY_URL_STRING = "cct.website.com";
+    private static final String TERTIARY_URL_STRING = "cct.website.com/test";
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -54,6 +55,7 @@ public class ContextMenuHeaderViewTest {
     private TextView mTitle;
     private TextView mUrl;
     private TextView mSecondaryUrl;
+    private TextView mTertiaryUrl;
     private View mTitleAndUrl;
     private ImageView mImage;
     private View mCircleBg;
@@ -75,6 +77,7 @@ public class ContextMenuHeaderViewTest {
                     mTitle = mHeaderView.findViewById(R.id.menu_header_title);
                     mUrl = mHeaderView.findViewById(R.id.menu_header_url);
                     mSecondaryUrl = mHeaderView.findViewById(R.id.menu_header_secondary_url);
+                    mTertiaryUrl = mHeaderView.findViewById(R.id.menu_header_tertiary_url);
                     mTitleAndUrl = mHeaderView.findViewById(R.id.title_and_url);
                     mImage = mHeaderView.findViewById(R.id.menu_header_image);
                     mCircleBg = mHeaderView.findViewById(R.id.circle_background);
@@ -84,6 +87,7 @@ public class ContextMenuHeaderViewTest {
                                     .with(ListMenuItemProperties.TITLE, "")
                                     .with(ContextMenuHeaderProperties.URL, "")
                                     .with(ContextMenuHeaderProperties.SECONDARY_URL, "")
+                                    .with(ContextMenuHeaderProperties.TERTIARY_URL, "")
                                     .with(
                                             ContextMenuHeaderProperties
                                                     .TITLE_AND_URL_CLICK_LISTENER,
@@ -204,6 +208,59 @@ public class ContextMenuHeaderViewTest {
         assertThat(
                 "Secondary URL should be GONE when text is empty.",
                 mSecondaryUrl.getVisibility(),
+                equalTo(View.GONE));
+    }
+
+    @Test
+    @SmallTest
+    public void testTertiaryUrl() {
+        assertThat(
+                "Incorrect initial tertiary URL visibility.",
+                mTertiaryUrl.getVisibility(),
+                equalTo(View.GONE));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ContextMenuHeaderProperties.TERTIARY_URL, TERTIARY_URL_STRING);
+                    mModel.set(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES, 1);
+                });
+
+        assertThat(
+                "Incorrect tertiary URL visibility.",
+                mTertiaryUrl.getVisibility(),
+                equalTo(View.VISIBLE));
+        assertThat(
+                "Incorrect tertiary URL string.",
+                mTertiaryUrl.getText(),
+                equalTo(TERTIARY_URL_STRING));
+        assertThat(
+                "Incorrect max line count for tertiary URL.",
+                mTertiaryUrl.getMaxLines(),
+                equalTo(1));
+        assertThat(
+                "Incorrect tertiary URL ellipsize mode.",
+                mTertiaryUrl.getEllipsize(),
+                equalTo(TextUtils.TruncateAt.END));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mModel.set(
+                                ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES,
+                                Integer.MAX_VALUE));
+
+        assertThat(
+                "Incorrect max line count for tertiary URL.",
+                mTertiaryUrl.getMaxLines(),
+                equalTo(Integer.MAX_VALUE));
+        assertNull("Tertiary URL is ellipsized when it shouldn't be.", mTertiaryUrl.getEllipsize());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ContextMenuHeaderProperties.TERTIARY_URL, "");
+                });
+        assertThat(
+                "Tertiary URL should be GONE when text is empty.",
+                mTertiaryUrl.getVisibility(),
                 equalTo(View.GONE));
     }
 
