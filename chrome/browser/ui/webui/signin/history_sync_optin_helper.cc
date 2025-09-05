@@ -21,8 +21,8 @@
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/account_capability_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_state_fetcher.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -142,25 +142,25 @@ HistorySyncOptinHelper::HistorySyncOptinHelper(
     : profile_(profile),
       account_info_(account_info),
       delegate_(delegate),
-      is_managed_capability_fetcher_(std::make_unique<AccountCapabilityFetcher>(
-          identity_manager,
-          account_info,
-          /*get_capability_state_callback=*/
-          base::BindRepeating(
-              &HistorySyncOptinHelper::AccountIsManagedCapability,
-              base::Unretained(this)),
-          /*on_capability_fetched_callback=*/
-          base::BindOnce(
-              &HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow,
-              base::Unretained(this)))) {
+      account_state_fetcher_(
+          std::make_unique<AccountStateFetcher>(
+              identity_manager,
+              account_info,
+              /*get_account_state_callback=*/
+              base::BindRepeating(&HistorySyncOptinHelper::AccountIsManaged,
+                                  base::Unretained(this)),
+              /*on_account_info_fetched_callback=*/
+              base::BindOnce(&HistorySyncOptinHelper::
+                                 ResumeShowHistorySyncOptinScreenFlow,
+                             base::Unretained(this)))) {
   CHECK(base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin));
   CHECK(delegate);
 }
 
-HistorySyncOptinHelper::~HistorySyncOptinHelper() {}
+HistorySyncOptinHelper::~HistorySyncOptinHelper() = default;
 
 void HistorySyncOptinHelper::StartHistorySyncOptinFlow() {
-  is_managed_capability_fetcher_->FetchCapability();
+  account_state_fetcher_->FetchAccountInfo();
 }
 
 void HistorySyncOptinHelper::MaybeShowAccountManagementScreen(
@@ -265,7 +265,7 @@ void HistorySyncOptinHelper::OnAccountManagementScreenClosed(
   }
 }
 
-signin::Tribool HistorySyncOptinHelper::AccountIsManagedCapability(
+signin::Tribool HistorySyncOptinHelper::AccountIsManaged(
     const AccountInfo& account_info) {
   if (!account_info.IsEmpty()) {
     return account_info.IsManaged();

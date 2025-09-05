@@ -17,7 +17,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
-class AccountCapabilityFetcher;
+class AccountStateFetcher;
 class Profile;
 class TurnSyncOnHelperPolicyFetchTracker;
 
@@ -113,8 +113,8 @@ class HistorySyncOptinHelper {
 
   void StartHistorySyncOptinFlow();
 
-  AccountCapabilityFetcher* GetAccountCapabilityFetcherForTesting() {
-    return is_managed_capability_fetcher_.get();
+  AccountStateFetcher* GetAccountStateFetcherForTesting() {
+    return account_state_fetcher_.get();
   }
 
   SyncServiceStartupStateObserver*
@@ -134,14 +134,12 @@ class HistorySyncOptinHelper {
   // screen.
   void OnAccountManagementScreenClosed(signin::SigninChoice result);
 
-  signin::Tribool AccountIsManagedCapability(const AccountInfo& account_info);
+  signin::Tribool AccountIsManaged(const AccountInfo& account_info);
 
   raw_ptr<Profile> profile_;
   const AccountInfo account_info_;
   raw_ptr<Delegate> delegate_;
-  // TODO(crbug.com/434964019): Rename this class and instances as they do not
-  // track capabilities anymore.
-  std::unique_ptr<AccountCapabilityFetcher> is_managed_capability_fetcher_;
+  std::unique_ptr<AccountStateFetcher> account_state_fetcher_;
 
   std::unique_ptr<SyncServiceStartupStateObserver> sync_startup_state_observer_;
   std::unique_ptr<HistorySyncOptinPolicyHelper> policy_helper_;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITY_FETCHER_H_
-#define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITY_FETCHER_H_
+#ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_STATE_FETCHER_H_
+#define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_STATE_FETCHER_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
@@ -12,29 +12,30 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
-// Waits until a capability is fetched.
-// The capability state is computed through the input callback
-// `get_capability_state_callback_`.
-// When the capability is fetched or we timeout while waiting for it,
-// it executes the provided callback `on_capability_fetched_callback`
+// Waits until some account info is fetched.
+// The account state is computed through the input callback
+// `get_account_state_callback_`.
+// When the account info is fetched or we timeout while waiting for it,
+// it executes the provided callback `on_account_info_fetched_callback_`
 // and stops observing for further updates.
 // Expected to be used for a single fetch only.
-class AccountCapabilityFetcher : public signin::IdentityManager::Observer {
+class AccountStateFetcher : public signin::IdentityManager::Observer {
  public:
-  AccountCapabilityFetcher(
+  AccountStateFetcher(
       signin::IdentityManager* identity_manager,
       CoreAccountInfo core_account_info,
       base::RepeatingCallback<signin::Tribool(const AccountInfo&)>
-          get_capability_state_callback,
-      base::OnceCallback<void(signin::Tribool)> on_capability_fetched_callback);
+          get_account_state_callback,
+      base::OnceCallback<void(signin::Tribool)>
+          on_account_info_fetched_callback);
 
-  AccountCapabilityFetcher();
-  ~AccountCapabilityFetcher() override;
+  AccountStateFetcher();
+  ~AccountStateFetcher() override;
 
-  // Starts fetching the capability. Returns the result through
-  // `on_capability_fetched_callback_` when ready and may
+  // Starts fetching the account info. Returns the result through
+  // `on_account_info_fetched_callback_` when ready and may
   // return right away if already available. Should be called once.
-  void FetchCapability();
+  void FetchAccountInfo();
 
   void EnforceTimeoutReachedForTesting();
 
@@ -44,11 +45,11 @@ class AccountCapabilityFetcher : public signin::IdentityManager::Observer {
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
-  void GetOrWaitForCapability(const CoreAccountInfo& core_account_info);
+  void GetOrWaitForAccountInfo(const CoreAccountInfo& core_account_info);
 
-  void OnCapabilityFetched(signin::Tribool account_capability_value);
+  void OnAccountInfoFetched(signin::Tribool account_info_value);
 
-  void OnCapabilityFetchedTimeout();
+  void OnAccountInfoFetchTimeout();
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -57,9 +58,9 @@ class AccountCapabilityFetcher : public signin::IdentityManager::Observer {
   raw_ptr<signin::IdentityManager> identity_manager_;
   CoreAccountInfo core_account_info_;
   base::RepeatingCallback<signin::Tribool(const AccountInfo&)>
-      get_capability_state_callback_;
-  base::OnceCallback<void(signin::Tribool)> on_capability_fetched_callback_;
-  base::OneShotTimer capability_available_timeout_timer_;
+      get_account_state_callback_;
+  base::OnceCallback<void(signin::Tribool)> on_account_info_fetched_callback_;
+  base::OneShotTimer account_info_timeout_timer_;
 };
 
-#endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITY_FETCHER_H_
+#endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_STATE_FETCHER_H_

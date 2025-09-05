@@ -27,8 +27,7 @@
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
-#include "components/signin/public/identity_manager/account_capability_fetcher.h"
+#include "components/signin/public/identity_manager/account_state_fetcher.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -73,13 +72,9 @@ class HistorySyncOptinHelperBrowserTest : public SigninBrowserTestBase {
   }
 
   // Updates the fields relating to the account management.
-  void UpdateManagedUserCapabilities(AccountInfo& account_info,
-                                     bool is_managed) {
+  void UpdateAccountManagementInfo(AccountInfo& account_info, bool is_managed) {
     account_info.hosted_domain =
         is_managed ? "example.com" : signin::constants::kNoHostedDomainFound;
-    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_is_subject_to_account_level_enterprise_policies(is_managed);
-
     CHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
   }
@@ -115,7 +110,7 @@ class HistorySyncOptinHelperBrowserTest : public SigninBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(
     HistorySyncOptinHelperBrowserTest,
-    TriggersHistorySyncScreenWhenCapabilityFetchedForConsumerAccount) {
+    TriggersHistorySyncScreenWhenAccountInfoFetchedForConsumerAccount) {
   AccountInfo account_info = MakeAccountInfoAvailable();
   MockHistorySyncOptinHelperDelegate delegate;
 
@@ -126,12 +121,12 @@ IN_PROC_BROWSER_TEST_F(
       &delegate);
   history_sync_optin_helper.StartHistorySyncOptinFlow();
 
-  // This triggers the flopw that reaches the delegate's
+  // This triggers the flow that reaches the delegate's
   // `ShowHistorySyncOptinScreen`.
-  UpdateManagedUserCapabilities(account_info, /*is_managed=*/false);
+  UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
 
   // Subsequent updates should have no impact.
-  UpdateManagedUserCapabilities(account_info, /*is_managed=*/false);
+  UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -157,11 +152,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // This triggers the flow that reaches the delegate's
   // `ShowAccountManagementScreen`.
-  UpdateManagedUserCapabilities(account_info, /*is_managed=*/true);
+  UpdateAccountManagementInfo(account_info, /*is_managed=*/true);
   run_loop.Run();
 
   // Subsequent updates should have no impact on the flow.
-  UpdateManagedUserCapabilities(account_info, /*is_managed=*/true);
+  UpdateAccountManagementInfo(account_info, /*is_managed=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -188,16 +183,17 @@ IN_PROC_BROWSER_TEST_F(
 
   // This triggers the flow that reaches the delegate's
   // `ShowAccountManagementScreen`.
-  UpdateManagedUserCapabilities(account_info, /*is_managed=*/true);
+  UpdateAccountManagementInfo(account_info, /*is_managed=*/true);
   run_loop.Run();
 
   // Subsequent updates should have no impact on the flow.
-  UpdateManagedUserCapabilities(account_info, /*is_managed=*/true);
+  UpdateAccountManagementInfo(account_info, /*is_managed=*/true);
+
 }
 
 IN_PROC_BROWSER_TEST_F(
     HistorySyncOptinHelperBrowserTest,
-    TriggersHistorySyncScreenWhenCapabilityFetchingTimesOut) {
+    TriggersHistorySyncScreenWhenAccountInfoFetchingTimesOut) {
   AccountInfo account_info = MakeAccountInfoAvailable();
   MockHistorySyncOptinHelperDelegate delegate;
 
@@ -210,11 +206,11 @@ IN_PROC_BROWSER_TEST_F(
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(1);
-  history_sync_optin_helper.GetAccountCapabilityFetcherForTesting()
+  history_sync_optin_helper.GetAccountStateFetcherForTesting()
       ->EnforceTimeoutReachedForTesting();
 
-  // After the timeout is reached, capability updates should have no impact.
-  UpdateManagedUserCapabilities(account_info, /*is_managed=*/true);
+  // After the timeout is reached, account info updates should have no impact.
+  UpdateAccountManagementInfo(account_info, /*is_managed=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperBrowserTest,
@@ -224,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperBrowserTest,
       syncer::SyncService::TransportState::INITIALIZING);
 
   AccountInfo account_info = MakeAccountInfoAvailable();
-  UpdateManagedUserCapabilities(account_info, /*is_managed=*/false);
+  UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
   MockHistorySyncOptinHelperDelegate delegate;
 
   HistorySyncOptinHelper history_sync_optin_helper(
@@ -253,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperBrowserTest,
   GetTestSyncService()->SetAllowedByEnterprisePolicy(false);
 
   AccountInfo account_info = MakeAccountInfoAvailable();
-  UpdateManagedUserCapabilities(account_info, /*is_managed=*/false);
+  UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
   MockHistorySyncOptinHelperDelegate delegate;
 
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
