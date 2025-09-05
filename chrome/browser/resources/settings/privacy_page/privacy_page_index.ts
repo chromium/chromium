@@ -110,6 +110,13 @@ export class SettingsPrivacyPageIndexElement extends
             loadTimeData.getBoolean('enableIncognitoTrackingProtections'),
       },
 
+      enablePaymentHandlerContentSetting_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('enablePaymentHandlerContentSetting');
+        },
+      },
+
       enableSecurityKeysSubpage_: {
         type: Boolean,
         readOnly: true,
@@ -121,14 +128,19 @@ export class SettingsPrivacyPageIndexElement extends
         value: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
       },
 
+      enableLocalNetworkAccessSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
+      },
+
       enableWebAppInstallation_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
       },
 
-      enableLocalNetworkAccessSetting_: {
+      enableWebPrintingContentSetting_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
+        value: () => loadTimeData.getBoolean('enableWebPrintingContentSetting'),
       },
 
       isAdPrivacyAvailable_: {
@@ -166,8 +178,10 @@ export class SettingsPrivacyPageIndexElement extends
   declare private enableIncognitoTrackingProtections_: boolean;
   declare private enableKeyboardLockPrompt_: boolean;
   declare private enableLocalNetworkAccessSetting_: boolean;
+  declare private enablePaymentHandlerContentSetting_: boolean;
   declare private enableSecurityKeysSubpage_: boolean;
   declare private enableWebAppInstallation_: boolean;
+  declare private enableWebPrintingContentSetting_: boolean;
   declare private isAdPrivacyAvailable_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
 

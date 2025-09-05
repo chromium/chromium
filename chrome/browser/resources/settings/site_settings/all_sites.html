@@ -1,55 +1,58 @@
-    <style include="settings-shared md-select clear-storage-dialog-shared">
-      cr-dialog div[slot=title] {
-          line-height: 20px;
-      }
+  <style include="settings-shared md-select clear-storage-dialog-shared">
+    cr-dialog div[slot=title] {
+        line-height: 20px;
+    }
 
-      #sort {
-        align-items: center;
-        display: flex;
-        margin: 0 var(--cr-icon-button-margin-start);
-        margin-bottom: 8px;
-        padding: 0 var(--cr-section-padding);
-      }
+    #sort {
+      align-items: center;
+      display: flex;
+      margin: 0 var(--cr-icon-button-margin-start);
+      margin-bottom: 8px;
+      padding: 0 var(--cr-section-padding);
+    }
 
-      #sortMethod {
-        margin-inline-start: 1em;
-      }
+    #sortMethod {
+      margin-inline-start: 1em;
+    }
 
-      /* There is only one top-level heading for All Sites, so remove the
-       * additional leading padding used for lists. */
-      .list-frame.without-heading {
-        padding-inline-start: var(--cr-section-padding);
-      }
+    /* There is only one top-level heading for All Sites, so remove the
+     * additional leading padding used for lists. */
+    .list-frame.without-heading {
+      padding-inline-start: var(--cr-section-padding);
+    }
 
-      #clearAllContainer {
-        align-items: center;
-        display: flex;
-        height: var(--cr-section-two-line-min-height);
-        justify-content: space-between;
-        margin: 0 var(--cr-icon-button-margin-start);
-        padding-inline-end: var(--cr-section-padding);
-        padding-inline-start: var(--cr-section-padding);
-      }
+    #clearAllContainer {
+      align-items: center;
+      display: flex;
+      height: var(--cr-section-two-line-min-height);
+      justify-content: space-between;
+      margin: 0 var(--cr-icon-button-margin-start);
+      padding-inline-end: var(--cr-section-padding);
+      padding-inline-start: var(--cr-section-padding);
+    }
 
-      #relatedWebsiteSetsLearnMore {
-        margin: 0 var(--cr-icon-button-margin-start);
-        padding-bottom: 16px;
-        padding-inline-end: var(--cr-section-padding);
-        padding-inline-start: var(--cr-section-padding);
-        width: 60%;
-      }
+    #relatedWebsiteSetsLearnMore {
+      margin: 0 var(--cr-icon-button-margin-start);
+      padding-bottom: 16px;
+      padding-inline-end: var(--cr-section-padding);
+      padding-inline-start: var(--cr-section-padding);
+      width: 60%;
+    }
 
-      #relatedWebsiteSetsDescription {
-        margin: 0 var(--cr-icon-button-margin-start);
-        padding-bottom: 8px;
-        padding-inline-end: var(--cr-section-padding);
-        padding-inline-start: var(--cr-section-padding);
-      }
+    #relatedWebsiteSetsDescription {
+      margin: 0 var(--cr-icon-button-margin-start);
+      padding-bottom: 8px;
+      padding-inline-end: var(--cr-section-padding);
+      padding-inline-start: var(--cr-section-padding);
+    }
 
-      #clearAllButton cr-button {
-        white-space: nowrap;
-      }
-    </style>
+    #clearAllButton cr-button {
+      white-space: nowrap;
+    }
+  </style>
+  <settings-subpage page-title="$i18n{siteSettingsAllSites}"
+      search-label="$i18n{siteSettingsAllSitesSearch}"
+      search-term="{{filter}}" preserve-search-term route-path$="[[routePath]]">
     <div id="sort">
       <label id="sortLabel">$i18n{siteSettingsAllSitesSort}</label>
       <select id="sortMethod" class="md-select" aria-labelledby="sortLabel"
@@ -194,3 +197,4 @@
         </cr-dialog>
       </template>
     </cr-lazy-render>
+  </settings-subpage>

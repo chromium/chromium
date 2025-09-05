@@ -31,6 +31,7 @@ suite('PrivacyPageIndex', function() {
           enableIncognitoTrackingProtections: false,
           enableKeyboardLockPrompt: false,
           enableLocalNetworkAccessSetting: false,
+          enablePaymentHandlerContentSetting: false,
           enableSecurityKeysSubpage: false,
           enableWebAppInstallation: false,
           isGuest: false,
@@ -246,13 +247,33 @@ suite('PrivacyPageIndex', function() {
           parentViewId: 'old',
         },
         {
+          route: routes.SITE_SETTINGS_ALL,
+          viewId: 'siteSettingsAll',
+          parentViewId: 'old',
+        },
+        {
           route: routes.SITE_SETTINGS_AR,
           viewId: 'siteSettingsAr',
           parentViewId: 'old',
         },
         {
+          route: routes.SITE_SETTINGS_AUTOMATIC_DOWNLOADS,
+          viewId: 'siteSettingsAutomaticDownloads',
+          parentViewId: 'old',
+        },
+        {
           route: routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN,
           viewId: 'siteSettingsAutomaticFullscreen',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_BACKGROUND_SYNC,
+          viewId: 'siteSettingsBackgroundSync',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_CLIPBOARD,
+          viewId: 'siteSettingsClipboard',
           parentViewId: 'old',
         },
         {
@@ -266,6 +287,11 @@ suite('PrivacyPageIndex', function() {
           parentViewId: 'old',
         },
         {
+          route: routes.SITE_SETTINGS_JAVASCRIPT,
+          viewId: 'siteSettingsJavascript',
+          parentViewId: 'old',
+        },
+        {
           route: routes.SITE_SETTINGS_LOCAL_FONTS,
           viewId: 'siteSettingsLocalFonts',
           parentViewId: 'old',
@@ -276,6 +302,11 @@ suite('PrivacyPageIndex', function() {
           parentViewId: 'old',
         },
         {
+          route: routes.SITE_SETTINGS_MIDI_DEVICES,
+          viewId: 'siteSettingsMidiDevices',
+          parentViewId: 'old',
+        },
+        {
           route: routes.SITE_SETTINGS_NOTIFICATIONS,
           viewId: 'siteSettingsNotifications',
           parentViewId: 'old',
@@ -283,6 +314,16 @@ suite('PrivacyPageIndex', function() {
         {
           route: routes.SITE_SETTINGS_PDF_DOCUMENTS,
           viewId: 'siteSettingsPdfDocuments',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_POPUPS,
+          viewId: 'siteSettingsPopups',
+          parentViewId: 'old',
+        },
+        {
+          route: routes.SITE_SETTINGS_SENSORS,
+          viewId: 'siteSettingsSensors',
           parentViewId: 'old',
         },
         {
@@ -372,6 +413,16 @@ suite('PrivacyPageIndex', function() {
       return testViewsForRoute(
           routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS,
           ['siteSettingsLocalNetworkAccess'], 'old');
+    });
+
+    test('RoutingPaymentHandler', async function() {
+      assertFalse(
+          loadTimeData.getBoolean('enablePaymentHandlerContentSetting'));
+      await createPrivacyPageIndex({enablePaymentHandlerContentSetting: true});
+
+      return testViewsForRoute(
+          routes.SITE_SETTINGS_PAYMENT_HANDLER, ['siteSettingsPaymentHandler'],
+          'old');
     });
 
     test('RoutingWebAppInstallation', async function() {

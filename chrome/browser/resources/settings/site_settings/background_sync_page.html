@@ -1,4 +1,7 @@
-  <style include="settings-shared site-settings-shared"></style>
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsBackgroundSync}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsBackgroundSyncDescription}
   </div>
@@ -14,5 +17,6 @@
       category="[[contentSettingsTypesEnum_.BACKGROUND_SYNC]]"
       allow-header="$i18n{siteSettingsBackgroundSyncAllowedExceptions}"
       block-header="$i18n{siteSettingsBackgroundSyncBlockedExceptions}"
-      search-filter="[[searchFilter_]]">
+      search-filter="[[searchTerm]]">
   </category-setting-exceptions>
+</settings-subpage>

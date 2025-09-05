@@ -133,6 +133,13 @@
   </template>
 
   <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_ALL, currentRoute, inSearchMode)]]">
+    <all-sites slot="view" id="siteSettingsAll" data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_ALL.path]]">
+    </all-sites>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_AR, currentRoute, inSearchMode)]]">
     <settings-ar-page slot="view" id="siteSettingsAr" data-parent-view-id="old"
         route-path$="[[routes_.SITE_SETTINGS_AR.path]]">
@@ -150,12 +157,28 @@
   </template>
 
   <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_AUTOMATIC_DOWNLOADS, currentRoute, inSearchMode)]]">
+    <settings-automatic-downloads-page slot="view"
+        id="siteSettingsAutomaticDownloads" data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_AUTOMATIC_DOWNLOADS.path]]">
+    </settings-automatic-downloads-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_AUTOMATIC_FULLSCREEN, currentRoute,
       inSearchMode)]]">
     <settings-automatic-full-screen-page slot="view"
         id="siteSettingsAutomaticFullscreen" data-parent-view-id="old"
         route-path$="[[routes_.SITE_SETTINGS_AUTOMATIC_FULLSCREEN.path]]">
     </settings-automatic-full-screen-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_BACKGROUND_SYNC, currentRoute, inSearchMode)]]">
+    <settings-background-sync-page slot="view"
+        id="siteSettingsBackgroundSync" data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_BACKGROUND_SYNC.path]]">
+    </settings-background-sync-page>
   </template>
 
   <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
@@ -176,6 +199,14 @@
           route-path$="[[routes_.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL.path]]">
       </settings-captured-surface-control-page>
     </template>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_CLIPBOARD, currentRoute, inSearchMode)]]">
+    <settings-clipboard-page slot="view"
+        id="siteSettingsClipboard" data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_CLIPBOARD.path]]">
+    </settings-clipboard-page>
   </template>
 
   <template is="dom-if" if="[[enableHandTrackingContentSetting_]]">
@@ -204,6 +235,14 @@
         route-path$="[[routes_.SITE_SETTINGS_IDLE_DETECTION.path]]"
         data-parent-view-id="old">
     </settings-idle-detection-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_JAVASCRIPT, currentRoute, inSearchMode)]]">
+    <settings-javascript-page slot="view"
+        id="siteSettingsJavascript" data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_JAVASCRIPT.path]]">
+    </settings-javascript-page>
   </template>
 
   <template is="dom-if" if="[[enableKeyboardLockPrompt_]]">
@@ -244,11 +283,29 @@
   </template>
 
   <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_MIDI_DEVICES, currentRoute, inSearchMode)]]">
+    <settings-midi-devices-page slot="view"
+        id="siteSettingsMidiDevices" data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_MIDI_DEVICES.path]]">
+    </settings-midi-devices-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_NOTIFICATIONS, currentRoute, inSearchMode)]]">
     <settings-notifications-page slot="view" id="siteSettingsNotifications"
         route-path$="[[routes_.SITE_SETTINGS_NOTIFICATIONS.path]]"
         data-parent-view-id="old" prefs="{{prefs}}">
     </settings-notifications-page>
+  </template>
+
+  <template is="dom-if" if="[[enablePaymentHandlerContentSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_PAYMENT_HANDLER, currentRoute, inSearchMode)]]">
+      <settings-payment-handler-page slot="view"
+          id="siteSettingsPaymentHandler" data-parent-view-id="old"
+          route-path$="[[routes_.SITE_SETTINGS_PAYMENT_HANDLER.path]]">
+      </settings-payment-handler-page>
+    </template>
   </template>
 
   <template is="dom-if" if="[[renderView_(
@@ -257,6 +314,22 @@
         data-parent-view-id="old" prefs="{{prefs}}"
         route-path$="[[routes_.SITE_SETTINGS_PDF_DOCUMENTS.path]]">
     </settings-pdf-documents-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_POPUPS, currentRoute, inSearchMode)]]">
+    <settings-popups-page slot="view"
+        id="siteSettingsPopups" data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_POPUPS.path]]">
+    </settings-popups-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_SENSORS, currentRoute, inSearchMode)]]">
+    <settings-sensors-page slot="view"
+        id="siteSettingsSensors" data-parent-view-id="old"
+        route-path$="[[routes_.SITE_SETTINGS_SENSORS.path]]">
+    </settings-sensors-page>
   </template>
 
   <template is="dom-if" if="[[renderView_(
@@ -290,6 +363,16 @@
           id="siteSettingsWebAppInstallation" data-parent-view-id="old"
           route-path$="[[routes_.SITE_SETTINGS_WEB_APP_INSTALLATION.path]]">
       </settings-web-applications-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[enableWebPrintingContentSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_WEB_PRINTING, currentRoute, inSearchMode)]]">
+      <settings-web-printing-page slot="view"
+          id="siteSettingsWebPrinting" data-parent-view-id="old"
+          route-path$="[[routes_.SITE_SETTINGS_WEB_PRINTING.path]]">
+      </settings-web-printing-page>
     </template>
   </template>
 

@@ -123,40 +123,6 @@
         </settings-subpage>
       </template>
 
-      <template is="dom-if" route-path="/content/all" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsAllSites}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}"
-            preserve-search-term>
-          <all-sites filter="[[searchFilter_]]"></all-sites>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/automaticDownloads" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsAutomaticDownloads}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-automatic-downloads-page search-term="[[searchFilter_]]">
-          </settings-automatic-downloads-page>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" if="[[enableWebPrintingContentSetting_]]">
-        <template is="dom-if" route-path="/content/webPrinting" no-search>
-          <settings-subpage page-title="$i18n{siteSettingsWebPrinting}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}">
-            <settings-web-printing-page search-term="[[searchFilter_]]">
-            </settings-web-printing-page>
-          </settings-subpage>
-        </template>
-      </template>
-      <template is="dom-if" route-path="/content/backgroundSync" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsBackgroundSync}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-background-sync-page search-term="[[searchFilter_]]">
-          </settings-background-sync-page>
-        </settings-subpage>
-      </template>
       <template is="dom-if" route-path="/content/camera" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryCamera}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
@@ -259,14 +225,6 @@
           </settings-subpage>
         </template>
       </template>
-      <template is="dom-if" route-path="/content/javascript" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsCategoryJavascript}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-javascript-page search-term="[[searchFilter_]]">
-          </settings-javascript-page>
-        </settings-subpage>
-      </template>
       <template is="dom-if" route-path="/content/sound" no-search>
         <settings-subpage page-title="$i18n{siteSettingsSound}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
@@ -331,22 +289,6 @@
           </category-setting-exceptions>
         </settings-subpage>
       </template>
-      <template is="dom-if" route-path="/content/sensors" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsSensors}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-sensors-page search-term="[[searchFilter_]]">
-          </settings-sensors-page>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/popups" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsCategoryPopups}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-popups-page search-term="[[searchFilter_]]">
-          </settings-popups-page>
-        </settings-subpage>
-      </template>
       <template is="dom-if" if="[[enableSafeBrowsingSubresourceFilter_]]"
           no-search>
         <template is="dom-if" route-path="/content/ads" no-search>
@@ -358,14 +300,6 @@
           </settings-subpage>
        </template>
      </template>
-      <template is="dom-if" route-path="/content/midiDevices" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsMidiDevices}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-midi-devices-page search-term="[[searchFilter_]]">
-          </settings-midi-devices-page>
-        </settings-subpage>
-      </template>
       <template is="dom-if" route-path="/content/usbDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsUsbDevices}"
           learn-more-url="$i18n{chooserUsbOverviewURL}">
@@ -504,24 +438,6 @@
               search-term="[[searchFilter_]]">
           </settings-protected-content-page>
         </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/clipboard" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsClipboard}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-clipboard-page search-term="[[searchFilter_]]">
-          </settings-clipboard-page>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" if="[[enablePaymentHandlerContentSetting_]]">
-        <template is="dom-if" route-path="/content/paymentHandler" no-search>
-          <settings-subpage page-title="$i18n{siteSettingsPaymentHandler}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}">
-            <settings-payment-handler-page search-term="[[searchFilter_]]">
-            </settings-payment-handler-page>
-          </settings-subpage>
-       </template>
       </template>
 
       <if expr="is_chromeos">

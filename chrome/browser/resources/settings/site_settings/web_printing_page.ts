@@ -5,15 +5,19 @@
 import './category_setting_exceptions.js';
 import './settings_category_default_radio_group.js';
 import './site_settings_shared.css.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {getTemplate} from './web_printing_page.html.js';
 
-export class WebPrintingPageElement extends PolymerElement {
+const WebPrintingPageElementBase = SettingsViewMixin(PolymerElement);
+
+export class WebPrintingPageElement extends WebPrintingPageElementBase {
   static get is() {
     return 'settings-web-printing-page';
   }
@@ -35,6 +39,11 @@ export class WebPrintingPageElement extends PolymerElement {
   }
 
   declare searchTerm: string;
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {

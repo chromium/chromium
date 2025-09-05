@@ -119,13 +119,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('enableDeleteBrowsingDataRevamp'),
       },
 
-      enablePaymentHandlerContentSetting_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enablePaymentHandlerContentSetting');
-        },
-      },
-
       enableFederatedIdentityApiContentSetting_: {
         type: Boolean,
         value() {
@@ -156,11 +149,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
-      },
-
-      enableWebPrintingContentSetting_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableWebPrintingContentSetting'),
       },
 
       isPrivacySandboxRestricted_: {
@@ -229,21 +217,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: ChooserType,
       },
 
-      enableKeyboardLockPrompt_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
-      },
-
-      enableWebAppInstallation_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
-      },
-
-      enableLocalNetworkAccessSetting_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
-      },
-
       enableIncognitoTrackingProtections_: {
         type: Boolean,
         value: () =>
@@ -278,18 +251,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private blockAutoplayStatus_: BlockAutoplayStatus;
   declare private enableDeleteBrowsingDataRevamp_: boolean;
   declare private enableFederatedIdentityApiContentSetting_: boolean;
-  declare private enablePaymentHandlerContentSetting_: boolean;
   declare private enableExperimentalWebPlatformFeatures_: boolean;
   // <if expr="is_chromeos">
   declare private enableSmartCardReadersContentSetting_: boolean;
   // </if>
   declare private enableWebBluetoothNewPermissionsBackend_: boolean;
-  declare private enableWebPrintingContentSetting_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
   declare private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   private privateStateTokensEnabled_: boolean;
-  declare private enableWebAppInstallation_: boolean;
-  declare private enableLocalNetworkAccessSetting_: boolean;
   declare private focusConfig_: FocusConfig;
   declare private searchFilter_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
@@ -300,7 +269,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
-  declare private enableKeyboardLockPrompt_: boolean;
   declare private enableIncognitoTrackingProtections_: boolean;
   declare private enableBundledSecuritySettings_: boolean;
   declare private dbdDeletionConfirmationToastLabel_: string;
@@ -486,24 +454,34 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         triggerId = 'securityLinkRow';
         break;
       case 'siteSettings':
+      case 'siteSettingsAll':
       case 'siteSettingsAr':
+      case 'siteSettingsAutomaticDownloads':
       case 'siteSettingsAutomaticFullscreen':
       case 'siteSettingsAutoPictureInPicture':
+      case 'siteSettingsBackgroundSync':
       case 'siteSettingsBluetoothScanning':
       case 'siteSettingsCapturedSurfaceControl':
+      case 'siteSettingsClipboard':
       case 'siteSettingsHandlers':
       case 'siteSettingsHandTracking':
       case 'siteSettingsIdleDetection':
+      case 'siteSettingsJavascript':
       case 'siteSettingsKeyboardLock':
       case 'siteSettingsLocalFonts':
       case 'siteSettingsLocalNetworkAccess':
       case 'siteSettingsLocation':
+      case 'siteSettingsMidiDevices':
       case 'siteSettingsNotifications':
+      case 'siteSettingsPaymentHandler':
       case 'siteSettingsPdfDocuments':
+      case 'siteSettingsPopups':
+      case 'siteSettingsSensors':
       case 'siteSettingsSiteData':
       case 'siteSettingsStorageAccess':
       case 'siteSettingsVr':
       case 'siteSettingsWebAppInstallation':
+      case 'siteSettingsWebPrinting':
       case 'siteSettingsWindowManagement':
       case 'siteSettingsZoomLevels':
         triggerId = 'permissionsLinkRow';

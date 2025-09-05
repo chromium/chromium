@@ -1,11 +1,13 @@
-  <style include="settings-shared site-settings-shared"></style>
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsMidiDevices}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsMidiDescription}
   </div>
   <settings-category-default-radio-group
       category="[[contentSettingsTypesEnum_.MIDI_DEVICES]]"
-      allow-option-label=
-          "$i18n{siteSettingsMidiAllowed}"
+      allow-option-label="$i18n{siteSettingsMidiAllowed}"
       allow-option-icon="privacy:piano"
       block-option-label="$i18n{siteSettingsMidiBlocked}"
       block-option-icon="privacy:piano-off">
@@ -17,3 +19,4 @@
       block-header="$i18n{siteSettingsMidiBlockedExceptions}"
       search-filter="[[searchTerm]]">
   </category-setting-exceptions>
+</settings-subpage>
