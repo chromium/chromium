@@ -131,6 +131,7 @@ source_set("unit_tests") {
     "browser_download_service_unittest.mm",
     "document_download_tab_helper_unittest.mm",
     "download_directory_util_unittest.mm",
+    "download_file_service_unittest.mm",
     "download_filter_util_unittest.mm",
     "download_manager_tab_helper_unittest.mm",
     "download_record_database_unittest.mm",
