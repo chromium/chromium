@@ -35,9 +35,7 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
 }
 
 std::unique_ptr<KeyedService>
-ChildAccountServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+ChildAccountServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   CHECK(SupervisedUserServiceFactory::GetForProfile(profile));
   return std::make_unique<supervised_user::ChildAccountService>(
       CHECK_DEREF(profile->GetPrefs()),

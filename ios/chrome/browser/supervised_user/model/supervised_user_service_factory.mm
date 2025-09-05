@@ -55,9 +55,7 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
 
 std::unique_ptr<KeyedService>
 SupervisedUserServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
       std::make_unique<SupervisedUserServicePlatformDelegate>(profile);
   signin::IdentityManager* identity_manager =

@@ -32,8 +32,7 @@ ListFamilyMembersServiceFactory::ListFamilyMembersServiceFactory()
 
 std::unique_ptr<KeyedService>
 ListFamilyMembersServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<supervised_user::ListFamilyMembersService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(), CHECK_DEREF(profile->GetPrefs()));
