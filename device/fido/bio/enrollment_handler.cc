@@ -108,6 +108,7 @@ void BioEnrollmentHandler::AuthenticatorRemoved(
     return;
   }
 
+  bio_enroller_.reset();
   authenticator_ = nullptr;
   RunErrorCallback(Error::kAuthenticatorRemoved);
 }

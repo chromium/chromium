@@ -848,9 +848,16 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
       response_code = OnCredentialManagement(request_bytes, &response_data);
       break;
     case CtapRequestCommand::kAuthenticatorBioEnrollment:
-    case CtapRequestCommand::kAuthenticatorBioEnrollmentPreview:
-      response_code = OnBioEnrollment(request_bytes, &response_data);
+    case CtapRequestCommand::kAuthenticatorBioEnrollmentPreview: {
+      std::optional<CtapDeviceResponseCode> maybe_response_code =
+          OnBioEnrollment(request_bytes, &response_data);
+      if (!maybe_response_code) {
+        // Simulate timeout due to unresponded user tap.
+        return 0;
+      }
+      response_code = *maybe_response_code;
       break;
+    }
     case CtapRequestCommand::kAuthenticatorSelection:
       DCHECK(SupportsAtLeast(Ctap2Version::kCtap2_1));
       if (!SimulatePress()) {
@@ -2368,7 +2375,9 @@ CtapDeviceResponseCode VirtualCtap2Device::OnCredentialManagement(
   NOTREACHED();
 }
 
-CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
+// Returns std::nullopt if the request should be left hanging due to a simulate
+// user not tapping the security key sensor.
+std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnBioEnrollment(
     base::span<const uint8_t> request_bytes,
     std::vector<uint8_t>* response) {
   request_state_.Reset();
@@ -2478,6 +2487,9 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
           config_.bio_enrollment_capacity) {
         return CtapDeviceResponseCode::kCtap2ErrFpDatabaseFull;
       }
+      if (!SimulatePress()) {
+        return std::nullopt;
+      }
       mutable_state()->bio_current_template_id = 0;
       while (mutable_state()->bio_templates.find(
                  ++(*mutable_state()->bio_current_template_id)) !=
@@ -2501,6 +2513,9 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
       if (!mutable_state()->bio_current_template_id ||
           mutable_state()->bio_current_template_id != *template_id) {
         NOTREACHED() << "Invalid current enrollment or template id parameter.";
+      }
+      if (!SimulatePress()) {
+        return std::nullopt;
       }
       if (mutable_state()->bio_enrollment_next_sample_error) {
         response_map.emplace(

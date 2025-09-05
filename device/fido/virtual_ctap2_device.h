@@ -353,8 +353,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
   CtapDeviceResponseCode OnCredentialManagement(
       base::span<const uint8_t> request,
       std::vector<uint8_t>* response);
-  CtapDeviceResponseCode OnBioEnrollment(base::span<const uint8_t> request,
-                                         std::vector<uint8_t>* response);
+  std::optional<CtapDeviceResponseCode> OnBioEnrollment(
+      base::span<const uint8_t> request,
+      std::vector<uint8_t>* response);
   CtapDeviceResponseCode OnLargeBlobs(base::span<const uint8_t> request,
                                       std::vector<uint8_t>* response);
   CtapDeviceResponseCode OnAuthenticatorGetInfo(

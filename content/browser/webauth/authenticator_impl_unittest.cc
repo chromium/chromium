@@ -4696,11 +4696,13 @@ class UVTestAuthenticatorClientDelegate
   explicit UVTestAuthenticatorClientDelegate(bool* collected_pin,
                                              uint32_t* min_pin_length,
                                              bool* did_bio_enrollment,
-                                             bool cancel_bio_enrollment)
+                                             bool cancel_bio_enrollment,
+                                             bool block_request_on_failure_once)
       : collected_pin_(collected_pin),
         min_pin_length_(min_pin_length),
         did_bio_enrollment_(did_bio_enrollment),
-        cancel_bio_enrollment_(cancel_bio_enrollment) {
+        cancel_bio_enrollment_(cancel_bio_enrollment),
+        block_request_on_failure_once_(block_request_on_failure_once) {
     *collected_pin_ = false;
     *did_bio_enrollment_ = false;
   }
@@ -4735,12 +4737,19 @@ class UVTestAuthenticatorClientDelegate
 
   void FinishCollectToken() override {}
 
+  bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override {
+    bool block = block_request_on_failure_once_;
+    block_request_on_failure_once_ = false;
+    return block;
+  }
+
  private:
   raw_ptr<bool> collected_pin_;
   raw_ptr<uint32_t> min_pin_length_;
   base::OnceClosure bio_callback_;
   raw_ptr<bool> did_bio_enrollment_;
   bool cancel_bio_enrollment_;
+  bool block_request_on_failure_once_;
 };
 
 class UVTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
@@ -4755,7 +4764,7 @@ class UVTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
       RenderFrameHost* render_frame_host) override {
     return std::make_unique<UVTestAuthenticatorClientDelegate>(
         &collected_pin, &min_pin_length, &did_bio_enrollment,
-        cancel_bio_enrollment);
+        cancel_bio_enrollment, block_request_on_failure_once);
   }
 
   TestWebAuthenticationDelegate web_authentication_delegate;
@@ -4764,6 +4773,7 @@ class UVTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   uint32_t min_pin_length = 0;
   bool did_bio_enrollment;
   bool cancel_bio_enrollment = false;
+  bool block_request_on_failure_once = false;
 };
 
 class UVAuthenticatorImplTest : public AuthenticatorImplTest {
@@ -6113,6 +6123,52 @@ TEST_F(InternalUVAuthenticatorImplTest,
   EXPECT_EQ(device::kMinPinLength, test_client_.min_pin_length);
   EXPECT_TRUE(test_client_.did_bio_enrollment);
   EXPECT_FALSE(virtual_device_factory_->mutable_state()->fingerprints_enrolled);
+}
+
+// Regression test for https://crbug.com/442489275.
+// Tests that removing the authenticator during bio enrollment does not leave a
+// dangling pointer.
+TEST_F(InternalUVAuthenticatorImplTest,
+       InlineBioEnrollmentRemoveAuthenticator) {
+  device::VirtualCtap2Device::Config config;
+  config.internal_uv_support = true;
+  config.pin_support = true;
+  config.user_verification_succeeds = true;
+  config.bio_enrollment_support = true;
+  virtual_device_factory_->mutable_state()->pin = kTestPIN;
+  virtual_device_factory_->mutable_state()->pin_retries =
+      device::kMaxPinRetries;
+  virtual_device_factory_->mutable_state()->fingerprints_enrolled = false;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  // Stall the biometric enrollment so we can disconnect the authenticator.
+  base::test::TestFuture<void> touch_fingerprint_future;
+  virtual_device_factory_->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting([&](device::VirtualFidoDevice* device) {
+        touch_fingerprint_future.SetValue();
+        return false;
+      });
+
+  // Block the request on failure, otherwise the request ends immediately and
+  // the bug doesn't trigger.
+  test_client_.block_request_on_failure_once = true;
+
+  // Make a credential and wait for the touch.
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  TestMakeCredentialFuture request_future;
+  authenticator->MakeCredential(
+      make_credential_options(device::UserVerificationRequirement::kRequired),
+      request_future.GetCallback());
+  ASSERT_TRUE(touch_fingerprint_future.Wait());
+
+  // Disconnect the device, which should clean up the bio enroller.
+  virtual_device_factory_->DisconnectDevice();
+
+  // Time the request out.
+  task_environment()->FastForwardBy(kTestTimeout);
+  ASSERT_TRUE(request_future.Wait());
+  // No crashes due to dangling pointers.
 }
 
 // Test making a credential skipping biometric enrollment during credential

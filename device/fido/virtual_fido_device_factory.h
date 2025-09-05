@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"
@@ -55,6 +56,10 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
   // `WinWebAuthnApi::ScopedOverride` before settings to true.
   void set_discover_win_webauthn_api_authenticator(bool on);
 
+  // If there's an active virtual authenticator, disconnects it. Otherwise, does
+  // nothing.
+  void DisconnectDevice();
+
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<device::FidoDiscoveryBase>
   MaybeCreateWinWebAuthnApiDiscovery() override;
@@ -80,6 +85,7 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
   scoped_refptr<VirtualFidoDeviceDiscovery::Trace> trace_ =
       new VirtualFidoDeviceDiscovery::Trace;
   bool discover_win_webauthn_api_authenticator_ = false;
+  base::RepeatingCallback<void(bool)> disconnect_callback_;
 
   base::WeakPtrFactory<VirtualFidoDeviceFactory> weak_ptr_factory_{this};
 };

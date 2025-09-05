@@ -553,6 +553,9 @@ void MakeCredentialRequestHandler::AuthenticatorRemoved(
 
   FidoRequestHandlerBase::AuthenticatorRemoved(discovery, authenticator);
 
+  if (bio_enroller_ && authenticator == bio_enroller_->authenticator()) {
+    bio_enroller_.reset();
+  }
   if (authenticator == selected_authenticator_for_pin_uv_auth_token_) {
     selected_authenticator_for_pin_uv_auth_token_ = nullptr;
     // Authenticator could have been removed during PIN entry, PIN fallback
