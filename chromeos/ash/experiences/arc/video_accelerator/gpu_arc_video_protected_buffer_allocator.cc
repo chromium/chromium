@@ -13,7 +13,6 @@
 #include "chromeos/ash/experiences/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_allocator.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
-#include "media/base/format_utils.h"
 #include "media/gpu/macros.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -76,30 +75,25 @@ void GpuArcVideoProtectedBufferAllocator::AllocateProtectedNativePixmap(
     std::move(callback).Run(false);
     return;
   }
-  media::VideoPixelFormat pixel_format;
+  viz::SharedImageFormat si_format;
   switch (format) {
     case arc::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_YV12:
-      pixel_format = media::PIXEL_FORMAT_YV12;
+      si_format = viz::MultiPlaneFormat::kYV12;
       break;
     case arc::mojom::HalPixelFormat::HAL_PIXEL_FORMAT_NV12:
-      pixel_format = media::PIXEL_FORMAT_NV12;
+      si_format = viz::MultiPlaneFormat::kNV12;
       break;
     default:
       VLOGF(1) << "Unsupported format: " << format;
       std::move(callback).Run(false);
       return;
   }
-  VLOGF(2) << "format=" << media::VideoPixelFormatToString(pixel_format)
+  VLOGF(2) << "format=" << si_format.ToString()
            << ", picture_size=" << picture_size.ToString();
 
-  auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
-  if (!buffer_format) {
-    std::move(callback).Run(false);
-    return;
-  }
   std::move(callback).Run(
       protected_buffer_allocator_->AllocateProtectedNativePixmap(
-          std::move(fd), *buffer_format, picture_size));
+          std::move(fd), si_format, picture_size));
   return;
 }
 
