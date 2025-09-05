@@ -22,7 +22,7 @@ public class AppHistoryUmaRecorder extends HistoryUmaRecorder {
     }
 
     @Override
-    public void recordClearBrowsingData(boolean isIncognito) {
+    public void recordClearBrowsingData() {
         // Clear data is disabled for in-app history for now.
     }
 

@@ -609,7 +609,7 @@ public class HistoryManager
     // HistoryContentManager.Observer
     @Override
     public void onClearBrowsingDataClicked() {
-        mUmaRecorder.recordClearBrowsingData(mIsIncognito);
+        mUmaRecorder.recordClearBrowsingData();
         // Opens the clear browsing data preference.
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();

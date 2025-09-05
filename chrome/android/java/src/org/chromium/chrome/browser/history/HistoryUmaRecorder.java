@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.history;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.profile_metrics.BrowserProfileType;
 
 /** UMA/Histogram recorder for history UI. */
 @NullMarked
@@ -111,23 +110,9 @@ public class HistoryUmaRecorder {
         // Do nothing for browser history UI.
     }
 
-    /**
-     * Record the action/histogram for clear browsing data.
-     *
-     * @param isIncognito Whether the action is triggered for incognito tab.
-     */
-    public void recordClearBrowsingData(boolean isIncognito) {
+    /** Record the action for clear browsing data. */
+    public void recordClearBrowsingData() {
         recordUserAction("ClearBrowsingData");
-        recordClearBrowsingDataMetric(isIncognito);
-    }
-
-    private void recordClearBrowsingDataMetric(boolean incognito) {
-        @BrowserProfileType
-        int type = incognito ? BrowserProfileType.INCOGNITO : BrowserProfileType.REGULAR;
-        RecordHistogram.recordEnumeratedHistogram(
-                getPrefix() + "ClearBrowsingData.PerProfileType",
-                type,
-                BrowserProfileType.MAX_VALUE);
     }
 
     /**

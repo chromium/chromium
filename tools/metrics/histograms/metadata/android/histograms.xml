@@ -2380,16 +2380,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.HistoryPage.ClearBrowsingData.PerProfileType"
-    enum="BrowserProfileType" expires_after="2025-09-14">
-  <owner>roagarwal@chromium.org</owner>
-  <owner>chrome-incognito@google.com</owner>
-  <summary>
-    Records the clicks on Clear Browsing Data button at history page for each
-    profile type in Android.
-  </summary>
-</histogram>
-
 <histogram name="Android.HomeButton.PerProfileType" enum="BrowserProfileType"
     expires_after="2023-01-15">
   <owner>roagarwal@chromium.org</owner>
