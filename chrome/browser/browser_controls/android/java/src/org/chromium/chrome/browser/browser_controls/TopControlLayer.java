@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browser_controls;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.ScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 
@@ -29,6 +30,15 @@ public interface TopControlLayer {
      */
     default boolean contributesToTotalHeight() {
         return true;
+    }
+
+    /**
+     * Returns the scroll behavior of the layer. By default, all layers are scrollable.
+     *
+     * @return The {@link ScrollBehavior} of the layer.
+     */
+    default @ScrollBehavior int getScrollBehavior() {
+        return ScrollBehavior.DEFAULT_SCROLLABLE;
     }
 
     /**

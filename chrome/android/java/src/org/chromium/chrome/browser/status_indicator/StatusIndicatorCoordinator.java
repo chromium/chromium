@@ -19,6 +19,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.ScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -266,6 +267,11 @@ public class StatusIndicatorCoordinator implements TopControlLayer {
     @Override
     public @TopControlVisibility int getTopControlVisibility() {
         return mIsShowing ? TopControlVisibility.VISIBLE : TopControlVisibility.HIDDEN;
+    }
+
+    @Override
+    public @ScrollBehavior int getScrollBehavior() {
+        return ScrollBehavior.NEVER_SCROLLABLE;
     }
 
     StatusIndicatorMediator getMediatorForTesting() {

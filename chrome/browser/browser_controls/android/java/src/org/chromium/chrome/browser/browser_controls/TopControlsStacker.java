@@ -55,6 +55,17 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         int HIDDEN = 1;
     }
 
+    /** Enum that defines the scroll behavior of a top control. */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        ScrollBehavior.DEFAULT_SCROLLABLE,
+        ScrollBehavior.NEVER_SCROLLABLE,
+    })
+    public @interface ScrollBehavior {
+        int DEFAULT_SCROLLABLE = 0;
+        int NEVER_SCROLLABLE = 1;
+    }
+
     // The pre-defined stack order for different top controls.
     private static final @TopControlType int[] STACK_ORDER =
             new int[] {
