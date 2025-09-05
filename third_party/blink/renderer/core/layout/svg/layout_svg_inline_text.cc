@@ -202,6 +202,14 @@ const Font* LayoutSVGInlineText::ComputeNewScaledFontForStyle(
 
   FontDescription font_description = unscaled_font_description;
   font_description.SetComputedSize(scaled_font_size);
+  if (font_description.HasSizeAdjust()) {
+    if (auto adjusted_size =
+            FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
+                style.GetFont()->PrimaryFont(), font_description)) {
+      font_description.SetAdjustedSize(adjusted_size.value());
+    }
+  }
+
   const float zoom = style.EffectiveZoom();
   font_description.SetLetterSpacing(
       Length::Fixed(font_description.LetterSpacing() * scaling_factor / zoom));

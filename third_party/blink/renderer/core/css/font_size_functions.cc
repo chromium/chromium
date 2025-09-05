@@ -116,9 +116,12 @@ int FindNearestLegacyFontSize(int pixel_font_size,
 }
 
 float AspectValue(const SimpleFontData& font_data,
-                  FontSizeAdjust::Metric metric,
-                  float computed_size) {
-  DCHECK(computed_size);
+                  FontSizeAdjust::Metric metric) {
+  const float font_size = font_data.PlatformData().size();
+  if (!font_size) {
+    return 0.0f;
+  }
+
   const FontMetrics& font_metrics = font_data.GetFontMetrics();
   // We return fallback values for missing font metrics.
   // https://github.com/w3c/csswg-drafts/issues/6384
@@ -126,31 +129,31 @@ float AspectValue(const SimpleFontData& font_data,
   switch (metric) {
     case FontSizeAdjust::Metric::kCapHeight:
       if (font_metrics.CapHeight() > 0) {
-        aspect_value = font_metrics.CapHeight() / computed_size;
+        aspect_value = font_metrics.CapHeight() / font_size;
       }
       break;
     case FontSizeAdjust::Metric::kChWidth:
       if (font_metrics.HasZeroWidth()) {
-        aspect_value = font_metrics.ZeroWidth() / computed_size;
+        aspect_value = font_metrics.ZeroWidth() / font_size;
       }
       break;
     case FontSizeAdjust::Metric::kIcWidth:
       if (const std::optional<float>& size =
               font_data.IdeographicAdvanceWidth()) {
-        aspect_value = *size / computed_size;
+        aspect_value = *size / font_size;
       }
       break;
     case FontSizeAdjust::Metric::kIcHeight: {
       if (const std::optional<float>& size =
               font_data.IdeographicAdvanceHeight()) {
-        aspect_value = *size / computed_size;
+        aspect_value = *size / font_size;
       }
       break;
     }
     case FontSizeAdjust::Metric::kExHeight:
     default:
       if (font_metrics.HasXHeight()) {
-        aspect_value = font_metrics.XHeight() / computed_size;
+        aspect_value = font_metrics.XHeight() / font_size;
       }
   }
   return aspect_value;
@@ -255,13 +258,12 @@ int FontSizeFunctions::LegacyFontSize(const Document* document,
 
 std::optional<float> FontSizeFunctions::FontAspectValue(
     const SimpleFontData* font_data,
-    FontSizeAdjust::Metric metric,
-    float computed_size) {
-  if (!font_data || !computed_size) {
+    FontSizeAdjust::Metric metric) {
+  if (!font_data) {
     return std::nullopt;
   }
 
-  float aspect_value = AspectValue(*font_data, metric, computed_size);
+  float aspect_value = AspectValue(*font_data, metric);
   if (!aspect_value) {
     return std::nullopt;
   }
@@ -279,8 +281,7 @@ std::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
     return std::nullopt;
   }
 
-  float aspect_value =
-      AspectValue(*font_data, size_adjust.GetMetric(), computed_size);
+  float aspect_value = AspectValue(*font_data, size_adjust.GetMetric());
   if (!aspect_value) {
     return std::nullopt;
   }

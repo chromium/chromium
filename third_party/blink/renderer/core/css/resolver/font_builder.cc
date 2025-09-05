@@ -392,8 +392,8 @@ void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
   FontSizeAdjust size_adjust = font_description.SizeAdjust();
   if (size_adjust.IsFromFont() &&
       size_adjust.Value() == FontSizeAdjust::kFontSizeAdjustNone) {
-    std::optional<float> aspect_value = FontSizeFunctions::FontAspectValue(
-        font_data, size_adjust.GetMetric(), font_description.ComputedSize());
+    std::optional<float> aspect_value =
+        FontSizeFunctions::FontAspectValue(font_data, size_adjust.GetMetric());
     font_description.SetSizeAdjust(FontSizeAdjust(
         aspect_value.has_value() ? aspect_value.value()
                                  : FontSizeAdjust::kFontSizeAdjustNone,
