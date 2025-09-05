@@ -589,6 +589,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="FingerprintingProtection.SubresourceLoad.Evaluation.WallDuration.FirstRun"
+    units="microseconds" expires_after="2026-03-01">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <owner>tanub@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <summary>
+    Whenever a subresource of a document is evaluated against the ruleset,
+    records how much time was spent on calculating whether it should be allowed
+    to load. This is only recorded on the first run of the ruleset service in a
+    particular process.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram
     name="FingerprintingProtection.SubresourceLoad.TotalDeferTime.{Result}"
     units="microseconds" expires_after="2026-03-01">
   <owner>rizvis@google.com</owner>

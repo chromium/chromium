@@ -65,6 +65,7 @@ LoadPolicy DocumentSubresourceFilter::GetLoadPolicy(
       activation_state_.measure_performance &&
           ScopedThreadTimers::IsSupported(),
       [this](base::TimeDelta delta) {
+        static bool first_run = true;
         statistics_.evaluation_total_wall_duration += delta;
         // Here we use custom histograms to maintain subresource filter
         // metrics, which used UMA_HISTOGRAM_MICRO_TIMES prior to introducing
@@ -73,6 +74,14 @@ LoadPolicy DocumentSubresourceFilter::GetLoadPolicy(
             base::StrCat(
                 {uma_tag_, ".SubresourceLoad.Evaluation.WallDuration"}),
             delta, base::Microseconds(1), base::Seconds(1), 50);
+        if (first_run) {
+          UmaHistogramCustomMicrosecondsTimes(
+              base::StrCat(
+                  {uma_tag_,
+                   ".SubresourceLoad.Evaluation.WallDuration.FirstRun"}),
+              delta, base::Microseconds(1), base::Seconds(1), 50);
+          first_run = false;
+        }
       });
   auto cpu_duration_timer = ScopedThreadTimers::StartIf(
       activation_state_.measure_performance, [this](base::TimeDelta delta) {
