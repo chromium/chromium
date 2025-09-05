@@ -460,11 +460,6 @@ class AccountReconcilor
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On Ash, this is a pointer to `AccountManagerFacadeImpl`.
-  // Note: On Lacros too, this is a pointer to `AccountManagerFacadeImpl`, and
-  // not `ProfileAccountManager`. This was done to simplify the design since
-  // this pointer is only used to observe the closure of the OS/Ash-level signin
-  // dialog and nothing else. Reconsider this decision if this usage changes in
-  // the future.
   raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

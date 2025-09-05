@@ -2237,8 +2237,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileRemoveFromCookie) {
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
 }
 
-// Check that token error on primary account results in a logout to all accounts
-// on Lacros. For other mirror platforms, reconcile is aborted.
+// Check that token error on primary account results in aborted reconcile
 TEST_F(AccountReconcilorMirrorTest, TokenErrorOnPrimary) {
   AccountInfo account_info = ConnectProfileToAccount(kFakeEmail);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(

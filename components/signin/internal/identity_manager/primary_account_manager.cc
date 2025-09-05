@@ -661,8 +661,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
 
   if (abort_signout) {
     // TODO(crbug.com/40240858): Add 'NOTREACHED()' after updating the
-    // 'SigninManager', 'Dice Response Handler',
-    // 'Lacros Profile Account Mapper'.
+    // 'SigninManager', 'Dice Response Handler'.
     VLOG(1) << "Ignoring attempt to sign out while signout disallowed";
     return;
   }
