@@ -1512,12 +1512,12 @@
     {
         "name": "wire-runtime",
         "group": "com.squareup.wire",
-        "version": "5.3.11"
+        "version": "5.4.0"
     },
     {
         "name": "wire-runtime-jvm",
         "group": "com.squareup.wire",
-        "version": "5.3.11"
+        "version": "5.4.0"
     },
     {
         "name": "javapoet",

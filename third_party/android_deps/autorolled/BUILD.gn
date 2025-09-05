@@ -1370,7 +1370,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("com_squareup_wire_wire_runtime_jvm_java") {
-      jar_path = "autorolled/cipd/libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-5.3.11.jar"
+      jar_path = "autorolled/cipd/libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-5.4.0.jar"
       output_name = "com_squareup_wire_wire_runtime_jvm"
       supports_android = true
       requires_android = true
