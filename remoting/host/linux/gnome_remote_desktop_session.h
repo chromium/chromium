@@ -19,6 +19,7 @@
 #include "remoting/host/linux/gnome_display_config_monitor.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/pipewire_capture_stream_manager.h"
+#include "remoting/host/linux/pipewire_mouse_cursor_capturer.h"
 
 namespace remoting {
 
@@ -53,6 +54,11 @@ class GnomeRemoteDesktopSession {
   base::WeakPtr<PipewireCaptureStreamManager> capture_stream_manager() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return capture_stream_manager_.GetWeakPtr();
+  }
+
+  base::WeakPtr<PipewireMouseCursorCapturer> mouse_cursor_capturer() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return mouse_cursor_capturer_.GetWeakPtr();
   }
 
   base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor() {
@@ -126,6 +132,8 @@ class GnomeRemoteDesktopSession {
       sequence_checker_){display_config_client_.GetWeakPtr()};
   PipewireCaptureStreamManager capture_stream_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  PipewireMouseCursorCapturer mouse_cursor_capturer_ GUARDED_BY_CONTEXT(
+      sequence_checker_){capture_stream_manager_.GetWeakPtr()};
   PipewireCaptureStreamManager::Observer::Subscription
       capture_stream_manager_subscription_
           GUARDED_BY_CONTEXT(sequence_checker_);
