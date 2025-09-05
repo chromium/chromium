@@ -14,8 +14,7 @@
 namespace {
 
 // Creates the TabGroupService from `context`.
-std::unique_ptr<KeyedService> CreateService(web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> CreateService(ProfileIOS* profile) {
   CHECK(!profile->IsOffTheRecord());
 
   collaboration::CollaborationService* collaboration_service =
@@ -53,6 +52,6 @@ TabGroupServiceFactory::TabGroupServiceFactory()
 TabGroupServiceFactory::~TabGroupServiceFactory() = default;
 
 std::unique_ptr<KeyedService> TabGroupServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return CreateService(context);
+    ProfileIOS* profile) const {
+  return CreateService(profile);
 }
