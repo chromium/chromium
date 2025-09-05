@@ -35,9 +35,7 @@ DownloadFileServiceFactory::DownloadFileServiceFactory()
 DownloadFileServiceFactory::~DownloadFileServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
-DownloadFileServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+DownloadFileServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   // DownloadRecordService may be nullptr if IsDownloadListEnabled() is false.
   DownloadRecordService* download_record_service = nullptr;
   if (IsDownloadListEnabled()) {

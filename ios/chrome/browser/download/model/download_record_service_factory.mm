@@ -30,7 +30,6 @@ DownloadRecordServiceFactory::~DownloadRecordServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 DownloadRecordServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<DownloadRecordServiceImpl>(profile->GetStatePath());
 }

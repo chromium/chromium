@@ -144,14 +144,14 @@ class BackgroundDownloadServiceTest
   // service. A pointer to the FakeClient object is kept in the test fixture
   // instance to allow test cases to manipulate it.
   std::unique_ptr<KeyedService> MakeBackgroundDowloadService(
-      web::BrowserState* browser_state) {
+      ProfileIOS* profile) {
     DCHECK(!fake_client_);
     auto fake_client = std::make_unique<NiceMock<FakeClient>>();
     fake_client_ = fake_client.get();
     auto clients = std::make_unique<download::DownloadClientMap>();
     clients->emplace(download::DownloadClient::TEST, std::move(fake_client));
     return BackgroundDownloadServiceFactory::GetInstance()
-        ->BuildServiceWithClients(browser_state, std::move(clients));
+        ->BuildServiceWithClients(profile, std::move(clients));
   }
 
  private:

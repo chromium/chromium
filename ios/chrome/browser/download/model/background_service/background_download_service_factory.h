@@ -32,12 +32,12 @@ class BackgroundDownloadServiceFactory : public ProfileKeyedServiceFactoryIOS {
   BackgroundDownloadServiceFactory();
   ~BackgroundDownloadServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 
   std::unique_ptr<KeyedService> BuildServiceWithClients(
-      web::BrowserState* context,
+      ProfileIOS* profile,
       std::unique_ptr<download::DownloadClientMap> clients) const;
 };
 
