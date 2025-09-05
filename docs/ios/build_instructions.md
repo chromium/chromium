@@ -121,6 +121,8 @@ $ autoninja -C out/Debug-iphonesimulator gn_all
 (`autoninja` is a wrapper that automatically provides optimal values for the
 arguments passed to `ninja`.)
 
+Tips: See [Siso tips](../siso_tips.md).
+
 Note: The `setup-gn.py` script needs to run every time one of the `BUILD.gn`
 files is updated (either by you or after rebasing). If you forget to run it,
 the list of targets and files in the Xcode solution may be stale. You can run

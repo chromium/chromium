@@ -396,45 +396,7 @@ You can get a list of all of the other build targets from GN by running
 the GN label with no preceding "//" (so for `//chrome/test:unit_tests`
 use `autoninja -C out\Default chrome/test:unit_tests`).
 
-## Compile a single file
-
-Ninja supports a special [syntax `^`][ninja hat syntax] to compile a single
-object file specifying the source file. For example, `ninja -C
-out/Default ../../base/logging.cc^` compiles `obj/base/base/logging.o`.
-
-[ninja hat syntax]: https://ninja-build.org/manual.html#:~:text=There%20is%20also%20a%20special%20syntax%20target%5E%20for%20specifying%20a%20target%20as%20the%20first%20output%20of%20some%20rule%20containing%20the%20source%20you%20put%20in%20the%20command%20line%2C%20if%20one%20exists.%20For%20example%2C%20if%20you%20specify%20target%20as%20foo.c%5E%20then%20foo.o%20will%20get%20built%20(assuming%20you%20have%20those%20targets%20in%20your%20build%20files)
-
-With autoninja, you need to add  `^^` to preserve the trailing `^`.
-
-```shell
-$ autoninja -C out\Default ..\..\base\logging.cc^^
-```
-
-In addition to `foo.cc^^`, Siso also supports `foo.h^^` syntax to compile
-the corresponding `foo.o` if it exists.
-
-If you run a `bash` shell, you can use the following script to ease invocation:
-
-```shell
-#!/bin/sh
-files=("${@/#/..\/..\/}")
-autoninja -C out/Default ${files[@]/%/^^}
-```
-
-This script assumes it is run from `src` and your output dir is `out/Default`;
-it invokes `autoninja` to compile all given files. If you place it in your
-`$PATH` and name it e.g. `compile`, you can invoke like this:
-
-```shell
-$ pwd  # Just to illustrate where this is run from
-/c/src
-$ compile base/time/time.cc base/time/time_unittest.cc
-...
-[0/47] 5.56s S CXX obj/base/base/time.obj
-...
-[2/3] 9.27s S CXX obj/base/base_unittests/time_unittest.obj
-...
-```
+Tips: See [Siso tips](../siso_tips.md).
 
 ## Run Chromium
 
