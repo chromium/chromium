@@ -15,8 +15,6 @@ import static org.mockito.Mockito.when;
 
 import android.view.ContextThemeWrapper;
 
-import androidx.annotation.DrawableRes;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,8 +40,6 @@ import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizerJni;
 import org.chromium.url.GURL;
 
@@ -76,7 +72,6 @@ public class LocationBarModelUnitTest {
     @Mock private LocationBarDataProvider.Observer mLocationBarDataObserver;
     @Mock private LocationBarModel.Natives mLocationBarModelJni;
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
-    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private OmniboxUrlEmphasizerJni mOmniboxUrlEmphasizerJni;
     @Mock private TabbedPaintPreview mTabbedPaintPreview;
 
@@ -99,7 +94,6 @@ public class LocationBarModelUnitTest {
         ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
         LocationBarModelJni.setInstanceForTesting(mLocationBarModelJni);
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
         OmniboxUrlEmphasizerJni.setInstanceForTesting(mOmniboxUrlEmphasizerJni);
 
         when(mPrimaryOtrProfileMock.isOffTheRecord()).thenReturn(true);
@@ -342,19 +336,5 @@ public class LocationBarModelUnitTest {
                         /* editingText= */ null);
 
         Assert.assertEquals("Alphabet", data.displayText);
-    }
-
-    @Test
-    public void testGetSecurityIconResource_ReadingModePage() {
-        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
-        when(mRegularTabMock.getUrl())
-                .thenReturn(new GURL(UrlConstants.DISTILLER_SCHEME + "://test"));
-        when(mRegularTabMock.isInitialized()).thenReturn(true);
-        when(mRegularTabMock.isDestroyed()).thenReturn(false);
-        mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
-
-        @DrawableRes
-        int drawableRes = mLocationBarModel.getSecurityIconResource(/* isTablet= */ false);
-        Assert.assertEquals(R.drawable.ic_reader_mode_24dp, drawableRes);
     }
 }
