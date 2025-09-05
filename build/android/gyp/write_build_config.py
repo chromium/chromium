@@ -230,13 +230,13 @@ class _TransitiveValuesBuilder:
 
     # Add the target's .jar (except for dist_jar, where it's the output .jar).
     if params.collects_processed_classpath():
-      if not params.is_dist_jar():
+      if not params.is_dist_xar():
         if path := params.get('processed_jar_path'):
           ret.all_processed_jars.add(path)
       ret.all_processed_jars.update(all_deps.collect('processed_jar_path'))
 
     if params.collects_dex_paths():
-      if not params.is_dist_jar():
+      if not params.is_dist_xar():
         if path := params.get('dex_path'):
           ret.all_dex_files.add(path)
       ret.all_dex_files.update(all_deps.collect('dex_path'))
@@ -667,8 +667,6 @@ def main():
   if has_classpath:
     tv = _TransitiveValuesBuilder(params).Build()
 
-    main_config['classpath'] = list(tv.direct_unprocessed_jars) + list(
-        tv.direct_input_jars_paths)
     main_config['interface_classpath'] = list(tv.direct_interface_jars) + list(
         tv.direct_input_jars_paths)
     # processor_configs will be of type 'java_annotation_processor', and so not
@@ -713,7 +711,7 @@ def main():
     if is_apk_or_module:
       main_config['java_resources_jars'] = sorted(tv.java_resources_jars)
 
-  if params.is_dist_jar():
+  if params.is_dist_xar():
     if params.get('direct_deps_only'):
       if params.get('use_interface_jars'):
         dist_jars = tv.direct_interface_jars
@@ -724,8 +722,7 @@ def main():
     else:
       dist_jars = tv.all_processed_jars
 
-    main_config['dist_jar'] = {}
-    main_config['dist_jar']['jars'] = list(dist_jars)
+    main_config['dist_classpath'] = list(dist_jars)
 
   if params.collects_resources():
     main_config['assets'] = sorted(tv.assets)

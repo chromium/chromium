@@ -1562,7 +1562,7 @@ if (!is_robolectric && enable_java_templates) {
         "--output",
         rebase_path(_zip_jar_path, root_build_dir),
         "--no-compress",
-        "--input-zips=@FileArg($_rebased_build_config:dist_jar:jars)",
+        "--input-zips=@FileArg($_rebased_build_config:dist_classpath)",
       ]
 
       _excludes = []
@@ -1692,9 +1692,6 @@ if (!is_robolectric && enable_java_templates) {
   template("dist_aar") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-    _direct_deps_only =
-        defined(invoker.direct_deps_only) && invoker.direct_deps_only
-
     _deps = []
 
     if (defined(invoker.deps)) {
@@ -1708,7 +1705,11 @@ if (!is_robolectric && enable_java_templates) {
 
     write_build_config(_build_config_target_name) {
       type = "dist_aar"
-      forward_variables_from(invoker, [ "proguard_configs" ])
+      forward_variables_from(invoker,
+                             [
+                               "direct_deps_only",
+                               "proguard_configs",
+                             ])
       possible_config_deps = _deps
       supports_android = true
       requires_android = true
@@ -1755,13 +1756,8 @@ if (!is_robolectric && enable_java_templates) {
         "--dependencies-res-zips=@FileArg($_rebased_res_build_config:dependency_zip_overlays)",
         "--r-text-files=@FileArg($_rebased_rtxt_build_config:dependency_rtxt_files)",
         "--proguard-configs=@FileArg($_rebased_build_config:proguard_all_configs)",
+        "--jars=@FileArg($_rebased_build_config:dist_classpath)",
       ]
-      if (_direct_deps_only) {
-        args += [ "--jars=@FileArg($_rebased_build_config:classpath)" ]
-      } else {
-        args +=
-            [ "--jars=@FileArg($_rebased_build_config:processed_classpath)" ]
-      }
 
       if (defined(invoker.android_manifest)) {
         args += [

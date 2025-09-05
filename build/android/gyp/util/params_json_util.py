@@ -385,8 +385,8 @@ class ParamsJson(dict):
   def is_bundle_module(self):
     return self.type == 'android_app_bundle_module'
 
-  def is_dist_jar(self):
-    return self.type == 'dist_jar'
+  def is_dist_xar(self):
+    return self.type in ('dist_aar', 'dist_jar')
 
   def is_group(self):
     return self.type == 'group'
