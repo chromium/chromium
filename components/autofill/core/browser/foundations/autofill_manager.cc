@@ -716,9 +716,7 @@ void AutofillManager::ParseFormsAsyncCommon(
         if (!self) {
           return;
         }
-        if (context.log_manager && self->log_manager()) {
-          context.log_manager->Flush(*self->log_manager());
-        }
+
         CHECK_EQ(context.regex_predictions.size(),
                  context.form_structures.size());
         for (size_t i = 0; i < context.form_structures.size(); ++i) {
@@ -743,6 +741,10 @@ void AutofillManager::ParseFormsAsyncCommon(
           self->NotifyObservers(
               &Observer::OnFieldTypesDetermined, f.global_id(),
               Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
+        }
+
+        if (context.log_manager && self->log_manager()) {
+          context.log_manager->Flush(*self->log_manager());
         }
         std::move(callback).Run(*self);
       },
