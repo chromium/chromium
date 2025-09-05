@@ -61,7 +61,7 @@ void CreateArcVideoEncodeAccelerator(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<arc::GpuArcVideoEncodeAccelerator>(
           gpu::ArcSharedImageInterface::Create(
-              gpu_service->gpu_channel_manager()),
+              gpu_service->gpu_channel_manager(), gpu_service->main_runner()),
           gpu_preferences, gpu_workarounds),
       std::move(receiver));
 }
