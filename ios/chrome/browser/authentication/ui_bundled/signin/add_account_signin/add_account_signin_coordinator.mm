@@ -265,6 +265,8 @@ using signin_metrics::PromoAction;
 #pragma mark - Private
 
 - (void)stopAlertCoordinator {
+  // To avoid reentry, `noInteractionAction` is set to nil.
+  self.alertCoordinator.noInteractionAction = nil;
   [self.alertCoordinator stop];
   self.alertCoordinator = nil;
 }
