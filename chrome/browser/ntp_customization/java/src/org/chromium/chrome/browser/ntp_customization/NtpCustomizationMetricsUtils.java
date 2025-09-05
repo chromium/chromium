@@ -74,6 +74,6 @@ public class NtpCustomizationMetricsUtils {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + name,
                 moduleType,
-                NtpCustomizationCoordinator.BottomSheetType.NUM_ENTRIES);
+                ModuleDelegate.ModuleType.NUM_ENTRIES);
     }
 }
