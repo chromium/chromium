@@ -77,10 +77,6 @@
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/pwa_install_page_action.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/wallet/chrome_walletable_pass_client.h"
-#endif
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -95,6 +91,7 @@
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/wallet/content/browser/content_walletable_pass_ingestion_controller.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "net/base/features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -378,8 +375,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       std::make_unique<InactiveWindowMouseEventController>();
 
   if (base::FeatureList::IsEnabled(wallet::kWalletablePassDetection)) {
-    walletable_pass_client_ =
-        std::make_unique<wallet::ChromeWalletablePassClient>(&tab);
+    if (auto* opt_guide =
+            OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
+      wallet::ContentWalletablePassIngestionController::CreateForWebContents(
+          tab.GetContents(), opt_guide);
+    }
   }
 #endif
 
