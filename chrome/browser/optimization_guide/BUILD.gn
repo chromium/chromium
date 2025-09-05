@@ -134,6 +134,7 @@ if (!is_android) {
       ":test_support",
       "//base/test:test_proto",
       "//base/test:test_support",
+      "//chrome/browser/preloading/prefetch:test_support",
       "//chrome/browser/signin/e2e_tests:test_support",
       "//chrome/browser/ui/webauthn",
       "//chrome/test:test_support",

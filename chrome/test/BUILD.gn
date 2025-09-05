@@ -426,8 +426,6 @@ static_library("test_support") {
       "../browser/extensions/test_extension_menu_icon_loader.h",
       "../browser/policy/extension_force_install_mixin.cc",
       "../browser/policy/extension_force_install_mixin.h",
-      "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.cc",
-      "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.h",
       "../browser/task_manager/task_manager_browsertest_util.cc",
       "../browser/task_manager/task_manager_browsertest_util.h",
       "../browser/task_manager/task_manager_tester.cc",

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 source_set("test_support") {
   testonly = true
@@ -18,6 +19,24 @@ source_set("test_support") {
   ]
 
   deps = [ "//content/public/browser" ]
+
+  if (enable_extensions) {
+    sources += [
+      "no_state_prefetch/no_state_prefetch_test_utils.cc",
+      "no_state_prefetch/no_state_prefetch_test_utils.h",
+    ]
+
+    public_deps += [
+      "//chrome/browser/safe_browsing:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/no_state_prefetch/browser",
+      "//components/safe_browsing/core/browser/db:test_database_manager",
+    ]
+
+    # TODO(crbug.com/353332589): Revisit this when external_protocol_handler.h
+    # gets modularized.
+    public_deps += [ "//chrome/browser" ]
+  }
 }
 
 source_set("platform_browser_tests") {
