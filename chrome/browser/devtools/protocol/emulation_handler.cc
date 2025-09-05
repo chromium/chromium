@@ -32,7 +32,7 @@ const std::vector<display::Display>& GetAllDisplays() {
   // Web Platform we only have a collection of screens. So the protocol screen
   // is referring to Chrome's display. This is consistent with
   // window.getScreenDetails() API naming conventions.
-  display::Screen& screen = CHECK_DEREF(display::Screen::GetScreen());
+  display::Screen& screen = CHECK_DEREF(display::Screen::Get());
   return screen.GetAllDisplays();
 }
 
@@ -47,7 +47,7 @@ std::optional<display::Display> GetDisplay(int64_t display_id) {
 }
 
 bool IsPrimaryDisplay(int64_t display_id) {
-  display::Screen& screen = CHECK_DEREF(display::Screen::GetScreen());
+  display::Screen& screen = CHECK_DEREF(display::Screen::Get());
   return screen.GetPrimaryDisplay().id() == display_id;
 }
 
@@ -172,7 +172,7 @@ Response EmulationHandler::AddScreen(
     std::optional<protocol::String> label,
     std::optional<bool> is_internal,
     std::unique_ptr<protocol::Emulation::ScreenInfo>* out_screen_info) {
-  if (!display::Screen::GetScreen()->IsHeadless()) {
+  if (!display::Screen::Get()->IsHeadless()) {
     return Response::ServerError("Method is only available in headless mode");
   }
 
@@ -222,7 +222,7 @@ Response EmulationHandler::AddScreen(
 }
 
 Response EmulationHandler::RemoveScreen(const protocol::String& screen_id) {
-  if (!display::Screen::GetScreen()->IsHeadless()) {
+  if (!display::Screen::Get()->IsHeadless()) {
     return Response::ServerError("Method is only available in headless mode");
   }
 
