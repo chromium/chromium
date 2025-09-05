@@ -8,7 +8,7 @@ prompts:
 providers:
   - id: python:../../../testing/gemini_provider.py
     config:
-      timeoutSeconds: 300
+      timeoutSeconds: 1200
 defaultTest:
   options:
     provider: python:agents/testing/gemini_provider.py
@@ -27,6 +27,8 @@ tests:
     - type: python
       value: |
         import subprocess
-        return subprocess.run(['out/Default/viz_unittests'],
+        result = subprocess.run(['out/Default/viz_unittests'],
                             capture_output=True,
-                            text=True).returncode == 0
+                            check=True,
+                            text=True)
+        return 'RegionCaptureBoundsTest' in result.stdout

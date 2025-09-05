@@ -3,15 +3,25 @@
 # found in the LICENSE file.
 """A promptfoo provider for the Gemini CLI."""
 
+import json
+import logging
 import os
+import pathlib
 import subprocess
 import sys
+import time
 import threading
 from typing import Any
+from collections.abc import Collection
 
-FINAL_OUTPUT_TAG = 'final_output'
 DEFAULT_TIMEOUT_SECONDS = 600
 DEFAULT_COMMAND = ['gemini', '-y']
+
+DEFAULT_EXTENSIONS = [
+    'build_information',
+    'depot_tools',
+    'landmines',
+]
 
 
 def _stream_reader(stream, output_list: list[str]):
@@ -27,6 +37,20 @@ def _stream_reader(stream, output_list: list[str]):
         stream.close()
 
 
+def _install_extensions(extensions: Collection[str] | None = None, ) -> None:
+    # The installation script should identify the working tree as the "repo
+    # root", so use the copy in the working tree with the CWD set
+    # appropriately for subprocesses like `git`.
+    logging.info('Installing extensions: %s', extensions)
+    command = [
+        sys.executable,
+        pathlib.Path('agents', 'extensions', 'install.py'),
+        'add',
+        *extensions,
+    ]
+    subprocess.check_call(command)
+
+
 def call_api(prompt: str, options: dict[str, Any],
              context: dict[str, Any]) -> dict[str, Any]:
     """A flexible promptfoo provider that runs a command-line tool.
@@ -35,19 +59,19 @@ def call_api(prompt: str, options: dict[str, Any],
     reliable timeout.
     """
     provider_config = options.get('config', {})
+    provider_vars = context.get('vars', {})
+    logging.basicConfig(
+        level=logging.DEBUG
+        if provider_vars.get('verbose', False) else logging.INFO,
+        format='%(message)s',
+    )
+
     command = provider_config.get('command', DEFAULT_COMMAND)
     if not isinstance(command, list):
         return {
             'error': f"'command' must be a list of strings, but got: {command}"
         }
     system_prompt = provider_config.get('system_prompt', '')
-    final_output_tag = provider_config.get('final_output_tag',
-                                           FINAL_OUTPUT_TAG)
-    output_instruction = (
-        'IMPORTANT: After you have finished all your work, wrap your final '
-        f'output in <{final_output_tag}> tags. For example: '
-        f'<{final_output_tag}>your output here</{final_output_tag}>')
-    combined_input = f'{output_instruction}\n{system_prompt}\n\n{prompt}'
     try:
         timeout_seconds = int(
             provider_config.get('timeoutSeconds', DEFAULT_TIMEOUT_SECONDS))
@@ -55,8 +79,14 @@ def call_api(prompt: str, options: dict[str, Any],
         timeout_seconds = DEFAULT_TIMEOUT_SECONDS
     process = None
     combined_output: list[str] = []
+
+    logging.debug('options: %s', json.dumps(options, indent=2))
+    logging.debug('context: %s', json.dumps(context, indent=2))
+
+    extensions = provider_config.get('extensions', DEFAULT_EXTENSIONS)
+    _install_extensions(extensions)
     try:
-        cwd = provider_config.get('cwd', os.getcwd())
+        start_time = time.time()
         process = subprocess.Popen(
             command,
             stdin=subprocess.PIPE,
@@ -64,28 +94,28 @@ def call_api(prompt: str, options: dict[str, Any],
             stderr=subprocess.STDOUT,
             text=True,
             universal_newlines=True,
-            cwd=cwd,
         )
         if process.stdin:
-            process.stdin.write(combined_input)
+            process.stdin.write(f'{system_prompt}\n\n{prompt}')
             process.stdin.close()
-        print(
-            f'--- Streaming Output (Timeout: {timeout_seconds}s) ---',
-            file=sys.stderr,
+        logging.info('--- Streaming Output (Timeout: %ss) ---',
+                     timeout_seconds)
+        output_thread = threading.Thread(
+            target=_stream_reader,
+            args=(process.stdout, combined_output),
         )
-        output_thread = threading.Thread(target=_stream_reader,
-                                         args=(process.stdout,
-                                               combined_output))
         output_thread.start()
         process.wait(timeout=timeout_seconds)
         output_thread.join(timeout=5)
-        print('\n--- End of Stream ---', file=sys.stderr)
+        elapsed_time = time.time() - start_time
+        logging.info('\n--- End of Stream ---')
 
         full_output = ''.join(combined_output)
         metrics = {
             'system_prompt': system_prompt,
             'user_prompt': prompt,
             'full_output': full_output,
+            'duration': elapsed_time,
         }
         if process.returncode != 0:
             error_message = (
@@ -93,24 +123,10 @@ def call_api(prompt: str, options: dict[str, Any],
                 f'{process.returncode}.\n'
                 f'Output:\n{full_output}')
             return {'error': error_message, 'metrics': metrics}
-
-        start_tag = f'<{final_output_tag}>'
-        end_tag = f'</{final_output_tag}>'
-        start_index = full_output.rfind(start_tag)
-        end_index = -1
-        if start_index != -1:
-            end_index = full_output.find(end_tag, start_index)
-        if start_index != -1 and end_index != -1:
-            final_output = full_output[start_index +
-                                       len(start_tag):end_index].strip()
-        else:
-            print(
-                f"Warning: Could not find '{start_tag}' and '{end_tag}' in "
-                'output. Falling back to full output.',
-                file=sys.stderr,
-            )
-            final_output = full_output.strip()
-        return {'output': final_output, 'metrics': metrics}
+        return {
+            'output': full_output.strip(),
+            'metrics': metrics,
+        }
     except subprocess.TimeoutExpired:
         if process:
             process.kill()

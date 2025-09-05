@@ -7,6 +7,7 @@
 import abc
 import argparse
 import contextlib
+import logging
 import os
 import pathlib
 import shutil
@@ -22,6 +23,7 @@ PROMPTFOO_CONFIG_COMPONENTS = [
      'host_os.yaml'),
     ('agents', 'extensions', 'build_information', 'tests', 'promptfoo',
      'host_arch.yaml'),
+    ('agents', 'prompts', 'eval', 'add_gtest_coverage', 'eval.yaml'),
 ]
 PROMPTFOO_CONFIGS = [
     CHROMIUM_SRC.joinpath(*c) for c in PROMPTFOO_CONFIG_COMPONENTS
@@ -53,7 +55,8 @@ class PromptfooInstallation(abc.ABC):
         """Called once to clean up the promptfoo installation."""
         try:
             shutil.rmtree(self._directory)
-            print(f'Removed promptfoo installation at {self._directory}')
+            logging.info('Removed promptfoo installation at %s',
+                         self._directory)
         except FileNotFoundError:
             pass
 
@@ -78,7 +81,7 @@ class FromNpmPromptfooInstallation(PromptfooInstallation):
         self._version = version or 'latest'
 
     def setup(self) -> None:
-        print(f'Creating promptfoo copy at {self._directory}')
+        logging.info('Creating promptfoo copy at %s', self._directory)
         self._directory.mkdir(exist_ok=True)
         subprocess.run(['npm', 'init', '-y'], cwd=self._directory, check=True)
         subprocess.run(['npm', 'install', f'promptfoo@{self._version}'],
@@ -108,7 +111,7 @@ class FromSourcePromptfooInstallation(PromptfooInstallation):
         self._revision = revision
 
     def setup(self) -> None:
-        print(f'Creating promptfoo copy at {self._directory}')
+        logging.info('Creating promptfoo copy at %s', self._directory)
 
         cmd = [
             'git',
@@ -171,7 +174,8 @@ def _setup_promptfoo(promptfoo_dir: pathlib.Path,
     if not promptfoo_revision and not promptfoo_version:
         for promptfoo in [promptfoo_from_src, promptfoo_from_npm]:
             if promptfoo.installed:
-                print(f'Using promptfoo already installed at {promptfoo_dir}')
+                logging.info('Using promptfoo already installed at %s',
+                             promptfoo_dir)
                 return promptfoo
 
     promptfoo = promptfoo_from_npm if promptfoo_version else promptfoo_from_src
@@ -184,67 +188,43 @@ def _setup_promptfoo(promptfoo_dir: pathlib.Path,
     return promptfoo
 
 
-class WorkTree(contextlib.AbstractContextManager):
-    """A `git worktree` [0] used for testing destructive changes by an agent.
+class WorkDir(contextlib.AbstractContextManager):
+    """A WorkDir used for testing destructive changes by an agent.
 
-    Each working tree acts like a local shallow clone and has its own isolated
+    Each workdir acts like a local shallow clone and has its own isolated
     checkout state (staging, untracked files, `//.gemini/extensions/`).
-
-    [0]: https://git-scm.com/docs/git-worktree
     """
 
-    def __init__(self, path: os.PathLike):
-        self.path = pathlib.Path(path)
+    def __init__(self, name: str, clean: bool, verbose: bool):
+        self.name = name
+        self.path = None
+        self.clean = clean
+        self.verbose = verbose
 
-    def __enter__(self) -> 'WorkTree':
+    def __enter__(self) -> 'WorkDir':
         # TODO(crbug.com/436274253): Consider some optimizations once the test
         # suite grows large enough:
-        # 1. Parallelization [a]
-        # 2. Worktree reuse when several test cases share a revision, and each
-        #    test run doesn't modify the checkout
-        #
-        # [a]: https://docs.anthropic.com/en/docs/claude-code/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees
-        subprocess.check_call(['git', 'worktree', 'add', str(self.path)])
-        self.install_extensions()
+        # 1. Parallelization
+        # 2. WorkDir reuse
+        result = subprocess.run(
+            ['gclient', 'root'],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        root_path = pathlib.Path(result.stdout.strip())
+        self.path = root_path.parent.joinpath(self.name)
+        logging.info('Creating new workdir: %s', self.path)
+        subprocess.check_call(
+            ['gclient-new-workdir.py', root_path, self.path],
+            stdout=subprocess.STDOUT if self.verbose else subprocess.DEVNULL,
+        )
         return self
 
     def __exit__(self, *_exc_info) -> None:
-        # Add `--force` in case the agent left behind a dirty checkout.
-        subprocess.check_call([
-            'git',
-            'worktree',
-            'remove',
-            '--force',
-            str(self.path),
-        ])
-        # `git worktree remove` doesn't automatically delete the associated
-        # branch in the main tree.
-        subprocess.check_call([
-            'git',
-            'branch',
-            '--delete',
-            self.path.name,
-        ])
-
-    def install_extensions(
-        self,
-        extensions: Collection[str] | None = None,
-    ) -> None:
-        # The installation script should identify the working tree as the "repo
-        # root", so use the copy in the working tree with the CWD set
-        # appropriately for subprocesses like `git`.
-        #
-        # TODO(crbug.com/436274253): Consider allowing tests to specify which
-        # extensions they need.
-        if extensions is None:
-            extensions = EXTENSIONS_TO_INSTALL
-        command = [
-            sys.executable,
-            str(self.path / 'agents' / 'extensions' / 'install.py'),
-            'add',
-            *extensions,
-        ]
-        subprocess.check_call(command, cwd=self.path)
+        if self.clean:
+            logging.info('Cleaning %s', self.path)
+            shutil.rmtree(self.path)
 
 
 def main() -> int:
@@ -254,6 +234,15 @@ def main() -> int:
     tests.
     """
     parser = argparse.ArgumentParser()
+    parser.add_argument('--no-clean',
+                        action='store_true',
+                        help='Do not clean up the workdir after evaluation.')
+    parser.add_argument('--verbose',
+                        '-v',
+                        action='store_true',
+                        help='Print debug information.')
+    parser.add_argument('--filter',
+                        help='Only run configs that contain this substring.')
     promptfoo_install_group = parser.add_mutually_exclusive_group()
     promptfoo_install_group.add_argument(
         '--install-promptfoo-from-npm',
@@ -273,25 +262,42 @@ def main() -> int:
               'is specified, ToT will be used.'))
     args = parser.parse_args()
 
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format='%(message)s',
+    )
     promptfoo_dir = pathlib.Path(tempfile.gettempdir()) / 'promptfoo'
     promptfoo = _setup_promptfoo(promptfoo_dir, args.promptfoo_revision,
                                  args.promptfoo_version)
 
     returncode = 0
-    for config in PROMPTFOO_CONFIGS:
-        # TODO(crbug.com/436274253): Add a `--no-clean` flag so that the agent
-        # output can be inspected.
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            with WorkTree(tmp_dir):
-                command = [
-                    'eval',
-                    '-j',
-                    '1',
-                    '-c',
-                    str(config),
-                ]
-                rc = promptfoo.run(command, cwd=tmp_dir)
-                returncode = returncode or rc
+    configs_to_run = PROMPTFOO_CONFIGS
+    if args.filter:
+        configs_to_run = [
+            c for c in PROMPTFOO_CONFIGS if args.filter in str(c)
+        ]
+    if len(configs_to_run) == 0:
+        logging.info('No tests to run')
+
+    for config in configs_to_run:
+        with WorkDir(
+                'workdir',
+                not args.no_clean,
+                args.verbose,
+        ) as workdir:
+            command = [
+                'eval',
+                '-j',
+                '1',
+                '--no-cache',
+                '-c',
+                str(config),
+            ]
+            if args.verbose:
+                command.extend(['--var', 'verbose=True'])
+            logging.info('Running test: %s', str(config))
+            rc = promptfoo.run(command, cwd=workdir.path / 'src')
+            returncode = returncode or rc
 
     return returncode
 
