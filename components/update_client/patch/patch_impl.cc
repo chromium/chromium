@@ -4,6 +4,8 @@
 
 #include "components/update_client/patch/patch_impl.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -16,6 +18,19 @@ namespace update_client {
 
 namespace {
 
+int CheckFiles(bool old_valid, bool patch_valid, bool destination_valid) {
+  if (!old_valid) {
+    return static_cast<int>(UnpackerError::kPatchInvalidOldFile);
+  }
+  if (!patch_valid) {
+    return static_cast<int>(UnpackerError::kPatchInvalidPatchFile);
+  }
+  if (!destination_valid) {
+    return static_cast<int>(UnpackerError::kPatchInvalidNewFile);
+  }
+  return 0;
+}
+
 class PatcherImpl : public Patcher {
  public:
   explicit PatcherImpl(PatchChromiumFactory::Callback callback)
@@ -25,6 +40,13 @@ class PatcherImpl : public Patcher {
                       base::File patch_file,
                       base::File destination_file,
                       PatchCompleteCallback callback) const override {
+    int error = CheckFiles(old_file.IsValid(), patch_file.IsValid(),
+                           destination_file.IsValid());
+    if (error != 0) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), error));
+      return;
+    }
     patch::PuffPatch(callback_.Run(), std::move(old_file),
                      std::move(patch_file), std::move(destination_file),
                      std::move(callback));
@@ -34,26 +56,11 @@ class PatcherImpl : public Patcher {
                      base::File patch_file,
                      base::File destination_file,
                      PatchCompleteCallback callback) const override {
-    if (!old_file.IsValid()) {
+    int error = CheckFiles(old_file.IsValid(), patch_file.IsValid(),
+                           destination_file.IsValid());
+    if (error != 0) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback),
-                                    static_cast<int>(
-                                        UnpackerError::kPatchInvalidOldFile)));
-      return;
-    }
-    if (!patch_file.IsValid()) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              std::move(callback),
-              static_cast<int>(UnpackerError::kPatchInvalidPatchFile)));
-      return;
-    }
-    if (!destination_file.IsValid()) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback),
-                                    static_cast<int>(
-                                        UnpackerError::kPatchInvalidNewFile)));
+          FROM_HERE, base::BindOnce(std::move(callback), error));
       return;
     }
     patch::ZucchiniPatch(callback_.Run(), std::move(old_file),

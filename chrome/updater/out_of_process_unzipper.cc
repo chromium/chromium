@@ -86,17 +86,28 @@ class DecodeOperation : public base::RefCountedThreadSafe<DecodeOperation> {
     unzipper_.Bind(std::move(pending_remote));
     unzipper_.set_disconnect_handler(
         base::BindOnce(&DecodeOperation::Done, this, false));
-    unzipper_->DecodeXz(
-        base::File(in_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                base::File::FLAG_WIN_EXCLUSIVE_WRITE |
-                                base::File::FLAG_WIN_SEQUENTIAL_SCAN |
-                                base::File::FLAG_WIN_SHARE_DELETE),
-        base::File(out_path_, base::File::FLAG_CREATE | base::File::FLAG_READ |
+    base::File in(in_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                               base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                               base::File::FLAG_WIN_SEQUENTIAL_SCAN |
+                               base::File::FLAG_WIN_SHARE_DELETE);
+    if (!in.IsValid()) {
+      VLOG(1) << "Failed to open input file.";
+      Done(false);
+      return;
+    }
+    base::File out(out_path_, base::File::FLAG_CREATE | base::File::FLAG_READ |
                                   base::File::FLAG_WRITE |
                                   base::File::FLAG_WIN_EXCLUSIVE_WRITE |
                                   base::File::FLAG_WIN_SEQUENTIAL_SCAN |
-                                  base::File::FLAG_WIN_SHARE_DELETE),
-        base::BindOnce(&DecodeOperation::Done, this));
+                                  base::File::FLAG_WIN_SHARE_DELETE);
+    if (!out.IsValid()) {
+      VLOG(1) << "Failed to open output file.";
+      Done(false);
+      return;
+    }
+
+    unzipper_->DecodeXz(std::move(in), std::move(out),
+                        base::BindOnce(&DecodeOperation::Done, this));
   }
 
   // Resets the unzipper remote and triggers the completion callback.
