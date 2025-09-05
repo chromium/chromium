@@ -369,11 +369,13 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
   std::unique_ptr<views::Widget> OpenChildDialog(
       const gfx::Size& size,
       ui::mojom::ModalType modal_type,
-      std::optional<gfx::Size> initial_size = std::nullopt) {
+      std::optional<gfx::Size> initial_size = std::nullopt,
+      views::Widget::InitParams::Type widget_type =
+          views::Widget::InitParams::TYPE_WINDOW) {
     CHECK(!delegate_);
     delegate_ = std::make_unique<ModalWidgetDelegate>(modal_type);
-    auto dialog = OpenChildDialogWithDelegate(size, delegate_.get(),
-                                              std::move(initial_size));
+    auto dialog = OpenChildDialogWithDelegate(
+        size, delegate_.get(), std::move(initial_size), widget_type);
     pip_frame_view()->RunPendingChildResizeForTesting();
     return dialog;
   }
@@ -384,10 +386,11 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
   std::unique_ptr<views::Widget> OpenChildDialogWithDelegate(
       const gfx::Size& size,
       views::WidgetDelegate* delegate,
-      std::optional<gfx::Size> initial_size = std::nullopt) {
+      std::optional<gfx::Size> initial_size = std::nullopt,
+      views::Widget::InitParams::Type widget_type =
+          views::Widget::InitParams::TYPE_WINDOW) {
     views::Widget::InitParams init_params(
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-        views::Widget::InitParams::TYPE_WINDOW);
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET, widget_type);
     init_params.child = true;
     init_params.parent = pip_frame_view_->GetWidget()->GetNativeView();
     init_params.delegate = delegate;
@@ -526,10 +529,12 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   EXPECT_GE(new_pip_bounds.height(), child_dialog_size_2.height());
 }
 
+#if defined(USE_AURA)
+// Aura platforms support child widgets that are not desktop widgets. These
+// child widgets are clipped to the bounds of the parent pip window. This test
+// ensures the pip window resizes to contain the child dialog.
 IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
                        ResizesToFitNonModalChildDialogs) {
-  // Note that on Windows and CrOS, this should not resize, because they do not
-  // clip child dialogs.
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
   gfx::Rect initial_pip_bounds =
@@ -540,21 +545,59 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
                                     initial_pip_bounds.height() + 10);
   auto child_dialog =
       OpenChildDialog(child_dialog_size, ui::mojom::ModalType::kNone);
+  EXPECT_FALSE(child_dialog->GetIsDesktopWidget());
 
   // The pip window should increase its size to contain the child dialog.
   gfx::Rect new_pip_bounds =
       pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
-  // Memorize these, rather than reusing the #if's in the cc file, in case
-  // somebody accidentally changes them.
-#if BUILDFLAG(IS_LINUX)
-  // On these platforms, the pip window should be updated.
+
+  // Most Aura platforms clip non-desktop widgets to the parent bounds. To
+  // ensure the child dialog is visible, the pip window needs to resize on those
+  // platforms. ChromeOS does not clip non-desktop widgets, so the pip window
+  // does not need to resize.
+#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_NE(initial_pip_bounds, new_pip_bounds);
   EXPECT_GE(new_pip_bounds.width(), child_dialog_size.width());
   EXPECT_GE(new_pip_bounds.height(), child_dialog_size.height());
 #else
-  // On these platforms, no adjustment should be made.
   EXPECT_EQ(initial_pip_bounds, new_pip_bounds);
 #endif
+
+  // Close the dialog.
+  child_dialog->CloseNow();
+  pip_frame_view()->RunPendingChildResizeForTesting();
+
+  // The pip window should still have its original bounds.
+  EXPECT_EQ(initial_pip_bounds,
+            pip_frame_view()->GetWidget()->GetWindowBoundsInScreen());
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       NoResizeForDesktopChildDialogs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  gfx::Rect initial_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+
+  // Open a desktop child dialog that is larger than the pip window.
+  const gfx::Size child_dialog_size(initial_pip_bounds.width() + 20,
+                                    initial_pip_bounds.height() + 10);
+
+  auto child_dialog =
+      OpenChildDialog(child_dialog_size, ui::mojom::ModalType::kNone,
+                      std::nullopt, views::Widget::InitParams::TYPE_MENU);
+#if !BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS always creates a non-desktop widget.
+  EXPECT_TRUE(child_dialog->GetIsDesktopWidget());
+#endif
+
+  // The pip window should not increase in size as the child dialog can draw
+  // outside the bounds of the pip window.
+  gfx::Rect new_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+
+  EXPECT_EQ(initial_pip_bounds, new_pip_bounds);
 
   // Close the dialog.
   child_dialog->CloseNow();

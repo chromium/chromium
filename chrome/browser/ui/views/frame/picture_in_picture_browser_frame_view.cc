@@ -72,13 +72,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-// Windows, Mac and CrOS do not clip child widgets to their parents, so we
-// don't have to worry about resizing quite as much.
-#if BUILDFLAG(IS_LINUX)
-#define PLATFORM_CLIPS_CHILD_WINDOWS
-#endif
-
 namespace {
 
 constexpr int kWindowIconImageSize = 16;
@@ -414,17 +407,7 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
 
   child_dialog_sizes_.insert_or_assign(child_dialog, dialog_bounds.size());
 
-  if (!child_dialog->IsModal()) {
-    // Non-modal dialogs set their bounds directly.  Expand the pip window to
-    // include them, and that's it if we're on a platform that clips child
-    // windows.  If child windows can extend past their parents, then just leave
-    // it all as is.
-#if defined(PLATFORM_CLIPS_CHILD_WINDOWS)
-    adjusted_bounds.Union(dialog_bounds);
-#else
-    return;
-#endif
-  } else {
+  if (child_dialog->IsModal()) {
     // Modal dialogs will be resized / moved to use the available space, so we
     // only need to make sure that the pip window is big enough, accounting for
     // some padding that the ModalDialogHost won't allow a dialog to use.  We
@@ -449,6 +432,19 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
     required_size.SetToMax(original_bounds.size());
 
     adjusted_bounds.set_size(required_size);
+  } else if (!child_dialog->GetIsDesktopWidget()) {
+    // Non-modal dialogs set their bounds directly.  If the child window is not
+    // a desktop widget, then it will be clipped by the parent window.  Expand
+    // the pip window to include the child dialog.
+    // ChromeOS is unique in that it does not clip non-desktop widgets to the
+    // parent window. So skip resizing the pip window on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+    adjusted_bounds.Union(dialog_bounds);
+#endif
+  } else {
+    // Non-modal dialogs that are desktop widgets set their bounds directly and
+    // are not clipped to the parent window bounds, so just leave it as is.
+    return;
   }
 
   if (adjusted_bounds == original_bounds) {
@@ -472,12 +468,6 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
 
 void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
     MaybeRevertSizeAfterChildDialogCloses() {
-  // If the pip window in the process of closing ignore any resizes that could
-  // occur as child dialogs are destroyed during teardown.
-  if (pip_widget_->IsClosed()) {
-    return;
-  }
-
   // If the pip window in the process of closing ignore any resizes that could
   // occur as child dialogs are destroyed during teardown.
   if (pip_widget_->IsClosed()) {
