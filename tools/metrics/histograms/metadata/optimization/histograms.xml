@@ -2007,7 +2007,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status"
-    enum="HttpResponseCode" expires_after="2025-09-07">
+    enum="HttpResponseCode" expires_after="2026-09-07">
   <owner>rajendrant@chromium.org</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
