@@ -908,17 +908,13 @@ export class NetworkRequest {
       this.#response.extraInfo = undefined;
     }
 
-    const headers = [
-      ...bidiNetworkHeadersFromCdpNetworkHeaders(this.#response.info?.headers),
-      ...bidiNetworkHeadersFromCdpNetworkHeaders(
-        this.#response.extraInfo?.headers,
-      ),
-      // TODO: Verify how to dedupe these
-      // ...bidiNetworkHeadersFromCdpNetworkHeadersEntries(
-      //   this.#response.paused?.responseHeaders
-      // ),
-    ];
-
+    // TODO: Also this.#response.paused?.responseHeaders have to be merged here.
+    const cdpHeaders = this.#response.info?.headers ?? {};
+    const cdpRawHeaders = this.#response.extraInfo?.headers ?? {};
+    for (const [key, value] of Object.entries(cdpRawHeaders)) {
+      cdpHeaders[key] = value;
+    }
+    const headers = bidiNetworkHeadersFromCdpNetworkHeaders(cdpHeaders);
     const authChallenges = this.#authChallenges;
 
     const response: Network.ResponseData = {
