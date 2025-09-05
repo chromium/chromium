@@ -40,10 +40,9 @@ ScriptBlockingRuleApplierServiceFactory::
 
 std::unique_ptr<KeyedService>
 ScriptBlockingRuleApplierServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<ScriptBlockingRuleApplierService>(
-      web::ContentRuleListManager::FromBrowserState(context),
+      web::ContentRuleListManager::FromBrowserState(profile),
       TrackingProtectionSettingsFactory::GetForProfile(profile),
       profile->IsOffTheRecord());
 }
