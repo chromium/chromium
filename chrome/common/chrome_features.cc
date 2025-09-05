@@ -615,7 +615,7 @@ BASE_FEATURE(GlicApiActivationGating, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, don't try to update the views background color based on the
 // glic client background color.
-BASE_FEATURE(GlicExplicitBackgroundColor, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(GlicExplicitBackgroundColor, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Features to experiment with resetting the panel default location.
 BASE_FEATURE(GlicPanelResetTopChromeButton, base::FEATURE_ENABLED_BY_DEFAULT);
