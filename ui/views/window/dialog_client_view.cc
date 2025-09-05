@@ -314,7 +314,11 @@ bool DialogClientView::IsPossiblyUnintendedInteraction(const ui::Event& event,
 }
 
 DialogDelegate* DialogClientView::GetDialogDelegate() const {
-  return GetWidget()->widget_delegate()->AsDialogDelegate();
+  // TODO(crbug.com/443163515): investigate which dialog is crashing due to
+  // widget delegate being null.
+  return GetWidget()->widget_delegate()
+             ? GetWidget()->widget_delegate()->AsDialogDelegate()
+             : nullptr;
 }
 
 void DialogClientView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
