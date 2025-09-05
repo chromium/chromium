@@ -25,14 +25,11 @@ BASE_FEATURE(kSuppressMemoryListeners,
              "SuppressMemoryListeners",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kSuppressMemoryListenersStart{
-    &kSuppressMemoryListeners, "suppress_memory_listeners_start",
-    static_cast<int>(base::MemoryPressureListenerTag::kMax)};
-
-const base::FeatureParam<int> kSuppressMemoryListenersEnd{
-    &kSuppressMemoryListeners, "suppress_memory_listeners_end",
-    static_cast<int>(base::MemoryPressureListenerTag::kMax)};
-
+BASE_FEATURE_PARAM(std::string,
+                   kSuppressMemoryListenersMask,
+                   &kSuppressMemoryListeners,
+                   "suppress_memory_listeners_mask",
+                   "");
 }  // namespace
 
 MemoryPressureListenerRegistry::MemoryPressureListenerRegistry() = default;
@@ -78,14 +75,16 @@ void MemoryPressureListenerRegistry::RemoveObserver(
 void MemoryPressureListenerRegistry::DoNotifyMemoryPressure(
     MemoryPressureLevel memory_pressure_level) {
   if (base::FeatureList::IsEnabled(kSuppressMemoryListeners)) {
-    int start = kSuppressMemoryListenersStart.Get();
-    int end = kSuppressMemoryListenersEnd.Get();
-
+    auto mask = kSuppressMemoryListenersMask.Get();
     for (auto& listener : listeners_) {
+      const size_t tag_index = static_cast<size_t>(listener.tag());
       // Only Notify observers that aren't suppressed. An observer is suppressed
-      // if its tag is between `start` (inclusive) and `end` (exclusive)
-      if (static_cast<int>(listener.tag()) < start ||
-          static_cast<int>(listener.tag()) >= end) {
+      // if its tag is present in the mask, the value is not '0'. A value of '1'
+      // suppresses non critical levels, and a value of '2' supressess all
+      // levels.
+      if (tag_index >= mask.size() || mask[tag_index] == '0' ||
+          (mask[tag_index] == '1' &&
+           memory_pressure_level == MEMORY_PRESSURE_LEVEL_CRITICAL)) {
         listener.Notify(memory_pressure_level);
       }
     }

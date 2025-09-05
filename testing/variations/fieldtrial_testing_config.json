@@ -24352,6 +24352,46 @@
             ]
         }
     ],
+    "SuppressMemoryListeners": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_empty",
+                    "params": {
+                        "suppress_memory_listeners_mask": ""
+                    },
+                    "enable_features": [
+                        "SuppressMemoryListeners"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SuppressMemoryMonitor": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_empty",
+                    "params": {
+                        "suppress_memory_monitor_mask": ""
+                    },
+                    "enable_features": [
+                        "SuppressMemoryMonitor"
+                    ]
+                }
+            ]
+        }
+    ],
     "SuppressesNetworkActivitiesOnSlowNetwork": [
         {
             "platforms": [
