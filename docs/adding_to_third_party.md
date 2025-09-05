@@ -517,12 +517,13 @@ Non-Googlers can email one of the people in
   for security vulnerabilities. Help people make informed decisions about
   relying on this package by highlighting security considerations.
 * Add chromium-third-party@google.com as a reviewer on your change. This
-  will trigger an automatic round-robin assignment to a reviewer who will check
-  licensing matters. These reviewers may not be able to +1 a change so look for
-  verbal approval in the comments. (This list does not receive or deliver
-  email, so only use it as a reviewer, not for other communication. Internally,
-  see [crbug.com/441381904](https://crbug.com/441381904) for additional context
-  on how this is configured.). If you have questions about the third-party
+  will trigger automatic assignment to a reviewer who will check license use,
+  metadata compliance and verify long term dependency maintenance plans.
+  Not all these reviewers may be able to +1 a change so look for verbal approval
+  in the comments. (This list does not receive or deliver email, so only use it
+  as a reviewer, not for other communication. Internally, see
+  [crbug.com/441381904](https://crbug.com/441381904) for additional context on
+  how this is configured.). If you have questions about the third-party
   process, ask one of the [//third_party/OWNERS](../third_party/OWNERS) instead.
 * Lastly, if all other steps are complete, get a positive code review from a
   member of [//third_party/OWNERS](../third_party/OWNERS) to land the change.
