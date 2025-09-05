@@ -40,7 +40,8 @@ class AutofillAiUkmLogger {
       EntityInstance::RecordType record_type,
       uint64_t form_session_id,
       const std::string& domain,
-      AutofillClient::EntitySaveOrUpdatePromptResult result);
+      AutofillClient::EntitySaveOrUpdatePromptResult result,
+      ukm::SourceId ukm_source_id);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
