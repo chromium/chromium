@@ -33,8 +33,7 @@ PromosManagerFactory::PromosManagerFactory()
 PromosManagerFactory::~PromosManagerFactory() = default;
 
 std::unique_ptr<KeyedService> PromosManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   auto promos_manager = std::make_unique<PromosManagerImpl>(
       profile->GetPrefs(), base::DefaultClock::GetInstance(),
       feature_engagement::TrackerFactory::GetForProfile(profile));
