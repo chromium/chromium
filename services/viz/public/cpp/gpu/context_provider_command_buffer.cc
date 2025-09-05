@@ -275,8 +275,8 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   }
 
   if (attributes_.context_type == gpu::CONTEXT_TYPE_WEBGPU) {
-    DCHECK(!attributes_.enable_raster_interface);
-    DCHECK(!attributes_.enable_gles2_interface);
+    CHECK(!attributes_.enable_raster_interface);
+    CHECK(!attributes_.enable_gles2_interface);
 
     auto webgpu_helper =
         std::make_unique<gpu::webgpu::WebGPUCmdHelper>(command_buffer_.get());
@@ -313,8 +313,8 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     webgpu_interface_ = std::move(webgpu_impl);
     transfer_buffer_ = std::move(transfer_buffer);
     helper_ = std::move(webgpu_helper);
-  } else if (attributes_.enable_raster_interface &&
-             !attributes_.enable_gles2_interface) {
+  } else if (attributes_.enable_raster_interface) {
+    CHECK(!attributes_.enable_gles2_interface);
     // The raster helper writes the command buffer protocol.
     auto raster_helper =
         std::make_unique<gpu::raster::RasterCmdHelper>(command_buffer_.get());
@@ -357,6 +357,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     transfer_buffer_ = std::move(transfer_buffer);
     helper_ = std::move(raster_helper);
   } else {
+    CHECK(attributes_.enable_gles2_interface);
     // The GLES2 helper writes the command buffer protocol.
     auto gles2_helper =
         std::make_unique<gpu::gles2::GLES2CmdHelper>(command_buffer_.get());
@@ -473,26 +474,7 @@ gpu::raster::RasterInterface* ContextProviderCommandBuffer::RasterInterface() {
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
   CheckValidSequenceOrLockAcquired();
 
-  if (raster_interface_) {
-    return raster_interface_.get();
-  }
-
-  if (!attributes_.enable_raster_interface) {
-    return nullptr;
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  // Android uses RasterDecoder exclusively.
-  NOTREACHED();
-#else
-  if (!gles2_impl_.get()) {
-    return nullptr;
-  }
-
-  raster_interface_ = std::make_unique<gpu::raster::RasterImplementationGLES>(
-      gles2_impl_.get(), gles2_impl_.get(), ContextCapabilities());
   return raster_interface_.get();
-#endif
 }
 
 gpu::ContextSupport* ContextProviderCommandBuffer::ContextSupport() {
