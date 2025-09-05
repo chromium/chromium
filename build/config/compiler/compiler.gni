@@ -183,11 +183,15 @@ if (use_thin_lto) {
 
 # Determine whether to enable or disable frame pointers, based on the platform
 # and build arguments.
-if (is_chromeos) {
+if (is_chromeos || (enable_cast_receiver && is_linux)) {
   # ChromeOS generally prefers frame pointers, to support CWP.
   # However, Clang does not currently generate usable frame pointers in ARM
   # 32-bit builds (https://bugs.llvm.org/show_bug.cgi?id=18505) so disable them
   # there to avoid the unnecessary overhead.
+  #
+  # Linux cast builds run on embedded devices and are often constrained
+  # by binary size; disabling frame ptrs for ARM32 builds can save
+  # several MB.
   enable_frame_pointers = current_cpu != "arm"
 } else if (is_apple || is_linux) {
   enable_frame_pointers = true
