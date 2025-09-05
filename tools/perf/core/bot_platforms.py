@@ -576,6 +576,7 @@ _CROSSBENCH_TANGOR = frozenset([
     ]),
 ])
 
+# pylint: disable=line-too-long
 _CROSSBENCH_WEBVIEW = frozenset([
     _crossbench_loading(
         estimated_runtime=750,
@@ -588,8 +589,7 @@ _CROSSBENCH_WEBVIEW = frozenset([
             '--repetitions=50',
             '--cool-down-threshold=moderate',
             '--stories=cnn',
-        ]
-    ),
+        ]),
     _crossbench_embedder(
         estimated_runtime=900,
         arguments=[
@@ -604,9 +604,9 @@ _CROSSBENCH_WEBVIEW = frozenset([
             '--cool-down-threshold=moderate',
             '--http-request-timeout=15s',
             '--action-runner=android',
-        ]
-    ),
+        ]),
 ])
+# pylint: enable=line-too-long
 
 _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite(
     [_GetBenchmarkConfig('system_health.common_desktop')])
