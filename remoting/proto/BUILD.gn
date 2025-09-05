@@ -16,6 +16,7 @@ proto_library("proto") {
     "action.proto",
     "audio.proto",
     "control.proto",
+    "do_nothing.proto",
     "empty.proto",
     "event.proto",
     "file_transfer.proto",
@@ -69,8 +70,8 @@ source_set("internal_stubs") {
 
   deps = [
     ":internal_structs",
+    ":proto",
     "//base",
-    "//third_party/protobuf:protobuf_lite",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

@@ -21,25 +21,6 @@ const std::string& GetEmptyStringRef() {
 }
 }  // namespace
 
-// DoNothingProto
-
-const google::protobuf::internal::ClassData* DoNothingProto::GetClassData()
-    const {
-  NOTREACHED();
-}
-
-void DoNothingProto::Clear() {}
-
-size_t DoNothingProto::ByteSizeLong() const {
-  return 0;
-}
-
-uint8_t* DoNothingProto::_InternalSerialize(
-    uint8_t* ptr,
-    google::protobuf::io::EpsCopyOutputStream* stream) const {
-  return ptr;
-}
-
 // ===========================
 // RemoteAccessService helpers
 // ===========================

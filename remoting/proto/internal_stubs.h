@@ -10,28 +10,18 @@
 #include <string>
 #include <string_view>
 
+#include "remoting/proto/do_nothing.pb.h"
 #include "remoting/proto/logging_service.h"
 #include "remoting/proto/messaging_service.h"
 #include "remoting/proto/remote_support_service.h"
 #include "remoting/proto/session_authz_service.h"
-#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 // This file defines proto and function stubs for internal-only implementations.
 // This will allow us to build most of our code in Chromium rather than put
 // everything in //remoting/internal which is only built on official builders.
 namespace remoting::internal {
 
-// Base proto used for aliasing.
-class DoNothingProto : public google::protobuf::MessageLite {
- public:
-  // google::protobuf::MessageLite
-  const google::protobuf::internal::ClassData* GetClassData() const override;
-  void Clear() override;
-  size_t ByteSizeLong() const override;
-  uint8_t* _InternalSerialize(
-      uint8_t* ptr,
-      google::protobuf::io::EpsCopyOutputStream* stream) const override;
-};
+using DoNothingProto = remoting::DoNothing;
 
 // Aliases for internal protos.
 using RemoteAccessHostV1Proto = DoNothingProto;
