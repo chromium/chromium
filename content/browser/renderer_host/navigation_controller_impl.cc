@@ -165,27 +165,6 @@ void ConfigureEntriesForRestore(
   }
 }
 
-// Determines whether or not we should be carrying over a user agent override
-// between two NavigationEntries.
-bool ShouldKeepOverride(NavigationEntry* last_entry) {
-  return last_entry && last_entry->GetIsOverridingUserAgent();
-}
-
-// Determines whether to override user agent for a navigation.
-bool ShouldOverrideUserAgent(
-    NavigationController::UserAgentOverrideOption override_user_agent,
-    NavigationEntry* last_committed_entry) {
-  switch (override_user_agent) {
-    case NavigationController::UA_OVERRIDE_INHERIT:
-      return ShouldKeepOverride(last_committed_entry);
-    case NavigationController::UA_OVERRIDE_TRUE:
-      return true;
-    case NavigationController::UA_OVERRIDE_FALSE:
-      return false;
-  }
-  NOTREACHED();
-}
-
 // Returns true if this navigation should be treated as a reload. For e.g.
 // clicking on a link which results in a navigation to the last committed URL
 // (but wasn't converted to do a replacement navigation in the renderer), etc.
@@ -3885,8 +3864,8 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   // passed as a const reference, this is not possible.
   // TODO(clamy): When we only create a NavigationRequest, move this to
   // CreateNavigationRequestFromLoadURLParams.
-  bool override_user_agent = ShouldOverrideUserAgent(params.override_user_agent,
-                                                     GetLastCommittedEntry());
+  bool override_user_agent =
+      ShouldOverrideUserAgentInNextNavigation(params.override_user_agent);
 
   // An entry replacement must happen if the current browsing context should
   // maintain a trivial session history.
@@ -5339,6 +5318,21 @@ NavigationControllerImpl::CreateNavigationRequestForErrorPage(
   navigation_request->set_net_error(net::ERR_BLOCKED_BY_CLIENT);
   navigation_request->set_error_page_html(error_page_html);
   return navigation_request;
+}
+
+bool NavigationControllerImpl::ShouldOverrideUserAgentInNextNavigation(
+    NavigationController::UserAgentOverrideOption option) {
+  switch (option) {
+    case NavigationController::UA_OVERRIDE_INHERIT: {
+      auto* last_entry = GetLastCommittedEntry();
+      return last_entry && last_entry->GetIsOverridingUserAgent();
+    }
+    case NavigationController::UA_OVERRIDE_TRUE:
+      return true;
+    case NavigationController::UA_OVERRIDE_FALSE:
+      return false;
+  }
+  NOTREACHED();
 }
 
 }  // namespace content

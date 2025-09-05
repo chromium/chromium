@@ -502,6 +502,12 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void DidChangeReferrerPolicy(FrameTreeNode* node,
                                network::mojom::ReferrerPolicy referrer_policy);
 
+  // Determines whether to override user agent in the next navigation. This
+  // decision depends on the last committed entry if the given `option` is
+  // `NavigationController::UserAgentOverrideOption::INHERIT`.
+  bool ShouldOverrideUserAgentInNextNavigation(
+      NavigationController::UserAgentOverrideOption option);
+
   base::WeakPtr<NavigationControllerImpl> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
