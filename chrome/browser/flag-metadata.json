@@ -8359,14 +8359,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "pwm-access-loss-warning",
-    "owners": [
-      "izuzic@google.com",
-      "ioanap@chromium.org"
-    ],
-    "expiry_milestone": 134
-  },
-  {
     "name": "pwm-show-suggestions-on-autofocus",
     "owners": [ "kenrb@chromium.org", "derinel@google.com" ],
     "expiry_milestone": 145
