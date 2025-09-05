@@ -135,6 +135,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   // synchronously or asynchronously.
   void PerformPreflightCheck(
       CompletionCallback callback,
+      int32_t request_id,
       const ResourceRequest& resource_request,
       WithTrustedHeaderClient with_trusted_header_client,
       NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,

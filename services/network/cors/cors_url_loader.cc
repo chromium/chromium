@@ -1000,7 +1000,7 @@ void CorsURLLoader::StartRequest() {
   context_->cors_preflight_controller()->PerformPreflightCheck(
       base::BindOnce(&CorsURLLoader::OnPreflightRequestComplete,
                      weak_factory_.GetWeakPtr()),
-      request_,
+      request_id_, request_,
       PreflightController::WithTrustedHeaderClient(
           options_ & mojom::kURLLoadOptionUseHeaderClient),
       context_->cors_non_wildcard_request_headers_support(),

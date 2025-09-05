@@ -284,7 +284,7 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
             ? network::mojom::IPAddressSpace::kLocal
             : network::mojom::IPAddressSpace::kUnknown;
     preflight_controller.PerformPreflightCheck(
-        base::BindOnce([](int, std::optional<CorsErrorStatus>, bool) {}),
+        base::BindOnce([](int, std::optional<CorsErrorStatus>, bool) {}), 0,
         request, WithTrustedHeaderClient(false),
         NonWildcardRequestHeadersSupport(false),
         PrivateNetworkAccessPreflightBehavior::kWarn, /*tainted=*/false,
@@ -296,7 +296,7 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
         preflight_mode);
 
     preflight_controller.PerformPreflightCheck(
-        base::BindOnce([](int, std::optional<CorsErrorStatus>, bool) {}),
+        base::BindOnce([](int, std::optional<CorsErrorStatus>, bool) {}), 0,
         request, WithTrustedHeaderClient(true),
         NonWildcardRequestHeadersSupport(false),
         PrivateNetworkAccessPreflightBehavior::kWarn, /*tainted=*/false,
@@ -561,7 +561,7 @@ class PreflightControllerTest : public testing::Test {
     preflight_controller_->PerformPreflightCheck(
         base::BindOnce(&PreflightControllerTest::HandleRequestCompletion,
                        base::Unretained(this)),
-        request, WithTrustedHeaderClient(false),
+        0, request, WithTrustedHeaderClient(false),
         non_wildcard_request_headers_support_, private_network_access_behavior,
         tainted, TRAFFIC_ANNOTATION_FOR_TESTS, url_loader_factory_remote_.get(),
         isolation_info, std::move(client_security_state),
