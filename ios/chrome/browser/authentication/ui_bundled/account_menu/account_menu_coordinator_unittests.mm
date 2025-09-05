@@ -71,10 +71,15 @@ const FakeSystemIdentity* kManagedIdentity =
 
 @end
 
-// Base class for `AccountMenuCoordinatorNonManagedTest` and
-// `AccountMenuCoordinatorManagedTest`.
-class AccountMenuCoordinatorTest : public PlatformTest {
+// The test param determines whether `kSeparateProfilesForManagedAccounts` is
+// enabled.
+class AccountMenuCoordinatorTest : public PlatformTest,
+                                   public testing::WithParamInterface<bool> {
  public:
+  AccountMenuCoordinatorTest() {
+    feature_list_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
+                                       GetParam());
+  }
   void SetUp() override {
     PlatformTest::SetUp();
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
@@ -157,8 +162,6 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  virtual const FakeSystemIdentity* primary_identity() = 0;
-
  protected:
   void VerifyMock() {
     EXPECT_OCMOCK_VERIFY((id)presentation_delegate_);
@@ -213,10 +216,10 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     coordinator_ = nil;
   }
 
-  // Signs in primary_identity() as primary identity.
+  // Signs in kPrimaryIdentity as primary identity.
   void SigninWithPrimaryIdentity() {
-    fake_system_identity_manager_->AddIdentity(primary_identity());
-    authentication_service_->SignIn(primary_identity(),
+    fake_system_identity_manager_->AddIdentity(kPrimaryIdentity);
+    authentication_service_->SignIn(kPrimaryIdentity,
                                     signin_metrics::AccessPoint::kUnknown);
   }
 
@@ -232,39 +235,11 @@ class AccountMenuCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
 };
 
-// The test param determines whether `kSeparateProfilesForManagedAccounts` is
-// enabled.
-class AccountMenuCoordinatorNonManagedTest
-    : public AccountMenuCoordinatorTest,
-      public testing::WithParamInterface<bool> {
- public:
-  AccountMenuCoordinatorNonManagedTest() {
-    feature_list_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
-                                       GetParam());
-  }
-  const FakeSystemIdentity* primary_identity() override {
-    return kPrimaryIdentity;
-  }
-};
-
-class AccountMenuCoordinatorManagedTest : public AccountMenuCoordinatorTest {
- public:
-  AccountMenuCoordinatorManagedTest() {
-    // TODO(crbug.com/374281861): This class needs to run with multi profile
-    // enabled. To do that, account switching needs to be supported in unttests.
-    feature_list_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
-                                       false);
-  }
-  const FakeSystemIdentity* primary_identity() override {
-    return kManagedIdentity;
-  }
-};
-
 #pragma mark - AccountMenuMediatorDelegate
 
 // Tests that `didTapManageYourGoogleAccount` requests the view controller to
 // present a view.
-TEST_P(AccountMenuCoordinatorNonManagedTest, testManageYourGoogleAccount) {
+TEST_P(AccountMenuCoordinatorTest, testManageYourGoogleAccount) {
   OCMExpect([view_controller_ presentViewController:[OCMArg any]
                                            animated:YES
                                          completion:nil]);
@@ -274,14 +249,14 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testManageYourGoogleAccount) {
 
 // Tests that `didTapManageAccounts` has no impact on the view controller and
 // mediator.
-TEST_P(AccountMenuCoordinatorNonManagedTest, testEditAccountList) {
+TEST_P(AccountMenuCoordinatorTest, testEditAccountList) {
   [coordinator_ didTapManageAccounts];
   AssertOpenAndStop();
 }
 
 // Tests that `signOutFromTargetRect` requests the delegate to be stopped and
 // shows a snackbar and calls its completion.
-TEST_P(AccountMenuCoordinatorNonManagedTest, testSignOut) {
+TEST_P(AccountMenuCoordinatorTest, testSignOut) {
   base::RunLoop run_loop;
   base::RepeatingClosure closure = run_loop.QuitClosure();
   CGRect rect = CGRect();
@@ -301,13 +276,13 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testSignOut) {
 
 // Tests that `mediatorWantsToBeDismissed` requests to the delegate to stop the
 // coordinator.
-TEST_P(AccountMenuCoordinatorNonManagedTest, testMediatorWantsToBeDismissed) {
+TEST_P(AccountMenuCoordinatorTest, testMediatorWantsToBeDismissed) {
   AssertOpenAndStop();
 }
 
 // Tests that `triggerSignoutWithTargetRect` calls its
 // callback.
-TEST_P(AccountMenuCoordinatorNonManagedTest, testTriggerSignout) {
+TEST_P(AccountMenuCoordinatorTest, testTriggerSignout) {
   OCMExpect([mock_snackbar_commands_handler_
       showCustomSnackbarMessageOverBrowserToolbar:[OCMArg any]]);
 
@@ -329,7 +304,7 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testTriggerSignout) {
 // view controller and mediator. Tests also that the
 // `SyncEncryptionPassphraseTableViewController` is allocated, and the view is
 // correctly closed when the coordinator is stopped.
-TEST_P(AccountMenuCoordinatorNonManagedTest, testPassphrase) {
+TEST_P(AccountMenuCoordinatorTest, testPassphrase) {
   SyncEncryptionPassphraseTableViewController* passphraseViewController =
       [SyncEncryptionPassphraseTableViewController alloc];
   passphraseViewController.presentationDelegate = presentation_delegate_;
@@ -343,27 +318,27 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testPassphrase) {
 
 // Tests that `openTrustedVaultReauthForFetchKeys` calls
 // `showTrustedVaultReauthForFetchKeysFromViewController`.
-TEST_P(AccountMenuCoordinatorNonManagedTest, testFetchKeys) {
+TEST_P(AccountMenuCoordinatorTest, testFetchKeys) {
   [coordinator_ openTrustedVaultReauthForFetchKeys];
   AssertOpenAndStop();
 }
 
 // Tests that `openTrustedVaultReauthForDegradedRecoverability` calls
 // `showTrustedVaultReauthForDegradedRecoverabilityFromViewController`.
-TEST_P(AccountMenuCoordinatorNonManagedTest, testDegradedRecoverability) {
+TEST_P(AccountMenuCoordinatorTest, testDegradedRecoverability) {
   [coordinator_ openTrustedVaultReauthForDegradedRecoverability];
   AssertOpenAndStop();
 }
 
 // Tests that `openMDMErrodDialogWithSystemIdentity` has no effects on the
 // mediator and view controller.
-TEST_P(AccountMenuCoordinatorNonManagedTest, testMDMError) {
+TEST_P(AccountMenuCoordinatorTest, testMDMError) {
   [coordinator_ openMDMErrodDialogWithSystemIdentity:kPrimaryIdentity];
   AssertOpenAndStop();
 }
 
 INSTANTIATE_TEST_SUITE_P(,
-                         AccountMenuCoordinatorNonManagedTest,
+                         AccountMenuCoordinatorTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "WithSeparateProfiles"
