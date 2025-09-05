@@ -534,16 +534,14 @@ void MockPeerConnectionImpl::CreateOffer(
     CreateSessionDescriptionObserver* observer,
     const RTCOfferAnswerOptions& options) {
   DCHECK(observer);
-  created_sessiondescription_ =
-      MockParsedSessionDescription("unknown", kDummyAnswer).release();
+  created_session_description_ = true;
 }
 
 void MockPeerConnectionImpl::CreateAnswer(
     CreateSessionDescriptionObserver* observer,
     const RTCOfferAnswerOptions& options) {
   DCHECK(observer);
-  created_sessiondescription_ =
-      MockParsedSessionDescription("unknown", kDummyAnswer).release();
+  created_session_description_ = true;
 }
 
 void MockPeerConnectionImpl::SetLocalDescriptionWorker(

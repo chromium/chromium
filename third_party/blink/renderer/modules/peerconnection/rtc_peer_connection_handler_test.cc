@@ -72,7 +72,41 @@
 static const char kDummySdp[] =
     "candidate:2214029314 1 udp 2122260223 127.0.0.1 49152 typ host generation "
     "0";
-static const char kDummySdpType[] = "dummy type";
+static const char kRealSdp[] =
+    "v=0\r\n"
+    "o=- 1878890426675213188 2 IN IP4 127.0.0.1\r\n"
+    "s=-\r\n"
+    "t=0 0\r\n"
+    "a=group:BUNDLE video\r\n"
+    "a=msid-semantic: WMS\r\n"
+    "m=video 9 UDP/TLS/RTP/SAVPF 96 97 98 99\r\n"
+    "c=IN IP4 0.0.0.0\r\n"
+    "a=rtcp:9 IN IP4 0.0.0.0\r\n"
+    "a=ice-ufrag:RGPK\r\n"
+    "a=ice-pwd:rAyHEAKC7ckxQgWaRZXukz+Z\r\n"
+    "a=ice-options:trickle\r\n"
+    "a=fingerprint:sha-256 "
+    "8C:29:0A:8F:11:06:BF:1C:58:B3:CA:E6:F1:F1:DC:99:4C:6C:89:E9:FF:BC:D4:38:"
+    "11:18:1F:40:19:C8:49:37\r\n"
+    "a=setup:actpass\r\n"
+    "a=mid:video\r\n"
+    "a=recvonly\r\n"
+    "a=rtcp-mux\r\n"
+    "a=rtpmap:96 VP8/90000\r\n"
+    "a=rtpmap:97 rtx/90000\r\n"
+    "a=fmtp:97 apt=98\r\n"
+    "a=rtpmap:98 VP8/90000\r\n"
+    "a=rtcp-fb:98 ccm fir\r\n"
+    "a=rtcp-fb:98 nack\r\n"
+    "a=rtcp-fb:98 nack pli\r\n"
+    "a=rtcp-fb:98 goog-remb\r\n"
+    "a=rtcp-fb:98 transport-cc\r\n"
+    "a=rtpmap:99 rtx/90000\r\n"
+    "a=fmtp:99 apt=96\r\n";
+
+static const char* kDummySdpType = "dummy type";
+static const char* kRealSdpType =
+    &webrtc::SessionDescriptionInterface::kOffer[0];
 
 using testing::_;
 using testing::ElementsAre;
@@ -377,8 +411,9 @@ class RTCPeerConnectionHandlerTest : public SimTest {
   }
 
   void StopAllTracks(MediaStreamDescriptor* descriptor) {
-    for (auto component : descriptor->AudioComponents())
+    for (auto component : descriptor->AudioComponents()) {
       MediaStreamAudioTrack::From(component.Get())->Stop();
+    }
 
     for (auto component : descriptor->VideoComponents()) {
       MediaStreamVideoTrack::From(component.Get())->Stop();
@@ -411,8 +446,9 @@ class RTCPeerConnectionHandlerTest : public SimTest {
   std::vector<std::unique_ptr<blink::RTCRtpSenderImpl>>::iterator
   FindSenderForTrack(MediaStreamComponent* component) {
     for (auto it = senders_.begin(); it != senders_.end(); ++it) {
-      if ((*it)->Track()->UniqueId() == component->UniqueId())
+      if ((*it)->Track()->UniqueId() == component->UniqueId()) {
         return it;
+      }
     }
     return senders_.end();
   }
@@ -423,13 +459,15 @@ class RTCPeerConnectionHandlerTest : public SimTest {
     // https://crbug.com/799030
     for (auto component : descriptor->AudioComponents()) {
       auto it = FindSenderForTrack(component);
-      if (it != senders_.end() && pc_handler_->RemoveTrack((*it).get()).ok())
+      if (it != senders_.end() && pc_handler_->RemoveTrack((*it).get()).ok()) {
         senders_.erase(it);
+      }
     }
     for (auto component : descriptor->VideoComponents()) {
       auto it = FindSenderForTrack(component);
-      if (it != senders_.end() && pc_handler_->RemoveTrack((*it).get()).ok())
+      if (it != senders_.end() && pc_handler_->RemoveTrack((*it).get()).ok()) {
         senders_.erase(it);
+      }
     }
     return senders_size_before_remove > senders_.size();
   }
@@ -512,12 +550,14 @@ class RTCPeerConnectionHandlerTest : public SimTest {
       const webrtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream,
       const std::vector<std::unique_ptr<RTCRtpReceiverPlatform>>& receivers) {
     for (const auto& audio_track : remote_stream->GetAudioTracks()) {
-      if (!HasReceiverForTrack(*audio_track.get(), receivers))
+      if (!HasReceiverForTrack(*audio_track.get(), receivers)) {
         return false;
+      }
     }
     for (const auto& video_track : remote_stream->GetAudioTracks()) {
-      if (!HasReceiverForTrack(*video_track.get(), receivers))
+      if (!HasReceiverForTrack(*video_track.get(), receivers)) {
         return false;
+      }
     }
     return true;
   }
@@ -526,8 +566,9 @@ class RTCPeerConnectionHandlerTest : public SimTest {
       const webrtc::MediaStreamTrackInterface& track,
       const std::vector<std::unique_ptr<RTCRtpReceiverPlatform>>& receivers) {
     for (const auto& receiver : receivers) {
-      if (receiver->Track()->Id().Utf8() == track.id())
+      if (receiver->Track()->Id().Utf8() == track.id()) {
         return true;
+      }
     }
     return false;
   }
@@ -640,21 +681,21 @@ TEST_F(RTCPeerConnectionHandlerTest, setLocalDescription) {
   // before |mock_peer_connection| is called.
   testing::InSequence sequence;
   EXPECT_CALL(*mock_tracker_.Get(),
-              TrackSetSessionDescription(pc_handler_.get(), String(kDummySdp),
-                                         String(kDummySdpType),
+              TrackSetSessionDescription(pc_handler_.get(), String(kRealSdp),
+                                         String(kRealSdpType),
                                          PeerConnectionTracker::kSourceLocal));
   EXPECT_CALL(*mock_peer_connection_, SetLocalDescriptionForMock(_, _));
 
   pc_handler_->SetLocalDescription(
       nullptr /*RTCVoidRequest*/,
-      MockParsedSessionDescription(kDummySdpType, kDummySdp));
+      MockParsedSessionDescription(kRealSdpType, kRealSdp));
   RunMessageLoopsUntilIdle();
 
   std::string sdp_string;
   ASSERT_TRUE(mock_peer_connection_->local_description());
-  EXPECT_EQ(kDummySdpType, mock_peer_connection_->local_description()->type());
+  EXPECT_EQ(kRealSdpType, mock_peer_connection_->local_description()->type());
   mock_peer_connection_->local_description()->ToString(&sdp_string);
-  EXPECT_EQ(kDummySdp, sdp_string);
+  EXPECT_EQ(kRealSdp, sdp_string);
 
   // TODO(deadbeef): Also mock the "success" callback from the PeerConnection
   // and ensure that the sucessful result is tracked by PeerConnectionTracker.
@@ -690,21 +731,21 @@ TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescription) {
   // before |mock_peer_connection| is called.
   testing::InSequence sequence;
   EXPECT_CALL(*mock_tracker_.Get(),
-              TrackSetSessionDescription(pc_handler_.get(), String(kDummySdp),
-                                         String(kDummySdpType),
+              TrackSetSessionDescription(pc_handler_.get(), String(kRealSdp),
+                                         String(kRealSdpType),
                                          PeerConnectionTracker::kSourceRemote));
   EXPECT_CALL(*mock_peer_connection_, SetRemoteDescriptionForMock(_, _));
 
   pc_handler_->SetRemoteDescription(
       nullptr /*RTCVoidRequest*/,
-      MockParsedSessionDescription(kDummySdpType, kDummySdp));
+      MockParsedSessionDescription(kRealSdpType, kRealSdp));
   RunMessageLoopsUntilIdle();
 
   std::string sdp_string;
   ASSERT_TRUE(mock_peer_connection_->remote_description());
-  EXPECT_EQ(kDummySdpType, mock_peer_connection_->remote_description()->type());
+  EXPECT_EQ(kRealSdpType, mock_peer_connection_->remote_description()->type());
   mock_peer_connection_->remote_description()->ToString(&sdp_string);
-  EXPECT_EQ(kDummySdp, sdp_string);
+  EXPECT_EQ(kRealSdp, sdp_string);
 
   // TODO(deadbeef): Also mock the "success" callback from the PeerConnection
   // and ensure that the sucessful result is tracked by PeerConnectionTracker.
