@@ -2558,6 +2558,25 @@
             ]
         }
     ],
+    "AutofillEnableSaveAndFill": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableSaveAndFill"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableSupportForParsingWithSharedLabels": [
         {
             "platforms": [
