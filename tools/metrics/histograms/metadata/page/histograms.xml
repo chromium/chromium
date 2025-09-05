@@ -244,6 +244,12 @@ chromium-metrics-reviews@google.com.
       summary="Not Emitted because the URL was empty (normal interaction)"/>
 </variants>
 
+<variants name="SyntheticResponseSuffix">
+  <variant name="" summary=""/>
+  <variant name=".SyntheticResponse"
+      summary="and the response is returned with the synthetic response"/>
+</variants>
+
 <variants name="TabInitializationStatus">
   <variant name="" summary="any"/>
   <variant name=".FromNewTabPage" summary="navigation from new tab page"/>
@@ -1533,18 +1539,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToFirstContentfulPaint"
+    name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToFirstContentfulPaint{SyntheticResponseSuffix}"
     units="ms" expires_after="2026-02-15">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time in milliseconds from navigation timing's navigation start
-    to the time when the page first paints content, for Google Search page
-    loads. A contentful paint includes a paint of text, image, SVG, or canvas.
-    Only recorded for Search navigations that start in the foreground and stay
-    in the foreground until the first contentful paint.
+    to the time when the page first paints content, for Google Search page loads
+    {SyntheticResponseSuffix}. A contentful paint includes a paint of text,
+    image, SVG, or canvas. Only recorded for Search navigations that start in
+    the foreground and stay in the foreground until the first contentful paint.
   </summary>
+  <token key="SyntheticResponseSuffix" variants="SyntheticResponseSuffix"/>
 </histogram>
 
 <histogram
@@ -1578,27 +1585,24 @@ chromium-metrics-reviews@google.com.
     <variant name=".Prerender" summary="Prerendered page load"/>
   </token>
   <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
-  <token key="SyntheticResponseSuffix">
-    <variant name="" summary=""/>
-    <variant name=".SyntheticResponse"
-        summary="and the response is returned with the synthetic response"/>
-  </token>
+  <token key="SyntheticResponseSuffix" variants="SyntheticResponseSuffix"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.ParseTiming.NavigationToParseStart"
+    name="PageLoad.Clients.GoogleSearch.ParseTiming.NavigationToParseStart{SyntheticResponseSuffix}"
     units="ms" expires_after="2025-10-05">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
-    parser started, for Google Search page loads. Only recorded for Search
-    navigations that start in the foreground and stay in the foreground until
-    parse start.
+    parser started, for Google Search page loads{SyntheticResponseSuffix}. Only
+    recorded for Search navigations that start in the foreground and stay in the
+    foreground until parse start.
 
     This metric has incomplete data. It was expired between 2023-10-01 and M121.
   </summary>
+  <token key="SyntheticResponseSuffix" variants="SyntheticResponseSuffix"/>
 </histogram>
 
 <histogram
@@ -2533,17 +2537,12 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-worker@google.com</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
-    parser started, for page controlled by service worker.
-    {SyntheticResponseSuffix} Only recorded for navigations that start in the
-    foreground and stay in the foreground until parse start. This metric is
+    parser started, for page controlled by service
+    worker{SyntheticResponseSuffix}. Only recorded for navigations that start in
+    the foreground and stay in the foreground until parse start. This metric is
     emitted when the parser starts for a navigation.
   </summary>
-  <token key="SyntheticResponseSuffix">
-    <variant name=""/>
-    <variant name=".SyntheticResponse"
-        summary="This is recorded only when the response is created with the
-                 synthetic response."/>
-  </token>
+  <token key="SyntheticResponseSuffix" variants="SyntheticResponseSuffix"/>
 </histogram>
 
 <histogram
