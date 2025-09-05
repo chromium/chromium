@@ -36,6 +36,8 @@ class TurnSyncOnHelperPolicyFetchTracker {
   // managed), `true` otherwise. `callback` will run either way.
   virtual bool FetchPolicy(base::OnceClosure callback) = 0;
 
+  virtual std::optional<bool> GetPolicyRegistrationResult() const = 0;
+
   static std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> CreateInstance(
       Profile* profile,
       const AccountInfo& account_info);

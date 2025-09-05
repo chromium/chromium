@@ -92,7 +92,6 @@ class ProfileManagementDisclaimerService
     base::WeakPtr<Profile> profile_to_continue_in;
     CoreAccountId account_id;
     bool profile_creation_required_by_policy = false;
-    std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> policy_fetch_tracker;
 
     // Callbacks to be executed the user chooses which profile to be managed and
     // whether management is required by policy. The first parameter is the
@@ -148,6 +147,9 @@ class ProfileManagementDisclaimerService
   std::optional<signin::SigninChoice> user_choice_for_testing_;
 
   bool enable_management_disclaimer_ = true;
+
+  std::map<CoreAccountId, std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker>>
+      policy_fetch_tracker_by_account_id_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

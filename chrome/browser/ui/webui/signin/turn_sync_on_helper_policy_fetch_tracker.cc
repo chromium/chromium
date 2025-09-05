@@ -35,6 +35,8 @@ class PolicyFetchTracker
   }
 
   void RegisterForPolicy(base::OnceCallback<void(bool)> callback) override {
+    // This method should only be called once per instance.
+    CHECK(!is_managed_account_.has_value());
     policy::UserPolicySigninService* policy_service =
         policy::UserPolicySigninServiceFactory::GetForProfile(profile_);
     policy_service->RegisterForPolicyWithAccountId(
@@ -42,6 +44,10 @@ class PolicyFetchTracker
         base::BindOnce(&PolicyFetchTracker::OnRegisteredForPolicy,
                        weak_pointer_factory_.GetWeakPtr(),
                        std::move(callback)));
+  }
+
+  std::optional<bool> GetPolicyRegistrationResult() const override {
+    return is_managed_account_;
   }
 
   bool FetchPolicy(base::OnceClosure callback) override {
@@ -95,10 +101,12 @@ class PolicyFetchTracker
       const std::string& dm_token,
       const std::string& client_id,
       const std::vector<std::string>& user_affiliation_ids) {
+    CHECK(!is_managed_account_.has_value());
     // Indicates that the account isn't managed OR there is an error during the
     // registration
     if (dm_token.empty()) {
-      std::move(callback).Run(/*is_managed_account=*/false);
+      is_managed_account_ = false;
+      std::move(callback).Run(is_managed_account_.value());
       return;
     }
 
@@ -109,7 +117,8 @@ class PolicyFetchTracker
     dm_token_ = dm_token;
     client_id_ = client_id;
     user_affiliation_ids_ = user_affiliation_ids;
-    std::move(callback).Run(/*is_managed_account=*/true);
+    is_managed_account_ = true;
+    std::move(callback).Run(is_managed_account_.value());
   }
 
   void OnPolicyFetchComplete(base::OnceClosure callback, bool success) {
@@ -140,6 +149,7 @@ class PolicyFetchTracker
   // a new profile for an enterprise user or not.
   std::string dm_token_;
   std::string client_id_;
+  std::optional<bool> is_managed_account_;
   std::vector<std::string> user_affiliation_ids_;
 
   base::OnceClosure on_policy_updated_callback_;

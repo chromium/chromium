@@ -567,3 +567,119 @@ INSTANTIATE_TEST_SUITE_P(,
                          ProfileManagementDisclaimerServiceSigninBrowserTest,
                          testing::ValuesIn(kManagementDisclaimerTestParams),
                          [](const auto& info) { return info.param.test_name; });
+
+class ProfileManagementDisclaimerServiceCachingBrowserTest
+    : public SigninBrowserTestBase {
+ public:
+  ProfileManagementDisclaimerServiceCachingBrowserTest()
+      : SigninBrowserTestBase(/*use_main_profile=*/true) {}
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SigninBrowserTestBase::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &ProfileManagementDisclaimerServiceCachingBrowserTest::
+                    OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
+
+    policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(
+                     &policy::FakeUserPolicySigninService::BuildForEnterprise));
+
+    // Clear the previous cookie responses (if any) before using it for a new
+    // profile (as test_url_loader_factory() is shared across profiles).
+    test_url_loader_factory()->ClearResponses();
+    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                     test_url_loader_factory()));
+  }
+
+  AccountInfo MakeValidPrimaryAccountInfoAvailableAndUpdate(
+      const std::string& email,
+      const std::string& hosted_domain) {
+    AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        email, signin::ConsentLevel::kSignin);
+    // Fill the account info, in particular for the hosted_domain field.
+    account_info.full_name = "fullname";
+    account_info.given_name = "givenname";
+    account_info.hosted_domain = hosted_domain;
+    account_info.locale = "en";
+    account_info.picture_url = "https://example.com";
+
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    bool is_managed = hosted_domain != kNoHostedDomainFound;
+    mutator.set_is_subject_to_enterprise_features(is_managed);
+
+    DCHECK(account_info.IsValid());
+    identity_test_env()->UpdateAccountInfoForAccount(account_info);
+    return account_info;
+  }
+
+  ProfileManagementDisclaimerService* GetDisclaimerService() {
+    return ProfileManagementDisclaimerServiceFactory::GetForProfile(
+        GetProfile());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kEnforceManagementDisclaimer};
+
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceCachingBrowserTest,
+                       Test) {
+  auto* disclaimer_service = GetDisclaimerService();
+
+  // User first cancels the disclaimer.
+  disclaimer_service->SetUserChoiceForTesting(
+      signin::SigninChoice::SIGNIN_CHOICE_CANCEL);
+  disclaimer_service->SetProfileSeparationPoliciesForTesting(
+      policy::ProfileSeparationPolicies());
+
+  // Here the disclaimer is shown and PolicyFetchTracker::RegisterForPolicy()
+  // should be called. This should cache the dm token and the client id.
+  AccountInfo primary_account_info =
+      MakeValidPrimaryAccountInfoAvailableAndUpdate("bob@example.com",
+                                                    "example.com");
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
+
+  // User then accepts the disclaimer.
+  disclaimer_service->SetUserChoiceForTesting(
+      signin::SigninChoice::SIGNIN_CHOICE_CONTINUE);
+  disclaimer_service->SetProfileSeparationPoliciesForTesting(
+      policy::ProfileSeparationPolicies());
+
+  // Here the caching logic should be triggered. Without the caching logic, the
+  // PolicyFetchTracker::RegisterForPolicy() would be called again and a crash
+  // would happen.
+  disclaimer_service->EnsureManagedProfileForAccount(
+      primary_account_info.account_id,
+      signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup,
+      base::DoNothing());
+
+  base::test::TestFuture<Profile*, bool> future;
+  disclaimer_service->EnsureManagedProfileForAccount(
+      primary_account_info.account_id,
+      signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup,
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  Profile* new_profile = future.Get<Profile*>();
+  ASSERT_EQ(new_profile, GetProfile());
+
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(identity_manager()
+                ->FindExtendedAccountInfo(primary_account_info)
+                .IsManaged(),
+            signin::TriboolFromBool(true));
+  ASSERT_TRUE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
+}

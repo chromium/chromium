@@ -135,7 +135,7 @@ void ProfileManagementDisclaimerService::
   state_->access_point = access_point;
 
   // Wait for the current disclaimer to be closed.
-  if (state_->profile_creation_controller || state_->policy_fetch_tracker) {
+  if (state_->profile_creation_controller) {
     return;
   }
   // We can only create one managed profile at a time.
@@ -177,10 +177,24 @@ void ProfileManagementDisclaimerService::
     return;
   }
 
-  CHECK(!state_->policy_fetch_tracker && !state_->profile_creation_controller);
-  state_->policy_fetch_tracker =
-      TurnSyncOnHelperPolicyFetchTracker::CreateInstance(&profile_.get(), info);
-  state_->policy_fetch_tracker->RegisterForPolicy(
+  CHECK(!state_->profile_creation_controller);
+
+  // If the account is already registered for policy, we can check the result
+  // immediately. Otherwise, we need to register for policy updates.
+  if (!policy_fetch_tracker_by_account_id_.contains(account_id)) {
+    policy_fetch_tracker_by_account_id_[account_id] =
+        TurnSyncOnHelperPolicyFetchTracker::CreateInstance(&profile_.get(),
+                                                           info);
+  }
+  auto& policy_fetch_tracker = policy_fetch_tracker_by_account_id_[account_id];
+  if (policy_fetch_tracker->GetPolicyRegistrationResult().has_value() &&
+      policy_fetch_tracker->GetPolicyRegistrationResult().value()) {
+    OnRegisteredForPolicy(
+        policy_fetch_tracker->GetPolicyRegistrationResult().value());
+    return;
+  }
+
+  policy_fetch_tracker->RegisterForPolicy(
       base::BindOnce(&ProfileManagementDisclaimerService::OnRegisteredForPolicy,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -197,7 +211,8 @@ void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
     CHECK_IS_TEST();
     state_->profile_creation_controller =
         ManagedProfileCreationController::CreateManagedProfileForTesting(
-            &profile_.get(), GetExtendedAccountInfo(state_->account_id), state_->access_point,
+            &profile_.get(), GetExtendedAccountInfo(state_->account_id),
+            state_->access_point,
             base::BindOnce(&ProfileManagementDisclaimerService::
                                OnManagedProfileCreationResult,
                            weak_ptr_factory_.GetWeakPtr()),
@@ -208,11 +223,11 @@ void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
 
   state_->profile_creation_controller =
       ManagedProfileCreationController::CreateManagedProfile(
-        &profile_.get(), GetExtendedAccountInfo(state_->account_id),
-        state_->access_point,
-        base::BindOnce(&ProfileManagementDisclaimerService::
-                           OnManagedProfileCreationResult,
-                       weak_ptr_factory_.GetWeakPtr()));
+          &profile_.get(), GetExtendedAccountInfo(state_->account_id),
+          state_->access_point,
+          base::BindOnce(&ProfileManagementDisclaimerService::
+                             OnManagedProfileCreationResult,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ProfileManagementDisclaimerService::OnManagedProfileCreationResult(
@@ -223,10 +238,11 @@ void ProfileManagementDisclaimerService::OnManagedProfileCreationResult(
   }
   state_->profile_creation_required_by_policy =
       profile_creation_required_by_policy;
-  if (state_->profile_to_continue_in && state_->policy_fetch_tracker) {
-    state_->policy_fetch_tracker->SwitchToProfile(
-        state_->profile_to_continue_in.get());
-    state_->policy_fetch_tracker->FetchPolicy(
+  auto& policy_fetch_tracker =
+      policy_fetch_tracker_by_account_id_[state_->account_id];
+  if (state_->profile_to_continue_in && policy_fetch_tracker) {
+    policy_fetch_tracker->SwitchToProfile(state_->profile_to_continue_in.get());
+    policy_fetch_tracker->FetchPolicy(
         base::BindOnce(&ProfileManagementDisclaimerService::Reset,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
