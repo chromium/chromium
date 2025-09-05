@@ -147,16 +147,7 @@ class MockContextProviderCommandBuffer
  public:
   explicit MockContextProviderCommandBuffer(
       scoped_refptr<gpu::GpuChannelHost> channel)
-      : viz::ContextProviderCommandBuffer(
-            std::move(channel),
-            kGpuStreamIdDefault,
-            kGpuStreamPriorityDefault,
-            GURL(),
-            false,
-            true,
-            gpu::SharedMemoryLimits(),
-            gpu::ContextCreationAttribs(),
-            viz::command_buffer_metrics::ContextType::FOR_TESTING) {}
+      : viz::ContextProviderCommandBuffer(std::move(channel)) {}
 
   MOCK_METHOD(gpu::CommandBufferProxyImpl*,
               GetCommandBufferProxy,

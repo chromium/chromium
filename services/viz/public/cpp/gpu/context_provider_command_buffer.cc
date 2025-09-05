@@ -56,6 +56,7 @@ class SkDiscardableMemory;
 namespace viz {
 
 ContextProviderCommandBuffer::ContextProviderCommandBuffer(
+    base::PassKey<ContextProviderCommandBuffer> pass_key,
     scoped_refptr<gpu::GpuChannelHost> channel,
     int32_t stream_id,
     gpu::SchedulingPriority stream_priority,
@@ -82,6 +83,20 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
   DCHECK(channel_);
 }
 
+ContextProviderCommandBuffer::ContextProviderCommandBuffer(
+    scoped_refptr<gpu::GpuChannelHost> channel)
+    : ContextProviderCommandBuffer(
+          base::PassKey<ContextProviderCommandBuffer>(),
+          channel,
+          /*stream_id=*/0,
+          gpu::SchedulingPriority::kNormal,
+          GURL(),
+          /*automatic_flushes=*/false,
+          /*support_locking=*/false,
+          gpu::SharedMemoryLimits(),
+          gpu::ContextCreationAttribs(),
+          command_buffer_metrics::ContextType::FOR_TESTING) {}
+
 // static
 scoped_refptr<ContextProviderCommandBuffer>
 ContextProviderCommandBuffer::CreateForGL(
@@ -97,7 +112,8 @@ ContextProviderCommandBuffer::CreateForGL(
   attributes.lose_context_when_out_of_memory = lose_context_when_out_of_memory;
 
   return base::MakeRefCounted<ContextProviderCommandBuffer>(
-      std::move(channel), stream_id, stream_priority, active_url,
+      base::PassKey<ContextProviderCommandBuffer>(), std::move(channel),
+      stream_id, stream_priority, active_url,
       /*automatic_flushes=*/false, /*support_locking=*/false,
       gpu::SharedMemoryLimits::ForMailboxContext(), attributes, type);
 }
@@ -131,8 +147,8 @@ ContextProviderCommandBuffer::CreateForWebGL(
   }
 
   return base::MakeRefCounted<ContextProviderCommandBuffer>(
-      std::move(channel), /*stream_id=*/0, gpu::SchedulingPriority::kNormal,
-      active_url,
+      base::PassKey<ContextProviderCommandBuffer>(), std::move(channel),
+      /*stream_id=*/0, gpu::SchedulingPriority::kNormal, active_url,
       /*automatic_flushes=*/true, /*support_locking=*/false,
       gpu::SharedMemoryLimits(), attributes,
       command_buffer_metrics::ContextType::WEBGL);
@@ -152,8 +168,9 @@ ContextProviderCommandBuffer::CreateForWebGPU(
   attributes.context_type = gpu::CONTEXT_TYPE_WEBGPU;
 
   return base::MakeRefCounted<ContextProviderCommandBuffer>(
-      std::move(channel), /*stream_id=*/0, gpu::SchedulingPriority::kNormal,
-      active_url, /*automatic_flushes=*/true,
+      base::PassKey<ContextProviderCommandBuffer>(), std::move(channel),
+      /*stream_id=*/0, gpu::SchedulingPriority::kNormal, active_url,
+      /*automatic_flushes=*/true,
       /*support_locking=*/false, gpu::SharedMemoryLimits::ForWebGPUContext(),
       attributes, type, buffer_mapper);
 }
@@ -178,8 +195,9 @@ ContextProviderCommandBuffer::CreateForRaster(
   attributes.lose_context_when_out_of_memory = lose_context_when_out_of_memory;
 
   return base::MakeRefCounted<ContextProviderCommandBuffer>(
-      std::move(channel), stream_id, stream_priority, active_url,
-      automatic_flushes, support_locking, memory_limits, attributes, type);
+      base::PassKey<ContextProviderCommandBuffer>(), std::move(channel),
+      stream_id, stream_priority, active_url, automatic_flushes,
+      support_locking, memory_limits, attributes, type);
 }
 
 ContextProviderCommandBuffer::~ContextProviderCommandBuffer() {

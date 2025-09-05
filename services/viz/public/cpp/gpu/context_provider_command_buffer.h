@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "base/types/pass_key.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -106,6 +107,7 @@ class ContextProviderCommandBuffer
       base::SharedMemoryMapper* buffer_mapper);
 
   ContextProviderCommandBuffer(
+      base::PassKey<ContextProviderCommandBuffer> pass_key,
       scoped_refptr<gpu::GpuChannelHost> channel,
       int32_t stream_id,
       gpu::SchedulingPriority stream_priority,
@@ -152,6 +154,11 @@ class ContextProviderCommandBuffer
  protected:
   friend class base::DeleteHelper<ContextProviderCommandBuffer>;
   ~ContextProviderCommandBuffer() override;
+
+  // Used by MockContextProviderCommandBuffer in
+  // media/mojo/clients/mojo_gpu_video_accelerator_factories_unittest.cc
+  explicit ContextProviderCommandBuffer(
+      scoped_refptr<gpu::GpuChannelHost> channel);
 
  private:
   void OnLostContext();
