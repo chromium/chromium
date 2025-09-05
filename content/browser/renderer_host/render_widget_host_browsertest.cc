@@ -402,7 +402,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
 
   SimulateRoutedMouseEvent(blink::WebInputEvent::Type::kMouseUp, 10, 60, 0,
                            true);
-  WaitForAckWith(blink::WebInputEvent::Type::kTouchEnd);
+  if (observer.acked_touch_event_type() !=
+      blink::WebInputEvent::Type::kTouchEnd) {
+    WaitForAckWith(blink::WebInputEvent::Type::kTouchEnd);
+  }
   EXPECT_EQ(blink::WebInputEvent::Type::kTouchEnd,
             observer.acked_touch_event_type());
   dispatched_events = observer.GetAndResetDispatchedEventTypes();
