@@ -5464,6 +5464,7 @@ source_set("browser_navigator_params_headers") {
 
   public_deps = [
     "//base",
+    "//build:android_buildflags",
     "//chrome/browser/ui/tabs:tab_enums",
     "//components/captive_portal/core",
     "//components/tab_groups",

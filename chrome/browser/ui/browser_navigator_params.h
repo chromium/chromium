@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "components/captive_portal/core/captive_portal_types.h"
@@ -38,6 +39,7 @@
 #endif
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -259,19 +261,32 @@ struct NavigateParams {
   };
   PathBehavior path_behavior = RESPECT;
 
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+  // [in]  Specifies a BrowserWindowInterface object where the navigation
+  //       could occur or the tab could be added. Navigate() is not obliged to
+  //       use this BrowserWindowInterface if it is not compatible with the
+  //       operation being performed. This can be NULL, in which case
+  //       |initiating_profile| must be provided.
+  // [out] Specifies the BrowserWindowInterface object where the navigation
+  //       occurred or the tab was added. Guaranteed non-NULL unless the
+  //       disposition did not require a navigation, in which case this is set
+  //       to NULL (SAVE_TO_DISK, IGNORE_ACTION).
+  // Note: If |show_window| is set to false and a new BrowserWindowInterface is
+  //       created by Navigate(), the caller is responsible for showing it so
+  //       that its window can assume responsibility for the Browser's lifetime
+  //       (Browser objects are deleted when the user closes a visible browser
+  //       window).
+  // Note: (crbug.com/443062679) When possible, prefer this over browser.
+  raw_ptr<BrowserWindowInterface> browser_window_interface = nullptr;
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
-  // [in]  Specifies a Browser object where the navigation could occur or the
-  //       tab could be added. Navigate() is not obliged to use this Browser if
-  //       it is not compatible with the operation being performed. This can be
-  //       NULL, in which case |initiating_profile| must be provided.
-  // [out] Specifies the Browser object where the navigation occurred or the
-  //       tab was added. Guaranteed non-NULL unless the disposition did not
-  //       require a navigation, in which case this is set to NULL
-  //       (SAVE_TO_DISK, IGNORE_ACTION).
-  // Note: If |show_window| is set to false and a new Browser is created by
-  //       Navigate(), the caller is responsible for showing it so that its
-  //       window can assume responsibility for the Browser's lifetime (Browser
-  //       objects are deleted when the user closes a visible browser window).
+  // The BrowserWindowInterface on non-Android platforms.
+  // Please see the |browser_window_interface| field for documentation.
+  //
+  // Note: Please don't use this if you can use |browser_window_interface|.
+  //
+  // TODO(http://crbug.com/443062679): Delete this.
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser = nullptr;
 
   // The group the caller would like the tab to be added to.
