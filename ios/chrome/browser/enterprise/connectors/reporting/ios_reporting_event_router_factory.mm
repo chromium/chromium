@@ -37,8 +37,7 @@ IOSReportingEventRouterFactory::~IOSReportingEventRouterFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSReportingEventRouterFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  auto* profile = ProfileIOS::FromBrowserState(browser_state);
+    ProfileIOS* profile) const {
   return std::make_unique<ReportingEventRouter>(
       IOSRealtimeReportingClientFactory::GetForProfile(profile));
 }

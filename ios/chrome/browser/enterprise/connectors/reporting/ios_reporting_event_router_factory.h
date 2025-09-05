@@ -26,9 +26,9 @@ class IOSReportingEventRouterFactory : public ProfileKeyedServiceFactoryIOS {
   IOSReportingEventRouterFactory();
   ~IOSReportingEventRouterFactory() override;
 
-  // BrowserStateKeyedServiceFactory overrides.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace enterprise_connectors
