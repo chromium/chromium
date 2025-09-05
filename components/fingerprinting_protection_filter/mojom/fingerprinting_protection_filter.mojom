@@ -13,8 +13,8 @@ interface FingerprintingProtectionAgent {
   // Instructs the renderer to activate subresource filtering at the specified
   // |activation_state| for the document load committed next in a frame.
   //
-  // Must be called just before mojom::FrameNavigationControl::CommitNavigation,
-  // at ReadyToCommitNavigation time. If not called, the default behavior is
+  // Must be called just before RenderFrameHost::CommitNavigation, at
+  // ReadyToCommitNavigation time. If not called, the default behavior is
   // subresource_filter::mojom::ActivationLevel::kDisabled.
   ActivateForNextCommittedLoad(
     subresource_filter.mojom.ActivationState activation_state);

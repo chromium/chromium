@@ -951,9 +951,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // embedding frame.
   virtual bool IsSandboxed(network::mojom::WebSandboxFlags flags) = 0;
 
-  // Calls |FlushForTesting()| on Network Service and FrameNavigationControl
-  // related interfaces to make sure all in-flight mojo messages have been
-  // received by the other end. For test use only.
+  // Calls |FlushForTesting()| on Network Service related interfaces to make
+  // sure all in-flight mojo messages have been received by the other end. For
+  // test use only.
   //
   // It is usually an error to call this method when the frame doesn't have any
   // NetworkService connection.  OTOH, tests that can't easily tell when this

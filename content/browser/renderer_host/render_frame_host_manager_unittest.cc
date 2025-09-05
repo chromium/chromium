@@ -1877,7 +1877,7 @@ TEST_P(RenderFrameHostManagerTest,
 
 // Tests that the RenderFrameHost is properly deleted when the
 // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame is received.
-// (mojo::FrameNavigationControl::Unload and the corresponding
+// (mojo::Frame:Unload and the corresponding
 // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame always occur after
 // commit.) Also tests that an early
 // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame is properly ignored.
@@ -1929,7 +1929,7 @@ TEST_P(RenderFrameHostManagerTest, DeleteFrameAfterUnloadACK) {
 
 // Tests that the RenderFrameHost is properly unloaded when the
 // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame is received.
-// (mojo::FrameNavigationControl::Unload and the corresponding
+// (mojo::Frame::Unload and the corresponding
 // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame always occur after
 // commit.)
 TEST_P(RenderFrameHostManagerTest, UnloadFrameAfterUnloadACK) {
@@ -1976,10 +1976,9 @@ TEST_P(RenderFrameHostManagerTest, UnloadFrameAfterUnloadACK) {
 }
 
 // Test that a RenderFrameHost is properly deleted if a navigation in the new
-// renderer commits before sending the mojo::FrameNavigationControl::Unload
-// message to the old renderer. This simulates a cross-site navigation to a
-// synchronously committing URL (e.g., a data URL) and ensures it works
-// properly.
+// renderer commits before sending the mojo::Frame::Unload message to the old
+// renderer. This simulates a cross-site navigation to a synchronously
+// committing URL (e.g., a data URL) and ensures it works properly.
 TEST_P(RenderFrameHostManagerTest, CommitNewNavigationBeforeSendingUnload) {
   // When a page enters the BackForwardCache, the RenderFrameHost is not
   // deleted.  Similarly, no

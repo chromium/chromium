@@ -632,8 +632,8 @@ interface LocalFrameHost {
   // |untrusted_stack_trace| should only be printed or sent to other services;
   // it's untrusted and should not be parsed to get a structured stack trace.
   // The stack trace is only present if
-  // FrameNavigationControl.SetWantErrorMessageStackTrace has been called for
-  // this frame and the log_level is kError.
+  // content.mojom.Frame.SetWantErrorMessageStackTrace has been called for this
+  // frame and the log_level is kError.
   DidAddMessageToConsole(
       ConsoleMessageLevel log_level,
       mojo_base.mojom.BigString16 msg,
