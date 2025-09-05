@@ -1798,12 +1798,10 @@ TEST_F(AcceleratorControllerTest, SideVolumeButtonLocation) {
   base::Value::Dict location;
   location.Set(kVolumeButtonRegion, kVolumeButtonRegionScreen);
   location.Set(kVolumeButtonSide, kVolumeButtonSideLeft);
-  std::string json_location;
-  base::JSONWriter::Write(location, &json_location);
   base::ScopedTempDir file_tmp_dir;
   ASSERT_TRUE(file_tmp_dir.CreateUniqueTempDir());
   base::FilePath file_path = file_tmp_dir.GetPath().Append("location.json");
-  ASSERT_TRUE(WriteJsonFile(file_path, json_location));
+  ASSERT_TRUE(WriteJsonFile(file_path, base::WriteJson(location).value_or("")));
   EXPECT_TRUE(base::PathExists(file_path));
   test_api_->SetSideVolumeButtonFilePath(file_path);
   EXPECT_EQ(kVolumeButtonRegionScreen,

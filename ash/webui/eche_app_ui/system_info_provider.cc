@@ -109,9 +109,7 @@ void SystemInfoProvider::GetSystemInfo(
       base::FeatureList::IsEnabled(features::kEcheSWACheckAndroidNetworkInfo));
   json_dictionary.Set(kJsonProcessAndroidAccessibilityTreeKey, true);
 
-  std::string json_message;
-  base::JSONWriter::Write(json_dictionary, &json_message);
-  std::move(callback).Run(json_message);
+  std::move(callback).Run(base::WriteJson(json_dictionary).value_or(""));
 }
 
 void SystemInfoProvider::SetSystemInfoObserver(

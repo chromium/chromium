@@ -1153,10 +1153,9 @@ class PowerButtonControllerWithPositionTest
     position_info.Set(PowerButtonController::kPositionField,
                       kPowerButtonPercentage);
 
-    std::string json_position_info;
-    base::JSONWriter::Write(position_info, &json_position_info);
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kAshPowerButtonPosition, json_position_info);
+        switches::kAshPowerButtonPosition,
+        base::WriteJson(position_info).value_or(""));
   }
 
   PowerButtonControllerWithPositionTest(

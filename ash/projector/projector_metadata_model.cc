@@ -325,9 +325,7 @@ void ProjectorMetadata::MarkKeyIdea() {
 }
 
 std::string ProjectorMetadata::Serialize() {
-  std::string metadata_str;
-  base::JSONWriter::Write(ToJson(), &metadata_str);
-  return metadata_str;
+  return base::WriteJson(ToJson()).value_or("");
 }
 
 // The JSON we generate looks like this:

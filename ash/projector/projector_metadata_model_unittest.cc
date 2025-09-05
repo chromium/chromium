@@ -2249,8 +2249,8 @@ void AssertSerializedString(const std::string& expected,
                             const std::string& actual) {
   std::optional<base::Value> expected_value = base::JSONReader::Read(expected);
   ASSERT_TRUE(expected_value);
-  std::string expected_serialized_value;
-  base::JSONWriter::Write(expected_value.value(), &expected_serialized_value);
+  std::string expected_serialized_value =
+      base::WriteJson(expected_value.value()).value_or("");
   EXPECT_EQ(expected_serialized_value, actual);
 }
 
@@ -2524,11 +2524,8 @@ TEST_F(ProjectorKeyIdeaTest, ToJson) {
       /*start_time=*/base::Milliseconds(1000),
       /*end_time=*/base::Milliseconds(3000));
 
-  std::string key_idea_str;
-  base::JSONWriter::Write(key_idea.ToJson(), &key_idea_str);
-
   AssertSerializedString(BuildKeyIdeaJson(1000, 3000, std::string()),
-                         key_idea_str);
+                         base::WriteJson(key_idea.ToJson()).value_or(""));
 }
 
 TEST_F(ProjectorKeyIdeaTest, ToJsonWithText) {
@@ -2536,11 +2533,8 @@ TEST_F(ProjectorKeyIdeaTest, ToJsonWithText) {
       /*start_time=*/base::Milliseconds(1000),
       /*end_time=*/base::Milliseconds(3000), "Key idea text");
 
-  std::string key_idea_str;
-  base::JSONWriter::Write(key_idea.ToJson(), &key_idea_str);
-
   AssertSerializedString(BuildKeyIdeaJson(1000, 3000, "Key idea text"),
-                         key_idea_str);
+                         base::WriteJson(key_idea.ToJson()).value_or(""));
 }
 
 class ProjectorTranscriptTest : public testing::Test {
@@ -2569,10 +2563,8 @@ TEST_F(ProjectorTranscriptTest, ToJson) {
       /*end_time=*/base::Milliseconds(3000), 1000, "transcript text",
       std::move(hypothesis_parts));
 
-  std::string transcript_str;
-  base::JSONWriter::Write(transcript.ToJson(), &transcript_str);
-
-  AssertSerializedString(expected_transcript, transcript_str);
+  AssertSerializedString(expected_transcript,
+                         base::WriteJson(transcript.ToJson()).value_or(""));
 }
 
 class ProjectorMetadataTest : public testing::Test {
