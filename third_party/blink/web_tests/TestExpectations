@@ -9642,11 +9642,6 @@ crbug.com/441011869 [ Linux ] external/wpt/storage-access-api/requestStorageAcce
 # Gardener 2025-08-29
 crbug.com/441826647 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Skip Timeout ]
 
-# Disabled to unblock crrev.com/c/6903230
-crbug.com/442509324 http/tests/devtools/device-mode/device-mode-responsive.js [ Failure Pass ]
-crbug.com/442509324 http/tests/devtools/device-mode/device-mode-switching-devices.js [ Failure Pass ]
-crbug.com/442509324 http/tests/devtools/device-mode/device-mode-toolbar.js [ Failure Pass ]
-
 # Gardener 2025-09-01
 crbug.com/442030691 compositing/video/video-poster.html [ Failure Pass ]
 
