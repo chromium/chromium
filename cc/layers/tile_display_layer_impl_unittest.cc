@@ -181,6 +181,99 @@ TEST_F(TileDisplayLayerImplTest, GetContentsResourceIdHandlesLackOfTiles) {
   EXPECT_EQ(mask_resource_id, viz::kInvalidResourceId);
 }
 
+// Verifies that GetContentsResourceId() returns the correct resource ID for a
+// backdrop filter mask.
+TEST_F(TileDisplayLayerImplTest,
+       GetContentsResourceIdReturnsResourceForBackdropFilter) {
+  constexpr gfx::Size kLayerBounds(1300, 1900);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->SetIsBackdropFilterMask(true);
+
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  tiling.SetTileSize(kLayerBounds);
+  tiling.SetTilingRect(kLayerRect);
+
+  auto resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents contents =
+      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds,
+                                         /*is_checkered=*/false);
+  tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/true);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  viz::ResourceId mask_resource_id;
+  gfx::Size mask_texture_size;
+  gfx::SizeF mask_uv_size;
+  raw_layer->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
+                                   &mask_uv_size);
+
+  EXPECT_EQ(mask_resource_id, resource_id);
+  EXPECT_EQ(mask_texture_size, kLayerBounds);
+
+  // `mask_uv_size` is the ratio between the tile's width/height and that of
+  // the resource. Here, the tile and resource have been created with the same
+  // size.
+  EXPECT_EQ(mask_uv_size, gfx::SizeF(1.0f, 1.0f));
+}
+
+// Verifies that GetContentsResourceId() returns the correct mask UV size when
+// the tile and resource sizes differ.
+TEST_F(TileDisplayLayerImplTest,
+       GetContentsResourceIdComputesUVMaskSizeCorrectlyForBackdropFilter) {
+  constexpr gfx::Size kLayerBounds(100, 200);
+  constexpr gfx::Size kResourceSize(200, 400);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->SetIsBackdropFilterMask(true);
+
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  tiling.SetTileSize(kLayerBounds);
+  tiling.SetTilingRect(kLayerRect);
+
+  auto resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents contents =
+      TileDisplayLayerImpl::TileResource(resource_id, kResourceSize,
+                                         /*is_checkered=*/false);
+  tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/true);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  viz::ResourceId mask_resource_id;
+  gfx::Size mask_texture_size;
+  gfx::SizeF mask_uv_size;
+  raw_layer->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
+                                   &mask_uv_size);
+
+  EXPECT_EQ(mask_resource_id, resource_id);
+  EXPECT_EQ(mask_texture_size, kResourceSize);
+
+  // `mask_uv_size` is the ratio between the tile's width/height and that of
+  // the resource. Here, the tile has been created to be half the size of the
+  // resource in each dimension.
+  EXPECT_EQ(mask_uv_size, gfx::SizeF(0.5f, 0.5f));
+}
+
 class TileDisplayLayerImplWithEdgeAADisabledTest
     : public TileDisplayLayerImplTest {
  public:
