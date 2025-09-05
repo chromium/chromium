@@ -53,8 +53,7 @@ LanguageModelManagerFactory::~LanguageModelManagerFactory() {}
 
 std::unique_ptr<KeyedService>
 LanguageModelManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* const state) const {
-  ProfileIOS* const profile = ProfileIOS::FromBrowserState(state);
+    ProfileIOS* profile) const {
   std::unique_ptr<language::LanguageModelManager> manager =
       std::make_unique<language::LanguageModelManager>(
           profile->GetPrefs(),

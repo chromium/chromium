@@ -29,8 +29,7 @@ UrlLanguageHistogramFactory::~UrlLanguageHistogramFactory() {}
 
 std::unique_ptr<KeyedService>
 UrlLanguageHistogramFactory::BuildServiceInstanceFor(
-    web::BrowserState* const context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<language::UrlLanguageHistogram>(profile->GetPrefs());
 }
 
