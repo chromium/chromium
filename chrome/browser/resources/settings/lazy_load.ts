@@ -185,10 +185,10 @@ export {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_page
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
 // <if expr="not is_chromeos">
 export {SettingsAddLanguagesDialogElement} from './languages_page/add_languages_dialog.js';
-export {getLanguageHelperInstance} from './languages_page/languages.js';
 // <if expr="not is_macosx">
 export {SettingsEditDictionaryPageElement} from './languages_page/edit_dictionary_page.js';
 // </if>
+export {getLanguageHelperInstance} from './languages_page/languages.js';
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_page/languages_browser_proxy.js';
 export {kMenuCloseDelay, SettingsLanguagesPageElement} from './languages_page/languages_page.js';
 export {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_page/languages_settings_metrics_proxy.js';
