@@ -520,4 +520,19 @@ TEST_F(TileDisplayLayerImplTest, RemoveTilingRemovesTiling) {
   EXPECT_EQ(raw_layer->GetTilingForTesting(1.0), nullptr);
 }
 
+// Verifies that calling RemoveTiling() for a tiling that doesn't exist doesn't
+// crash.
+TEST_F(TileDisplayLayerImplTest, RemoveTilingOnNonExistentTilingDoesNotCrash) {
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  EXPECT_EQ(raw_layer->GetTilingForTesting(1.0), nullptr);
+
+  // This should not crash.
+  raw_layer->RemoveTiling(1.0);
+  EXPECT_EQ(raw_layer->GetTilingForTesting(1.0), nullptr);
+}
+
 }  // namespace cc
