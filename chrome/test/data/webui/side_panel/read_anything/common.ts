@@ -4,11 +4,13 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAnythingLogger, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAloudNode, ReadAnythingLogger, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 export async function createApp(): Promise<AppElement> {
@@ -123,6 +125,8 @@ export function setSimpleAxTreeWithText(text: string) {
   chrome.readingMode.setContentForTesting(axTree, [2]);
 }
 
+// TODO: crbug.com/440400392- Merge setSimpleNodeStoreWithText with
+// setSimpleNodeStoreWithTextAndModel
 export function setSimpleNodeStoreWithText(text: string) {
   const id = 2;
   chrome.readingMode.getCurrentTextSegments =
@@ -131,6 +135,21 @@ export function setSimpleNodeStoreWithText(text: string) {
   chrome.readingMode.getTextContent = () => text;
   NodeStore.getInstance().setDomNode(document.createTextNode(text), id);
 }
+
+export function setSimpleNodeStoreWithTextAndModel(
+    text: string, model?: TestReadAloudModelBrowserProxy): Node {
+  const id = 2;
+  const node = document.createTextNode(text);
+  NodeStore.getInstance().setDomNode(node, id);
+  const segments: Segment[] =
+      [{node: ReadAloudNode.create(node)!, start: 0, length: text.length}];
+  if (model) {
+    model.setCurrentTextSegments(segments);
+    model.setCurrentTextContent(text);
+  }
+  return node;
+}
+
 
 // Sets up the simple AX tree and node store with the given text.
 export function setSimpleTreeWithText(text: string) {

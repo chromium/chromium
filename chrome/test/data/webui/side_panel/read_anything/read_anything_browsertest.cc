@@ -299,6 +299,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechController) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechControllerContent) {
+  RunSidePanelTest("side_panel/read_anything/speech_controller_content_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechModel) {
   RunSidePanelTest("side_panel/read_anything/speech_model_test.js",
                    "mocha.run()");
