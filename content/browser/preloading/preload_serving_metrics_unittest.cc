@@ -14,13 +14,11 @@
 
 namespace content {
 
-class PreloadServingMetricsTest : public ::testing::Test {};
-
 struct MakeSkeltonPreloadServingMetricsArgs {
   int n_prefetch_match_metrics;
 };
 
-std::unique_ptr<PreloadServingMetrics> MakeSkeltonPreloadServingMetrics(
+std::unique_ptr<PreloadServingMetrics> MakeSkeletonPreloadServingMetrics(
     MakeSkeltonPreloadServingMetricsArgs args) {
   auto ret = std::make_unique<PreloadServingMetrics>();
 
@@ -36,7 +34,7 @@ base::TimeTicks Millis(int ms) {
   return base::TimeTicks::UnixEpoch() + base::Milliseconds(ms);
 }
 
-TEST_F(PreloadServingMetricsTest, NavigationWithoutPreload) {
+TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {
@@ -50,7 +48,7 @@ TEST_F(PreloadServingMetricsTest, NavigationWithoutPreload) {
       {});
   base::HistogramTester histogram_tester;
 
-  auto log = MakeSkeltonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
+  auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
   log->prerender_initial_preload_serving_metrics = nullptr;
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
@@ -210,7 +208,7 @@ TEST_F(PreloadServingMetricsTest, NavigationWithoutPreload) {
       0);
 }
 
-TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
+TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {
@@ -224,7 +222,7 @@ TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
       {});
   base::HistogramTester histogram_tester;
 
-  auto log = MakeSkeltonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
+  auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
   log->prefetch_match_metrics_list[0]->time_match_start = Millis(42);
   log->prefetch_match_metrics_list[0]->time_match_end = Millis(57);
   log->prefetch_match_metrics_list[0]->n_initial_candidates = 1;
@@ -410,8 +408,8 @@ TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
       0);
 }
 
-TEST_F(PreloadServingMetricsTest,
-       NavigationWithPrerenderWithPrefetchAheadOfPrerender) {
+TEST(PreloadServingMetricsTest,
+     NavigationWithPrerenderWithPrefetchAheadOfPrerender) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {
@@ -426,7 +424,7 @@ TEST_F(PreloadServingMetricsTest,
   base::HistogramTester histogram_tester;
 
   auto log_prerender =
-      MakeSkeltonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
+      MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
   log_prerender->prefetch_match_metrics_list[0]->time_match_start =
       Millis(3042);
   log_prerender->prefetch_match_metrics_list[0]->time_match_end = Millis(3057);
@@ -455,7 +453,7 @@ TEST_F(PreloadServingMetricsTest,
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender = nullptr;
   log_prerender->prerender_initial_preload_serving_metrics = nullptr;
-  auto log = MakeSkeltonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
+  auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
   log->prerender_initial_preload_serving_metrics = std::move(log_prerender);
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
@@ -616,8 +614,8 @@ TEST_F(PreloadServingMetricsTest,
       base::Milliseconds(334), 1);
 }
 
-TEST_F(PreloadServingMetricsTest,
-       PrefetchTriggeredPrerenderTriggeredNavigationStartedPrefetchFailed) {
+TEST(PreloadServingMetricsTest,
+     PrefetchTriggeredPrerenderTriggeredNavigationStartedPrefetchFailed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {
@@ -632,7 +630,7 @@ TEST_F(PreloadServingMetricsTest,
   base::HistogramTester histogram_tester;
 
   auto log_prerender =
-      MakeSkeltonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
+      MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
   log_prerender->prefetch_match_metrics_list[0]->time_match_start = Millis(42);
   log_prerender->prefetch_match_metrics_list[0]->time_match_end = Millis(57);
   log_prerender->prefetch_match_metrics_list[0]->n_initial_candidates = 1;
@@ -665,7 +663,7 @@ TEST_F(PreloadServingMetricsTest,
       ->prefetch_container_metrics_ahead_of_prerender
       ->time_prefetch_completed_successfully = std::nullopt;
   log_prerender->prerender_initial_preload_serving_metrics = nullptr;
-  auto log = MakeSkeltonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
+  auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
   log->prefetch_match_metrics_list[0]->time_match_start = Millis(57);
   log->prefetch_match_metrics_list[0]->time_match_end = Millis(57);
   log->prefetch_match_metrics_list[0]->n_initial_candidates = 1;
@@ -893,7 +891,7 @@ TEST_F(PreloadServingMetricsTest,
       0);
 }
 
-TEST_F(
+TEST(
     PreloadServingMetricsTest,
     PrefetchTriggeredPrerenderTriggeredNavigationStartedPrefetchFailedDurationGe10000) {
   base::test::ScopedFeatureList feature_list;
@@ -910,7 +908,7 @@ TEST_F(
   base::HistogramTester histogram_tester;
 
   auto log_prerender =
-      MakeSkeltonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
+      MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
   log_prerender->prefetch_match_metrics_list[0]->time_match_start = Millis(42);
   log_prerender->prefetch_match_metrics_list[0]->time_match_end = Millis(10057);
   log_prerender->prefetch_match_metrics_list[0]->n_initial_candidates = 1;
@@ -943,7 +941,7 @@ TEST_F(
       ->prefetch_container_metrics_ahead_of_prerender
       ->time_prefetch_completed_successfully = std::nullopt;
   log_prerender->prerender_initial_preload_serving_metrics = nullptr;
-  auto log = MakeSkeltonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
+  auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
   log->prefetch_match_metrics_list[0]->time_match_start = Millis(57);
   log->prefetch_match_metrics_list[0]->time_match_end = Millis(57);
   log->prefetch_match_metrics_list[0]->n_initial_candidates = 1;

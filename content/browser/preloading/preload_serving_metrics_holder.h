@@ -68,8 +68,6 @@ class CONTENT_EXPORT PreloadServingMetricsHolder final
   // Non null until `Take()` is called.
   std::unique_ptr<PreloadServingMetrics> preload_serving_metrics_;
 
-  base::WeakPtrFactory<PreloadServingMetricsHolder> weak_method_factory_{this};
-
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
 
