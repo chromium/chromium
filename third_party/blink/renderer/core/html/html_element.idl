@@ -35,6 +35,7 @@
     [RuntimeCallStatsCounter=HTMLElementClick] void click();
     [CEReactions, Reflect] attribute boolean inert;
     [CEReactions, Reflect] attribute DOMString accessKey;
+    [RuntimeEnabled=AccessKeyLabel] readonly attribute DOMString accessKeyLabel;
     [CEReactions] attribute boolean draggable;
     [CEReactions] attribute boolean spellcheck;
     [Measure] attribute DOMString autocapitalize;

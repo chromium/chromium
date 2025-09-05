@@ -165,6 +165,8 @@ class CORE_EXPORT HTMLElement : public Element {
 
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
 
+  String accessKeyLabel();
+
   bool ShouldSerializeEndTag() const;
 
   virtual HTMLFormElement* formOwner() const;

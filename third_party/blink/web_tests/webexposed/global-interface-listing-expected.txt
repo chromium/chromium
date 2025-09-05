@@ -3851,6 +3851,7 @@ interface HTMLDocument : Document
 interface HTMLElement : Element
     attribute @@toStringTag
     getter accessKey
+    getter accessKeyLabel
     getter attributeStyleMap
     getter autocapitalize
     getter autofocus

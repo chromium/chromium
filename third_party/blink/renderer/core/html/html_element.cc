@@ -106,6 +106,7 @@
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/keywords.h"
@@ -130,6 +131,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -2684,6 +2687,46 @@ void HTMLElement::click() {
 
 void HTMLElement::AccessKeyAction(SimulatedClickCreationScope creation_scope) {
   DispatchSimulatedClick(nullptr, creation_scope);
+}
+
+String HTMLElement::accessKeyLabel() {
+  CHECK(RuntimeEnabledFeatures::AccessKeyLabelEnabled());
+  const String access_key = FastGetAttribute(html_names::kAccesskeyAttr);
+  if (access_key.empty()) {
+    return String();
+  } else if (access_key.length() > 1) {
+    // If there is more than one code point for access key then it will
+    // cause no access key to be assigned.
+    // This is because the behavior of access_key is not matched
+    // with the spec[1][2]
+    // [1] https://html.spec.whatwg.org/#keyboard-shortcuts-processing-model
+    // [2] https://github.com/whatwg/html/issues/3769
+    AddConsoleMessage(
+        mojom::ConsoleMessageSource::kJavaScript,
+        mojom::ConsoleMessageLevel::kWarning,
+        "An accessKey with more than one code point is not supported.");
+    return String();
+  }
+
+  StringBuilder result;
+
+  const int modifiers = KeyboardEventManager::kAccessKeyModifiers;
+#if BUILDFLAG(IS_MAC)
+  if (modifiers & WebInputEvent::kControlKey) {
+    result.Append(uchar::kUpArrowheadKey);
+  }
+  if (modifiers & WebInputEvent::kAltKey) {
+    result.Append(uchar::kOptionKey);
+  }
+#else
+  DCHECK(!(modifiers & WebInputEvent::kControlKey));
+  if (modifiers & WebInputEvent::kAltKey) {
+    result.Append("Alt+");
+  }
+#endif
+
+  result.Append(access_key);
+  return result.ReleaseString();
 }
 
 String HTMLElement::title() const {

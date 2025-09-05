@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>accessKeyLabel attribute</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const modifier = navigator.userAgent.includes('Mac OS X') ? '\u2303\u2325' : 'Alt+';
+
+function createButtonWithAccessKey(accessKey) {
+    const button = document.createElement('button');
+    button.setAttribute('accesskey', accessKey);
+    return button;
+}
+
+test(() => {
+    const element = createButtonWithAccessKey('b');
+    assert_equals(element.accessKeyLabel, modifier + 'b');
+}, 'Returns modifier + key when accesskey is a lowercase');
+
+test(() => {
+    const element = createButtonWithAccessKey('B');
+    assert_equals(element.accessKeyLabel, modifier + 'B');
+}, 'Returns modifier + key when accesskey is an uppercase');
+
+test(() => {
+    const element = createButtonWithAccessKey('');
+    assert_equals(element.accessKeyLabel, '');
+}, 'Returns empty string when accesskey is an empty');
+
+test(() => {
+    const element = document.createElement('button');
+    assert_equals(element.accessKeyLabel, '');
+}, 'Returns empty string when accesskey is missing');
+
+test(() => {
+    const element = createButtonWithAccessKey('s 0');
+    assert_equals(element.accessKeyLabel, '');
+}, 'Returns empty string when accesskey contains multiple code points');
+</script>
+</body>
+</html>

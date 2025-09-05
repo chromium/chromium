@@ -284,6 +284,12 @@
       public: true,
     },
     {
+      // https://chromestatus.com/feature/5113389252739072
+      // https://issues.chromium.org/issues/41119923
+      name: "AccessKeyLabel",
+      status: "experimental",
+    },
+    {
       name: "AddressSpace",
       status: "experimental",
       implied_by: ["CorsRFC1918"],
