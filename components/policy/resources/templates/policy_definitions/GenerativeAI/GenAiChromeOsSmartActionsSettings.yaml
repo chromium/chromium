@@ -1,6 +1,6 @@
-caption: Settings for Scanner feature
+caption: Settings for the Text Capture feature
 desc: |-
-  This policy controls the settings of the Scanner feature for <ph name="PRODUCT_OS_NAME">$1<ex>Google ChromeOS</ex></ph>.
+  This policy controls the settings of the Text Capture feature for <ph name="PRODUCT_OS_NAME">$1<ex>Google ChromeOS</ex></ph>.
 
   0 = Allow the feature to be used, while allowing Google to use relevant data to improve its AI models. Relevant data may include prompts, inputs, outputs, source materials, and written feedback, depending on the feature. It may also be reviewed by humans to improve AI models. 0 is the default value, except when noted below.
 
@@ -20,13 +20,13 @@ features:
 owners:
 - file://ash/scanner/OWNERS
 items:
-- caption: Allow Scanner and improve AI models.
+- caption: Allow Text Capture and improve AI models.
   name: Allowed
   value: 0
-- caption: Allow Scanner without improving AI models.
+- caption: Allow Text Capture without improving AI models.
   name: AllowedWithoutLogging
   value: 1
-- caption: Do not allow Scanner.
+- caption: Do not allow Text Capture.
   name: Disabled
   value: 2
 schema:
