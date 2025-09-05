@@ -4,52 +4,47 @@
 
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
-#include "chrome/common/pref_names.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/separator.h"
 
-class VerticalTabStripRegionViewTest : public testing::Test {
+class VerticalTabStripRegionViewTest : public InProcessBrowserTest {
  public:
   VerticalTabStripRegionViewTest() = default;
   ~VerticalTabStripRegionViewTest() override = default;
 
   void SetUp() override {
-    testing::Test::SetUp();
-    pref_service_.registry()->RegisterBooleanPref(
-        prefs::kVerticalTabsEnabled, true,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-    controller_ =
-        std::make_unique<tabs::VerticalTabStripStateController>(&pref_service_);
-    region_view_ =
-        std::make_unique<VerticalTabStripRegionView>(controller_.get());
+    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
+    InProcessBrowserTest::SetUp();
   }
 
-  void TearDown() override {
-    controller_.reset();
-    testing::Test::TearDown();
+  VerticalTabStripRegionView* region_view() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->vertical_tab_strip_region_view();
   }
-
-  VerticalTabStripRegionView* region_view() { return region_view_.get(); }
   tabs::VerticalTabStripStateController* controller() {
-    return controller_.get();
+    return browser()
+        ->browser_window_features()
+        ->vertical_tab_strip_state_controller();
   }
 
  private:
-  std::unique_ptr<tabs::VerticalTabStripStateController> controller_;
-  std::unique_ptr<VerticalTabStripRegionView> region_view_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(VerticalTabStripRegionViewTest,
-       SeparatorVisibilityChangesWithCollapsedState) {
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       SeparatorVisibilityChangesWithCollapsedState) {
   controller()->SetCollapsed(true);
   EXPECT_TRUE(controller()->IsCollapsed());
   EXPECT_TRUE(region_view()->tabs_separator_for_testing()->GetVisible());
@@ -59,7 +54,7 @@ TEST_F(VerticalTabStripRegionViewTest,
   EXPECT_FALSE(region_view()->tabs_separator_for_testing()->GetVisible());
 }
 
-TEST_F(VerticalTabStripRegionViewTest, ResizeAreaBounds) {
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeAreaBounds) {
   region_view()->SetBounds(0, 0, 200, 600);
   // Verify resize area is on the right side of the VerticalTabStripRegionView.
   EXPECT_EQ(region_view()->bounds().right(),
@@ -75,7 +70,8 @@ TEST_F(VerticalTabStripRegionViewTest, ResizeAreaBounds) {
 
 // Verify that the pinned tabs container will never be larger than the unpinned
 // tabs area.
-TEST_F(VerticalTabStripRegionViewTest, PinnedTabsAreaSmallerThanUnpinned) {
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       PinnedTabsAreaSmallerThanUnpinned) {
   region_view()->SetBounds(0, 0, 200, 600);
   region_view()->pinned_tabs_container_for_testing()->SetPreferredSize(
       gfx::Size(100, 500));

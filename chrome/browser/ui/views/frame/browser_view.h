@@ -90,6 +90,7 @@ class TopContainerLoadingBar;
 class TopContainerView;
 class TopControlsSlideController;
 class TopControlsSlideControllerTest;
+class VerticalTabStripRegionView;
 class WebAppFrameToolbarView;
 class WebUITabStripContainerView;
 
@@ -253,6 +254,10 @@ class BrowserView : public BrowserWindow,
 
   TabStripRegionView* tab_strip_region_view() const {
     return tab_strip_region_view_;
+  }
+
+  VerticalTabStripRegionView* vertical_tab_strip_region_view() const {
+    return vertical_tab_strip_container_;
   }
 
   // Accessor for the TabStrip.
@@ -1228,7 +1233,7 @@ class BrowserView : public BrowserWindow,
   raw_ptr<ContentsContainerView> contents_container_view_ = nullptr;
 
   // The view responsible for housing the contents of the vertical tab strip.
-  raw_ptr<views::View> vertical_tab_strip_container_ = nullptr;
+  raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_container_ = nullptr;
 
   // The side panel aligned to the left or the right side of the browser window
   // depending on the kSidePanelHorizontalAlignment pref's value.

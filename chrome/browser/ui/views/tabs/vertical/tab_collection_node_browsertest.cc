@@ -16,9 +16,13 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 
 class TabCollectionNodeBrowserTest : public InProcessBrowserTest {
@@ -362,6 +366,74 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
             TabCollectionNode::Type::kTab);
 }
 
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
+                       RootNodePopulatesWithTabs_ViewClasses) {
+  AppendPinnedTab();
+  AppendTabToNewGroup();
+  AppendSplitTab();
+  auto parent_view = std::make_unique<views::View>();
+
+  RootTabCollectionNode root_node(
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
+      base::BindRepeating(static_cast<views::View* (
+                              views::View::*)(std::unique_ptr<views::View>)>(
+                              &views::View::AddChildView),
+                          base::Unretained(parent_view.get())));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
+
+  // The root node should contain two nodes: one for pinned
+  // (VerticalPinnedTabContainerView), one for unpinned
+  // (VerticalUnpinnedTabContainerView).
+  ASSERT_EQ(root_node.children().size(), 2u);
+  EXPECT_TRUE(views::IsViewClass<VerticalTabStripView>(
+      root_node.get_view_for_testing()));
+  const auto& pinned_node = root_node.children()[0];
+  const auto& unpinned_node = root_node.children()[1];
+  EXPECT_EQ(pinned_node->GetType(), TabCollectionNode::Type::kPinnedTabs);
+  EXPECT_TRUE(views::IsViewClass<VerticalPinnedTabContainerView>(
+      pinned_node->get_view_for_testing()));
+  EXPECT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  EXPECT_TRUE(views::IsViewClass<VerticalUnpinnedTabContainerView>(
+      unpinned_node->get_view_for_testing()));
+
+  // The pinned Node should be have one tab.
+  ASSERT_EQ(pinned_node->children().size(), 1u);
+  EXPECT_EQ(pinned_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+  // TODO(crbug.com/442567140): Verify tab view is created.
+
+  // The unpinned Node should contain a tab, a tab group, and a split tab.
+  ASSERT_EQ(unpinned_node->children().size(), 3u);
+  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+  // TODO(crbug.com/442567140): Verify tab view is created.
+
+  const auto& group_node = unpinned_node->children()[1];
+  EXPECT_EQ(group_node->GetType(), TabCollectionNode::Type::kTabGroup);
+  // TODO(crbug.com/442567916): Verify tab group view is created.
+  ASSERT_EQ(group_node->children().size(), 1u);
+  EXPECT_EQ(group_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+  // TODO(crbug.com/442567140): Verify tab view is created.
+
+  const auto& split_node = unpinned_node->children()[2];
+  EXPECT_EQ(split_node->GetType(), TabCollectionNode::Type::kSplitTab);
+  // TODO(crbug.com/442568605): Verify split tab view is created.
+  ASSERT_EQ(split_node->children().size(), 2u);
+  EXPECT_EQ(split_node->children()[0]->GetType(),
+            TabCollectionNode::Type::kTab);
+  // TODO(crbug.com/442567140): Verify tab view is created.
+  EXPECT_EQ(split_node->children()[1]->GetType(),
+            TabCollectionNode::Type::kTab);
+  // TODO(crbug.com/442567140): Verify tab view is created.
+}
+
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_ViewHierarchy) {
   AppendTab();
@@ -385,16 +457,30 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   ASSERT_EQ(parent_view->children().size(), 1u);
   const auto root_node_view = parent_view->children()[0];
 
-  // The root_node_view should have two children, the pinned and unpinned views.
-  ASSERT_EQ(root_node_view->children().size(), 2u);
-  const auto pinned_node_view = root_node_view->children()[0];
-  const auto unpinned_node_view = root_node_view->children()[1];
+  // The root_node_view should have three children, the pinned and unpinned
+  // views and a separator.
+  ASSERT_EQ(root_node_view->children().size(), 3u);
+  const auto pinned_node_scroll_view = root_node_view->children()[0];
+  ASSERT_TRUE(
+      views::IsViewClass<views::Separator>(root_node_view->children()[1]));
+  const auto unpinned_node_scroll_view = root_node_view->children()[2];
 
-  // The pinned_node_view should have no children.
-  ASSERT_EQ(pinned_node_view->children().size(), 0u);
+  // The pinned_node_scroll_view's contents should have no children.
+  ASSERT_TRUE(views::IsViewClass<views::ScrollView>(pinned_node_scroll_view));
+  ASSERT_EQ(static_cast<views::ScrollView*>(pinned_node_scroll_view)
+                ->contents()
+                ->children()
+                .size(),
+            0u);
 
-  // The unpinned_node_view should have two children, the two tab views.
-  ASSERT_EQ(unpinned_node_view->children().size(), 2u);
+  // The unpinned_node_scroll_view's contents should have two children, the two
+  // tab views.
+  ASSERT_TRUE(views::IsViewClass<views::ScrollView>(unpinned_node_scroll_view));
+  ASSERT_EQ(static_cast<views::ScrollView*>(unpinned_node_scroll_view)
+                ->contents()
+                ->children()
+                .size(),
+            2u);
 }
 
 namespace {
@@ -461,9 +547,23 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   ASSERT_EQ(unpinned_node_view->children().size(), 2u);
 }
 
+namespace {
+
+std::unique_ptr<views::View> CreateView(TabCollectionNode* node) {
+  auto view = std::make_unique<views::View>();
+  node->set_add_child_to_node(base::BindRepeating(
+      static_cast<views::View* (views::View::*)(std::unique_ptr<views::View>)>(
+          &views::View::AddChildView),
+      base::Unretained(view.get())));
+  return view;
+}
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GetDirectChildren) {
   AppendTab();
   auto parent_view = std::make_unique<views::View>();
+  TabCollectionNode::SetViewFactoryForTesting(base::BindRepeating(&CreateView));
 
   RootTabCollectionNode root_node(
       browser()
@@ -499,6 +599,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
                        CollectionReturnsOnlyCollectionItems) {
   AppendTab();
   auto parent_view = std::make_unique<views::View>();
+  TabCollectionNode::SetViewFactoryForTesting(base::BindRepeating(&CreateView));
   views::View* non_collection_view =
       parent_view->AddChildView(std::make_unique<views::View>());
 

@@ -12,12 +12,17 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/resize_area_delegate.h"
 
+class RootTabCollectionNode;
 class VerticalUnpinnedTabContainerView;
 class VerticalPinnedTabContainerView;
 
 namespace tabs {
 class VerticalTabStripStateController;
 }  // namespace tabs
+
+namespace tabs_api {
+class TabStripService;
+}
 
 namespace views {
 class ResizeArea;
@@ -35,6 +40,7 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   static constexpr int kResizeAreaWidth = 6;
 
   explicit VerticalTabStripRegionView(
+      tabs_api::TabStripService* service_register,
       tabs::VerticalTabStripStateController* state_controller);
   VerticalTabStripRegionView(const VerticalTabStripRegionView&) = delete;
   VerticalTabStripRegionView& operator=(const VerticalTabStripRegionView&) =
@@ -46,10 +52,10 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   }
   views::ResizeArea* resize_area_for_testing() { return resize_area_; }
   VerticalPinnedTabContainerView* pinned_tabs_container_for_testing() {
-    return tab_strip_view_->pinned_tabs_container_for_testing();
+    return tab_strip_view_->GetPinnedTabsContainerForTesting();
   }
   VerticalUnpinnedTabContainerView* unpinned_tabs_container_for_testing() {
-    return tab_strip_view_->unpinned_tabs_container_for_testing();
+    return tab_strip_view_->GetUnpinnedTabsContainerForTesting();
   }
 
   // views::View:
@@ -59,6 +65,8 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   void OnResize(int resize_amount, bool done_resizing) override;
 
  private:
+  views::View* SetTabStripView(std::unique_ptr<views::View> view);
+
   void OnCollapsedStateChanged(
       tabs::VerticalTabStripStateController* state_controller);
 
@@ -68,7 +76,9 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   raw_ptr<views::View> segmented_button_ = nullptr;
   raw_ptr<views::View> gemini_button_ = nullptr;
   raw_ptr<views::ResizeArea> resize_area_ = nullptr;
+  std::unique_ptr<RootTabCollectionNode> root_node_;
 
+  raw_ptr<tabs::VerticalTabStripStateController> state_controller_;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
 };
 

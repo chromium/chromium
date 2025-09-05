@@ -9,7 +9,9 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -22,6 +24,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 constexpr gfx::Insets kRegionInteriorMargins = gfx::Insets::VH(8, 0);
@@ -30,7 +33,9 @@ constexpr int kRegionVerticalPadding = 5;
 }  // namespace
 
 VerticalTabStripRegionView::VerticalTabStripRegionView(
-    tabs::VerticalTabStripStateController* state_controller) {
+    tabs_api::TabStripService* service_register,
+    tabs::VerticalTabStripStateController* state_controller)
+    : state_controller_(state_controller) {
   SetBackground(views::CreateSolidBackground(ui::kColorFrameActive));
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -51,18 +56,6 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   top_button_separator_ = AddChildView(std::make_unique<views::Separator>());
   top_button_separator_->SetColorId(kColorTabDividerFrameActive);
 
-  tab_strip_view_ = AddChildView(std::make_unique<VerticalTabStripView>());
-  tab_strip_view_->SetCollapsedState(state_controller->IsCollapsed());
-  gfx::Insets tab_container_margins = gfx::Insets::TLBR(
-      kRegionVerticalPadding,
-      GetLayoutConstant(VERTICAL_TAB_STRIP_HORIZONTAL_PADDING),
-      kRegionVerticalPadding, 0);
-  tab_strip_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
-  tab_strip_view_->SetProperty(views::kMarginsKey, tab_container_margins);
-
   segmented_button_ = AddChildView(std::make_unique<views::View>());
 
   gemini_button_ = AddChildView(std::make_unique<views::View>());
@@ -76,6 +69,11 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
           base::Unretained(this)));
 
   SetProperty(views::kElementIdentifierKey, kVerticalTabStripRegionElementId);
+
+  root_node_ = std::make_unique<RootTabCollectionNode>(
+      service_register, this,
+      base::BindRepeating(&VerticalTabStripRegionView::SetTabStripView,
+                          base::Unretained(this)));
 }
 
 VerticalTabStripRegionView::~VerticalTabStripRegionView() = default;
@@ -91,6 +89,27 @@ void VerticalTabStripRegionView::Layout(PassKey) {
 
 void VerticalTabStripRegionView::OnResize(int resize_amount,
                                           bool done_resizing) {}
+
+views::View* VerticalTabStripRegionView::SetTabStripView(
+    std::unique_ptr<views::View> view) {
+  CHECK(views::IsViewClass<VerticalTabStripView>(view.get()));
+  tab_strip_view_ =
+      static_cast<VerticalTabStripView*>(AddChildView(std::move(view)));
+  tab_strip_view_->SetCollapsedState(state_controller_->IsCollapsed());
+  gfx::Insets tab_container_margins = gfx::Insets::TLBR(
+      kRegionVerticalPadding,
+      GetLayoutConstant(VERTICAL_TAB_STRIP_HORIZONTAL_PADDING),
+      kRegionVerticalPadding, 0);
+  tab_strip_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  tab_strip_view_->SetProperty(views::kMarginsKey, tab_container_margins);
+  std::optional<size_t> separator_index = GetIndexOf(top_button_separator_);
+  CHECK(separator_index.has_value());
+  ReorderChildView(tab_strip_view_, separator_index.value() + 1);
+  return tab_strip_view_;
+}
 
 void VerticalTabStripRegionView::OnCollapsedStateChanged(
     tabs::VerticalTabStripStateController* state_controller) {

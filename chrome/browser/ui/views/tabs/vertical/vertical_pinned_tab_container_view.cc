@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rect.h"
@@ -17,8 +19,13 @@ namespace {
 constexpr int kTabVerticalPadding = 4;
 }  // namespace
 
-VerticalPinnedTabContainerView::VerticalPinnedTabContainerView() {
+VerticalPinnedTabContainerView::VerticalPinnedTabContainerView(
+    TabCollectionNode* collection_node)
+    : collection_node_(collection_node) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+  node_destroyed_subscription_ = collection_node_->RegisterWillDestroyCallback(
+      base::BindOnce(&VerticalPinnedTabContainerView::ResetCollectionNode,
+                     base::Unretained(this)));
 }
 
 VerticalPinnedTabContainerView::~VerticalPinnedTabContainerView() = default;
@@ -29,15 +36,15 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
   int total_width = 0;
   int total_height = 0;
 
+  const auto children = collection_node_->GetDirectChildren();
+
   int x = 0;
   int y = 0;
-  // TODO(crbug.com/441086907): Update all |children()| callers in this method
-  // to instead read from the TabCollectionNode.
-  int children_on_row = children().size();
+  int children_on_row = children.size();
 
   // Child width will be uniform and match the largest child's width.
   int child_width = 0;
-  for (views::View* child : children()) {
+  for (auto* child : children) {
     // TODO(corising): look into caching this value and only recomputing if the
     // children change.
     child_width = std::max(child_width, child->GetPreferredSize().width());
@@ -59,7 +66,7 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
   }
 
   int row_index = 0;
-  for (views::View* child : children()) {
+  for (auto* child : children) {
     gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
     bounds.set_width(child_width);
     if (row_index != 0) {
@@ -80,6 +87,10 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
   }
   layouts.host_size = gfx::Size(total_width, total_height);
   return layouts;
+}
+
+void VerticalPinnedTabContainerView::ResetCollectionNode() {
+  collection_node_ = nullptr;
 }
 
 BEGIN_METADATA(VerticalPinnedTabContainerView)

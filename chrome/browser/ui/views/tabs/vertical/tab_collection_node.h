@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
@@ -49,11 +50,17 @@ class TabCollectionNode {
     add_child_to_node_ = std::move(add_child_to_node);
   }
 
+  base::CallbackListSubscription RegisterWillDestroyCallback(
+      base::OnceClosure callback);
+
   static void SetViewFactoryForTesting(ViewFactory factory);
+  views::View* get_view_for_testing() { return node_view_; }
 
  protected:
   static std::unique_ptr<views::View> CreateViewForNode(
       TabCollectionNode* node_for_view);
+
+  base::OnceClosureList on_will_destroy_callback_list_;
 
   // the current collection_data object. provided by snapshot and updated
   // through TabObserver.

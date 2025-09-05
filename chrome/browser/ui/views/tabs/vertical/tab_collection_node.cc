@@ -4,10 +4,16 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_types.mojom.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "ui/views/view.h"
+#include "vertical_unpinned_tab_container_view.h"
 
 namespace {
 
@@ -30,6 +36,11 @@ class CollectionTestViewImpl : public views::View {
 
 }  // anonymous namespace
 
+base::CallbackListSubscription TabCollectionNode::RegisterWillDestroyCallback(
+    base::OnceClosure callback) {
+  return on_will_destroy_callback_list_.Add(std::move(callback));
+}
+
 // static
 void TabCollectionNode::SetViewFactoryForTesting(ViewFactory factory) {
   GetViewFactory() = std::move(factory);
@@ -41,6 +52,23 @@ std::unique_ptr<views::View> TabCollectionNode::CreateViewForNode(
   if (GetViewFactory()) {
     return GetViewFactory().Run(node_for_view);
   }
+  switch (node_for_view->GetType()) {
+    case Type::kTabStrip:
+      return std::make_unique<VerticalTabStripView>(node_for_view);
+    case Type::kPinnedTabs:
+      return std::make_unique<VerticalPinnedTabContainerView>(node_for_view);
+    case Type::kUnpinnedTabs:
+      return std::make_unique<VerticalUnpinnedTabContainerView>(node_for_view);
+    case Type::kSplitTab:
+      // TODO(crbug.com/442568605): support split tabs.
+      break;
+    case Type::kTabGroup:
+      // TODO(crbug.com/442567916): support tab groups.
+      break;
+    case Type::kTab:
+      // TODO(crbug.com/442567140): support tabs.
+      break;
+  }
   return std::make_unique<CollectionTestViewImpl>(node_for_view);
 }
 
@@ -50,7 +78,9 @@ TabCollectionNode::TabCollectionNode(
     CustomAddChildView add_node_to_parent_callback)
     : add_node_to_parent_(std::move(add_node_to_parent_callback)) {}
 
-TabCollectionNode::~TabCollectionNode() = default;
+TabCollectionNode::~TabCollectionNode() {
+  on_will_destroy_callback_list_.Notify();
+}
 
 void TabCollectionNode::Initialize(
     tabs_api::mojom::ContainerPtr container,

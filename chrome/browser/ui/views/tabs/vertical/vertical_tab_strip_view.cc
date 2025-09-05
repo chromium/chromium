@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -33,24 +34,23 @@ void SetScrollViewProperties(views::ScrollView* scroll_view) {
 }
 }  // namespace
 
-VerticalTabStripView::VerticalTabStripView() {
+VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
-  views::ScrollView* pinned_tabs_scroll_view =
+  pinned_tabs_scroll_view_ =
       AddChildView(std::make_unique<views::ScrollView>());
-  SetScrollViewProperties(pinned_tabs_scroll_view);
-  pinned_tabs_container_ = pinned_tabs_scroll_view->SetContents(
-      std::make_unique<VerticalPinnedTabContainerView>());
+  SetScrollViewProperties(pinned_tabs_scroll_view_);
 
   auto tabs_separator = std::make_unique<views::Separator>();
   tabs_separator->SetColorId(kColorTabDividerFrameActive);
   tabs_separator_ = AddChildView(std::move(tabs_separator));
 
-  views::ScrollView* unpinned_tabs_scroll_view =
+  unpinned_tabs_scroll_view_ =
       AddChildView(std::make_unique<views::ScrollView>());
-  SetScrollViewProperties(unpinned_tabs_scroll_view);
-  unpinned_tabs_container_ = unpinned_tabs_scroll_view->SetContents(
-      std::make_unique<VerticalUnpinnedTabContainerView>());
+  SetScrollViewProperties(unpinned_tabs_scroll_view_);
+
+  collection_node->set_add_child_to_node(base::BindRepeating(
+      &VerticalTabStripView::AddScrollViewContents, base::Unretained(this)));
 }
 
 VerticalTabStripView::~VerticalTabStripView() = default;
@@ -77,16 +77,14 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   }
 
   // Place the pinned container.
-  views::ScrollView* pinned_tabs_scroll_view =
-      views::ScrollView::GetScrollViewForContents(pinned_tabs_container_.get());
   gfx::Rect pinned_container_bounds(
       0, y, tab_container_size_bounds.width().value(),
-      pinned_tabs_scroll_view->GetPreferredSize(tab_container_size_bounds)
+      pinned_tabs_scroll_view_->GetPreferredSize(tab_container_size_bounds)
           .height());
   pinned_container_bounds.set_height(
       std::min(pinned_container_bounds.height(), (remaining_height / 2)));
-  layouts.child_layouts.emplace_back(pinned_tabs_scroll_view,
-                                     pinned_tabs_scroll_view->GetVisible(),
+  layouts.child_layouts.emplace_back(pinned_tabs_scroll_view_.get(),
+                                     pinned_tabs_scroll_view_->GetVisible(),
                                      pinned_container_bounds);
 
   remaining_height -= pinned_container_bounds.height();
@@ -108,11 +106,8 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   // Place the unpinned container.
   gfx::Rect unpinned_container_bounds(
       0, y, tab_container_size_bounds.width().value(), remaining_height);
-  views::ScrollView* unpinned_tabs_scroll_view =
-      views::ScrollView::GetScrollViewForContents(
-          unpinned_tabs_container_.get());
-  layouts.child_layouts.emplace_back(unpinned_tabs_scroll_view,
-                                     unpinned_tabs_scroll_view->GetVisible(),
+  layouts.child_layouts.emplace_back(unpinned_tabs_scroll_view_.get(),
+                                     unpinned_tabs_scroll_view_->GetVisible(),
                                      unpinned_container_bounds);
 
   layouts.host_size =
@@ -120,10 +115,37 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   return layouts;
 }
 
+VerticalPinnedTabContainerView*
+VerticalTabStripView::GetPinnedTabsContainerForTesting() {
+  if (views::View* contents = pinned_tabs_scroll_view_->contents()) {
+    return static_cast<VerticalPinnedTabContainerView*>(contents);
+  }
+  return nullptr;
+}
+
+VerticalUnpinnedTabContainerView*
+VerticalTabStripView::GetUnpinnedTabsContainerForTesting() {
+  if (views::View* contents = unpinned_tabs_scroll_view_->contents()) {
+    return static_cast<VerticalUnpinnedTabContainerView*>(contents);
+  }
+  return nullptr;
+}
+
 void VerticalTabStripView::SetCollapsedState(bool is_collapsed) {
   if (is_collapsed != tabs_separator_->GetVisible()) {
     tabs_separator_->SetVisible(is_collapsed);
   }
+}
+
+views::View* VerticalTabStripView::AddScrollViewContents(
+    std::unique_ptr<views::View> view) {
+  if (views::IsViewClass<VerticalUnpinnedTabContainerView>(view.get())) {
+    return unpinned_tabs_scroll_view_->SetContents(std::move(view));
+  }
+  // |view| should only ever be VerticalUnpinnedTabContainerView or
+  // VerticalPinnedTabContainerView.
+  CHECK(views::IsViewClass<VerticalPinnedTabContainerView>(view.get()));
+  return pinned_tabs_scroll_view_->SetContents(std::move(view));
 }
 
 BEGIN_METADATA(VerticalTabStripView)

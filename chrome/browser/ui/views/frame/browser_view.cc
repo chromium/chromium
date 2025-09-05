@@ -98,6 +98,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -1011,6 +1012,9 @@ BrowserView::BrowserView(Browser* browser)
   if (tabs::AreVerticalTabsEnabled()) {
     auto vertical_tab_strip_container =
         std::make_unique<VerticalTabStripRegionView>(
+            browser_->GetFeatures()
+                .tab_strip_service_feature()
+                ->GetTabStripService(),
             browser_->GetFeatures().vertical_tab_strip_state_controller());
     vertical_tab_strip_container_ =
         AddChildView(std::move(vertical_tab_strip_container));
