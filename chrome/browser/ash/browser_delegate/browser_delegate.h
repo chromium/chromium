@@ -140,6 +140,9 @@ class BrowserDelegate {
   // end of the tab strip.
   virtual void MoveTab(size_t tab_index, BrowserDelegate& target_browser) = 0;
 
+  // Initiates user install of a WebApp for the current page.
+  virtual bool CreateWebAppFromActiveWebContents() = 0;
+
  protected:
   ~BrowserDelegate() = default;
 

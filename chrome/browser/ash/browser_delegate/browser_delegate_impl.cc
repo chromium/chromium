@@ -6,11 +6,13 @@
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -194,6 +196,10 @@ void BrowserDelegateImpl::MoveTab(size_t tab_index,
   target_tab_strip->InsertDetachedTabAt(
       TabStripModel::kNoTab, std::move(detached_tab),
       was_pinned ? AddTabTypes::ADD_PINNED : AddTabTypes::ADD_ACTIVE);
+}
+
+bool BrowserDelegateImpl::CreateWebAppFromActiveWebContents() {
+  return chrome::ExecuteCommand(&*browser_, IDC_INSTALL_PWA);
 }
 
 }  // namespace ash

@@ -48,6 +48,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   void CreateTabGroup(const tab_groups::TabGroupInfo& tab_group) override;
   void PinTab(size_t tab_index) override;
   void MoveTab(size_t tab_index, BrowserDelegate& target_browser) override;
+  bool CreateWebAppFromActiveWebContents() override;
 
  private:
   const raw_ref<Browser> browser_;
