@@ -37,22 +37,6 @@ MultiUserWindowManagerHelper* MultiUserWindowManagerHelper::CreateInstance() {
 }
 
 // static
-bool MultiUserWindowManagerHelper::ShouldShowAvatar(aura::Window* window) {
-  // Session restore can open a window for the first user before the instance
-  // is created.
-  if (!g_multi_user_window_manager_instance) {
-    return false;
-  }
-
-  // Show the avatar icon if the window is on a different desktop than the
-  // window's owner's desktop.
-  auto* multi_user_window_manager =
-      ash::Shell::Get()->multi_user_window_manager();
-  return !multi_user_window_manager->IsWindowOnDesktopOfUser(
-      window, multi_user_window_manager->GetWindowOwner(window));
-}
-
-// static
 void MultiUserWindowManagerHelper::DeleteInstance() {
   DCHECK(g_multi_user_window_manager_instance);
   delete g_multi_user_window_manager_instance;

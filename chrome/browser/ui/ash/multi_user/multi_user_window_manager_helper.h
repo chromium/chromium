@@ -18,10 +18,6 @@ namespace ash {
 class MultiUserWindowManager;
 }
 
-namespace aura {
-class Window;
-}
-
 // MultiUserWindowManagerHelper is responsible for creating and owning the
 // right ash::MultiUserWindowManager implementation. If multi-profile is not
 // enabled it creates a stub implementation, otherwise MultiProfileSupport,
@@ -42,11 +38,6 @@ class MultiUserWindowManagerHelper {
   // MultiUserWindowManagerImpl::Get() or
   // ash::Shell::Get()->multi_user_window_manager().
   static ash::MultiUserWindowManager* GetWindowManager();
-
-  // Whether or not the window's title should show the avatar. On chromeos,
-  // this is true when the owner of the window is different from the owner of
-  // the desktop.
-  static bool ShouldShowAvatar(aura::Window* window);
 
   // Removes the instance.
   static void DeleteInstance();

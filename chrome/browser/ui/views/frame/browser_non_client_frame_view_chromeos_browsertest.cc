@@ -1716,7 +1716,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
   BrowserNonClientFrameViewChromeOSTestApi test_api(frame_view);
   aura::Window* window = browser->window()->GetNativeWindow();
 
-  EXPECT_FALSE(MultiUserWindowManagerHelper::ShouldShowAvatar(window));
+  EXPECT_FALSE(
+      BrowserNonClientFrameViewChromeOS::ShouldShowAvatarForTesting(window));
   EXPECT_FALSE(test_api.GetProfileIndicatorIcon());
 
   // Log in with the secondary user.
@@ -1737,13 +1738,15 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTestNoWebUiTabStrip,
       session_manager::SessionManager::Get()->GetActiveSession()->account_id(),
       kSecondaryAccountId);
 
-  EXPECT_TRUE(MultiUserWindowManagerHelper::ShouldShowAvatar(window));
+  EXPECT_TRUE(
+      BrowserNonClientFrameViewChromeOS::ShouldShowAvatarForTesting(window));
   EXPECT_TRUE(test_api.GetProfileIndicatorIcon());
 
   // Teleport the window back to owner desktop.
   browser_view->Activate();
   window_manager->ShowWindowForUser(window, kPrimaryAccountId);
-  EXPECT_FALSE(MultiUserWindowManagerHelper::ShouldShowAvatar(window));
+  EXPECT_FALSE(
+      BrowserNonClientFrameViewChromeOS::ShouldShowAvatarForTesting(window));
   EXPECT_FALSE(test_api.GetProfileIndicatorIcon());
 }
 

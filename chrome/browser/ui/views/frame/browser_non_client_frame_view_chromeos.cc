@@ -7,6 +7,8 @@
 #include <memory>
 #include <optional>
 
+#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_highlight_border_overlay_delegate.h"
@@ -22,7 +24,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -130,6 +131,16 @@ bool UsePackagedAppHeaderStyle(const Browser* browser) {
   }
 
   return !browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP);
+}
+
+// Whether or not the window's title should show the avatar. Practically,
+// returns true when the owner of the window is different from the owner of
+// the desktop.
+bool ShouldShowAvatar(aura::Window* window) {
+  auto* multi_user_window_manager =
+      ash::Shell::Get()->multi_user_window_manager();
+  return !multi_user_window_manager->IsWindowOnDesktopOfUser(
+      window, multi_user_window_manager->GetWindowOwner(window));
 }
 
 }  // namespace
@@ -908,6 +919,12 @@ bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
          fullscreen_controller->IsFullscreenForBrowser();
 }
 
+// static
+bool BrowserNonClientFrameViewChromeOS::ShouldShowAvatarForTesting(
+    aura::Window* window) {
+  return ShouldShowAvatar(window);
+}
+
 bool BrowserNonClientFrameViewChromeOS::IsTrustedPinned() const {
   return ash::WindowState::Get(frame()->GetNativeWindow())->IsTrustedPinned();
 }
@@ -1086,8 +1103,7 @@ bool BrowserNonClientFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
-  return MultiUserWindowManagerHelper::ShouldShowAvatar(
-      browser_view()->GetNativeWindow());
+  return ShouldShowAvatar(browser_view()->GetNativeWindow());
 }
 
 void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {

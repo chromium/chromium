@@ -129,6 +129,10 @@ class BrowserNonClientFrameViewChromeOS
   // Helper to check whether we should enable immersive mode in current state.
   bool ShouldEnableImmersiveModeController() const;
 
+  // Returns true to show if the user avatar should be shown.
+  // Exposed for testing purpose.
+  static bool ShouldShowAvatarForTesting(aura::Window* window);
+
   chromeos::FrameCaptionButtonContainerView* caption_button_container() {
     return caption_button_container_;
   }
