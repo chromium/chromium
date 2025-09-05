@@ -288,7 +288,6 @@ source_set("eg2_tests") {
   sources = [
     "separate_profiles_egtest.mm",
     "separate_profiles_migration_egtest.mm",
-    "separate_profiles_rollback_egtest.mm",
   ]
   deps = [
     ":eg_test_support+eg2",
