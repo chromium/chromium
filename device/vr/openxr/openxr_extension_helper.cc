@@ -243,7 +243,6 @@ OpenXrExtensionHelper::CreateLightEstimator(XrSession session,
 std::unique_ptr<OpenXRSceneUnderstandingManager>
 OpenXrExtensionHelper::CreateSceneUnderstandingManager(
     OpenXrApiWrapper* openxr,
-    XrSession session,
     XrSpace base_space,
     const std::vector<mojom::XRSessionFeature>& required_features,
     const std::vector<mojom::XRSessionFeature>& optional_features) const {
@@ -293,7 +292,7 @@ OpenXrExtensionHelper::CreateSceneUnderstandingManager(
     // then use it.
     if (supported_optional_features_count ==
         optional_features_requested_count) {
-      return factory->CreateSceneUnderstandingManager(*this, openxr, session,
+      return factory->CreateSceneUnderstandingManager(*this, openxr,
                                                       base_space);
     }
 
@@ -308,7 +307,7 @@ OpenXrExtensionHelper::CreateSceneUnderstandingManager(
   }
 
   if (best_factory) {
-    return best_factory->CreateSceneUnderstandingManager(*this, openxr, session,
+    return best_factory->CreateSceneUnderstandingManager(*this, openxr,
                                                          base_space);
   }
 

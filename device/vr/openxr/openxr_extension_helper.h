@@ -164,7 +164,6 @@ class OpenXrExtensionHelper {
   std::unique_ptr<OpenXRSceneUnderstandingManager>
   CreateSceneUnderstandingManager(
       OpenXrApiWrapper* openxr,
-      XrSession session,
       XrSpace base_space,
       const std::vector<mojom::XRSessionFeature>& required_features,
       const std::vector<mojom::XRSessionFeature>& optional_features) const;

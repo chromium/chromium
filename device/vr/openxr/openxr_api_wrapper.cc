@@ -528,8 +528,7 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         if (scene_understanding_manager_ == nullptr) {
           scene_understanding_manager_ =
               extension_helper.CreateSceneUnderstandingManager(
-                  this, session_, local_space_,
-                  session_options_->required_features,
+                  this, local_space_, session_options_->required_features,
                   session_options_->optional_features);
         }
         is_enabled =
@@ -548,8 +547,7 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
         if (scene_understanding_manager_ == nullptr) {
           scene_understanding_manager_ =
               extension_helper.CreateSceneUnderstandingManager(
-                  this, session_, local_space_,
-                  session_options_->required_features,
+                  this, local_space_, session_options_->required_features,
                   session_options_->optional_features);
         }
         is_enabled =

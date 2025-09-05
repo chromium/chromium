@@ -26,7 +26,6 @@ class OpenXrSpatialFrameworkManager : public OpenXRSceneUnderstandingManager {
   OpenXrSpatialFrameworkManager(
       const OpenXrExtensionHelper& extension_helper,
       OpenXrApiWrapper* openxr,
-      XrSession session,
       XrSpace space,
       const std::set<device::mojom::XRSessionFeature>& supported_features);
   ~OpenXrSpatialFrameworkManager() override;
@@ -49,7 +48,6 @@ class OpenXrSpatialFrameworkManager : public OpenXRSceneUnderstandingManager {
 
   const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   raw_ptr<OpenXrApiWrapper> openxr_;
-  XrSession session_;
   XrSpace base_space_ = XR_NULL_HANDLE;
   XrSpatialContextEXT spatial_context_ = XR_NULL_HANDLE;
   XrSpatialSnapshotEXT discovery_snapshot_ = XR_NULL_HANDLE;
@@ -77,7 +75,6 @@ class OpenXrSpatialFrameworkManagerFactory
   std::unique_ptr<OpenXRSceneUnderstandingManager>
   CreateSceneUnderstandingManager(const OpenXrExtensionHelper& extension_helper,
                                   OpenXrApiWrapper* openxr,
-                                  XrSession session,
                                   XrSpace base_space) const override;
 
  private:

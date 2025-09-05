@@ -93,6 +93,8 @@ class OpenXrApiWrapper {
 
   XrSpace GetReferenceSpace(device::mojom::XRReferenceSpaceType type) const;
 
+  XrSession session() const { return session_; }
+
   XrResult BeginFrame();
   XrResult EndFrame();
   bool HasPendingFrame() const;

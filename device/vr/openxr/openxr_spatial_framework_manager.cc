@@ -32,12 +32,10 @@ namespace device {
 OpenXrSpatialFrameworkManager::OpenXrSpatialFrameworkManager(
     const OpenXrExtensionHelper& extension_helper,
     OpenXrApiWrapper* openxr,
-    XrSession session,
     XrSpace space,
     const std::set<device::mojom::XRSessionFeature>& supported_features)
     : extension_helper_(extension_helper),
       openxr_(openxr),
-      session_(session),
       base_space_(space) {
   absl::flat_hash_map<XrSpatialCapabilityEXT,
                       absl::flat_hash_set<XrSpatialComponentTypeEXT>>
@@ -80,7 +78,7 @@ OpenXrSpatialFrameworkManager::OpenXrSpatialFrameworkManager(
   // or something is seriously wrong with the system.
   if (XR_FAILED(
           extension_helper_->ExtensionMethods().xrCreateSpatialContextAsyncEXT(
-              session_, &create_info, &future))) {
+              openxr_->session(), &create_info, &future))) {
     DLOG(ERROR) << __func__ << " Failed to create spatial context";
     return;
   }
@@ -163,8 +161,8 @@ void OpenXrSpatialFrameworkManager::OnCreateSpatialContextComplete(
   XrCreateSpatialContextCompletionEXT complete_info = {
       XR_TYPE_CREATE_SPATIAL_CONTEXT_COMPLETION_EXT};
   if (XR_FAILED(extension_helper_->ExtensionMethods()
-                    .xrCreateSpatialContextCompleteEXT(session_, future,
-                                                       &complete_info))) {
+                    .xrCreateSpatialContextCompleteEXT(
+                        openxr_->session(), future, &complete_info))) {
     return;
   }
 
@@ -292,13 +290,12 @@ std::unique_ptr<OpenXRSceneUnderstandingManager>
 OpenXrSpatialFrameworkManagerFactory::CreateSceneUnderstandingManager(
     const OpenXrExtensionHelper& extension_helper,
     OpenXrApiWrapper* openxr,
-    XrSession session,
     XrSpace base_space) const {
   bool is_supported = IsEnabled();
   DVLOG(2) << __func__ << " is_supported=" << is_supported;
   if (is_supported) {
     return std::make_unique<OpenXrSpatialFrameworkManager>(
-        extension_helper, openxr, session, base_space, supported_features_);
+        extension_helper, openxr, base_space, supported_features_);
   }
 
   return nullptr;
