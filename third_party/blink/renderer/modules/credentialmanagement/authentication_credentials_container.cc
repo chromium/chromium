@@ -1988,6 +1988,14 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
           "An allowCredentials is not allowed with immediate mediation."));
       return;
     }
+    if (options->hasPublicKey() && options->publicKey()->hasExtensions() &&
+        options->publicKey()->extensions()->hasRemoteDesktopClientOverride()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "Immediate mediation cannot be used with a remote desktop override "
+          "request."));
+      return;
+    }
     if (!LocalFrame::ConsumeTransientUserActivation(
             To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
             UserActivationUpdateSource::kRenderer)) {

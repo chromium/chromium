@@ -1510,6 +1510,18 @@ void AuthenticatorCommonImpl::GetCredential(
         blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
     return;
   }
+
+  if (public_key_options->extensions->remote_desktop_client_override &&
+      options->mediation == Mediation::IMMEDIATE) {
+    mojo::ReportBadMessage(
+        "Immediate mediation cannot be used with a remote desktop override "
+        "request");
+    req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
+    CompleteGetAssertionRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
+
   req_state_->mediation_ = options->mediation;
 
   if (public_key_options->challenge_url.has_value() &&

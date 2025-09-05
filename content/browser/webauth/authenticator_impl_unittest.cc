@@ -3181,6 +3181,38 @@ TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest, GetAssertionAppid) {
   }
 }
 
+TEST_F(AuthenticatorImplRemoteDesktopClientOverrideTest,
+       GetAssertionImmediateMediation) {
+  // Verify that an authorized origin may not use the extension with immediate
+  // mediation.
+  NavigateAndCommit(GURL(kCorpCrdOrigin));
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->allow_credentials.clear();
+  options->relying_party_id = kExampleRpId;
+  options->extensions->remote_desktop_client_override =
+      RemoteDesktopClientOverride::New(
+          url::Origin::Create(GURL(kExampleOrigin)), true);
+
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  base::test::TestFuture<void> mojo_error_future;
+  SetMojoErrorHandler(base::BindLambdaForTesting([&](const std::string& error) {
+    EXPECT_EQ(error,
+              "Immediate mediation cannot be used with a remote desktop "
+              "override request");
+    mojo_error_future.SetValue();
+  }));
+
+  auto get_credential_options = GetCredentialOptions::New();
+  get_credential_options->public_key = std::move(options);
+  get_credential_options->mediation = blink::mojom::Mediation::IMMEDIATE;
+  authenticator->GetCredential(std::move(get_credential_options),
+                               base::DoNothing());
+  EXPECT_TRUE(mojo_error_future.Wait());
+}
+
 class MockAuthenticatorRequestDelegateObserver
     : public TestAuthenticatorRequestDelegate {
  public:
