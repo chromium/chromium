@@ -82,6 +82,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -219,6 +220,30 @@ void EmitTimeInStageHistogram(base::TimeDelta duration,
   DCHECK(!name.empty());
   base::UmaHistogramCustomTimes(name, duration, base::Milliseconds(10),
                                 base::Hours(6), 50);
+}
+
+vm_tools::concierge::VmInfo::VmType ToConciergeServiceVmType(
+    vm_tools::apps::VmType type) {
+  // Keep in sync with
+  // https://source.chromium.org/chromiumos/chromiumos/codesearch/+/HEAD:src/platform2/vm_tools/concierge/vm_util.cc;l=1303
+  using VmType = vm_tools::concierge::VmInfo::VmType;
+  using AppsVmType = vm_tools::apps::VmType;
+  switch (type) {
+    case AppsVmType::TERMINA:
+      return VmType::VmInfo_VmType_TERMINA;
+    case AppsVmType::PLUGIN_VM:
+      return VmType::VmInfo_VmType_PLUGIN_VM;
+    case AppsVmType::BOREALIS:
+      return VmType::VmInfo_VmType_BOREALIS;
+    case AppsVmType::ARCVM:
+      return VmType::VmInfo_VmType_ARC_VM;
+    case AppsVmType::BRUSCHETTA:
+      return VmType::VmInfo_VmType_BRUSCHETTA;
+    case AppsVmType::BAGUETTE:
+      return VmType::VmInfo_VmType_BAGUETTE;
+    default:
+      return VmType::VmInfo_VmType_UNKNOWN;
+  }
 }
 
 }  // namespace
@@ -2224,6 +2249,7 @@ void CrostiniManager::ImportDiskImage(guest_os::GuestId vm_id,
   vm_tools::concierge::ImportDiskImageRequest request;
   request.set_vm_name(vm_id.vm_name);
   request.set_cryptohome_id(user_id_hash);
+  request.set_vm_type(ToConciergeServiceVmType(vm_id.vm_type));
   // All vm's are stored in root except pluginvm, which is not supported in this
   // flow.
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
