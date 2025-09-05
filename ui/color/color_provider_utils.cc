@@ -171,10 +171,8 @@ std::string_view ForcedColorsName(
   switch (forced_colors) {
     case ColorProviderKey::ForcedColors::kNone:
       return "kNone";
-    case ColorProviderKey::ForcedColors::kEmulated:
-      return "kEmulated";
-    case ColorProviderKey::ForcedColors::kActive:
-      return "kActive";
+    case ColorProviderKey::ForcedColors::kSystem:
+      return "kSystem";
     case ColorProviderKey::ForcedColors::kDusk:
       return "kDusk";
     case ColorProviderKey::ForcedColors::kDesert:
@@ -385,7 +383,12 @@ std::unique_ptr<ColorProvider> CreateColorProviderFromRendererColorMap(
   return color_provider;
 }
 
-void AddEmulatedForcedColorsToMixer(ColorMixer& mixer, bool dark_mode) {
+std::unique_ptr<ColorProvider> CreateEmulatedForcedColorsColorProvider(
+    bool dark_mode) {
+  std::unique_ptr<ColorProvider> color_provider =
+      std::make_unique<ColorProvider>();
+  ui::ColorMixer& mixer = color_provider->AddMixer();
+
   // Colors were chosen based on Windows 10 default light and dark high contrast
   // themes.
   mixer[kColorCssSystemBtnFace] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
@@ -412,14 +415,6 @@ void AddEmulatedForcedColorsToMixer(ColorMixer& mixer, bool dark_mode) {
   mixer[kColorCssSystemActiveText] = {kColorCssSystemHotlight};
   mixer[kColorCssSystemLinkText] = {kColorCssSystemHotlight};
   mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
-}
-
-std::unique_ptr<ColorProvider> CreateEmulatedForcedColorsColorProvider(
-    bool dark_mode) {
-  std::unique_ptr<ColorProvider> color_provider =
-      std::make_unique<ColorProvider>();
-  ui::ColorMixer& mixer = color_provider->AddMixer();
-  AddEmulatedForcedColorsToMixer(mixer, dark_mode);
 
   // Set the colors for the scrollbar parts based on the emulated definitions
   // above.

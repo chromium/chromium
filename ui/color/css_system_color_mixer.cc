@@ -73,24 +73,6 @@ void AddNightSkyPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
 }
 
-void AddWhitePageColorsToMixer(ColorMixer& mixer) {
-  mixer[kColorCssSystemBtnFace] = {SK_ColorWHITE};
-  mixer[kColorCssSystemBtnText] = {SK_ColorBLACK};
-  mixer[kColorCssSystemGrayText] = {SkColorSetRGB(0x60, 0x00, 0x00)};
-  mixer[kColorCssSystemHighlight] = {SkColorSetRGB(0x37, 0x00, 0x6E)};
-  mixer[kColorCssSystemHighlightText] = {SK_ColorWHITE};
-  mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x00, 0x00, 0x9F)};
-  mixer[kColorCssSystemMenuHilight] = {SK_ColorBLACK};
-  mixer[kColorCssSystemScrollbar] = {SK_ColorWHITE};
-  mixer[kColorCssSystemWindow] = {SK_ColorWHITE};
-  mixer[kColorCssSystemWindowText] = {SK_ColorBLACK};
-  mixer[kColorCssSystemField] = {kColorCssSystemWindow};
-  mixer[kColorCssSystemFieldText] = {kColorCssSystemWindowText};
-  mixer[kColorCssSystemActiveText] = {kColorCssSystemHotlight};
-  mixer[kColorCssSystemLinkText] = {kColorCssSystemHotlight};
-  mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
-}
-
 void AddAquaticPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0x20, 0x20, 0x20)};
   mixer[kColorCssSystemBtnText] = {SK_ColorWHITE};
@@ -109,23 +91,34 @@ void AddAquaticPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
 }
 
+void AddWhitePageColorsToMixer(ColorMixer& mixer) {
+  mixer[kColorCssSystemBtnFace] = {SK_ColorWHITE};
+  mixer[kColorCssSystemBtnText] = {SK_ColorBLACK};
+  mixer[kColorCssSystemGrayText] = {SkColorSetRGB(0x60, 0x00, 0x00)};
+  mixer[kColorCssSystemHighlight] = {SkColorSetRGB(0x37, 0x00, 0x6E)};
+  mixer[kColorCssSystemHighlightText] = {SK_ColorWHITE};
+  mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x00, 0x00, 0x9F)};
+  mixer[kColorCssSystemMenuHilight] = {SK_ColorBLACK};
+  mixer[kColorCssSystemScrollbar] = {SK_ColorWHITE};
+  mixer[kColorCssSystemWindow] = {SK_ColorWHITE};
+  mixer[kColorCssSystemWindowText] = {SK_ColorBLACK};
+  mixer[kColorCssSystemField] = {kColorCssSystemWindow};
+  mixer[kColorCssSystemFieldText] = {kColorCssSystemWindowText};
+  mixer[kColorCssSystemActiveText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemLinkText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
+}
+
 void AddCssSystemColorMixer(ColorProvider* provider,
                             const ColorProviderKey& key) {
   ColorMixer& mixer = provider->AddMixer();
   const ColorProviderKey::ForcedColors forced_colors = key.forced_colors;
 
   switch (forced_colors) {
-    case ColorProviderKey::ForcedColors::kEmulated: {
-      AddEmulatedForcedColorsToMixer(
-          mixer,
-          /*dark_mode=*/key.color_mode == ColorProviderKey::ColorMode::kDark);
-      break;
-    }
     case ColorProviderKey::ForcedColors::kNone:
-    case ColorProviderKey::ForcedColors::kActive:
+    case ColorProviderKey::ForcedColors::kSystem:
       CompleteDefaultCssSystemColorDefinition(
-          mixer,
-          /*dark_mode=*/key.color_mode == ColorProviderKey::ColorMode::kDark);
+          mixer, key.color_mode == ColorProviderKey::ColorMode::kDark);
       MapNativeColorsToCssSystemColors(mixer, key);
       break;
     case ColorProviderKey::ForcedColors::kDusk:
@@ -137,11 +130,11 @@ void AddCssSystemColorMixer(ColorProvider* provider,
     case ColorProviderKey::ForcedColors::kNightSky:
       AddNightSkyPageColorsToMixer(mixer);
       break;
-    case ColorProviderKey::ForcedColors::kWhite:
-      AddWhitePageColorsToMixer(mixer);
-      break;
     case ColorProviderKey::ForcedColors::kAquatic:
       AddAquaticPageColorsToMixer(mixer);
+      break;
+    case ColorProviderKey::ForcedColors::kWhite:
+      AddWhitePageColorsToMixer(mixer);
       break;
     default:
       NOTREACHED();

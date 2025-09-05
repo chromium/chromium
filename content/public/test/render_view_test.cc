@@ -478,7 +478,7 @@ void RenderViewTest::SetUp() {
           ui::ColorProviderKey::ForcedColors::kNone),
       mock_color_provider_source_.GetRendererColorMap(
           mock_color_provider_source_.GetColorMode(),
-          ui::ColorProviderKey::ForcedColors::kActive)};
+          ui::ColorProviderKey::ForcedColors::kSystem)};
 
   mojom::CreateViewParamsPtr view_params = mojom::CreateViewParams::New();
   view_params->opener_frame_token = std::nullopt;

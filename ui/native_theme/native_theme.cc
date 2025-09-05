@@ -71,7 +71,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
             {PageColors::kNightSky, ColorProviderKey::ForcedColors::kNightSky},
             {PageColors::kWhite, ColorProviderKey::ForcedColors::kWhite},
             {PageColors::kHighContrast,
-             ColorProviderKey::ForcedColors::kActive},
+             ColorProviderKey::ForcedColors::kSystem},
             {PageColors::kAquatic, ColorProviderKey::ForcedColors::kAquatic},
         });
 

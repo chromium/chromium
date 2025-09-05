@@ -85,7 +85,7 @@ TEST(NativeThemeTest, TestColorProviderKeyForcedColors) {
 
   theme.set_page_colors(NativeTheme::PageColors::kHighContrast);
   EXPECT_EQ(theme.GetForcedColorsKey(),
-            ColorProviderKey::ForcedColors::kActive);
+            ColorProviderKey::ForcedColors::kSystem);
 
   theme.set_forced_colors(false);
   theme.set_page_colors(NativeTheme::PageColors::kOff);

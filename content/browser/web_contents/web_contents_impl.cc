@@ -8010,7 +8010,7 @@ blink::ColorProviderColorMaps WebContentsImpl::GetColorProviderColorMaps()
   ui::ColorProviderKey::ForcedColors forced_colors =
       forced_colors_source->GetForcedColors();
   if (forced_colors == ui::ColorProviderKey::ForcedColors::kNone) {
-    forced_colors = ui::ColorProviderKey::ForcedColors::kActive;
+    forced_colors = ui::ColorProviderKey::ForcedColors::kSystem;
   }
 
   return blink::ColorProviderColorMaps{

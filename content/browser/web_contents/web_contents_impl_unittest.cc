@@ -410,7 +410,7 @@ const ui::ColorProvider* TestColorProviderSource::GetColorProvider() const {
 ui::RendererColorMap TestColorProviderSource::GetRendererColorMap(
     ui::ColorProviderKey::ColorMode color_mode,
     ui::ColorProviderKey::ForcedColors forced_colors) const {
-  if (forced_colors == ui::ColorProviderKey::ForcedColors::kActive) {
+  if (forced_colors == ui::ColorProviderKey::ForcedColors::kSystem) {
     return system_colors_;
   }
   return color_mode == ui::ColorProviderKey::ColorMode::kLight ? light_colors_
