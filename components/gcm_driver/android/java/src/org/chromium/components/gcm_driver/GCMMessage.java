@@ -71,7 +71,7 @@ public class GCMMessage {
     private final String @Nullable [] mDataKeysAndValuesArray;
 
     /** Creates a GCMMessage object based on data received from GCM. The extras will be filtered. */
-    public GCMMessage(String senderId, Bundle extras) {
+    public GCMMessage(@Nullable String senderId, @Nullable Bundle extras) {
         String bundleCollapseKey = "collapse_key";
         String bundleGcmplex = "com.google.ipc.invalidation.gcmmplex.";
         String bundleRawData = "rawData";
@@ -80,7 +80,7 @@ public class GCMMessage {
         String bundleOriginalPriority = "google.original_priority";
         String bundleMessageId = "google.message_id";
 
-        if (!extras.containsKey(bundleSubtype)) {
+        if (extras == null || !extras.containsKey(bundleSubtype)) {
             throw new IllegalArgumentException("Received push message with no subtype");
         }
 

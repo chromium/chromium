@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.services.gcm;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +16,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.SplitCompatGcmListenerService;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -27,6 +32,7 @@ import org.chromium.components.gcm_driver.LazySubscriptionsManager;
 import org.chromium.components.gcm_driver.SubscriptionFlagManager;
 
 /** Receives Downstream messages and status of upstream messages from GCM. */
+@NullMarked
 public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.Impl {
     private static final String TAG = "ChromeGcmListener";
 
@@ -37,7 +43,7 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
     }
 
     @Override
-    public void onMessageReceived(final String from, final Bundle data) {
+    public void onMessageReceived(final @Nullable String from, final @Nullable Bundle data) {
         // Dispatch the message to the GCM Driver for native features.
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
@@ -94,7 +100,7 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
 
         final String subscriptionId =
                 SubscriptionFlagManager.buildSubscriptionUniqueId(
-                        message.getAppId(), message.getSenderId());
+                        assertNonNull(message.getAppId()), assertNonNull(message.getSenderId()));
         if (!SubscriptionFlagManager.hasFlags(subscriptionId, InstanceIDFlags.BYPASS_SCHEDULER)) {
             return false;
         }
@@ -124,7 +130,7 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
 
         final String subscriptionId =
                 LazySubscriptionsManager.buildSubscriptionUniqueId(
-                        message.getAppId(), message.getSenderId());
+                        assertNonNull(message.getAppId()), assertNonNull(message.getSenderId()));
 
         boolean isSubscriptionLazy = LazySubscriptionsManager.isSubscriptionLazy(subscriptionId);
         boolean isHighPriority = message.getOriginalPriority() == GCMMessage.Priority.HIGH;
@@ -186,7 +192,7 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
         ThreadUtils.assertOnUiThread();
 
         // GCMMessage#getAppId never returns null.
-        if (message.getAppId().startsWith("wp:")) {
+        if (assumeNonNull(message.getAppId()).startsWith("wp:")) {
             recordWebPushMetrics(message);
         }
 
