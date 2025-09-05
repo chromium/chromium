@@ -23,7 +23,7 @@ class TemplateURLServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the default factory used to build TemplateURLServices. Can be
   // registered with AddTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<TemplateURLServiceFactory>;
@@ -31,11 +31,11 @@ class TemplateURLServiceFactory : public ProfileKeyedServiceFactoryIOS {
   TemplateURLServiceFactory();
   ~TemplateURLServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

@@ -37,9 +37,7 @@ base::RepeatingClosure GetDefaultSearchProviderChangedCallback() {
 #endif
 }
 
-std::unique_ptr<KeyedService> BuildTemplateURLService(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildTemplateURLService(ProfileIOS* profile) {
   return std::make_unique<TemplateURLService>(
       CHECK_DEREF(profile->GetPrefs()),
       CHECK_DEREF(
@@ -71,9 +69,9 @@ TemplateURLServiceFactory* TemplateURLServiceFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 TemplateURLServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildTemplateURLService);
+  return base::BindOnce(&BuildTemplateURLService);
 }
 
 TemplateURLServiceFactory::TemplateURLServiceFactory()
@@ -95,9 +93,8 @@ void TemplateURLServiceFactory::RegisterProfilePrefs(
 }
 
 std::unique_ptr<KeyedService>
-TemplateURLServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildTemplateURLService(context);
+TemplateURLServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+  return BuildTemplateURLService(profile);
 }
 
 }  // namespace ios
