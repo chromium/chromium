@@ -77,9 +77,15 @@ AiMode::AiMode() {
 
 AiModeOmniboxEntryPoint::AiModeOmniboxEntryPoint() {
   enabled = base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
+
   hide_aim_hint_text_on_ntp_open =
       base::FeatureParam<bool>(&omnibox::kAiModeOmniboxEntryPoint,
                               "HideAimHintTextOnNtpOpen", false)
+          .Get();
+
+  hide_other_page_actions_on_ntp =
+      base::FeatureParam<bool>(&omnibox::kAiModeOmniboxEntryPoint,
+                               "HideOtherPageActionsOnNtp", true)
           .Get();
 }
 

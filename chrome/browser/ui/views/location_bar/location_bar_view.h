@@ -389,6 +389,9 @@ class LocationBarView
   bool ShouldHidePageActionIcons() const override;
   bool ShouldHidePageActionIcon(PageActionIconView* icon_view) const override;
 
+  bool ShouldHidePageActionIconsForContext(
+      metrics::OmniboxEventProto::PageClassification page_context) const;
+
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
