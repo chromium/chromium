@@ -13,6 +13,7 @@
 #include "components/lens/contextual_input.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -39,6 +40,9 @@ class TabContextualizationController : public content::WebContentsObserver {
   using GetPageContextEligibilityCallback =
       base::OnceCallback<void(bool page_context_eligible)>;
 
+  using GetAnnotatedPageContentCallback = base::OnceCallback<void(
+      std::optional<optimization_guide::AIPageContentResult> result)>;
+
   // Triggers initial page context eligibility check on the current page.
   // Equivalent to calling `optimization_guide::IsPageContextEligible()` with
   // empty frame_metadata. Only needed for the Chromnient use case, lower
@@ -64,13 +68,13 @@ class TabContextualizationController : public content::WebContentsObserver {
  private:
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
-  //   void DidFinishNavigation(
-  //       content::NavigationHandle* navigation_handle) override;
 
   // TabInterface::WillDiscardContentsCallback:
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
+
+  void GetAnnotatedPageContent(GetAnnotatedPageContentCallback callback);
 
   // Retrieves annotated page contents.
   void OnAnnotatedPageContentReceived(
@@ -82,6 +86,12 @@ class TabContextualizationController : public content::WebContentsObserver {
       const GURL& main_frame_url,
       std::vector<optimization_guide::FrameMetadata> frame_metadata,
       GetPageContextEligibilityCallback callback);
+
+  void CaptureScreenshot(base::OnceCallback<void(const SkBitmap&)> callback);
+
+  void OnScreenshotCaptured(GetPageContextCallback callback,
+                            std::unique_ptr<lens::ContextualInputData> data,
+                            const SkBitmap& screenshot);
 
   ::ui::ScopedUnownedUserData<TabContextualizationController>
       scoped_unowned_user_data_;

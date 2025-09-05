@@ -75,4 +75,22 @@ IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
   EXPECT_FALSE(controller->GetCurrentPageContextEligibility());
 }
 
+IN_PROC_BROWSER_TEST_F(TabContextualizationControllerBrowserTest,
+                       GetPageContext) {
+  auto* controller = GetTabContextualizationController();
+
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  base::RunLoop run_loop;
+  controller->GetPageContext(base::BindLambdaForTesting(
+      [&](std::unique_ptr<lens::ContextualInputData> data) {
+        EXPECT_EQ(data->page_url, url);
+        EXPECT_TRUE(data->page_title.has_value());
+        EXPECT_TRUE(data->viewport_screenshot.has_value());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 }  // namespace lens
