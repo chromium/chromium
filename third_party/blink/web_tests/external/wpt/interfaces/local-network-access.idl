@@ -1,14 +1,9 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: Private Network Access (https://wicg.github.io/private-network-access/)
+// Source: Local Network Access (https://wicg.github.io/local-network-access/)
 
-enum IPAddressSpace { "public", "private", "local" };
-
-dictionary PrivateNetworkAccessPermissionDescriptor
-    : PermissionDescriptor {
-  DOMString id;
-};
+enum IPAddressSpace { "public", "local", "loopback" };
 
 partial dictionary RequestInit {
   IPAddressSpace targetAddressSpace;

@@ -261964,6 +261964,32 @@
         }
        ]
       ],
+      "nested-parent-changes-transform-twice.html": [
+       "f4dbcb24a15c7483c6d56bee8c4b8b0a23a36659",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/nested/green-rect-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "nested-parent-changes-transform.html": [
+       "153449bb014c8e3314e17db52f45653c673a40c9",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/nested/green-rect-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "nested-position-with-border.html": [
        "cabd94afbe165546b8451f802afaf20357ba1924",
        [
@@ -382878,6 +382904,10 @@
       }
      },
      "nested": {
+      "green-rect-ref.html": [
+       "6d73024b615b64fa728dd4d2ab52394992ce9a96",
+       []
+      ],
       "group-children-sizing-ref.html": [
        "4f994bd03f67c7e73b03bb58b8eec220cb7720c5",
        []
@@ -420796,12 +420826,8 @@
      "0eab6bc75423a025081e379c158172bfb6583be6",
      []
     ],
-    "css-view-transitions-2.idl": [
-     "09719d647ddafd06bab9203c83145b98fa8642ad",
-     []
-    ],
     "css-view-transitions.idl": [
-     "275ccf3d6bfd5f373a8981e4e031c175e07f89dc",
+     "1584977bc4704310bfd9a66646ace200ae0dd55f",
      []
     ],
     "css-viewport.idl": [
@@ -421036,6 +421062,10 @@
      "10e2e1f012e92139a1f6cdfe3bf4f4d7e52474d1",
      []
     ],
+    "local-network-access.idl": [
+     "1074e284bcf25504221538006e975ff25992b5c0",
+     []
+    ],
     "login-status.idl": [
      "6d368806e462670cce5f434bb68769362dff6544",
      []
@@ -421250,10 +421280,6 @@
     ],
     "private-click-measurement.idl": [
      "3bed7ccf991f6b8cd4e9a5a237275c4ff5fc6f1f",
-     []
-    ],
-    "private-network-access.idl": [
-     "65b58760228921514e48decd39ae49047adb84c5",
      []
     ],
     "proximity.idl": [
@@ -421548,12 +421574,16 @@
      "3d4db1ed49d316c31005a5be857ad7d48eca378d",
      []
     ],
+    "webcrypto-modern-algos.idl": [
+     "dc2f842794477b6b439eaa20d62e4e1f0195b6b9",
+     []
+    ],
     "webcrypto-secure-curves.idl": [
      "01bb290b747827bb4e45ea6d0c8f6146e59b01ee",
      []
     ],
     "webcrypto.idl": [
-     "9c742fa97094dd82dff45f878bdc3c33fd85738e",
+     "ebb9cf5718b98de2c2696c452326df8ce04c60c7",
      []
     ],
     "webdriver.idl": [
@@ -445725,7 +445755,7 @@
      []
     ],
     "supported-stats.https-expected.txt": [
-     "0bfe05217cdf6c80a51f9550aeaa28c5ddf78a10",
+     "395ef9f08bc7c8be9cd97615e2b07bb344807825",
      []
     ]
    },
@@ -542276,7 +542306,7 @@
       ]
      ],
      "idlharness.html": [
-      "97380b7388288fdcd6dfaa9ae22d69ab55ce7be4",
+      "a16330fcddd33337e3c3d4a047cc1b43f35e9325",
       [
        null,
        {}
@@ -545995,7 +546025,7 @@
       ]
      ],
      "scrollParent.html": [
-      "344ee522ef2664e0b963e79812074f08f343f5bf",
+      "b1c6898af349691d357a3d39cc8fd8e578612d94",
       [
        null,
        {}
@@ -611422,8 +611452,8 @@
     ]
    },
    "hsts": {
-    "only-top-level-navigation-hsts-upgrade.tentative.sub.html": [
-     "be891d05c01e04a961842557ee5a8fb0e8941f46",
+    "third-party-subframe-hsts-upgrade.tentative.sub.html": [
+     "7619709706a25370ba00a623ed52f1e1410267f9",
      [
       null,
       {}
