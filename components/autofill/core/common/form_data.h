@@ -347,9 +347,6 @@ class FormData {
     likely_contains_captcha_ = likely_contains_captcha;
   }
 
-  bool ShouldRunHeuristics() const;
-  bool ShouldRunHeuristicsForSingleFields() const;
-
  private:
   friend class FormDataTestApi;
 

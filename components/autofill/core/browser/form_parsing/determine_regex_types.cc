@@ -36,10 +36,10 @@ FieldCandidatesMap ParseFieldTypesWithPatterns(const FormData& form,
   FieldCandidatesMap field_type_map;
 
   auto form_field_data_vector = base::ToVector(form.fields(), &ToPointer);
-  if (form.ShouldRunHeuristics()) {
+  if (ShouldRunHeuristics(form)) {
     FormFieldParser::ParseFormFields(context, form_field_data_vector,
                                      field_type_map);
-  } else if (form.ShouldRunHeuristicsForSingleFields()) {
+  } else if (ShouldRunHeuristicsForSingleFields(form)) {
     FormFieldParser::ParseSingleFields(context, form_field_data_vector,
                                        field_type_map);
     FormFieldParser::ParseStandaloneCVCFields(context, form_field_data_vector,

@@ -33,11 +33,6 @@ class FormStructureTestApi {
     return *form_structure_->fields_.back();
   }
 
-  [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params = {},
-                                    LogManager* log_manager = nullptr) {
-    return form_structure_->ShouldBeParsed(params, log_manager);
-  }
-
   // Set the heuristic and server types for each field. The `heuristic_types`
   // and `server_types` vectors must be aligned with the indices of the fields
   // in the form. For each field in `heuristic_types` there must be exactly one

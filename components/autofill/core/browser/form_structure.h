@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
+#include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
@@ -53,16 +54,6 @@ using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 
 class FormData;
 struct FormDataPredictions;
-
-// Production code only uses the default parameters.
-// Unit tests also test other parameters.
-struct ShouldBeParsedParams {
-  size_t min_required_fields =
-      std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
-                kMinRequiredFieldsForUpload});
-  size_t required_fields_for_forms_with_only_password_fields =
-      kRequiredFieldsForFormsWithOnlyPasswordFields;
-};
 
 // FormStructure stores a single HTML form together with the values entered
 // in the fields along with additional information needed by Autofill.
@@ -101,10 +92,6 @@ class FormStructure {
   // Return the form signature as string.
   std::string FormSignatureAsStr() const;
 
-  // Runs a quick heuristic to rule out forms that are obviously not
-  // auto-fillable, like google/yahoo/msn search, etc.
-  bool IsAutofillable() const;
-
   // This enum defines two different states of completeness for a credit card
   // form, each used for a distinct purpose to check if the required credit card
   // fields exist.
@@ -124,38 +111,33 @@ class FormStructure {
   bool IsCompleteCreditCardForm(
       CreditCardFormCompleteness credit_card_form_completeness) const;
 
-  // Returns true if this form matches the structural requirements for Autofill.
   [[nodiscard]] bool ShouldBeParsed(LogManager* log_manager = nullptr) const {
-    return ShouldBeParsed({}, log_manager);
+    return autofill::ShouldBeParsed(*this, log_manager);
   }
 
-  // Returns true if heuristic autofill type detection should be attempted for
-  // this form.
-  bool ShouldRunHeuristics() const;
+  [[nodiscard]] bool ShouldRunHeuristics() const {
+    return autofill::ShouldRunHeuristics(*this);
+  }
 
-  // Returns true if autofill's heuristic field type detection should be
-  // attempted for this form given that |kMinRequiredFieldsForHeuristics| is not
-  // met.
-  bool ShouldRunHeuristicsForSingleFields() const;
+  [[nodiscard]] bool ShouldRunHeuristicsForSingleFields() const {
+    return autofill::ShouldRunHeuristicsForSingleFields(*this);
+  }
 
-  // Returns true if we should query the crowd-sourcing server to determine this
-  // form's field types. If the form includes author-specified types, this will
-  // return false unless there are password fields in the form. If there are no
-  // password fields the assumption is that the author has expressed their
-  // intent and crowdsourced data should not be used to override this. Password
-  // fields are different because there is no way to specify password generation
-  // directly.
-  bool ShouldBeQueried() const;
+  [[nodiscard]] bool ShouldBeQueried() const {
+    return autofill::ShouldBeQueried(*this);
+  }
 
-  // Returns true if we should upload Autofill votes for this form to the
-  // crowd-sourcing server. It is not applied for Password Manager votes.
-  bool ShouldBeUploaded() const;
+  [[nodiscard]] bool ShouldBeUploaded() const {
+    return autofill::ShouldBeUploaded(*this);
+  }
 
-  // Returns whether the form is considered parseable and meets a couple of
-  // other requirements which makes uploading UKM data worthwhile. E.g. the
-  // form should not be a search form, the forms should have at least one
-  // focusable input field with a type from heuristics or the server.
-  bool ShouldUploadUkm(bool require_classified_field) const;
+  [[nodiscard]] bool ShouldUploadUkm(bool require_classified_field) const {
+    return autofill::ShouldUploadUkm(*this, require_classified_field);
+  }
+
+  [[nodiscard]] bool IsAutofillable() const {
+    return autofill::IsAutofillable(*this);
+  }
 
   // This enum defines the behavior of RetrieveFromCache, which needs to adapt
   // to the reason for retrieving data from the cache.
@@ -368,9 +350,6 @@ class FormStructure {
 
   FormStructure(FormSignature form_signature,
                 const std::vector<FieldSignature>& field_signatures);
-
-  [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params,
-                                    LogManager* log_manager = nullptr) const;
 
   // Extracts the parseable field name by removing a common affix.
   void ExtractParseableFieldNames();

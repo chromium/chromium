@@ -75,34 +75,6 @@ void LogDeserializationError(int version) {
            << " FormData from pickle.";
 }
 
-// Returns true if the scheme given by |url| is one for which autofill is
-// allowed to activate. By default this only returns true for HTTP and HTTPS.
-bool HasAllowedScheme(const GURL& url) {
-  return url.SchemeIsHTTPOrHTTPS();
-}
-
-// A field is active if it contributes to the form signature and it is are
-// included in queries to the Autofill server.
-bool is_active(const FormFieldData& field) {
-  return !IsCheckable(field.check_status());
-}
-
-// Returns true if at least `num` fields satisfy `p`.
-// This is useful if `num` is significantly smaller than `fields.size()` because
-// it may avoid iterating over all of `fields`. It's equivalent to
-// `std::range::count_if(fields, [](auto& f) { p(*f); }) >= num`.
-template <typename Predicate>
-bool AtLeastNumSatisfy(base::span<const FormFieldData> fields,
-                       size_t num,
-                       Predicate p) {
-  for (auto it = fields.begin(); it != fields.end() && num > 0; ++it) {
-    if (std::invoke(p, *it)) {
-      --num;
-    }
-  }
-  return num == 0;
-}
-
 }  // namespace
 
 FrameTokenWithPredecessor::FrameTokenWithPredecessor() = default;
@@ -156,18 +128,6 @@ const FormFieldData* FormData::FindFieldByGlobalId(
   // If the field is found, return a pointer to the field, otherwise return
   // nullptr.
   return fields_it != fields().end() ? &*fields_it : nullptr;
-}
-
-bool FormData::ShouldRunHeuristics() const {
-  // Must be identical to FormStructure::ShouldRunHeuristics()!
-  return AtLeastNumSatisfy(fields(), kMinRequiredFieldsForHeuristics,
-                           is_active) &&
-         HasAllowedScheme(url());
-}
-
-bool FormData::ShouldRunHeuristicsForSingleFields() const {
-  // Must be identical to FormStructure::ShouldRunHeuristicsForSingleFields()!
-  return AtLeastNumSatisfy(fields(), 1, is_active) && HasAllowedScheme(url());
 }
 
 bool FormHasNonEmptyPasswordField(const FormData& form) {

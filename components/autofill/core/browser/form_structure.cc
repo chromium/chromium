@@ -87,38 +87,7 @@ namespace autofill {
 
 using mojom::SubmissionIndicatorEvent;
 
-template <typename T>
-concept IsForm = std::same_as<T, FormStructure> || std::same_as<T, FormData>;
-
-const GURL& url(const FormData& form) {
-  return form.url();
-}
-const GURL& url(const FormStructure& form) {
-  return form.source_url();
-}
-
-const GURL& action(const FormData& form) {
-  return form.action();
-}
-const GURL& action(const FormStructure& form) {
-  return form.target_url();
-}
-
-const std::vector<FormFieldData>& fields(const FormData& form) {
-  return form.fields();
-}
-const std::vector<std::unique_ptr<AutofillField>>& fields(
-    const FormStructure& form) {
-  return form.fields();
-}
-
 namespace {
-
-// Returns true if the scheme given by |url| is one for which autofill is
-// allowed to activate. By default this only returns true for HTTP and HTTPS.
-bool HasAllowedScheme(const GURL& url) {
-  return url.SchemeIsHTTPOrHTTPS();
-}
 
 raw_ptr<const FormFieldData> to_form_field_data(
     const std::unique_ptr<AutofillField>& field) {
@@ -152,66 +121,6 @@ std::string AttributeTypesToString(base::span<const AttributeType> types) {
 
 std::string_view ToYesOrNo(bool value) {
   return value ? "Yes" : "No";
-}
-
-auto has_autocomplete = absl::Overload{
-    [](const FormFieldData& field) {
-      return field.parsed_autocomplete().has_value();
-    },
-    [](const std::unique_ptr<AutofillField>& field) {
-      return field->parsed_autocomplete().has_value();
-    },
-};
-
-auto is_password_field = absl::Overload{
-    [](const FormFieldData& field) {
-      return field.form_control_type() == FormControlType::kInputPassword;
-    },
-    [](const std::unique_ptr<AutofillField>& field) {
-      return field->form_control_type() == FormControlType::kInputPassword;
-    },
-};
-
-// A field is active if it contributes to the form signature and it is are
-// included in queries to the Autofill server.
-auto is_active = absl::Overload{
-    [](const FormFieldData& field) {
-      return !IsCheckable(field.check_status());
-    },
-    [](const std::unique_ptr<AutofillField>& field) {
-      return !IsCheckable(field->check_status());
-    },
-};
-
-auto is_select_element = absl::Overload{
-    [](const FormFieldData& field) { return field.IsSelectElement(); },
-    [](const std::unique_ptr<AutofillField>& field) {
-      return field->IsSelectElement();
-    },
-};
-
-// Returns true if at least `num` fields satisfy `p`.
-// This is useful if `num` is significantly smaller than `fields.size()` because
-// it may avoid iterating over all of `fields`. It's equivalent to
-// `std::range::count_if(fields, [](auto& f) { p(*f); }) >= num`.
-template <typename T, typename Predicate>
-  requires IsForm<T>
-bool AtLeastNumFieldsSatisfy(const T& form, size_t num, Predicate p) {
-  for (auto& field : fields(form)) {
-    if (num == 0) {
-      break;
-    }
-    if constexpr (std::same_as<T, FormStructure>) {
-      if (std::invoke(p, *field)) {
-        --num;
-      }
-    } else {
-      if (std::invoke(p, field)) {
-        --num;
-      }
-    }
-  }
-  return num == 0;
 }
 
 }  // namespace
@@ -439,25 +348,6 @@ std::string FormStructure::FormSignatureAsStr() const {
   return base::NumberToString(form_signature().value());
 }
 
-template <typename T>
-  requires IsForm<T>
-bool ShouldBeParsed(const T& form,
-                    ShouldBeParsedParams params,
-                    LogManager* log_manager);
-
-bool IsAutofillable(const FormStructure& form) {
-  static constexpr size_t kMinRequiredFields =
-      std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
-                kMinRequiredFieldsForUpload});
-  return AtLeastNumFieldsSatisfy(form, kMinRequiredFields,
-                                 &AutofillField::IsFieldFillable) &&
-         ShouldBeParsed(form, {}, nullptr);
-}
-
-bool FormStructure::IsAutofillable() const {
-  return autofill::IsAutofillable(*this);
-}
-
 bool FormStructure::IsCompleteCreditCardForm(
     CreditCardFormCompleteness credit_card_form_completeness) const {
   FieldTypeSet all_cc_types = FieldTypeSet(fields_, [](const auto& field) {
@@ -483,153 +373,6 @@ bool FormStructure::IsCompleteCreditCardForm(
              found_cc_name;
     }
   }
-}
-
-template <typename T>
-  requires IsForm<T>
-bool ShouldBeParsed(const T& form,
-                    ShouldBeParsedParams params,
-                    LogManager* log_manager) {
-  // Exclude URLs not on the web via HTTP(S).
-  if (!HasAllowedScheme(url(form))) {
-    LOG_AF(log_manager) << LoggingScope::kAbortParsing
-                        << LogMessage::kAbortParsingNotAllowedScheme << form;
-    return false;
-  }
-
-  if (!AtLeastNumFieldsSatisfy(form, params.min_required_fields, is_active) &&
-      (!AtLeastNumFieldsSatisfy(
-           form, params.required_fields_for_forms_with_only_password_fields,
-           is_active) ||
-       !std::ranges::all_of(fields(form), is_password_field)) &&
-      std::ranges::none_of(fields(form), has_autocomplete)) {
-    LOG_AF(log_manager) << LoggingScope::kAbortParsing
-                        << LogMessage::kAbortParsingNotEnoughFields
-                        << std::ranges::count_if(fields(form), is_active)
-                        << form;
-    return false;
-  }
-
-  // Rule out search forms.
-  if (MatchesRegex<kUrlSearchActionRe>(
-          base::UTF8ToUTF16(action(form).path_piece()))) {
-    LOG_AF(log_manager) << LoggingScope::kAbortParsing
-                        << LogMessage::kAbortParsingUrlMatchesSearchRegex
-                        << form;
-    return false;
-  }
-
-  bool has_text_field =
-      std::ranges::any_of(fields(form), std::not_fn(is_select_element));
-  if (!has_text_field) {
-    LOG_AF(log_manager) << LoggingScope::kAbortParsing
-                        << LogMessage::kAbortParsingFormHasNoTextfield << form;
-  }
-  return has_text_field;
-}
-
-bool FormStructure::ShouldBeParsed(ShouldBeParsedParams params,
-                                   LogManager* log_manager) const {
-  return autofill::ShouldBeParsed(*this, params, log_manager);
-}
-
-template <typename T>
-  requires IsForm<T>
-bool ShouldRunHeuristics(const T& form) {
-  return AtLeastNumFieldsSatisfy(form, kMinRequiredFieldsForHeuristics,
-                                 is_active) &&
-         HasAllowedScheme(url(form));
-}
-
-bool FormStructure::ShouldRunHeuristics() const {
-  return autofill::ShouldRunHeuristics(*this);
-}
-
-template <typename T>
-  requires IsForm<T>
-bool ShouldRunHeuristicsForSingleFields(const T& form) {
-  return AtLeastNumFieldsSatisfy(form, 1, is_active) &&
-         HasAllowedScheme(url(form));
-}
-
-bool FormStructure::ShouldRunHeuristicsForSingleFields() const {
-  return autofill::ShouldRunHeuristicsForSingleFields(*this);
-}
-
-bool ShouldBeQueried(const FormStructure& form) {
-  return (AtLeastNumFieldsSatisfy(form, kMinRequiredFieldsForQuery,
-                                  is_active) ||
-          std::ranges::any_of(fields(form), is_password_field)) &&
-         ShouldBeParsed(form, {}, nullptr);
-}
-
-bool FormStructure::ShouldBeQueried() const {
-  return autofill::ShouldBeQueried(*this);
-}
-
-bool ShouldBeUploaded(const FormStructure& form) {
-  return AtLeastNumFieldsSatisfy(form, kMinRequiredFieldsForUpload,
-                                 is_active) &&
-         ShouldBeParsed(form, {}, nullptr);
-}
-
-bool FormStructure::ShouldBeUploaded() const {
-  return autofill::ShouldBeUploaded(*this);
-}
-
-bool ShouldUploadUkm(const FormStructure& form, bool require_classified_field) {
-  if (!ShouldBeParsed(form, {}, nullptr)) {
-    return false;
-  }
-
-  auto is_focusable_text_field =
-      [](const std::unique_ptr<AutofillField>& field) {
-        return field->IsTextInputElement() && field->IsFocusable();
-      };
-
-  // Return true if the field is a visible text input field which has predicted
-  // types from heuristics or the server.
-  auto is_focusable_predicted_text_field =
-      [](const std::unique_ptr<AutofillField>& field) {
-        return field->IsTextInputElement() && field->IsFocusable() &&
-               ((field->server_type() != NO_SERVER_DATA &&
-                 field->server_type() != UNKNOWN_TYPE) ||
-                field->heuristic_type() != UNKNOWN_TYPE ||
-                field->html_type() != HtmlFieldType::kUnspecified);
-      };
-
-  size_t num_text_fields = std::ranges::count_if(
-      fields(form), require_classified_field ? is_focusable_predicted_text_field
-                                             : is_focusable_text_field);
-  if (num_text_fields == 0) {
-    return false;
-  }
-
-  // If the form contains a single text field and this contains the string
-  // "search" in its name/id/placeholder, the function return false and the form
-  // is not recorded into UKM. The form is considered a search box.
-  if (num_text_fields == 1) {
-    auto it = std::ranges::find_if(fields(form),
-                                   require_classified_field
-                                       ? is_focusable_predicted_text_field
-                                       : is_focusable_text_field);
-    if (base::ToLowerASCII((*it)->placeholder()).find(u"search") !=
-            std::string::npos ||
-        base::ToLowerASCII((*it)->name()).find(u"search") !=
-            std::string::npos ||
-        base::ToLowerASCII((*it)->label()).find(u"search") !=
-            std::string::npos ||
-        base::ToLowerASCII((*it)->aria_label()).find(u"search") !=
-            std::string::npos) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool FormStructure::ShouldUploadUkm(bool require_classified_field) const {
-  return autofill::ShouldUploadUkm(*this, require_classified_field);
 }
 
 void FormStructure::RetrieveFromCache(const FormStructure& cached_form,

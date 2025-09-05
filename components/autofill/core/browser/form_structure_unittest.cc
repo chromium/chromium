@@ -20,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -79,20 +78,7 @@ class FormStructureTestImpl : public test::FormStructureTest {
     return base::NumberToString(StrToHash64Bit(str));
   }
 
- protected:
-  bool FormIsAutofillable(const FormData& form) {
-    FormStructure form_structure(form);
-    const RegexPredictions regex_predictions =
-        DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
-                            form_structure.ToFormData(), nullptr);
-    regex_predictions.ApplyTo(form_structure.fields());
-    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
-                                                LanguageCode(""), nullptr);
-    return form_structure.IsAutofillable();
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
@@ -172,346 +158,6 @@ TEST_F(FormStructureTestImpl, FullSourceURLWithHashAndParam) {
   FormStructure form_structure(form);
 
   EXPECT_EQ(form.full_url(), form_structure.full_source_url());
-}
-
-TEST_F(FormStructureTestImpl, IsAutofillable) {
-  FormData form;
-  form.set_url(GURL("http://www.foo.com/"));
-  FormFieldData field;
-
-  // Start with a username field. It should be picked up by the password but
-  // not by autofill.
-  field.set_label(u"username");
-  field.set_name(u"username");
-  field.set_form_control_type(FormControlType::kInputText);
-  field.set_renderer_id(test::MakeFieldRendererId());
-  test_api(form).Append(field);
-
-  // With min required fields enabled.
-  EXPECT_FALSE(FormIsAutofillable(form));
-
-  // Add a password field. The form should be picked up by the password but
-  // not by autofill.
-  field.set_label(u"password");
-  field.set_name(u"password");
-  field.set_form_control_type(FormControlType::kInputPassword);
-  field.set_renderer_id(test::MakeFieldRendererId());
-  test_api(form).Append(field);
-
-  EXPECT_FALSE(FormIsAutofillable(form));
-
-  // Add an auto-fillable fields. With just one auto-fillable field, this should
-  // be picked up by autofill only if there is no minimum field enforcement.
-  field.set_label(u"Full Name");
-  field.set_name(u"fullname");
-  field.set_form_control_type(FormControlType::kInputText);
-  field.set_renderer_id(test::MakeFieldRendererId());
-  test_api(form).Append(field);
-
-  EXPECT_FALSE(FormIsAutofillable(form));
-
-  // Add an auto-fillable fields. With just one auto-fillable field, this should
-  // be picked up by autofill only if there is no minimum field enforcement.
-  field.set_label(u"Address Line 1");
-  field.set_name(u"address1");
-  field.set_form_control_type(FormControlType::kInputText);
-  field.set_renderer_id(test::MakeFieldRendererId());
-  test_api(form).Append(field);
-
-  EXPECT_FALSE(FormIsAutofillable(form));
-
-  // We now have three auto-fillable fields. It's always autofillable.
-  field.set_label(u"Email");
-  field.set_name(u"email");
-  field.set_form_control_type(FormControlType::kInputEmail);
-  field.set_renderer_id(test::MakeFieldRendererId());
-  test_api(form).Append(field);
-
-  EXPECT_TRUE(FormIsAutofillable(form));
-
-  // The target cannot include http(s)://*/search...
-  form.set_action(GURL("http://google.com/search?q=hello"));
-
-  EXPECT_FALSE(FormIsAutofillable(form));
-
-  // But search can be in the URL.
-  form.set_action(GURL("http://search.com/?q=hello"));
-
-  EXPECT_TRUE(FormIsAutofillable(form));
-}
-
-class FormStructureTestImpl_ShouldBeParsed_Test : public FormStructureTestImpl {
- public:
-  FormStructureTestImpl_ShouldBeParsed_Test() {
-    form_.set_url(GURL("http://www.foo.com/"));
-    form_structure_ = std::make_unique<FormStructure>(form_);
-  }
-
-  ~FormStructureTestImpl_ShouldBeParsed_Test() override = default;
-
-  void SetAction(GURL action) {
-    form_.set_action(action);
-    form_structure_ = nullptr;
-  }
-
-  void AddField(FormFieldData field) {
-    field.set_renderer_id(test::MakeFieldRendererId());
-    test_api(form_).Append(std::move(field));
-    form_structure_ = nullptr;
-  }
-
-  void AddTextField() {
-    FormFieldData field;
-    field.set_form_control_type(FormControlType::kInputText);
-    AddField(field);
-  }
-
-  FormStructure& form_structure() {
-    if (!form_structure_) {
-      form_structure_ = std::make_unique<FormStructure>(form_);
-    }
-    return *form_structure_.get();
-  }
-
- private:
-  FormData form_;
-  std::unique_ptr<FormStructure> form_structure_;
-};
-
-// Empty forms should not be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfNoFields) {
-  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-}
-
-// Forms with only checkable fields should not be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, IgnoresCheckableFields) {
-  // Start with a single checkable field.
-  {
-    FormFieldData field;
-    field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
-    field.set_form_control_type(FormControlType::kInputRadio);
-    AddField(field);
-  }
-  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-
-  // Add a second checkable field.
-  {
-    FormFieldData field;
-    field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
-    field.set_form_control_type(FormControlType::kInputCheckbox);
-    AddField(field);
-  }
-  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-
-  // Add one text field.
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-}
-
-// Forms with at least one text field should be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOneTextField) {
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-}
-
-// Forms that have only select fields should not be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectField) {
-  {
-    FormFieldData field;
-    field.set_form_control_type(FormControlType::kSelectOne);
-    AddField(field);
-  }
-  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-}
-
-// Form whose action is a search URL should not be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfSearchURL) {
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-
-  // The target cannot include http(s)://*/search...
-  SetAction(GURL("http://google.com/search?q=hello"));
-  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-
-  // But search can be in the URL.
-  SetAction(GURL("http://search.com/?q=hello"));
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-}
-
-// Forms with two password fields and no other fields should be parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOnlyPasswordFields) {
-  {
-    FormFieldData field;
-    field.set_form_control_type(FormControlType::kInputPassword);
-    AddField(field);
-  }
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure())
-          .ShouldBeParsed(
-              {.min_required_fields = 2,
-               .required_fields_for_forms_with_only_password_fields = 1}));
-  EXPECT_FALSE(
-      test_api(form_structure())
-          .ShouldBeParsed(
-              {.min_required_fields = 2,
-               .required_fields_for_forms_with_only_password_fields = 2}));
-
-  {
-    FormFieldData field;
-    field.set_form_control_type(FormControlType::kInputPassword);
-    AddField(field);
-  }
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure())
-          .ShouldBeParsed(
-              {.min_required_fields = 2,
-               .required_fields_for_forms_with_only_password_fields = 1}));
-  EXPECT_TRUE(
-      test_api(form_structure())
-          .ShouldBeParsed(
-              {.min_required_fields = 2,
-               .required_fields_for_forms_with_only_password_fields = 2}));
-}
-
-// Forms with at least one field with an autocomplete attribute should be
-// parsed.
-TEST_F(FormStructureTestImpl_ShouldBeParsed_Test,
-       TrueIfOneFieldHasAutocomplete) {
-  AddTextField();
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-
-  {
-    FormFieldData field;
-    field.set_parsed_autocomplete(AutocompleteParsingResult{
-        .section = "my-billing-section", .field_type = HtmlFieldType::kName});
-    field.set_form_control_type(FormControlType::kInputText);
-    AddField(field);
-  }
-  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-  EXPECT_TRUE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
-}
-
-TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
-  std::unique_ptr<FormStructure> form_structure;
-  FormData form;
-  form.set_fields(
-      {CreateTestFormField("Name", "name", "", FormControlType::kInputText,
-                           "name"),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputText,
-                           "email"),
-       CreateTestFormField("Address", "address", "",
-                           FormControlType::kInputText, "address-line1")});
-
-  // Baseline, HTTP should work.
-  form.set_url(GURL("http://wwww.foo.com/myform"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_TRUE(form_structure->ShouldBeParsed());
-  EXPECT_TRUE(form_structure->ToFormData().ShouldRunHeuristics());
-  EXPECT_TRUE(form_structure->ShouldRunHeuristics());
-  EXPECT_TRUE(form_structure->ShouldBeQueried());
-  EXPECT_TRUE(form_structure->ShouldBeUploaded());
-
-  // Baseline, HTTPS should work.
-  form.set_url(GURL("https://wwww.foo.com/myform"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_TRUE(form_structure->ShouldBeParsed());
-  EXPECT_TRUE(form_structure->ToFormData().ShouldRunHeuristics());
-  EXPECT_TRUE(form_structure->ShouldRunHeuristics());
-  EXPECT_TRUE(form_structure->ShouldBeQueried());
-  EXPECT_TRUE(form_structure->ShouldBeUploaded());
-
-  // Chrome internal urls shouldn't be parsed.
-  form.set_url(GURL("chrome://settings"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_FALSE(form_structure->ShouldBeParsed());
-  EXPECT_FALSE(form_structure->ToFormData().ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldBeQueried());
-  EXPECT_FALSE(form_structure->ShouldBeUploaded());
-
-  // FTP urls shouldn't be parsed.
-  form.set_url(GURL("ftp://ftp.foo.com/form.html"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_FALSE(form_structure->ShouldBeParsed());
-  EXPECT_FALSE(form_structure->ToFormData().ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldBeQueried());
-  EXPECT_FALSE(form_structure->ShouldBeUploaded());
-
-  // Blob urls shouldn't be parsed.
-  form.set_url(GURL("blob://blob.foo.com/form.html"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_FALSE(form_structure->ShouldBeParsed());
-  EXPECT_FALSE(form_structure->ToFormData().ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldBeQueried());
-  EXPECT_FALSE(form_structure->ShouldBeUploaded());
-
-  // About urls shouldn't be parsed.
-  form.set_url(GURL("about://about.foo.com/form.html"));
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_FALSE(form_structure->ShouldBeParsed());
-  EXPECT_FALSE(form_structure->ToFormData().ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldRunHeuristics());
-  EXPECT_FALSE(form_structure->ShouldBeQueried());
-  EXPECT_FALSE(form_structure->ShouldBeUploaded());
-}
-
-// Tests that ShouldBeParsed returns true for a form containing less than three
-// fields if at least one has an autocomplete attribute.
-TEST_F(FormStructureTestImpl, ShouldBeParsed_TwoFields_HasAutocomplete) {
-  std::unique_ptr<FormStructure> form_structure;
-  FormData form;
-  form.set_url(GURL("http://www.foo.com/"));
-  form.set_fields({CreateTestFormField("Name", "name", "",
-                                       FormControlType::kInputText, "name"),
-                   CreateTestFormField("Address", "Address", "",
-                                       FormControlType::kSelectOne, "")});
-  form_structure = std::make_unique<FormStructure>(form);
-  EXPECT_TRUE(form_structure->ShouldBeParsed());
 }
 
 // Tests that ShouldBeParsed returns true for a form containing less than three
@@ -879,7 +525,6 @@ TEST_F(FormStructureTestImpl,
   test_api(form).Append(field);
 
   EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
-  EXPECT_FALSE(form.ShouldRunHeuristics());
 
   EXPECT_TRUE(FormStructure(form).ShouldBeQueried());
 
@@ -916,7 +561,6 @@ TEST_F(FormStructureTestImpl,
        CreateTestFormField("Last Name", "lastname", "",
                            FormControlType::kInputText, "")});
   EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
-  EXPECT_FALSE(form.ShouldRunHeuristics());
   EXPECT_TRUE(FormStructure(form).ShouldBeQueried());
 
   // As a side effect of parsing small forms, if any of the heuristics, query,
@@ -957,7 +601,7 @@ TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
   test_api(form).Append(field);
 
   EXPECT_TRUE(FormStructure(form).ShouldRunHeuristicsForSingleFields());
-  EXPECT_TRUE(form.ShouldRunHeuristicsForSingleFields());
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
 
   // Default configuration.
   {
@@ -2506,9 +2150,9 @@ TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsBehavior) {
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
   EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
-  EXPECT_FALSE(form.ShouldRunHeuristics());
+  EXPECT_FALSE(ShouldRunHeuristics(form));
   EXPECT_TRUE(FormStructure(form).ShouldRunHeuristicsForSingleFields());
-  EXPECT_TRUE(form.ShouldRunHeuristicsForSingleFields());
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
 
   {
     FormStructure form_structure(form);
@@ -2534,9 +2178,9 @@ TEST_F(FormStructureTestImpl, TwoFieldFormEmailHeuristicsBehavior) {
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
   EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
-  EXPECT_FALSE(form.ShouldRunHeuristics());
+  EXPECT_FALSE(ShouldRunHeuristics(form));
   EXPECT_TRUE(FormStructure(form).ShouldRunHeuristicsForSingleFields());
-  EXPECT_TRUE(form.ShouldRunHeuristicsForSingleFields());
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
 
   {
     FormStructure form_structure(form);
@@ -2564,9 +2208,9 @@ TEST_F(FormStructureTestImpl,
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
   EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
-  EXPECT_FALSE(form.ShouldRunHeuristics());
+  EXPECT_FALSE(ShouldRunHeuristics(form));
   EXPECT_TRUE(FormStructure(form).ShouldRunHeuristicsForSingleFields());
-  EXPECT_TRUE(form.ShouldRunHeuristicsForSingleFields());
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
 
   {
     FormStructure form_structure(form);
@@ -2594,9 +2238,9 @@ TEST_F(FormStructureTestImpl,
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
   EXPECT_FALSE(FormStructure(form).ShouldRunHeuristics());
-  EXPECT_FALSE(form.ShouldRunHeuristics());
+  EXPECT_FALSE(ShouldRunHeuristics(form));
   EXPECT_TRUE(FormStructure(form).ShouldRunHeuristicsForSingleFields());
-  EXPECT_TRUE(form.ShouldRunHeuristicsForSingleFields());
+  EXPECT_TRUE(ShouldRunHeuristicsForSingleFields(form));
   {
     FormStructure form_structure(form);
     const RegexPredictions regex_predictions =
