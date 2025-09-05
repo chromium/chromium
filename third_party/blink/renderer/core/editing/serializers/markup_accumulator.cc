@@ -656,7 +656,8 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
                                           true);
   }
   if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      shadow_root->IsWaitingForScopedRegistry()) {
+      shadow_root->host().customElementRegistry() !=
+          shadow_root->customElementRegistry()) {
     template_element->SetBooleanAttribute(
         html_names::kShadowrootcustomelementregistryAttr, true);
   }
