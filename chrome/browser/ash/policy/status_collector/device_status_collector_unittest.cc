@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 
 #include <stddef.h>
@@ -24,6 +19,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -391,10 +387,10 @@ class TestingDeviceStatusCollector : public DeviceStatusCollector {
     test_clock_->SetNow(base::Time::Now().LocalMidnight() + kHour);
   }
 
-  void Simulate(ui::IdleState* states, int len) {
-    for (int i = 0; i < len; i++) {
+  void Simulate(base::span<const ui::IdleState> states) {
+    for (const auto& state : states) {
       test_clock_->Advance(DeviceStatusCollector::kIdlePollInterval);
-      ProcessIdleState(states[i]);
+      ProcessIdleState(state);
     }
   }
 
@@ -1261,8 +1257,8 @@ class DeviceStatusCollectorTest : public testing::Test {
 
 TEST_F(DeviceStatusCollectorTest, AllIdle) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_IDLE, ui::IDLE_STATE_IDLE,
-                                 ui::IDLE_STATE_IDLE};
+  const std::array<ui::IdleState, 3> test_states = {
+      ui::IDLE_STATE_IDLE, ui::IDLE_STATE_IDLE, ui::IDLE_STATE_IDLE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
 
@@ -1272,14 +1268,13 @@ TEST_F(DeviceStatusCollectorTest, AllIdle) {
   EXPECT_EQ(0, GetActiveMilliseconds(device_status_));
 
   // Test reporting with a single idle sample.
-  status_collector_->Simulate(test_states, 1);
+  status_collector_->Simulate(base::span(test_states).first(1u));
   GetStatus();
   EXPECT_EQ(0, device_status_.active_periods_size());
   EXPECT_EQ(0, GetActiveMilliseconds(device_status_));
 
   // Test reporting with multiple consecutive idle samples.
-  status_collector_->Simulate(test_states,
-                              sizeof(test_states) / sizeof(ui::IdleState));
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(0, device_status_.active_periods_size());
   EXPECT_EQ(0, GetActiveMilliseconds(device_status_));
@@ -1287,13 +1282,13 @@ TEST_F(DeviceStatusCollectorTest, AllIdle) {
 
 TEST_F(DeviceStatusCollectorTest, AllActive) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_ACTIVE};
+  const std::array<ui::IdleState, 3> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
 
   // Test a single active sample.
-  status_collector_->Simulate(test_states, 1);
+  status_collector_->Simulate(base::span(test_states).first(1u));
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_EQ(1 * ActivePeriodMilliseconds(),
@@ -1301,8 +1296,7 @@ TEST_F(DeviceStatusCollectorTest, AllActive) {
   device_status_.clear_active_periods();  // Clear the result protobuf.
 
   // Test multiple consecutive active samples.
-  status_collector_->Simulate(test_states,
-                              sizeof(test_states) / sizeof(ui::IdleState));
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_EQ(4 * ActivePeriodMilliseconds(),
@@ -1311,15 +1305,14 @@ TEST_F(DeviceStatusCollectorTest, AllActive) {
 
 TEST_F(DeviceStatusCollectorTest, MixedStates) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE,
-                                 ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_IDLE,   ui::IDLE_STATE_IDLE,
-                                 ui::IDLE_STATE_ACTIVE};
+  const std::array<ui::IdleState, 7> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE, ui::IDLE_STATE_ACTIVE,
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE, ui::IDLE_STATE_IDLE,
+      ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
 
-  status_collector_->Simulate(test_states,
-                              sizeof(test_states) / sizeof(ui::IdleState));
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(4 * ActivePeriodMilliseconds(),
             GetActiveMilliseconds(device_status_));
@@ -1328,7 +1321,7 @@ TEST_F(DeviceStatusCollectorTest, MixedStates) {
 // For kiosks report total uptime instead of only active periods.
 TEST_F(DeviceStatusCollectorTest, MixedStatesForKiosk) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {
+  const std::array<ui::IdleState, 6> test_states = {
       ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE, ui::IDLE_STATE_ACTIVE,
       ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE, ui::IDLE_STATE_IDLE,
   };
@@ -1336,8 +1329,7 @@ TEST_F(DeviceStatusCollectorTest, MixedStatesForKiosk) {
       ash::LoginState::LOGGED_IN_ACTIVE, ash::LoginState::LOGGED_IN_USER_KIOSK);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
-  status_collector_->Simulate(test_states,
-                              sizeof(test_states) / sizeof(ui::IdleState));
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(6 * ActivePeriodMilliseconds(),
             GetActiveMilliseconds(device_status_));
@@ -1345,20 +1337,18 @@ TEST_F(DeviceStatusCollectorTest, MixedStatesForKiosk) {
 
 TEST_F(DeviceStatusCollectorTest, StateKeptInPref) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE,
-                                 ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_IDLE,   ui::IDLE_STATE_IDLE};
+  const std::array<ui::IdleState, 6> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE, ui::IDLE_STATE_ACTIVE,
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE, ui::IDLE_STATE_IDLE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
-  status_collector_->Simulate(test_states,
-                              sizeof(test_states) / sizeof(ui::IdleState));
+  status_collector_->Simulate(test_states);
 
   // Process the list a second time after restarting the collector. It should be
   // able to count the active periods found by the original collector, because
   // the results are stored in a pref.
   RestartStatusCollector(CreateEmptyDeviceStatusCollectorOptions());
-  status_collector_->Simulate(test_states,
-                              sizeof(test_states) / sizeof(ui::IdleState));
+  status_collector_->Simulate(test_states);
 
   GetStatus();
   EXPECT_EQ(6 * ActivePeriodMilliseconds(),
@@ -1372,10 +1362,9 @@ TEST_F(DeviceStatusCollectorTest, ActivityNotWrittenToProfilePref) {
   EXPECT_THAT(profile_pref_service_.GetDict(prefs::kUserActivityTimes),
               IsEmpty());
 
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_ACTIVE};
-  status_collector_->Simulate(test_states,
-                              sizeof(test_states) / sizeof(ui::IdleState));
+  const std::array<ui::IdleState, 3> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE};
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_EQ(3 * ActivePeriodMilliseconds(),
@@ -1389,7 +1378,8 @@ TEST_F(DeviceStatusCollectorTest, ActivityNotWrittenToProfilePref) {
 
 TEST_F(DeviceStatusCollectorTest, MaxStoredPeriods) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_IDLE};
+  const std::array<ui::IdleState, 2> test_states = {ui::IDLE_STATE_ACTIVE,
+                                                    ui::IDLE_STATE_IDLE};
   const int kMaxDays = 10;
 
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1401,8 +1391,7 @@ TEST_F(DeviceStatusCollectorTest, MaxStoredPeriods) {
 
   // Simulate 12 active periods.
   for (int i = 0; i < kMaxDays + 2; i++) {
-    status_collector_->Simulate(test_states,
-                                sizeof(test_states) / sizeof(ui::IdleState));
+    status_collector_->Simulate(test_states);
     // Advance the simulated clock by a day.
     test_clock_.Advance(base::Days(1));
   }
@@ -1413,8 +1402,7 @@ TEST_F(DeviceStatusCollectorTest, MaxStoredPeriods) {
 
   // Simulate some future times.
   for (int i = 0; i < kMaxDays + 2; i++) {
-    status_collector_->Simulate(test_states,
-                                sizeof(test_states) / sizeof(ui::IdleState));
+    status_collector_->Simulate(test_states);
     // Advance the simulated clock by a day.
     test_clock_.Advance(base::Days(1));
   }
@@ -1422,7 +1410,7 @@ TEST_F(DeviceStatusCollectorTest, MaxStoredPeriods) {
   test_clock_.Advance(-base::Days(20));
 
   // Collect one more data point to trigger pruning.
-  status_collector_->Simulate(test_states, 1);
+  status_collector_->Simulate(base::span(test_states).first(1u));
 
   // Check that we don't exceed the max number of periods.
   device_status_.clear_active_periods();
@@ -1432,10 +1420,9 @@ TEST_F(DeviceStatusCollectorTest, MaxStoredPeriods) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityTimesEnabledByDefault) {
   // Device activity times should be reported by default.
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_ACTIVE};
-  status_collector_->Simulate(test_states,
-                              sizeof(test_states) / sizeof(ui::IdleState));
+  const std::array<ui::IdleState, 3> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE};
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_EQ(3 * ActivePeriodMilliseconds(),
@@ -1446,10 +1433,9 @@ TEST_F(DeviceStatusCollectorTest, ActivityTimesOff) {
   // Device activity times should not be reported while disabled.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, false);
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_ACTIVE};
-  status_collector_->Simulate(test_states,
-                              sizeof(test_states) / sizeof(ui::IdleState));
+  const std::array<ui::IdleState, 3> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE};
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(0, device_status_.active_periods_size());
   EXPECT_EQ(0, GetActiveMilliseconds(device_status_));
@@ -1457,14 +1443,14 @@ TEST_F(DeviceStatusCollectorTest, ActivityTimesOff) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityCrossingMidnight) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE};
+  const std::array<ui::IdleState, 1> test_states = {ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
 
   // Set the baseline time to 20 seconds before midnight.
   test_clock_.SetNow(base::Time::Now().LocalMidnight() - base::Seconds(20));
 
-  status_collector_->Simulate(test_states, 1);
+  status_collector_->Simulate(test_states);
   GetStatus();
   ASSERT_EQ(2, device_status_.active_periods_size());
 
@@ -1487,7 +1473,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityCrossingMidnight) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityTimesKeptUntilSubmittedSuccessfully) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {
+  const std::array<ui::IdleState, 2> test_states = {
       ui::IDLE_STATE_ACTIVE,
       ui::IDLE_STATE_ACTIVE,
   };
@@ -1499,7 +1485,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityTimesKeptUntilSubmittedSuccessfully) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
 
-  status_collector_->Simulate(test_states, 2);
+  status_collector_->Simulate(base::span(test_states).first(2u));
   GetStatus();
   EXPECT_EQ(2 * ActivePeriodMilliseconds(),
             GetActiveMilliseconds(device_status_));
@@ -1516,7 +1502,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityTimesKeptUntilSubmittedSuccessfully) {
 
   // After indicating a successful submit, the submitted status gets cleared,
   // and prior activity is no longer showing.
-  status_collector_->Simulate(test_states, 1);
+  status_collector_->Simulate(base::span(test_states).first(1u));
   status_collector_->OnSubmittedSuccessfully();
   GetStatus();
   EXPECT_EQ(0, GetActiveMilliseconds(device_status_));
@@ -1524,8 +1510,8 @@ TEST_F(DeviceStatusCollectorTest, ActivityTimesKeptUntilSubmittedSuccessfully) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityNoUser) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_ACTIVE};
+  const std::array<ui::IdleState, 3> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1534,7 +1520,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityNoUser) {
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
 
-  status_collector_->Simulate(test_states, 3);
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
@@ -1543,8 +1529,8 @@ TEST_F(DeviceStatusCollectorTest, ActivityNoUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_ACTIVE};
+  const std::array<ui::IdleState, 3> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1560,7 +1546,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
 
-  status_collector_->Simulate(test_states, 3);
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
@@ -1570,8 +1556,8 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_ACTIVE};
+  const std::array<ui::IdleState, 3> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1587,7 +1573,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
 
-  status_collector_->Simulate(test_states, 3);
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
@@ -1597,8 +1583,8 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithIwaKioskUser) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_ACTIVE};
+  const std::array<ui::IdleState, 3> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1614,7 +1600,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithIwaKioskUser) {
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
 
-  status_collector_->Simulate(test_states, 3);
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
@@ -1624,8 +1610,8 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithIwaKioskUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_ACTIVE};
+  const std::array<ui::IdleState, 3> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1640,7 +1626,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   EXPECT_TRUE(status_collector_->IsReportingActivityTimes());
   EXPECT_TRUE(status_collector_->IsReportingUsers());
 
-  status_collector_->Simulate(test_states, 3);
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_EQ(account_id0.GetUserEmail(),
@@ -1655,7 +1641,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   EXPECT_TRUE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
 
-  status_collector_->Simulate(test_states, 3);
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
@@ -1664,8 +1650,8 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   DisableDefaultSettings();
-  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
-                                 ui::IDLE_STATE_ACTIVE};
+  const std::array<ui::IdleState, 3> test_states = {
+      ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1680,7 +1666,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
 
-  status_collector_->Simulate(test_states, 3);
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
@@ -1693,7 +1679,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
 
-  status_collector_->Simulate(test_states, 3);
+  status_collector_->Simulate(test_states);
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
@@ -2691,21 +2677,22 @@ TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatusUpToDate) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportOsUpdateStatus, true);
 
-  const char* kRequiredPlatformVersions[] = {"1234", "1234.0", "1234.0.0"};
+  const std::array<const char*, 3> kRequiredPlatformVersions = {
+      "1234", "1234.0", "1234.0.0"};
 
-  for (size_t i = 0; i < std::size(kRequiredPlatformVersions); ++i) {
+  for (const char* version : kRequiredPlatformVersions) {
     MockAutoLaunchKioskAppWithRequiredPlatformVersion(
-        fake_kiosk_device_local_account_, kRequiredPlatformVersions[i]);
+        fake_kiosk_device_local_account_, version);
 
     GetStatus();
     ASSERT_TRUE(device_status_.has_os_update_status())
-        << "Required platform version=" << kRequiredPlatformVersions[i];
+        << "Required platform version=" << version;
     EXPECT_EQ(em::OsUpdateStatus::OS_UP_TO_DATE,
               device_status_.os_update_status().update_status())
-        << "Required platform version=" << kRequiredPlatformVersions[i];
-    EXPECT_EQ(kRequiredPlatformVersions[i],
+        << "Required platform version=" << version;
+    EXPECT_EQ(version,
               device_status_.os_update_status().new_required_platform_version())
-        << "Required platform version=" << kRequiredPlatformVersions[i];
+        << "Required platform version=" << version;
   }
 }
 
@@ -2739,14 +2726,14 @@ TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatus) {
   EXPECT_EQ(em::OsUpdateStatus::OS_IMAGE_DOWNLOAD_NOT_STARTED,
             device_status_.os_update_status().update_status());
 
-  const update_engine::Operation kUpdateEngineOps[] = {
+  const std::array<update_engine::Operation, 3> kUpdateEngineOps = {
       update_engine::Operation::DOWNLOADING,
       update_engine::Operation::VERIFYING,
       update_engine::Operation::FINALIZING,
   };
 
-  for (size_t i = 0; i < std::size(kUpdateEngineOps); ++i) {
-    update_status.set_current_operation(kUpdateEngineOps[i]);
+  for (const auto op : kUpdateEngineOps) {
+    update_status.set_current_operation(op);
     update_status.set_new_version("1235.1.2");
     update_engine_client_->PushLastStatus(update_status);
 
@@ -2788,14 +2775,14 @@ TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatus_NonKiosk) {
   ASSERT_FALSE(
       device_status_.os_update_status().has_new_required_platform_version());
 
-  const update_engine::Operation kUpdateEngineOps[] = {
+  const std::array<update_engine::Operation, 3> kUpdateEngineOps = {
       update_engine::Operation::DOWNLOADING,
       update_engine::Operation::VERIFYING,
       update_engine::Operation::FINALIZING,
   };
 
-  for (size_t i = 0; i < std::size(kUpdateEngineOps); ++i) {
-    update_status.set_current_operation(kUpdateEngineOps[i]);
+  for (const auto op : kUpdateEngineOps) {
+    update_status.set_current_operation(op);
     update_status.set_new_version("1235.1.2");
     update_engine_client_->PushLastStatus(update_status);
 
@@ -2844,12 +2831,12 @@ TEST_F(DeviceStatusCollectorTest, ReportLastCheckedTimestamp) {
 
   // Check update multiple times, the timestamp stored in device status should
   // change accordingly.
-  const int64 kLastCheckedTimes[] = {10, 20, 30};
+  const std::array<int64_t, 3> kLastCheckedTimes = {10, 20, 30};
 
-  for (size_t i = 0; i < std::size(kLastCheckedTimes); ++i) {
+  for (const auto time : kLastCheckedTimes) {
     update_engine::StatusResult update_status;
     update_status.set_new_version(kDefaultPlatformVersion);
-    update_status.set_last_checked_time(kLastCheckedTimes[i]);
+    update_status.set_last_checked_time(time);
     update_engine_client_->PushLastStatus(update_status);
 
     GetStatus();
@@ -2858,7 +2845,7 @@ TEST_F(DeviceStatusCollectorTest, ReportLastCheckedTimestamp) {
     // The timestamp precision in UpdateEngine is in seconds, but the
     // DeviceStatusCollector is in milliseconds. Therefore, the number should be
     // multiplied by 1000 before validation.
-    ASSERT_EQ(kLastCheckedTimes[i] * 1000,
+    ASSERT_EQ(time * 1000,
               device_status_.os_update_status().last_checked_timestamp());
   }
 }
@@ -3289,15 +3276,16 @@ TEST_F(DeviceStatusCollectorTest, TestCrashReportInfo_LastDayUploadedOnly) {
   // Create a test uploads.log file. One |upload_time| is within last 24 hours,
   // the other is not.
   base::Time now = base::Time::Now();
-  base::Time timestamps[] = {now - base::Hours(22), now - base::Hours(24)};
+  std::array<base::Time, 2> timestamps = {now - base::Hours(22),
+                                          now - base::Hours(24)};
 
   std::stringstream stream;
-  for (int i = 0; i <= 1; ++i) {
+  for (const auto& timestamp : timestamps) {
     stream << "{";
-    stream << "\"upload_time\":\"" << timestamps[i].ToTimeT() << "\",";
+    stream << "\"upload_time\":\"" << timestamp.ToTimeT() << "\",";
     stream << "\"upload_id\":\"" << kTestUploadId << "\",";
     stream << "\"local_id\":\"" << kTestLocalID << "\",";
-    stream << "\"capture_time\":\"" << timestamps[i].ToTimeT() << "\",";
+    stream << "\"capture_time\":\"" << timestamp.ToTimeT() << "\",";
     stream << "\"state\":"
            << static_cast<int>(UploadList::UploadInfo::State::Uploaded) << ",";
     stream << "\"source\":\"" << kTestCauseKernel << "\"";
