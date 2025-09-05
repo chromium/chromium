@@ -160,7 +160,6 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
   void ExternalCanvasDrawHelper(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
       override {
-    WillDrawIfNeeded();
     draw_callback(Canvas());
   }
 
@@ -476,10 +475,13 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   void ExternalCanvasDrawHelper(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
       override {
-    // TODO(crbug.com/40183122): Video frames don't work without
-    // WillDrawIfNeeded(), but we are getting memory leak on CreatePattern
+    // TODO(crbug.com/40183122): Video frames don't work without this
+    // conditional WillDraw(), but we are getting memory leak on CreatePattern
     // with it. There should be a better way to solve this.
-    WillDrawIfNeeded();
+    if (cached_snapshot_) {
+      WillDraw();
+    }
+
     draw_callback(Canvas());
   }
 
@@ -598,12 +600,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     DCHECK(cached_snapshot_);
     DCHECK(!current_resource_has_write_access_);
     return cached_snapshot_;
-  }
-
-  void WillDrawIfNeeded() final {
-    if (cached_snapshot_) {
-      WillDraw();
-    }
   }
 
   void WillDrawInternal(bool write_to_local_texture) {
