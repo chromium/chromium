@@ -107,6 +107,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:binary_size_trybot",
+    bootstrappable = True,
 )
 
 build_recipe(
