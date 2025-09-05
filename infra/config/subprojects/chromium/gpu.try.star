@@ -99,6 +99,15 @@ gpu_android_builder(
 )
 
 gpu_android_builder(
+    name = "gpu-fyi-try-android-pixel-10-64",
+    mirrors = [
+        "ci/GPU FYI Android arm64 Builder",
+        "ci/Android FYI Release (Pixel 10)",
+    ],
+    gn_args = "ci/GPU FYI Android arm64 Builder",
+)
+
+gpu_android_builder(
     name = "gpu-fyi-try-android-a13-32",
     description_html = "Runs GPU tests on Samsung A13 phones",
     mirrors = [

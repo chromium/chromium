@@ -646,6 +646,7 @@
     "gpu-fyi-try-android-a13-32": "try/gpu-fyi-try-android-a13-32/gn-args.json",
     "gpu-fyi-try-android-a23-32": "try/gpu-fyi-try-android-a23-32/gn-args.json",
     "gpu-fyi-try-android-nvidia-shield-tv": "try/gpu-fyi-try-android-nvidia-shield-tv/gn-args.json",
+    "gpu-fyi-try-android-pixel-10-64": "try/gpu-fyi-try-android-pixel-10-64/gn-args.json",
     "gpu-fyi-try-android-pixel-6-64": "try/gpu-fyi-try-android-pixel-6-64/gn-args.json",
     "gpu-fyi-try-android-pixel-6-64-exp": "try/gpu-fyi-try-android-pixel-6-64-exp/gn-args.json",
     "gpu-fyi-try-android-q-pixel-2-32": "try/gpu-fyi-try-android-q-pixel-2-32/gn-args.json",
@@ -701,6 +702,7 @@
   "tryserver.chromium.dawn": {
     "android-dawn-arm-rel": "try/android-dawn-arm-rel/gn-args.json",
     "android-dawn-arm64-exp-rel": "try/android-dawn-arm64-exp-rel/gn-args.json",
+    "android-dawn-arm64-p10-rel": "try/android-dawn-arm64-p10-rel/gn-args.json",
     "android-dawn-arm64-rel": "try/android-dawn-arm64-rel/gn-args.json",
     "android-dawn-arm64-s24-rel": "try/android-dawn-arm64-s24-rel/gn-args.json",
     "dawn-android-arm-deps-rel": "try/dawn-android-arm-deps-rel/gn-args.json",

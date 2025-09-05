@@ -1033,6 +1033,22 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_pixel_10_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Android",
+            "device_type": "frankel",
+            "device_os": "BD3A.250721.001",
+            "device_os_type": "userdebug",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "gpu_samsung_a13_stable",
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.

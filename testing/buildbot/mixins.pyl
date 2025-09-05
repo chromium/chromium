@@ -330,6 +330,18 @@
       },
     },
   },
+  'gpu_pixel_10_stable': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'os': 'Android',
+        'device_type': 'frankel',
+        'device_os': 'BD3A.250721.001',
+        'device_os_type': 'userdebug',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'gpu_pixel_4_stable': {
     'fail_if_unused': False,
     'swarming': {
