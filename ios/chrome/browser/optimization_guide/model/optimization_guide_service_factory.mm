@@ -23,12 +23,11 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildOptimizationGuideService(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   ProfileIOS* original_profile = profile->GetOriginalProfile();
 
   // Regardless of whether the profile is off the record or not, initialize the
@@ -97,13 +96,13 @@ OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
 OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
 
 // static
-ProfileKeyedServiceFactoryIOS::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 OptimizationGuideServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildOptimizationGuideService);
+  return base::BindOnce(&BuildOptimizationGuideService);
 }
 
 std::unique_ptr<KeyedService>
 OptimizationGuideServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildOptimizationGuideService(context);
+    ProfileIOS* profile) const {
+  return BuildOptimizationGuideService(profile);
 }

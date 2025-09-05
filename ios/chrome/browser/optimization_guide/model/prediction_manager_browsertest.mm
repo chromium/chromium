@@ -142,12 +142,12 @@ class PredictionManagerTestBase : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState* context) -> std::unique_ptr<KeyedService> {
+        base::BindOnce(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               TestingApplicationContext::GetGlobal()->SetSharedURLLoaderFactory(
-                  context->GetSharedURLLoaderFactory());
+                  profile->GetSharedURLLoaderFactory());
               return OptimizationGuideServiceFactory::GetDefaultFactory().Run(
-                  context);
+                  profile);
             }));
     builder.SetPrefService(std::move(testing_prefs));
     profile_ = std::move(builder).Build();
