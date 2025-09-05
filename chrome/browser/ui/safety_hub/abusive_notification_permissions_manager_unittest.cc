@@ -25,7 +25,9 @@
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -311,6 +313,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
        RegrantedPermissionShouldNotBeChecked) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
 
@@ -356,6 +359,20 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   EXPECT_TRUE(safety_hub_util::IsAbusiveNotificationRevocationIgnored(
       hcsm(), GURL(url1)));
   EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+
+  // Check that the correct metric is reported.
+  auto ukm_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::
+          SafetyHub_AbusiveNotificationPermissionRevocation_Interactions::
+              kEntryName);
+  ASSERT_EQ(1u, ukm_entries.size());
+  const auto* entry1 = ukm_entries[0].get();
+  ukm_recorder.ExpectEntrySourceHasUrl(entry1, GURL(url1));
+  ukm_recorder.ExpectEntryMetric(
+      entry1, "InteractionType",
+      static_cast<int>(
+          AbusiveNotificationPermissionsManager::
+              AbusiveNotificationPermissionsInteractions::kAllowAgain));
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest, ClearRevokedPermissionsList) {
@@ -464,6 +481,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
        UndoRegrantPermissionForOriginIfNecessary) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
 
@@ -504,6 +522,27 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
             ContentSetting::CONTENT_SETTING_ASK);
   EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
   EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+
+  // Check that the correct metric is reported.
+  auto ukm_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::
+          SafetyHub_AbusiveNotificationPermissionRevocation_Interactions::
+              kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  const auto* entry1 = ukm_entries[0].get();
+  ukm_recorder.ExpectEntrySourceHasUrl(entry1, GURL(url1));
+  ukm_recorder.ExpectEntryMetric(
+      entry1, "InteractionType",
+      static_cast<int>(
+          AbusiveNotificationPermissionsManager::
+              AbusiveNotificationPermissionsInteractions::kAllowAgain));
+  const auto* entry2 = ukm_entries[1].get();
+  ukm_recorder.ExpectEntrySourceHasUrl(entry2, GURL(url1));
+  ukm_recorder.ExpectEntryMetric(
+      entry2, "InteractionType",
+      static_cast<int>(
+          AbusiveNotificationPermissionsManager::
+              AbusiveNotificationPermissionsInteractions::kUndoAllowAgain));
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,

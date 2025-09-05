@@ -18,6 +18,8 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -141,6 +143,9 @@ void AbusiveNotificationPermissionsManager::
   // Set this back to false, so that revoked settings can be cleaned up if
   // necessary.
   is_abusive_site_revocation_running_ = false;
+
+  LogAbusiveNotificationPermissionRevocationUKM(
+      url, AbusiveNotificationPermissionsInteractions::kAllowAgain);
 }
 
 void AbusiveNotificationPermissionsManager::
@@ -169,6 +174,9 @@ void AbusiveNotificationPermissionsManager::
   // Set this back to false, so that revoked settings can be cleaned up if
   // necessary.
   is_abusive_site_revocation_running_ = false;
+
+  LogAbusiveNotificationPermissionRevocationUKM(
+      url, AbusiveNotificationPermissionsInteractions::kUndoAllowAgain);
 }
 
 void AbusiveNotificationPermissionsManager::ClearRevokedPermissionsList() {
@@ -208,6 +216,18 @@ const base::Clock* AbusiveNotificationPermissionsManager::GetClock() {
 bool AbusiveNotificationPermissionsManager::IsRevocationRunning() {
   return is_abusive_site_revocation_running_ ||
          !safe_browsing_request_clients_.empty();
+}
+
+void AbusiveNotificationPermissionsManager::
+    LogAbusiveNotificationPermissionRevocationUKM(
+        const GURL& origin,
+        AbusiveNotificationPermissionsInteractions interaction) {
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForNotificationEvent(
+      base::PassKey<AbusiveNotificationPermissionsManager>(), origin);
+  ukm::builders::SafetyHub_AbusiveNotificationPermissionRevocation_Interactions(
+      source_id)
+      .SetInteractionType(static_cast<int>(interaction))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
