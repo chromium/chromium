@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/surface.h"
 
 #include <optional>
@@ -890,18 +885,19 @@ TEST_P(SurfaceTest, SubpixelCoordinate) {
   child_surface->Attach(child_buffer.get());
 
   // These rects are in pixel coordinates with some having subpixel coordinates.
-  gfx::RectF kTestRects[] = {
+  constexpr std::array<gfx::RectF, 8> kTestRects = {{
       gfx::RectF(10, 20, 30, 40),     gfx::RectF(11, 22, 33, 44),
       gfx::RectF(10.5, 20, 30, 40),   gfx::RectF(10, 20.5, 30, 40),
       gfx::RectF(10, 20, 30.5, 40),   gfx::RectF(10, 20, 30, 40.5),
-      gfx::RectF(10.5, 20, 30, 40.5), gfx::RectF(10.5, 20.5, 30, 40)};
-  bool kExpectedAligned[] = {true,  true,  false, false,
-                             false, false, false, false};
-  static_assert(std::size(kTestRects) == std::size(kExpectedAligned),
+      gfx::RectF(10.5, 20, 30, 40.5), gfx::RectF(10.5, 20.5, 30, 40),
+  }};
+  constexpr std::array<bool, 8> kExpectedAligned = {true,  true,  false, false,
+                                                    false, false, false, false};
+  static_assert(kTestRects.size() == kExpectedAligned.size(),
                 "Number of elements in each list should be the identical.");
   for (int j = 0; j < 2; j++) {
     const bool kTestCaseRotation = (j == 1);
-    for (size_t i = 0; i < std::size(kTestRects); i++) {
+    for (size_t i = 0; i < kTestRects.size(); i++) {
       auto rect_in_dip = device_scale_transform.MapRect(kTestRects[i]);
       sub_surface->SetPosition(rect_in_dip.origin());
       child_surface->SetViewport(rect_in_dip.size());
@@ -1268,10 +1264,11 @@ TEST_P(SurfaceTest, ForceRgbxTestNoBufferAlpha) {
 
 TEST_P(SurfaceTest, ColorBufferAlpha) {
   gfx::Size buffer_size(1, 1);
-  constexpr SkColor4f kBuffColorExpected[] = {{1.f, 128.0f / 255.0f, 0.f, 1.f},
-                                              {0.f, 128.0f / 255.0f, 1.f, 0.f}};
-  constexpr bool kExpectedOpaque[] = {true, false};
-  for (size_t i = 0; i < std::size(kBuffColorExpected); i++) {
+  constexpr std::array<SkColor4f, 2> kBuffColorExpected = {
+      {{1.f, 128.0f / 255.0f, 0.f, 1.f},
+       {0.f, 128.0f / 255.0f, 1.f, 0.f}}};
+  constexpr std::array<bool, 2> kExpectedOpaque = {{true, false}};
+  for (size_t i = 0; i < kBuffColorExpected.size(); i++) {
     auto buffer =
         std::make_unique<SolidColorBuffer>(kBuffColorExpected[i], buffer_size);
     auto surface = std::make_unique<Surface>();
