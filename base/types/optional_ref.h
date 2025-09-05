@@ -5,6 +5,7 @@
 #ifndef BASE_TYPES_OPTIONAL_REF_H_
 #define BASE_TYPES_OPTIONAL_REF_H_
 
+#include <compare>
 #include <concepts>
 #include <memory>
 #include <optional>
@@ -192,8 +193,7 @@ class optional_ref {
   template <typename U>
     requires std::equality_comparable_with<T, U>
   constexpr bool operator==(optional_ref<U> u) const {
-    return (!has_value() && !u.has_value()) ||
-           (has_value() && u.has_value() && value() == u.value());
+    return has_value() == u.has_value() && (!has_value() || value() == *u);
   }
 
   // Equality comparison operator against `T`.
@@ -204,12 +204,10 @@ class optional_ref {
   }
 
   // Three-way comparison (homogeneous). Mirrors that of std::optional<T>.
-  friend constexpr auto operator<=>(const optional_ref<T> x,
-                                    const optional_ref<T> y)
+  friend constexpr auto operator<=>(optional_ref<T> x, optional_ref<T> y)
     requires std::three_way_comparable<T>
   {
-    return (!x.ptr_ || !y.ptr_) ? (!!x.ptr_) <=> (!!y.ptr_)
-                                : *x.ptr_ <=> *y.ptr_;
+    return x && y ? *x <=> *y : x.has_value() <=> y.has_value();
   }
 
  private:
