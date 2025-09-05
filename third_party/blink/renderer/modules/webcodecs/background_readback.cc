@@ -326,8 +326,9 @@ bool SyncReadbackThread::LazyInitialize() {
 
   if (context_provider_)
     return true;
-  context_provider_ =
-      CreateRasterGraphicsContextProvider(KURL("chrome://BackgroundReadback"));
+  context_provider_ = CreateRasterGraphicsContextProvider(
+      KURL("chrome://BackgroundReadback"),
+      Platform::RasterContextType::kWebCodecsReadback);
 
   if (!context_provider_) {
     DLOG(ERROR) << "Can't create context provider.";

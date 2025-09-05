@@ -281,7 +281,8 @@ Platform::CreateWebGLGraphicsContextProvider(
 }
 
 std::unique_ptr<WebGraphicsContext3DProvider>
-Platform::CreateRasterGraphicsContextProvider(const WebURL& document_url) {
+Platform::CreateRasterGraphicsContextProvider(const WebURL& document_url,
+                                              RasterContextType context_type) {
   return nullptr;
 }
 

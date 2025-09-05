@@ -174,6 +174,19 @@ viz::WebGLContextType ToGpuContextType(blink::Platform::WebGLContextType type) {
   NOTREACHED();
 }
 
+viz::command_buffer_metrics::ContextType ToVizContextType(
+    blink::Platform::RasterContextType type) {
+  switch (type) {
+    case blink::Platform::RasterContextType::kSharedGpuContextWorker:
+      return viz::command_buffer_metrics::ContextType::RENDERER_BLINK_WORKER;
+    case blink::Platform::RasterContextType::kVideoTrackRecorder:
+      return viz::command_buffer_metrics::ContextType::VIDEO_TRACK_RECORDER;
+    case blink::Platform::RasterContextType::kWebCodecsReadback:
+      return viz::command_buffer_metrics::ContextType::WEBCODECS_READBACK;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 //------------------------------------------------------------------------------
@@ -744,7 +757,8 @@ RendererBlinkPlatformImpl::CreateWebGLGraphicsContextProvider(
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
 RendererBlinkPlatformImpl::CreateRasterGraphicsContextProvider(
-    const blink::WebURL& document_url) {
+    const blink::WebURL& document_url,
+    blink::Platform::RasterContextType context_type) {
   if (!RenderThreadImpl::current()) {
     return nullptr;
   }
@@ -760,15 +774,16 @@ RendererBlinkPlatformImpl::CreateRasterGraphicsContextProvider(
 
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;
+  constexpr bool enable_gpu_rasterization = true;
+  constexpr bool lose_context_when_out_of_memory = false;
 
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       viz::ContextProviderCommandBuffer::CreateForRaster(
           std::move(gpu_channel_host), kGpuStreamIdDefault,
           kGpuStreamPriorityDefault, GURL(document_url), automatic_flushes,
           support_locking, gpu::SharedMemoryLimits(),
-          viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR,
-          /*enable_gpu_rasterization=*/true,
-          /*lose_context_when_out_of_memory=*/false));
+          ToVizContextType(context_type), enable_gpu_rasterization,
+          lose_context_when_out_of_memory));
 }
 
 //------------------------------------------------------------------------------

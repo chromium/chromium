@@ -103,7 +103,8 @@ static void CreateContextProviderOnMainThread(
   }
 
   auto context_provider =
-      Platform::Current()->CreateRasterGraphicsContextProvider(WebURL());
+      Platform::Current()->CreateRasterGraphicsContextProvider(
+          WebURL(), Platform::RasterContextType::kSharedGpuContextWorker);
   if (context_provider) {
     *wrapper = std::make_unique<WebGraphicsContext3DProviderWrapper>(
         std::move(context_provider));

@@ -507,8 +507,15 @@ class BLINK_PLATFORM_EXPORT Platform {
                                      WebGLContextType context_type,
                                      const WebURL& document_url,
                                      WebGLContextInfo*);
+
+  enum class RasterContextType {
+    kSharedGpuContextWorker,
+    kVideoTrackRecorder,
+    kWebCodecsReadback,
+  };
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
-  CreateRasterGraphicsContextProvider(const WebURL& document_url);
+  CreateRasterGraphicsContextProvider(const WebURL& document_url,
+                                      RasterContextType context_type);
 
   // Returns a newly allocated and initialized offscreen context provider,
   // backed by the process-wide shared main thread context. Returns null if

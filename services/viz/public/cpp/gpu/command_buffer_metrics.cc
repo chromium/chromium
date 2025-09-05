@@ -20,23 +20,32 @@ void RecordContextLost(ContextType type, ContextLostReason reason) {
     case ContextType::BROWSER_MAIN_THREAD:
       UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.BrowserMainThread", reason);
       break;
-    case ContextType::BROWSER_WORKER:
-      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.BrowserWorker", reason);
+    case ContextType::BROWSER_RASTER_WORKER:
+      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.BrowserRasterWorker", reason);
       break;
-    case ContextType::RENDER_COMPOSITOR:
-      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.RenderCompositor", reason);
+    case ContextType::RENDERER_BLINK_WORKER:
+      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.RendererBlinkWorker", reason);
       break;
-    case ContextType::RENDER_WORKER:
-      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.RenderWorker", reason);
+    case ContextType::RENDERER_COMPOSITOR:
+      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.RendererCompositor", reason);
       break;
     case ContextType::RENDERER_MAIN_THREAD:
-      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.RenderMainThread", reason);
+      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.RendererMainThread", reason);
+      break;
+    case ContextType::RENDERER_RASTER_WORKER:
+      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.RendererRasterWorker", reason);
       break;
     case ContextType::VIDEO_ACCELERATOR:
       UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.VideoAccelerator", reason);
       break;
     case ContextType::VIDEO_CAPTURE:
       UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.VideoCapture", reason);
+      break;
+    case ContextType::VIDEO_TRACK_RECORDER:
+      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.VideoTrackRecorder", reason);
+      break;
+    case ContextType::WEBCODECS_READBACK:
+      UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.WebCodecsReadback", reason);
       break;
     case ContextType::WEBGL:
       UMA_HISTOGRAM_ENUMERATION("GPU.ContextLost.WebGL", reason);
@@ -67,18 +76,24 @@ std::string ContextTypeToString(ContextType type) {
       return "BrowserCompositor";
     case ContextType::BROWSER_MAIN_THREAD:
       return "BrowserMainThread";
-    case ContextType::BROWSER_WORKER:
-      return "BrowserWorker";
-    case ContextType::RENDER_COMPOSITOR:
-      return "RenderCompositor";
-    case ContextType::RENDER_WORKER:
-      return "RenderWorker";
+    case ContextType::BROWSER_RASTER_WORKER:
+      return "BrowserRasterWorker";
+    case ContextType::RENDERER_BLINK_WORKER:
+      return "RendererBlinkWorker";
+    case ContextType::RENDERER_COMPOSITOR:
+      return "RendererCompositor";
     case ContextType::RENDERER_MAIN_THREAD:
       return "RendererMainThread";
+    case ContextType::RENDERER_RASTER_WORKER:
+      return "RendererRasterWorker";
     case ContextType::VIDEO_ACCELERATOR:
       return "VideoAccelerator";
     case ContextType::VIDEO_CAPTURE:
       return "VideoCapture";
+    case ContextType::VIDEO_TRACK_RECORDER:
+      return "VideoTrackRecorder";
+    case ContextType::WEBCODECS_READBACK:
+      return "WebCodecsReadback";
     case ContextType::WEBGL:
       return "WebGL";
     case ContextType::WEBGPU:

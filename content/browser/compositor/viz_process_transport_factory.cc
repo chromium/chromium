@@ -522,7 +522,7 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     // rasterized on the GPU.
     auto worker_context_provider = CreateContextProvider(
         gpu_channel_host, /*supports_locking=*/true, enable_gpu_rasterization,
-        viz::command_buffer_metrics::ContextType::BROWSER_WORKER);
+        viz::command_buffer_metrics::ContextType::BROWSER_RASTER_WORKER);
 
     // Don't observer context loss on |worker_context_provider_| here,
     // that is already observed by LayerTreeFrameSink. The lost context will

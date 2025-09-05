@@ -514,27 +514,33 @@ chromium-metrics-reviews@google.com.
                  context"/>
     <variant name="BrowserMainThread"
         summary="A browser process shared main thread command buffer context"/>
-    <variant name="BrowserWorker"
-        summary="A browser process worker command buffer context"/>
+    <variant name="BrowserRasterWorker"
+        summary="A browser process raster worker command buffer context"/>
     <variant name="DisplayCompositor"
         summary="A display compositor command buffer context"/>
-    <variant name="Media" summary="The media worker command buffer context"/>
-    <variant name="RenderCompositor"
-        summary="A RenderCompositor GPU command buffer context"/>
-    <variant name="RenderMainThread"
-        summary="A RenderMainThread GPU command buffer context"/>
-    <variant name="RenderWorker"
-        summary="A RenderWorker GPU command buffer context"/>
+    <variant name="Media" summary="A media worker command buffer context"/>
+    <variant name="RendererBlinkWorker"
+        summary="A renderer blink worker GPU command buffer context"/>
+    <variant name="RendererCompositor"
+        summary="A renderer compositor GPU command buffer context"/>
+    <variant name="RendererMainThread"
+        summary="A renderer shared main thread GPU command buffer context"/>
+    <variant name="RendererRasterWorker"
+        summary="A renderer raster worker GPU command buffer context"/>
     <variant name="Unknown"
         summary="A GPU command buffer context of unknown type"/>
     <variant name="VideoAccelerator"
         summary="A VideoAccelerator GPU command buffer context"/>
     <variant name="VideoCapture"
         summary="A VideoCapture GPU command buffer context"/>
+    <variant name="VideoTrackRecorder"
+        summary="A VideoTrackRecorder GPU command buffer context"/>
+    <variant name="WebCodecsReadback"
+        summary="A WebCodecs background readback GPU command buffer context"/>
     <variant name="WebGL" summary="A WebGL GPU command buffer context"/>
     <variant name="WebGPU" summary="A WebGPU control command buffer context"/>
     <variant name="XRCompositing"
-        summary="Command buffer used for XR compositing"/>
+        summary="A command buffer context used for XR compositing"/>
   </token>
 </histogram>
 

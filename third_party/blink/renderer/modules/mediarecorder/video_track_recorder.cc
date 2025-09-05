@@ -103,7 +103,8 @@ class VideoTrackRecorderImplContextProvider {
   static std::unique_ptr<WebGraphicsContext3DProvider>
   CreateOffscreenGraphicsContext(const KURL& url) {
     base::ScopedAllowBaseSyncPrimitives allow;
-    return CreateRasterGraphicsContextProvider(url);
+    return CreateRasterGraphicsContextProvider(
+        url, Platform::RasterContextType::kVideoTrackRecorder);
   }
 };
 

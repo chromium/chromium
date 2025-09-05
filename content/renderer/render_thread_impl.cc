@@ -1071,7 +1071,7 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
           GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/"
                "RenderCompositor"),
           /*automatic_flushes=*/false, /*support_locking=*/false, limits,
-          viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR,
+          viz::command_buffer_metrics::ContextType::RENDERER_COMPOSITOR,
           /*enable_gpu_rasterization=*/false,
           /*lose_context_when_out_of_memory=*/true);
 
@@ -1646,7 +1646,7 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
                "RenderWorker"),
           /*automatic_flushes=*/false, /*support_locking=*/true,
           shared_memory_limits,
-          viz::command_buffer_metrics::ContextType::RENDER_WORKER,
+          viz::command_buffer_metrics::ContextType::RENDERER_RASTER_WORKER,
           /*enable_gpu_rasterization=*/support_gpu_rasterization,
           /*lose_context_when_out_of_memory=*/true);
 
