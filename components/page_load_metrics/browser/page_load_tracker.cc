@@ -257,10 +257,11 @@ void RegisterObservers(PageLoadTracker* tracker,
 }  // namespace
 
 PageLoadTracker::PageLoadTracker(
-    bool in_foreground,
+    InForegroundBool in_foreground,
     PageLoadMetricsEmbedderInterface* embedder_interface,
     const GURL& currently_committed_url,
-    bool is_first_navigation_in_web_contents,
+    IsFirstNavigationInWebContentsBool is_first_navigation_in_web_contents,
+    IsReloadAfterDiscardBool is_reload_after_discard,
     content::NavigationHandle* navigation_handle,
     UserInitiatedInfo user_initiated_info,
     ukm::SourceId source_id,
@@ -270,7 +271,8 @@ PageLoadTracker::PageLoadTracker(
       navigation_start_(navigation_handle->NavigationStart()),
       url_(navigation_handle->GetURL()),
       start_url_(navigation_handle->GetURL()),
-      visibility_tracker_(base::DefaultTickClock::GetInstance(), in_foreground),
+      visibility_tracker_(base::DefaultTickClock::GetInstance(),
+                          *in_foreground),
       did_commit_(false),
       page_end_reason_(END_NONE),
       page_end_user_initiated_info_(UserInitiatedInfo::NotUserInitiated()),
@@ -282,8 +284,9 @@ PageLoadTracker::PageLoadTracker(
       source_id_(source_id),
       web_contents_(navigation_handle->GetWebContents()),
       is_first_navigation_in_web_contents_(is_first_navigation_in_web_contents),
+      is_reload_after_discard_(is_reload_after_discard),
       is_origin_visit_(
-          CalculateIsOriginVisit(is_first_navigation_in_web_contents,
+          CalculateIsOriginVisit(*is_first_navigation_in_web_contents,
                                  navigation_handle->GetPageTransition())),
       soft_navigation_metrics_(CreateSoftNavigationMetrics()),
       page_type_(CalculatePageType(navigation_handle)),
@@ -1227,6 +1230,10 @@ PageVisibility PageLoadTracker::GetVisibilityAtActivation() const {
   return visibility_at_activation_;
 }
 
+bool PageLoadTracker::IsReloadAfterDiscard() const {
+  return *is_reload_after_discard_;
+}
+
 bool PageLoadTracker::WasPrerenderedThenActivatedInForeground() const {
   return GetVisibilityAtActivation() == PageVisibility::kForeground;
 }
@@ -1363,7 +1370,7 @@ ukm::SourceId PageLoadTracker::GetPreviousUkmSourceIdForSoftNavigation() const {
 }
 
 bool PageLoadTracker::IsFirstNavigationInWebContents() const {
-  return is_first_navigation_in_web_contents_;
+  return *is_first_navigation_in_web_contents_;
 }
 
 bool PageLoadTracker::IsOriginVisit() const {

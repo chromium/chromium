@@ -46,6 +46,7 @@ class FakePageLoadMetricsObserverDelegate
       size_t index) const override;
   bool StartedInForeground() const override;
   PageVisibility GetVisibilityAtActivation() const override;
+  bool IsReloadAfterDiscard() const override;
   bool WasPrerenderedThenActivatedInForeground() const override;
   const UserInitiatedInfo& GetUserInitiatedInfo() const override;
   const GURL& GetUrl() const override;
@@ -118,6 +119,7 @@ class FakePageLoadMetricsObserverDelegate
   base::TimeTicks navigation_start_;
   std::optional<base::TimeTicks> first_background_time_ = std::nullopt;
   bool started_in_foreground_ = true;
+  bool is_discarded_page_reload_ = false;
   PrerenderingState prerendering_state_ = PrerenderingState::kNoPrerendering;
   PageVisibility visibility_at_activation_ = PageVisibility::kNotInitialized;
   std::optional<base::TimeDelta> activation_start_ = std::nullopt;

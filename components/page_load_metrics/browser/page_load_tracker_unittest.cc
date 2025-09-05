@@ -178,6 +178,19 @@ TEST_F(PageLoadTrackerTest, PrimaryPageTypeDataScheme) {
   EXPECT_FALSE(GetEvents().was_committed);
 }
 
+TEST_F(PageLoadTrackerTest, NotReloadAfterDiscard) {
+  SetTargetUrl(kTestUrl);
+  NavigateAndCommit(GURL(kTestUrl));
+  EXPECT_FALSE(tester()->GetDelegateForCommittedLoad().IsReloadAfterDiscard());
+}
+
+TEST_F(PageLoadTrackerTest, ReloadAfterDiscard) {
+  SetTargetUrl(kTestUrl);
+  web_contents()->SetWasDiscarded(true);
+  NavigateAndCommit(GURL(kTestUrl));
+  EXPECT_TRUE(tester()->GetDelegateForCommittedLoad().IsReloadAfterDiscard());
+}
+
 TEST_F(PageLoadTrackerTest, EventForwarding) {
   ScopedPrerenderWebContentsDelegate web_contents_delegate(*web_contents());
 

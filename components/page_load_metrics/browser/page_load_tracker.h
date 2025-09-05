@@ -181,17 +181,31 @@ bool IsNavigationUserInitiated(content::NavigationHandle* handle);
 class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                         public PageLoadMetricsObserverDelegate {
  public:
+  // Whether a page is in foreground when it starts loading.
+  using InForegroundBool = base::StrongAlias<struct ForegroundTag, bool>;
+  // Whether a navigation is the first to occur in a WebContents.
+  using IsFirstNavigationInWebContentsBool =
+      base::StrongAlias<struct FirstNavigationInWebContentsTag, bool>;
+  // Whether a navigation is a reload of a page that was previously discarded.
+  // This typically happens when a user re-activates a background page that the
+  // browser had discarded. See https://wicg.github.io/page-lifecycle/spec.html
+  // for the formal definition of discarding.
+  using IsReloadAfterDiscardBool =
+      base::StrongAlias<struct ReloadAfterDiscardTag, bool>;
+
   // Caller must guarantee that the `embedder_interface` pointer outlives this
   // class. The PageLoadTracker must not hold on to `navigation_handle` beyond
   // the scope of the constructor.
-  PageLoadTracker(bool in_foreground,
-                  PageLoadMetricsEmbedderInterface* embedder_interface,
-                  const GURL& currently_committed_url,
-                  bool is_first_navigation_in_web_contents,
-                  content::NavigationHandle* navigation_handle,
-                  UserInitiatedInfo user_initiated_info,
-                  ukm::SourceId source_id,
-                  base::WeakPtr<PageLoadTracker> parent_tracker);
+  PageLoadTracker(
+      InForegroundBool in_foreground,
+      PageLoadMetricsEmbedderInterface* embedder_interface,
+      const GURL& currently_committed_url,
+      IsFirstNavigationInWebContentsBool is_first_navigation_in_web_contents,
+      IsReloadAfterDiscardBool is_reload_after_discard,
+      content::NavigationHandle* navigation_handle,
+      UserInitiatedInfo user_initiated_info,
+      ukm::SourceId source_id,
+      base::WeakPtr<PageLoadTracker> parent_tracker);
 
   PageLoadTracker(const PageLoadTracker&) = delete;
   PageLoadTracker& operator=(const PageLoadTracker&) = delete;
@@ -246,6 +260,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       size_t index) const override;
   bool StartedInForeground() const override;
   PageVisibility GetVisibilityAtActivation() const override;
+  bool IsReloadAfterDiscard() const override;
   bool WasPrerenderedThenActivatedInForeground() const override;
   const UserInitiatedInfo& GetUserInitiatedInfo() const override;
   const GURL& GetUrl() const override;
@@ -581,7 +596,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // instance is bound.
   content::GlobalRenderFrameHostId page_main_frame_id_;
 
-  const bool is_first_navigation_in_web_contents_;
+  const IsFirstNavigationInWebContentsBool is_first_navigation_in_web_contents_;
+  const IsReloadAfterDiscardBool is_reload_after_discard_;
   const bool is_origin_visit_;
   bool is_terminal_visit_ = true;
 
