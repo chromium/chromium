@@ -2455,6 +2455,7 @@
                     "enable_features": [
                         "AutofillEnableEmailOrLoyaltyCardsFilling",
                         "AutofillEnableLoyaltyCardsFilling",
+                        "IPH_AutofillEnableLoyaltyCards",
                         "SyncAutofillLoyaltyCard"
                     ]
                 }
