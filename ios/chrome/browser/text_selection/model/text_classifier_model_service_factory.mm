@@ -38,13 +38,12 @@ TextClassifierModelServiceFactory::~TextClassifierModelServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 TextClassifierModelServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   if (!IsExpKitTextClassifierEntityEnabled() ||
       !optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   // The optimization guide service must be available for the text classifier
   // model service to be created.
   OptimizationGuideService* opt_guide =

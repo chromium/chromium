@@ -13,7 +13,7 @@ class OptimizationGuideService;
 // Fake implementation of TextClassifierModelService that can be used by tests.
 class TextClassifierModelServiceFake : public TextClassifierModelService {
  public:
-  using TestingFactory = ProfileKeyedServiceFactoryIOS::TestingFactory;
+  using TestingFactory = ProfileKeyedServiceFactoryIOS::ProfileTestingFactory;
 
   static TestingFactory GetTestingFactory();
   ~TextClassifierModelServiceFake() override;

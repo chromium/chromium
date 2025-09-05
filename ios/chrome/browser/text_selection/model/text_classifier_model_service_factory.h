@@ -25,9 +25,9 @@ class TextClassifierModelServiceFactory : public ProfileKeyedServiceFactoryIOS {
   TextClassifierModelServiceFactory();
   ~TextClassifierModelServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation:
+  // ProfileKeyedServiceFactoryIOS implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_CLASSIFIER_MODEL_SERVICE_FACTORY_H_

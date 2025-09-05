@@ -15,13 +15,10 @@
 namespace {
 
 // Returns a new instance of TextClassifierModelServiceFake.
-std::unique_ptr<KeyedService> BuildInstance(web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildInstance(ProfileIOS* profile) {
   OptimizationGuideService* opt_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);
-  std::unique_ptr<TextClassifierModelService> service =
-      base::WrapUnique(new TextClassifierModelServiceFake(opt_guide));
-  return service;
+  return std::make_unique<TextClassifierModelServiceFake>(opt_guide);
 }
 
 }  // anonymous namespace
