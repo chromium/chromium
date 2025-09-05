@@ -22,9 +22,9 @@ class PolicyBlocklistServiceFactory : public ProfileKeyedServiceFactoryIOS {
   PolicyBlocklistServiceFactory();
   ~PolicyBlocklistServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_POLICY_URL_BLOCKING_MODEL_POLICY_URL_BLOCKING_SERVICE_FACTORY_H_

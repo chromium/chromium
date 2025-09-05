@@ -30,8 +30,8 @@ PolicyBlocklistServiceFactory::~PolicyBlocklistServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 PolicyBlocklistServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  PrefService* prefs = ProfileIOS::FromBrowserState(browser_state)->GetPrefs();
+    ProfileIOS* profile) const {
+  PrefService* prefs = profile->GetPrefs();
   return std::make_unique<PolicyBlocklistService>(
       std::make_unique<policy::URLBlocklistManager>(
           prefs, policy::policy_prefs::kUrlBlocklist,
