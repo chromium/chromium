@@ -54,7 +54,6 @@ BookmarkBarPreloadPipeline::~BookmarkBarPreloadPipeline() = default;
 void BookmarkBarPreloadPipeline::StartPrefetch(
     content::WebContents& web_contents,
     content::PreloadingPredictor predictor) {
-  CHECK(!prerender_handle_);
   // Don't trigger prefetch if already triggered.
   if (prefetch_handle_) {
     return;
