@@ -549,7 +549,6 @@ if (!is_android) {
       "//components/sync_sessions",
       "//components/tab_groups",
       "//components/tabs",
-      "//components/wallet/content/browser",
       "//components/wallet/core/common:features",
       "//net",
       "//ui/base/unowned_user_data",
@@ -566,6 +565,10 @@ if (!is_android) {
 
     if (!is_android) {
       deps += [ "//chrome/browser/ui/views/zoom" ]
+    }
+
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      deps += [ "//chrome/browser/wallet" ]
     }
   }
 
