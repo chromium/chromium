@@ -296,7 +296,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."png:0.18.0-rc"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."potential_utf:0.1.2"]
+[policy."potential_utf:0.1.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."proc-macro2:1.0.101"]

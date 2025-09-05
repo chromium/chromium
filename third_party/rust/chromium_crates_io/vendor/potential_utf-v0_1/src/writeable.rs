@@ -50,7 +50,7 @@ impl TryWriteable for &'_ PotentialUtf8 {
         LengthHint::between(self.0.len(), self.0.len() * 3)
     }
 
-    fn try_write_to_string(&self) -> Result<Cow<str>, (Self::Error, Cow<str>)> {
+    fn try_write_to_string(&self) -> Result<Cow<'_, str>, (Self::Error, Cow<'_, str>)> {
         match core::str::from_utf8(&self.0) {
             Ok(valid) => Ok(Cow::Borrowed(valid)),
             Err(e) => {

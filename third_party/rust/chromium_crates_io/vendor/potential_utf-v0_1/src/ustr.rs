@@ -267,4 +267,8 @@ impl PotentialUtf16 {
         // Safety: PotentialUtf16 is transparent over [u16]
         unsafe { core::mem::transmute(other) }
     }
+
+    pub fn chars(&self) -> impl Iterator<Item = char> + '_ {
+        char::decode_utf16(self.0.iter().copied()).map(|c| c.unwrap_or(char::REPLACEMENT_CHARACTER))
+    }
 }
