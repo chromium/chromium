@@ -162,7 +162,7 @@ void AddressBubblesController::OnUserDecision(
   if (decision == AutofillClient::AddressPromptUserDecision::kEditDeclined) {
     // Reopen this bubble if the user canceled editing.
     shown_by_user_gesture_ = false;
-    ShowBubble();
+    QueueOrShowBubble(/*force_show=*/true);
     return;
   }
   if (address_profile_save_prompt_callback_) {
@@ -196,7 +196,7 @@ void AddressBubblesController::OnIconClicked() {
     return;
   }
   shown_by_user_gesture_ = true;
-  ShowBubble();
+  QueueOrShowBubble(/*force_show=*/true);
 }
 
 bool AddressBubblesController::IsBubbleActive() const {

@@ -179,7 +179,7 @@ void OfferNotificationBubbleControllerImpl::ReshowBubble() {
 
   is_user_gesture_ = true;
 
-  ShowBubble();
+  QueueOrShowBubble(/*force_show=*/true);
 }
 
 void OfferNotificationBubbleControllerImpl::DismissNotification() {

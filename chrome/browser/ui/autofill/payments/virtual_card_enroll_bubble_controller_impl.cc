@@ -87,7 +87,7 @@ void VirtualCardEnrollBubbleControllerImpl::ReshowBubble() {
   }
 
   is_user_gesture_ = true;
-  ShowBubble();
+  QueueOrShowBubble(/*force_show=*/true);
 }
 
 void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(

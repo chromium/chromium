@@ -125,7 +125,7 @@ void IbanBubbleControllerImpl::ReshowBubble() {
     CHECK(current_bubble_type_ == IbanBubbleType::kManageSavedIban ||
           current_bubble_type_ == IbanBubbleType::kUploadInProgress);
   }
-  ShowBubble();
+  QueueOrShowBubble(/*force_show=*/true);
 }
 
 void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
