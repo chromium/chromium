@@ -48,10 +48,6 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/asm-generic/ioctls.h"
     export *
   }
-  module sysroot_asm_generic_posix_types_h {
-    header "$sysroot/asm-generic/posix_types.h"
-    export *
-  }
   module sysroot_asm_generic_siginfo_h {
     header "$sysroot/asm-generic/siginfo.h"
     export *
@@ -86,10 +82,6 @@ module sys_stage1 [system] [extern_c] {
   }
   module sysroot_asm_ioctls_h {
     header "$sysroot/arm-linux-androideabi/asm/ioctls.h"
-    export *
-  }
-  module sysroot_asm_posix_types_h {
-    header "$sysroot/arm-linux-androideabi/asm/posix_types.h"
     export *
   }
   module sysroot_asm_sigcontext_h {

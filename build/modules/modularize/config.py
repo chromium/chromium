@@ -124,6 +124,9 @@ def fix_graph(graph: dict[str, Header],
     graph['android/legacy_unistd_inlines.h'].textual = True
     graph['bits/threads_inlines.h'].textual = True
 
+    graph['asm-generic/posix_types.h'].textual = True
+    graph['asm/posix_types.h'].textual = True
+
   elif compiler.os == Os.Linux:
     # See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/bits/local_lim.h.html#56
     # if linux/limits.h is non-textual, then limits.h undefs the limits.h defined in the linux/limits.h module.
