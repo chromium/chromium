@@ -9710,6 +9710,21 @@
             ]
         }
     ],
+    "EnableClientCertificateProvisioningOnAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableClientCertificateProvisioningOnAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableClipboardDataControlsAndroid": [
         {
             "platforms": [
