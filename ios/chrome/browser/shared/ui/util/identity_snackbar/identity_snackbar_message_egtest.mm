@@ -158,7 +158,8 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
 
 // Verifies no identity confirmation snackbar shows on startup when there is an
 // identity on the device but the user is signed-out.
-- (void)testNoIdentity_IdentityConfirmationToast {
+// TODO(crbug.com/443199219): Flaky on iPad.
+- (void)DISABLED_testNoIdentity_IdentityConfirmationToast {
   // TODO(crbug.com/441260415): Re-enable the test on iOS26.
   if (base::ios::IsRunningOnIOS26OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
@@ -191,7 +192,8 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
 
 // Verifies identity confirmation snackbar shows on startup with multiple
 // identities on device with frequency limitations.
-- (void)testFrequencyLimitation_IdentityConfirmationToast {
+// TODO(crbug.com/443199219): Flaky on iPad.
+- (void)DISABLED_testFrequencyLimitation_IdentityConfirmationToast {
   // TODO(crbug.com/433726717): Test disabled on iPhones.
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPhones.");
