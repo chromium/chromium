@@ -424,25 +424,23 @@ TEST_F(SharedWorkerHostTest,
   EXPECT_THAT(params->isolation_info.nonce(), testing::Optional(nonce));
 }
 
-// Enable PrivateNetworkAccessForWorkers.
-class SharedWorkerHostTestWithPNAEnabled : public SharedWorkerHostTest {
+// Enable Local Network Access checks enforcement.
+class SharedWorkerHostTestWithLNAEnabled : public SharedWorkerHostTest {
  public:
-  SharedWorkerHostTestWithPNAEnabled() {
-    feature_list_.InitWithFeatures(
-        {
-            features::kPrivateNetworkAccessSendPreflights,
-            features::kPrivateNetworkAccessForWorkers,
-        },
-        {});
+  SharedWorkerHostTestWithLNAEnabled() {
+    base::FieldTrialParams params;
+    params["LocalNetworkAccessChecksWarn"] = "false";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        network::features::kLocalNetworkAccessChecks, params);
   }
 
-  ~SharedWorkerHostTestWithPNAEnabled() override = default;
+  ~SharedWorkerHostTestWithLNAEnabled() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(SharedWorkerHostTestWithPNAEnabled,
+TEST_F(SharedWorkerHostTestWithLNAEnabled,
        CreateNetworkFactoryParamsForSubresources) {
   SharedWorkerInstance instance(
       kWorkerUrl, blink::mojom::ScriptType::kClassic,
@@ -483,7 +481,7 @@ TEST_F(SharedWorkerHostTestWithPNAEnabled,
   EXPECT_EQ(params->client_security_state->ip_address_space,
             network::mojom::IPAddressSpace::kLoopback);
   EXPECT_EQ(params->client_security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+            network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
   EXPECT_EQ(params->client_security_state->cross_origin_embedder_policy.value,
             network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless);
 }
