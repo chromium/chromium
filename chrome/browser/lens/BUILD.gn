@@ -2,66 +2,86 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
-import("//build/config/android/rules.gni")
-import("//chrome/browser/buildflags.gni")
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//chrome/browser/buildflags.gni")
 
-android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/lens/LensController.java" ]
+  android_library("java") {
+    sources =
+        [ "java/src/org/chromium/chrome/browser/lens/LensController.java" ]
 
-  deps = [
-    ":java_resources",
-    "//base:base_java",
-    "//base:service_loader_java",
-    "//chrome/browser/contextmenu:java",
-    "//chrome/browser/ui/android/strings:ui_strings_grd",
-    "//components/embedder_support/android:context_menu_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//ui/android:ui_java",
-  ]
+    deps = [
+      ":java_resources",
+      "//base:base_java",
+      "//base:service_loader_java",
+      "//chrome/browser/contextmenu:java",
+      "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//components/embedder_support/android:context_menu_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//ui/android:ui_java",
+    ]
 
-  public_deps = [
-    ":delegate_java",
-    ":util_java",
-  ]
+    public_deps = [
+      ":delegate_java",
+      ":util_java",
+    ]
 
-  resources_package = "org.chromium.chrome.browser.lens"
-}
+    resources_package = "org.chromium.chrome.browser.lens"
+  }
 
-android_library("delegate_java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/lens/LensControllerDelegate.java",
-  ]
+  android_library("delegate_java") {
+    sources = [
+      "java/src/org/chromium/chrome/browser/lens/LensControllerDelegate.java",
+    ]
 
-  deps = [
-    ":java_resources",
-    ":util_java",
-    "//base:base_java",
-    "//chrome/browser/contextmenu:java",
-    "//chrome/browser/ui/android/strings:ui_strings_grd",
-    "//components/embedder_support/android:context_menu_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//ui/android:ui_java",
-  ]
-  resources_package = "org.chromium.chrome.browser.lens"
-}
+    deps = [
+      ":java_resources",
+      ":util_java",
+      "//base:base_java",
+      "//chrome/browser/contextmenu:java",
+      "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//components/embedder_support/android:context_menu_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//ui/android:ui_java",
+    ]
+    resources_package = "org.chromium.chrome.browser.lens"
+  }
 
-android_library("util_java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/lens/LensEntryPoint.java",
-    "java/src/org/chromium/chrome/browser/lens/LensIntentParams.java",
-    "java/src/org/chromium/chrome/browser/lens/LensMetrics.java",
-    "java/src/org/chromium/chrome/browser/lens/LensQueryParams.java",
-    "java/src/org/chromium/chrome/browser/lens/LensQueryResult.java",
-  ]
-  deps = [
-    "//base:base_java",
-    "//chrome/browser/flags:java",
-    "//content/public/android:content_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
-}
+  android_library("util_java") {
+    sources = [
+      "java/src/org/chromium/chrome/browser/lens/LensEntryPoint.java",
+      "java/src/org/chromium/chrome/browser/lens/LensIntentParams.java",
+      "java/src/org/chromium/chrome/browser/lens/LensMetrics.java",
+      "java/src/org/chromium/chrome/browser/lens/LensQueryParams.java",
+      "java/src/org/chromium/chrome/browser/lens/LensQueryResult.java",
+    ]
+    deps = [
+      "//base:base_java",
+      "//chrome/browser/flags:java",
+      "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
 
-android_resources("java_resources") {
-  sources = [ "java/res/drawable/lens_icon.xml" ]
+  android_resources("java_resources") {
+    sources = [ "java/res/drawable/lens_icon.xml" ]
+  }
+} else {
+  source_set("lens_tab_contextualization_test") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "tab_contextualization_controller_browsertest.cc" ]
+    deps = [
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/lens",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
 }

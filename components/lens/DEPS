@@ -1,5 +1,6 @@
 include_rules = [
   "+components/base32",
+  "+components/optimization_guide/content/browser",
   "+components/prefs",
   "+components/signin/public/identity_manager",
   "+components/sync",
@@ -9,6 +10,7 @@ include_rules = [
   "+components/unified_consent",
   "+content/public/browser",
   "+google_apis",
+  "+mojo/public/cpp/bindings",
   "+net",
   "+services/metrics/public/cpp",
   "+third_party/skia",

@@ -83,7 +83,10 @@ static_library("lens") {
       "tab_contextualization_controller.h",
     ]
     public_deps += [ "//ui/base/unowned_user_data" ]
-    deps += [ "//content/public/browser" ]
+    deps += [
+      "//components/optimization_guide/content/browser:page_context_eligibility",
+      "//content/public/browser",
+    ]
   }
 
   if (!is_android) {
