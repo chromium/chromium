@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents.h"
@@ -137,13 +139,16 @@ void KioskBrowserLogsCollector::OnBrowserRemoved(Browser* browser) {
 }
 
 void KioskBrowserLogsCollector::ObserveAlreadyOpenBrowsers() {
-  for (size_t i = 0; i < BrowserList::GetInstance()->size(); i++) {
-    ObserveBrowser(BrowserList::GetInstance()->get(i));
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        ObserveBrowser(browser);
+        return true;
+      });
 }
 
-void KioskBrowserLogsCollector::ObserveBrowser(Browser* browser) {
-  if (!browser || !browser->tab_strip_model() ||
+void KioskBrowserLogsCollector::ObserveBrowser(
+    BrowserWindowInterface* browser) {
+  if (!browser || !browser->GetTabStripModel() ||
       tab_strip_model_observers_.contains(browser)) {
     return;
   }
@@ -151,7 +156,7 @@ void KioskBrowserLogsCollector::ObserveBrowser(Browser* browser) {
   tab_strip_model_observers_.emplace(
       browser,
       std::make_unique<KioskTabStripModelObserver>(
-          browser->tab_strip_model(), base::BindRepeating(logger_callback_)));
+          browser->GetTabStripModel(), base::BindRepeating(logger_callback_)));
 }
 
 }  // namespace chromeos

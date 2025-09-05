@@ -10,9 +10,10 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_contents_observer.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+
+class BrowserWindowInterface;
 
 namespace chromeos {
 
@@ -31,10 +32,11 @@ class KioskBrowserLogsCollector : public BrowserListObserver {
 
  private:
   void ObserveAlreadyOpenBrowsers();
-  void ObserveBrowser(Browser* browser);
+  void ObserveBrowser(BrowserWindowInterface* browser);
 
   KioskWebContentsObserver::LoggerCallback logger_callback_;
-  std::unordered_map<Browser*, std::unique_ptr<KioskTabStripModelObserver>>
+  std::unordered_map<BrowserWindowInterface*,
+                     std::unique_ptr<KioskTabStripModelObserver>>
       tab_strip_model_observers_;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
