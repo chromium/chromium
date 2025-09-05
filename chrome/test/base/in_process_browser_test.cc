@@ -77,7 +77,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
-#include "components/embedder_support/switches.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -397,7 +396,7 @@ void InProcessBrowserTest::SetUp() {
   // reloaded out from under them. Tests that expect or desire this behavior can
   // append embedder_support::kEnableAutoReload, which will override the disable
   // here.
-  command_line->AppendSwitch(embedder_support::kDisableAutoReload);
+  command_line->AppendSwitch(switches::kDisableAutoReload);
 
   // Allow subclasses to change the command line before running any tests.
   SetUpCommandLine(command_line);

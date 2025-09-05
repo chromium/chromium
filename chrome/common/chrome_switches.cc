@@ -188,6 +188,9 @@ const char kDiagnosticsRecovery[] = "diagnostics-recovery";
 const char kDisableAutoMaximizeForTests[] = "disable-auto-maximize-for-tests";
 #endif
 
+// Disable auto-reload of pages on top-level error.
+const char kDisableAutoReload[] = "disable-auto-reload";
+
 // Disable several subsystems which run network requests in the background.
 // This is for use when doing network performance testing to avoid noise in the
 // measurements.
@@ -253,6 +256,9 @@ const char kDumpBrowserHistograms[] = "dump-browser-histograms";
 // If the WebRTC logging private API is active, enables audio debug recordings.
 const char kEnableAudioDebugRecordingsFromExtension[] =
     "enable-audio-debug-recordings-from-extension";
+
+// Enable auto-reload of pages on top-level error.
+const char kEnableAutoReload[] = "enable-auto-reload";
 
 // Enables the multi-level undo system for bookmarks.
 const char kEnableBookmarkUndo[] = "enable-bookmark-undo";
