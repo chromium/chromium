@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 
-#include "components/history/core/browser/history_database_params.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/history/core/browser/visit_delegate.h"
-#include "components/history/core/common/pref_names.h"
-#include "components/history/ios/browser/history_database_helper.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#include "ios/chrome/browser/history/model/history_client_impl.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#include "ios/chrome/common/channel_info.h"
+#import "components/history/core/browser/history_database_params.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/history/core/browser/visit_delegate.h"
+#import "components/history/core/common/pref_names.h"
+#import "components/history/ios/browser/history_database_helper.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/history/model/history_client_impl.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/common/channel_info.h"
 
 namespace ios {
 
