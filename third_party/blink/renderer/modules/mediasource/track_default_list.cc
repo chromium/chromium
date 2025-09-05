@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
@@ -35,9 +36,9 @@ TrackDefaultList* TrackDefaultList::Create(
              .is_new_entry) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidAccessError,
-          "Duplicate TrackDefault type (" +
-              V8TrackDefaultType(key.first).AsString() +
-              ") and byteStreamTrackID (" + key.second + ")");
+          StrCat({"Duplicate TrackDefault type (",
+                  V8TrackDefaultType(key.first).AsStringView(),
+                  ") and byteStreamTrackID (", key.second, ")"}));
       return nullptr;
     }
   }

@@ -301,11 +301,11 @@ XMLHttpRequest::State XMLHttpRequest::readyState() const {
 String XMLHttpRequest::responseText(ExceptionState& exception_state) {
   if (response_type_code_ != kResponseTypeDefault &&
       response_type_code_ != V8XMLHttpRequestResponseType::Enum::kText) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The value is only accessible if the "
-                                      "object's 'responseType' is '' or 'text' "
-                                      "(was '" +
-                                          responseType().AsString() + "').");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        StrCat({"The value is only accessible if the object's 'responseType' "
+                "is '' or 'text' (was '",
+                responseType().AsStringView(), "')."}));
     return String();
   }
   if (error_ || (state_ != kLoading && state_ != kDone))
@@ -342,11 +342,11 @@ void XMLHttpRequest::InitResponseDocument() {
 Document* XMLHttpRequest::responseXML(ExceptionState& exception_state) {
   if (response_type_code_ != kResponseTypeDefault &&
       response_type_code_ != V8XMLHttpRequestResponseType::Enum::kDocument) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The value is only accessible if the "
-                                      "object's 'responseType' is '' or "
-                                      "'document' (was '" +
-                                          responseType().AsString() + "').");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        StrCat({"The value is only accessible if the object's 'responseType' "
+                "is '' or 'document' (was '",
+                responseType().AsStringView(), "')."}));
     return nullptr;
   }
 

@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -377,8 +378,8 @@ IDBTransaction* IDBDatabase::transaction(
   if (mode != mojom::blink::IDBTransactionMode::ReadOnly &&
       mode != mojom::blink::IDBTransactionMode::ReadWrite) {
     exception_state.ThrowTypeError(
-        "The mode provided ('" + v8_mode.AsString() +
-        "') is not one of 'readonly' or 'readwrite'.");
+        StrCat({"The mode provided ('", v8_mode.AsStringView(),
+                "') is not one of 'readonly' or 'readwrite'."}));
     return nullptr;
   }
 

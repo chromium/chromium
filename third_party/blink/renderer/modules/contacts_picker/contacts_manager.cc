@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace mojo {
 
@@ -188,8 +189,8 @@ ScriptPromise<IDLSequence<ContactInfo>> ContactsManager::select(
         (property == V8ContactProperty::Enum::kAddress ||
          property == V8ContactProperty::Enum::kIcon)) {
       exception_state.ThrowTypeError(
-          "The provided value '" + property.AsString() +
-          "' is not a valid enum value of type ContactProperty");
+          StrCat({"The provided value '", property.AsStringView(),
+                  "' is not a valid enum value of type ContactProperty"}));
       return ScriptPromise<IDLSequence<ContactInfo>>();
     }
 

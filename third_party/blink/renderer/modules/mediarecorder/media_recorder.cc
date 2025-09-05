@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -269,9 +270,9 @@ void MediaRecorder::start(int time_slice, ExceptionState& exception_state) {
     return;
   }
   if (state_ != State::kInactive) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "The MediaRecorder's state is '" + state().AsString() + "'.");
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      StrCat({"The MediaRecorder's state is '",
+                                              state().AsStringView(), "'."}));
     return;
   }
 
