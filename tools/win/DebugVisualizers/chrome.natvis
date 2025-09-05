@@ -135,12 +135,17 @@
       <Item Name="Payload">(void*)((char*)header_ + header_size_)</Item>
     </Expand>
   </Type>
+  <Type Name="base::FilePath">
+    <DisplayString>{path_}</DisplayString>
+  </Type>
   <!-- Handles most classes inside base/time/time.h -->
   <Type Name="base::time_internal::TimeBase&lt;*&gt;">
     <Intrinsic Name="microseconds" Expression="us_.value_" />
     <!-- These static constexpr values are not consistently embedded in
         the PDB. To ensure it works in all build configs, define them directly
-        here. -->
+        here. If/when https://github.com/llvm/llvm-project/issues/46924 gets
+        resolved, we can likely remove these in favor of referencing the
+        symbol. -->
     <Intrinsic Name="kHoursPerDay" Expression="24" />
     <Intrinsic Name="kMinutesPerHour" Expression="60" />
     <Intrinsic Name="kSecondsPerMinute" Expression="60" />
