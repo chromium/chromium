@@ -41,9 +41,7 @@ PushNotificationProfileServiceFactory::
 
 std::unique_ptr<KeyedService>
 PushNotificationProfileServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   const scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
 
