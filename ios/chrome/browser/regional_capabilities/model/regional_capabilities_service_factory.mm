@@ -73,9 +73,7 @@ RegionalCapabilitiesServiceFactory::GetForProfile(ProfileIOS* profile) {
 
 std::unique_ptr<KeyedService>
 RegionalCapabilitiesServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   return std::make_unique<regional_capabilities::RegionalCapabilitiesService>(
       CHECK_DEREF(profile->GetPrefs()),
       std::make_unique<RegionalCapabilitiesServiceClient>(
