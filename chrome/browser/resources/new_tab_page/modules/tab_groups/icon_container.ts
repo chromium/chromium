@@ -69,7 +69,7 @@ export class IconContainerElement extends CrLitElement {
   private renderOverflowCell(count: number) {
     // clang-format off
     return html`
-      <div class="cell overflow-count">
+      <div class="cell overflow-count" aria-hidden="true">
         ${count <= 99 ? html`+${count}` : '99+'}
       </div>
     `;
