@@ -137,8 +137,8 @@ String TextCodecLatin1::Decode(base::span<const uint8_t> bytes,
 
           static constexpr size_t kMachineWordSize = sizeof(MachineWord);
           CopyAsciiMachineWord(
-              destination.take_first<kMachineWordSize>().data(),
-              source.take_first<kMachineWordSize>().data());
+              chunk, destination.take_first<kMachineWordSize>().data());
+          source.take_first<kMachineWordSize>();
         }
 
         if (source.empty()) {
@@ -192,8 +192,8 @@ upConvertTo16Bit:
 
           static constexpr size_t kMachineWordSize = sizeof(MachineWord);
           CopyAsciiMachineWord(
-              destination16.take_first<kMachineWordSize>().data(),
-              source.take_first<kMachineWordSize>().data());
+              chunk, destination16.take_first<kMachineWordSize>().data());
+          source.take_first<kMachineWordSize>();
         }
 
         if (source.empty()) {

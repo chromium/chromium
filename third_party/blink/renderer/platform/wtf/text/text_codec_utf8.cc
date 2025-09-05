@@ -403,8 +403,8 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
               break;
             }
             CopyAsciiMachineWord(
-                destination.take_first<sizeof(MachineWord)>().data(),
-                source.take_first<sizeof(MachineWord)>().data());
+                chunk, destination.take_first<sizeof(MachineWord)>().data());
+            source.take_first<sizeof(MachineWord)>();
           }
           if (source.empty()) {
             break;
@@ -491,8 +491,8 @@ upConvertTo16Bit:
             }
 
             CopyAsciiMachineWord(
-                destination16.take_first<sizeof(MachineWord)>().data(),
-                source.take_first<sizeof(MachineWord)>().data());
+                chunk, destination16.take_first<sizeof(MachineWord)>().data());
+            source.take_first<sizeof(MachineWord)>();
           }
           if (source.empty()) {
             break;

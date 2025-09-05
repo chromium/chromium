@@ -37,17 +37,18 @@ struct UCharByteFiller;
 
 template <>
 struct UCharByteFiller<4> {
-  static void Copy(LChar* destination, const uint8_t* source) {
+  static void Copy(MachineWord word, LChar* destination) {
     // SAFETY: This is only used in a few places, and only copies
     // a MachineWord buffer, the caller guarantees that destination
-    // and source holds at least 4 elements.
-    UNSAFE_BUFFERS(memcpy(destination, source, 4));
+    // holds at least 4 elements.
+    UNSAFE_BUFFERS(memcpy(destination, &word, 4));
   }
 
-  static void Copy(UChar* destination, const uint8_t* source) {
+  static void Copy(MachineWord word, UChar* destination) {
+    auto source = base::byte_span_from_ref(word);
     // SAFETY: This is only used in a few places, and only copies
     // a MachineWord buffer, the caller guarantees that destination
-    // and source holds at least 4 elements.
+    // holds at least 4 elements.
     UNSAFE_BUFFERS({
       destination[0] = source[0];
       destination[1] = source[1];
@@ -59,17 +60,18 @@ struct UCharByteFiller<4> {
 
 template <>
 struct UCharByteFiller<8> {
-  static void Copy(LChar* destination, const uint8_t* source) {
+  static void Copy(MachineWord word, LChar* destination) {
     // SAFETY: This is only used in a few places, and only copies
     // a MachineWord buffer, the caller guarantees that destination
-    // and source holds at least 8 elements.
-    UNSAFE_BUFFERS(memcpy(destination, source, 8));
+    // holds at least 8 elements.
+    UNSAFE_BUFFERS(memcpy(destination, &word, 8));
   }
 
-  static void Copy(UChar* destination, const uint8_t* source) {
+  static void Copy(MachineWord word, UChar* destination) {
+    auto source = base::byte_span_from_ref(word);
     // SAFETY: This is only used in a few places, and only copies
     // a MachineWord buffer, the caller guarantees that destination
-    // and source holds at least 8 elements.
+    // holds at least 8 elements.
     UNSAFE_BUFFERS({
       destination[0] = source[0];
       destination[1] = source[1];
@@ -83,12 +85,12 @@ struct UCharByteFiller<8> {
   }
 };
 
-inline void CopyAsciiMachineWord(LChar* destination, const uint8_t* source) {
-  UCharByteFiller<sizeof(MachineWord)>::Copy(destination, source);
+inline void CopyAsciiMachineWord(MachineWord word, LChar* destination) {
+  UCharByteFiller<sizeof(MachineWord)>::Copy(word, destination);
 }
 
-inline void CopyAsciiMachineWord(UChar* destination, const uint8_t* source) {
-  UCharByteFiller<sizeof(MachineWord)>::Copy(destination, source);
+inline void CopyAsciiMachineWord(MachineWord word, UChar* destination) {
+  UCharByteFiller<sizeof(MachineWord)>::Copy(word, destination);
 }
 
 }  // namespace blink
