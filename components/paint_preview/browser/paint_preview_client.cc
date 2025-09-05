@@ -886,10 +886,9 @@ void PaintPreviewClient::OnFinished(
     document_data.had_success = false;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "paint_preview", "PaintPreviewClient::CapturePaintPreview",
-      TRACE_ID_LOCAL(&document_data), "success", document_data.had_success,
-      "subframes", document_data.finished_subframes.size());
+  TRACE_EVENT_END("paint_preview", perfetto::Track::FromPointer(&document_data),
+                  "success", document_data.had_success, "subframes",
+                  document_data.finished_subframes.size());
 
   base::UmaHistogramBoolean("Browser.PaintPreview.Capture.Success",
                             document_data.had_success);
