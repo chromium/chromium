@@ -1985,8 +1985,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // CanvasResourceProvider. Returns the CanvasResourceProvider if the paint
   // succeeded; otherwise returns nullptr.
   CanvasResourceProvider* PaintRenderingResultsToResourceProvider(
-      SourceDrawingBuffer source_buffer,
-      bool* resource_provider_was_updated = nullptr);
+      SourceDrawingBuffer source_buffer);
   void TexImageHelperMediaVideoFrame(
       TexImageParams,
       WebGLTexture*,
@@ -2030,6 +2029,10 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // Used to provide accelerated snapshots and CanvasResources holding the
   // current content.
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
+
+  // Whether `resource_provider_` has fresh content that should be sent to the
+  // compositor in response to a PushFrame() call.
+  bool resource_provider_has_content_for_frame_push_ = false;
 
   // If PaintRenderingResultsToSnapshot() is unable to create
   // `resource_provider_`, it will attempt to create an unaccelerated snapshot

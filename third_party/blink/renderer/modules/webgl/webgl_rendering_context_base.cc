@@ -1673,17 +1673,16 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
 
   // Note: we push a frame only if (a) there is fresh content to produce and
   // (b) we successfully produced that content.
-  bool resource_provider_was_updated = false;
-
-  auto* resource_provider = PaintRenderingResultsToResourceProvider(
-      kBackBuffer, &resource_provider_was_updated);
-  if (resource_provider && resource_provider_was_updated) {
+  auto* resource_provider =
+      PaintRenderingResultsToResourceProvider(kBackBuffer);
+  if (resource_provider && resource_provider_has_content_for_frame_push_) {
     const int width = GetDrawingBuffer()->Size().width();
     const int height = GetDrawingBuffer()->Size().height();
     auto size = SkIRect::MakeWH(width, height);
     submitted_frame = Host()->PushFrame(
         resource_provider->ProduceCanvasResource(FlushReason::kNon2DCanvas),
         size);
+    resource_provider_has_content_for_frame_push_ = false;
   }
   MarkLayerComposited();
   return submitted_frame;
@@ -2128,16 +2127,12 @@ WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
 
 CanvasResourceProvider*
 WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
-    SourceDrawingBuffer source_buffer,
-    bool* resource_provider_was_updated /*=nullptr*/) {
+    SourceDrawingBuffer source_buffer) {
   CHECK(!CanUseDrawingBufferSIWithoutCopyForLowLatency());
 
   TRACE_EVENT0(
       "blink",
       "WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider");
-  if (resource_provider_was_updated != nullptr) {
-    *resource_provider_was_updated = false;
-  }
 
   if (isContextLost() || !GetDrawingBuffer()) {
     return nullptr;
@@ -2182,12 +2177,9 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     return nullptr;
   }
 
-  if (resource_provider_was_updated != nullptr) {
-    *resource_provider_was_updated = true;
-  }
-
   // We successfully painted the contents to the resource provider.
   must_paint_to_canvas_ = false;
+  resource_provider_has_content_for_frame_push_ = true;
   return resource_provider;
 }
 
