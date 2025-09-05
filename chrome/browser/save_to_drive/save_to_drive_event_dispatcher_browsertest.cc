@@ -9,6 +9,7 @@
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/save_to_drive/time_remaining_calculator.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -26,7 +27,16 @@ namespace save_to_drive {
 
 namespace {
 namespace pdf_api = extensions::api::pdf_viewer_private;
+using ::testing::StrictMock;
 }  // namespace
+
+class MockTimeRemainingCalculator : public TimeRemainingCalculator {
+ public:
+  MOCK_METHOD(std::optional<std::u16string>,
+              CalculateTimeRemainingText,
+              (const pdf_api::SaveToDriveProgress& progress),
+              (override));
+};
 
 class SaveToDriveEventDispatcherBrowserTest
     : public base::test::WithFeatureOverride,
@@ -44,27 +54,40 @@ class SaveToDriveEventDispatcherBrowserTest
 
   bool UseOopif() const override { return GetParam(); }
 
- protected:
-  std::unique_ptr<SaveToDriveEventDispatcher> CreateDispatcher() {
+  void SetUpOnMainThread() override {
+    PDFExtensionTestBase::SetUpOnMainThread();
+
     GURL page_url = ui_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
         base::FilePath(FILE_PATH_LITERAL("test.pdf")));
     auto* extension_frame = LoadPdfGetExtensionHost(page_url);
-    if (!extension_frame) {
-      return nullptr;
-    }
+    ASSERT_TRUE(extension_frame);
 
-    return SaveToDriveEventDispatcher::Create(extension_frame);
+    auto time_remaining_calculator =
+        std::make_unique<StrictMock<MockTimeRemainingCalculator>>();
+    time_remaining_calculator_ = time_remaining_calculator.get();
+    dispatcher_ = SaveToDriveEventDispatcher::CreateForTesting(
+        extension_frame, std::move(time_remaining_calculator));
+    ASSERT_TRUE(dispatcher_);
   }
+
+  void TearDownOnMainThread() override {
+    time_remaining_calculator_ = nullptr;
+    dispatcher_.reset();
+    PDFExtensionTestBase::TearDownOnMainThread();
+  }
+
+ protected:
+  std::unique_ptr<SaveToDriveEventDispatcher> dispatcher_;
+  raw_ptr<StrictMock<MockTimeRemainingCalculator>> time_remaining_calculator_;
 };
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest, Notify) {
-  auto dispatcher = CreateDispatcher();
-  ASSERT_TRUE(dispatcher);
+  EXPECT_CALL(*time_remaining_calculator_, CalculateTimeRemainingText);
 
   auto create_progress = []() {
     pdf_api::SaveToDriveProgress progress;
-    progress.status = pdf_api::SaveToDriveStatus::kUploadInProgress;
+    progress.status = pdf_api::SaveToDriveStatus::kUploadStarted;
     progress.error_type = pdf_api::SaveToDriveErrorType::kNoError;
     progress.uploaded_bytes = 50;
     progress.file_size_bytes = 100;
@@ -74,14 +97,14 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest, Notify) {
   auto* event_router = extensions::EventRouter::Get(profile());
   extensions::TestEventRouterObserver observer(event_router);
 
-  dispatcher->Notify(create_progress());
+  dispatcher_->Notify(create_progress());
 
   ASSERT_EQ(observer.events().size(), 1u);
   EXPECT_EQ(observer.events().begin()->first,
             pdf_api::OnSaveToDriveProgress::kEventName);
 
   pdf_api::SaveToDriveProgress expected_progress = create_progress();
-  expected_progress.file_metadata = "50/100 B • PLACEHOLDER";
+  expected_progress.file_metadata = "50/100 B";
 
   extensions::Event* captured_event = observer.events().begin()->second.get();
   ASSERT_TRUE(captured_event);
@@ -98,8 +121,8 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest, Notify) {
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
                        GetFileMetadataStringForUploadInProgress) {
-  auto dispatcher = CreateDispatcher();
-  ASSERT_TRUE(dispatcher);
+  EXPECT_CALL(*time_remaining_calculator_, CalculateTimeRemainingText)
+      .WillOnce(testing::Return(u"PLACEHOLDER"));
 
   pdf_api::SaveToDriveProgress progress;
   progress.status = pdf_api::SaveToDriveStatus::kUploadInProgress;
@@ -110,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
   auto* event_router = extensions::EventRouter::Get(profile());
   extensions::TestEventRouterObserver observer(event_router);
 
-  dispatcher->Notify(std::move(progress));
+  dispatcher_->Notify(std::move(progress));
 
   extensions::Event* captured_event = observer.events().begin()->second.get();
   ASSERT_TRUE(captured_event);
@@ -122,9 +145,6 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
                        GetFileMetadataStringForUploadCompleted) {
-  auto dispatcher = CreateDispatcher();
-  ASSERT_TRUE(dispatcher);
-
   pdf_api::SaveToDriveProgress progress;
   progress.status = pdf_api::SaveToDriveStatus::kUploadCompleted;
   progress.error_type = pdf_api::SaveToDriveErrorType::kNoError;
@@ -134,7 +154,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
   auto* event_router = extensions::EventRouter::Get(profile());
   extensions::TestEventRouterObserver observer(event_router);
 
-  dispatcher->Notify(std::move(progress));
+  dispatcher_->Notify(std::move(progress));
 
   extensions::Event* captured_event = observer.events().begin()->second.get();
   ASSERT_TRUE(captured_event);
@@ -146,9 +166,6 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
                        GetFileMetadataStringForUploadNotStarted) {
-  auto dispatcher = CreateDispatcher();
-  ASSERT_TRUE(dispatcher);
-
   pdf_api::SaveToDriveProgress progress;
   progress.status = pdf_api::SaveToDriveStatus::kNotStarted;
   progress.error_type = pdf_api::SaveToDriveErrorType::kNoError;
@@ -156,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
   auto* event_router = extensions::EventRouter::Get(profile());
   extensions::TestEventRouterObserver observer(event_router);
 
-  dispatcher->Notify(std::move(progress));
+  dispatcher_->Notify(std::move(progress));
 
   extensions::Event* captured_event = observer.events().begin()->second.get();
   ASSERT_TRUE(captured_event);

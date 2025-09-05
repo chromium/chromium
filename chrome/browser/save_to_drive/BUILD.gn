@@ -15,6 +15,7 @@ source_set("save_to_drive") {
     "resumable_drive_uploader.h",
     "save_to_drive_event_dispatcher.h",
     "save_to_drive_flow.h",
+    "time_remaining_calculator.h",
   ]
 
   sources = [
@@ -24,6 +25,7 @@ source_set("save_to_drive") {
     "resumable_drive_uploader.cc",
     "save_to_drive_event_dispatcher.cc",
     "save_to_drive_flow.cc",
+    "time_remaining_calculator.cc",
   ]
 
   configs += [
@@ -73,6 +75,7 @@ source_set("unit_tests") {
   sources = [
     "drive_uploader_unittest.cc",
     "save_to_drive_flow_unittest.cc",
+    "time_remaining_calculator_unittest.cc",
   ]
   deps = [
     ":save_to_drive",

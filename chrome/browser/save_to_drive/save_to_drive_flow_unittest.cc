@@ -13,6 +13,7 @@
 #include "chrome/browser/save_to_drive/multipart_drive_uploader.h"
 #include "chrome/browser/save_to_drive/resumable_drive_uploader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
+#include "chrome/browser/save_to_drive/time_remaining_calculator.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/test/base/testing_profile.h"
@@ -47,9 +48,13 @@ AccountInfo CreateAccountInfo() {
 
 class MockSaveToDriveEventDispatcher : public SaveToDriveEventDispatcher {
  public:
-  MockSaveToDriveEventDispatcher(content::RenderFrameHost* render_frame_host,
-                                 const GURL& stream_url)
-      : SaveToDriveEventDispatcher(render_frame_host, stream_url) {}
+  MockSaveToDriveEventDispatcher(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& stream_url,
+      std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator)
+      : SaveToDriveEventDispatcher(render_frame_host,
+                                   stream_url,
+                                   std::move(time_remaining_calculator)) {}
   ~MockSaveToDriveEventDispatcher() override = default;
 
   MOCK_METHOD(void, Notify, (SaveToDriveProgress progress), (const, override));
@@ -74,7 +79,8 @@ class SaveToDriveFlowTest : public testing::Test {
     web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
     auto event_dispatcher =
         std::make_unique<testing::StrictMock<MockSaveToDriveEventDispatcher>>(
-            rfh(), GURL("https://example.com/stream"));
+            rfh(), GURL("https://example.com/stream"),
+            std::make_unique<TimeRemainingCalculator>());
     auto content_reader =
         std::make_unique<testing::StrictMock<MockContentReader>>();
 

@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/download/status_text_builder_utils.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/save_to_drive/time_remaining_calculator.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/event_router.h"
@@ -22,29 +23,6 @@ namespace save_to_drive {
 namespace {
 
 using extensions::api::pdf_viewer_private::SaveToDriveStatus;
-
-// Returns a string for the current upload state.
-// Example: "100/120 MB • 10 seconds left", "100 MB • Done"
-std::optional<std::string> GetFileMetadataString(
-    const extensions::api::pdf_viewer_private::SaveToDriveProgress& progress) {
-  if (progress.status == SaveToDriveStatus::kUploadInProgress) {
-    // TODO(crbug.com/427451594): Replace `PLACEHOLDER` with the time remaining.
-    // The final string should be "100/120 MB • 10 seconds left".
-    std::u16string file_metadata_string =
-        StatusTextBuilderUtils::GetBubbleProgressSizesString(
-            progress.uploaded_bytes.value(), progress.file_size_bytes.value());
-    file_metadata_string =
-        StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
-            file_metadata_string, u"PLACEHOLDER");
-    return base::UTF16ToUTF8(file_metadata_string);
-  }
-  if (progress.status == SaveToDriveStatus::kUploadCompleted) {
-    return base::UTF16ToUTF8(
-        StatusTextBuilderUtils::GetCompletedTotalSizeString(
-            progress.file_size_bytes.value_or(0)));
-  }
-  return std::nullopt;
-}
 
 GURL GetStreamUrl(content::RenderFrameHost* render_frame_host) {
   base::WeakPtr<extensions::StreamContainer> stream;
@@ -79,11 +57,53 @@ std::unique_ptr<SaveToDriveEventDispatcher> SaveToDriveEventDispatcher::Create(
   if (stream_url.spec().empty()) {
     return nullptr;
   }
-  return base::WrapUnique(
-      new SaveToDriveEventDispatcher(render_frame_host, stream_url));
+  return base::WrapUnique(new SaveToDriveEventDispatcher(
+      render_frame_host, stream_url,
+      std::make_unique<TimeRemainingCalculator>()));
+}
+
+// static
+std::unique_ptr<SaveToDriveEventDispatcher>
+SaveToDriveEventDispatcher::CreateForTesting(
+    content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator) {
+  const GURL stream_url = GetStreamUrl(render_frame_host);
+  if (stream_url.spec().empty()) {
+    return nullptr;
+  }
+  return base::WrapUnique(new SaveToDriveEventDispatcher(
+      render_frame_host, stream_url, std::move(time_remaining_calculator)));
 }
 
 SaveToDriveEventDispatcher::~SaveToDriveEventDispatcher() = default;
+
+std::optional<std::string> SaveToDriveEventDispatcher::GetFileMetadataString(
+    const extensions::api::pdf_viewer_private::SaveToDriveProgress& progress)
+    const {
+  switch (progress.status) {
+    case SaveToDriveStatus::kUploadCompleted:
+      return base::UTF16ToUTF8(
+          StatusTextBuilderUtils::GetCompletedTotalSizeString(
+              progress.file_size_bytes.value()));
+    case SaveToDriveStatus::kUploadInProgress:
+    case SaveToDriveStatus::kUploadStarted: {
+      std::u16string file_metadata_string =
+          StatusTextBuilderUtils::GetBubbleProgressSizesString(
+              progress.uploaded_bytes.value(),
+              progress.file_size_bytes.value());
+      if (const std::optional<std::u16string> time_remaining_text =
+              time_remaining_calculator_->CalculateTimeRemainingText(progress);
+          time_remaining_text.has_value()) {
+        file_metadata_string =
+            StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
+                file_metadata_string, time_remaining_text.value());
+      }
+      return base::UTF16ToUTF8(file_metadata_string);
+    }
+    default:
+      return std::nullopt;
+  }
+}
 
 void SaveToDriveEventDispatcher::Notify(
     extensions::api::pdf_viewer_private::SaveToDriveProgress progress) const {
@@ -105,8 +125,10 @@ void SaveToDriveEventDispatcher::Notify(
 
 SaveToDriveEventDispatcher::SaveToDriveEventDispatcher(
     content::RenderFrameHost* render_frame_host,
-    const GURL& stream_url)
+    const GURL& stream_url,
+    std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator)
     : browser_context_(render_frame_host->GetBrowserContext()),
-      stream_url_(stream_url) {}
+      stream_url_(stream_url),
+      time_remaining_calculator_(std::move(time_remaining_calculator)) {}
 
 }  // namespace save_to_drive

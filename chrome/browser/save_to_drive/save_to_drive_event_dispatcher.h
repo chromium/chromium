@@ -20,6 +20,7 @@ class RenderFrameHost;
 }  // namespace content
 
 namespace save_to_drive {
+class TimeRemainingCalculator;
 
 // This class is used to dispatch events to the PDF viewer extension from the
 // browser process. The owner of this object must ensure that the browser
@@ -28,6 +29,10 @@ class SaveToDriveEventDispatcher {
  public:
   static std::unique_ptr<SaveToDriveEventDispatcher> Create(
       content::RenderFrameHost* render_frame_host);
+
+  static std::unique_ptr<SaveToDriveEventDispatcher> CreateForTesting(
+      content::RenderFrameHost* render_frame_host,
+      std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator);
 
   virtual ~SaveToDriveEventDispatcher();
 
@@ -38,13 +43,23 @@ class SaveToDriveEventDispatcher {
       extensions::api::pdf_viewer_private::SaveToDriveProgress progress) const;
 
  protected:
-  SaveToDriveEventDispatcher(content::RenderFrameHost* render_frame_host,
-                             const GURL& stream_url);
+  SaveToDriveEventDispatcher(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& stream_url,
+      std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator);
 
  private:
+  // Returns a string for the current upload state.
+  // Example: "100/120 MB • 10 seconds left", "100 MB • Done"
+  std::optional<std::string> GetFileMetadataString(
+      const extensions::api::pdf_viewer_private::SaveToDriveProgress& progress)
+      const;
+
   const raw_ptr<content::BrowserContext> browser_context_;
   // The stream URL of the PDF that is being saved to Drive.
   const GURL stream_url_;
+  // The calculator used to calculate the time remaining for upload.
+  std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator_;
 };
 
 }  // namespace save_to_drive
