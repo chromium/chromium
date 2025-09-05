@@ -668,6 +668,15 @@
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to update an existing address.">
       No thanks
     </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address which is a result of a merge between the AccountNameEmail and a Work/Home profile">
+      Use this address in more places
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_OK_BUTTON_LABEL" desc="Label of the save button shown in the prompt that offers the user to save a new address which is a result of a merge between the AccountNameEmail and a Work/Home profile">
+      I'm in
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_CANCEL_BUTTON_LABEL" desc="Label of the cancel button shown in the prompt that offers the user to save a new address which is a result of a merge between the AccountNameEmail and a Work/Home profile">
+      Cancel
+    </message>
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE" desc="Title shown at the top of dialog that edits an address before saving it">
       Edit address
     </message>

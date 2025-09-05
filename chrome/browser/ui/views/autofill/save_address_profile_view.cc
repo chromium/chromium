@@ -135,9 +135,7 @@ SaveAddressProfileView::SaveAddressProfileView(
   SetTitle(controller_->GetWindowTitle());
   SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
-                 l10n_util::GetStringUTF16(
-                     IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL));
-
+                 controller_->GetNegativeButtonLabel());
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       views::LayoutProvider::Get()->GetDistanceMetric(

@@ -293,6 +293,9 @@ IN_PROC_BROWSER_TEST_P(MigrateToProfileAddressProfileTest, SaveWithEdit) {
           AutofillClient::AddressPromptUserDecision::kAccepted));
 }
 
+// TODO(crbug.com/356845298): Add a test for combining the `kAccountNameEmail`
+// profile with one of the `kAccountHome`/`kAccountWork` profiles.
+
 INSTANTIATE_TEST_SUITE_P(AllAutofillAddressStates,
                          SaveAddressProfileTest,
                          ::testing::Bool(),

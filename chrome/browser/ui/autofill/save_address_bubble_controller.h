@@ -45,6 +45,7 @@ class SaveAddressBubbleController : public content::WebContentsObserver {
   virtual std::u16string GetProfileEmail() const;
   virtual std::u16string GetProfilePhone() const;
   virtual std::u16string GetOkButtonLabel() const;
+  std::u16string GetNegativeButtonLabel() const;
   const AutofillProfile& GetAutofillProfile() const { return address_profile_; }
 
   // The value returned by the cancel button callback depends on whether

@@ -249,9 +249,15 @@ class AutofillClient {
 
   // Specifies the type of the address save prompt.
   enum class SaveAddressBubbleType {
+    // The standard "Save address" bubble.
     kSave = 0,
+    // An altered save bubble, that offers migrating a profile to the Google
+    // Account.
     kMigrateToAccount = 1,
-    kMaxValue = kMigrateToAccount
+    // A bubble offering to merge the `kAccountNameEmail` and
+    // `kAccountHome/kAccountName` profiles into a single profile.
+    kHomeWorkNameEmailMerge = 2,
+    kMaxValue = kHomeWorkNameEmailMerge
   };
 
   // Callback to run when the user makes a decision on whether to save the

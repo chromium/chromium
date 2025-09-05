@@ -16,9 +16,11 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -184,6 +186,47 @@ TEST_F(SaveAddressBubbleControllerTest, MigrateIntoAccountAddress) {
   EXPECT_EQ(controller->GetCancelCallbackValue(),
             AutofillClient::AddressPromptUserDecision::kNever);
   EXPECT_TRUE(controller->GetFooterMessage().empty());
+}
+
+TEST_F(SaveAddressBubbleControllerTest, CombiningAccountsTypes) {
+  const AutofillProfile merged_profile = test::SupersetProfileOf(
+      {test::AccountNameEmailProfile(),
+       test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome)},
+      app_locale(), AutofillProfile::RecordType::kAccount);
+  std::unique_ptr<SaveAddressBubbleController> controller = CreateController(
+      merged_profile,
+      AutofillClient::SaveAddressBubbleType::kHomeWorkNameEmailMerge);
+
+  EXPECT_EQ(
+      controller->GetWindowTitle(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_PROMPT_TITLE));
+  EXPECT_EQ(
+      controller->GetOkButtonLabel(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_OK_BUTTON_LABEL));
+  EXPECT_EQ(
+      controller->GetNegativeButtonLabel(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_CANCEL_BUTTON_LABEL));
+  EXPECT_EQ(controller->GetFooterMessage(),
+            l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
+                base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
+                                      web_contents()->GetBrowserContext())
+                                      ->email)));
+  EXPECT_NE(controller->GetHeaderImages(), std::nullopt);
+  EXPECT_TRUE(controller->GetBodyText().empty());
+
+  EXPECT_EQ(controller->GetAddressSummary(),
+            GetEnvelopeStyleAddress(merged_profile, app_locale(),
+                                    /*include_recipient=*/true,
+                                    /*include_country=*/true));
+  EXPECT_EQ(controller->GetProfileEmail(),
+            merged_profile.GetInfo(EMAIL_ADDRESS, app_locale()));
+
+  EXPECT_EQ(controller->GetCancelCallbackValue(),
+            AutofillClient::AddressPromptUserDecision::kDeclined);
 }
 
 }  // namespace

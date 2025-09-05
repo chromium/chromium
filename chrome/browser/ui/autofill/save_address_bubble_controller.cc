@@ -55,6 +55,9 @@ std::u16string SaveAddressBubbleController::GetWindowTitle() const {
         return IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE;
       case autofill::AutofillClient::SaveAddressBubbleType::kMigrateToAccount:
         return IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE;
+      case autofill::AutofillClient::SaveAddressBubbleType::
+          kHomeWorkNameEmailMerge:
+        return IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_PROMPT_TITLE;
     }
   }());
 }
@@ -165,6 +168,22 @@ std::u16string SaveAddressBubbleController::GetOkButtonLabel() const {
         return IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE;
       case autofill::AutofillClient::SaveAddressBubbleType::kMigrateToAccount:
         return IDS_AUTOFILL_MIGRATE_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE;
+      case autofill::AutofillClient::SaveAddressBubbleType::
+          kHomeWorkNameEmailMerge:
+        return IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_OK_BUTTON_LABEL;
+    }
+  }());
+}
+
+std::u16string SaveAddressBubbleController::GetNegativeButtonLabel() const {
+  return l10n_util::GetStringUTF16([this] {
+    switch (save_address_bubble_type_) {
+      case AutofillClient::SaveAddressBubbleType::kSave:
+      case autofill::AutofillClient::SaveAddressBubbleType::kMigrateToAccount:
+        return IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL;
+      case autofill::AutofillClient::SaveAddressBubbleType::
+          kHomeWorkNameEmailMerge:
+        return IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_CANCEL_BUTTON_LABEL;
     }
   }());
 }

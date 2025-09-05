@@ -48,11 +48,12 @@ AutofillClient::SaveAddressBubbleType AutofillProfileImportTypeToBubbleType(
     case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
     case AutofillProfileImportType::kNameEmailSuperset:
     case AutofillProfileImportType::kHomeAndWorkSuperset:
-    case AutofillProfileImportType::kHomeWorkNameEmailMerge:
       return AutofillClient::SaveAddressBubbleType::kSave;
     case AutofillProfileImportType::kProfileMigration:
     case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
       return AutofillClient::SaveAddressBubbleType::kMigrateToAccount;
+    case AutofillProfileImportType::kHomeWorkNameEmailMerge:
+      return AutofillClient::SaveAddressBubbleType::kHomeWorkNameEmailMerge;
     // Those import types do not cause save/update/migrate/merge bubble to be
     // displayed.
     case AutofillProfileImportType::kDuplicateImport:
