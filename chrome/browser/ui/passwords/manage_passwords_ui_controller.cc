@@ -1279,7 +1279,6 @@ void ManagePasswordsUIController::UpdatePasswordIconAndBubbleState(
     PasswordBubbleViewBase::CloseCurrentBubble();
     // This will detach any existing bubble so OnBubbleHidden() isn't called.
     weak_ptr_factory_.InvalidateWeakPtrs();
-    passwords_action_item->SetIsShowingBubble(true);
     PasswordBubbleViewBase::ShowBubble(
         web_contents(), LocationBarBubbleDelegateView::AUTOMATIC);
     // If the bubble appeared then the status is updated in OnBubbleShown().
