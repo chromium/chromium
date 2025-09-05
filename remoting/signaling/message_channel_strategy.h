@@ -18,6 +18,8 @@ class ScopedProtobufHttpRequest;
 // An interface for handling use-case specific logic for MessageChannel.
 class MessageChannelStrategy {
  public:
+  using ChannelClosedCallback = base::OnceCallback<void(const HttpStatus&)>;
+
   virtual ~MessageChannelStrategy() = default;
 
   // Called by the message channel to provide a callback which should be run
@@ -28,7 +30,7 @@ class MessageChannelStrategy {
   // Creates the specific channel implementation for the stream.
   virtual std::unique_ptr<ScopedProtobufHttpRequest> CreateChannel(
       base::OnceClosure on_channel_ready,
-      base::OnceCallback<void(const HttpStatus&)> on_channel_closed) = 0;
+      ChannelClosedCallback on_channel_closed) = 0;
 
   // Returns the inactivity timeout for the stream.
   virtual base::TimeDelta GetInactivityTimeout() const = 0;

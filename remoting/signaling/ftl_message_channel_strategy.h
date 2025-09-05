@@ -22,12 +22,13 @@ class InboxMessage;
 
 class FtlMessageChannelStrategy : public MessageChannelStrategy {
  public:
+  using MessageReceivedCallback = base::RepeatingCallback<void(
+      std::unique_ptr<ftl::ReceiveMessagesResponse>)>;
   using StreamOpener =
       base::RepeatingCallback<std::unique_ptr<ScopedProtobufHttpRequest>(
           base::OnceClosure on_channel_ready,
-          const base::RepeatingCallback<void(
-              std::unique_ptr<ftl::ReceiveMessagesResponse>)>& on_incoming_msg,
-          base::OnceCallback<void(const HttpStatus&)> on_channel_closed)>;
+          const MessageReceivedCallback& on_incoming_msg,
+          ChannelClosedCallback on_channel_closed)>;
   using MessageCallback =
       base::RepeatingCallback<void(const ftl::InboxMessage& message)>;
 
@@ -45,7 +46,7 @@ class FtlMessageChannelStrategy : public MessageChannelStrategy {
   // MessageChannelStrategy implementation.
   std::unique_ptr<ScopedProtobufHttpRequest> CreateChannel(
       base::OnceClosure on_channel_ready,
-      base::OnceCallback<void(const HttpStatus&)> on_channel_closed) override;
+      ChannelClosedCallback on_channel_closed) override;
   base::TimeDelta GetInactivityTimeout() const override;
   void set_on_channel_active(base::RepeatingClosure on_channel_active) override;
 

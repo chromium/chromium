@@ -45,8 +45,8 @@ using remoting::internal::ChannelOpenStruct;
 using remoting::internal::ReceiveClientMessagesResponseStruct;
 using remoting::internal::SimpleMessageStruct;
 
-using ReceiveMessagesResponseCallback = base::RepeatingCallback<void(
-    std::unique_ptr<ReceiveClientMessagesResponseStruct>)>;
+using MessageReceivedCallback =
+    CorpMessageChannelStrategy::MessageReceivedCallback;
 using StatusCallback = base::OnceCallback<void(const HttpStatus&)>;
 
 // TODO: joedow - Move `FtlServicesContext` constants to a shared file.
@@ -122,7 +122,7 @@ decltype(auto) StartStream(OnStreamOpenedLambda on_stream_opened,
                            base::WeakPtr<FakeScopedProtobufHttpRequest>*
                                optional_out_stream = nullptr) {
   return [=](base::OnceClosure on_channel_ready,
-             const ReceiveMessagesResponseCallback& on_incoming_msg,
+             const MessageReceivedCallback& on_incoming_msg,
              StatusCallback on_channel_closed) {
     auto fake_stream = CreateFakeServerStream();
     if (optional_out_stream) {
@@ -210,13 +210,12 @@ TEST_F(CorpMessageChannelStrategyTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
-      .WillOnce(StartStream(
-          [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
-              StatusCallback on_channel_closed) {
-            channel_->StopReceivingMessages();
-            run_loop.Quit();
-          }));
+      .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
+                                const MessageReceivedCallback& on_incoming_msg,
+                                StatusCallback on_channel_closed) {
+        channel_->StopReceivingMessages();
+        run_loop.Quit();
+      }));
 
   channel_->StartReceivingMessages(NotReachedClosure(),
                                    NotReachedStatusCallback(FROM_HERE));
@@ -229,10 +228,10 @@ TEST_F(CorpMessageChannelStrategyTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
-      .WillOnce(StartStream(
-          [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
-              StatusCallback on_channel_closed) {
+      .WillOnce(
+          StartStream([&](base::OnceClosure on_channel_ready,
+                          const MessageReceivedCallback& on_incoming_msg,
+                          StatusCallback on_channel_closed) {
             std::move(on_channel_closed)
                 .Run(HttpStatus(HttpStatus::Code::UNAUTHENTICATED, ""));
           }));
@@ -252,14 +251,13 @@ TEST_F(CorpMessageChannelStrategyTest,
   EXPECT_CALL(mock_signaling_tracker_, OnSignalingActive()).WillOnce(Return());
 
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
-      .WillOnce(StartStream(
-          [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
-              StatusCallback on_channel_closed) {
-            on_incoming_msg.Run(CreateChannelOpenMessage());
+      .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
+                                const MessageReceivedCallback& on_incoming_msg,
+                                StatusCallback on_channel_closed) {
+        on_incoming_msg.Run(CreateChannelOpenMessage());
 
-            std::move(on_channel_ready).Run();
-          }));
+        std::move(on_channel_ready).Run();
+      }));
 
   channel_->StartReceivingMessages(run_loop.QuitClosure(),
                                    NotReachedStatusCallback(FROM_HERE));
@@ -277,7 +275,7 @@ TEST_F(CorpMessageChannelStrategyTest,
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
       .WillOnce(StartStream(
           [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
+              const MessageReceivedCallback& on_incoming_msg,
               StatusCallback on_channel_closed) {
             // The first open stream attempt fails with UNAVAILABLE error.
             ASSERT_EQ(GetRetryFailureCount(), 0);
@@ -293,21 +291,20 @@ TEST_F(CorpMessageChannelStrategyTest,
             task_environment_.FastForwardBy(GetTimeUntilRetry());
           },
           &old_stream))
-      .WillOnce(StartStream(
-          [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
-              StatusCallback on_channel_closed) {
-            // Second open stream attempt succeeds.
+      .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
+                                const MessageReceivedCallback& on_incoming_msg,
+                                StatusCallback on_channel_closed) {
+        // Second open stream attempt succeeds.
 
-            // Assert old stream closed.
-            ASSERT_FALSE(old_stream);
+        // Assert old stream closed.
+        ASSERT_FALSE(old_stream);
 
-            on_incoming_msg.Run(CreateChannelOpenMessage());
+        on_incoming_msg.Run(CreateChannelOpenMessage());
 
-            std::move(on_channel_ready).Run();
+        std::move(on_channel_ready).Run();
 
-            ASSERT_EQ(GetRetryFailureCount(), 0);
-          }));
+        ASSERT_EQ(GetRetryFailureCount(), 0);
+      }));
 
   channel_->StartReceivingMessages(run_loop.QuitClosure(),
                                    NotReachedStatusCallback(FROM_HERE));
@@ -330,13 +327,12 @@ TEST_F(CorpMessageChannelStrategyTest,
       .WillOnce([&]() { run_loop.Quit(); });
 
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
-      .WillOnce(StartStream(
-          [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
-              StatusCallback on_channel_closed) {
-            on_incoming_msg.Run(CreateChannelOpenMessage());
-            std::move(on_channel_ready).Run();
-          }));
+      .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
+                                const MessageReceivedCallback& on_incoming_msg,
+                                StatusCallback on_channel_closed) {
+        on_incoming_msg.Run(CreateChannelOpenMessage());
+        std::move(on_channel_ready).Run();
+      }));
 
   channel_->StartReceivingMessages(stream_ready_callback.Get(),
                                    NotReachedStatusCallback(FROM_HERE));
@@ -364,19 +360,18 @@ TEST_F(CorpMessageChannelStrategyTest, StreamsTwoMessages) {
       .WillOnce(Invoke([&](const SimpleMessageStruct&) { run_loop.Quit(); }));
 
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
-      .WillOnce(StartStream(
-          [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
-              StatusCallback on_channel_closed) {
-            on_incoming_msg.Run(CreateChannelOpenMessage());
-            std::move(on_channel_ready).Run();
+      .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
+                                const MessageReceivedCallback& on_incoming_msg,
+                                StatusCallback on_channel_closed) {
+        on_incoming_msg.Run(CreateChannelOpenMessage());
+        std::move(on_channel_ready).Run();
 
-            on_incoming_msg.Run(CreateSimpleMessage(kMessage1Payload));
-            on_incoming_msg.Run(CreateSimpleMessage(kMessage2Payload));
+        on_incoming_msg.Run(CreateSimpleMessage(kMessage1Payload));
+        on_incoming_msg.Run(CreateSimpleMessage(kMessage2Payload));
 
-            const HttpStatus kCancel(HttpStatus::Code::CANCELLED, "Cancelled");
-            std::move(on_channel_closed).Run(kCancel);
-          }));
+        const HttpStatus kCancel(HttpStatus::Code::CANCELLED, "Cancelled");
+        std::move(on_channel_closed).Run(kCancel);
+      }));
 
   channel_->StartReceivingMessages(
       base::DoNothing(),
@@ -397,16 +392,15 @@ TEST_F(CorpMessageChannelStrategyTest,
       .WillOnce([&]() { run_loop.Quit(); });
 
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
-      .WillOnce(StartStream(
-          [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
-              StatusCallback on_channel_closed) {
-            on_incoming_msg.Run(CreateChannelOpenMessage());
+      .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
+                                const MessageReceivedCallback& on_incoming_msg,
+                                StatusCallback on_channel_closed) {
+        on_incoming_msg.Run(CreateChannelOpenMessage());
 
-            std::move(on_channel_ready).Run();
+        std::move(on_channel_ready).Run();
 
-            on_incoming_msg.Run(CreateChannelActiveMessage());
-          }));
+        on_incoming_msg.Run(CreateChannelActiveMessage());
+      }));
 
   channel_->StartReceivingMessages(base::DoNothing(),
                                    NotReachedStatusCallback(FROM_HERE));
@@ -425,7 +419,7 @@ TEST_F(CorpMessageChannelStrategyTest, NoKeepAliveWithinTimeout_ResetsStream) {
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
       .WillOnce(StartStream(
           [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
+              const MessageReceivedCallback& on_incoming_msg,
               StatusCallback on_channel_closed) {
             on_incoming_msg.Run(CreateChannelOpenMessage());
 
@@ -442,21 +436,20 @@ TEST_F(CorpMessageChannelStrategyTest, NoKeepAliveWithinTimeout_ResetsStream) {
             task_environment_.FastForwardBy(GetTimeUntilRetry());
           },
           &old_stream))
-      .WillOnce(StartStream(
-          [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
-              StatusCallback on_channel_closed) {
-            // Stream is reopened.
+      .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
+                                const MessageReceivedCallback& on_incoming_msg,
+                                StatusCallback on_channel_closed) {
+        // Stream is reopened.
 
-            // Assert old stream closed.
-            ASSERT_FALSE(old_stream);
+        // Assert old stream closed.
+        ASSERT_FALSE(old_stream);
 
-            on_incoming_msg.Run(CreateChannelOpenMessage());
+        on_incoming_msg.Run(CreateChannelOpenMessage());
 
-            std::move(on_channel_ready).Run();
-            ASSERT_EQ(GetRetryFailureCount(), 0);
-            run_loop.Quit();
-          }));
+        std::move(on_channel_ready).Run();
+        ASSERT_EQ(GetRetryFailureCount(), 0);
+        run_loop.Quit();
+      }));
 
   channel_->StartReceivingMessages(base::DoNothing(),
                                    NotReachedStatusCallback(FROM_HERE));
@@ -475,7 +468,7 @@ TEST_F(CorpMessageChannelStrategyTest, ServerClosesStream_ResetsStream) {
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
       .WillOnce(StartStream(
           [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
+              const MessageReceivedCallback& on_incoming_msg,
               StatusCallback on_channel_closed) {
             auto fake_server_stream = CreateFakeServerStream();
 
@@ -486,16 +479,15 @@ TEST_F(CorpMessageChannelStrategyTest, ServerClosesStream_ResetsStream) {
             std::move(on_channel_closed).Run(HttpStatus::OK());
           },
           &old_stream))
-      .WillOnce(StartStream(
-          [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
-              StatusCallback on_channel_closed) {
-            ASSERT_FALSE(old_stream);
+      .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
+                                const MessageReceivedCallback& on_incoming_msg,
+                                StatusCallback on_channel_closed) {
+        ASSERT_FALSE(old_stream);
 
-            std::move(on_channel_ready).Run();
-            ASSERT_EQ(GetRetryFailureCount(), 0);
-            run_loop.Quit();
-          }));
+        std::move(on_channel_ready).Run();
+        ASSERT_EQ(GetRetryFailureCount(), 0);
+        run_loop.Quit();
+      }));
 
   channel_->StartReceivingMessages(base::DoNothing(),
                                    NotReachedStatusCallback(FROM_HERE));
@@ -511,10 +503,10 @@ TEST_F(CorpMessageChannelStrategyTest, TimeoutIncreasesToMaximum) {
   int failure_count = 0;
   int hitting_max_delay_count = 0;
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
-      .WillRepeatedly(StartStream(
-          [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
-              StatusCallback on_channel_closed) {
+      .WillRepeatedly(
+          StartStream([&](base::OnceClosure on_channel_ready,
+                          const MessageReceivedCallback& on_incoming_msg,
+                          StatusCallback on_channel_closed) {
             // Quit if delay is ~kBackoffMaxDelay three times.
             if (hitting_max_delay_count == 3) {
               on_incoming_msg.Run(CreateChannelOpenMessage());
@@ -563,7 +555,7 @@ TEST_F(CorpMessageChannelStrategyTest,
   EXPECT_CALL(mock_stream_opener_, Run(_, _, _))
       .WillOnce(StartStream(
           [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
+              const MessageReceivedCallback& on_incoming_msg,
               StatusCallback on_channel_closed) {
             // The first open stream attempt fails with UNAUTHENTICATED error.
             ASSERT_EQ(GetRetryFailureCount(), 0);
@@ -576,21 +568,20 @@ TEST_F(CorpMessageChannelStrategyTest,
                         GetTimeUntilRetry().InSecondsF(), 0.5);
           },
           &old_stream))
-      .WillOnce(StartStream(
-          [&](base::OnceClosure on_channel_ready,
-              const ReceiveMessagesResponseCallback& on_incoming_msg,
-              StatusCallback on_channel_closed) {
-            // Second open stream attempt succeeds.
+      .WillOnce(StartStream([&](base::OnceClosure on_channel_ready,
+                                const MessageReceivedCallback& on_incoming_msg,
+                                StatusCallback on_channel_closed) {
+        // Second open stream attempt succeeds.
 
-            // Assert old stream closed.
-            ASSERT_FALSE(old_stream);
-            ASSERT_EQ(GetRetryFailureCount(), 1);
+        // Assert old stream closed.
+        ASSERT_FALSE(old_stream);
+        ASSERT_EQ(GetRetryFailureCount(), 1);
 
-            on_incoming_msg.Run(CreateChannelOpenMessage());
+        on_incoming_msg.Run(CreateChannelOpenMessage());
 
-            std::move(on_channel_ready).Run();
-            ASSERT_EQ(GetRetryFailureCount(), 0);
-          }));
+        std::move(on_channel_ready).Run();
+        ASSERT_EQ(GetRetryFailureCount(), 0);
+      }));
 
   channel_->StartReceivingMessages(
       base::DoNothing(),

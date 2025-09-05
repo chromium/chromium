@@ -23,13 +23,13 @@ struct SimpleMessageStruct;
 
 class CorpMessageChannelStrategy : public MessageChannelStrategy {
  public:
+  using MessageReceivedCallback = base::RepeatingCallback<void(
+      std::unique_ptr<internal::ReceiveClientMessagesResponseStruct>)>;
   using StreamOpener =
       base::RepeatingCallback<std::unique_ptr<ScopedProtobufHttpRequest>(
           base::OnceClosure on_channel_ready,
-          const base::RepeatingCallback<void(
-              std::unique_ptr<internal::ReceiveClientMessagesResponseStruct>)>&
-              on_incoming_msg,
-          base::OnceCallback<void(const HttpStatus&)> on_channel_closed)>;
+          const MessageReceivedCallback& on_incoming_msg,
+          ChannelClosedCallback on_channel_closed)>;
   using MessageCallback = base::RepeatingCallback<void(
       const internal::SimpleMessageStruct& message)>;
 
@@ -47,7 +47,7 @@ class CorpMessageChannelStrategy : public MessageChannelStrategy {
   // MessageChannelStrategy implementation.
   std::unique_ptr<ScopedProtobufHttpRequest> CreateChannel(
       base::OnceClosure on_channel_ready,
-      base::OnceCallback<void(const HttpStatus&)> on_channel_closed) override;
+      ChannelClosedCallback on_channel_closed) override;
   base::TimeDelta GetInactivityTimeout() const override;
   void set_on_channel_active(base::RepeatingClosure on_channel_active) override;
 

@@ -58,7 +58,7 @@ void CorpMessageChannelStrategy::OnReceiveMessagesResponse(
 std::unique_ptr<ScopedProtobufHttpRequest>
 CorpMessageChannelStrategy::CreateChannel(
     base::OnceClosure on_channel_ready,
-    base::OnceCallback<void(const HttpStatus&)> on_channel_closed) {
+    ChannelClosedCallback on_channel_closed) {
   return stream_opener_.Run(
       std::move(on_channel_ready),
       base::BindRepeating(
