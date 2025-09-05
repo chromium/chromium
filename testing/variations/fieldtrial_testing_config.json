@@ -7182,25 +7182,6 @@
             ]
         }
     ],
-    "CookieDeprecationFacilitatedTestingFledgeTrustedSignalsHeaders": [
-        {
-            "platforms": [
-                "chromeos",
-                "windows",
-                "mac",
-                "linux",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FledgeFacilitatedTestingSignalsHeaders"
-                    ]
-                }
-            ]
-        }
-    ],
     "CookieSameSiteConsidersRedirectChainDesktop": [
         {
             "platforms": [
