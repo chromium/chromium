@@ -1086,7 +1086,8 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                            ->ChildRules(),
                       medium, mixins, add_rule_flags, container_query,
                       cascade_layer, style_scope, apply_mixins_stack);
-      } else if (contents_rule->FakeParentRuleForFallback()) {
+      } else if (contents_rule->FakeParentRuleForFallback() &&
+                 contents_rule->FakeParentRuleForFallback()->ChildRules()) {
         AddChildRules(parent_rule,
                       *contents_rule->FakeParentRuleForFallback()->ChildRules(),
                       medium, mixins, add_rule_flags, container_query,
