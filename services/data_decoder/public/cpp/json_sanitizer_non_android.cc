@@ -28,11 +28,12 @@ void JsonSanitizer::Sanitize(const std::string& json, Callback callback) {
                               value.type() != base::Value::Type::LIST) {
                             return base::unexpected("Invalid top-level type");
                           }
-                          std::string safe_json;
-                          if (!base::JSONWriter::Write(value, &safe_json)) {
+                          std::optional<std::string> safe_json =
+                              base::WriteJson(value);
+                          if (!safe_json.has_value()) {
                             return base::unexpected("Encoding error");
                           }
-                          return base::ok(std::move(safe_json));
+                          return base::ok(std::move(safe_json.value()));
                         }));
           },
           std::move(callback)));

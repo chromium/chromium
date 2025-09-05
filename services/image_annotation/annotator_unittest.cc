@@ -362,13 +362,7 @@ class TestServerURLLoaderFactory {
 // Returns a "canonically" formatted version of a JSON string by parsing and
 // then rewriting it.
 std::string ReformatJson(const std::string& in) {
-  const std::optional<base::Value> json = base::JSONReader::Read(in);
-  CHECK(json);
-
-  std::string out;
-  base::JSONWriter::Write(*json, &out);
-
-  return out;
+  return base::WriteJson(base::JSONReader::Read(in).value()).value_or("");
 }
 
 // Receives the result of an annotation request and writes the result data into

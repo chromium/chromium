@@ -830,15 +830,12 @@ TEST(TrustTokenKeyCommitmentParserMultipleIssuers,
 }
 
 void ParsesOneIssuerCorrectly(base::Value value) {
-  std::string output;
-  base::JSONWriter::Write(std::move(value), &output);
-  TrustTokenKeyCommitmentParser().Parse(output);
+  TrustTokenKeyCommitmentParser().Parse(base::WriteJson(value).value_or(""));
 }
 
 void ParsesMultipleIssuersCorrectly(base::Value value) {
-  std::string output;
-  base::JSONWriter::Write(std::move(value), &output);
-  TrustTokenKeyCommitmentParser().ParseMultipleIssuers(output);
+  TrustTokenKeyCommitmentParser().ParseMultipleIssuers(
+      base::WriteJson(value).value_or(""));
 }
 
 FUZZ_TEST(TrustTokenKeyCommitmentFuzzer, ParsesOneIssuerCorrectly);

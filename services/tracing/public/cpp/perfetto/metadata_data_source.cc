@@ -218,9 +218,7 @@ void MetadataDataSource::AddMetadataToBundle(
   } else if (value.is_string()) {
     metadata->set_string_value(value.GetString().c_str());
   } else {
-    std::string json_value;
-    base::JSONWriter::Write(value, &json_value);
-    metadata->set_json_value(json_value.c_str());
+    metadata->set_json_value(base::WriteJson(value).value_or(""));
   }
 }
 

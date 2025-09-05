@@ -754,8 +754,7 @@ std::string Annotator::FormatJsonRequest(
   base::Value::Dict request;
   request.Set("imageRequests", std::move(image_request_list));
 
-  std::string json_request;
-  base::JSONWriter::Write(request, &json_request);
+  std::string json_request = base::WriteJson(request).value_or("");
 
   ReportServerRequestSizeKB(json_request.size() / 1024);
 

@@ -214,11 +214,7 @@ std::optional<std::string> SCTAuditingHandler::SerializeData() {
     reports.Append(std::move(report_entry));
   }
 
-  std::string output;
-  if (!base::JSONWriter::Write(reports, &output)) {
-    return std::nullopt;
-  }
-  return output;
+  return base::WriteJson(reports);
 }
 
 void SCTAuditingHandler::DeserializeData(const std::string& serialized) {

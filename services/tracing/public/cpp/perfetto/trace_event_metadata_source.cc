@@ -224,9 +224,7 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
       } else if (it.second.is_string()) {
         new_metadata->set_string_value(it.second.GetString().c_str());
       } else {
-        std::string json_value;
-        base::JSONWriter::Write(it.second, &json_value);
-        new_metadata->set_json_value(json_value.c_str());
+        new_metadata->set_json_value(base::WriteJson(it.second).value_or(""));
       }
     }
   };

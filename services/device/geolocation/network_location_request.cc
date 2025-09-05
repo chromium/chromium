@@ -251,8 +251,7 @@ void NetworkLocationRequest::MakeRequest(
   url_loader_->SetAllowHttpErrorResults(true);
 
   request_data_ = FormUploadData(wifi_data, wifi_timestamp);
-  std::string upload_data;
-  base::JSONWriter::Write(request_data_, &upload_data);
+  std::string upload_data = base::WriteJson(request_data_).value_or("");
   url_loader_->AttachStringForUpload(upload_data, "application/json");
 
   url_loader_->DownloadToString(
