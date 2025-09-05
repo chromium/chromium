@@ -3791,7 +3791,6 @@ if (!is_android) {
       "interaction/webcontents_interaction_test_util_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
-
     fuzztests = [ "SafeXmlParserFixture.ParseXML" ]
     fuzztest_additional_args = [
       "--single-process-tests",
@@ -3884,6 +3883,7 @@ if (!is_android) {
     if (enable_glic) {
       sources += [
         "../browser/contextual_cueing/zero_state_suggestions_browsertest.cc",
+        "../browser/ui/views/side_panel/glic/glic_side_panel_coordinator_browsertest.cc",
         "../browser/ui/views/tabs/glic_button_browsertest.cc",
         "../browser/ui/webui/settings/glic_handler_browsertest.cc",
       ]

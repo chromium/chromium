@@ -8894,7 +8894,7 @@ source_set("primitives") {
     "//ui/base",
     "//ui/gfx",
   ]
-  deps = []
+  deps = [ "//chrome/common:buildflags" ]
   if (!is_android) {
     sources += [
       "ui/chrome_web_modal_dialog_manager_delegate.cc",
