@@ -56,11 +56,9 @@ using testing::_;
 using testing::Return;
 
 namespace collaboration {
-
 namespace {
-std::unique_ptr<KeyedService> BuildTestShareKitService(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+
+std::unique_ptr<KeyedService> BuildTestShareKitService(ProfileIOS* profile) {
   data_sharing::DataSharingService* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   TabGroupService* tab_group_service =
