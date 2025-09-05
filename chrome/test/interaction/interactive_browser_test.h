@@ -98,6 +98,13 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
                                      const std::string& screenshot_name,
                                      const std::string& baseline_cl);
 
+  // Takes a screenshot of a specific element `where` inside a WebContents
+  // `webcontents_id`. See `Screenshot()` for more information.
+  [[nodiscard]] MultiStep ScreenshotWebUi(ElementSpecifier element,
+                                          const DeepQuery& where,
+                                          const std::string& screenshot_name,
+                                          const std::string& baseline_cl);
+
   // As `Screenshot()` but takes a screenshot of the entire surface (widget,
   // WebUI, etc.) containing `element_in_surface`. See `Screenshot()` for more
   // information.

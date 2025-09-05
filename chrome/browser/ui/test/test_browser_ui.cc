@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/test/test_browser_ui.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_switches.h"
@@ -118,6 +120,14 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
     views::View* view,
     const std::string& screenshot_prefix,
     const std::string& screenshot_name) {
+  return VerifyPixelUi(view, std::nullopt, screenshot_prefix, screenshot_name);
+}
+
+ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
+    views::View* view,
+    std::optional<gfx::Rect> region,
+    const std::string& screenshot_prefix,
+    const std::string& screenshot_name) {
 #ifdef SUPPORTS_PIXEL_TEST
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kVerifyPixels)) {
@@ -145,8 +155,33 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
   ui::DrawWaiterForTest::WaitForCompositingEnded(compositor);
 
   views::ViewSkiaGoldPixelDiff pixel_diff(screenshot_prefix);
-  bool success = pixel_diff.CompareViewScreenshot(screenshot_name, view,
-                                                  GetPixelMatchAlgorithm());
+
+  // Calculate the snapshot bounds in the widget's coordinates.
+  gfx::Rect window_rect = view->GetBoundsInScreen();
+  const views::Widget* widget = view->GetWidget();
+  gfx::Rect bounds_in_screen = widget->GetRootView()->GetBoundsInScreen();
+  gfx::Rect bounds = widget->GetRootView()->bounds();
+  window_rect.Offset(bounds.x() - bounds_in_screen.x(),
+                     bounds.y() - bounds_in_screen.y());
+
+  if (region) {
+    // Further narrow the rectangle to the targeted region.
+    auto region_rect = window_rect;
+    region_rect.Offset(region.value().OffsetFromOrigin());
+    region_rect.set_size(region.value().size());
+    region_rect.Intersect(window_rect);
+    if (region_rect.IsEmpty()) {
+      LOG(ERROR) << "Specified screenshot region (" << region.value().ToString()
+                 << ") is outside targeted view size ("
+                 << window_rect.size().ToString() << ")";
+      return ui::test::ActionResult::kFailed;
+    }
+    window_rect = region_rect;
+  }
+
+  const bool success = pixel_diff.CompareNativeWindowScreenshot(
+      screenshot_name, widget->GetNativeWindow(), window_rect,
+      GetPixelMatchAlgorithm());
   return success ? ui::test::ActionResult::kSucceeded
                  : ui::test::ActionResult::kFailed;
 #else

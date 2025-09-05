@@ -65,6 +65,49 @@ constexpr char kElementVisibilityQuery[] =
   }
 )";
 
+// Returns the intersection rectangle between a Web UI element `where`, and the
+// tracked WebContents `el` it resides in. The web element must reside (at least
+// partially) within the web container's bounds and be visible on screen, or
+// this will CHECK() fail.
+gfx::Rect GetWebElementIntersection(
+    ui::TrackedElement* el,
+    const WebContentsInteractionTestUtil::DeepQuery& where) {
+  auto* const contents = el->AsA<TrackedElementWebContents>();
+  CHECK(contents) << "Containing element is not a WebContents";
+  const gfx::Rect container_bounds = contents->GetScreenBounds();
+  gfx::Rect element_bounds = contents->owner()->GetElementBoundsInScreen(where);
+  CHECK(!element_bounds.IsEmpty())
+      << "Cannot target DOM element at " << where << " in " << el->identifier()
+      << " because its screen bounds are emtpy.";
+  gfx::Rect intersect_bounds = element_bounds;
+  intersect_bounds.Intersect(container_bounds);
+  CHECK(!intersect_bounds.IsEmpty())
+      << "Cannot target DOM element at " << where << " in " << el->identifier()
+      << " because its screen bounds " << element_bounds.ToString()
+      << " are outside the screen bounds of the containing WebView, "
+      << container_bounds.ToString()
+      << ". Did you forget to scroll the element into view? See "
+         "ScrollIntoView().";
+  return intersect_bounds;
+}
+
+// Returns the location of Web UI element `where`, relative to the tracked
+// WebContents `el` it resides in. The web element must reside (at least
+// partially) within the web container's bounds and be visible on screen, or
+// this will CHECK() fail.
+gfx::Rect GetRegionInWebContents(
+    ui::TrackedElement* el,
+    const WebContentsInteractionTestUtil::DeepQuery& where) {
+  gfx::Rect intersect_bounds = GetWebElementIntersection(el, where);
+
+  // Compute the sub-region relative to the webcontents.
+  auto* const contents = el->AsA<TrackedElementWebContents>();
+  CHECK(contents) << "Containing element is not a WebContents";
+  const gfx::Rect container_bounds = contents->GetScreenBounds();
+  intersect_bounds.Offset(-container_bounds.OffsetFromOrigin());
+  return intersect_bounds;
+}
+
 }  // namespace
 
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(InteractiveBrowserTestApi,
@@ -116,6 +159,34 @@ InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::Screenshot(
                      MaybeWaitForUserToDismiss(element));
   AddDescriptionPrefix(steps, base::StrCat({"Screenshot( \"", screenshot_name,
                                             "\", \"", baseline_cl, "\" )"}));
+  return steps;
+}
+
+InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::ScreenshotWebUi(
+    ElementSpecifier element,
+    const DeepQuery& where,
+    const std::string& screenshot_name,
+    const std::string& baseline_cl) {
+  StepBuilder builder;
+  builder.SetDescription("Compare WebUI Element Screenshot");
+  ui::test::internal::SpecifyElement(builder, element);
+  builder.SetStartCallback(base::BindOnce(
+      [](InteractiveBrowserTestApi* test, std::string screenshot_name,
+         std::string baseline_cl, const DeepQuery& where,
+         ui::InteractionSequence* seq, ui::TrackedElement* el) {
+        // Locate the element within the bounds of the WebContents.
+        const auto window_rect = GetRegionInWebContents(el, where);
+        const auto result = InteractionTestUtilBrowser::CompareScreenshot(
+            el, screenshot_name, baseline_cl, window_rect);
+        test->test_impl().HandleActionResult(seq, el, "Screenshot", result);
+      },
+      base::Unretained(this), screenshot_name, baseline_cl, where));
+
+  auto steps = Steps(MaybeWaitForPaint(element), std::move(builder),
+                     MaybeWaitForUserToDismiss(element));
+  AddDescriptionPrefix(
+      steps, base::StrCat({"ScreenshotWebUi( ", "", screenshot_name, ", ", "",
+                           baseline_cl, ""}));
   return steps;
 }
 
@@ -857,29 +928,13 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ClickElement(
 
 // static
 InteractiveBrowserTestApi::RelativePositionCallback
-InteractiveBrowserTestApi::DeepQueryToRelativePosition(const DeepQuery& query) {
+InteractiveBrowserTestApi::DeepQueryToRelativePosition(const DeepQuery& where) {
   return base::BindOnce(
       [](DeepQuery q, ui::TrackedElement* el) {
-        auto* const contents = el->AsA<TrackedElementWebContents>();
-        const gfx::Rect container_bounds = contents->GetScreenBounds();
-        const gfx::Rect element_bounds =
-            contents->owner()->GetElementBoundsInScreen(q);
-        CHECK(!element_bounds.IsEmpty())
-            << "Cannot target DOM element at " << q << " in "
-            << el->identifier() << " because its screen bounds are emtpy.";
-        gfx::Rect intersect_bounds = element_bounds;
-        intersect_bounds.Intersect(container_bounds);
-        CHECK(!intersect_bounds.IsEmpty())
-            << "Cannot target DOM element at " << q << " in "
-            << el->identifier() << " because its screen bounds "
-            << element_bounds.ToString()
-            << " are outside the screen bounds of the containing WebView, "
-            << container_bounds.ToString()
-            << ". Did you forget to scroll the element into view? See "
-               "ScrollIntoView().";
+        gfx::Rect intersect_bounds = GetWebElementIntersection(el, q);
         return intersect_bounds.CenterPoint();
       },
-      query);
+      where);
 }
 
 InteractiveBrowserTestApi::MultiStep

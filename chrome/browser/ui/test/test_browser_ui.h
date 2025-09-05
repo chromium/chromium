@@ -104,6 +104,13 @@ class TestBrowserUi {
                                        const std::string& screenshot_prefix,
                                        const std::string& screenshot_name);
 
+  // Verifies a region within a View. For example, verify an element within
+  // web content.
+  ui::test::ActionResult VerifyPixelUi(views::View* view,
+                                       std::optional<gfx::Rect> region,
+                                       const std::string& screenshot_prefix,
+                                       const std::string& screenshot_name);
+
   // Own |algorithm|.
   void SetPixelMatchAlgorithm(
       std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm> algorithm);
