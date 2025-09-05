@@ -409,10 +409,8 @@ found in the LICENSE file.
         <item name="android:gravity">center_vertical</item>
     </style>
     <style name="ListMenuItemIconStyle">
-        <item name="android:layout_width">?attr/listItemIconViewWidth</item>
+        <item name="android:layout_width">?attr/listItemIconSize</item>
         <item name="android:layout_height">?attr/listItemIconSize</item>
-        <!-- list_menu_item_start_view_width - list_menu_item_icon_size -->
-        <item name="android:paddingHorizontal">?attr/listItemIconHorizontalPadding</item>
     </style>
     <style name="ListMenuItemIconStyle.Start">
         <item name="android:layout_marginStart">0dp</item>
