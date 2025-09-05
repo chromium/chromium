@@ -32,7 +32,7 @@ class NativeThemeQt : public ui::NativeThemeAura {
  private:
   // IMPORTANT NOTE: All members that use `shim_` must be decorated with
   // `DISABLE_CFI_VCALL`.
-  raw_ptr<QtInterface> const shim_;
+  raw_ptr<QtInterface> shim_;
 };
 
 }  // namespace qt

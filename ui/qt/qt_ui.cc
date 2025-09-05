@@ -20,6 +20,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/scoped_environment_variable_override.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -156,26 +157,6 @@ ui::SelectFileDialog* QtUi::CreateSelectFileDialog(
 DISABLE_CFI_DLSYM
 DISABLE_CFI_VCALL
 bool QtUi::Initialize() {
-  base::FilePath path;
-  if (!base::PathService::Get(base::DIR_MODULE, &path)) {
-    return false;
-  }
-  void* libqt_shim = nullptr;
-  auto load_libqt_shim = [&](int qt_version) -> bool {
-    auto file_name = base::StringPrintf("libqt%d_shim.so", qt_version);
-    if ((libqt_shim = LoadLibrary(path.Append(file_name)))) {
-      qt_version_ = qt_version;
-    }
-    return libqt_shim;
-  };
-  PreferQt6() ? load_libqt_shim(6) || load_libqt_shim(5)
-              : load_libqt_shim(5) || load_libqt_shim(6);
-  if (!libqt_shim) {
-    return false;
-  }
-  void* create_qt_interface = dlsym(libqt_shim, "CreateQtInterface");
-  DCHECK(create_qt_interface);
-
   // Under certain conditions, a hang may occur in libICE when reading from the
   // ICE connection.  Chrome doesn't use QT's session save/restore capabilities
   // and instead manages it's own sessions, so this is not needed anyway.  Unset
@@ -189,6 +170,7 @@ bool QtUi::Initialize() {
   // [3] https://crbug.com/396193145
   base::ScopedEnvironmentVariableOverride qt_xcb_no_xi2("QT_XCB_NO_XI2", "1");
 
+  // Set up command line.
   auto cmd_line = *base::CommandLine::ForCurrentProcess();
   if (auto* delegate = ui::LinuxUiDelegate::GetInstance()) {
     // Ensure QT is initialized with the same display server protocol as Chrome.
@@ -208,9 +190,33 @@ bool QtUi::Initialize() {
     }
   }
   cmd_line_ = CopyCmdLine(cmd_line);
+
+  // Create shim.
+  base::FilePath path;
+  if (!base::PathService::Get(base::DIR_MODULE, &path)) {
+    return false;
+  }
+  void* libqt_shim = nullptr;
+  auto load_libqt_shim = [&](int qt_version) -> bool {
+    auto file_name = base::StringPrintf("libqt%d_shim.so", qt_version);
+    if ((libqt_shim = LoadLibrary(path.Append(file_name)))) {
+      qt_version_ = qt_version;
+    }
+    return libqt_shim;
+  };
+  PreferQt6() ? load_libqt_shim(6) || load_libqt_shim(5)
+              : load_libqt_shim(5) || load_libqt_shim(6);
+  if (!libqt_shim) {
+    return false;
+  }
+  void* create_qt_interface = dlsym(libqt_shim, "CreateQtInterface");
+  DCHECK(create_qt_interface);
   shim_.reset((reinterpret_cast<decltype(&CreateQtInterface)>(
       create_qt_interface)(this, &cmd_line_.argc, cmd_line_.argv.data())));
+
+  // Initialize native theme.
   native_theme_ = std::make_unique<NativeThemeQt>(shim_.get());
+
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&QtUi::AddNativeColorMixer, base::Unretained(this)));
   ScaleFactorMaybeChangedImpl();
@@ -348,8 +354,8 @@ QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
 
 std::vector<std::string> QtUi::GetCmdLineFlagsForCopy() const {
   return {std::string(switches::kUiToolkitFlag) + "=qt",
-          std::string(switches::kQtVersionFlag) + "=" +
-              base::NumberToString(qt_version_)};
+          base::StrCat({switches::kQtVersionFlag, "=",
+                        base::NumberToString(qt_version_)})};
 }
 
 DISABLE_CFI_VCALL

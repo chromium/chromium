@@ -53,7 +53,7 @@ void NativeThemeQt::PaintFrameTopArea(
   SkBitmap bitmap;
   bitmap.installPixels(
       image_info, image.data_argb.Take(), image_info.minRowBytes(),
-      [](void* data, void*) { free(data); }, nullptr);
+      [](void* data, void*) { std::free(data); }, nullptr);
   bitmap.setImmutable();
   canvas->drawImage(cc::PaintImage::CreateFromBitmap(std::move(bitmap)),
                     rect.x(), rect.y());
