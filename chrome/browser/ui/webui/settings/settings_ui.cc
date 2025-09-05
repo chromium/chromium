@@ -393,6 +393,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           ->GetPaymentsDataManager()
           .ShouldShowBnplSettings());
 
+  html_source->AddBoolean("enableBlockV8OptimizerOnUnfamiliarSites",
+                          base::FeatureList::IsEnabled(
+                              content_settings::features::
+                                  kBlockV8OptimizerOnUnfamiliarSitesSetting));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 

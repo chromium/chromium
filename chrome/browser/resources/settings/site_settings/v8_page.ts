@@ -3,17 +3,22 @@
 // found in the LICENSE file.
 
 import './category_setting_exceptions.js';
-import './settings_category_default_radio_group.js';
 import './site_settings_shared.css.js';
+import '../controls/settings_radio_group.js';
+import '../privacy_page/collapse_radio_button.js';
 import '../settings_shared.css.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContentSettingsTypes} from '../site_settings/constants.js';
+import {loadTimeData} from '../i18n_setup.js';
 
+import {ContentSettingsTypes, JavascriptOptimizerSetting} from './constants.js';
 import {getTemplate} from './v8_page.html.js';
 
-export class V8PageElement extends PolymerElement {
+const V8PageElementBase = PrefsMixin(PolymerElement);
+
+export class V8PageElement extends V8PageElementBase {
   static get is() {
     return 'settings-v8-page';
   }
@@ -26,15 +31,30 @@ export class V8PageElement extends PolymerElement {
     return {
       searchTerm: String,
 
+      isBlockV8OptimizerOnUnfamiliarSitesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableBlockV8OptimizerOnUnfamiliarSites');
+        },
+      },
+
       // Expose ContentSettingsTypes enum to the HTML template.
       contentSettingsTypesEnum_: {
         type: Object,
         value: ContentSettingsTypes,
       },
+
+      // Expose JavascriptOptimizerSetting enum to the HTML template.
+      javascriptOptimizerSettingEnum_: {
+        type: Object,
+        value: JavascriptOptimizerSetting,
+      },
     };
   }
 
   declare searchTerm: string;
+  declare private isBlockV8OptimizerOnUnfamiliarSitesEnabled_: boolean;
 }
 
 declare global {

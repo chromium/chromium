@@ -43,6 +43,7 @@ source_set("content_settings") {
   } else {
     sources += [
       "generated_cookie_prefs.h",
+      "generated_javascript_optimizer_pref.h",
       "generated_permission_prompting_behavior_pref.h",
     ]
 
@@ -101,6 +102,7 @@ source_set("impl") {
   } else {
     sources += [
       "generated_cookie_prefs.cc",
+      "generated_javascript_optimizer_pref.cc",
       "generated_permission_prompting_behavior_pref.cc",
     ]
 
@@ -318,7 +320,10 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [ "javascript_optimizer_provider_android_unittest.cc" ]
   } else {
-    sources += [ "generated_cookie_prefs_unittest.cc" ]
+    sources += [
+      "generated_cookie_prefs_unittest.cc",
+      "generated_javascript_optimizer_pref_unittest.cc",
+    ]
 
     deps += [
       "//chrome/browser/extensions",

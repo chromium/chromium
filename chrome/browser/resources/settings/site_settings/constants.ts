@@ -145,6 +145,19 @@ export enum SettingsState {
 }
 
 /**
+ * Enumeration of states for the Javascript optimizer default setting generated
+ * pref. Must be kept in sync with the JavascriptOptimizerSetting enum in:
+ * chrome/browser/content_settings/generated_javascript_optimizer_pref.h
+ */
+// LINT.IfChange(JavascriptOptimizerSetting)
+export enum JavascriptOptimizerSetting {
+  BLOCKED = 0,
+  ALLOWED = 1,
+  BLOCKED_FOR_UNFAMILIAR_SITES = 2,
+}
+// LINT.ThenChange(//chrome/browser/content_settings/generated_javascript_optimizer_pref.h:JavascriptOptimizerSetting)
+
+/**
  * An invalid subtype value.
  */
 export const INVALID_CATEGORY_SUBTYPE: string = '';
