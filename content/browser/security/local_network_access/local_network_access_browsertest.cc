@@ -64,6 +64,13 @@ constexpr char kPublicHost[] = "c.test";
 // Path to a default response served by all servers in this test.
 constexpr char kDefaultPath[] = "/defaultresponse";
 
+// Path to a response with the `treat-as-public-address` CSP directive.
+constexpr char kTreatAsPublicAddressPath[] =
+    "/set-header?Content-Security-Policy: treat-as-public-address";
+
+// Path to a cacheable response.
+constexpr char kCacheablePath[] = "/cachetime";
+
 // A |ContentBrowserClient| implementation that allows modifying the return
 // value of |ShouldAllowInsecurePrivateNetworkRequests()| at will.
 class PolicyTestContentBrowserClient
@@ -504,6 +511,22 @@ class LocalNetworkAccessBrowserTest : public LocalNetworkAccessBrowserTestBase {
 // These tests verify the contents of `ClientSecurityState` for top-level
 // documents in various different circumstances.
 
+// This test checks the default security state.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, CheckSecurityState) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
+}
+
 // This test verifies the contents of the ClientSecurityState for the initial
 // empty document in a new main frame created by the browser.
 //
@@ -537,19 +560,304 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
             security_state->ip_address_space);
 }
 
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, CheckSecurityState) {
+// This test verifies the contents of the ClientSecurityState for `about:blank`
+// in a new main frame created by the browser.
+//
+// Note: the renderer-created main frame case is exercised by the Openee
+// inheritance tests below.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForAboutBlank) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForDataURL) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForFileURL) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "empty.html")));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForInsecureLoopbackAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLoopbackURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForInsecureLocalAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecureLocalURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForInsecurePublicAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForSecureLoopbackAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForSecureLocalAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForSecurePublicAddress) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
-
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
             security_state->ip_address_space);
+}
 
-  EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
+// Tests that a top-level navigation to 0.0.0.0 is in the kLoopback address
+// space.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForNullIP) {
+  if constexpr (BUILDFLAG(IS_WIN)) {
+    GTEST_SKIP() << "0.0.0.0 behavior varies across platforms and is "
+                    "unreachable on Windows.";
+  }
+
+  EXPECT_TRUE(NavigateToURL(shell(), NullIPURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForTreatAsPublicAddress) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureLoopbackURL(kTreatAsPublicAddressPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForTreatAsPublicAddressReportOnly) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      SecureLoopbackURL("/set-header?Content-Security-Policy-Report-Only: "
+                        "treat-as-public-address")));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForCachedSecureLoopbackDocument) {
+  // Navigate to the cacheable document in order to cache it, then navigate
+  // away.
+  const GURL url = SecureLoopbackURL(kCacheablePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  // Navigate to the cached document.
+  ResourceLoadObserver observer(shell());
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  observer.WaitForResourceCompletion(url);
+
+  blink::mojom::ResourceLoadInfoPtr* info = observer.GetResource(url);
+  ASSERT_TRUE(info);
+  ASSERT_TRUE(*info);
+  EXPECT_TRUE((*info)->was_cached);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForCachedInsecurePublicDocument) {
+  // Navigate to the cacheable document in order to cache it, then navigate
+  // away.
+  const GURL url = InsecurePublicURL(kCacheablePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(NavigateToURL(shell(), SecureLoopbackURL(kDefaultPath)));
+
+  // Navigate to the cached document.
+  ResourceLoadObserver observer(shell());
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  observer.WaitForResourceCompletion(url);
+
+  blink::mojom::ResourceLoadInfoPtr* info = observer.GetResource(url);
+  ASSERT_TRUE(info);
+  ASSERT_TRUE(*info);
+  EXPECT_TRUE((*info)->was_cached);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+// This test verifies that the chrome:// scheme is considered loopback for the
+// purpose of Local Network Access.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForSpecialSchemeChromeURL) {
+  // Not all chrome:// hosts are available in content/ but ukm is one of them.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("chrome://ukm")));
+  EXPECT_TRUE(
+      root_frame_host()->GetLastCommittedURL().SchemeIs(kChromeUIScheme));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+// The view-source:// scheme should only ever appear in the display URL. It
+// shouldn't affect the IPAddressSpace computation. This test verifies that we
+// end up with the response IPAddressSpace.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForSpecialSchemeViewSourcePublic) {
+  const GURL url = SecurePublicURL(kDefaultPath);
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("view-source:" + url.spec())));
+
+  EXPECT_FALSE(
+      root_frame_host()->GetLastCommittedURL().SchemeIs(kViewSourceScheme));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+// Variation of above test with a local address.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForSpecialSchemeViewSourceLocal) {
+  const GURL url = SecureLocalURL(kDefaultPath);
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("view-source:" + url.spec())));
+
+  EXPECT_FALSE(
+      root_frame_host()->GetLastCommittedURL().SchemeIs(kViewSourceScheme));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+// The chrome-error:// scheme should only ever appear in origins. It shouldn't
+// affect the IPAddressSpace computation. This test verifies that we end up with
+// the response IPAddressSpace. Error pages should not be considered secure
+// contexts however.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForSpecialSchemeChromeErrorPublic) {
+  EXPECT_FALSE(NavigateToURL(shell(), SecurePublicURL("/empty404.html")));
+
+  EXPECT_FALSE(
+      root_frame_host()->GetLastCommittedURL().SchemeIs(kChromeErrorScheme));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+}
+
+// Variation of above test with a local address.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForSpecialSchemeChromeErrorLocal) {
+  EXPECT_FALSE(NavigateToURL(shell(), SecureLocalURL("/empty404.html")));
+
+  EXPECT_FALSE(
+      root_frame_host()->GetLastCommittedURL().SchemeIs(kChromeErrorScheme));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
 }
 
 }  // namespace content
