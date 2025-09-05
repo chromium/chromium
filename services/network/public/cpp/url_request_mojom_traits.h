@@ -72,6 +72,13 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return enabled_client_hints.hints;
   }
 
+  static const std::vector<network::mojom::WebClientHintsType>&
+  not_allowed_hints(
+      const network::ResourceRequest::TrustedParams::EnabledClientHints&
+          enabled_client_hints) {
+    return enabled_client_hints.not_allowed_hints;
+  }
+
   static bool Read(
       network::mojom::EnabledClientHintsDataView data,
       network::ResourceRequest::TrustedParams::EnabledClientHints* out);

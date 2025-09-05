@@ -49,6 +49,9 @@ bool StructTraits<network::mojom::EnabledClientHintsDataView,
   if (!data.ReadHints(&out->hints)) {
     return false;
   }
+  if (!data.ReadNotAllowedHints(&out->not_allowed_hints)) {
+    return false;
+  }
   return true;
 }
 

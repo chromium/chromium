@@ -52,8 +52,16 @@ struct EnabledClientHints {
   // Whether this is for an outermost main frame.
   bool is_outermost_main_frame;
 
-  // The client hints enabled for the request.
+  // The set of client hints that are enabled for the origin and currently
+  // allowed to be attached to the request (e.g., by Feature Policy).
   array<WebClientHintsType> hints;
+
+  // The set of client hints that are persisted for the origin but are
+  // currently not allowed to be attached to the request (e.g., blocked by
+  // Feature Policy). This is used in the network service to avoid an
+  // unnecessary IPC to the browser process when an ACCEPT_CH frame contains
+  // such hints.
+  array<WebClientHintsType> not_allowed_hints;
 };
 
 // See documentation at `URLRequest.trusted_params`.

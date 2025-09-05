@@ -72,7 +72,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
 
       url::Origin origin;
       bool is_outermost_main_frame = false;
+      // The set of client hints that are enabled for the origin and currently
+      // allowed to be attached to the request (e.g., by Feature Policy).
       std::vector<network::mojom::WebClientHintsType> hints;
+      // The set of client hints that are persisted for the origin but are
+      // currently not allowed to be attached to the request (e.g., blocked by
+      // Feature Policy). This is used in the network service to avoid an
+      // unnecessary IPC to the browser process when an ACCEPT_CH frame contains
+      // such hints.
+      std::vector<network::mojom::WebClientHintsType> not_allowed_hints;
     };
 
     TrustedParams();

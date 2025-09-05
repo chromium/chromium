@@ -44,6 +44,7 @@
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/cpp/permissions_policy/client_hints_permissions_policy_mapping.h"
@@ -1100,8 +1101,18 @@ GetEnabledClientHints(const url::Origin& origin,
   // origin-level or "browser-level" policies like disabling JS or other
   // features.
   for (const auto& [hint, _] : client_hints_map) {
+    // `enabled_client_hints.hints` are client hints that are enabled for the
+    // origin and allowed to be attached to the request.
     if (ShouldAddClientHint(data, hint)) {
       enabled_client_hints.hints.push_back(hint);
+    }
+    // `enabled_client_hints.not_allowed_hints` are client hints that are
+    // currently not allowed to be attached to the request.
+    if (base::FeatureList::IsEnabled(
+            network::features::kOffloadAcceptCHFrameCheck) &&
+        network::features::kAcceptCHFrameOffloadNotAllowedHints.Get() &&
+        !IsClientHintAllowed(data, hint)) {
+      enabled_client_hints.not_allowed_hints.push_back(hint);
     }
   }
   enabled_client_hints.origin = data.main_frame_origin;

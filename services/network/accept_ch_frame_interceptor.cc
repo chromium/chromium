@@ -167,17 +167,30 @@ AcceptCHFrameInterceptor::NeedsObserverCheck(
   }
 
   CHECK(base::FeatureList::IsEnabled(features::kOffloadAcceptCHFrameCheck));
-  if (!std::all_of(hints.cbegin(), hints.cend(),
-                   [&](const network::mojom::WebClientHintsType& h) {
-                     const bool hint_enabled =
-                         base::Contains(enabled_client_hints_->hints, h);
-                     if (!hint_enabled) {
-                       base::UmaHistogramEnumeration(
-                           "Net.AcceptCHFrameInterceptor.MismatchClientHint",
-                           h);
-                     }
-                     return hint_enabled;
-                   })) {
+  // The Accept-CH frame can be offloaded (i.e., handled in the network
+  // service without an IPC to the browser process) if all hints in the frame
+  // are present in either the `hints` list (enabled and allowed) or the
+  // `not_allowed_hints` list (persisted but currently disallowed). If any hint
+  // is not in either list, we must fall back to the browser process to check.
+  bool needs_observer_check = false;
+  for (const auto& h : hints) {
+    const bool is_in_hints = base::Contains(enabled_client_hints_->hints, h);
+    const bool is_in_not_allowed_hints =
+        features::kAcceptCHFrameOffloadNotAllowedHints.Get() &&
+        base::Contains(enabled_client_hints_->not_allowed_hints, h);
+    const bool is_valid_for_offload = is_in_hints || is_in_not_allowed_hints;
+    if (is_in_not_allowed_hints && !is_in_hints) {
+      base::UmaHistogramEnumeration(
+          "Net.AcceptCHFrameInterceptor.OffloadSuccessForNotAllowedHint", h);
+    }
+    if (!is_valid_for_offload) {
+      needs_observer_check = true;
+      base::UmaHistogramEnumeration(
+          "Net.AcceptCHFrameInterceptor.MismatchClientHint2", h);
+    }
+  }
+
+  if (needs_observer_check) {
     return NeedsObserverCheckReason::kHintNotEnabled;
   }
 

@@ -68,7 +68,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.request_initiator = url::Origin::Create(original.url);
   original.isolated_world_origin =
       url::Origin::Create(GURL("chrome-extension://blah"));
-  original.referrer = GURL("https://referrer.com/");
+  original.referrer = GURL("https://referrer.test/");
   original.referrer_policy =
       net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN;
   original.headers.SetHeader("Accept", "text/xml");
@@ -127,16 +127,20 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.trusted_params->include_request_cookies_with_response = true;
   original.trusted_params->enabled_client_hints.emplace();
   original.trusted_params->enabled_client_hints->origin =
-      url::Origin::Create(GURL("https://a.com"));
+      url::Origin::Create(GURL("https://a.test"));
   original.trusted_params->enabled_client_hints->is_outermost_main_frame = true;
   original.trusted_params->enabled_client_hints->hints = {
       network::mojom::WebClientHintsType::kUAArch,
       network::mojom::WebClientHintsType::kUAWoW64,
   };
+  original.trusted_params->enabled_client_hints->not_allowed_hints = {
+      network::mojom::WebClientHintsType::kUAPlatform,
+      network::mojom::WebClientHintsType::kUAModel,
+  };
 
   original.trust_token_params = network::mojom::TrustTokenParams();
   original.trust_token_params->issuers.push_back(
-      url::Origin::Create(GURL("https://issuer.com")));
+      url::Origin::Create(GURL("https://issuer.test")));
   original.trust_token_params->operation =
       mojom::TrustTokenOperationType::kRedemption;
   original.trust_token_params->include_timestamp_header = true;
@@ -186,11 +190,15 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_TrustedParams) {
   original.include_request_cookies_with_response = true;
   original.enabled_client_hints.emplace();
   original.enabled_client_hints->origin =
-      url::Origin::Create(GURL("https://a.com"));
+      url::Origin::Create(GURL("https://a.test"));
   original.enabled_client_hints->is_outermost_main_frame = true;
   original.enabled_client_hints->hints = {
       network::mojom::WebClientHintsType::kUAArch,
       network::mojom::WebClientHintsType::kUAWoW64,
+  };
+  original.enabled_client_hints->not_allowed_hints = {
+      network::mojom::WebClientHintsType::kUAPlatform,
+      network::mojom::WebClientHintsType::kUAModel,
   };
   network::ResourceRequest::TrustedParams copied;
   EXPECT_TRUE(

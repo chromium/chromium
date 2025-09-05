@@ -5975,6 +5975,64 @@ INSTANTIATE_TEST_SUITE_P(
                     TestMode::kCredentialsModeOmitWorkaround,
                     TestMode::kCredentialsModeOmitWithFeatureFix));
 
+TEST_F(URLLoaderTest, AcceptCHFrameNotAllowedHintWithFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOffloadAcceptCHFrameCheck,
+      {{"AcceptCHFrameOffloadNotAllowedHints", "true"}});
+
+  net::TransportInfo info = net::DefaultTransportInfo();
+  info.accept_ch_frame = "Sec-CH-UA-Platform";
+
+  const GURL url("http://accept-ch.test/");
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      url, std::make_unique<FakeTransportInfoInterceptor>(info));
+
+  MockAcceptCHFrameObserver observer;
+  set_accept_ch_frame_observer_for_next_request(&observer);
+
+  network::ResourceRequest::TrustedParams::EnabledClientHints enabled_hints;
+  enabled_hints.origin = url::Origin::Create(url);
+  enabled_hints.is_outermost_main_frame = true;
+  enabled_hints.hints = {network::mojom::WebClientHintsType::kUAArch};
+  enabled_hints.not_allowed_hints = {
+      network::mojom::WebClientHintsType::kUAPlatform};
+  set_enabled_client_hints_for_next_request(std::move(enabled_hints));
+
+  EXPECT_THAT(Load(url), IsOk());
+  EXPECT_FALSE(observer.called());
+}
+
+TEST_F(URLLoaderTest, AcceptCHFrameNotAllowedHintWithoutFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOffloadAcceptCHFrameCheck,
+      {{"AcceptCHFrameOffloadNotAllowedHints", "false"}});
+
+  net::TransportInfo info = net::DefaultTransportInfo();
+  info.accept_ch_frame = "Sec-CH-UA-Platform";
+
+  const GURL url("http://accept-ch.test/");
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      url, std::make_unique<FakeTransportInfoInterceptor>(info));
+
+  MockAcceptCHFrameObserver observer;
+  set_accept_ch_frame_observer_for_next_request(&observer);
+
+  network::ResourceRequest::TrustedParams::EnabledClientHints enabled_hints;
+  enabled_hints.origin = url::Origin::Create(url);
+  enabled_hints.is_outermost_main_frame = true;
+  enabled_hints.hints = {network::mojom::WebClientHintsType::kUAArch};
+  enabled_hints.not_allowed_hints = {
+      network::mojom::WebClientHintsType::kUAPlatform};
+  set_enabled_client_hints_for_next_request(std::move(enabled_hints));
+
+  EXPECT_THAT(Load(url), IsOk());
+  EXPECT_TRUE(observer.called());
+  EXPECT_THAT(observer.accept_ch_frame(),
+              ElementsAre(network::mojom::WebClientHintsType::kUAPlatform));
+}
+
 // Tests that a request with CredentialsMode::kOmit still sends client
 // certificates when features::kOmitCorsClientCert is disabled, and when the
 // feature is enabled client certificates are not sent. Also test that when

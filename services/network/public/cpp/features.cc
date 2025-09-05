@@ -166,6 +166,16 @@ BASE_FEATURE(kOffloadAcceptCHFrameCheck,
              "OffloadAcceptCHFrameCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the network service will consider not-allowed but persisted
+// client hints as "enabled" for the purpose of the Accept-CH frame offload
+// check.
+// See crbug.com/406407746 for details.
+BASE_FEATURE_PARAM(bool,
+                   kAcceptCHFrameOffloadNotAllowedHints,
+                   &kOffloadAcceptCHFrameCheck,
+                   "AcceptCHFrameOffloadNotAllowedHints",
+                   false);
+
 // Enable offloading the network layer to check enabled client hints even when
 // cross origin redirect happens.
 // See crbug.com/406407746 for details.

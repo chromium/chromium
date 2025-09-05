@@ -1248,14 +1248,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.AcceptCHFrameInterceptor.MismatchClientHint"
-    enum="WebClientHintsType" expires_after="2026-02-01">
+<histogram name="Net.AcceptCHFrameInterceptor.MismatchClientHint2"
+    enum="WebClientHintsType" expires_after="2026-08-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
-    Records which client hint caused the Accept-CH frame offload to fail because
-    the hint was not in the enabled list. This is recorded when
-    AcceptCHFrameInterceptor::NeedsObserverCheck returns kHintNotEnabled.
+    To optimize performance, the network service can handle `Accept-CH` frames
+    directly without consulting the browser process (an optimization called
+    'offloading'). This histogram is recorded when that optimization fails. It
+    identifies the specific client hint from the `Accept-CH` frame that was not
+    in the network service's cache of hints the browser had previously
+    identified as either allowed or disallowed for the origin. A value is
+    recorded each time this mismatch occurs, forcing a fallback to the browser
+    process.
   </summary>
 </histogram>
 
@@ -1267,6 +1272,22 @@ chromium-metrics-reviews@google.com.
     The reason why AcceptCHFrameInterceptor::NeedsObserverCheck returns true.
     Recorded every time NeedsObserverCheck is called. It is recorded just before
     returning from the function.
+  </summary>
+</histogram>
+
+<histogram name="Net.AcceptCHFrameInterceptor.OffloadSuccessForNotAllowedHint"
+    enum="WebClientHintsType" expires_after="2026-08-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    When handling an `Accept-CH` frame, the network service can sometimes avoid
+    a costly round-trip to the browser process by checking for required client
+    hints itself (an optimization called 'offloading'). This histogram is
+    recorded for each client hint that was successfully offloaded specifically
+    because of a mechanism enabled by the AcceptCHFrameOffloadNotAllowedHints
+    feature parameter. This mechanism allows offloading for hints that are
+    persisted for an origin but currently disabled by Permissions Policy. This
+    metric helps measure the effectiveness of this opt-in optimization.
   </summary>
 </histogram>
 

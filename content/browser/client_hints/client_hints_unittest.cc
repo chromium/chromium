@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/test_browser_context.h"
@@ -19,6 +20,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -345,6 +347,7 @@ TEST_F(ClientHintsTest, GetEnabledClientHintsMainFrame) {
   // We do not care the order of contents.
   EXPECT_THAT(actual_hints.hints,
               testing::UnorderedElementsAreArray(expected_types));
+  EXPECT_TRUE(actual_hints.not_allowed_hints.empty());
 }
 
 TEST_F(ClientHintsTest, GetEnabledClientHintsSubframe) {
@@ -535,6 +538,49 @@ TEST_F(ClientHintsTest, GetCriticalHintsMissingStatus) {
   EXPECT_EQ(GetCriticalHintsMissingStatus(origin, main_frame_node, &delegate,
                                           critical_hints),
             CriticalHintsMissingStatus::kPresent);
+}
+
+TEST_F(ClientHintsTest, GetEnabledClientHintsSubframeNotAllowed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{network::features::kOffloadAcceptCHFrameCheck,
+        {{network::features::kAcceptCHFrameOffloadNotAllowedHints.name,
+          "true"}}}},
+      {});
+
+  GURL main_url(kOriginUrl);
+  contents()->NavigateAndCommit(main_url);
+  url::Origin main_origin = url::Origin::Create(main_url);
+
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* main_frame_node = frame_tree.root();
+  AddOneChildNode();
+  FrameTreeNode* sub_frame_node = main_frame_node->child_at(0);
+
+  blink::UserAgentMetadata ua_metadata;
+  MockClientHintsControllerDelegate delegate(ua_metadata);
+
+  GURL sub_url("https://sub.example.com");
+  const auto& actual_hints = GetEnabledClientHints(url::Origin::Create(sub_url),
+                                                   sub_frame_node, &delegate);
+
+  std::vector<network::mojom::WebClientHintsType> expected_allowed_hints;
+  std::vector<network::mojom::WebClientHintsType> expected_not_allowed_hints;
+
+  for (const auto& [hint, _] : network::GetClientHintToNameMap()) {
+    if (blink::IsClientHintSentByDefault(hint)) {
+      expected_allowed_hints.push_back(hint);
+    } else {
+      expected_not_allowed_hints.push_back(hint);
+    }
+  }
+
+  EXPECT_EQ(main_origin, actual_hints.origin);
+  EXPECT_FALSE(actual_hints.is_outermost_main_frame);
+  EXPECT_THAT(actual_hints.hints,
+              testing::UnorderedElementsAreArray(expected_allowed_hints));
+  EXPECT_THAT(actual_hints.not_allowed_hints,
+              testing::UnorderedElementsAreArray(expected_not_allowed_hints));
 }
 
 }  // namespace content
