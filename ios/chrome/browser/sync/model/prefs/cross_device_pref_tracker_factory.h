@@ -13,10 +13,6 @@
 class KeyedService;
 class ProfileIOS;
 
-namespace web {
-class BrowserState;
-}  // namespace web
-
 namespace sync_preferences {
 class CrossDevicePrefTracker;
 }  // namespace sync_preferences
@@ -44,9 +40,9 @@ class CrossDevicePrefTrackerFactory : public ProfileKeyedServiceFactoryIOS {
   CrossDevicePrefTrackerFactory();
   ~CrossDevicePrefTrackerFactory() override;
 
-  // `BrowserStateKeyedServiceFactory` implementation.
+  // `ProfileKeyedServiceFactoryIOS` implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_PREFS_CROSS_DEVICE_PREF_TRACKER_FACTORY_H_

@@ -43,13 +43,12 @@ CrossDevicePrefTrackerFactory::~CrossDevicePrefTrackerFactory() = default;
 
 std::unique_ptr<KeyedService>
 CrossDevicePrefTrackerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   if (!base::FeatureList::IsEnabled(
           sync_preferences::features::kEnableCrossDevicePrefTracker)) {
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   // The implementation in `components/sync_preferences` is platform-agnostic.
   return std::make_unique<sync_preferences::CrossDevicePrefTrackerImpl>(

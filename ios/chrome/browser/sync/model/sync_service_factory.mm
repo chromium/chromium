@@ -176,9 +176,7 @@ std::unique_ptr<syncer::SyncClient> BuildSyncClient(ProfileIOS* profile) {
       SupervisedUserSettingsServiceFactory::GetForProfile(profile));
 }
 
-std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS* profile) {
   CHECK(profile);
   CHECK(!profile->IsOffTheRecord());
 
@@ -360,6 +358,6 @@ SyncServiceFactory::SyncServiceFactory()
 SyncServiceFactory::~SyncServiceFactory() {}
 
 std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildSyncService(context);
+    ProfileIOS* profile) const {
+  return BuildSyncService(profile);
 }

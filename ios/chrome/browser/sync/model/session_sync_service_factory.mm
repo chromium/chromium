@@ -155,9 +155,7 @@ SessionSyncServiceFactory::SessionSyncServiceFactory()
 SessionSyncServiceFactory::~SessionSyncServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
-SessionSyncServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+SessionSyncServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<sync_sessions::SessionSyncServiceImpl>(
       ::GetChannel(),
       std::make_unique<SyncSessionsClientImpl>(

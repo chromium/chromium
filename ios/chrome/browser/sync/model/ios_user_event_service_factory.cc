@@ -45,9 +45,7 @@ IOSUserEventServiceFactory::IOSUserEventServiceFactory()
 IOSUserEventServiceFactory::~IOSUserEventServiceFactory() {}
 
 std::unique_ptr<KeyedService>
-IOSUserEventServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+IOSUserEventServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   if (profile->IsOffTheRecord()) {
     return std::make_unique<syncer::NoOpUserEventService>();
   }
