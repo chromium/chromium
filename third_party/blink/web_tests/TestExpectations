@@ -9652,3 +9652,7 @@ crbug.com/442030691 compositing/video/video-poster.html [ Failure Pass ]
 
 # Gardener 2025-09-05
 crbug.com/443161677 [ Win11-arm64 ] http/tests/inspector-protocol/network/get-durable-response-gzip-body.js [ Failure Timeout ]
+
+# Temporarily disabled because RenderDocument is not enabled on mac bots just yet.
+# TODO(crbug.com/40615943): Re-enable this test once RenderDocument is enabled on mac bots.
+crbug.com/40615943 [ Mac ] http/tests/inspector-protocol/bfcache/report-back-forward-cache-status-blocklisted-features-same-site.js [ Failure ]
