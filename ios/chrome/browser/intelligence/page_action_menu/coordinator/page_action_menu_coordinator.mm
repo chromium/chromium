@@ -29,8 +29,11 @@
 
 namespace {
 
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+const CGFloat kMenuCornerRadius = 28;
+#else
 const CGFloat kMenuCornerRadius = 20;
-
+#endif
 }
 
 @interface PageActionMenuCoordinator () <
