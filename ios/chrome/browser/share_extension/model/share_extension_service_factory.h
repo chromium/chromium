@@ -26,9 +26,9 @@ class ShareExtensionServiceFactory : public ProfileKeyedServiceFactoryIOS {
   ShareExtensionServiceFactory();
   ~ShareExtensionServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARE_EXTENSION_MODEL_SHARE_EXTENSION_SERVICE_FACTORY_H_
