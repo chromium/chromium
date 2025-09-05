@@ -126,7 +126,7 @@ BASE_FEATURE(kLensOverlayPermissionBubbleAlt,
 
 BASE_FEATURE(kLensOverlayBackToPage,
              "LensOverlayBackToPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSearchNotFoundOnPageToast,
              "kLensSearchNotFoundOnPageToast",
