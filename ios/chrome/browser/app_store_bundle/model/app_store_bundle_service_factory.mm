@@ -30,7 +30,7 @@ AppStoreBundleServiceFactory::~AppStoreBundleServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 AppStoreBundleServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   if (base::FeatureList::IsEnabled(
           segmentation_platform::features::kAppBundlePromoEphemeralCard)) {
     return ios::provider::CreateAppStoreBundleService();

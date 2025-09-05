@@ -28,9 +28,9 @@ class AppStoreBundleServiceFactory : public ProfileKeyedServiceFactoryIOS {
   AppStoreBundleServiceFactory();
   ~AppStoreBundleServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_APP_STORE_BUNDLE_MODEL_APP_STORE_BUNDLE_SERVICE_FACTORY_H_
