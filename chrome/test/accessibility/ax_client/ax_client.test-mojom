@@ -1,0 +1,29 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax_client.mojom;
+
+// Interface for controlling the out-of-process accessibility client in
+// [//chrome/test/accessibility/ax_client/impl](../impl). Use an
+// `ax_client::Launcher` instance from a browser test to launch the process and
+// get a `mojo::Remote<>` to its implementation of this interface.
+interface AxClient {
+
+  // Initializes the accessibility client in the remote process for the given
+  // `hwnd`. In so doing, the client obtains the top-level accessible element
+  // for the window and starts observing structure changes beneath it. Returns
+  // an `HRESULT` indicating success or failure.
+  Initialize(uint32 hwnd) => (uint32 result);
+
+  // Recursively finds all accessible elements in the window for which the
+  // instance was initialized. Returns an `HRESULT` indicating success or
+  // failure.
+  FindAll() => (uint32 result);
+
+  // Releases all resources and returns the instance to the uninitialized state.
+  Shutdown() => ();
+
+  // Terminates the process immediately without cleaning up any resources.
+  Terminate();
+};
