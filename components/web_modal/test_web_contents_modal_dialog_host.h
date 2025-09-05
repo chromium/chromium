@@ -8,7 +8,7 @@
 #include "base/compiler_specific.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace web_modal {
 

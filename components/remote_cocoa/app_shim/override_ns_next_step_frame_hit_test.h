@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_OVERRIDE_NS_NEXT_STEP_FRAME_HIT_TEST_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_OVERRIDE_NS_NEXT_STEP_FRAME_HIT_TEST_H_
 
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace remote_cocoa {
 

@@ -6,7 +6,7 @@
 
 #include <Foundation/Foundation.h>
 
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace {
 NSMutableSet* ObjectSetForTesting() {

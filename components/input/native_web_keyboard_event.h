@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
