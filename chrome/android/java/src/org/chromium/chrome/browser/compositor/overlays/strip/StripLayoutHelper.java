@@ -4335,9 +4335,9 @@ public class StripLayoutHelper
     private float getStripWidthForEndMostTabMouseClosure(
             float closingEndMostTabDrawX, float closingEndMostTabWidth) {
         if (LocalizationUtils.isLayoutRtl()) {
-            return mWidth - closingEndMostTabDrawX;
+            return mWidth - mRightMargin - closingEndMostTabDrawX;
         } else {
-            return closingEndMostTabDrawX + closingEndMostTabWidth;
+            return closingEndMostTabDrawX + closingEndMostTabWidth - mLeftMargin;
         }
     }
 
