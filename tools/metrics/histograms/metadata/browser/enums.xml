@@ -474,6 +474,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Failed CanRequestURL Check"/>
 </enum>
 
+<!-- LINT.IfChange(RenderProcessHostDelayShutdownReason) -->
+
 <enum name="RenderProcessHostDelayShutdownReason">
   <int value="0" label="No Delay"/>
   <int value="1" label="Other Active Or Pending Views">
@@ -485,7 +487,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="No Process">
     Render process hasn't started or is probably crashed.
   </int>
-  <int value="4" label="Unload Handler Exists"/>
+  <int value="4" label="Unload Handler Exists (Deprecated)"/>
   <int value="5" label="Fetch Keepalive Request">
     There is pending fetch keepalive request.
   </int>
@@ -501,7 +503,14 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="NavigationStateKeepAlive">
     There are NavigationStateKeepAlives in this process.
   </int>
+  <int value="12" label="Fast shutdown disallowed at the process level"/>
+  <int value="13" label="Has a beforeunload handler"/>
+  <int value="14" label="Has a unload handler"/>
+  <int value="15" label="Has a pagehide handler"/>
+  <int value="16" label="Has a visibilitychange handler"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/render_process_host_impl.h:RenderProcessHostDelayShutdownReason) -->
 
 <!-- LINT.IfChange(SpareProcessMaybeTakeAction) -->
 

@@ -1315,15 +1315,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.FastShutdownIfPossible.DelayReason"
-    enum="RenderProcessHostDelayShutdownReason" expires_after="2026-01-04">
+    enum="RenderProcessHostDelayShutdownReason" expires_after="2026-02-28">
   <owner>mych@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
-    Recorded whenever a RenderProcessHost is fast shutting down, with the reason
-    the shutdown fails or is delayed, or kNoDelay if it succeeded quickly.
-
-    The total count of this histogram should be equal to
-    BrowserRenderProcessHost.FastShutdownIfPossible.Total.
+    Recorded on every attempt to fast-shutdown a RenderProcessHost. The value is
+    kNoDelay on success, or the reason it couldn't take place otherwise.
 
     Warning: this histogram was expired from 2024-04-29 to 2024-12-09; data may
     be missing.

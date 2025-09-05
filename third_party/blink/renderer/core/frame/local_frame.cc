@@ -1396,7 +1396,6 @@ int NumberOfSuddenTerminationEventListeners(const EventTarget& event_target,
 void LocalFrame::UpdateSuddenTerminationStatus(
     bool added_listener,
     mojom::blink::SuddenTerminationDisablerType disabler_type) {
-  Platform::Current()->SuddenTerminationChanged(!added_listener);
   if (features::IsUnloadBlocklisted()) {
     // Block BFCache for using the unload handler. Originally unload handler was
     // not a blocklisted feature, but we make them blocklisted so the source

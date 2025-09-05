@@ -414,30 +414,24 @@ WebString RendererBlinkPlatformImpl::DefaultLocale() {
   return WebString::FromASCII(RenderThread::Get()->GetLocale());
 }
 
-void RendererBlinkPlatformImpl::SuddenTerminationChanged(bool enabled) {
-  if (enabled) {
-    // We should not get more enables than disables, but we want it to be a
-    // non-fatal error if it does happen.
-    DCHECK_GT(sudden_termination_disables_, 0);
-    sudden_termination_disables_ =
-        std::max(sudden_termination_disables_ - 1, 0);
-    if (sudden_termination_disables_ != 0) {
-      return;
-    }
+void RendererBlinkPlatformImpl::SetSuddenTerminationAllowed(bool allowed) {
+  if (allowed) {
+    CHECK_GT(sudden_termination_disables_, 0);
+    --sudden_termination_disables_;
   } else {
-    sudden_termination_disables_++;
-    if (sudden_termination_disables_ != 1) {
+    ++sudden_termination_disables_;
+  }
+
+  if ((allowed && sudden_termination_disables_ == 0) ||
+      (!allowed && sudden_termination_disables_ == 1)) {
+    RenderThreadImpl* thread = RenderThreadImpl::current();
+    if (!thread) {
+      CHECK_IS_TEST();
       return;
     }
-  }
 
-  RenderThreadImpl* thread = RenderThreadImpl::current();
-  if (!thread) {
-    CHECK_IS_TEST();
-    return;
+    thread->GetRendererHost()->SuddenTerminationAllowedChanged(allowed);
   }
-
-  thread->GetRendererHost()->SuddenTerminationChanged(enabled);
 }
 
 //------------------------------------------------------------------------------

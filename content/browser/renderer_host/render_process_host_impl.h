@@ -80,6 +80,7 @@
 #include "third_party/blink/public/mojom/call_stack_generator/call_stack_generator.mojom.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-forward.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
@@ -283,7 +284,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void DumpProcessStack() override;
 #endif
   void SetSuddenTerminationAllowed(bool enabled) override;
-  bool SuddenTerminationAllowed() override;
   IPC::ChannelProxy* GetChannel() override;
   bool FastShutdownStarted() override;
   base::TimeDelta GetChildProcessIdleTime() override;
@@ -581,19 +581,20 @@ class CONTENT_EXPORT RenderProcessHostImpl
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/histograms.xml:SpareProcessMaybeTakeAction)
 
-  // Please keep in sync with "RenderProcessHostDelayShutdownReason" in
-  // tools/metrics/histograms/metadata/browser/enums.xml. These values should
-  // not be renumbered.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(RenderProcessHostDelayShutdownReason)
   enum class DelayShutdownReason {
     kNoDelay = 0,
     // There are active or pending views other than the ones shutting down.
     kOtherActiveOrPendingViews = 1,
     // Single process mode never shuts down the renderer.
     kSingleProcess = 2,
+    // There is unload handler.
+    // kUnload = 4, // no longer used, replaced with values 12-16
     // Render process hasn't started or is probably crashed.
     kNoProcess = 3,
-    // There is unload handler.
-    kUnload = 4,
     // There is pending fetch keepalive request.
     kFetchKeepAlive = 5,
     // There is worker.
@@ -608,9 +609,21 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kObserver = 10,
     // There are NavigationStateKeepAlive objects in this process.
     kNavigationStateKeepAlive = 11,
+    // Fast shutdown disallowed at the process level (as of Aug 2025, this was
+    // only done by blink::BlobBytesProvider).
+    kFastShutdownDisallowedProcessLevel = 12,
+    // Has a beforeunload handler
+    kBeforeUnloadHandler = 13,
+    // Has an unload handler
+    kUnloadHandler = 14,
+    // Has a pagehide handler
+    kPageHideHandler = 15,
+    // Has a visibilitychange handler
+    kVisibilityChangeHandler = 16,
 
-    kMaxValue = kNavigationStateKeepAlive,
+    kMaxValue = kVisibilityChangeHandler,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/histograms.xml:RenderProcessHostDelayShutdownReason)
 
   static scoped_refptr<base::SingleThreadTaskRunner>
   GetInProcessRendererThreadTaskRunnerForTesting();
@@ -1023,12 +1036,17 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // render_process_host_impl_receiver_bindings.cc.
   void RegisterMojoInterfaces();
 
+  // Returns true if a frame in this process has a sudden termination disabler
+  // of type `disabler_type`.
+  bool HasSuddenTerminationDisabler(
+      blink::mojom::SuddenTerminationDisablerType disabler_type);
+
   // mojom::RendererHost
   using BrowserHistogramCallback =
       mojom::RendererHost::GetBrowserHistogramCallback;
   void GetBrowserHistogram(const std::string& name,
                            BrowserHistogramCallback callback) override;
-  void SuddenTerminationChanged(bool enabled) override;
+  void SuddenTerminationAllowedChanged(bool enabled) override;
   void RecordUserMetricsAction(const std::string& action) override;
 #if BUILDFLAG(IS_ANDROID)
   void SetPrivateMemoryFootprint(
@@ -1387,12 +1405,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // The observers watching content-internal events.
   base::ObserverList<RenderProcessHostInternalObserver> internal_observers_;
 
-  // True if the process can be shut down suddenly.  If this is true, then we're
-  // sure that all the `blink::WebView`s in the process can be shutdown
-  // suddenly.  If it's false, then specific `blink::WebView`s might still be
-  // allowed to be shutdown suddenly by checking their
-  // SuddenTerminationAllowed() flag.  This can occur if one WebContents has an
-  // unload event listener but another WebContents in the same process doesn't.
+  // True if sudden termination is allowed at the process level.
+  // Note: There may be frame-level disablers not tracked here.
   bool sudden_termination_allowed_ = true;
 
   // Set to true if this process is blocked and shouldn't be sent input events.

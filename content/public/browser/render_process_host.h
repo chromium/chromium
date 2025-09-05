@@ -417,11 +417,8 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void ResumeSocketManagerForRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) = 0;
 
-  // Sets a flag indicating that the process can be abnormally terminated.
+  // Sets a flag indicating that the process can be fast shutdown.
   virtual void SetSuddenTerminationAllowed(bool allowed) = 0;
-  // Returns true if the process can be abnormally terminated.
-  virtual bool SuddenTerminationAllowed() = 0;
-
   // Returns how long the child has been idle. The definition of idle
   // depends on when a derived class calls mark_child_process_activity_time().
   // This is a rough indicator and its resolution should not be better than

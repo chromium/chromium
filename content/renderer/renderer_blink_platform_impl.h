@@ -117,7 +117,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebURL& request_url) const override;
   bool IsolateStartsInBackground() override;
   blink::WebString DefaultLocale() override;
-  void SuddenTerminationChanged(bool enabled) override;
+  void SetSuddenTerminationAllowed(bool allowed) override;
   viz::FrameSinkId GenerateFrameSinkId() override;
   bool IsLockedToSite() const override;
   bool IsThreadedAnimationEnabled() override;
@@ -283,11 +283,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   std::unique_ptr<blink::WebSandboxSupport> sandbox_support_;
 #endif
 
-  // This counter keeps track of the number of times sudden termination is
-  // enabled or disabled. It starts at 0 (enabled) and for every disable
-  // increments by 1, for every enable decrements by 1. When it reaches 0,
-  // we tell the browser to enable fast termination.
-  int sudden_termination_disables_;
+  // Number of active process-level sudden termination disablers.
+  int sudden_termination_disables_ = 0;
 
   // If true, the renderer process is locked to a site.
   bool is_locked_to_site_;

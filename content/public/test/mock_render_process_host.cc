@@ -394,10 +394,6 @@ void MockRenderProcessHost::DumpProcessStack() {}
 
 void MockRenderProcessHost::SetSuddenTerminationAllowed(bool allowed) {}
 
-bool MockRenderProcessHost::SuddenTerminationAllowed() {
-  return true;
-}
-
 BrowserContext* MockRenderProcessHost::GetBrowserContext() {
   return browser_context_;
 }

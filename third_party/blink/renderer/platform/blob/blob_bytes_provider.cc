@@ -253,7 +253,7 @@ void BlobBytesProvider::IncreaseChildProcessRefCount() {
         CrossThreadBindOnce(&BlobBytesProvider::IncreaseChildProcessRefCount));
     return;
   }
-  Platform::Current()->SuddenTerminationChanged(false);
+  Platform::Current()->SetSuddenTerminationAllowed(/*allowed=*/false);
 }
 
 void BlobBytesProvider::DecreaseChildProcessRefCount() {
@@ -264,7 +264,7 @@ void BlobBytesProvider::DecreaseChildProcessRefCount() {
         CrossThreadBindOnce(&BlobBytesProvider::DecreaseChildProcessRefCount));
     return;
   }
-  Platform::Current()->SuddenTerminationChanged(true);
+  Platform::Current()->SetSuddenTerminationAllowed(/*allowed=*/true);
 }
 
 }  // namespace blink
