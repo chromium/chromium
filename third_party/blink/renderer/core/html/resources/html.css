@@ -961,7 +961,7 @@ select:-internal-list-box {
       vertical-align: -internal-auto-base(text-bottom, initial);
       white-space: -internal-auto-base(nowrap, inherit);
       field-sizing: -internal-auto-base(initial, content);
-      border: -internal-auto-base(1px solid light-dark(#767676, #858585), none);
+      border: -internal-auto-base(1px solid light-dark(#767676, #858585), 1px solid currentColor);
       box-sizing: -internal-auto-base(border-box, initial);
     }
     @supports not blink-feature(CustomizableSelectInPage) {
