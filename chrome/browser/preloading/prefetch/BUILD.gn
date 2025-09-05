@@ -4,7 +4,7 @@
 
 import("//build/config/features.gni")
 
-source_set("browser_tests") {
+source_set("platform_browser_tests") {
   testonly = true
 
   sources = [ "prefetch_browsertest.cc" ]
