@@ -1371,13 +1371,13 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
     hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   }
 
-  RecreateCanvasResourceProviderForCanvas2D();
+  resource_provider = RecreateCanvasResourceProviderForCanvas2D();
 
   canvas()->UpdateMemoryUsage();
 
   canvas()->SetNeedsCompositingUpdate();
 
-  return resource_provider_.get();
+  return resource_provider;
 }
 
 std::unique_ptr<CanvasResourceProvider>
@@ -1419,23 +1419,25 @@ void CanvasRenderingContext2D::
   }
 
   // Bail out if it's not possible to create a new provider.
-  RecreateCanvasResourceProviderForCanvas2D();
-  if (!resource_provider_) {
+  CanvasResourceProvider* new_provider =
+      RecreateCanvasResourceProviderForCanvas2D();
+  if (!new_provider) {
     return;
   }
 
-  resource_provider_->RestoreBackBuffer(image->PaintImageForCurrentFrame());
-  resource_provider_->SetRecorder(std::move(recorder));
+  new_provider->RestoreBackBuffer(image->PaintImageForCurrentFrame());
+  new_provider->SetRecorder(std::move(recorder));
 
   canvas()->UpdateMemoryUsage();
 }
 
-void CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
+CanvasResourceProvider*
+CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
   CHECK(GetHibernationHandler());
   CHECK(!resource_provider_);
 
   if (did_fail_to_create_resource_provider_) {
-    return;
+    return nullptr;
   }
 
   if (canvas()->IsValidImageSize()) {
@@ -1444,18 +1446,19 @@ void CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
   }
   if (!resource_provider_) {
     did_fail_to_create_resource_provider_ = true;
-    return;
+  } else if (resource_provider_->IsValid()) {
+    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                              resource_provider_->IsAccelerated());
+    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                  resource_provider_->GetType());
   }
-
-  CHECK(resource_provider_->IsValid());
-  base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                            resource_provider_->IsAccelerated());
-  base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                resource_provider_->GetType());
+  if (!resource_provider_ || !resource_provider_->IsValid()) {
+    return nullptr;
+  }
 
   auto* hibernation_handler = GetHibernationHandler();
   if (!hibernation_handler->IsHibernating()) {
-    return;
+    return resource_provider_.get();
   }
 
   if (resource_provider_->IsAccelerated()) {
@@ -1485,6 +1488,8 @@ void CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
 
   // shouldBeDirectComposited() may have changed.
   canvas()->SetNeedsCompositingUpdate();
+
+  return resource_provider_.get();
 }
 
 void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
