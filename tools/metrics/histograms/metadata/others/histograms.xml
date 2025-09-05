@@ -3099,6 +3099,9 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2022-04-03 to M105; data may be
     missing.
+
+    Warning: this histogram is capped at 20 seconds and is not correctly
+    representing longer end of boot time.
   </summary>
 </histogram>
 
