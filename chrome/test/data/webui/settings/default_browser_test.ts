@@ -8,6 +8,7 @@ import type {DefaultBrowserBrowserProxy, DefaultBrowserInfo, SettingsDefaultBrow
 import {DefaultBrowserBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // clang-format on
 
 /**
@@ -27,6 +28,7 @@ class TestDefaultBrowserBrowserProxy extends TestBrowserProxy implements
 
     this.defaultBrowserInfo_ = {
       canBeDefault: true,
+      canPin: false,
       isDefault: false,
       isDisabledByPolicy: false,
       isUnknownError: false,
@@ -38,8 +40,8 @@ class TestDefaultBrowserBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.defaultBrowserInfo_);
   }
 
-  setAsDefaultBrowser() {
-    this.methodCalled('setAsDefaultBrowser');
+  setAsDefaultBrowser(pin: boolean) {
+    this.methodCalled('setAsDefaultBrowser', pin);
   }
 
   /**
@@ -76,6 +78,7 @@ suite('DefaultBrowserPageTest', function() {
   test('default-browser-test-can-be-default', async function() {
     browserProxy.setDefaultBrowserInfo({
       canBeDefault: true,
+      canPin: false,
       isDefault: false,
       isDisabledByPolicy: false,
       isUnknownError: false,
@@ -89,12 +92,47 @@ suite('DefaultBrowserPageTest', function() {
     assertTrue(
         !page.shadowRoot!.querySelector<HTMLElement>('#isSecondaryInstall'));
     assertTrue(!page.shadowRoot!.querySelector<HTMLElement>('#isUnknownError'));
+    // Verify that settings page doesn't offer to pin Chrome.
+    const makeDefault =
+        page.shadowRoot!.querySelector<HTMLElement>('#makeDefaultLabel');
+    assertTrue(!!makeDefault);
+    assertEquals(
+        makeDefault.textContent!.trim(),
+        loadTimeData.getString('defaultBrowserMakeDefault'));
+  });
+
+  test('default-browser-test-can-be-default-and-pin', async function() {
+    browserProxy.setDefaultBrowserInfo({
+      canBeDefault: true,
+      canPin: true,
+      isDefault: false,
+      isDisabledByPolicy: false,
+      isUnknownError: false,
+    });
+
+    await initPage();
+    flush();
+    assertTrue(
+        !!page.shadowRoot!.querySelector<HTMLElement>('#canBeDefaultBrowser'));
+    assertFalse(!!page.shadowRoot!.querySelector<HTMLElement>('#isDefault'));
+    assertFalse(
+        !!page.shadowRoot!.querySelector<HTMLElement>('#isSecondaryInstall'));
+    // Verify that settings page offers to pin Chrome.
+    const makeDefault =
+        page.shadowRoot!.querySelector<HTMLElement>('#makeDefaultLabel');
+    assertTrue(!!makeDefault);
+    assertEquals(
+        makeDefault.textContent!.trim(),
+        loadTimeData.getString('defaultBrowserMakeDefaultAndPin'));
+    assertFalse(
+        !!page.shadowRoot!.querySelector<HTMLElement>('#isUnknownError'));
   });
 
   test('default-browser-test-is-default', async function() {
     assertTrue(!!page);
     browserProxy.setDefaultBrowserInfo({
       canBeDefault: true,
+      canPin: false,
       isDefault: true,
       isDisabledByPolicy: false,
       isUnknownError: false,
@@ -116,6 +154,7 @@ suite('DefaultBrowserPageTest', function() {
   test('default-browser-test-is-secondary-install', async function() {
     browserProxy.setDefaultBrowserInfo({
       canBeDefault: false,
+      canPin: false,
       isDefault: false,
       isDisabledByPolicy: false,
       isUnknownError: false,
@@ -137,6 +176,7 @@ suite('DefaultBrowserPageTest', function() {
   test('default-browser-test-is-disabled-by-policy', async function() {
     browserProxy.setDefaultBrowserInfo({
       canBeDefault: true,
+      canPin: false,
       isDefault: false,
       isDisabledByPolicy: true,
       isUnknownError: false,
@@ -158,6 +198,7 @@ suite('DefaultBrowserPageTest', function() {
   test('default-browser-test-is-unknown-error', async function() {
     browserProxy.setDefaultBrowserInfo({
       canBeDefault: true,
+      canPin: false,
       isDefault: false,
       isDisabledByPolicy: false,
       isUnknownError: true,

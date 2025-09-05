@@ -13,6 +13,9 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 export interface DefaultBrowserInfo {
   canBeDefault: boolean;
+  // On Windows, this will be true if Chrome isn't the default browser, and
+  // can be pinned to the taskbar. It is currently false on other platforms.
+  canPin: boolean;
   isDefault: boolean;
   isDisabledByPolicy: boolean;
   isUnknownError: boolean;
@@ -28,18 +31,18 @@ export interface DefaultBrowserBrowserProxy {
   /*
    * Try to set the current browser as the default browser. The new status of
    * the settings will be sent to 'settings.updateDefaultBrowserState'.
+   * pin: If true, will also try to pin Chrome to the taskbar.
    */
-  setAsDefaultBrowser(): void;
+  setAsDefaultBrowser(pin: boolean): void;
 }
-
 export class DefaultBrowserBrowserProxyImpl implements
     DefaultBrowserBrowserProxy {
   requestDefaultBrowserState() {
     return sendWithPromise('requestDefaultBrowserState');
   }
 
-  setAsDefaultBrowser() {
-    chrome.send('setAsDefaultBrowser');
+  setAsDefaultBrowser(pin: boolean) {
+    chrome.send('setAsDefaultBrowser', [pin]);
   }
 
   static getInstance(): DefaultBrowserBrowserProxy {

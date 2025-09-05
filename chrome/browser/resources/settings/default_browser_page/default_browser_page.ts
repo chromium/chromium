@@ -16,6 +16,7 @@ import '../settings_shared.css.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import {getSearchManager} from '../search_settings.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
@@ -38,6 +39,7 @@ export class SettingsDefaultBrowserPageElement extends
 
   static get properties() {
     return {
+      canPin_: Boolean,
       isDefault_: Boolean,
       isSecondaryInstall_: Boolean,
       isUnknownError_: Boolean,
@@ -45,6 +47,7 @@ export class SettingsDefaultBrowserPageElement extends
     };
   }
 
+  declare private canPin_: boolean;
   declare private isDefault_: boolean;
   declare private isSecondaryInstall_: boolean;
   declare private isUnknownError_: boolean;
@@ -64,6 +67,7 @@ export class SettingsDefaultBrowserPageElement extends
   }
 
   private updateDefaultBrowserState_(defaultBrowserState: DefaultBrowserInfo) {
+    this.canPin_ = defaultBrowserState.canPin;
     this.isDefault_ = false;
     this.isSecondaryInstall_ = false;
     this.isUnknownError_ = false;
@@ -82,8 +86,14 @@ export class SettingsDefaultBrowserPageElement extends
     }
   }
 
+  private getMakeDefaultLabel(): string {
+    return loadTimeData.getString(
+        this.canPin_ ? 'defaultBrowserMakeDefaultAndPin' :
+                       'defaultBrowserMakeDefault');
+  }
+
   private onSetDefaultBrowserClick_() {
-    this.browserProxy_.setAsDefaultBrowser();
+    this.browserProxy_.setAsDefaultBrowser(this.canPin_);
   }
 
   // SettingsPlugin implementation
