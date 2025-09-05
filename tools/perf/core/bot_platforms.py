@@ -1085,7 +1085,7 @@ ANDROID_PIXEL_TANGOR = PerfPlatform(
     executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
     crossbench=_CROSSBENCH_TANGOR)
 ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf', 'Android U',
-                                  _ANDROID_GO_BENCHMARK_CONFIGS, 15, 'android')
+                                  _ANDROID_GO_BENCHMARK_CONFIGS, 13, 'android')
 ANDROID_GO_WEMBLEY_WEBVIEW = PerfPlatform(
     'android-go-wembley_webview-perf', 'Android U',
     _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android')
