@@ -6,6 +6,7 @@
 #include "base/version.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -27,6 +28,8 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
+#include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -46,6 +49,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/mock_sync_service.h"
@@ -1000,4 +1004,74 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kBookmarkBubble, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
+                       PasswordSignInPromoAccountDisallowedByPattern) {
+  // Set the signin pattern
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, "*@signinallowed.com");
+
+  // Sign in with an account, but only on the web. The primary account is not
+  // set, and is not allowed to be set with this account.
+  AccountInfo info = signin::MakeAccountAvailable(
+      identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie()
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build("test@email.com"));
+  ExtendAccountInfo(info);
+
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_FALSE(signin::IsUsernameAllowedByPatternFromPrefs(local_state,
+                                                           "test@email.com"));
+
+  base::HistogramTester histogram_tester;
+
+  // Set up password and the local password store.
+  GetController()->OnPasswordSubmitted(
+      CreateFormManager(local_password_store_.get(), nullptr));
+
+  // Save the password and check that it was properly saved to profile store.
+  SavePassword();
+  EXPECT_EQ(1u, local_password_store_->stored_passwords().size());
+
+  // Wait for the bubble to be replaced with the sign in promo and click the
+  // sign in button.
+  RunTestSequence(
+      WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                   kBubbleSignInPromoSignInButtonHasCallback),
+      EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId),
+      EnsureNotPresent(PasswordSaveUpdateView::kExtraButtonElementId),
+      NameChildViewByType<views::MdTextButton>(
+          BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
+      // The button has the generic non-personalized "Sign in to Chrome" text.
+      CheckViewProperty(
+          kButton, &views::MdTextButton::GetText,
+          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON)),
+      PressButton(kButton).SetMustRemainVisible(false),
+      EnsureNotPresent(PasswordSaveUpdateView::kPasswordBubbleElementId));
+
+  // Check that clicking the sign in button navigated to a sign in page.
+  EXPECT_TRUE(IsSignInURL());
+
+  // And did not sign the user in.
+  EXPECT_FALSE(IsSignedIn());
+
+  // Signin metrics - Offered/Started/Completed are recorded, but no values for
+  // WebSignin (WithDefault).
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kPasswordBubble, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount",
+      signin_metrics::AccessPoint::kPasswordBubble, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Started", signin_metrics::AccessPoint::kPasswordBubble, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kPasswordBubble,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::kPasswordBubble, 1);
 }
