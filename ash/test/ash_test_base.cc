@@ -181,12 +181,12 @@ void AshTestBase::SetUp() {
         std::move(*pixel_test_init_params));
   }
 
-  const bool enabe_pixel_output =
+  const bool enable_pixel_output =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kEnablePixelOutputInTests);
   test_context_factories_ = std::make_unique<ui::TestContextFactories>(
-      /*enable_pixel_output=*/enabe_pixel_output,
-      /*output_to_window=*/enabe_pixel_output);
+      /*enable_pixel_output=*/enable_pixel_output,
+      /*output_to_window=*/enable_pixel_output);
   ash_test_helper_ = std::make_unique<AshTestHelper>(
       test_context_factories_->GetContextFactory());
   ash_test_helper_->SetUp(std::move(*init_params_));
@@ -225,7 +225,7 @@ void AshTestBase::TearDown() {
 
   // Must be deleted before ash_test_helper. AshPixelTestHelper manages a
   // ScopedFeatureList, and for the correct order of destruction of feature
-  // listss, AshPixelTestHelper needs to be deleted earlier.
+  // lists, AshPixelTestHelper needs to be deleted earlier.
   pixel_test_helper_.reset();
 
   ash_test_helper_->TearDown();
