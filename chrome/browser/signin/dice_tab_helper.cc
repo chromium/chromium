@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
@@ -43,6 +44,34 @@ constexpr char kDiceSyncHeaderArrivalTimeWindowHistogramName[] =
 // static
 base::TimeDelta DiceTabHelper::g_delay_before_interception_bubble_retry =
     base::Seconds(3);
+
+DiceTabHelper::HistorySyncOptinDelegate::HistorySyncOptinDelegate(
+    Browser* browser)
+    : browser_(browser) {
+  CHECK(browser_);
+}
+
+DiceTabHelper::HistorySyncOptinDelegate::~HistorySyncOptinDelegate() = default;
+
+void DiceTabHelper::HistorySyncOptinDelegate::ShowHistorySyncOptinScreen() {
+  if (!browser_) {
+    return;
+  }
+  browser_->GetFeatures()
+      .signin_view_controller()
+      ->ShowModalHistorySyncOptInDialog();
+}
+
+void DiceTabHelper::HistorySyncOptinDelegate::ShowAccountManagementScreen(
+    signin::SigninChoiceCallback on_account_management_screen_closed) {
+  // Flows via the Dice Tab Helper that have access to a Browser
+  // do not call this method. Thy rely on the
+  // `ProfileManagementDisclaimerService` for displaying management screens.
+  NOTREACHED();
+}
+
+void DiceTabHelper::HistorySyncOptinDelegate::
+    FinishFlowWithoutHistorySyncOptin() {}
 
 // static
 DiceTabHelper::EnableSyncCallback
@@ -91,14 +120,30 @@ DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
       return;
     }
 
-    const signin::IdentityManager* identity_manager =
+    DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents);
+    if (!tab_helper) {
+      return;
+    }
+
+    signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     CHECK(identity_manager);
+    AccountInfo extended_account_info =
+        identity_manager->FindExtendedAccountInfoByAccountId(
+            account_info.account_id);
+    if (extended_account_info.IsEmpty()) {
+      return;
+    }
     CHECK(identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
               .account_id == account_info.account_id);
-    browser->GetFeatures()
-        .signin_view_controller()
-        ->ShowModalHistorySyncOptInDialog();
+    tab_helper->state_->history_sync_optin_delegate =
+        std::make_unique<HistorySyncOptinDelegate>(browser);
+    tab_helper->state_->history_sync_optin_helper =
+        std::make_unique<HistorySyncOptinHelper>(
+            identity_manager, profile, extended_account_info,
+            tab_helper->state_->history_sync_optin_delegate.get(),
+            HistorySyncOptinHelper::LaunchContext::kInBrowser);
+    tab_helper->state_->history_sync_optin_helper->StartHistorySyncOptinFlow();
   });
 }
 

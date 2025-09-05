@@ -54,6 +54,8 @@ std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
 }
 }  // namespace
 
+// TODO(crbug.com/434964019): When management screen support is implemented
+// for the browser case, make this test parametrizable.
 class HistorySyncOptinHelperBrowserTest : public SigninBrowserTestBase {
  public:
   HistorySyncOptinHelperBrowserTest()
@@ -118,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(
 
   HistorySyncOptinHelper history_sync_optin_helper(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate);
+      &delegate, HistorySyncOptinHelper::LaunchContext::kInProfilePicker);
   history_sync_optin_helper.StartHistorySyncOptinFlow();
 
   // This triggers the flow that reaches the delegate's
@@ -147,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(
 
   HistorySyncOptinHelper history_sync_optin_helper(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate);
+      &delegate, HistorySyncOptinHelper::LaunchContext::kInProfilePicker);
   history_sync_optin_helper.StartHistorySyncOptinFlow();
 
   // This triggers the flow that reaches the delegate's
@@ -178,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(
 
   HistorySyncOptinHelper history_sync_optin_helper(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate);
+      &delegate, HistorySyncOptinHelper::LaunchContext::kInProfilePicker);
   history_sync_optin_helper.StartHistorySyncOptinFlow();
 
   // This triggers the flow that reaches the delegate's
@@ -201,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(
 
   HistorySyncOptinHelper history_sync_optin_helper(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate);
+      &delegate, HistorySyncOptinHelper::LaunchContext::kInProfilePicker);
   history_sync_optin_helper.StartHistorySyncOptinFlow();
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
@@ -225,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperBrowserTest,
 
   HistorySyncOptinHelper history_sync_optin_helper(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate);
+      &delegate, HistorySyncOptinHelper::LaunchContext::kInProfilePicker);
 
   // The helper is waiting for the sync service to start before attempting
   // to show the history sync optin screen.
@@ -257,6 +259,6 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperBrowserTest,
 
   HistorySyncOptinHelper history_sync_optin_helper(
       identity_test_env()->identity_manager(), GetProfile(), account_info,
-      &delegate);
+      &delegate, HistorySyncOptinHelper::LaunchContext::kInProfilePicker);
   history_sync_optin_helper.StartHistorySyncOptinFlow();
 }

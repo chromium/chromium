@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -147,6 +148,20 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   SetScopedInterceptionBubbleTimerForTesting(base::TimeDelta delay);
 
  private:
+  class HistorySyncOptinDelegate : public HistorySyncOptinHelper::Delegate {
+   public:
+    HistorySyncOptinDelegate(Browser* browser);
+    ~HistorySyncOptinDelegate() override;
+    void ShowHistorySyncOptinScreen() override;
+    void ShowAccountManagementScreen(
+        signin::SigninChoiceCallback on_account_management_screen_closed)
+        override;
+    void FinishFlowWithoutHistorySyncOptin() override;
+
+   private:
+    raw_ptr<Browser> browser_;
+  };
+
   friend class content::WebContentsUserData<DiceTabHelper>;
   explicit DiceTabHelper(content::WebContents* web_contents);
 
@@ -187,6 +202,9 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
     // assuming that the user completed a web signin instead of a
     // browser signin.
     base::OneShotTimer retry_interception_bubble_timer;
+
+    std::unique_ptr<HistorySyncOptinDelegate> history_sync_optin_delegate;
+    std::unique_ptr<HistorySyncOptinHelper> history_sync_optin_helper;
   };
 
   // content::WebContentsObserver:

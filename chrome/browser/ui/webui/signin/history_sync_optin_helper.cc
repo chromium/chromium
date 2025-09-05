@@ -138,23 +138,27 @@ HistorySyncOptinHelper::HistorySyncOptinHelper(
     signin::IdentityManager* identity_manager,
     Profile* profile,
     const AccountInfo& account_info,
-    Delegate* delegate)
+    Delegate* delegate,
+    LaunchContext launch_context)
     : profile_(profile),
       account_info_(account_info),
       delegate_(delegate),
-      account_state_fetcher_(
-          std::make_unique<AccountStateFetcher>(
-              identity_manager,
-              account_info,
-              /*get_account_state_callback=*/
-              base::BindRepeating(&HistorySyncOptinHelper::AccountIsManaged,
-                                  base::Unretained(this)),
-              /*on_account_info_fetched_callback=*/
-              base::BindOnce(&HistorySyncOptinHelper::
-                                 ResumeShowHistorySyncOptinScreenFlow,
-                             base::Unretained(this)))) {
+      launch_context_(launch_context),
+      account_state_fetcher_(std::make_unique<AccountStateFetcher>(
+          identity_manager,
+          account_info,
+          /*get_account_state_callback=*/
+          base::BindRepeating(&HistorySyncOptinHelper::AccountIsManaged,
+                              base::Unretained(this)),
+          /*on_account_info_fetched_callback=*/
+          base::BindOnce(
+              &HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow,
+              base::Unretained(this)))) {
   CHECK(base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin));
   CHECK(delegate);
+  // TODO(crbug.com/434964019): HistorySyncOptinHelper will have two different
+  // implementations based on the launch_context: One for the picker and one for
+  // the browser cases.
 }
 
 HistorySyncOptinHelper::~HistorySyncOptinHelper() = default;
@@ -182,7 +186,8 @@ void HistorySyncOptinHelper::MaybeShowAccountManagementScreen(
 
 void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
     signin::Tribool maybe_managed_account) {
-  if (maybe_managed_account == signin::Tribool::kTrue && !policy_helper_) {
+  if (maybe_managed_account == signin::Tribool::kTrue && !policy_helper_ &&
+      launch_context_ == LaunchContext::kInProfilePicker) {
     // Register for policies to determine if the user is managed.
     // Show the management screen for managed user, before proceeding with the
     // flow.
@@ -235,6 +240,7 @@ void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
 }
 
 void HistorySyncOptinHelper::ShowAccountManagementScreen() {
+  CHECK_EQ(launch_context_, LaunchContext::kInProfilePicker);
   CHECK(!enterprise_util::UserAcceptedAccountManagement(profile_));
   delegate_->ShowAccountManagementScreen(
       base::BindOnce(&HistorySyncOptinHelper::OnAccountManagementScreenClosed,

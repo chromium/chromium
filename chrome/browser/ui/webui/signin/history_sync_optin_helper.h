@@ -105,10 +105,16 @@ class HistorySyncOptinHelper {
     virtual void FinishFlowWithoutHistorySyncOptin() = 0;
   };
 
+  // The two contexts below are mutually exclusive.
+  // `kInProfilePicker`: The flow is running in the profile picker.
+  // `kInBrowser`: The flow is running in a browser window.
+  enum class LaunchContext : int { kInProfilePicker = 0, kInBrowser = 1 };
+
   HistorySyncOptinHelper(signin::IdentityManager* identity_manager,
                          Profile* profile,
                          const AccountInfo& account_info,
-                         Delegate* delegate);
+                         Delegate* delegate,
+                         LaunchContext launch_context);
   ~HistorySyncOptinHelper();
 
   void StartHistorySyncOptinFlow();
@@ -139,6 +145,7 @@ class HistorySyncOptinHelper {
   raw_ptr<Profile> profile_;
   const AccountInfo account_info_;
   raw_ptr<Delegate> delegate_;
+  LaunchContext launch_context_;
   std::unique_ptr<AccountStateFetcher> account_state_fetcher_;
 
   std::unique_ptr<SyncServiceStartupStateObserver> sync_startup_state_observer_;
