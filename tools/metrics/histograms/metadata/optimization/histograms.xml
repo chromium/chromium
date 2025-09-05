@@ -2119,20 +2119,6 @@ chromium-metrics-reviews@google.com.
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
-<histogram
-    name="OptimizationGuide.PredictionModelValidationLatency.{OptimizationTarget}"
-    units="ms" expires_after="2025-08-15">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>wittman@chromium.org</owner>
-  <summary>
-    Records the duration of construction and validation of a prediction model
-    when the prediction manager loads it into memory for a given optimization
-    target. Recorded only if the model is valid and successfully loaded into
-    memory for use.
-  </summary>
-  <token key="OptimizationTarget" variants="OptimizationTarget"/>
-</histogram>
-
 <histogram name="OptimizationGuide.ProcessHintsResult"
     enum="OptimizationGuideProcessHintsResult" expires_after="2026-01-11">
   <owner>rajendrant@chromium.org</owner>

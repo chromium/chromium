@@ -60,42 +60,6 @@ proto::ModelCacheKey GetModelCacheKey(const std::string& locale) {
   return model_cache_key;
 }
 
-// Util class for recording the construction and validation of a prediction
-// model. The result is recorded when it goes out of scope and its destructor is
-// called.
-class ScopedPredictionModelConstructionAndValidationRecorder {
- public:
-  explicit ScopedPredictionModelConstructionAndValidationRecorder(
-      proto::OptimizationTarget optimization_target)
-      : validation_start_time_(base::TimeTicks::Now()),
-        optimization_target_(optimization_target) {}
-
-  ~ScopedPredictionModelConstructionAndValidationRecorder() {
-    base::UmaHistogramBoolean(
-        "OptimizationGuide.IsPredictionModelValid." +
-            GetStringNameForOptimizationTarget(optimization_target_),
-        is_valid_);
-
-    // Only record the timing if the model is valid and was able to be
-    // constructed.
-    if (is_valid_) {
-      base::TimeDelta validation_latency =
-          base::TimeTicks::Now() - validation_start_time_;
-      base::UmaHistogramTimes(
-          "OptimizationGuide.PredictionModelValidationLatency." +
-              GetStringNameForOptimizationTarget(optimization_target_),
-          validation_latency);
-    }
-  }
-
-  void set_is_valid(bool is_valid) { is_valid_ = is_valid; }
-
- private:
-  bool is_valid_ = true;
-  const base::TimeTicks validation_start_time_;
-  const proto::OptimizationTarget optimization_target_;
-};
-
 void RecordModelUpdateVersion(const proto::ModelInfo& model_info) {
   base::UmaHistogramSparse(
       "OptimizationGuide.PredictionModelUpdateVersion." +
@@ -708,11 +672,14 @@ bool PredictionManager::ProcessAndStoreLoadedModel(
     return false;
   }
 
-  ScopedPredictionModelConstructionAndValidationRecorder
-      prediction_model_recorder(optimization_target);
   std::unique_ptr<ModelInfo> model_info = ModelInfo::Create(model);
+
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.IsPredictionModelValid." +
+          GetStringNameForOptimizationTarget(optimization_target),
+      !!model_info);
+
   if (!model_info) {
-    prediction_model_recorder.set_is_valid(false);
     return false;
   }
 

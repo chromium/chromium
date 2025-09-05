@@ -909,8 +909,6 @@ TEST_F(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
       "OptimizationGuide.IsPredictionModelValid.PainfulPageLoad", false, 1);
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelValidationLatency.PainfulPageLoad", 0);
-  histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
