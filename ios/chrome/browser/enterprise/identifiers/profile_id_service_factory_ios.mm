@@ -11,10 +11,7 @@
 
 namespace enterprise {
 namespace {
-std::unique_ptr<KeyedService> BuildProfileIdService(
-    web::BrowserState* browser_state) {
-  auto* profile = ProfileIOS::FromBrowserState(browser_state);
-  DCHECK(profile);
+std::unique_ptr<KeyedService> BuildProfileIdService(ProfileIOS* profile) {
   return std::make_unique<ProfileIdService>(
       std::make_unique<ProfileIdDelegateIOSImpl>(profile), profile->GetPrefs());
 }
@@ -34,9 +31,9 @@ ProfileIdService* ProfileIdServiceFactoryIOS::GetForProfile(
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 ProfileIdServiceFactoryIOS::GetDefaultFactory() {
-  return base::BindRepeating(&BuildProfileIdService);
+  return base::BindOnce(&BuildProfileIdService);
 }
 
 ProfileIdServiceFactoryIOS::ProfileIdServiceFactoryIOS()
@@ -46,9 +43,8 @@ ProfileIdServiceFactoryIOS::ProfileIdServiceFactoryIOS()
 ProfileIdServiceFactoryIOS::~ProfileIdServiceFactoryIOS() = default;
 
 std::unique_ptr<KeyedService>
-ProfileIdServiceFactoryIOS::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  return BuildProfileIdService(browser_state);
+ProfileIdServiceFactoryIOS::BuildServiceInstanceFor(ProfileIOS* profile) const {
+  return BuildProfileIdService(profile);
 }
 
 }  // namespace enterprise
