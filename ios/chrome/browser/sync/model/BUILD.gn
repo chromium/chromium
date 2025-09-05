@@ -74,7 +74,6 @@ source_set("model") {
     "//ios/chrome/browser/passwords/model:sharing_factory",
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/plus_addresses/model",
-    "//ios/chrome/browser/power_bookmarks/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/search_engines/model",

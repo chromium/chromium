@@ -71,10 +71,6 @@ class PlusAddressSettingService;
 class PlusAddressWebDataService;
 }  // namespace plus_addresses
 
-namespace power_bookmarks {
-class PowerBookmarkService;
-}  // namespace power_bookmarks
-
 namespace reading_list {
 class DualReadingListModel;
 }  // namespace reading_list
@@ -187,8 +183,6 @@ class CommonControllerBuilder {
       plus_addresses::PlusAddressSettingService* plus_address_setting_service,
       const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
           plus_address_webdata_service);
-  void SetPowerBookmarkService(
-      power_bookmarks::PowerBookmarkService* power_bookmark_service);
   void SetPrefService(PrefService* pref_service);
   void SetPrefServiceSyncable(
       sync_preferences::PrefServiceSyncable* pref_service_syncable);
@@ -300,8 +294,6 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<sync_bookmarks::BookmarkSyncService>>
       account_bookmark_sync_service_;
   SafeOptional<raw_ptr<bookmarks::BookmarkModel>> bookmark_model_;
-  SafeOptional<raw_ptr<power_bookmarks::PowerBookmarkService>>
-      power_bookmark_service_;
   SafeOptional<raw_ptr<supervised_user::SupervisedUserSettingsService>>
       supervised_user_settings_service_;
   SafeOptional<raw_ptr<plus_addresses::PlusAddressSettingService>>

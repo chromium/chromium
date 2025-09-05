@@ -51,7 +51,6 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_sender_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
-#import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -132,8 +131,6 @@ syncer::DataTypeController::TypeVector CreateControllers(
       PlusAddressSettingServiceFactory::GetForProfile(profile),
       ios::WebDataServiceFactory::GetPlusAddressWebDataForProfile(
           profile, ServiceAccessType::IMPLICIT_ACCESS));
-  builder.SetPowerBookmarkService(
-      PowerBookmarkServiceFactory::GetForProfile(profile));
   builder.SetPrefService(profile->GetPrefs());
   builder.SetPrefServiceSyncable(profile->GetSyncablePrefs());
   // TODO(crbug.com/330201909) implement for iOS.
@@ -352,7 +349,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(IOSTrustedVaultServiceFactory::GetInstance());
   DependsOn(IOSUserEventServiceFactory::GetInstance());
   DependsOn(PlusAddressSettingServiceFactory::GetInstance());
-  DependsOn(PowerBookmarkServiceFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());

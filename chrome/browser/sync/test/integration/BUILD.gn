@@ -156,7 +156,6 @@ source_set("sync_integration_tests_impl") {
       "two_client_extensions_sync_test.cc",
       "two_client_history_sync_test.cc",
       "two_client_passwords_sync_test.cc",
-      "two_client_power_bookmarks_sync_test.cc",
       "two_client_preferences_sync_test.cc",
       "two_client_search_engines_sync_test.cc",
       "two_client_send_tab_to_self_sync_test.cc",
@@ -235,8 +234,6 @@ source_set("sync_integration_tests_impl") {
       "//components/favicon/core",
       "//components/history/content/browser",
       "//components/history/core/common",
-      "//components/power_bookmarks/common:test_support",
-      "//components/power_bookmarks/core",
       "//components/reading_list/core",
       "//components/saved_tab_groups/internal:tab_group_sync_bridge",
       "//components/search_engines",
@@ -433,7 +430,6 @@ source_set("sync_integration_test_support") {
     "//chrome/browser/favicon",
     "//chrome/test:test_support",
     "//components/autofill/content/browser",
-    "//components/power_bookmarks/core:features",
   ]
 
   deps = [

@@ -31,7 +31,6 @@
 #include "chrome/browser/password_manager/password_receiver_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
-#include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -235,8 +234,6 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
       PlusAddressSettingServiceFactory::GetForBrowserContext(profile),
       WebDataServiceFactory::GetPlusAddressWebDataForProfile(
           profile, ServiceAccessType::IMPLICIT_ACCESS));
-  builder.SetPowerBookmarkService(
-      PowerBookmarkServiceFactory::GetForBrowserContext(profile));
   builder.SetPrefService(profile->GetPrefs());
   builder.SetPrefServiceSyncable(PrefServiceSyncableFromProfile(profile));
   builder.SetProductSpecificationsService(
@@ -538,7 +535,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(PlusAddressSettingServiceFactory::GetInstance());
   DependsOn(commerce::ProductSpecificationsServiceFactory::GetInstance());
   DependsOn(ProfilePasswordStoreFactory::GetInstance());
-  DependsOn(PowerBookmarkServiceFactory::GetInstance());
 
   DependsOn(SecurityEventRecorderFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());

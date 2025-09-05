@@ -105,7 +105,6 @@ syncer::DataTypeController::TypeVector CreateControllers(
   controller_builder.SetPasswordReceiverService(nullptr);
   controller_builder.SetPasswordSenderService(nullptr);
   controller_builder.SetPlusAddressServices(nullptr, nullptr);
-  controller_builder.SetPowerBookmarkService(nullptr);
   controller_builder.SetPrefServiceSyncable(nullptr);
   // TODO(crbug.com/330201909) implement for iOS.
   controller_builder.SetProductSpecificationsService(nullptr);

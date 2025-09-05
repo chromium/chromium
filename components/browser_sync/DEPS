@@ -15,7 +15,6 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/password_manager/core/browser",
   "+components/plus_addresses",
-  "+components/power_bookmarks/core",
   "+components/prefs",
   "+components/reading_list/core",
   "+components/reading_list/features",
