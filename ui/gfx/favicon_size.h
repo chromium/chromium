@@ -10,7 +10,7 @@
 namespace gfx {
 
 // Size (along each axis) of the favicon.
-COMPONENT_EXPORT(GFX) extern const int kFaviconSize;
+inline constexpr int kFaviconSize = 16;
 
 // If the width or height is bigger than the favicon size, a new width/height
 // is calculated and returned in width/height that maintains the aspect

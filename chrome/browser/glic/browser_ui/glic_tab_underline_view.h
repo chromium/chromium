@@ -71,6 +71,8 @@ class GlicTabUnderlineView : public GlicAnimatedEffectView {
       std::vector<cc::PaintShader::IntUniform>& int_uniforms) const override;
   void DrawEffect(gfx::Canvas* canvas, const cc::PaintFlags& flags) override;
 
+  int ComputeWidth();
+
   // A utility class that subscribes to `GlicKeyedService` for various browser
   // UI status changes that affect showing and animating of the tab underlines.
   class UnderlineViewUpdater;
