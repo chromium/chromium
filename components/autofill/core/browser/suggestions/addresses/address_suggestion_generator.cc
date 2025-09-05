@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -856,13 +857,65 @@ void AddressSuggestionGenerator::FetchSuggestionData(
         void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
-  if (!form_structure || !trigger_autofill_field) {
-    callback({SuggestionDataSource::kAddress, {}});
+  std::vector<AutofillProfile> profiles_to_suggest =
+      MaybeFetchRegularAddressSuggestionData(
+          form, trigger_field, form_structure, trigger_autofill_field);
+  if (!profiles_to_suggest.empty()) {
+    std::vector<SuggestionGenerator::SuggestionData> suggestion_data =
+        base::ToVector(
+            std::move(profiles_to_suggest), [](AutofillProfile& profile) {
+              return SuggestionGenerator::SuggestionData(std::move(profile));
+            });
+    callback({SuggestionDataSource::kAddress, std::move(suggestion_data)});
     return;
+  }
+
+  // TODO(crbug.com/409962888): Handle address suggestions on typing.
+  callback({SuggestionDataSource::kAddress, {}});
+}
+
+void AddressSuggestionGenerator::GenerateSuggestions(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field,
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
+        all_suggestion_data,
+    base::FunctionRef<void(ReturnedSuggestions)> callback) {
+  std::vector<SuggestionData> address_suggestion_data =
+      ExtractSuggestionDataForSource(all_suggestion_data,
+                                     SuggestionDataSource::kAddress);
+
+  if (!address_suggestion_data.empty()) {
+    std::vector<AutofillProfile> profiles_to_suggest = base::ToVector(
+        std::move(address_suggestion_data),
+        [](SuggestionData& suggestion_data) {
+          return std::get<AutofillProfile>(std::move(suggestion_data));
+        });
+    callback({FillingProduct::kAddress,
+              GenerateAddressSuggestions(form, trigger_field, form_structure,
+                                         trigger_autofill_field,
+                                         profiles_to_suggest)});
+    return;
+  }
+
+  // TODO(crbug.com/409962888): Handle address suggestions on typing.
+  callback({FillingProduct::kAddress, {}});
+}
+
+std::vector<AutofillProfile>
+AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
+    const FormData& form,
+    const FormFieldData& trigger_field,
+    const FormStructure* form_structure,
+    const AutofillField* trigger_autofill_field) {
+  if (!form_structure || !trigger_autofill_field) {
+    return {};
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   bool should_suppress =
-      client.GetPersonalDataManager()
+      client_->GetPersonalDataManager()
           .address_data_manager()
           .AreAddressSuggestionsBlocked(
               CalculateFormSignature(form),
@@ -879,8 +932,7 @@ void AddressSuggestionGenerator::FetchSuggestionData(
     }
     // If the user already reached the strike limit on this particular field,
     // address suggestions are suppressed.
-    callback({SuggestionDataSource::kAddress, {}});
-    return;
+    return {};
   }
 #endif
 
@@ -909,47 +961,25 @@ void AddressSuggestionGenerator::FetchSuggestionData(
   }();
 
   std::vector<AutofillProfile> profiles_to_suggest = GetProfilesToSuggest(
-      client.GetPersonalDataManager().address_data_manager(), trigger_field,
+      client_->GetPersonalDataManager().address_data_manager(), trigger_field,
       trigger_autofill_field->Type().GetAddressType(), field_types_);
-
-  std::vector<SuggestionGenerator::SuggestionData> suggestion_data =
-      base::ToVector(
-          std::move(profiles_to_suggest), [](AutofillProfile& profile) {
-            return SuggestionGenerator::SuggestionData(std::move(profile));
-          });
 
   // Add devtools test addresses if it exists. A test addresses will
   // exist if devtools is open and therefore test addresses were set.
-  for (AutofillProfile test_address : client.GetTestAddresses()) {
-    suggestion_data.emplace_back(test_address);
-  }
-
-  callback({SuggestionDataSource::kAddress, std::move(suggestion_data)});
+  base::Extend(profiles_to_suggest, client_->GetTestAddresses());
+  return profiles_to_suggest;
 }
 
-void AddressSuggestionGenerator::GenerateSuggestions(
+std::vector<Suggestion> AddressSuggestionGenerator::GenerateAddressSuggestions(
     const FormData& form,
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const std::vector<
-        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
-        all_suggestion_data,
-    base::FunctionRef<void(ReturnedSuggestions)> callback) {
+    std::vector<AutofillProfile>& profiles_to_suggest) {
   if (!form_structure || !trigger_autofill_field ||
       !client_->GetIdentityManager()) {
-    callback({FillingProduct::kAddress, {}});
-    return;
+    return {};
   }
-
-  std::vector<SuggestionData> address_suggestion_data =
-      ExtractSuggestionDataForSource(all_suggestion_data,
-                                     SuggestionDataSource::kAddress);
-
-  std::vector<AutofillProfile> profiles_to_suggest = base::ToVector(
-      std::move(address_suggestion_data), [](SuggestionData& suggestion_data) {
-        return std::get<AutofillProfile>(std::move(suggestion_data));
-      });
 
   // Testing profiles were added last.
   auto partition_it = std::ranges::find_if(
@@ -974,12 +1004,11 @@ void AddressSuggestionGenerator::GenerateSuggestions(
     suggestions.push_back(std::move(*test_addresses_suggestion));
   }
   if (suggestions.empty()) {
-    callback({FillingProduct::kAddress, {}});
-    return;
+    return {};
   }
   base::Extend(suggestions,
                GetAddressFooterSuggestions(trigger_field.is_autofilled()));
-  callback({FillingProduct::kAddress, std::move(suggestions)});
+  return suggestions;
 }
 
 }  // namespace autofill

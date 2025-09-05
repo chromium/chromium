@@ -122,6 +122,24 @@ class AddressSuggestionGenerator : public SuggestionGenerator {
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 
  private:
+  // Returns a vector of `AutofillProfile`s that will be suggested on a
+  // `trigger_field` in a `form`. Can be empty if there is no data available for
+  // filling or the filling conditions were not met.
+  std::vector<AutofillProfile> MaybeFetchRegularAddressSuggestionData(
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field);
+
+  // Returns a vector of suggestions that will be suggested on a
+  // `trigger_field` in a `form`.
+  std::vector<Suggestion> GenerateAddressSuggestions(
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const FormStructure* form_structure,
+      const AutofillField* trigger_autofill_field,
+      std::vector<AutofillProfile>& profiles_to_suggest);
+
   // Used to change the emails matching the GAIA email in suggestions with
   // the `plus_address_email_override_`.
   // TODO(crbug.com/409962888): `plus_address_email_override_` has to be removed
