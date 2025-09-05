@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VARIATIONS_SERVICE_SAFE_SEED_MANAGER_H_
 #define COMPONENTS_VARIATIONS_SERVICE_SAFE_SEED_MANAGER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
