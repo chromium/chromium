@@ -9,11 +9,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/with_feature_override.h"
 #include "base/values.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -24,6 +26,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/widget_test.h"
 
 namespace autofill {
 
@@ -201,18 +204,26 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleControllerImplTest, InvokeUi_Manage) {
 
 // Tests that opening a new tab will hide the save card bubble.
 IN_PROC_BROWSER_TEST_P(SaveCardBubbleControllerImplTest, NewTabHidesDialog) {
-  if (GetParam()) {
-    // TODO(crbug.com/432429605): Investigate.
-    GTEST_SKIP() << "The test is flaky.";
-  }
   ShowUi("LocalSave");
-  EXPECT_NE(nullptr, controller()->GetPaymentBubbleView());
+  AutofillBubbleBase* bubble_base = controller()->GetPaymentBubbleView();
+  ASSERT_NE(nullptr, bubble_base);
+
+  SaveCardBubbleViews* bubble_view =
+      static_cast<SaveCardBubbleViews*>(bubble_base);
+
+  // Create a waiter that will return once the bubble's widget is destroyed.
+  views::test::WidgetDestroyedWaiter waiter(bubble_view->GetWidget());
+
   // Open a new tab page in the foreground.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Wait until the bubble is actually gone.
+  waiter.Wait();
+
   EXPECT_EQ(nullptr, controller()->GetPaymentBubbleView());
 }
 
