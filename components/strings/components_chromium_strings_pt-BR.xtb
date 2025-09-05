@@ -8,30 +8,12 @@
 <translation id="358997566136285270">Logotipo do Chromium</translation>
 <translation id="4050599136622776556">O Chromium está tentando editar formas de pagamento.</translation>
 <translation id="4365115785552740256">O Chromium tornou-se possível graças ao projeto de código aberto <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> e outros <ph name="BEGIN_LINK_OSS" />softwares de código aberto<ph name="END_LINK_OSS" />.</translation>
-<translation id="4559775032954821361">Vá para
-          o menu do Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Configurações da LAN
-          e desmarque a caixa de seleção "Usar um servidor proxy para a rede local".</translation>
 <translation id="4622039161600275920">Esta página foi bloqueada pelo Chromium</translation>
 <translation id="48558539577516920">Permitir que o Chromium acesse a rede nas configurações do seu
           firewall ou antivírus.</translation>
 <translation id="4949828774841497663">Acesse Aplicativos &gt; Ajustes do Sistema &gt; Rede, selecione a
           rede ativa, clique no botão Detalhes… e desmarque todos os proxies
           que podem ter sido selecionados.</translation>
-<translation id="580822234363523061">Vá para
-          o menu do Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          e verifique se sua configuração está definida como "Sem proxy" ou "Direta".</translation>
 <translation id="648062525172759633">Estas páginas se destinam para uso dos desenvolvedores do Chromium e podem não ser mantidas ou testadas ativamente. Para ativá-las, acesse <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, clique no botão para ativar as páginas de depuração. Em seguida, volte para esta página.</translation>
 <translation id="6549378540556750549">A criação do Chromium só foi possível graças a outro <ph name="BEGIN_LINK_OSS" />software de código aberto<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">As alterações entrarão em vigor na próxima vez que você reiniciar o Chromium.</translation>

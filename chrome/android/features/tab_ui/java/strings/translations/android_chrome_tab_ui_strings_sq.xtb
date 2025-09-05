@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> skedë e grupuar</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
 <translation id="1909810060368225529">Njoftim: Ndryshimet në këtë grup të ndarë të skedave janë të dukshme për të gjithë. Të gjithë mund të bëjnë ndryshime te grupet e ndara të skedave</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Gozhdo skedën}other{Gozhdo skedat}}</translation>
 <translation id="1982637982196732906">Zhvendos në seksionin joaktiv</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Shto te faqeshënuesit <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Shto te faqeshënuesit <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="2055057176188061528">Zgjidh grupin e skedave ose krijo një grup të ri skedash</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura për pamjen paraprake të ndarjes së fletës.</translation>
 <translation id="3810973564298564668">Menaxho</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Zhgozhdo skedën}other{Zhgozhdo skedat}}</translation>
 <translation id="3940195383040445971">Monitoro çmimet në skeda</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{Skeda të reja: <ph name="ONE_ADDED" />. Skeda të mbyllura: <ph name="ANY_CLOSED" />.}other{Skeda të reja: <ph name="MANY_ADDED" />. Skeda të mbyllura: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grupo skedën}other{Grupo skedat}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Mbyll <ph name="TABS_COUNT_ONE" /> artikull të zgjedhur}other{Mbyll <ph name="TABS_COUNT_MANY" /> artikuj të zgjedhur}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Zhvendose grupin në dritaren e re}other{Zhvendose grupin në një dritare tjetër}}</translation>
 <translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Hiqe skedën nga grupi}other{Hiqi skedat nga grupi}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Shto skedën te grupi i ri}other{Shto skedat te grupi i ri}}</translation>
 <translation id="6333260925957816943">Informacioni për këtë dyqan</translation>
 <translation id="6381032505162537930">Grupet e skedave do t'i gjesh këtu</translation>

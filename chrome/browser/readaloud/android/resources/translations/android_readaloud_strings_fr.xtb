@@ -57,6 +57,7 @@
 <translation id="7221920857098237570">Doux</translation>
 <translation id="7237590978482584900">Enjoué</translation>
 <translation id="7282547042039404307">Fluide</translation>
+<translation id="7514257690823355037">Passer au suivant</translation>
 <translation id="8004767876552422827">Champ</translation>
 <translation id="8136852699834914183">La lecture n'est pas disponible pour cette page.</translation>
 <translation id="8198036737896977997">Air</translation>
@@ -68,5 +69,6 @@
 <translation id="8756370108715456837">Factuellement incorrect</translation>
 <translation id="8953618380150219653">Lecteur "Écouter cette page" ouvert à pleine hauteur.</translation>
 <translation id="9087782179025630211">Barre de défilement. Temps écoulé : <ph name="ELAPSED" /> sur <ph name="TOTAL" />.</translation>
+<translation id="9193673272519126093">Passer au précédent</translation>
 <translation id="978117257931832348">Ton grave</translation>
 </translationbundle>

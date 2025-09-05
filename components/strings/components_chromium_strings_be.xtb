@@ -8,28 +8,10 @@
 <translation id="358997566136285270">Лагатып Chromium</translation>
 <translation id="4050599136622776556">Chromium спрабуе змяніць спосабы аплаты.</translation>
 <translation id="4365115785552740256">Chromium працуе дзякуючы праекту <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> з адкрытым зыходным кодам і іншаму <ph name="BEGIN_LINK_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_OSS" />.</translation>
-<translation id="4559775032954821361">Перайдзіце ў
-          меню Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Налады LAN
-          і зніміце птушку ў полі "Выкарыстоўваць проксі-сервер для LAN".</translation>
 <translation id="4622039161600275920">Старонка заблакіравана браўзерам Chromium</translation>
 <translation id="48558539577516920">Дазвольце Chromium доступ да сеткі ў наладах брандмаўэра або
          антывіруса.</translation>
 <translation id="4949828774841497663">Перайдзіце ў меню "Праграмы &gt; Сістэмныя налады &gt; Сетка", выберыце актыўную сетку, націсніце кнопку "Падрабязныя звесткі…" і скасуйце выбар усіх проксі-сервераў (калі яны выбраны).</translation>
-<translation id="580822234363523061">Перайдзіце ў
-          меню Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          і ўпэўніцеся, што ў канфігурацыі зададзены значэнні "no proxy" або "direct".</translation>
 <translation id="648062525172759633">Гэтыя старонкі прызначаны для распрацоўшчыкаў Chromium, таму іх тэхнічная падтрымка ці праверка могуць праводзіцца рэдка. Для ўключэння перайдзіце на старонку <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, націсніце кнопку, каб уключыць старонкі адладкі, і зноў вярніцеся на гэту старонку.</translation>
 <translation id="6549378540556750549">Chromium працуе ў тым ліку дзякуючы іншаму <ph name="BEGIN_LINK_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Змены ўступяць у сілу пасля перазапуску Chromium.</translation>

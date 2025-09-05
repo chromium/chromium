@@ -109,6 +109,7 @@
 <translation id="2199691482078155239">તમે જુઓ છો તે જાહેરાતો માટે Chrome તમને વધુ નિયંત્રણો આપે છે અને સાઇટ તમને મનગમતી બનાવેલી જાહેરાતો બતાવે ત્યારે તે તમારા વિશે શું જાણી શકે છે તેને મર્યાદિત કરે છે</translation>
 <translation id="2216543877350048334">Chromeમાંથી તમારા Google એકાઉન્ટને કાઢી નાખવા માટે, સાઇન આઉટ કરો</translation>
 <translation id="2236949375853147973">મારી ઍક્ટિવિટી</translation>
+<translation id="22791603784558743">Chrome Devમાં Gemini બંધ કરો</translation>
 <translation id="2290014774651636340">Google API કીઝ ખૂટે છે. Google Chrome ની કેટલીક કાર્યક્ષમતા અક્ષમ થશે.</translation>
 <translation id="2290095356545025170">શું તમને ખાતરી છે કે તમારે Google Chromeને અનઇન્સ્ટૉલ કરવું છે?</translation>
 <translation id="2301513536169703857">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ, બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, Chromeમાં સાઇન ઇન કરો</translation>
@@ -142,6 +143,7 @@
 <translation id="2665296953892887393">ક્રૅશ રિપોર્ટ અને <ph name="UMA_LINK" /> Googleને મોકલીને Google Chromeને વધુ સારું બનાવવામાં મદદ કરો.</translation>
 <translation id="2668094785979141847">Google Lensમાંથી બહાર નીકળવા માટે ક્લિક કરો</translation>
 <translation id="2681444469812712297">Google Chromeમાં નવા ટૅબમાં <ph name="URL" /> ખોલો.</translation>
+<translation id="2699790011615497488">Chrome બીટામાં Gemini ખોલો</translation>
 <translation id="2712141162840347885">Google Lens વડે શોધવા માટે કંઈપણ પસંદ કરો અથવા Google Lensમાંથી બહાર નીકળવા માટે Esc કી દબાવો</translation>
 <translation id="2738871930057338499">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. HTTP 403 પ્રતિબંધિત. કૃપા કરીને તમારું પ્રૉક્સી કન્ફિગ્યુરેશન ચેક કરો.</translation>
 <translation id="2742320827292110288">ચેતવણી: Google Chrome તમારો બ્રાઉઝિંગ ઇતિહાસ રેકોર્ડ કરવાથી એક્સ્ટેન્શનને અટકાવી શકતું નથી. છૂપા મોડમાં આ એક્સ્ટેન્શનને બંધ કરવા માટે, આ વિકલ્પની પસંદગીને નાપસંદ કરો.</translation>
@@ -404,6 +406,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="58431560289969279">જ્યારે તમે સાઇન ઇન કર્યું હોય, ત્યારે તમે Chromeમાં તમારા Google એકાઉન્ટમાંથી તમારા પાસવર્ડ અને વધુનો ઉપયોગ કરી શકો છો. તમે સેટિંગમાં જઈને કોઈપણ સમયે આને બદલી શકો છો.</translation>
 <translation id="5858486459377137936">જ્યારે તમે બધી Chrome વિન્ડો બંધ કરશો, ત્યારે તમને મોટાભાગની સાઇટમાંથી સાઇન આઉટ કરવામાં આવશે, સિવાય કે જો તમે Chromeમાં સાઇન ઇન કરેલું હોય, તો તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવામાં આવશે નહીં. સાઇટને તમને યાદ રાખવાની મંજૂરી આપવા માટે, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563">અસુરક્ષિત સાઇટ અને ડાઉનલોડ વિશે <ph name="BEGIN_LINK" />Chrome તમને ચેતવણી આપે છે<ph name="END_LINK" /></translation>
+<translation id="5894164573378901688">Chromeમાં Geminiનો ઉપયોગ કરવા માટે, કોઈ બીજા Google એકાઉન્ટ વડે સાઇન ઇન કરો</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન</translation>
 <translation id="5924017743176219022">ઇન્ટરનેટ સાથે કનેક્ટ કરી રહ્યાં છીએ...</translation>
@@ -466,6 +469,8 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6506909944137591434">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને કૅમેરાની પરવાનગીની જરૂર છે</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">તમારા લોકેશનનો ઉપયોગ કરવા માટે, <ph name="BEGIN_LINK" />સિસ્ટમના સેટિંગ<ph name="END_LINK" />માં જઈને Chromeને ઍક્સેસ આપો</translation>
+<translation id="6532945796722480006">Chrome Canaryમાં Gemini ખોલો</translation>
+<translation id="6585124893636629274">Chromeમાં Gemini બંધ કરો</translation>
 <translation id="659498884637196217">આ ડિવાઇસ પર Google પાસવર્ડ મેનેજરમાં</translation>
 <translation id="6631524303639368205">તમે જ્યાંથી છોડ્યું હતું ત્યાંથી ચાલુ કરો: Chromeએ તમારા છેલ્લા સત્રના ટૅબ રિસ્ટોર કર્યા છે. તમે આને આમાં બંધ કરી શકો છો</translation>
 <translation id="6632473616050862500">ChromeOS Flex વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બન્યું છે.</translation>
@@ -561,6 +566,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7670287553302121848">Chrome એકાઉન્ટને પુન:પ્રમાણીકરણની જરૂર છે</translation>
 <translation id="769538538642757151">જો કંઈપણ માટે તમારા રિવ્યૂની જરૂર હોય, તો Chrome તમને જણાવશે</translation>
+<translation id="769906121737764913">Chrome બીટામાં Gemini બંધ કરો</translation>
 <translation id="7716950018788545737">કામ સમાપ્ત થયું/થયા.</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> માટે સિસ્ટમ ટ્રેસ કરવાની સેવાઓ પ્રદાન કરે છે. જો આ સેવા બંધ હોય, તો બ્રાઉઝર દ્વારા બનાવવામાં આવેલા પર્ફોર્મન્સ ટ્રેસમાં સમગ્ર સિસ્ટમ પરની ઇવેન્ટ જેમ કે સંદર્ભ સ્વિચ અને તૈયાર થ્રેડની ઇવેન્ટ શામેલ કરવામાં આવશે નહીં.</translation>
 <translation id="7736869414036750079">તમારી સંસ્થા માટે જરૂરી છે કે તમે Chromeમાં સાઇન ઇન કરો</translation>
@@ -581,6 +587,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7886087451482920026">Google Lens વડે ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="7890208801193284374">જો તમે કમ્પ્યુટરને શેર કરો છો, તો મિત્રો અને કુટુંબીજનો અલગ-અલગ બ્રાઉઝ કરી શકે છે અને તેમને જોઈએ તેમ Chrome ને સેટ કરી શકે છે.</translation>
 <translation id="7896673875602241923">કોઈએ આ કમ્પ્યુટર પર પહેલા <ph name="ACCOUNT_EMAIL_LAST" /> તરીકે Chromeમાં સાઇન ઇન કર્યું છે. તમારી માહિતી અલગ રાખવા માટે કૃપા કરીને નવો Chrome વપરાશકર્તા બનાવો.</translation>
+<translation id="7904985524660297937">Google Chromeમાં Gemini અજમાવો</translation>
 <translation id="7917876797003313048">તમે તમારા સાઇન ઇન કરેલા હોય એવા Google એકાઉન્ટ મેનેજ કરી શકો છો. તમારા Google એકાઉન્ટનો ઉપયોગ Chrome બ્રાઉઝર, Play Store, Gmail અને વધુ માટે થાય છે. જો તમે કોઈ બીજા, જેમકે તમારા કુટુંબના સભ્ય માટે એકાઉન્ટ ઉમેરવા માંગતા હો, તો તેના બદલે નવી વ્યક્તિને તમારા <ph name="DEVICE_TYPE" />માં ઉમેરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે આ ફાઇલ છેતરામણી છે અને તે તમારા ડિવાઇસમાં અનપેક્ષિત ફેરફારો કરે તેમ બની શકે છે</translation>
 <translation id="7951272445806340501">અપડેટ લાગુ કરવા માટે ChromeOS Flexને ફરી શરૂ કરવાની જરૂર છે.</translation>
@@ -641,6 +648,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8637932705841171563">તમારી વિન્ડો શેર કરવા માટે, સિસ્ટમના સેટિંગમાં Chrome માટે સ્ક્રીન રેકોર્ડિંગની મંજૂરી આપો</translation>
 <translation id="8641606876632989680">જ્યારે તમે ચેડાં થયેલા પાસવર્ડ વડે સાઇન ઇન કરશો ત્યારે Chrome તમને સૂચિત કરશે</translation>
 <translation id="8649026945479135076">તમારા અનુભવને મનગમતો બનાવવા માટે તમે જે સાઇટની મુલાકાત લો છો તે બધી સાઇટ તમને જેમાં રુચિ હોય એવી તમામ વસ્તુઓ યાદ રાખી લે તે સામાન્ય બાબત છે. સાઇટ, Chrome પર તમારી રુચિના વિષયો વિશેની માહિતી પણ સ્ટોર કરી શકે છે.</translation>
+<translation id="8656634243791296665">Chrome Devમાં Gemini ખોલો</translation>
 <translation id="8669527147644353129">Google Chrome સહાયક</translation>
 <translation id="8679801911857917785">જ્યારે તમે Chrome શરૂ કરો ત્યારે કયું પેજ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
@@ -669,11 +677,13 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8948460679427074738">આ એક્સ્ટેન્શન દ્વારા તેની ડેટા એકત્રિત કરવાની અને તેનો ઉપયોગ કરવાની રીત જેવી પ્રાઇવસી પ્રૅક્ટિસ પબ્લિશ કરવામાં આવી નથી. Chrome તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે.</translation>
 <translation id="8958307504142971576">Chromeમાં હવે તમારા માટે વધુ સુવિધાઓ ઉપલબ્ધ છે</translation>
 <translation id="8989968390305463310">તમારો બ્રાઉઝિંગ ઇતિહાસ તમે જુઓ છો તે જાહેરાતોને અને નીચે જણાવેલી અનુમાનિત રુચિઓને અસર કરે છે. તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે Chrome નવા વિષયો આવતા જાય, તેના આધારે દર મહિને તમારી રુચિના વિષયોને ઑટોમૅટિક રીતે ડિલીટ કરે છે. જો તમે રુચિઓને કાઢી ન નાખો, તો તે રિફ્રેશ થઈ શકે છે.</translation>
+<translation id="8991530961471831170">Chromeમાં Gemini ખોલો</translation>
 <translation id="8992769679401294069">તમારો ડેટા તમારા પાસફ્રેઝ વડે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો.</translation>
 <translation id="8999117580775242387">જ્યારે HTTPS ઉપલબ્ધ ન હોય, ત્યારે Chrome તમને ચેતવણી આપ્યા વિના અસુરક્ષિત કનેક્શનનો ઉપયોગ કરશે</translation>
 <translation id="8999208279178790196">{0,plural, =0{એક Chrome અપડેટ ઉપલબ્ધ છે}=1{એક Chrome અપડેટ ઉપલબ્ધ છે}one{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}other{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}}</translation>
 <translation id="9014771989710951291">એકથી વધુ સંસ્થાઓ Chromeને મેનેજ કરે છે</translation>
 <translation id="9024318700713112071">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
+<translation id="9066987883552592250">Chrome Canaryમાં Gemini બંધ કરો</translation>
 <translation id="9090566250983691233">Chrome શા માટે અમુક ફાઇલો બ્લૉક કરે છે, તે જાણો</translation>
 <translation id="9106236359747881194">શોધવા માટે ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="911206726377975832">તમારો બ્રાઉઝિંગ ડેટા પણ ડિલીટ કરી દઈએ?</translation>

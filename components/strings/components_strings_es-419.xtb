@@ -724,6 +724,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2188375229972301266">Perforaciones múltiples en la parte inferior</translation>
 <translation id="218940509700321686">Valores separados por comas</translation>
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
+<translation id="2198183835992354675">Número de viajero conocido</translation>
 <translation id="2198215508485017216">Se produjo un error inesperado. <ph name="BEGIN_LINK" />Más información sobre las cargas de Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Botón No me gusta, presiona Intro para abrir un formulario y enviar comentarios detallados sobre los motivos por los que no te gusta esta sugerencia</translation>
 <translation id="2202627062836089804">dorso de tu tarjeta</translation>
@@ -986,6 +987,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2616412942031748191">Marketing y optimización para motores de búsqueda</translation>
 <translation id="2618206371527040026">Conferencias y publicaciones académicas</translation>
 <translation id="2619052155095999743">Insertar</translation>
+<translation id="2620436844016719705">Sistema</translation>
 <translation id="2622754869869445457">Tu pestaña más reciente</translation>
 <translation id="2625385379895617796">El reloj está adelantado</translation>
 <translation id="262745152991669301">Puede solicitar permiso para establecer conexión con dispositivos USB</translation>
@@ -1114,6 +1116,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2879233115503670140">Válido hasta el <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">usar el bloqueo de pantalla para completar contraseñas</translation>
 <translation id="2881276955470682203">¿Quieres guardar la tarjeta?</translation>
+<translation id="2882280148032777436">Borrar el número de viajero conocido</translation>
 <translation id="2882949212241984732">Plegado en ventana doble</translation>
 <translation id="2891963978019740012">Tu motor de búsqueda en Chrome</translation>
 <translation id="2893773853358652045">Cuarto rollo</translation>
@@ -1405,7 +1408,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3350450887151703713">Volver a reproducir 10 segundos</translation>
 <translation id="3352881017886802007">Juegos deportivos</translation>
-<translation id="3355823806454867987">Cambiar la configuración del proxy...</translation>
 <translation id="335809815767823">Se exportó correctamente</translation>
 <translation id="3359565626472459400">Matrimonio</translation>
 <translation id="3360103848165129075">Hoja del controlador de pagos</translation>
@@ -1707,6 +1709,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3814865536373139791">Agiliza la forma en que tu organización administra las políticas</translation>
 <translation id="3815434930383843058">20.3 × 30.5 cm (8 × 12 in)</translation>
 <translation id="3816482573645936981">Valor (sustituido)</translation>
+<translation id="3817524650114746564">Abre la configuración de proxy de tu computadora</translation>
 <translation id="382115839591654906">CVC de <ph name="CARD_NAME" /></translation>
 <translation id="3822492359574576064">bloqueo y uso del mouse</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -2488,7 +2491,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="512670116361803001">Es posible que el cambio de tamaño de <ph name="APP_NAME" /> no funcione correctamente. Utiliza los tamaños predeterminados de ventana para que no se generen problemas en la app.</translation>
 <translation id="512756860033933700">Se permite el bloqueo del teclado</translation>
 <translation id="5127934926273826089">Flores</translation>
-<translation id="5129094684098010260">La tarjeta se guardó solo en el dispositivo</translation>
 <translation id="5129534298163637277">Diálogo de confirmación</translation>
 <translation id="5129662217315786329">Polaco</translation>
 <translation id="5135404736266831032">Administrar direcciones…</translation>
@@ -2499,7 +2501,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5144613843429436866">Permitiste que este sitio use tu <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Código de error en la respuesta de la política</translation>
 <translation id="5146995429444047494">Se bloquearon las notificaciones de <ph name="ORIGIN" /></translation>
-<translation id="514704532284964975"><ph name="URL" /> quiere ver y cambiar la información de los dispositivos NFC que presionas con tu teléfono</translation>
+<translation id="514704532284964975"><ph name="URL" /> quiere ver y cambiar la información de los dispositivos NFC a los que acercas el teléfono</translation>
 <translation id="5147633291963801297">Consulta las reducciones de precio en el panel lateral</translation>
 <translation id="5148809049217731050">Hacia arriba</translation>
 <translation id="5148889558173091794">Tu organización bloqueó <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque incumple una política. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -2631,6 +2633,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"El reloj está atrasado", "El reloj está adelantado" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Para obtener esta contraseña en todos tus dispositivos, verifica tu identidad</translation>
+<translation id="5380539543938195166">¿Quieres actualizar el número de viajero conocido?</translation>
 <translation id="5380953781541843508">en orden ascendente</translation>
 <translation id="5381318171304904246">Si continúas, se te redireccionará al sitio web de tu banco. Después de que realices la verificación, regresarás automáticamente para finalizar la compra.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> actualizó la pestaña "<ph name="WEBSITE_TITLE" />"</translation>
@@ -3066,7 +3069,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6108580855199168381">Detalles del certificado</translation>
 <translation id="6108702513636120202">Tu motor de búsqueda en Chromium</translation>
 <translation id="6108849843016142864">Reptiles y anfibios</translation>
-<translation id="610911394827799129">Es posible que tu cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="611018310643025551">Tus búsquedas, los resultados más relevantes y el contenido de sus páginas se envían a Google y es posible que los revisen personas para mejorar esta función.</translation>
 <translation id="6116338172782435947">Ver el texto y las imágenes copiados en el portapapeles</translation>
 <translation id="6117833587752089929">Foto (satinado)</translation>
@@ -3233,6 +3235,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6380497234672085559">A0</translation>
 <translation id="638289054711715023">Plástico retráctil</translation>
 <translation id="6383221683286411806">Es posible que se cobren cargos.</translation>
+<translation id="6384448607821972818">Se muestra la contraseña de recuperación</translation>
 <translation id="6385164437039878414">Mochilas y bolsos</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 sugerencia más}other{# sugerencias más}}</translation>
 <translation id="6386565501269869892">Sobre You n.º 4</translation>
@@ -3341,7 +3344,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6529173248185917884">Séptimo rollo</translation>
 <translation id="6529602333819889595">&amp;Rehacer Eliminar</translation>
 <translation id="6532101170117367231">Guardar en Google Drive</translation>
-<translation id="6535617236508021606">Esta tarjeta se ha guardado en tu Cuenta de Google para que puedas usarla en todos los servicios de Google.</translation>
 <translation id="6536221421038631327">Si quitas una suscripción a Passpoint de tu <ph name="DEVICE_TYPE" />, también se quitarán las redes asociadas. Comunícate con "<ph name="FRIENDLY_NAME" />" para hacer cambios en tu plan de suscripción. <ph name="LEARN_MORE" /></translation>
 <translation id="653801826293432362">Para ver las tablas de comparación, activa la sincronización</translation>
 <translation id="6539092367496845964">Se produjo un error; vuelve a intentarlo más tarde.</translation>
@@ -4005,6 +4007,7 @@ Detalles adicionales:
 <translation id="7638605456503525968">Puertos en serie</translation>
 <translation id="7646681339175747202">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. El Administrador de contraseñas de Google te recomienda cambiarla ahora.</translation>
 <translation id="7647206758853451655">Calidad de impresión</translation>
+<translation id="7648133459447652947">Para mostrar el cursor, cambia de app, vuelve a cargar la página o retrocede</translation>
 <translation id="7648527891719919697">Este sitio permanecerá bloqueado porque tienes activada la Protección avanzada en la <ph name="BEGIN_ANDROID_SETTINGS_LINK" />configuración de Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Almacenar archivos en el dispositivo</translation>
 <translation id="7653957176542370971">La hoja del controlador de pagos está cerrada</translation>
@@ -4044,6 +4047,7 @@ Detalles adicionales:
 <translation id="7690647519407127574">Postal Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Orden de páginas recibido</translation>
 <translation id="769424100851389104">Actualizar ahora</translation>
+<translation id="7696107855583699585">Editar el número de viajero conocido</translation>
 <translation id="7697837508203274589">Eventos deportivos en vivo</translation>
 <translation id="7698864304447945242">¿Quieres actualizar los Servicios de Google Play para RA?</translation>
 <translation id="7701040980221191251">No hay</translation>
@@ -4332,6 +4336,7 @@ Detalles adicionales:
 <translation id="822925450938886901">Para obtener información adicional y conocer las políticas que pueden aplicarse, abre chrome://management en tu navegador.</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8230528737876789478">VIN (número de identificación del vehículo)</translation>
 <translation id="8232343881378637145">Temperatura de la plataforma</translation>
 <translation id="8233773197406738106">Preparando archivo</translation>
 <translation id="823490921909113114">Para habilitar estos parámetros de configuración y usar la información de pago de tu Cuenta de Google, visita la configuración de los servicios de autocompletado.</translation>
@@ -4651,12 +4656,13 @@ Detalles adicionales:
 <translation id="8767765348545497220">Cerrar el cuadro de ayuda</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 forma de pago}other{# formas de pago}}</translation>
 <translation id="8768225988514678921">Botón Crear presentación: actívalo para crear una nueva presentación de Google en Presentaciones rápidamente</translation>
-<translation id="8769662576926275897">Detalles de la tarjeta</translation>
+<translation id="8769662576926275897">Datos de la tarjeta</translation>
 <translation id="8769858749286369844">Canela 2</translation>
 <translation id="8770286973007342895">Cortadoras de césped</translation>
 <translation id="8772387130037509473">Yoga y pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{¿Quieres mover este archivo confidencial?}other{¿Quieres mover estos archivos confidenciales?}}</translation>
 <translation id="8775347646940100151">Papel (con membrete)</translation>
+<translation id="8776941011841875705">¿Quieres guardar el número de viajero conocido?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Botón Traducir página: actívalo para traducir esta página con Google Traductor</translation>
 <translation id="8785658048882205566">Motocicletas</translation>
@@ -4841,6 +4847,7 @@ Detalles adicionales:
 <translation id="9107199998619088551"><ph name="MANAGER" /> administra tu perfil</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> administra tu navegador</translation>
 <translation id="91108059142052966">La política del administrador inhabilita el uso compartido de pantallas con <ph name="APPLICATION_TITLE" /> cuando se muestra contenido confidencial</translation>
+<translation id="9114101423898634479">Agregar el número de viajero conocido</translation>
 <translation id="9114524666733003316">Confirmando tarjeta…</translation>
 <translation id="9114581008513152754">Este navegador no está administrado por una empresa ni por otra organización. Es posible que la actividad de este dispositivo se administre fuera de Chrome. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Obtén más información sobre los anuncios en Chrome</translation>

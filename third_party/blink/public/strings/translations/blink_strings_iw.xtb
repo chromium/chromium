@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1012241361789814178">הכלי לניפוי באגים מושהה בכרטיסייה אחרת. צריך ללחוץ כדי לעבור לכרטיסייה הזו.</translation>
-<translation id="1171774979989969504">הזנת כתובת אימייל.</translation>
+<translation id="1171774979989969504">צריך להזין כתובת אימייל תקינה.</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1306460908038601864">כבוי</translation>
 <translation id="1311894908970423688">הערך חייב להיות <ph name="VALUE_DATE_OR_TIME" />.</translation>
@@ -20,12 +20,12 @@
 <translation id="2226276347425096477">צריך לקצר את הטקסט ל-<ph name="MAX_CHARACTERS" /> תווים או פחות (כרגע: <ph name="CURRENT_LENGTH" /> תווים).</translation>
 <translation id="2247351761944213033">שבוע <ph name="WEEKNUMBER" />‏, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">טראק <ph name="NUMBER" /></translation>
-<translation id="2507943997699731163">זהו שדה חובה.</translation>
+<translation id="2507943997699731163">חובה למלא את השדה הזה.</translation>
 <translation id="2613802280814924224">יש להזין ערך חוקי. הערך החוקי הקרוב ביותר הוא <ph name="VALID_VALUE" /></translation>
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2746543609216772311">על הערך להיות <ph name="MINIMUM_DATE_OR_TIME" /> ומעלה.</translation>
-<translation id="2761667185364618470">יש לסמן את התיבה הזאת כדי להמשיך.</translation>
-<translation id="2908441821576996758">יש להזין רשימה של כתובות אימייל המופרדות באמצעות פסיקים.</translation>
+<translation id="2761667185364618470">כדי להמשיך, צריך לסמן את התיבה הזאת.</translation>
+<translation id="2908441821576996758">יש להזין רשימה של כתובות אימייל שמופרדות באמצעות פסיקים.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">יש להזין ערך חוקי. השדה ריק או שהוא מכיל תאריך לא חוקי.</translation>
 <translation id="310520048233152454">הזנת כתובת אתר.</translation>
@@ -96,7 +96,7 @@
 <translation id="8451268428117625855">יש לבחור קובץ.</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">גלישת שורות</translation>
-<translation id="8750798805984357768">יש לבחור אחת מהאפשרויות הבאות.</translation>
+<translation id="8750798805984357768">יש לבחור את אחת מהאפשרויות הבאות.</translation>
 <translation id="8845239796550121995">העברת תוכן לטלוויזיה מתבצעת</translation>
 <translation id="8875657656876809964">שגיאה בהפעלת הסרטון</translation>
 <translation id="8901569739625249689">‏<ph name="QUANTITY" />KB‏</translation>

@@ -8,28 +8,10 @@
 <translation id="358997566136285270">Логотип Chromium</translation>
 <translation id="4050599136622776556">Chromium намагається змінити способи оплати.</translation>
 <translation id="4365115785552740256">Chromium став можливим завдяки проекту з відкритим кодом <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> та іншому <ph name="BEGIN_LINK_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_OSS" />.</translation>
-<translation id="4559775032954821361">Перейдіть у
-          меню Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Налаштування LAN
-          і зніміть прапорець біля опції "Використовувати проксі-сервер для вашої локальної мережі".</translation>
 <translation id="4622039161600275920">Веб-переглядач Chromium заблокував цю сторінку</translation>
 <translation id="48558539577516920">Надайте Chromium доступ до мережі в налаштуваннях брандмауера чи
         антивірусної програми.</translation>
 <translation id="4949828774841497663">Перейдіть у меню Applications (Програми) &gt; System Settings (Системні параметри) &gt; Network (Мережа) і виберіть активну мережу, а потім натисніть кнопку Details (Докладніше) і зніміть прапорці біля всіх вибраних проксі-серверів.</translation>
-<translation id="580822234363523061">Перейдіть у
-          меню Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          і переконайтеся, що встановлено значення конфігурації "без проксі" чи "безпосередньо".</translation>
 <translation id="648062525172759633">Ці сторінки призначені для розробників Chromium. Вони можуть не підтримуватися й не тестуватися. Щоб увімкнути їх, перейдіть за посиланням <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, натисніть кнопку, щоб увімкнути сторінки налагодження, а потім поверніться сюди.</translation>
 <translation id="6549378540556750549">Chromium також працює завдяки іншому <ph name="BEGIN_LINK_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Ваші зміни почнуть діяти після наступного перезапуску Chromium.</translation>

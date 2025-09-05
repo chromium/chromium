@@ -332,6 +332,7 @@
 <translation id="2083190527011054446">Доброй ночи, <ph name="GIVEN_NAME" />!</translation>
 <translation id="2086334242442703436">Открыть окно выбора эмодзи</translation>
 <translation id="2088116547584365419">игры</translation>
+<translation id="2093792000875799555">Новости Steam для Chromebook</translation>
 <translation id="209965399369889474">Нет подключения к сети</translation>
 <translation id="2107581415810719320">Другая кнопка <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Кабель USB-C не поддерживает интерфейс Thunderbolt. Производительность устройства может быть ограничена.</translation>
@@ -1589,6 +1590,7 @@
 <translation id="612734058257491180">В рамках гостевого сеанса Google Ассистент недоступен.</translation>
 <translation id="6127395413317891856">Нет интернета. Проверьте подключение и повторите попытку.</translation>
 <translation id="6129953537138746214">Пробел</translation>
+<translation id="6136872094979134163">Не удалось получить новости Steam для Chromebook.</translation>
 <translation id="6137566720514957455">Открыть диалоговое окно удаления аккаунта <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">На чем вы хотите сфокусироваться?</translation>
 <translation id="6141988275892716286">Подтвердите скачивание</translation>

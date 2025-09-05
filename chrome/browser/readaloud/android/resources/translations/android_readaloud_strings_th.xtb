@@ -4,7 +4,7 @@
 <translation id="1173075331199604451">เมนูเสียง</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1246424317317450637">ตัวหนา</translation>
-<translation id="1357114957607379632">กำลังสร้างการเล่นสำหรับ AI...</translation>
+<translation id="1357114957607379632">กำลังสร้างการเล่นด้วย AI...</translation>
 <translation id="1483137792530497944">แม่น้ำ</translation>
 <translation id="1586836055630070874">สบายๆ</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
@@ -19,7 +19,7 @@
 <translation id="2611765907167846862">เรียบๆ</translation>
 <translation id="3023502830214299618">ขออภัย ไม่สามารถเล่นเสียงสำหรับหน้านี้ได้ในขณะนี้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="3493899379487634969">เกิดข้อผิดพลาดอะไรขึ้น</translation>
-<translation id="3730775656877876887">กำลังสร้างการเล่นสำหรับ AI</translation>
+<translation id="3730775656877876887">กำลังสร้างการเล่นด้วย AI</translation>
 <translation id="3778044272390020426">เมนูตัวเลือกความคิดเห็นเชิงลบ</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3936324432406465283">ความเร็วในการเล่น</translation>
@@ -36,7 +36,7 @@
 <translation id="5026371835667036198">สดใส</translation>
 <translation id="5234971936051226002">โปรแกรมเล่น "ฟังหน้านี้" ที่ย่อขนาดอยู่</translation>
 <translation id="5251803541071282808">ระบบคลาวด์</translation>
-<translation id="5528503854289436485">การเล่นสำหรับ AI</translation>
+<translation id="5528503854289436485">การเล่นด้วย AI</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="565342223183747919">แตะเพื่อเปลี่ยนโหมดการเล่น</translation>
 <translation id="5694491020339060116">เมนูความเร็วในการเล่น</translation>
@@ -57,6 +57,7 @@
 <translation id="7221920857098237570">อ่อนโยน</translation>
 <translation id="7237590978482584900">สดชื่น</translation>
 <translation id="7282547042039404307">ราบรื่น</translation>
+<translation id="7514257690823355037">ย้ายไปที่บทความถัดไป</translation>
 <translation id="8004767876552422827">ทุ่งหญ้า</translation>
 <translation id="8136852699834914183">การเล่นไม่พร้อมใช้งานสำหรับหน้านี้</translation>
 <translation id="8198036737896977997">ลม</translation>
@@ -68,5 +69,6 @@
 <translation id="8756370108715456837">ไม่ถูกต้องตามข้อเท็จจริง</translation>
 <translation id="8953618380150219653">โปรแกรมเล่น "ฟังหน้านี้" ที่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="9087782179025630211">ตัวควบคุมการค้นหา ผ่านไปแล้ว <ph name="ELAPSED" /> จาก <ph name="TOTAL" /></translation>
+<translation id="9193673272519126093">ย้ายไปที่บทความก่อนหน้า</translation>
 <translation id="978117257931832348">ระดับเสียงต่ำ</translation>
 </translationbundle>

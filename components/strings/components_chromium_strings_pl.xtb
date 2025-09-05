@@ -8,28 +8,10 @@
 <translation id="358997566136285270">Logo Chromium</translation>
 <translation id="4050599136622776556">Chromium próbuje edytować formy płatności.</translation>
 <translation id="4365115785552740256">Stworzenie Chromium było możliwe dzięki projektowi open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> i innym <ph name="BEGIN_LINK_OSS" />programom o otwartym kodzie źródłowym<ph name="END_LINK_OSS" />.</translation>
-<translation id="4559775032954821361">Wybierz
-          menu Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Ustawienia sieci LAN
-          i usuń zaznaczenie pola wyboru „Użyj serwera proxy dla sieci LAN”.</translation>
 <translation id="4622039161600275920">Ta strona została zablokowana przez Chromium</translation>
 <translation id="48558539577516920">Zezwalaj Chromium na korzystanie z sieci w ustawieniach zapory sieciowej
         lub oprogramowania antywirusowego.</translation>
 <translation id="4949828774841497663">Otwórz kolejno Aplikacje &gt; Ustawienia systemu &gt; Sieć, wybierz aktywną sieć, kliknij przycisk Szczegóły… i usuń zaznaczenie wszystkich zaznaczonych serwerów proxy.</translation>
-<translation id="580822234363523061">Wybierz
-          menu Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          i upewnij się, że w konfiguracji wybrano połączenie bez serwera proxy lub bezpośrednie.</translation>
 <translation id="648062525172759633">Te strony są przeznaczone dla programistów Chromium i mogą nie być aktywnie utrzymywane ani testowane. Aby je włączyć, otwórz <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknij przycisk włączania debugowania stron, a potem ponownie otwórz tę stronę.</translation>
 <translation id="6549378540556750549">Stworzenie przeglądarki Chromium było też możliwe dzięki innemu <ph name="BEGIN_LINK_OSS" />oprogramowaniu open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Zmiany zostaną zastosowane po ponownym uruchomieniu Chromium.</translation>

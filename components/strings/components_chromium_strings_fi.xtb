@@ -8,30 +8,12 @@
 <translation id="358997566136285270">Chromium-logo</translation>
 <translation id="4050599136622776556">Chromium yrittää muokata maksutapoja.</translation>
 <translation id="4365115785552740256">Chromiumin ovat tehneet mahdolliseksi <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-projekti ja muut <ph name="BEGIN_LINK_OSS" />avoimen lähdekoodin ohjelmistot<ph name="END_LINK_OSS" />.</translation>
-<translation id="4559775032954821361">Avaa
-          Chromium-valikko &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Lähiverkon asetukset
-          ja poista valinta kohdasta Käytä välityspalvelinta lähiverkossa.</translation>
 <translation id="4622039161600275920">Chromium on estänyt tämän sivun</translation>
 <translation id="48558539577516920">Myönnä Chromiumille verkon käyttöoikeus palomuurin tai virustorjuntaohjelmiston
           asetuksissa</translation>
 <translation id="4949828774841497663">Siirry kohtaan Sovellukset &gt; Järjestelmäasetukset &gt; Verkko, valitse
           aktiivinen verkko, klikkaa Tiedot…-painiketta ja poista valinta kaikista mahdollisesti
           valituista välityspalvelimista.</translation>
-<translation id="580822234363523061">Avaa
-          Chromium-valikko &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          ja varmista, että asetus on "ei välityspalvelinta" tai "suora".</translation>
 <translation id="648062525172759633">Nämä sivut on tarkoitettu Chromiumin kehittäjille, eikä niitä välttämättä ylläpidetä tai testata aktiivisesti. Voit ottaa ne käyttöön siirtymällä osoitteeseen <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikkaamalla painiketta, jolla voit ottaa virheenkorjaussivut käyttöön, ja siirtymällä sitten uudelleen tälle sivulle.</translation>
 <translation id="6549378540556750549">Muu <ph name="BEGIN_LINK_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_OSS" /> tukee Chromiumia.</translation>
 <translation id="6613594504749178791">Muutokset tulevat voimaan, kun käynnistät Chromiumin seuraavan kerran.</translation>
