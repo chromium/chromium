@@ -279,11 +279,18 @@ void BnplManager::OnVcnDetailsFetched(
 void BnplManager::OnIssuerSelected(BnplIssuer selected_issuer) {
   ongoing_flow_state_->issuer = std::move(selected_issuer);
 
-  if (ongoing_flow_state_->issuer.payment_instrument().has_value() &&
-      !AcceptTosActionRequired()) {
+  // TODO(crbug.com/424259928): Refactor BnplManager to always use
+  // `ongoing_flow_state_->instrument_id` instead of
+  // `ongoing_flow_state_->issuer.payment_instrument()->instrument_id()` to
+  // prevent duplicity.
+  bool is_linked_issuer =
+      ongoing_flow_state_->issuer.payment_instrument().has_value();
+  if (is_linked_issuer) {
     ongoing_flow_state_->instrument_id = base::NumberToString(
         ongoing_flow_state_->issuer.payment_instrument()->instrument_id());
+  }
 
+  if (is_linked_issuer && !AcceptTosActionRequired()) {
     LoadRiskDataForFetchingRedirectUrl();
   } else {
     GetLegalMessageFromServer();
