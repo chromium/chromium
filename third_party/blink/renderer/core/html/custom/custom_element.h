@@ -114,7 +114,9 @@ class CORE_EXPORT CustomElement {
       const CreateElementFlags,
       const AtomicString& is_value,
       CustomElementRegistry* registry);
-  static HTMLElement* CreateFailedElement(Document&, const QualifiedName&);
+  static HTMLElement* CreateFailedElement(Document&,
+                                          const QualifiedName&,
+                                          CustomElementRegistry*);
 
   static void Enqueue(Element&, CustomElementReaction&);
   static void EnqueueConnectedCallback(Element&);

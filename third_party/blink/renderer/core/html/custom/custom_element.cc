@@ -182,8 +182,10 @@ Element* CustomElement::CreateUncustomizedOrUndefinedElement(
       document, tag_name, flags, is_value, registry);
 }
 
-HTMLElement* CustomElement::CreateFailedElement(Document& document,
-                                                const QualifiedName& tag_name) {
+HTMLElement* CustomElement::CreateFailedElement(
+    Document& document,
+    const QualifiedName& tag_name,
+    CustomElementRegistry* registry) {
   CHECK(ShouldCreateCustomElement(tag_name))
       << "HTMLUnknownElement with built-in tag name: " << tag_name;
 
@@ -197,6 +199,7 @@ HTMLElement* CustomElement::CreateFailedElement(Document& document,
 
   auto* element = MakeGarbageCollected<HTMLUnknownElement>(tag_name, document);
   element->SetCustomElementState(CustomElementState::kFailed);
+  element->SetCustomElementRegistry(registry);
   return element;
 }
 

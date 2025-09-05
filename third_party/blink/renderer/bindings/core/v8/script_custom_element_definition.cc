@@ -73,7 +73,7 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
     CustomElementRegistry* registry) {
   DCHECK(CustomElement::ShouldCreateCustomElement(tag_name)) << tag_name;
   if (!script_state_->ContextIsValid())
-    return CustomElement::CreateFailedElement(document, tag_name);
+    return CustomElement::CreateFailedElement(document, tag_name, registry);
   ScriptState::Scope scope(script_state_);
   v8::Isolate* isolate = script_state_->GetIsolate();
   v8::TryCatch try_catch(isolate);
@@ -94,7 +94,7 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
       // 1 Report the exception.
       V8ScriptRunner::ReportException(isolate, try_catch.Exception());
       // 2 Return HTMLUnknownElement.
-      return CustomElement::CreateFailedElement(document, tag_name);
+      return CustomElement::CreateFailedElement(document, tag_name, registry);
     }
   }
 
@@ -106,7 +106,7 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
     // 1 Report the exception.
     V8ScriptRunner::ReportException(isolate, try_catch.Exception());
     // 2 Return HTMLUnknownElement.
-    return CustomElement::CreateFailedElement(document, tag_name);
+    return CustomElement::CreateFailedElement(document, tag_name, registry);
   }
   // 5.1.3.9 Set result’s namespace prefix to prefix.
   if (element->prefix() != tag_name.Prefix())
