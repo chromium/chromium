@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities_delegate.h"
+#include "chrome/browser/ui/browser_window_deleter.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -117,10 +118,11 @@ enum class BrowserClosingStatus {
   kDeniedUnloadHandlersNeedTime
 };
 
-// An instance of this class represents a single browser window on Desktop. All
-// features that are scoped to a browser window should have lifetime semantics
-// scoped to an instance of this class, usually via direct or indirect ownership
-// of a std::unique_ptr. See BrowserWindowFeatures and TabFeatures.
+// An instance of this class represents a single browser window on Desktop.
+// Owned by BrowserManagerService.
+// All features that are scoped to a browser window should have lifetime scoped
+// to an instance of this class, usually via direct or indirect ownership of a
+// std::unique_ptr. See BrowserWindowFeatures and TabFeatures.
 class Browser : public TabStripModelObserver,
                 public WebContentsCollection::Observer,
                 public content::WebContentsDelegate,
@@ -436,7 +438,7 @@ class Browser : public TabStripModelObserver,
 
   // |window()| will return NULL if called before |CreateBrowserWindow()|
   // is done.
-  BrowserWindow* window() const { return window_; }
+  BrowserWindow* window() const { return window_.get(); }
 
   // In production code, each instance of Browser will always instantiate an
   // instance of BrowserView in the constructor. Some tests instantiate a
@@ -1285,13 +1287,8 @@ class Browser : public TabStripModelObserver,
   // Prevent Profile deletion until this browser window is closed.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
-  // The Browser's BrowserWindow, only set by tests.
-  // TODO(crbug.com/413168662): This can be consolidated with `window_` once
-  // Browser always owns BrowserWindow.
-  std::unique_ptr<BrowserWindow> window_for_testing_;
-
   // This Browser's window.
-  raw_ptr<BrowserWindow, DanglingUntriaged> window_;
+  std::unique_ptr<BrowserWindow, BrowserWindowDeleter> window_;
 
   // The active state of this browser.
   bool is_active_ = false;

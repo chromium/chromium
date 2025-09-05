@@ -259,6 +259,10 @@ BrowserView* TestBrowserWindow::AsBrowserView() {
   return nullptr;
 }
 
+void TestBrowserWindow::DeleteBrowserWindow() {
+  delete this;
+}
+
 ShowTranslateBubbleResult TestBrowserWindow::ShowTranslateBubble(
     content::WebContents* contents,
     translate::TranslateStep step,

@@ -150,6 +150,7 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   ui::ColorProviderKey::ThemeInitializerSupplier* GetCustomTheme()
       const override;
   void OnNativeWidgetWorkspaceChanged() override;
+  void OnNativeWidgetDestroyed() override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(

@@ -82,8 +82,7 @@ class WebUIBrowserWindow::WidgetDelegate : public views::WidgetDelegate {
   raw_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
 };
 
-WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
-    : browser_(std::move(browser)) {
+WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
   location_bar_ = std::make_unique<WebUILocationBar>(browser_.get());
   web_contents_delegate_ =
       std::make_unique<WebUIBrowserWebContentsDelegate>(this);
@@ -319,6 +318,10 @@ gfx::Rect WebUIBrowserWindow::GetContentsBoundsInScreen() const {
           kContentsContainerViewElementId,
           views::ElementTrackerViews::GetContextForWidget(widget_.get()));
   return content_region->GetScreenBounds();
+}
+
+void WebUIBrowserWindow::DeleteBrowserWindow() {
+  delete this;
 }
 
 bool WebUIBrowserWindow::FindCommandIdForAccelerator(
@@ -1032,13 +1035,6 @@ bool WebUIBrowserWindow::CanUserExitFullscreen() const {
   return false;
 }
 
-void WebUIBrowserWindow::DestroyBrowser() {
-  // Defer destroy so that Browser and TabStripModel outlive WebContents.
-  // During shutdown WebContents might need access to them.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                this);
-}
-
 void WebUIBrowserWindow::OnWindowCloseRequested(
     views::Widget::ClosedReason close_reason) {
   // TODO(webium): don't close a window during tab dragging.
@@ -1062,7 +1058,7 @@ void WebUIBrowserWindow::OnWindowCloseRequested(
     return;
   }
 
-  DestroyBrowser();
+  browser_->SynchronouslyDestroyBrowser();
 }
 
 WebUIBrowserWindow::WidgetDelegate::WidgetDelegate(
