@@ -33,9 +33,9 @@ class DeviceAuthenticatorProxyFactory : public ProfileKeyedServiceFactoryIOS {
   DeviceAuthenticatorProxyFactory();
   ~DeviceAuthenticatorProxyFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 // Creates an IOSDeviceAuthenticator. It is built on top of a
