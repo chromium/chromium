@@ -155,6 +155,7 @@ public class AppHeaderCoordinator
     }
 
     /** Destroy the instances and remove all the dependencies. */
+    @Override
     public void destroy() {
         mActivity = null;
         mCaptionBarRectProvider.destroy();

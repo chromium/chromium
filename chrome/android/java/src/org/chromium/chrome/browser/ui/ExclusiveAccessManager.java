@@ -9,11 +9,13 @@ import android.app.Activity;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -26,16 +28,25 @@ import org.chromium.content_public.browser.WebContents;
  * responsible for native object creation and destruction.
  */
 @NullMarked
-public class ExclusiveAccessManager implements Destroyable {
+public class ExclusiveAccessManager
+        implements Destroyable, DesktopWindowStateManager.AppHeaderObserver {
     private long mExclusiveAccessManagerAndroidNativePointer;
+    private final FullscreenManager mFullscreenManager;
+    private @MonotonicNonNull DesktopWindowStateManager mDesktopWindowStateManager;
 
     public ExclusiveAccessManager(
             Activity activity,
             FullscreenManager fullscreenManager,
-            ActivityTabProvider activityTabProvider) {
+            ActivityTabProvider activityTabProvider,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+        mFullscreenManager = fullscreenManager;
         mExclusiveAccessManagerAndroidNativePointer =
                 ExclusiveAccessManagerJni.get()
                         .init(this, activity, fullscreenManager, activityTabProvider);
+        if (desktopWindowStateManager != null) {
+            mDesktopWindowStateManager = desktopWindowStateManager;
+            mDesktopWindowStateManager.addObserver(this);
+        }
     }
 
     /**
@@ -127,6 +138,14 @@ public class ExclusiveAccessManager implements Destroyable {
                 .lostPointerLock(mExclusiveAccessManagerAndroidNativePointer);
     }
 
+    @Override
+    public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
+        if (isInDesktopWindow && mFullscreenManager.getPersistentFullscreenMode()) {
+            ExclusiveAccessManagerJni.get()
+                    .exitExclusiveAccess(mExclusiveAccessManagerAndroidNativePointer);
+        }
+    }
+
     /** Cleanup function which should be called when owning object is destroyed. */
     @Override
     public void destroy() {
@@ -134,6 +153,7 @@ public class ExclusiveAccessManager implements Destroyable {
             ExclusiveAccessManagerJni.get().destroy(mExclusiveAccessManagerAndroidNativePointer);
             mExclusiveAccessManagerAndroidNativePointer = 0;
         }
+        if (mDesktopWindowStateManager != null) mDesktopWindowStateManager.removeObserver(this);
     }
 
     @NativeMethods
@@ -175,6 +195,8 @@ public class ExclusiveAccessManager implements Destroyable {
                 boolean lastUnlockedByTarget);
 
         void lostPointerLock(long nativeExclusiveAccessManagerAndroid);
+
+        void exitExclusiveAccess(long nativeExclusiveAccessManagerAndroid);
 
         void destroy(long nativeExclusiveAccessManagerAndroid);
     }

@@ -106,6 +106,10 @@ void ExclusiveAccessManagerAndroid::LostPointerLock(JNIEnv* env) {
   eam_.pointer_lock_controller()->ExitExclusiveAccessToPreviousState();
 }
 
+void ExclusiveAccessManagerAndroid::ExitExclusiveAccess(JNIEnv* env) {
+  eam_.ExitExclusiveAccess();
+}
+
 void ExclusiveAccessManagerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }

@@ -59,6 +59,8 @@ class ExclusiveAccessManagerAndroid {
 
   void LostPointerLock(JNIEnv* env);
 
+  void ExitExclusiveAccess(JNIEnv* env);
+
  private:
   // Our global reference to the Java ExclusiveAccessManagerAndroid.
   base::android::ScopedJavaGlobalRef<jobject> j_eam_;

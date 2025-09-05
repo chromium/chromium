@@ -74,4 +74,7 @@ public interface DesktopWindowStateManager {
      * @param backgroundColor The app header background color.
      */
     void updateForegroundColor(@ColorInt int backgroundColor);
+
+    /** Destroy the instances and remove all the dependencies. */
+    void destroy();
 }

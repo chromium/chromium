@@ -228,7 +228,9 @@ public abstract class FullscreenHtmlApiHandlerBase
             implements MultiWindowModeStateDispatcher.MultiWindowModeObserver {
         @Override
         public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
-            if (isDisplayEdgeToEdgeFullscreenFeatureEnabledOn2DDevice()) {
+            if (isDisplayEdgeToEdgeFullscreenFeatureEnabledOn2DDevice()
+                    && !ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
                 // Fix for https://crbug.com/416443642 exiting from full screen mode when
                 // transition to PIP is done.
                 // When playing video in full screen mode and the home button is pushed the page

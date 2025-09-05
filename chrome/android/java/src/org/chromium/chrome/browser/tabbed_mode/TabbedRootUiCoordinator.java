@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.ViewGroup;
@@ -186,7 +184,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarC
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -275,7 +272,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     private final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier;
-    private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
     private final @NonNull DataSharingTabManager mDataSharingTabManager;
     private final Supplier<Boolean> mCanAnimateBrowserControls;
@@ -484,7 +480,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 savedInstanceState,
                 overviewColorSupplier,
                 edgeToEdgeManager,
-                xrSpaceModeObservableSupplier);
+                xrSpaceModeObservableSupplier,
+                initAppHeaderCoordinator(
+                        activity,
+                        savedInstanceState,
+                        edgeToEdgeManager.getEdgeToEdgeStateProvider(),
+                        browserControlsManager,
+                        insetObserver,
+                        activityLifecycleDispatcher));
         mInsetObserver = insetObserver;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
         mSendToBackground = sendToBackground;
@@ -561,8 +564,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         collaborationControllerDelegateFactory);
 
         mEdgeToEdgeManager = edgeToEdgeManager;
-        initAppHeaderCoordinator(
-                savedInstanceState, mEdgeToEdgeManager.getEdgeToEdgeStateProvider());
 
         mBookmarkManagerOpenerSupplier = bookmarkManagerOpenerSupplier;
 
@@ -685,11 +686,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             ((CoordinatorLayoutForPointer) mCoordinator)
                     .removeTouchEventObserver(mDragDropTouchObserver);
             mDragDropTouchObserver = null;
-        }
-
-        if (mAppHeaderCoordinator != null && VERSION.SDK_INT >= VERSION_CODES.R) {
-            mAppHeaderCoordinator.destroy();
-            mAppHeaderCoordinator = null;
         }
 
         mDataSharingTabManager.destroy();
@@ -922,7 +918,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mTabModelSelectorSupplier.get(),
                             mWindowAndroid,
                             mLayoutStateProviderOneShotSupplier,
-                            mAppHeaderCoordinator);
+                            getDesktopWindowStateManager());
 
             mCompositorViewHolderSupplier.get().setOnDragListener(chromeTabbedOnDragListener);
 
@@ -1301,7 +1297,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // TODO(crbug/331844971): Do a smooth transition head into DW mode.
         final boolean animate =
                 !sDisableTopControlsAnimationForTesting
-                        && !AppHeaderUtils.isAppInDesktopWindow(mAppHeaderCoordinator);
+                        && !AppHeaderUtils.isAppInDesktopWindow(getDesktopWindowStateManager());
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
@@ -1467,24 +1463,27 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     @SuppressWarnings("NewApi") // OS version check is done via helper method.
-    private void initAppHeaderCoordinator(
-            Bundle savedInstanceState, EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
-        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+    private static @Nullable AppHeaderCoordinator initAppHeaderCoordinator(
+            AppCompatActivity activity,
+            Bundle savedInstanceState,
+            EdgeToEdgeStateProvider edgeToEdgeStateProvider,
+            BrowserControlsManager browserControlsManager,
+            InsetObserver insetObserver,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(
-                isTablet, DisplayUtil.isContextInDefaultDisplay(mActivity))) {
-            return;
+                isTablet, DisplayUtil.isContextInDefaultDisplay(activity))) {
+            return null;
         }
 
-        mAppHeaderCoordinator =
-                new AppHeaderCoordinator(
-                        mActivity,
-                        mActivity.getWindow().getDecorView().getRootView(),
-                        mBrowserControlsManager.getBrowserVisibilityDelegate(),
-                        mInsetObserver,
-                        mActivityLifecycleDispatcher,
-                        savedInstanceState,
-                        edgeToEdgeStateProvider);
-        mDesktopWindowStateManagerSupplier.set(mAppHeaderCoordinator);
+        return new AppHeaderCoordinator(
+                activity,
+                activity.getWindow().getDecorView().getRootView(),
+                browserControlsManager.getBrowserVisibilityDelegate(),
+                insetObserver,
+                activityLifecycleDispatcher,
+                savedInstanceState,
+                edgeToEdgeStateProvider);
     }
 
     private void initCollaborationDelegatesOnProfile(Profile profile) {
@@ -1618,11 +1617,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 MultiWindowUtils.launchIntentInMaybeClosedWindow(mActivity, intent, windowId);
             }
         };
-    }
-
-    @Override
-    public DesktopWindowStateManager getDesktopWindowStateManager() {
-        return mAppHeaderCoordinator;
     }
 
     /** Returns the {@link TabGroupSyncControllerImpl} if it has been created yet. */

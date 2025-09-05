@@ -147,7 +147,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     private @Nullable EdgeToEdgeSupplier.ChangeObserver mEdgeToEdgeChangeObserver;
     private final @NonNull Runnable mOpenInBrowserRunnable;
-    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private @Nullable WebAppHeaderLayoutCoordinator mWebAppHeaderLayoutCoordinator;
     private final Supplier<BrowserServicesThemeColorProvider> mWebAppThemeColorProvider;
 
@@ -278,12 +277,12 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 null,
                 new ObservableSupplierImpl<>(Color.TRANSPARENT),
                 edgeToEdgeManager,
-                /* xrSpaceModeObservableSupplier= */ null);
+                /* xrSpaceModeObservableSupplier= */ null,
+                desktopWindowStateManager);
         mCustomTabProvider = customTabProvider;
         mToolbarCoordinator = customTabToolbarCoordinator;
         mIntentDataProvider = intentDataProvider;
         mCustomTabSearchClient = new SearchActivityClientImpl(activity, IntentOrigin.CUSTOM_TAB);
-        mDesktopWindowStateManager = desktopWindowStateManager;
         mWebAppThemeColorProvider = webAppThemeColorProvider;
 
         boolean isAuthTab = intentDataProvider.get().isAuthTab();
@@ -772,12 +771,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                 mActivity.startActivity(fullHistoryIntent);
                             });
         }
-    }
-
-    @Nullable
-    @Override
-    public DesktopWindowStateManager getDesktopWindowStateManager() {
-        return mDesktopWindowStateManager;
     }
 
     @Override

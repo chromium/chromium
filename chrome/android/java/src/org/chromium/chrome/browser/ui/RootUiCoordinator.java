@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -354,6 +356,7 @@ public class RootUiCoordinator
     private final boolean mIsTablet;
     private final ObservableSupplierImpl<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
     private @Nullable ToolbarControlContainer mToolbarContainer;
+    private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final ExclusiveAccessManager mExclusiveAccessManager;
 
     /**
@@ -401,6 +404,7 @@ public class RootUiCoordinator
      * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
+     * @param desktopWindowStateManager Tracks whether in desktop windowing mode
      */
     public RootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -444,7 +448,8 @@ public class RootUiCoordinator
             @Nullable Bundle savedInstanceState,
             @NonNull ObservableSupplier<Integer> overviewColorSupplier,
             @NonNull EdgeToEdgeManager edgeToEdgeManager,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -575,10 +580,18 @@ public class RootUiCoordinator
                 new BottomControlsStacker(mBrowserControlsManager, mActivity, mWindowAndroid);
         mTopControlsStacker = new TopControlsStacker(mBrowserControlsManager);
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+        mDesktopWindowStateManager = desktopWindowStateManager;
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManagerSupplier.set(mDesktopWindowStateManager);
+        }
 
         if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             mExclusiveAccessManager =
-                    new ExclusiveAccessManager(mActivity, mFullscreenManager, mActivityTabProvider);
+                    new ExclusiveAccessManager(
+                            mActivity,
+                            mFullscreenManager,
+                            mActivityTabProvider,
+                            mDesktopWindowStateManager);
         } else {
             mExclusiveAccessManager = null;
         }
@@ -605,7 +618,7 @@ public class RootUiCoordinator
      * @return The {@link DesktopWindowStateManager} instance associated with the current activity.
      */
     public @Nullable DesktopWindowStateManager getDesktopWindowStateManager() {
-        return null;
+        return mDesktopWindowStateManager;
     }
 
     public void onAttachFragment(Fragment fragment) {
@@ -796,6 +809,12 @@ public class RootUiCoordinator
         }
         mBottomControlsStacker.destroy();
         mTopControlsStacker.destroy();
+
+        if (mDesktopWindowStateManager != null && VERSION.SDK_INT >= VERSION_CODES.R) {
+            mDesktopWindowStateManager.destroy();
+            mDesktopWindowStateManager = null;
+        }
+
         mActivity = null;
     }
 
