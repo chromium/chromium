@@ -165,7 +165,7 @@ const char kNonInsightsRequestBody[] =
     "id": "shared",
     "method": "GET",
     "url": "/me/drive/sharedWithMe?$select=id,name,webUrl,file,)"
-    R"(lastModifiedDateTime,remoteItem&$orderBy=lastModifiedDateTime+desc"
+    R"(remoteItem&$orderBy=lastModifiedDateTime+desc"
   }]})";
 
 const char kNonInsightsFakeData[] =
@@ -581,8 +581,7 @@ MicrosoftFilesPageHandler::GetTrendingFiles(base::Value::Dict result) {
               "'resourceVisualization.mediaType': %s)",
               GetBoolAsString(!id), GetBoolAsString(!title),
               GetBoolAsString(!url), GetBoolAsString(!mime_type)));
-      request_result_ = MicrosoftFilesRequestResult::kContentError;
-      return std::vector<file_suggestion::mojom::FilePtr>();
+      continue;
     }
 
     std::string file_extension =
@@ -652,8 +651,6 @@ MicrosoftFilesPageHandler::GetNonInsightFiles(const base::Value::List* values,
     const std::string* last_opened_time_str =
         suggestion_dict.FindStringByDottedPath(
             "fileSystemInfo.lastAccessedDateTime");
-    const std::string* last_modified_time_str =
-        suggestion_dict.FindString("lastModifiedDateTime");
     const std::string* shared_by = suggestion_dict.FindStringByDottedPath(
         "remoteItem.shared.sharedBy.user.displayName");
     const std::string* shared_time_str = suggestion_dict.FindStringByDottedPath(
@@ -680,26 +677,21 @@ MicrosoftFilesPageHandler::GetNonInsightFiles(const base::Value::List* values,
             : shared_by && shared_time_str &&
                   base::Time::FromUTCString(shared_time_str->c_str(),
                                             &sort_time);
-    if (!id || !title || !item_url || !last_modified_time_str ||
-        !suggestion_has_formatted_time) {
+    if (!id || !title || !item_url || !suggestion_has_formatted_time) {
       LogModuleError(
           ntp_features::kNtpSharepointModule,
           base::StringPrintf(
               "Content Error: Recent/Shared File ('response_id': %s) missing "
               "field "
-              "('id': %s, 'name': %s, 'webUrl': %s, 'lastModifiedDateTime': "
-              "%s, "
+              "('id': %s, 'name': %s, 'webUrl': %s,"
               "'fileSystemInfo.lastAccessedDateTime': %s, "
               "'remoteItem.shared.sharedBy.user.displayName': %s, "
               "'remoteItem.shared.sharedDateTime': %s)",
               response_id, GetBoolAsString(!id), GetBoolAsString(!title),
               GetBoolAsString(!item_url),
-              GetBoolAsString(!last_modified_time_str),
               GetBoolAsString(!last_opened_time_str),
               GetBoolAsString(!shared_by), GetBoolAsString(!shared_time_str)));
-      request_result_ = MicrosoftFilesRequestResult::kContentError;
-      return std::vector<
-          std::pair<base::Time, file_suggestion::mojom::FilePtr>>();
+      continue;
     }
 
     std::string file_extension =
