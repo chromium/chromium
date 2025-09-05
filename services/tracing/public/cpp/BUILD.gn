@@ -76,8 +76,6 @@ target(tracing_lib_type, "cpp") {
       "perfetto/shared_memory.cc",
       "perfetto/shared_memory.h",
       "perfetto/system_trace_writer.h",
-      "perfetto/trace_event_metadata_source.cc",
-      "perfetto/trace_event_metadata_source.h",
       "perfetto/trace_packet_tokenizer.cc",
       "perfetto/trace_packet_tokenizer.h",
       "perfetto/trace_string_lookup.cc",

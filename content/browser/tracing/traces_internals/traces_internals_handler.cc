@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
+#include "base/trace_event/builtin_categories.h"
 #include "base/uuid.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/tracing_scenarios_config.h"
