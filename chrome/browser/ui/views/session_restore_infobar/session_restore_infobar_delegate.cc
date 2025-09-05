@@ -1,0 +1,96 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
+
+#include <memory>
+#include <utility>
+
+#include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobar_manager.h"
+#include "components/omnibox/browser/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/vector_icon_types.h"
+
+namespace session_restore_infobar {
+
+// static
+void SessionRestoreInfoBarDelegate::Show(
+    content::WebContents* contents,
+    base::OnceCallback<void()> close_cb,
+    SessionRestoreInfoBarDelegate::InfobarMessageType message_type) {
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(contents);
+
+  std::unique_ptr<SessionRestoreInfoBarDelegate> delegate =
+      std::make_unique<SessionRestoreInfoBarDelegate>(std::move(close_cb),
+                                                      message_type);
+  infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+}
+
+SessionRestoreInfoBarDelegate::SessionRestoreInfoBarDelegate(
+    base::OnceCallback<void()> close_cb,
+    SessionRestoreInfoBarDelegate::InfobarMessageType message_type)
+    : close_cb_(std::move(close_cb)), message_type_(message_type) {}
+
+SessionRestoreInfoBarDelegate::~SessionRestoreInfoBarDelegate() = default;
+
+infobars::InfoBarDelegate::InfoBarIdentifier
+SessionRestoreInfoBarDelegate::GetIdentifier() const {
+  return infobars::InfoBarDelegate::InfoBarIdentifier::
+      SESSION_RESTORE_INFOBAR_DELEGATE;
+}
+
+const gfx::VectorIcon& SessionRestoreInfoBarDelegate::GetVectorIcon() const {
+  return dark_mode() ? omnibox::kProductChromeRefreshIcon
+                     : vector_icons::kProductRefreshIcon;
+}
+
+bool SessionRestoreInfoBarDelegate::ShouldExpire(
+    const NavigationDetails& details) const {
+  // Returns false if the infobar should not be dismissed on navigation.
+  return false;
+}
+
+std::u16string SessionRestoreInfoBarDelegate::GetMessageText() const {
+  switch (message_type_) {
+    case InfobarMessageType::kTurnOffFromRestart:
+      return l10n_util::GetStringUTF16(
+          IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_RESTART);
+    case InfobarMessageType::kTurnOffFromSession:
+      return l10n_util::GetStringUTF16(
+          IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_SESSION);
+    case InfobarMessageType::kTurnOnSessionRestore:
+      return l10n_util::GetStringUTF16(IDS_SESSION_RESTORE_TURN_ON);
+    case InfobarMessageType::kNone:
+      return std::u16string();
+  }
+  return std::u16string();
+}
+
+std::u16string SessionRestoreInfoBarDelegate::GetLinkText() const {
+  return l10n_util::GetStringUTF16(IDS_SESSION_RESTORE_LINK);
+}
+
+int SessionRestoreInfoBarDelegate::GetButtons() const {
+  return BUTTON_NONE;
+}
+
+bool SessionRestoreInfoBarDelegate::ShouldShowLinkBeforeButton() const {
+  return true;
+}
+
+void SessionRestoreInfoBarDelegate::InfoBarDismissed() {
+  CHECK(close_cb_);
+  std::move(close_cb_).Run();
+}
+
+}  // namespace session_restore_infobar

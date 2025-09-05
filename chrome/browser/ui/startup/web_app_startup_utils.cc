@@ -418,9 +418,10 @@ void FinalizeWebAppLaunch(std::optional<OpenMode> app_open_mode,
   // OpenMode enum for the values of the buckets.
   base::UmaHistogramEnumeration("WebApp.OpenMode", mode);
 
-  AddInfoBarsIfNecessary(browser, browser->profile(), command_line,
-                         is_first_run,
-                         /*is_web_app=*/true);
+  AddInfoBarsIfNecessary(
+      browser, browser->profile(), command_line, is_first_run,
+      /*is_web_app=*/true, HasPendingUncleanExit(browser->profile()),
+      StartupBrowserCreator::WasRestarted());
 
   StartupBrowserCreatorImpl::MaybeToggleFullscreen(browser);
 }

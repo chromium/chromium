@@ -44,6 +44,11 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
 #endif
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_controller.h"
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_model.h"
+#endif
+
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_controller.h"
@@ -100,7 +105,9 @@ void AddInfoBarsIfNecessary(Browser* browser,
                             Profile* profile,
                             const base::CommandLine& startup_command_line,
                             chrome::startup::IsFirstRun is_first_run,
-                            bool is_web_app) {
+                            bool is_web_app,
+                            bool is_post_crash_launch,
+                            bool was_restarted) {
   if (!browser || !profile || browser->tab_strip_model()->count() == 0) {
     return;
   }
@@ -197,13 +204,6 @@ void AddInfoBarsIfNecessary(Browser* browser,
     }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    if (base::FeatureList::IsEnabled(features::kSessionRestoreInfobar)) {
-      // TODO(crbug.com/431828875): Instantiate and initialize the session
-      // restore controller.
-    }
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   if (is_web_app ||
       startup_command_line.HasSwitch(switches::kNoDefaultBrowserCheck) ||
@@ -227,6 +227,14 @@ void AddInfoBarsIfNecessary(Browser* browser,
         std::move(default_browser_prompt_shown_callback));
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(features::kSessionRestoreInfobar)) {
+    session_restore_infobar::SessionRestoreInfobarController controller(
+        *profile, was_restarted, is_post_crash_launch);
+    controller.CreateOrDestroySessionRestoreInfobar(*web_contents);
+  }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
   // The default browser prompt should only be shown after the first run.
   if (is_first_run == chrome::startup::IsFirstRun::kNo) {

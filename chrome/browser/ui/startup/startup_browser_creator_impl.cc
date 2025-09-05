@@ -441,7 +441,8 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 
   // Finally, add info bars.
   AddInfoBarsIfNecessary(browser, profile_, *command_line_, is_first_run_,
-                         /*is_web_app=*/false);
+                         /*is_web_app=*/false, is_post_crash_launch,
+                         StartupBrowserCreator::WasRestarted());
 
   tab_groups::MaybeShowSharedTabGroupVersionOutOfDateModal(browser);
   tab_groups::MaybeShowSharedTabGroupVersionUpToDateToast(browser);

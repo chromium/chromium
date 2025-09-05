@@ -19,40 +19,35 @@
 namespace session_restore_infobar {
 
 class SessionRestoreInfobarModelTest : public testing::Test {
- protected:
-  SessionRestoreInfobarModelTest() = default;
-
-  ~SessionRestoreInfobarModelTest() override = default;
-
-  void SetUp() override {
-    ChromeBrowserMainExtraPartsProfiles::
-        EnsureBrowserContextKeyedServiceFactoriesBuilt();
-    RegisterProfilePrefs(/*is_signin_profile=*/false,
-                         g_browser_process->GetApplicationLocale(),
-                         prefs_.registry());
-  }
-
-  sync_preferences::TestingPrefServiceSyncable prefs_;
+ private:
+  content::BrowserTaskEnvironment task_environment_;
 };
 
+TEST_F(SessionRestoreInfobarModelTest, CreateAndAccessModel) {
+  TestingProfile profile;
+  auto model =
+      std::make_unique<SessionRestoreInfobarModel>(profile, false, false);
+  EXPECT_TRUE(model);
+}
+
 TEST_F(SessionRestoreInfobarModelTest, GetSessionRestoreMessageValue_Prefs) {
-  // Pass the test's preference service to the model.
-  SessionRestoreInfobarModel model(prefs_);
+  TestingProfile profile;
+  SessionRestoreInfobarModel model(profile, false, false);
 
   // Test case 1: ContinueWhereLeftOff.
-  prefs_.SetInteger(prefs::kRestoreOnStartup, 1);
+  profile.GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
   EXPECT_EQ(SessionRestoreInfobarModel::SessionRestoreMessageValue::
                 ContinueWhereLeftOff,
             model.GetSessionRestoreMessageValue());
 
   // Test case 2: OpenSpecificPages.
-  prefs_.SetInteger(prefs::kRestoreOnStartup, 4);
+  profile.GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 4);
   EXPECT_EQ(
       SessionRestoreInfobarModel::SessionRestoreMessageValue::OpenSpecificPages,
       model.GetSessionRestoreMessageValue());
 
   // Test case 3: OpenNewTabPage.
-  prefs_.SetInteger(prefs::kRestoreOnStartup, 5);
+  profile.GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 5);
   EXPECT_EQ(
       SessionRestoreInfobarModel::SessionRestoreMessageValue::OpenNewTabPage,
       model.GetSessionRestoreMessageValue());

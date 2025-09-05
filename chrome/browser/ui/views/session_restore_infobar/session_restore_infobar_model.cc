@@ -4,26 +4,31 @@
 
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_model.h"
 
-#include "base/feature_list.h"
+#include "base/command_line.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/web_contents.h"
 
 namespace session_restore_infobar {
 
 SessionRestoreInfobarModel::~SessionRestoreInfobarModel() = default;
 
-SessionRestoreInfobarModel::SessionRestoreInfobarModel(PrefService& prefs)
-    : prefs_(prefs) {}
+SessionRestoreInfobarModel::SessionRestoreInfobarModel(
+    Profile& profile,
+    bool was_restarted,
+    bool is_post_crash_launch)
+    : profile_(profile),
+      was_restarted_(was_restarted),
+      is_post_crash_launch_(is_post_crash_launch) {}
 
 SessionRestoreInfobarModel::SessionRestoreMessageValue
-SessionRestoreInfobarModel::GetSessionRestoreMessageValue() {
+SessionRestoreInfobarModel::GetSessionRestoreMessageValue() const {
   // Get the integer value from the user's profile preferences.
-  int restore_on_startup_value = prefs_->GetInteger(prefs::kRestoreOnStartup);
+  int restore_on_startup_value =
+      profile_->GetPrefs()->GetInteger(prefs::kRestoreOnStartup);
   // Get the value for chrome session restore.
   switch (restore_on_startup_value) {
     case 1:
@@ -37,9 +42,19 @@ SessionRestoreInfobarModel::GetSessionRestoreMessageValue() {
   }
 }
 
-void SessionRestoreInfobarModel::SetInfobarDelegate() {
-  // TODO(crbug.com/431828875): Called to pass enum to the infobar delegate to
-  // display the correct message in the infobar.
+bool SessionRestoreInfobarModel::ShouldShowOnStartup() const {
+  if (is_post_crash_launch_) {
+    return false;
+  }
+
+  SessionRestoreMessageValue message_value = GetSessionRestoreMessageValue();
+
+  return message_value == SessionRestoreMessageValue::ContinueWhereLeftOff ||
+         message_value == SessionRestoreMessageValue::OpenNewTabPage;
+}
+
+bool SessionRestoreInfobarModel::IsBrowserRestarting() const {
+  return was_restarted_;
 }
 
 }  // namespace session_restore_infobar

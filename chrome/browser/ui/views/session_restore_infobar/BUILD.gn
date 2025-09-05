@@ -2,26 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chrome_build.gni")
-
 source_set("session_restore_infobar") {
-  sources = [
-    "session_restore_infobar_controller.cc",
+  public = [
     "session_restore_infobar_controller.h",
-    "session_restore_infobar_model.cc",
+    "session_restore_infobar_delegate.h",
     "session_restore_infobar_model.h",
   ]
+  sources = [
+    "session_restore_infobar_controller.cc",
+    "session_restore_infobar_delegate.cc",
+    "session_restore_infobar_model.cc",
+  ]
+  public_deps = [ "//base" ]
 
   deps = [
-    "//base",
+    "//chrome/app:branded_strings_grit",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/infobars",
     "//chrome/browser/profiles",
     "//chrome/browser/sessions",
-    "//chrome/browser/ui",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/startup",
+    "//chrome/browser/ui/views/infobars",
     "//chrome/common",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/omnibox/browser:vector_icons",
     "//components/prefs",
+    "//components/tabs:public",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//ui/base",
     "//url",
   ]
 }
@@ -29,7 +42,10 @@ source_set("session_restore_infobar") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "session_restore_infobar_model_unittest.cc" ]
+  sources = [
+    "session_restore_infobar_delegate_unittest.cc",
+    "session_restore_infobar_model_unittest.cc",
+  ]
 
   deps = [
     ":session_restore_infobar",
@@ -41,6 +57,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profiles_extra_parts",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//components/omnibox/browser:vector_icons",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
@@ -57,8 +74,12 @@ source_set("browser_tests") {
 
   deps = [
     ":session_restore_infobar",
+    "//chrome/app:branded_strings_grit",
+    "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ui/views/infobars",
     "//chrome/test:test_support",
+    "//components/infobars/content",
     "//content/test:test_support",
     "//testing/gtest",
   ]

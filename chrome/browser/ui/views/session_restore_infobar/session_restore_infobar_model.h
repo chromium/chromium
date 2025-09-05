@@ -6,7 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_SESSION_RESTORE_INFOBAR_SESSION_RESTORE_INFOBAR_MODEL_H_
 
 #include "base/memory/raw_ref.h"
-class PrefService;
+
+class Profile;
+
+namespace content {
+class WebContents;
+}
 
 namespace session_restore_infobar {
 
@@ -23,19 +28,30 @@ class SessionRestoreInfobarModel {
     OpenSpecificPages
   };
 
-  explicit SessionRestoreInfobarModel(PrefService& prefs);
+  explicit SessionRestoreInfobarModel(Profile& profile,
+                                      bool was_restarted,
+                                      bool is_post_crash_launch);
   ~SessionRestoreInfobarModel();
+
+  SessionRestoreInfobarModel(const SessionRestoreInfobarModel&) = delete;
+  SessionRestoreInfobarModel& operator=(const SessionRestoreInfobarModel&) =
+      delete;
 
   // Retrieves a value indicating the user's preference for session restore
   // behavior. This value is used to determine if a session restore message
   // should be displayed.
-  SessionRestoreMessageValue GetSessionRestoreMessageValue();
+  SessionRestoreMessageValue GetSessionRestoreMessageValue() const;
 
-  // Sets the infobar delegate to display the correct message in the infobar.
-  void SetInfobarDelegate();
+  // Checks if the infobar should be shown on startup.
+  bool ShouldShowOnStartup() const;
+
+  // Checks if the browser is restarting.
+  bool IsBrowserRestarting() const;
 
  private:
-  raw_ref<PrefService> prefs_;
+  const raw_ref<Profile> profile_;
+  const bool was_restarted_;
+  const bool is_post_crash_launch_;
 };
 
 }  // namespace session_restore_infobar
