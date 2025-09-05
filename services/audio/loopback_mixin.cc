@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define TODO_BASE_FEATURE_MACROS_NEED_MIGRATION
-
 #include "services/audio/loopback_mixin.h"
 
 #include "base/memory/ptr_util.h"
@@ -19,7 +17,7 @@
 
 namespace audio {
 
-BASE_FEATURE(RestrictOwnAudioAddChromiumBack,
+BASE_FEATURE(kRestrictOwnAudioAddChromiumBack,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
