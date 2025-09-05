@@ -26,9 +26,9 @@ class ImpressionLimitServiceFactory : public ProfileKeyedServiceFactoryIOS {
   ImpressionLimitServiceFactory();
   ~ImpressionLimitServiceFactory() override = default;
 
-  // BrowserContextKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_IMPRESSION_LIMIT_SERVICE_FACTORY_H_
