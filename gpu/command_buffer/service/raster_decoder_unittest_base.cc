@@ -166,13 +166,9 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
   decoder_->DisableFlushWorkaroundForTest();
   decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
-  ContextCreationAttribs attribs;
-  attribs.lose_context_when_out_of_memory =
-      init.lose_context_when_out_of_memory;
-  attribs.context_type = context_type;
-
-  ASSERT_EQ(decoder_->Initialize(surface_, shared_context_state_->context(),
-                                 true, gles2::DisallowedFeatures(), attribs),
+  ASSERT_EQ(decoder_->Initialize(/*enable_gpu_rasterization=*/false,
+                                 /*lose_context_when_out_of_memory=*/init
+                                     .lose_context_when_out_of_memory),
             gpu::ContextResult::kSuccess);
 
   EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))

@@ -117,9 +117,9 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
   }
 
   // Initialize the decoder with either the view or pbuffer GLContext.
-  result = decoder->Initialize(surface_, context, true /* offscreen */,
-                               gpu::gles2::DisallowedFeatures(),
-                               init_params.attribs);
+  result =
+      decoder->Initialize(init_params.attribs.enable_gpu_rasterization,
+                          init_params.attribs.lose_context_when_out_of_memory);
   if (result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize decoder.";
     return result;

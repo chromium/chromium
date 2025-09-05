@@ -487,16 +487,19 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   ~RasterDecoderImpl() override;
 
+  // RasterDecoder implementation.
+  ContextResult Initialize(bool enable_gpu_rasterization,
+                           bool lose_context_when_out_of_memory) override;
+  int GetRasterDecoderId() const override;
+  int DecoderIdForTest() override;
+  ServiceTransferCache* GetTransferCacheForTest() override;
+  void SetUpForRasterCHROMIUMForTest() override;
+  void SetOOMErrorForTest() override;
+  void DisableFlushWorkaroundForTest() override;
   gles2::GLES2Util* GetGLES2Util() override { return &util_; }
 
   // DecoderContext implementation.
   base::WeakPtr<DecoderContext> AsWeakPtr() override;
-  ContextResult Initialize(
-      const scoped_refptr<gl::GLSurface>& surface,
-      const scoped_refptr<gl::GLContext>& context,
-      bool offscreen,
-      const gles2::DisallowedFeatures& disallowed_features,
-      const ContextCreationAttribs& attrib_helper) override;
   void Destroy(bool have_context) override;
   bool MakeCurrent() override;
   gl::GLContext* GetGLContext() override;
@@ -598,12 +601,6 @@ class RasterDecoderImpl final : public RasterDecoder,
     NOTIMPLEMENTED();
     return false;
   }
-  int GetRasterDecoderId() const override;
-  int DecoderIdForTest() override;
-  ServiceTransferCache* GetTransferCacheForTest() override;
-  void SetUpForRasterCHROMIUMForTest() override;
-  void SetOOMErrorForTest() override;
-  void DisableFlushWorkaroundForTest() override;
 
   // ErrorClientState implementation.
   void OnContextLostError() override;
@@ -1054,19 +1051,12 @@ base::WeakPtr<DecoderContext> RasterDecoderImpl::AsWeakPtr() {
 }
 
 ContextResult RasterDecoderImpl::Initialize(
-    const scoped_refptr<gl::GLSurface>& surface,
-    const scoped_refptr<gl::GLContext>& context,
-    bool offscreen,
-    const gles2::DisallowedFeatures& disallowed_features,
-    const ContextCreationAttribs& attrib_helper) {
+    bool enable_gpu_rasterization,
+    bool lose_context_when_out_of_memory) {
   TRACE_EVENT0("gpu", "RasterDecoderImpl::Initialize");
   DCHECK(shared_context_state_->IsCurrent(nullptr));
 
   set_initialized();
-
-  if (!offscreen) {
-    return ContextResult::kFatalFailure;
-  }
 
   if (gpu_preferences_.enable_gpu_debugging)
     set_debug(true);
@@ -1074,22 +1064,17 @@ ContextResult RasterDecoderImpl::Initialize(
   if (gpu_preferences_.enable_gpu_command_logging)
     SetLogCommands(true);
 
-  DCHECK_EQ(surface.get(), shared_context_state_->surface());
-  DCHECK_EQ(context.get(), shared_context_state_->context());
-
   // Create GPU Tracer for timing values.
   gpu_tracer_ = std::make_unique<gles2::GPUTracer>(
       this, shared_context_state_->GrContextIsGL());
 
-  // Save the loseContextWhenOutOfMemory context creation attribute.
-  lose_context_when_out_of_memory_ =
-      attrib_helper.lose_context_when_out_of_memory;
+  lose_context_when_out_of_memory_ = lose_context_when_out_of_memory;
 
   CHECK_GL_ERROR();
 
   query_manager_ = std::make_unique<RasterQueryManager>(shared_context_state_);
 
-  if (attrib_helper.enable_gpu_rasterization) {
+  if (enable_gpu_rasterization) {
     DCHECK(gr_context() || graphite_shared_context());
     use_gpu_raster_ = true;
     paint_cache_ = std::make_unique<cc::ServicePaintCache>();

@@ -280,12 +280,8 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
         this, command_buffer_service_.get(), &outputter_, gpu_feature_info_,
         GpuPreferences(), nullptr /* memory_tracker */, &shared_image_manager_,
         context_state_, true /* is_privileged */));
-    ContextCreationAttribs attribs;
-    attribs.enable_gpu_rasterization = true;
-    attribs.enable_raster_interface = true;
-    CHECK_EQ(decoder->Initialize(context_state_->surface(),
-                                 context_state_->context(), true,
-                                 gles2::DisallowedFeatures(), attribs),
+    CHECK_EQ(decoder->Initialize(/*enable_gpu_rasterization=*/true,
+                                 /*lose_context_when_out_of_memory=*/false),
              ContextResult::kSuccess);
     return decoder;
   }

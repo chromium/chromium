@@ -43,14 +43,5 @@ WebGPUDecoder::WebGPUDecoder(DecoderClient* client,
 
 WebGPUDecoder::~WebGPUDecoder() {}
 
-ContextResult WebGPUDecoder::Initialize(
-    const scoped_refptr<gl::GLSurface>& surface,
-    const scoped_refptr<gl::GLContext>& context,
-    bool offscreen,
-    const gles2::DisallowedFeatures& disallowed_features,
-    const ContextCreationAttribs& attrib_helper) {
-  return ContextResult::kSuccess;
-}
-
 }  // namespace webgpu
 }  // namespace gpu

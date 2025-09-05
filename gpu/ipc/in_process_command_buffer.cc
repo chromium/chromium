@@ -324,15 +324,6 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       return result;
     }
 
-    result = webgpu_decoder->Initialize(surface, context_, /*offscreen=*/true,
-                                        gles2::DisallowedFeatures(),
-                                        *params.attribs);
-    if (result != gpu::ContextResult::kSuccess) {
-      DestroyOnGpuThread();
-      DLOG(ERROR) << "Failed to initialize decoder.";
-      return result;
-    }
-
     decoder_ = std::move(webgpu_decoder);
   } else {
     if (params.attribs->enable_raster_interface &&
@@ -366,8 +357,8 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
               true /*is_privileged*/));
 
       auto result = raster_decoder->Initialize(
-          surface, context_, /*offscreen=*/true, gles2::DisallowedFeatures(),
-          *params.attribs);
+          params.attribs->enable_gpu_rasterization,
+          params.attribs->lose_context_when_out_of_memory);
       if (result != gpu::ContextResult::kSuccess) {
         DestroyOnGpuThread();
         DLOG(ERROR) << "Failed to initialize decoder.";

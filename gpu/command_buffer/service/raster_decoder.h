@@ -14,7 +14,6 @@
 
 namespace gpu {
 
-struct ContextCreationAttribs;
 class DecoderClient;
 struct GpuFeatureInfo;
 struct GpuPreferences;
@@ -24,7 +23,6 @@ class SharedContextState;
 class SharedImageManager;
 
 namespace gles2 {
-struct DisallowedFeatures;
 class GLES2Util;
 class Logger;
 class Outputter;
@@ -85,11 +83,8 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
   bool log_commands() const { return log_commands_; }
 
   virtual gpu::ContextResult Initialize(
-      const scoped_refptr<gl::GLSurface>& surface,
-      const scoped_refptr<gl::GLContext>& context,
-      bool offscreen,
-      const gles2::DisallowedFeatures& disallowed_features,
-      const ContextCreationAttribs& attrib_helper) = 0;
+      bool enable_gpu_rasterization,
+      bool lose_context_when_out_of_memory) = 0;
 
   virtual int DecoderIdForTest() = 0;
   virtual ServiceTransferCache* GetTransferCacheForTest() = 0;
