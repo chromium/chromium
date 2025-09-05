@@ -275,9 +275,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
     aura::Window* created_window =
         navigated->GetWebContents()->GetTopLevelNativeWindow();
     ASSERT_TRUE(created_window);
-    EXPECT_TRUE(
-        MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-            created_window, kSecondaryAccountId));
+    EXPECT_TRUE(window_manager->IsWindowOnDesktopOfUser(created_window,
+                                                        kSecondaryAccountId));
   }
 
   // Test 2: Test that a window which is not visiting does not cause an owner
@@ -307,9 +306,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
     aura::Window* created_window =
         navigated->GetWebContents()->GetTopLevelNativeWindow();
     ASSERT_TRUE(created_window);
-    EXPECT_TRUE(
-        MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-            created_window, kPrimaryAccountId));
+    EXPECT_TRUE(window_manager->IsWindowOnDesktopOfUser(created_window,
+                                                        kPrimaryAccountId));
   }
 }
 

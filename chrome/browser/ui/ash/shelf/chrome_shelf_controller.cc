@@ -608,10 +608,12 @@ ash::ShelfAction ChromeShelfController::ActivateWindowOrMinimizeIfActive(
   aura::Window* native_window = window->GetNativeWindow();
   const AccountId& current_account_id =
       multi_user_util::GetAccountIdFromProfile(profile());
-  if (!MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          native_window, current_account_id)) {
-    MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(
-        native_window, current_account_id);
+  auto* multi_user_window_manager =
+      ash::Shell::Get()->multi_user_window_manager();
+  if (!multi_user_window_manager->IsWindowOnDesktopOfUser(native_window,
+                                                          current_account_id)) {
+    multi_user_window_manager->ShowWindowForUser(native_window,
+                                                 current_account_id);
     window->Activate();
     return ash::SHELF_ACTION_WINDOW_ACTIVATED;
   }

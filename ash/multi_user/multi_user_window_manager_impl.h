@@ -92,6 +92,8 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   std::set<AccountId> GetOwnersOfVisibleWindows() const override;
   const AccountId& GetUserPresentingWindow(
       const aura::Window* window) const override;
+  bool IsWindowOnDesktopOfUser(aura::Window* window,
+                               const AccountId& account_id) const override;
   const AccountId& CurrentAccountId() const override;
   void AddObserver(MultiUserWindowManagerObserver* observer) override;
   void RemoveObserver(MultiUserWindowManagerObserver* observer) override;
@@ -168,10 +170,6 @@ class ASH_EXPORT MultiUserWindowManagerImpl
 
   using WindowToEntryMap =
       std::map<aura::Window*, std::unique_ptr<WindowEntry>>;
-
-  // Returns true if the 'shown' owner of |window| is |account_id|.
-  bool IsWindowOnDesktopOfUser(aura::Window* window,
-                               const AccountId& account_id) const;
 
   // Returns the 'shown' owner.
   const AccountId& GetUserPresentingWindow(aura::Window* window) const;

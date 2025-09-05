@@ -71,11 +71,6 @@ class MultiUserWindowManagerHelper {
   // This must be called after User's profile gets ready.
   void AddUser(const AccountId& account_id);
 
-  // A query call for a given window to see if it is on the given user's
-  // desktop.
-  bool IsWindowOnDesktopOfUser(aura::Window* window,
-                               const AccountId& account_id) const;
-
  private:
   MultiUserWindowManagerHelper();
   ~MultiUserWindowManagerHelper();

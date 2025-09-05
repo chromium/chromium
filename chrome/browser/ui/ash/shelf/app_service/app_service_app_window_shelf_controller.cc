@@ -13,6 +13,7 @@
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -721,8 +722,8 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
   // If the window was created for the inactive user and it has been teleported
   // to the current user's desktop, register it to show an item on the shelf.
   const AccountId current_account_id = multi_user_util::GetCurrentAccountId();
-  MultiUserWindowManagerHelper* helper =
-      MultiUserWindowManagerHelper::GetInstance();
+  auto* multi_user_window_manager =
+      ash::Shell::Get()->multi_user_window_manager();
   aura::Window* other_window = nullptr;
   for (Profile* it : profile_list_) {
     apps::AppServiceProxy* proxy =
@@ -731,10 +732,11 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
       continue;
     }
     proxy->InstanceRegistry().ForEachInstance(
-        [&other_window, &window, &shelf_id, &browser_context, &helper,
+        [&other_window, &window, &shelf_id, &browser_context,
+         multi_user_window_manager,
          &current_account_id](const apps::InstanceUpdate& update) {
-          if (helper->IsWindowOnDesktopOfUser(update.Window(),
-                                              current_account_id) &&
+          if (multi_user_window_manager->IsWindowOnDesktopOfUser(
+                  update.Window(), current_account_id) &&
               (update.AppId() == shelf_id.app_id) &&
               (update.BrowserContext() == browser_context) &&
               update.Window() != window) {
@@ -746,7 +748,7 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
     }
   }
   if (other_window) {
-    MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(
+    multi_user_window_manager->ShowWindowForUser(
         window, multi_user_util::GetCurrentAccountId());
     RegisterWindow(window, shelf_id);
   }

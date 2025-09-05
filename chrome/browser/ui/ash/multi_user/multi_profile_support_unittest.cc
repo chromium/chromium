@@ -512,12 +512,10 @@ TEST_F(MultiProfileSupportTest, BasicTests) {
   EXPECT_FALSE(multi_user_window_manager()
                    ->GetUserPresentingWindow(window(0))
                    .is_valid());
-  EXPECT_TRUE(
-      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          window(0), kAccountIdA));
-  EXPECT_TRUE(
-      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          window(0), kAccountIdB));
+  EXPECT_TRUE(multi_user_window_manager()->IsWindowOnDesktopOfUser(
+      window(0), kAccountIdA));
+  EXPECT_TRUE(multi_user_window_manager()->IsWindowOnDesktopOfUser(
+      window(0), kAccountIdB));
 
   // Set the owner of one window should remember it as such. It should only be
   // drawn on the owners desktop - not on any other.
@@ -526,12 +524,10 @@ TEST_F(MultiProfileSupportTest, BasicTests) {
             multi_user_window_manager()->GetWindowOwner(window(0)));
   EXPECT_EQ(kAccountIdA,
             multi_user_window_manager()->GetUserPresentingWindow(window(0)));
-  EXPECT_TRUE(
-      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          window(0), kAccountIdA));
-  EXPECT_FALSE(
-      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          window(0), kAccountIdB));
+  EXPECT_TRUE(multi_user_window_manager()->IsWindowOnDesktopOfUser(
+      window(0), kAccountIdA));
+  EXPECT_FALSE(multi_user_window_manager()->IsWindowOnDesktopOfUser(
+      window(0), kAccountIdB));
 
   // Overriding it with another state should show it on the other user's
   // desktop.
@@ -540,12 +536,10 @@ TEST_F(MultiProfileSupportTest, BasicTests) {
             multi_user_window_manager()->GetWindowOwner(window(0)));
   EXPECT_EQ(kAccountIdB,
             multi_user_window_manager()->GetUserPresentingWindow(window(0)));
-  EXPECT_FALSE(
-      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          window(0), kAccountIdA));
-  EXPECT_TRUE(
-      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          window(0), kAccountIdB));
+  EXPECT_FALSE(multi_user_window_manager()->IsWindowOnDesktopOfUser(
+      window(0), kAccountIdA));
+  EXPECT_TRUE(multi_user_window_manager()->IsWindowOnDesktopOfUser(
+      window(0), kAccountIdB));
 }
 
 // Testing simple owner changes.
@@ -820,16 +814,14 @@ TEST_F(MultiProfileSupportTest, MinimizeChangesOwnershipBack) {
   multi_user_window_manager()->SetWindowOwner(window(2), kAccountIdB);
   ShowWindowForUserNoUserTransition(window(1), kAccountIdA);
   EXPECT_EQ("S[a], S[b,a], H[b], S[]", GetStatus());
-  EXPECT_TRUE(
-      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          window(1), kAccountIdA));
+  EXPECT_TRUE(multi_user_window_manager()->IsWindowOnDesktopOfUser(
+      window(1), kAccountIdA));
   WindowState::Get(window(1))->Minimize();
   // At this time the window is still on the desktop of that user, but the user
   // does not have a way to get to it.
   EXPECT_EQ("S[a], H[b,a], H[b], S[]", GetStatus());
-  EXPECT_TRUE(
-      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          window(1), kAccountIdA));
+  EXPECT_TRUE(multi_user_window_manager()->IsWindowOnDesktopOfUser(
+      window(1), kAccountIdA));
   EXPECT_TRUE(WindowState::Get(window(1))->IsMinimized());
   // Change to user B and make sure that minimizing does not change anything.
   SwitchActiveUser(kAccountIdB);

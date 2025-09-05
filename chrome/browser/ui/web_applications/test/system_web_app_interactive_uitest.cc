@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shell.h"
@@ -591,20 +592,21 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   EXPECT_TRUE(multi_user_util::IsProfileFromActiveUser(profile1));
   EXPECT_FALSE(multi_user_util::IsProfileFromActiveUser(profile2));
 
+  auto* multi_user_window_manager =
+      ash::Shell::Get()->multi_user_window_manager();
+
   // Launch the app from user 2 profile. The window should be on user 1
   // (the active) desktop.
   Browser* browser2 = LaunchAppOnProfile(profile2);
-  EXPECT_TRUE(
-      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          browser2->window()->GetNativeWindow(), account_id1_));
+  EXPECT_TRUE(multi_user_window_manager->IsWindowOnDesktopOfUser(
+      browser2->window()->GetNativeWindow(), account_id1_));
 
   // Launch the app from user 1 profile. The window should be on user 1 (the
   // active) desktop. And there should be two different browser windows
   // (for each profile).
   Browser* browser1 = LaunchAppOnProfile(profile1);
-  EXPECT_TRUE(
-      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          browser1->window()->GetNativeWindow(), account_id1_));
+  EXPECT_TRUE(multi_user_window_manager->IsWindowOnDesktopOfUser(
+      browser1->window()->GetNativeWindow(), account_id1_));
 
   EXPECT_NE(browser1, browser2);
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
@@ -615,9 +617,8 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   Browser* browser2_relaunch = LaunchAppOnProfile(profile2);
 
   EXPECT_EQ(browser2, browser2_relaunch);
-  EXPECT_TRUE(
-      MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-          browser2->window()->GetNativeWindow(), account_id2_));
+  EXPECT_TRUE(multi_user_window_manager->IsWindowOnDesktopOfUser(
+      browser2->window()->GetNativeWindow(), account_id2_));
 }
 
 IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,

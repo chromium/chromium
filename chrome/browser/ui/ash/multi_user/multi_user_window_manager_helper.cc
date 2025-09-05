@@ -46,8 +46,10 @@ bool MultiUserWindowManagerHelper::ShouldShowAvatar(aura::Window* window) {
 
   // Show the avatar icon if the window is on a different desktop than the
   // window's owner's desktop.
-  return !g_multi_user_window_manager_instance->IsWindowOnDesktopOfUser(
-      window, GetWindowManager()->GetWindowOwner(window));
+  auto* multi_user_window_manager =
+      ash::Shell::Get()->multi_user_window_manager();
+  return !multi_user_window_manager->IsWindowOnDesktopOfUser(
+      window, multi_user_window_manager->GetWindowOwner(window));
 }
 
 // static
@@ -66,14 +68,6 @@ void MultiUserWindowManagerHelper::CreateInstanceForTest() {
 
 void MultiUserWindowManagerHelper::AddUser(const AccountId& account_id) {
   multi_profile_support_->AddUser(account_id);
-}
-
-bool MultiUserWindowManagerHelper::IsWindowOnDesktopOfUser(
-    aura::Window* window,
-    const AccountId& account_id) const {
-  const AccountId& presenting_user =
-      GetWindowManager()->GetUserPresentingWindow(window);
-  return (!presenting_user.is_valid()) || presenting_user == account_id;
 }
 
 MultiUserWindowManagerHelper::MultiUserWindowManagerHelper()

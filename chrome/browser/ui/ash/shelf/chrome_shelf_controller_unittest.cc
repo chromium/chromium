@@ -452,12 +452,6 @@ void SelectItem(ash::ShelfItemDelegate* delegate) {
                          base::NullCallback());
 }
 
-bool IsWindowOnDesktopOfUser(aura::Window* window,
-                             const AccountId& account_id) {
-  return MultiUserWindowManagerHelper::GetInstance()->IsWindowOnDesktopOfUser(
-      window, account_id);
-}
-
 void UpdateAppRegistryCache(Profile* profile,
                             const std::string& app_id,
                             bool block,
@@ -3212,14 +3206,14 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // Check that an activation of the window on its owner's desktop does not
   // change the visibility to another user.
   shelf_controller_->ActivateWindowOrMinimizeIfActive(browser_window, false);
-  EXPECT_TRUE(IsWindowOnDesktopOfUser(window, account_id()));
+  EXPECT_TRUE(window_manager->IsWindowOnDesktopOfUser(window, account_id()));
 
   // Transfer the window to another user's desktop and check that activating it
   // does pull it back to that user.
   window_manager->ShowWindowForUser(window, account_id1());
-  EXPECT_FALSE(IsWindowOnDesktopOfUser(window, account_id()));
+  EXPECT_FALSE(window_manager->IsWindowOnDesktopOfUser(window, account_id()));
   shelf_controller_->ActivateWindowOrMinimizeIfActive(browser_window, false);
-  EXPECT_TRUE(IsWindowOnDesktopOfUser(window, account_id()));
+  EXPECT_TRUE(window_manager->IsWindowOnDesktopOfUser(window, account_id()));
 }
 
 // Tests that web app icon is removed from shelf after user switch if the app is

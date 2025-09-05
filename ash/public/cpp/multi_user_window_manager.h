@@ -53,6 +53,10 @@ class ASH_EXPORT MultiUserWindowManager {
   virtual const AccountId& GetUserPresentingWindow(
       const aura::Window* window) const = 0;
 
+  // Returns true if the 'shown' owner of |window| is |account_id|.
+  virtual bool IsWindowOnDesktopOfUser(aura::Window* window,
+                                       const AccountId& account_id) const = 0;
+
   // Returns the id of the currently active user.
   virtual const AccountId& CurrentAccountId() const = 0;
 
