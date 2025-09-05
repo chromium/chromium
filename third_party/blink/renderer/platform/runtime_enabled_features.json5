@@ -5498,12 +5498,6 @@
       name: "WebAuthenticationJSONSerialization",
       status: "stable",
     },
-    // https://w3c.github.io/webauthn/#prf-extension
-    {
-      name: "WebAuthenticationPRF",
-      status: "stable",
-      base_feature: "WebAuthenticationPRFExtension",
-    },
     {
       name: "WebAuthenticationRemoteDesktopSupport",
       base_feature: "none",
