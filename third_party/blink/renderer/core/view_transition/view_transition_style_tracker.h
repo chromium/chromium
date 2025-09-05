@@ -347,6 +347,11 @@ class ViewTransitionStyleTracker
     bool is_generated_name;
   };
 
+  // Remaps the element data's snapshot matrix to be relative to the new parent
+  // transform (i.e. from the cached parent's snapshot matrix to the parent's
+  // current snapshot matrix). Returns true if a style invalidation is needed.
+  bool RemapSnapshotMatrixToNewParentSpace(ElementData* element_data) const;
+
   bool RunPostPrePaintStepsForElement(AtomicString name,
                                       ElementData* element_data,
                                       const int max_capture_size_in_layout,
@@ -494,6 +499,8 @@ class ViewTransitionStyleTracker
 
   HashMap<AtomicString, AtomicString> id_to_auto_name_map_;
 
+  // All of the view transition names associated with this transition. Note that
+  // these names are in DOM order.
   Vector<AtomicString> view_transition_names_;
 
   bool in_get_computed_style_scope_ = false;

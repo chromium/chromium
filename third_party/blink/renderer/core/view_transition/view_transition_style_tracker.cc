@@ -1446,22 +1446,12 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
 
   bool needs_style_invalidation = false;
 
-  if (scope_tag_) {
-    // If the scope element is a participant, process it first. Updating pseudo
-    // tree intrinsic sizes may invalidate PaintLayer ancestors, including the
-    // scope, which prevents us from reading the scope element's geometry.
-    if (!RunPostPrePaintStepsForElement(
-            scope_tag_, element_data_map_.at(scope_tag_),
-            max_capture_size_in_layout, needs_style_invalidation)) {
-      return false;
-    }
-  }
-  for (auto& entry : element_data_map_) {
-    if (entry.key == scope_tag_) {
-      continue;
-    }
-    if (!RunPostPrePaintStepsForElement(entry.key, entry.value.Get(),
-                                        max_capture_size_in_layout,
+  // Iterate in the order of view transition names, since we sometimes need
+  // parent transforms to compute child transforms.
+  CHECK(!scope_tag_ || scope_tag_ == view_transition_names_.front());
+  for (auto& tag : view_transition_names_) {
+    ElementData* entry = element_data_map_.at(tag);
+    if (!RunPostPrePaintStepsForElement(tag, entry, max_capture_size_in_layout,
                                         needs_style_invalidation)) {
       return false;
     }
@@ -1479,12 +1469,67 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
   return true;
 }
 
+bool ViewTransitionStyleTracker::RemapSnapshotMatrixToNewParentSpace(
+    ElementData* element_data) const {
+  // If we're in a flat tree, then there are no parent transforms. Also we
+  // don't need to update anything until we start the transition (i.e. we have
+  // the topology from the new state).
+  if (state_ != State::kStarted ||
+      element_data->containing_group_name.IsNull()) {
+    return false;
+  }
+
+  const auto* parent_data =
+      element_data_map_.at(element_data->containing_group_name);
+  // If we don't have a new state for the parent data, then the transform
+  // can't change.
+  if (!parent_data->new_snapshot_id.IsValid()) {
+    return false;
+  }
+
+  // This should be true because of the order in which we process elements.
+  CHECK(parent_data->container_properties);
+
+  const auto& child_old_transform =
+      element_data->cached_container_properties.snapshot_matrix;
+  const auto& parent_old_transform =
+      parent_data->cached_container_properties.snapshot_matrix;
+  const auto& parent_new_transform =
+      parent_data->container_properties->snapshot_matrix;
+
+  gfx::Transform parent_old_inverse;
+  if (parent_old_transform.GetInverse(&parent_old_inverse)) {
+    // Remap `child_old_transform` to be relative to the
+    // `parent_new_transform` instead of `parent_old_transform`.
+    gfx::Transform new_child_transform = parent_new_transform;
+    new_child_transform.PreConcat(parent_old_inverse);
+    new_child_transform.PreConcat(child_old_transform);
+
+    if (element_data->container_properties->snapshot_matrix !=
+        new_child_transform) {
+      element_data->container_properties->snapshot_matrix = new_child_transform;
+      return true;
+    }
+  }
+  return false;
+}
+
 bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
     AtomicString name,
     ElementData* element_data,
     const int max_capture_size_in_layout,
     bool& needs_style_invalidation) {
   if (!element_data->target_element) {
+    // For an exiting element, there is no "new" geometry. But if it's parented
+    // to a group that has a "new" geometry, the UA stylesheet needs a
+    // transform to correctly position this element relative to the parent's
+    // new position. The desired behavior is that the element holds its
+    // position relative to the parent. This requires computing a new transform
+    // here. Note: This logic assumes that parent elements are processed before
+    // their children, which is true if iterating over
+    // `view_transition_names_` in order.
+    needs_style_invalidation |=
+        RemapSnapshotMatrixToNewParentSpace(element_data);
     return true;
   }
 
