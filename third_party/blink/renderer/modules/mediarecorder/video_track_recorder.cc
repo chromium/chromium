@@ -486,6 +486,7 @@ void VideoTrackRecorderImpl::Encoder::Initialize() {}
 void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks capture_timestamp) {
+  TRACE_EVENT("media", "Encoder::StartFrameEncode");
   if (paused_) {
     return;
   }
@@ -507,10 +508,11 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   }
 
   const bool is_format_supported =
-      (video_frame->format() == media::PIXEL_FORMAT_NV12 &&
-       video_frame->HasMappableGpuBuffer()) ||
+      (video_frame->HasMappableGpuBuffer() &&
+       video_frame->format() == media::PIXEL_FORMAT_NV12) ||
       (video_frame->IsMappable() &&
-       (video_frame->format() == media::PIXEL_FORMAT_I420 ||
+       (video_frame->format() == media::PIXEL_FORMAT_NV12 ||
+        video_frame->format() == media::PIXEL_FORMAT_I420 ||
         video_frame->format() == media::PIXEL_FORMAT_I420A));
   scoped_refptr<media::VideoFrame> frame = std::move(video_frame);
   // First, pixel format is converted to NV12, I420 or I420A.
@@ -533,6 +535,8 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
       blink::BindOnce(&VideoTrackRecorderImpl::Counter::DecreaseCount,
                       num_frames_in_encode_->GetWeakPtr())));
   num_frames_in_encode_->IncreaseCount();
+  TRACE_EVENT_INSTANT("media", "PreEncodeFrame", "converted",
+                      !is_format_supported);
   EncodeFrame(std::move(frame), timestamp,
               request_key_frame_for_testing_ || force_key_frame);
   request_key_frame_for_testing_ = false;
@@ -577,7 +581,7 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
     if (!frame ||
         !frame_converter_.ConvertAndScale(*video_frame, *frame).is_ok()) {
       // Send black frames (yuv = {0, 127, 127}).
-      DLOG(ERROR) << "Can't convert RGB to I420";
+      DLOG(ERROR) << "Can't convert RGB to I420 - producing black frame";
       frame = media::VideoFrame::CreateColorFrame(
           video_frame->visible_rect().size(), 0u, 0x80, 0x80,
           video_frame->timestamp());
@@ -600,6 +604,8 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
   }
 
   if (!encoder_thread_context_) {
+    DLOG(ERROR) << "Can't create offscreen graphics canvas context - producing "
+                   "black frame";
     // Send black frames (yuv = {0, 127, 127}).
     frame = media::VideoFrame::CreateColorFrame(
         video_frame->visible_rect().size(), 0u, 0x80, 0x80,
