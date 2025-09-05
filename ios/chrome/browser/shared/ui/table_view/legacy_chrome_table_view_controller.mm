@@ -223,18 +223,14 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
 #pragma mark - LegacyChromeTableViewConsumer
 
 - (void)reconfigureCellsForItems:(NSArray*)items {
+  NSMutableArray<NSIndexPath*>* indexPaths = [NSMutableArray array];
   for (TableViewItem* item in items) {
     if ([self.tableViewModel hasItem:item]) {
-      NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
-      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-
-      // `cell` may be nil if the row is not currently on screen.
-      if (cell) {
-        TableViewCell* tableViewCell =
-            base::apple::ObjCCastStrict<TableViewCell>(cell);
-        [item configureCell:tableViewCell withStyler:self.styler];
-      }
+      [indexPaths addObject:[self.tableViewModel indexPathForItem:item]];
     }
+  }
+  if (indexPaths.count > 0) {
+    [self.tableView reconfigureRowsAtIndexPaths:indexPaths];
   }
 }
 
