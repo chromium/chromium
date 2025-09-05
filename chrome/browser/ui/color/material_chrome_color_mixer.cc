@@ -36,12 +36,9 @@ void ApplyDefaultChromeRefreshToolbarColors(ui::ColorMixer& mixer,
   mixer[kColorAppMenuHighlightSeverityMedium] = {kColorAppMenuHighlightDefault};
   mixer[kColorAppMenuHighlightSeverityHigh] = {kColorAppMenuHighlightDefault};
 
-  if (base::FeatureList::IsEnabled(
-          features::kEnableAppMenuButtonColorsForDefaultAvatarButtonStates)) {
-    mixer[kColorAvatarButtonHighlightDefaultForeground] = {
-        kColorAppMenuExpandedForegroundDefault};
-    mixer[kColorAvatarButtonHighlightDefault] = {kColorAppMenuHighlightDefault};
-  }
+  mixer[kColorAvatarButtonHighlightDefaultForeground] = {
+      kColorAppMenuExpandedForegroundDefault};
+  mixer[kColorAvatarButtonHighlightDefault] = {kColorAppMenuHighlightDefault};
 
   mixer[kColorAvatarButtonHighlightManagementForeground] = {
       kColorAvatarButtonHighlightDefaultForeground};
@@ -281,12 +278,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnTonalContainer};
   mixer[kColorAppMenuChipInkDropHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorAppMenuChipInkDropRipple] = {ui::kColorSysStateRipplePrimary};
-  if (!base::FeatureList::IsEnabled(
-          features::kEnableAppMenuButtonColorsForDefaultAvatarButtonStates)) {
-    mixer[kColorAvatarButtonHighlightDefault] = {ui::kColorSysTonalContainer};
-    mixer[kColorAvatarButtonHighlightDefaultForeground] = {
-        ui::kColorSysOnTonalContainer};
-  }
   mixer[kColorAvatarButtonHighlightSyncPaused] = {
       kColorAvatarButtonHighlightDefault};
   mixer[kColorAvatarButtonHighlightSigninPaused] = {
