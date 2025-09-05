@@ -336,12 +336,16 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     CreateSessionDeps();
   }
 
-  // Creates / re-creates `session_deps_`, and clears test fixture fields
-  // referencing it.
-  void CreateSessionDeps() {
+  void DestroySession() {
     factory_ = nullptr;
     job_controller_ = nullptr;
     session_.reset();
+  }
+
+  // Creates / re-creates `session_deps_`, and clears test fixture fields
+  // referencing it.
+  void CreateSessionDeps() {
+    DestroySession();
 
     session_deps_.proxy_resolution_service->SetProxyDelegate(nullptr);
 
@@ -352,8 +356,14 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     session_deps_.http_user_agent_settings =
         std::make_unique<StaticHttpUserAgentSettings>("*", "test-ua");
     if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
-      session_deps_.alternate_host_resolver =
-          std::make_unique<FakeServiceEndpointResolver>();
+      auto host_resolver = std::make_unique<FakeServiceEndpointResolver>();
+      // This configures the FakeServiceEndpointResolver in much the same way
+      // SpdySessionDeps configures the default MockHostResolver.
+      host_resolver->ConfigureDefaultResolution()
+          .set_start_result(OK)
+          .add_endpoint(ServiceEndpointBuilder().add_v4("127.0.2.1").endpoint())
+          .set_crypto_ready(true);
+      session_deps_.alternate_host_resolver = std::move(host_resolver);
     }
   }
 
@@ -582,6 +592,52 @@ class HttpStreamFactoryJobControllerTest
       : HttpStreamFactoryJobControllerTestBase(
             /*happy_eyeballs_v3_enabled=*/false) {}
 };
+
+// Tests that are run with Happy Eyeballs v3 both enabled and disabled.
+class HttpStreamFactoryJobControllerDualPathTest
+    : public HttpStreamFactoryJobControllerTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  HttpStreamFactoryJobControllerDualPathTest()
+      : HttpStreamFactoryJobControllerTestBase(
+            /*happy_eyeballs_v3_enabled=*/GetParam()) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpStreamFactoryJobControllerDualPathTest,
+                         ::testing::Bool());
+
+// Make sure that a socket will not outlive the network session if the session
+// is destroyed before the conneciton completes.
+TEST_P(HttpStreamFactoryJobControllerDualPathTest,
+       DestroyingSocketPoolDestroysSocket) {
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  SSLSocketDataProvider ssl_data(SYNCHRONOUS, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.example.test");
+  Initialize(request_info);
+
+  MockHttpStreamRequestDelegate request_delegate;
+  auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+      factory_, &request_delegate_, session_.get(), &job_factory_, request_info,
+      is_preconnect_, /*is_websocket=*/false, enable_ip_based_pooling_for_h2_,
+      enable_alternative_services_, delay_main_job_with_available_spdy_session_,
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
+  auto* job_controller_ptr = job_controller.get();
+  HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller));
+  std::unique_ptr<HttpStreamRequest> request = job_controller_ptr->Start(
+      &request_delegate_, nullptr, net_log_with_source_,
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  EXPECT_TRUE(tcp_data_->socket());
+
+  request.reset();
+  DestroySession();
+  // Destroying the session (and the request) should destroy the socket.
+  EXPECT_FALSE(tcp_data_->socket());
+}
 
 TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsSync) {
   ProxyConfig proxy_config;
