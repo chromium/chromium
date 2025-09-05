@@ -91,7 +91,10 @@ import java.lang.ref.WeakReference;
 
 /** Queries the user's default search engine and shows autocomplete suggestions. */
 public class SearchActivity extends AsyncInitializationActivity
-        implements SnackbarManageable, BackKeyBehaviorDelegate, UrlFocusChangeListener {
+        implements SnackbarManageable,
+                BackKeyBehaviorDelegate,
+                UrlFocusChangeListener,
+                UmaActivityObserver.UmaSessionAwareActivity {
     // Shared with other org.chromium.chrome.browser.searchwidget classes.
     protected static final String TAG = "searchwidget";
 
