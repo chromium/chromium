@@ -59,11 +59,19 @@ void PrefChangeRegistrar::Add(std::string_view path,
   if (!service_) {
     NOTREACHED();
   }
-  DCHECK(!IsObserved(path)) << "Already had pref, \"" << path
-                            << "\", registered.";
+  DCHECK(!IsObserved(path))
+      << "Already had pref, \"" << path << "\", registered.";
 
   service_->AddPrefObserver(path, this);
   observers_.insert_or_assign(std::string(path), std::move(obs));
+}
+
+void PrefChangeRegistrar::AddMultiple(
+    const std::initializer_list<std::string_view>& paths,
+    base::RepeatingClosure obs) {
+  for (std::string_view path : paths) {
+    Add(path, obs);
+  }
 }
 
 void PrefChangeRegistrar::Remove(std::string_view path) {

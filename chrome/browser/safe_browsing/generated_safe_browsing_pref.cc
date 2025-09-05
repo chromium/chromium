@@ -19,18 +19,9 @@ const char kGeneratedSafeBrowsingPref[] = "generated.safe_browsing";
 GeneratedSafeBrowsingPref::GeneratedSafeBrowsingPref(Profile* profile)
     : profile_(profile) {
   user_prefs_registrar_.Init(profile->GetPrefs());
-  user_prefs_registrar_.Add(
-      prefs::kSafeBrowsingEnabled,
-      base::BindRepeating(
-          &GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
-          base::Unretained(this)));
-  user_prefs_registrar_.Add(
-      prefs::kSafeBrowsingEnhanced,
-      base::BindRepeating(
-          &GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
-          base::Unretained(this)));
-  user_prefs_registrar_.Add(
-      prefs::kSafeBrowsingScoutReportingEnabled,
+  user_prefs_registrar_.AddMultiple(
+      {prefs::kSafeBrowsingEnabled, prefs::kSafeBrowsingEnhanced,
+       prefs::kSafeBrowsingScoutReportingEnabled},
       base::BindRepeating(
           &GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
           base::Unretained(this)));
@@ -38,15 +29,17 @@ GeneratedSafeBrowsingPref::GeneratedSafeBrowsingPref(Profile* profile)
 
 extensions::settings_private::SetPrefResult GeneratedSafeBrowsingPref::SetPref(
     const base::Value* value) {
-  if (!value->is_int())
+  if (!value->is_int()) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+  }
 
   auto selection = static_cast<SafeBrowsingSetting>(value->GetInt());
 
   if (selection != SafeBrowsingSetting::DISABLED &&
       selection != SafeBrowsingSetting::STANDARD &&
-      selection != SafeBrowsingSetting::ENHANCED)
+      selection != SafeBrowsingSetting::ENHANCED) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
+  }
 
   // If SBER is forcefully disabled, Enhanced cannot be selected by the user.
   const PrefService::Preference* reporting_pref =

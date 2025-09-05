@@ -6,6 +6,7 @@
 #define COMPONENTS_PREFS_PREF_CHANGE_REGISTRAR_H_
 
 #include <functional>
+#include <initializer_list>
 #include <map>
 #include <string>
 #include <string_view>
@@ -55,6 +56,9 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
   void Add(std::string_view path, base::RepeatingClosure obs);
   void Add(std::string_view path, NamedChangeCallback obs);
   void Add(std::string_view path, NamedChangeAsViewCallback obs);
+
+  void AddMultiple(const std::initializer_list<std::string_view>& paths,
+                   base::RepeatingClosure obs);
 
   // Removes the pref observer registered for |path|.
   void Remove(std::string_view path);
