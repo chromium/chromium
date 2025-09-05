@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -321,7 +322,8 @@ bool KioskBrowserWindowHandler::ShouldExitKioskWhenLastBrowserRemoved() const {
 
 bool KioskBrowserWindowHandler::IsOnlySettingsBrowserRemainOpen() const {
   return settings_browser_ && BrowserList::GetInstance()->size() == 1 &&
-         BrowserList::GetInstance()->get(0) == settings_browser_;
+         GetLastActiveBrowserWindowInterfaceWithAnyProfile() ==
+             settings_browser_;
 }
 
 void KioskBrowserWindowHandler::Shutdown() {

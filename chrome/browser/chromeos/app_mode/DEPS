@@ -40,6 +40,7 @@ include_rules = [
   "+chrome/browser/ui/browser_list_observer.h",
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/exclusive_access",
   "+chrome/browser/ui/extensions/application_launch.h",
   "+chrome/browser/ui/tabs/tab_activity_simulator.h",
