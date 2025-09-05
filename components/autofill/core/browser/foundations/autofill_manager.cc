@@ -39,6 +39,7 @@
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -590,7 +591,7 @@ void AutofillManager::ParseFormsAsync(
 
     auto form_structure = std::make_unique<FormStructure>(form_data);
     if (!ShouldBeParsed(*form_structure, log_manager())) {
-      LogCurrentFieldTypes(*form_structure);
+      LogCurrentFieldTypes(form_structure.get());
       continue;
     }
 
@@ -649,7 +650,7 @@ void AutofillManager::ParseFormAsync(
 
   auto form_structure = std::make_unique<FormStructure>(form_data);
   if (!ShouldBeParsed(*form_structure, log_manager())) {
-    LogCurrentFieldTypes(*form_structure);
+    LogCurrentFieldTypes(form_structure.get());
     // For Autocomplete, events need to be handled even for forms that cannot be
     // parsed.
     std::move(callback).Run(*this, form_data);
@@ -737,7 +738,7 @@ void AutofillManager::ParseFormsAsyncCommon(
                                          context.current_page_language,
                                          context.log_manager.get());
 
-          self->LogCurrentFieldTypes(f);
+          self->LogCurrentFieldTypes(&f);
           self->NotifyObservers(
               &Observer::OnFieldTypesDetermined, f.global_id(),
               Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
@@ -922,21 +923,46 @@ void AutofillManager::OnLoadedServerPredictions(
     autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
         *form, client().GetFormInteractionsUkmLogger(),
         driver().GetPageUkmSourceId());
-    LogCurrentFieldTypes(*form);
+    LogCurrentFieldTypes(form.get());
 
     NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
                     Observer::FieldTypeSource::kAutofillServer);
   }
 }
 
-void AutofillManager::LogCurrentFieldTypes(const FormStructure& form) {
+void AutofillManager::LogCurrentFieldTypes(
+    std::variant<const FormData*, const FormStructure*> form) {
+  std::unique_ptr<FormStructure> form_placeholder;
+
+  // Retrieves the FormStructure for `form`. Since the FormStructure is needed
+  // only if logging is enabled, we keep this lazy.
+  auto get_form_structure = [&]() -> const FormStructure& {
+    return std::visit(
+        absl::Overload{
+            [&](const FormData* form) -> const FormStructure& {
+              CHECK(form);
+              if (const FormStructure* form_structure =
+                      FindCachedFormById(form->global_id())) {
+                return *form_structure;
+              }
+              if (!form_placeholder) {
+                form_placeholder = std::make_unique<FormStructure>(*form);
+              }
+              return *form_placeholder;
+            },
+            [](const FormStructure* form_structure) -> const FormStructure& {
+              return CHECK_DEREF(form_structure);
+            }},
+        form);
+  };
+
   LogBuffer buffer(IsLoggingActive(log_manager()));
-  LOG_AF(buffer) << form;
+  LOG_AF(buffer) << get_form_structure();
   LOG_AF(log_manager()) << LoggingScope::kParsing << LogMessage::kParsedForms
                         << std::move(buffer);
   if (base::FeatureList::IsEnabled(
           features::test::kAutofillShowTypePredictions)) {
-    driver().SendTypePredictionsToRenderer(form);
+    driver().SendTypePredictionsToRenderer(get_form_structure());
   }
 }
 

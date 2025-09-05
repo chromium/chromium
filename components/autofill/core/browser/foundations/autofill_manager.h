@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -441,7 +442,8 @@ class AutofillManager
   // Logs the field types of `form` to chrome://autofill-internals and the
   // autofill-information attribute (if
   // `features::test::kAutofillShowTypePredictions` is enabled).
-  void LogCurrentFieldTypes(const FormStructure& form);
+  void LogCurrentFieldTypes(
+      std::variant<const FormData*, const FormStructure*> form);
 
  private:
   friend class AutofillManagerTestApi;
