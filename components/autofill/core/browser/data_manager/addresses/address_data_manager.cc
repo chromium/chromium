@@ -608,6 +608,11 @@ bool AddressDataManager::IsAutofillUserSelectableTypeEnabled() const {
 }
 
 bool AddressDataManager::IsAutofillSyncToggleAvailable() const {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return false;
+  }
+
   if (!pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin)) {
     return false;
   }

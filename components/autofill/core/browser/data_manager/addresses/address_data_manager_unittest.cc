@@ -33,6 +33,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strike_database/test_inmemory_strike_database.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/webdata/common/web_database_service.h"
@@ -1221,10 +1222,16 @@ TEST_F(AddressDataManagerTest, AutofillSyncToggleAvailableInTransportMode) {
       /*hosted_domain=*/"", "Full Name", "Given Name", "en-US",
       /*picture_url=*/"");
 
-  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, true);
-  EXPECT_TRUE(address_data_manager().IsAutofillSyncToggleAvailable());
 
   prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, false);
+  EXPECT_FALSE(address_data_manager().IsAutofillSyncToggleAvailable());
+}
+
+TEST_F(AddressDataManagerTest, AutofillSyncToggleNotAvailableWithSigninPromos) {
+  base::test::ScopedFeatureList feature_list{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+
+  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, true);
   EXPECT_FALSE(address_data_manager().IsAutofillSyncToggleAvailable());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
