@@ -958,6 +958,44 @@ TEST_F(SplitViewControllerTest, SplitDividerBasicTest) {
   EXPECT_FALSE(split_view_divider()->divider_widget());
 }
 
+// The view divider Widget's NativeWidget can be destroyed before the Widget
+// itself under the CLIENT_OWNS_WIDGET ownership scheme. Assert the split view
+// divider can tolerate destruction of its NativeWidget when exiting the split
+// view state.
+TEST_F(SplitViewControllerTest, SplitDividerHandlesNativeWidgetDestruction) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
+
+  EXPECT_FALSE(split_view_divider()->divider_widget());
+
+  // Enter a split view state with two windows.
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  EXPECT_TRUE(split_view_divider()->divider_widget());
+  EXPECT_EQ(ui::ZOrderLevel::kNormal,
+            split_view_divider()->divider_widget()->GetZOrderLevel());
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
+  EXPECT_TRUE(split_view_divider()->divider_widget());
+  EXPECT_EQ(ui::ZOrderLevel::kNormal,
+            split_view_divider()->divider_widget()->GetZOrderLevel());
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      window1.get(), split_view_divider()->GetDividerWindow()));
+  EXPECT_TRUE(window_util::IsStackedBelow(
+      window2.get(), split_view_divider()->GetDividerWindow()));
+
+  // Close the split view Widget's NativeWidget.
+  EXPECT_TRUE(split_view_divider()->divider_widget());
+  EXPECT_TRUE(split_view_divider()->divider_widget()->GetNativeWindow());
+  split_view_divider()->divider_widget()->CloseNow();
+  EXPECT_TRUE(split_view_divider()->divider_widget());
+  EXPECT_FALSE(split_view_divider()->divider_widget()->GetNativeWindow());
+
+  // Activating a non-snappable window and exit the split view mode.
+  std::unique_ptr<aura::Window> window3(CreateNonSnappableWindow(bounds));
+  wm::ActivateWindow(window3.get());
+  EXPECT_FALSE(split_view_divider()->divider_widget());
+}
+
 // Tests that the split divider has the correct state when the dragged overview
 // item is destroyed.
 TEST_F(SplitViewControllerTest, DividerStateWhenDraggedOverviewItemDestroyed) {
