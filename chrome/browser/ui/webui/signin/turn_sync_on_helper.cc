@@ -34,7 +34,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -90,36 +89,6 @@ class TurnSyncOnHelperShutdownNotifierFactory
     DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
   }
   ~TurnSyncOnHelperShutdownNotifierFactory() override = default;
-};
-
-// User input handler for the signin confirmation dialog.
-class SigninDialogDelegate : public ui::ProfileSigninConfirmationDelegate {
- public:
-  explicit SigninDialogDelegate(signin::SigninChoiceCallback callback)
-      : callback_(std::move(callback)) {
-    DCHECK(callback_);
-  }
-  SigninDialogDelegate(const SigninDialogDelegate&) = delete;
-  SigninDialogDelegate& operator=(const SigninDialogDelegate&) = delete;
-  ~SigninDialogDelegate() override = default;
-
-  void OnCancelSignin() override {
-    DCHECK(callback_);
-    std::move(callback_).Run(signin::SIGNIN_CHOICE_CANCEL);
-  }
-
-  void OnContinueSignin() override {
-    DCHECK(callback_);
-    std::move(callback_).Run(signin::SIGNIN_CHOICE_CONTINUE);
-  }
-
-  void OnSigninWithNewProfile() override {
-    DCHECK(callback_);
-    std::move(callback_).Run(signin::SIGNIN_CHOICE_NEW_PROFILE);
-  }
-
- private:
-  signin::SigninChoiceCallback callback_;
 };
 
 struct CurrentTurnSyncOnHelperUserData : public base::SupportsUserData::Data {

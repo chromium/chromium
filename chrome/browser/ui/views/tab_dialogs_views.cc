@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "chrome/browser/ui/views/hung_renderer_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"

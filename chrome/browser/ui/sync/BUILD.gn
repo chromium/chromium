@@ -18,7 +18,6 @@ source_set("sync") {
       "browser_synced_tab_delegate.h",
       "browser_synced_window_delegate.h",
       "browser_synced_window_delegates_getter.h",
-      "profile_signin_confirmation_helper.h",
     ]
     public_deps += [
       "//chrome/browser/ui/browser_window",
@@ -62,7 +61,6 @@ source_set("impl") {
       "browser_synced_tab_delegate.cc",
       "browser_synced_window_delegate.cc",
       "browser_synced_window_delegates_getter.cc",
-      "profile_signin_confirmation_helper.cc",
     ]
     deps += [
       "//chrome/browser/history",
@@ -107,7 +105,6 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    sources += [ "profile_signin_confirmation_helper_unittest.cc" ]
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/extensions:test_support",

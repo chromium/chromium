@@ -11,8 +11,6 @@ static_library("browser_sync") {
     "active_devices_provider_impl.h",
     "common_controller_builder.cc",
     "common_controller_builder.h",
-    "signin_confirmation_helper.cc",
-    "signin_confirmation_helper.h",
     "sync_engine_factory_impl.cc",
     "sync_engine_factory_impl.h",
     "sync_internals_message_handler.cc",
