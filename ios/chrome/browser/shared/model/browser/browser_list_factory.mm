@@ -27,6 +27,6 @@ BrowserListFactory::BrowserListFactory()
                                     ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService> BrowserListFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<BrowserList>();
 }
