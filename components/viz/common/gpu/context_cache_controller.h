@@ -16,8 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/viz_common_export.h"
 
-class GrDirectContext;
-
 namespace base {
 class Lock;
 }
@@ -54,7 +52,6 @@ class VIZ_COMMON_EXPORT ContextCacheController {
                          scoped_refptr<base::SequencedTaskRunner> task_runner);
   virtual ~ContextCacheController();
 
-  void SetGrContext(GrDirectContext* gr_context);
   void SetLock(base::Lock* lock);
 
   // Clients of the owning ContextProvider should call this function when they
@@ -94,7 +91,6 @@ class VIZ_COMMON_EXPORT ContextCacheController {
 
   raw_ptr<gpu::ContextSupport> context_support_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  raw_ptr<GrDirectContext> gr_context_ = nullptr;
 
   std::unique_ptr<ScopedVisibility> held_visibility_;
 
