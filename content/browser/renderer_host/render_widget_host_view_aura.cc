@@ -3090,6 +3090,7 @@ void RenderWidgetHostViewAura::OnOldViewDidNavigatePreCommit() {
   // Invalidate the surface so that we don't attempt to evict it multiple times.
   window_->InvalidateLocalSurfaceId();
   delegated_frame_host_->DidNavigateMainFramePreCommit();
+  CancelActiveTouches();
 }
 
 void RenderWidgetHostViewAura::OnNewViewDidNavigatePostCommit() {

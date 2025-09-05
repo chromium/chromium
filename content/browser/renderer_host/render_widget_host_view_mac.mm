@@ -625,6 +625,7 @@ input::CursorManager* RenderWidgetHostViewMac::GetCursorManager() {
 void RenderWidgetHostViewMac::OnOldViewDidNavigatePreCommit() {
   CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
   browser_compositor_->DidNavigateMainFramePreCommit();
+  gesture_provider_.ResetDetection();
 }
 
 void RenderWidgetHostViewMac::OnNewViewDidNavigatePostCommit() {

@@ -503,6 +503,95 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   scroll_observer.Wait();
 }
 
+// Observer to navigate on scroll and wait for scroll end.
+class ScrollAndNavigateObserver : public RenderWidgetHost::InputEventObserver {
+ public:
+  ScrollAndNavigateObserver(Shell* shell, const GURL& nav_url)
+      : shell_(shell), nav_url_(nav_url) {}
+
+  ScrollAndNavigateObserver(const ScrollAndNavigateObserver&) = delete;
+  ScrollAndNavigateObserver& operator=(const ScrollAndNavigateObserver&) =
+      delete;
+
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
+    if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate &&
+        !nav_started_) {
+      // Start navigation in middle of scroll.
+      shell_->LoadURL(nav_url_);
+      nav_started_ = true;
+    } else if (event.GetType() ==
+               blink::WebInputEvent::Type::kGestureScrollEnd) {
+      if (run_loop_.running()) {
+        run_loop_.Quit();
+      }
+    }
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  raw_ptr<Shell> shell_;
+  GURL nav_url_;
+  bool nav_started_ = false;
+  base::RunLoop run_loop_;
+};
+
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       BubbledScrollEndsOnNavigationCommit) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/scrollable_page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* iframe_node = root->child_at(0);
+
+  GURL child_url(
+      embedded_test_server()->GetURL("b.com", "/body_overflow_hidden.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(iframe_node, child_url));
+  WaitForHitTestData(iframe_node->current_frame_host());
+
+  GURL final_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  ScrollAndNavigateObserver observer(shell(), final_url);
+  base::ScopedObservation<RenderWidgetHostImpl,
+                          RenderWidgetHost::InputEventObserver>
+      scroll_observation_(&observer);
+  scroll_observation_.Observe(
+      root->current_frame_host()->GetRenderWidgetHost());
+
+  RenderFrameSubmissionObserver frame_observer(shell()->web_contents());
+  RenderWidgetHostViewBase* root_view = static_cast<RenderWidgetHostViewBase*>(
+      root->current_frame_host()->GetRenderWidgetHost()->GetView());
+  RenderWidgetHostViewBase* child_view = static_cast<RenderWidgetHostViewBase*>(
+      iframe_node->current_frame_host()->GetRenderWidgetHost()->GetView());
+  gfx::Rect bounds = child_view->GetViewBounds();
+  float scale_factor =
+      frame_observer.LastRenderFrameMetadata().page_scale_factor;
+  gfx::PointF scroll_pos(
+      std::ceil((bounds.x() - root_view->GetViewBounds().x() + 10) *
+                scale_factor),
+      std::ceil((bounds.y() - root_view->GetViewBounds().y() + 10) *
+                scale_factor));
+
+  SyntheticSmoothScrollGestureParams params;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.anchor = scroll_pos;
+  // A large scroll distance to make sure it's still active when navigation
+  // starts.
+  params.distances.push_back(gfx::Vector2d(0, -20000));
+  params.prevent_fling = true;
+
+  auto gesture = std::make_unique<SyntheticSmoothScrollGesture>(params);
+
+  root->current_frame_host()->GetRenderWidgetHost()->QueueSyntheticGesture(
+      std::move(gesture), base::DoNothing());
+
+  observer.Wait();
+
+  EXPECT_EQ(final_url, web_contents()->GetLastCommittedURL());
+}
+
 // This class intercepts RenderFrameProxyHost creations, and creates an
 // SynchronizeVisualPropertiesInterceptor to intercept the message of
 // SynchronizeVisualProperties. We may not use them all but we need to create
