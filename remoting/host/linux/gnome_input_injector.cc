@@ -40,19 +40,33 @@ void GnomeInputInjector::Start(
 }
 
 void GnomeInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
-  if (!ei_session_) {
+  if (!ei_session_ || !keymap_) {
     return;
   }
   if (!event.has_usb_keycode() || !event.has_pressed()) {
     LOG(WARNING) << "Key event with no key info";
     return;
   }
-  if (event.pressed()) {
-    pressed_keys_.insert(event.usb_keycode());
-  } else {
-    pressed_keys_.erase(event.usb_keycode());
+  if (!event.pressed()) {
+    // If the key isn't pressed, there's nothing to do. This is expected if
+    // the key was released immediately after being pressed in order to avoid
+    // unwanted auto-repeat.
+    if (!pressed_keys_.erase(event.usb_keycode())) {
+      return;
+    }
   }
   ei_session_->InjectKeyEvent(event.usb_keycode(), event.pressed());
+  if (event.pressed()) {
+    // Immediately release non-modifier keys to avoid unwanted auto-repeat.
+    //
+    // TODO: jamiewalch - Remove this workaround once
+    // https://gitlab.freedesktop.org/libinput/libei/-/issues/74 is fixed.
+    if (keymap_->CanAutoRepeatUsbCode(event.usb_keycode())) {
+      pressed_keys_.insert(event.usb_keycode());
+    } else {
+      ei_session_->InjectKeyEvent(event.usb_keycode(), false);
+    }
+  }
 }
 
 void GnomeInputInjector::InjectTextEvent(const protocol::TextEvent& event) {
