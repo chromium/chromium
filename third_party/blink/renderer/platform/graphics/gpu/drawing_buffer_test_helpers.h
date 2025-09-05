@@ -462,7 +462,7 @@ class DrawingBufferForTests : public DrawingBuffer {
             true /* wantAlphaChannel */,
             true /* premultipliedAlpha */,
             preserve,
-            kWebGL1,
+            Platform::kWebGL1ContextType,
             false /* wantDepth */,
             false /* wantStencil */,
             DrawingBuffer::kAllowChromiumImage /* ChromiumImageUsage */,

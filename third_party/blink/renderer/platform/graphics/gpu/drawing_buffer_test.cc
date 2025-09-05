@@ -612,7 +612,7 @@ TEST(DrawingBufferDepthStencilTest, packedDepthStencilSupported) {
         std::move(provider), context_info, using_swap_chain, nullptr,
         gfx::Size(10, 10), premultiplied_alpha, want_alpha_channel,
         want_depth_buffer, want_stencil_buffer, want_antialiasing,
-        desynchronized, preserve, DrawingBuffer::kWebGL1,
+        desynchronized, preserve, Platform::kWebGL1ContextType,
         DrawingBuffer::kAllowChromiumImage, PredefinedColorSpace::kSRGB,
         gl::GpuPreference::kHighPerformance);
 
@@ -694,9 +694,9 @@ TEST_F(DrawingBufferTest,
   scoped_refptr<DrawingBuffer> too_big_drawing_buffer = DrawingBuffer::Create(
       nullptr, context_info, false /* using_swap_chain */, nullptr,
       too_big_size, false, false, false, false, false,
-      /*desynchronized=*/false, DrawingBuffer::kDiscard, DrawingBuffer::kWebGL1,
-      DrawingBuffer::kAllowChromiumImage, PredefinedColorSpace::kSRGB,
-      gl::GpuPreference::kHighPerformance);
+      /*desynchronized=*/false, DrawingBuffer::kDiscard,
+      Platform::kWebGL1ContextType, DrawingBuffer::kAllowChromiumImage,
+      PredefinedColorSpace::kSRGB, gl::GpuPreference::kHighPerformance);
   EXPECT_EQ(too_big_drawing_buffer, nullptr);
   drawing_buffer_->BeginDestruction();
 }

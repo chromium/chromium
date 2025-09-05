@@ -124,10 +124,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     kPreserve,
     kDiscard,
   };
-  enum WebGLVersion {
-    kWebGL1,
-    kWebGL2,
-  };
 
   enum ChromiumImageUsage {
     kAllowChromiumImage,
@@ -147,7 +143,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       bool want_antialiasing,
       bool desynchronized,
       PreserveDrawingBuffer,
-      WebGLVersion,
+      Platform::WebGLContextType,
       ChromiumImageUsage,
       PredefinedColorSpace,
       gl::GpuPreference);
@@ -248,7 +244,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   WebGraphicsContext3DProvider* ContextProvider();
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWeakPtr();
   Client* client() { return client_; }
-  WebGLVersion webgl_version() const { return webgl_version_; }
   bool destroyed() const { return destruction_in_progress_; }
 
   // cc::TextureLayerClient implementation.
@@ -341,7 +336,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 bool want_alpha_channel,
                 bool premultiplied_alpha,
                 PreserveDrawingBuffer,
-                WebGLVersion,
+                Platform::WebGLContextType,
                 bool wants_depth,
                 bool wants_stencil,
                 ChromiumImageUsage,
@@ -611,7 +606,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   raw_ptr<Client> client_ = nullptr;
 
   const PreserveDrawingBuffer preserve_drawing_buffer_;
-  const WebGLVersion webgl_version_;
+  const Platform::WebGLContextType webgl_version_;
 
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
   // Lifetime is tied to the m_contextProvider.

@@ -176,7 +176,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
     bool want_antialiasing,
     bool desynchronized,
     PreserveDrawingBuffer preserve,
-    WebGLVersion webgl_version,
+    Platform::WebGLContextType webgl_version,
     ChromiumImageUsage chromium_image_usage,
     PredefinedColorSpace color_space,
     gl::GpuPreference gpu_preference) {
@@ -256,7 +256,7 @@ DrawingBuffer::DrawingBuffer(
     bool want_alpha_channel,
     bool premultiplied_alpha,
     PreserveDrawingBuffer preserve,
-    WebGLVersion webgl_version,
+    Platform::WebGLContextType webgl_version,
     bool want_depth,
     bool want_stencil,
     ChromiumImageUsage chromium_image_usage,
@@ -545,7 +545,7 @@ DrawingBuffer::ExportSharedImageFromBackBuffer(
     gpu::SyncToken& sync_token,
     viz::ReleaseCallback* out_release_callback) {
   DCHECK(state_restorer_);
-  if (webgl_version_ > kWebGL1) {
+  if (webgl_version_ != Platform::kWebGL1ContextType) {
     state_restorer_->SetPixelUnpackBufferBindingDirty();
     gl_->BindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
   }
@@ -1293,7 +1293,8 @@ bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
     // universally can cause issues with BGRA formats.
     // See: crbug.com/1443160#c38
     bool use_tex_image = !texture_storage_enabled_;
-    if (webgl_version_ == kWebGL1 && requested_format_ == GL_SRGB8_ALPHA8) {
+    if (webgl_version_ == Platform::kWebGL1ContextType &&
+        requested_format_ == GL_SRGB8_ALPHA8) {
       // On GLES2:
       //   * SRGB_ALPHA_EXT is not a valid internal format for TexStorage2DEXT.
       //   * SRGB8_ALPHA8 is not a renderable texture internal format.
@@ -1819,7 +1820,7 @@ void DrawingBuffer::ReadBackFramebuffer(
 
   state_restorer_->SetPixelPackParametersDirty();
   gl_->PixelStorei(GL_PACK_ALIGNMENT, 1);
-  if (webgl_version_ > kWebGL1) {
+  if (webgl_version_ != Platform::kWebGL1ContextType) {
     gl_->PixelStorei(GL_PACK_SKIP_ROWS, 0);
     gl_->PixelStorei(GL_PACK_SKIP_PIXELS, 0);
     gl_->PixelStorei(GL_PACK_ROW_LENGTH, 0);
@@ -1832,7 +1833,9 @@ void DrawingBuffer::ReadBackFramebuffer(
 
   base::CheckedNumeric<size_t> row_bytes = 4;
   if (destination_format == viz::SinglePlaneFormat::kRGBA_F16) {
-    data_type = (webgl_version_ > kWebGL1) ? GL_HALF_FLOAT : GL_HALF_FLOAT_OES;
+    data_type = (webgl_version_ != Platform::kWebGL1ContextType)
+                    ? GL_HALF_FLOAT
+                    : GL_HALF_FLOAT_OES;
     row_bytes *= 2;
   }
   row_bytes *= Size().width();

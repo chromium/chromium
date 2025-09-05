@@ -1316,14 +1316,6 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
   DrawingBuffer::PreserveDrawingBuffer preserve = attrs.preserve_drawing_buffer
                                                       ? DrawingBuffer::kPreserve
                                                       : DrawingBuffer::kDiscard;
-  DrawingBuffer::WebGLVersion web_gl_version = DrawingBuffer::kWebGL1;
-  if (context_type_ == Platform::kWebGL1ContextType) {
-    web_gl_version = DrawingBuffer::kWebGL1;
-  } else if (context_type_ == Platform::kWebGL2ContextType) {
-    web_gl_version = DrawingBuffer::kWebGL2;
-  } else {
-    NOTREACHED();
-  }
 
   // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage, this
   // allows WebGL-rendered canvases to be composited by the OS rather than
@@ -1344,14 +1336,16 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
                               .shared_image_swap_chain &&
                           desynchronized;
 
+  gl::GpuPreference gpu_preference =
+      PowerPreferenceToGpuPreference(attrs.power_preference);
+
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   return DrawingBuffer::Create(
       std::move(context_provider), context_info, using_swap_chain, this,
       ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
       want_depth_buffer, want_stencil_buffer, want_antialiasing, desynchronized,
-      preserve, web_gl_version, chromium_image_usage,
-      drawing_buffer_color_space_,
-      PowerPreferenceToGpuPreference(attrs.power_preference));
+      preserve, context_type_, chromium_image_usage,
+      drawing_buffer_color_space_, gpu_preference);
 }
 
 void WebGLRenderingContextBase::InitializeNewContext() {
