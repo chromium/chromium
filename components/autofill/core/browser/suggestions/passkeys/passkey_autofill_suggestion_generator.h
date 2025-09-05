@@ -28,7 +28,7 @@ class PasskeyAutofillSuggestionGenerator : public SuggestionGenerator {
       const AutofillField* field,
       const AutofillClient& client,
       base::OnceCallback<
-          void(std::pair<FillingProduct,
+          void(std::pair<SuggestionDataSource,
                          std::vector<SuggestionGenerator::SuggestionData>>)>
           callback) override;
   void GenerateSuggestions(
@@ -37,7 +37,7 @@ class PasskeyAutofillSuggestionGenerator : public SuggestionGenerator {
       const FormStructure* form,
       const AutofillField* field,
       const std::vector<
-          std::pair<FillingProduct,
+          std::pair<SuggestionDataSource,
                     std::vector<SuggestionGenerator::SuggestionData>>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;

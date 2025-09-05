@@ -85,7 +85,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
                  SuggestionType::kSeePromoCodeDetails);
 
   base::MockCallback<base::OnceCallback<void(
-      std::pair<FillingProduct,
+      std::pair<SuggestionGenerator::SuggestionDataSource,
                 std::vector<SuggestionGenerator::SuggestionData>>)>>
       suggestion_data_callback;
   base::MockCallback<
@@ -93,12 +93,14 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       suggestions_generated_callback;
 
   MerchantPromoCodeSuggestionGenerator generator;
-  std::pair<FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>
+  std::pair<SuggestionGenerator::SuggestionDataSource,
+            std::vector<SuggestionGenerator::SuggestionData>>
       savedCallbackArgument;
 
   EXPECT_CALL(suggestion_data_callback,
-              Run(testing::Pair(FillingProduct::kMerchantPromoCode,
-                                testing::ElementsAre(testPromoCodeOfferData))))
+              Run(testing::Pair(
+                  SuggestionGenerator::SuggestionDataSource::kMerchantPromoCode,
+                  testing::ElementsAre(testPromoCodeOfferData))))
       .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());

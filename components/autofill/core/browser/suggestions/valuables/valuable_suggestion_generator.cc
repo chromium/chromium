@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -158,7 +159,7 @@ std::vector<Suggestion> GetSuggestionsForLoyaltyCards(
   auto on_suggestion_data_returned =
       [&on_suggestions_generated, &form, &field, &form_structure,
        &autofill_field, &loyalty_card_suggestion_generator](
-          std::pair<FillingProduct,
+          std::pair<SuggestionGenerator::SuggestionDataSource,
                     std::vector<SuggestionGenerator::SuggestionData>>
               suggestion_data) {
         loyalty_card_suggestion_generator.GenerateSuggestions(
@@ -247,12 +248,12 @@ void LoyaltyCardSuggestionGenerator::FetchSuggestionData(
     const AutofillField* field,
     const AutofillClient& client,
     base::OnceCallback<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   FetchSuggestionData(
       form_data, field_data, form, field, client,
-      [&callback](std::pair<FillingProduct,
+      [&callback](std::pair<SuggestionDataSource,
                             std::vector<SuggestionGenerator::SuggestionData>>
                       suggestion_data) {
         std::move(callback).Run(std::move(suggestion_data));
@@ -264,7 +265,8 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& field_data,
     const FormStructure* form,
     const AutofillField* field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
@@ -281,13 +283,13 @@ void LoyaltyCardSuggestionGenerator::FetchSuggestionData(
     const AutofillField* field,
     const AutofillClient& client,
     base::FunctionRef<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   if (!field || !valuables_manager_ ||
       field->Type().GetTypes().contains_none(
           {LOYALTY_MEMBERSHIP_ID, EMAIL_OR_LOYALTY_MEMBERSHIP_ID})) {
-    callback({FillingProduct::kLoyaltyCard, {}});
+    callback({SuggestionDataSource::kLoyaltyCard, {}});
     return;
   }
 
@@ -296,7 +298,7 @@ void LoyaltyCardSuggestionGenerator::FetchSuggestionData(
   std::vector<SuggestionData> suggestion_data = base::ToVector(
       std::move(loyalty_cards),
       [](LoyaltyCard& card) { return SuggestionData(std::move(card)); });
-  callback({FillingProduct::kLoyaltyCard, std::move(suggestion_data)});
+  callback({SuggestionDataSource::kLoyaltyCard, std::move(suggestion_data)});
 }
 
 void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
@@ -304,12 +306,13 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& field_data,
     const FormStructure* form,
     const AutofillField* field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   std::vector<SuggestionData> loyalty_card_suggestion_data =
-      ExtractSuggestionDataForFillingProduct(all_suggestion_data,
-                                             FillingProduct::kLoyaltyCard);
+      ExtractSuggestionDataForSource(all_suggestion_data,
+                                     SuggestionDataSource::kLoyaltyCard);
   if (!valuables_manager_ || loyalty_card_suggestion_data.empty()) {
     callback({FillingProduct::kLoyaltyCard, {}});
     return;

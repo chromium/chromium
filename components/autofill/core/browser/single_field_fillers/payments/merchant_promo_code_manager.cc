@@ -46,7 +46,7 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
   auto on_suggestion_data_returned =
       [&on_suggestions_generated, &field, &form_structure, &autofill_field,
        &merchant_promo_code_suggestion_generator](
-          std::pair<FillingProduct,
+          std::pair<SuggestionGenerator::SuggestionDataSource,
                     std::vector<SuggestionGenerator::SuggestionData>>
               suggestion_data) {
         merchant_promo_code_suggestion_generator.GenerateSuggestions(

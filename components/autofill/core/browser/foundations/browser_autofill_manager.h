@@ -512,7 +512,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
-      std::vector<std::pair<FillingProduct,
+      std::vector<std::pair<SuggestionGenerator::SuggestionDataSource,
                             std::vector<SuggestionGenerator::SuggestionData>>>
           suggestion_data);
 

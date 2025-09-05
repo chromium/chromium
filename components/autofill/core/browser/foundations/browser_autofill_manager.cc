@@ -724,7 +724,7 @@ std::optional<Suggestion> GenerateComposeSuggestion(
 
   auto on_suggestion_data_returned =
       [&form, &field, &suggestions, &suggestion_generator](
-          std::pair<autofill::FillingProduct,
+          std::pair<autofill::SuggestionGenerator::SuggestionDataSource,
                     std::vector<autofill::SuggestionGenerator::SuggestionData>>
               suggestion_data) {
         suggestion_generator.GenerateSuggestions(
@@ -1274,8 +1274,9 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);
 
-  auto barrier_callback = base::BarrierCallback<std::pair<
-      FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>>(
+  auto barrier_callback = base::BarrierCallback<
+      std::pair<SuggestionGenerator::SuggestionDataSource,
+                std::vector<SuggestionGenerator::SuggestionData>>>(
       suggestion_generators_.size(),
       base::BindOnce(&BrowserAutofillManager::OnSuggestionDataFetched,
                      weak_ptr_factory_.GetWeakPtr(), form, field,
@@ -1293,7 +1294,7 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
-    std::vector<std::pair<FillingProduct,
+    std::vector<std::pair<SuggestionGenerator::SuggestionDataSource,
                           std::vector<SuggestionGenerator::SuggestionData>>>
         suggestion_data) {
   auto barrier_callback =
@@ -2997,7 +2998,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   auto on_suggestion_data_returned =
       [&on_suggestions_generated, &form, &trigger_field, &form_structure,
        &trigger_autofill_field, &address_suggestion_generator](
-          std::pair<FillingProduct,
+          std::pair<SuggestionGenerator::SuggestionDataSource,
                     std::vector<SuggestionGenerator::SuggestionData>>
               suggestion_data) {
         address_suggestion_generator.GenerateSuggestions(

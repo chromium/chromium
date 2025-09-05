@@ -68,7 +68,7 @@ void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
          FormData form, FormFieldData field,
          base::WeakPtr<AutocompleteSuggestionGenerator>
              autocomplete_suggestion_generator,
-         std::pair<FillingProduct,
+         std::pair<SuggestionGenerator::SuggestionDataSource,
                    std::vector<SuggestionGenerator::SuggestionData>>
              suggestion_data) {
         if (autocomplete_suggestion_generator) {

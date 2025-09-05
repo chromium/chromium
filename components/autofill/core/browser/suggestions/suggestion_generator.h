@@ -46,6 +46,23 @@ namespace autofill {
 // which the suggestion generators are called.
 class SuggestionGenerator {
  public:
+  // Used to precisely describe what kind of data was fetched to produce a
+  // suggestion. One `FillingProduct` may be able to generate different kinds of
+  // `SuggestionDataSource`, but cannot fetch data for more than one.
+  enum class SuggestionDataSource {
+    kAutofillAi = 0,
+    kAddress = 1,
+    kCreditCard = 2,
+    kIban = 3,
+    kMerchantPromoCode = 4,
+    kAutocomplete = 5,
+    kLoyaltyCard = 6,
+    kIdentityCredential = 7,
+    kPasskey = 8,
+    kCompose = 9,
+    kMaxValue = kCompose
+  };
+
   SuggestionGenerator() = default;
   virtual ~SuggestionGenerator() = default;
 
@@ -67,9 +84,16 @@ class SuggestionGenerator {
   // `trigger_field` that belongs to `form` by calling `GenerateSuggestions`
   // later (See top-level documentation of `SuggestionGenerator` for more
   // details). Once the data is obtained, `callback` is called with the
-  // `FillingProduct` of which the data is for and the corresponding
+  // `SuggestionDataSource` of which the data is for and the corresponding
   // `SuggestionData`. `form_structure` and `trigger_autofill_field` may be null
   // if the `form` or `trigger_field` wasn't yet parsed.
+  //
+  // Certain `FillingProduct`s can have different suggestions depending on the
+  // `trigger_field` and `form`.  In order to support those cases, fetched data
+  // is tracked by the `SuggestionDataSource`, to ensure that correct generation
+  // logic is later used.
+  // Note: That each `FillingProduct` can fetch only one type of
+  // `SuggestionDataSource` per `FetchSuggestionData` call.
   virtual void FetchSuggestionData(
       const FormData& form,
       const FormFieldData& trigger_field,
@@ -77,7 +101,7 @@ class SuggestionGenerator {
       const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       base::OnceCallback<
-          void(std::pair<FillingProduct,
+          void(std::pair<SuggestionDataSource,
                          std::vector<SuggestionGenerator::SuggestionData>>)>
           callback) = 0;
 
@@ -94,18 +118,20 @@ class SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
-      const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+      const std::vector<
+          std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) = 0;
 
  protected:
-  // Returns the vector of `SuggestionData` for a specific `FillingProduct`
-  // from the `all_suggestion_data` vector.
+  // Returns the vector of `SuggestionData` for a specific
+  // `SuggestionDataSource` from the `all_suggestion_data` vector.
   static std::vector<SuggestionGenerator::SuggestionData>
-  ExtractSuggestionDataForFillingProduct(
-      base::span<const std::pair<FillingProduct, std::vector<SuggestionData>>>
+  ExtractSuggestionDataForSource(
+      base::span<
+          const std::pair<SuggestionDataSource, std::vector<SuggestionData>>>
           all_suggestion_data,
-      FillingProduct filling_product);
+      SuggestionDataSource suggestion_data_source);
 };
 
 }  // namespace autofill

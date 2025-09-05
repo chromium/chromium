@@ -146,7 +146,7 @@ class AddressSuggestionGeneratorTest : public testing::Test {
     auto on_suggestion_data_returned =
         [this, &on_suggestions_generated, &form_data, &field_data,
          &address_suggestion_generator](
-            std::pair<FillingProduct,
+            std::pair<SuggestionGenerator::SuggestionDataSource,
                       std::vector<SuggestionGenerator::SuggestionData>>
                 suggestion_data) {
           address_suggestion_generator.GenerateSuggestions(
@@ -1260,7 +1260,7 @@ TEST_P(AddressLabelSuggestionGeneratorTest,
 
 TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
   base::MockCallback<base::OnceCallback<void(
-      std::pair<FillingProduct,
+      std::pair<SuggestionGenerator::SuggestionDataSource,
                 std::vector<SuggestionGenerator::SuggestionData>>)>>
       suggestion_data_callback;
   base::MockCallback<
@@ -1281,12 +1281,14 @@ TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
   AddressSuggestionGenerator generator(
       *autofill_client(), /*plus_address_email_override=*/std::nullopt,
       /*form_filler=*/nullptr, /*log_manager=*/nullptr);
-  std::pair<FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>
+  std::pair<SuggestionGenerator::SuggestionDataSource,
+            std::vector<SuggestionGenerator::SuggestionData>>
       savedCallbackArgument;
 
-  EXPECT_CALL(suggestion_data_callback,
-              Run(testing::Pair(FillingProduct::kAddress,
-                                testing::ElementsAre(profile1))))
+  EXPECT_CALL(
+      suggestion_data_callback,
+      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kAddress,
+                        testing::ElementsAre(profile1))))
       .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
   generator.FetchSuggestionData(form_data, field, form_structure.get(),
                                 form_structure->field(0), *autofill_client(),

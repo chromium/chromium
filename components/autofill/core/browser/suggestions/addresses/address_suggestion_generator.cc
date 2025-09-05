@@ -817,12 +817,12 @@ void AddressSuggestionGenerator::FetchSuggestionData(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::OnceCallback<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   FetchSuggestionData(
       form, trigger_field, form_structure, trigger_autofill_field, client,
-      [&callback](std::pair<FillingProduct,
+      [&callback](std::pair<SuggestionDataSource,
                             std::vector<SuggestionGenerator::SuggestionData>>
                       suggestion_data) {
         std::move(callback).Run(std::move(suggestion_data));
@@ -834,7 +834,8 @@ void AddressSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
@@ -852,11 +853,11 @@ void AddressSuggestionGenerator::FetchSuggestionData(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::FunctionRef<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   if (!form_structure || !trigger_autofill_field) {
-    callback({FillingProduct::kAddress, {}});
+    callback({SuggestionDataSource::kAddress, {}});
     return;
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -878,7 +879,7 @@ void AddressSuggestionGenerator::FetchSuggestionData(
     }
     // If the user already reached the strike limit on this particular field,
     // address suggestions are suppressed.
-    callback({FillingProduct::kAddress, {}});
+    callback({SuggestionDataSource::kAddress, {}});
     return;
   }
 #endif
@@ -923,7 +924,7 @@ void AddressSuggestionGenerator::FetchSuggestionData(
     suggestion_data.emplace_back(test_address);
   }
 
-  callback({FillingProduct::kAddress, std::move(suggestion_data)});
+  callback({SuggestionDataSource::kAddress, std::move(suggestion_data)});
 }
 
 void AddressSuggestionGenerator::GenerateSuggestions(
@@ -931,7 +932,8 @@ void AddressSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   if (!form_structure || !trigger_autofill_field ||
@@ -941,8 +943,8 @@ void AddressSuggestionGenerator::GenerateSuggestions(
   }
 
   std::vector<SuggestionData> address_suggestion_data =
-      ExtractSuggestionDataForFillingProduct(all_suggestion_data,
-                                             FillingProduct::kAddress);
+      ExtractSuggestionDataForSource(all_suggestion_data,
+                                     SuggestionDataSource::kAddress);
 
   std::vector<AutofillProfile> profiles_to_suggest = base::ToVector(
       std::move(address_suggestion_data), [](SuggestionData& suggestion_data) {

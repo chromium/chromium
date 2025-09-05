@@ -25,12 +25,12 @@ void MerchantPromoCodeSuggestionGenerator::FetchSuggestionData(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::OnceCallback<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   FetchSuggestionData(
       form, trigger_field, form_structure, trigger_autofill_field, client,
-      [&callback](std::pair<FillingProduct,
+      [&callback](std::pair<SuggestionDataSource,
                             std::vector<SuggestionGenerator::SuggestionData>>
                       suggestion_data) {
         std::move(callback).Run(std::move(suggestion_data));
@@ -42,7 +42,8 @@ void MerchantPromoCodeSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
@@ -60,21 +61,21 @@ void MerchantPromoCodeSuggestionGenerator::FetchSuggestionData(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::FunctionRef<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   // The field is eligible only if it's focused on a merchant promo code.
   if (!form_structure || !trigger_autofill_field ||
       !trigger_autofill_field->Type().GetTypes().contains(
           MERCHANT_PROMO_CODE)) {
-    callback({FillingProduct::kMerchantPromoCode, {}});
+    callback({SuggestionDataSource::kMerchantPromoCode, {}});
     return;
   }
 
   // If merchant promo code offers are available for the given site, and the
   // profile is not OTR, show the promo code offers.
   if (client.IsOffTheRecord() || !client.GetPaymentsAutofillClient()) {
-    callback({FillingProduct::kMerchantPromoCode, {}});
+    callback({SuggestionDataSource::kMerchantPromoCode, {}});
     return;
   }
   const std::vector<const AutofillOfferData*> promo_code_offers =
@@ -88,7 +89,7 @@ void MerchantPromoCodeSuggestionGenerator::FetchSuggestionData(
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
     if (trigger_autofill_field->value() ==
         base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
-      callback({FillingProduct::kMerchantPromoCode, {}});
+      callback({SuggestionDataSource::kMerchantPromoCode, {}});
       return;
     }
   }
@@ -96,7 +97,7 @@ void MerchantPromoCodeSuggestionGenerator::FetchSuggestionData(
   std::vector<SuggestionData> suggestion_data = base::ToVector(
       std::move(promo_code_offers),
       [](const AutofillOfferData* offer) { return SuggestionData(*offer); });
-  callback({FillingProduct::kMerchantPromoCode, suggestion_data});
+  callback({SuggestionDataSource::kMerchantPromoCode, suggestion_data});
 }
 
 void MerchantPromoCodeSuggestionGenerator::GenerateSuggestions(
@@ -104,12 +105,13 @@ void MerchantPromoCodeSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   std::vector<SuggestionData> promo_code_suggestion_data =
-      ExtractSuggestionDataForFillingProduct(
-          all_suggestion_data, FillingProduct::kMerchantPromoCode);
+      ExtractSuggestionDataForSource(all_suggestion_data,
+                                     SuggestionDataSource::kMerchantPromoCode);
   if (promo_code_suggestion_data.empty()) {
     callback({FillingProduct::kMerchantPromoCode, {}});
     return;

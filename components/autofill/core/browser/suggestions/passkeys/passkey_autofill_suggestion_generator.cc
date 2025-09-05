@@ -43,17 +43,17 @@ void PasskeyAutofillSuggestionGenerator::FetchSuggestionData(
     const AutofillField* field,
     const AutofillClient& client,
     base::OnceCallback<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   if (!ShouldShowWebauthnHybridEntryPoint(field_data) ||
       !password_manager_delegate_
            ->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
-    std::move(callback).Run({FillingProduct::kPasskey, {}});
+    std::move(callback).Run({SuggestionDataSource::kPasskey, {}});
     return;
   }
   std::move(callback).Run(
-      {FillingProduct::kPasskey, {HybridPasskeyAvailability(true)}});
+      {SuggestionDataSource::kPasskey, {HybridPasskeyAvailability(true)}});
 }
 
 void PasskeyAutofillSuggestionGenerator::GenerateSuggestions(
@@ -62,14 +62,14 @@ void PasskeyAutofillSuggestionGenerator::GenerateSuggestions(
     const FormStructure* form,
     const AutofillField* field,
     const std::vector<
-        std::pair<FillingProduct,
+        std::pair<SuggestionDataSource,
                   std::vector<SuggestionGenerator::SuggestionData>>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   std::vector<Suggestion> suggestions;
   const std::vector<SuggestionData>& passkey_data =
-      ExtractSuggestionDataForFillingProduct(all_suggestion_data,
-                                             FillingProduct::kPasskey);
+      ExtractSuggestionDataForSource(all_suggestion_data,
+                                     SuggestionDataSource::kPasskey);
 
   if (!passkey_data.empty()) {
     CHECK_EQ(passkey_data.size(), 1u);

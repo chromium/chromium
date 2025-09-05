@@ -99,7 +99,7 @@ class IdentityCredentialSuggestionGeneratorTest : public testing::Test {
 // Checks that identity credential suggestion is generated.
 TEST_F(IdentityCredentialSuggestionGeneratorTest, GeneratesSuggestion) {
   base::MockCallback<base::OnceCallback<void(
-      std::pair<FillingProduct,
+      std::pair<SuggestionGenerator::SuggestionDataSource,
                 std::vector<SuggestionGenerator::SuggestionData>>)>>
       suggestion_data_callback;
   base::MockCallback<
@@ -117,11 +117,14 @@ TEST_F(IdentityCredentialSuggestionGeneratorTest, GeneratesSuggestion) {
           Return(std::vector<scoped_refptr<content::IdentityRequestAccount>>{
               account}));
 
-  std::pair<FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>
+  std::pair<SuggestionGenerator::SuggestionDataSource,
+            std::vector<SuggestionGenerator::SuggestionData>>
       saved_suggestion_data;
-  EXPECT_CALL(suggestion_data_callback,
-              Run(testing::Pair(FillingProduct::kIdentityCredential,
-                                testing::SizeIs(1))))
+  EXPECT_CALL(
+      suggestion_data_callback,
+      Run(testing::Pair(
+          SuggestionGenerator::SuggestionDataSource::kIdentityCredential,
+          testing::SizeIs(1))))
       .WillOnce(testing::SaveArg<0>(&saved_suggestion_data));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());

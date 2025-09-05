@@ -49,7 +49,7 @@ class ComposeSuggestionGeneratorTest : public testing::Test {
 // Checks that compose suggestion is generated.
 TEST_F(ComposeSuggestionGeneratorTest, GeneratesComposeSuggestion) {
   base::MockCallback<base::OnceCallback<void(
-      std::pair<FillingProduct,
+      std::pair<SuggestionGenerator::SuggestionDataSource,
                 std::vector<SuggestionGenerator::SuggestionData>>)>>
       suggestion_data_callback;
   base::MockCallback<
@@ -64,11 +64,14 @@ TEST_F(ComposeSuggestionGeneratorTest, GeneratesComposeSuggestion) {
   ComposeSuggestionGenerator generator(
       &compose_delegate,
       AutofillSuggestionTriggerSource::kTextFieldValueChanged);
-  std::pair<FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>
+  std::pair<SuggestionGenerator::SuggestionDataSource,
+            std::vector<SuggestionGenerator::SuggestionData>>
       savedCallbackArgument;
 
-  EXPECT_CALL(suggestion_data_callback,
-              Run(testing::Pair(FillingProduct::kCompose, testing::IsEmpty())))
+  EXPECT_CALL(
+      suggestion_data_callback,
+      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kCompose,
+                        testing::IsEmpty())))
       .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());
@@ -85,7 +88,7 @@ TEST_F(ComposeSuggestionGeneratorTest, GeneratesComposeSuggestion) {
 TEST_F(ComposeSuggestionGeneratorTest,
        NoComposeSuggestionIfOtherSuggestionsAvailable) {
   base::MockCallback<base::OnceCallback<void(
-      std::pair<FillingProduct,
+      std::pair<SuggestionGenerator::SuggestionDataSource,
                 std::vector<SuggestionGenerator::SuggestionData>>)>>
       suggestion_data_callback;
   base::MockCallback<
@@ -98,13 +101,16 @@ TEST_F(ComposeSuggestionGeneratorTest,
   ComposeSuggestionGenerator generator(
       &compose_delegate,
       AutofillSuggestionTriggerSource::kTextFieldValueChanged);
-  std::pair<FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>
+  std::pair<SuggestionGenerator::SuggestionDataSource,
+            std::vector<SuggestionGenerator::SuggestionData>>
       other_generated_suggestion_data{
-          FillingProduct::kAutocomplete,
+          SuggestionGenerator::SuggestionDataSource::kAutocomplete,
           {SuggestionGenerator::SuggestionData(AutocompleteEntry())}};
 
-  EXPECT_CALL(suggestion_data_callback,
-              Run(testing::Pair(FillingProduct::kCompose, testing::IsEmpty())));
+  EXPECT_CALL(
+      suggestion_data_callback,
+      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kCompose,
+                        testing::IsEmpty())));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());
 

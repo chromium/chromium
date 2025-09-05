@@ -79,14 +79,15 @@ TEST_F(AutocompleteSuggestionGeneratorTest, GenerateAutocompleteSuggestions) {
           AUTOFILL_VALUE_RESULT, expected_values);
 
   base::MockCallback<base::OnceCallback<void(
-      std::pair<FillingProduct,
+      std::pair<SuggestionGenerator::SuggestionDataSource,
                 std::vector<SuggestionGenerator::SuggestionData>>)>>
       suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
 
-  std::pair<FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>
+  std::pair<SuggestionGenerator::SuggestionDataSource,
+            std::vector<SuggestionGenerator::SuggestionData>>
       saved_on_suggestion_data_returned_argument;
   SuggestionGenerator::ReturnedSuggestions
       saved_on_suggestions_generated_argument;
@@ -101,9 +102,10 @@ TEST_F(AutocompleteSuggestionGeneratorTest, GenerateAutocompleteSuggestions) {
         return kDbQueryId;
       });
 
-  EXPECT_CALL(
-      suggestion_data_callback,
-      Run(testing::Pair(FillingProduct::kAutocomplete, testing::SizeIs(2))))
+  EXPECT_CALL(suggestion_data_callback,
+              Run(testing::Pair(
+                  SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                  testing::SizeIs(2))))
       .WillOnce(
           testing::SaveArg<0>(&saved_on_suggestion_data_returned_argument));
   generator().FetchSuggestionData(form_data, field_data, /*form=*/nullptr,
@@ -142,14 +144,15 @@ TEST_F(AutocompleteSuggestionGeneratorTest, EmptyResult) {
   form_data.set_fields({field_data});
 
   base::MockCallback<base::OnceCallback<void(
-      std::pair<FillingProduct,
+      std::pair<SuggestionGenerator::SuggestionDataSource,
                 std::vector<SuggestionGenerator::SuggestionData>>)>>
       suggestion_data_callback;
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
 
-  std::pair<FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>
+  std::pair<SuggestionGenerator::SuggestionDataSource,
+            std::vector<SuggestionGenerator::SuggestionData>>
       saved_on_suggestion_data_returned_argument;
   SuggestionGenerator::ReturnedSuggestions
       saved_on_suggestions_generated_argument;
@@ -164,9 +167,10 @@ TEST_F(AutocompleteSuggestionGeneratorTest, EmptyResult) {
         return kDbQueryId;
       });
 
-  EXPECT_CALL(
-      suggestion_data_callback,
-      Run(testing::Pair(FillingProduct::kAutocomplete, testing::IsEmpty())))
+  EXPECT_CALL(suggestion_data_callback,
+              Run(testing::Pair(
+                  SuggestionGenerator::SuggestionDataSource::kAutocomplete,
+                  testing::IsEmpty())))
       .WillOnce(
           testing::SaveArg<0>(&saved_on_suggestion_data_returned_argument));
   generator().FetchSuggestionData(form_data, field_data, /*form=*/nullptr,
@@ -175,7 +179,7 @@ TEST_F(AutocompleteSuggestionGeneratorTest, EmptyResult) {
   EXPECT_TRUE(
       base::test::RunUntil([&saved_on_suggestion_data_returned_argument]() {
         return saved_on_suggestion_data_returned_argument.first ==
-               FillingProduct::kAutocomplete;
+               SuggestionGenerator::SuggestionDataSource::kAutocomplete;
       }));
 
   EXPECT_CALL(

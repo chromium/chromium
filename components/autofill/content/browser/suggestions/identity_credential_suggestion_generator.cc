@@ -115,12 +115,12 @@ void IdentityCredentialSuggestionGenerator::FetchSuggestionData(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::OnceCallback<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   FetchSuggestionData(
       form, trigger_field, form_structure, trigger_autofill_field, client,
-      [&callback](std::pair<FillingProduct,
+      [&callback](std::pair<SuggestionDataSource,
                             std::vector<SuggestionGenerator::SuggestionData>>
                       suggestion_data) {
         std::move(callback).Run(std::move(suggestion_data));
@@ -132,7 +132,8 @@ void IdentityCredentialSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
@@ -150,11 +151,11 @@ void IdentityCredentialSuggestionGenerator::FetchSuggestionData(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::FunctionRef<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   if (!trigger_autofill_field) {
-    callback({FillingProduct::kIdentityCredential, {}});
+    callback({SuggestionDataSource::kIdentityCredential, {}});
     return;
   }
 
@@ -163,14 +164,14 @@ void IdentityCredentialSuggestionGenerator::FetchSuggestionData(
   content::webid::AutofillSource* source = source_.Run();
 
   if (!source) {
-    callback({FillingProduct::kIdentityCredential, {}});
+    callback({SuggestionDataSource::kIdentityCredential, {}});
     return;
   }
 
   std::optional<std::vector<IdentityRequestAccountPtr>> accounts =
       source->GetAutofillSuggestions();
   if (!accounts) {
-    callback({FillingProduct::kIdentityCredential, {}});
+    callback({SuggestionDataSource::kIdentityCredential, {}});
     return;
   }
 
@@ -192,7 +193,8 @@ void IdentityCredentialSuggestionGenerator::FetchSuggestionData(
         base::UTF8ToUTF16(account->email),
         CreateFederatedProfileFields(account), account->decoded_picture));
   }
-  callback({FillingProduct::kIdentityCredential, std::move(suggestion_data)});
+  callback(
+      {SuggestionDataSource::kIdentityCredential, std::move(suggestion_data)});
 }
 
 void IdentityCredentialSuggestionGenerator::GenerateSuggestions(
@@ -200,7 +202,8 @@ void IdentityCredentialSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   if (!trigger_autofill_field) {
@@ -208,8 +211,8 @@ void IdentityCredentialSuggestionGenerator::GenerateSuggestions(
     return;
   }
   std::vector<SuggestionData> identity_credential_suggestion_data =
-      ExtractSuggestionDataForFillingProduct(
-          all_suggestion_data, FillingProduct::kIdentityCredential);
+      ExtractSuggestionDataForSource(all_suggestion_data,
+                                     SuggestionDataSource::kIdentityCredential);
 
   std::vector<IdentityCredential> credentials = base::ToVector(
       std::move(identity_credential_suggestion_data),

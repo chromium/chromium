@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/integrators/password_manager/mock_password_manager_delegate.h"
 #include "components/autofill/core/browser/suggestions/passkeys/hybrid_passkey_availability.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -27,7 +28,8 @@ using ::testing::SaveArg;
 using SuggestionData = SuggestionGenerator::SuggestionData;
 using ReturnedSuggestions = SuggestionGenerator::ReturnedSuggestions;
 using ProductSuggestionDataPair =
-    std::pair<FillingProduct, std::vector<SuggestionData>>;
+    std::pair<SuggestionGenerator::SuggestionDataSource,
+              std::vector<SuggestionData>>;
 
 class PasskeyAutofillSuggestionGeneratorTest : public testing::Test {
  public:
@@ -88,7 +90,8 @@ TEST_F(PasskeyAutofillSuggestionGeneratorTest,
   generator().FetchSuggestionData(form(), field(), nullptr, nullptr, client(),
                                   fetch_cb.Get());
 
-  EXPECT_EQ(fetched_suggestions.first, FillingProduct::kPasskey);
+  EXPECT_EQ(fetched_suggestions.first,
+            SuggestionGenerator::SuggestionDataSource::kPasskey);
   ASSERT_EQ(fetched_suggestions.second.size(), 1u);
   const SuggestionData& data = fetched_suggestions.second[0];
   ASSERT_TRUE(std::holds_alternative<HybridPasskeyAvailability>(data));
@@ -116,7 +119,8 @@ TEST_F(PasskeyAutofillSuggestionGeneratorTest, NoHybridPasskeyAvailability) {
                                   fetch_cb.Get());
 
   // Fetch still calls the callback to report no suggestion will be generated.
-  EXPECT_EQ(fetched_suggestions.first, FillingProduct::kPasskey);
+  EXPECT_EQ(fetched_suggestions.first,
+            SuggestionGenerator::SuggestionDataSource::kPasskey);
   EXPECT_EQ(fetched_suggestions.second.size(), 0u);
 
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
@@ -145,7 +149,8 @@ TEST_F(PasskeyAutofillSuggestionGeneratorTest,
                                   fetch_cb.Get());
 
   // Fetch still calls the callback to report no suggestion will be generated.
-  EXPECT_EQ(fetched_suggestions.first, FillingProduct::kPasskey);
+  EXPECT_EQ(fetched_suggestions.first,
+            SuggestionGenerator::SuggestionDataSource::kPasskey);
   EXPECT_EQ(fetched_suggestions.second.size(), 0u);
 
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
@@ -170,7 +175,8 @@ TEST_F(PasskeyAutofillSuggestionGeneratorTest,
                                   fetch_cb.Get());
 
   // Fetch still calls the callback to report no suggestion will be generated.
-  EXPECT_EQ(fetched_suggestions.first, FillingProduct::kPasskey);
+  EXPECT_EQ(fetched_suggestions.first,
+            SuggestionGenerator::SuggestionDataSource::kPasskey);
   EXPECT_EQ(fetched_suggestions.second.size(), 0u);
 
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
@@ -194,9 +200,10 @@ TEST_F(PasskeyAutofillSuggestionGeneratorTest,
   // ... but ensure it's not used because the fetch step didn't have access yet.
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb, Run(Pair(FillingProduct::kPasskey, IsEmpty())));
-  generator().GenerateSuggestions(form(), field(), nullptr, nullptr,
-                                  {{FillingProduct::kPasskey, {}}},
-                                  generate_cb.Get());
+  generator().GenerateSuggestions(
+      form(), field(), nullptr, nullptr,
+      {{SuggestionGenerator::SuggestionDataSource::kPasskey, {}}},
+      generate_cb.Get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

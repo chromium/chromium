@@ -471,12 +471,12 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::OnceCallback<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   FetchSuggestionData(
       form, trigger_field, form_structure, trigger_autofill_field, client,
-      [&callback](std::pair<FillingProduct,
+      [&callback](std::pair<SuggestionDataSource,
                             std::vector<SuggestionGenerator::SuggestionData>>
                       suggestion_data) {
         std::move(callback).Run(std::move(suggestion_data));
@@ -488,7 +488,8 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
@@ -506,17 +507,17 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::FunctionRef<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling)) {
-    callback({FillingProduct::kAutofillAi, {}});
+    callback({SuggestionDataSource::kAutofillAi, {}});
     return;
   }
 
   const EntityDataManager* entity_manager = client.GetEntityDataManager();
   if (!entity_manager || !form_structure || !trigger_autofill_field) {
-    callback({FillingProduct::kAutofillAi, {}});
+    callback({SuggestionDataSource::kAutofillAi, {}});
     return;
   }
 
@@ -530,7 +531,7 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
       std::move(entities),
       [](const EntityInstance* entity) { return SuggestionData(*entity); });
 
-  callback({FillingProduct::kAutofillAi, std::move(suggestion_data)});
+  callback({SuggestionDataSource::kAutofillAi, std::move(suggestion_data)});
 }
 
 void AutofillAiSuggestionGenerator::GenerateSuggestions(
@@ -538,7 +539,8 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   const EntityDataManager* entity_manager = client_->GetEntityDataManager();
@@ -548,8 +550,8 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
   }
 
   std::vector<SuggestionData> autofill_ai_suggestion_data =
-      ExtractSuggestionDataForFillingProduct(all_suggestion_data,
-                                             FillingProduct::kAutofillAi);
+      ExtractSuggestionDataForSource(all_suggestion_data,
+                                     SuggestionDataSource::kAutofillAi);
   if (autofill_ai_suggestion_data.empty()) {
     callback({FillingProduct::kAutofillAi, {}});
     return;

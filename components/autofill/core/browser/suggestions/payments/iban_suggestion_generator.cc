@@ -31,12 +31,12 @@ void IbanSuggestionGenerator::FetchSuggestionData(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::OnceCallback<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   FetchSuggestionData(
       form, trigger_field, form_structure, trigger_autofill_field, client,
-      [&callback](std::pair<FillingProduct,
+      [&callback](std::pair<SuggestionDataSource,
                             std::vector<SuggestionGenerator::SuggestionData>>
                       suggestion_data) {
         std::move(callback).Run(std::move(suggestion_data));
@@ -48,7 +48,8 @@ void IbanSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
@@ -66,19 +67,19 @@ void IbanSuggestionGenerator::FetchSuggestionData(
     const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     base::FunctionRef<
-        void(std::pair<FillingProduct,
+        void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   // The field is eligible only if it's focused on an IBAN field.
   if (!trigger_autofill_field ||
       !trigger_autofill_field->Type().GetTypes().contains(IBAN_VALUE)) {
-    callback({FillingProduct::kIban, {}});
+    callback({SuggestionDataSource::kIban, {}});
     return;
   }
   if (!client.GetPaymentsAutofillClient()
            ->GetPaymentsDataManager()
            .IsAutofillPaymentMethodsEnabled()) {
-    callback({FillingProduct::kIban, {}});
+    callback({SuggestionDataSource::kIban, {}});
     return;
   }
   // AutofillOptimizationGuideDecider will not be present on unsupported
@@ -90,7 +91,7 @@ void IbanSuggestionGenerator::FetchSuggestionData(
             trigger_autofill_field)) {
       autofill_metrics::LogIbanSuggestionBlockListStatusMetric(
           autofill_metrics::IbanSuggestionBlockListStatus::kBlocked);
-      callback({FillingProduct::kIban, {}});
+      callback({SuggestionDataSource::kIban, {}});
       return;
     }
     autofill_metrics::LogIbanSuggestionBlockListStatusMetric(
@@ -108,7 +109,7 @@ void IbanSuggestionGenerator::FetchSuggestionData(
   std::vector<SuggestionData> suggestion_data = base::ToVector(
       std::move(ibans),
       [](Iban& iban) { return SuggestionData(std::move(iban)); });
-  callback({FillingProduct::kIban, std::move(suggestion_data)});
+  callback({SuggestionDataSource::kIban, std::move(suggestion_data)});
 }
 
 void IbanSuggestionGenerator::GenerateSuggestions(
@@ -116,12 +117,13 @@ void IbanSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
-    const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+    const std::vector<
+        std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   std::vector<SuggestionData> iban_suggestion_data =
-      ExtractSuggestionDataForFillingProduct(all_suggestion_data,
-                                             FillingProduct::kIban);
+      ExtractSuggestionDataForSource(all_suggestion_data,
+                                     SuggestionDataSource::kIban);
 
   std::vector<Iban> ibans = base::ToVector(
       std::move(iban_suggestion_data), [](SuggestionData& suggestion_data) {

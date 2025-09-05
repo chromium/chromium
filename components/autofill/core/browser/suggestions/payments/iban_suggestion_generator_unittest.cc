@@ -169,7 +169,7 @@ TEST_P(IbanSuggestionGeneratorTest, GeneratesIbanSuggestions) {
   Suggestion footer_suggestion = SetUpFooterManagePaymentMethods();
 
   base::MockCallback<base::OnceCallback<void(
-      std::pair<FillingProduct,
+      std::pair<SuggestionGenerator::SuggestionDataSource,
                 std::vector<SuggestionGenerator::SuggestionData>>)>>
       suggestion_data_callback;
   base::MockCallback<
@@ -177,11 +177,14 @@ TEST_P(IbanSuggestionGeneratorTest, GeneratesIbanSuggestions) {
       suggestions_generated_callback;
 
   IbanSuggestionGenerator generator;
-  std::pair<FillingProduct, std::vector<SuggestionGenerator::SuggestionData>>
+  std::pair<SuggestionGenerator::SuggestionDataSource,
+            std::vector<SuggestionGenerator::SuggestionData>>
       savedCallbackArgument;
 
-  EXPECT_CALL(suggestion_data_callback,
-              Run(testing::Pair(FillingProduct::kIban, testing::SizeIs(4))))
+  EXPECT_CALL(
+      suggestion_data_callback,
+      Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kIban,
+                        testing::SizeIs(4))))
       .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());

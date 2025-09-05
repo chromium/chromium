@@ -22,7 +22,7 @@ class MerchantPromoCodeSuggestionGenerator : public SuggestionGenerator {
       const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       base::OnceCallback<
-          void(std::pair<FillingProduct,
+          void(std::pair<SuggestionDataSource,
                          std::vector<SuggestionGenerator::SuggestionData>>)>
           callback) override;
 
@@ -31,7 +31,8 @@ class MerchantPromoCodeSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
-      const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+      const std::vector<
+          std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
@@ -46,7 +47,7 @@ class MerchantPromoCodeSuggestionGenerator : public SuggestionGenerator {
       const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       base::FunctionRef<
-          void(std::pair<FillingProduct,
+          void(std::pair<SuggestionDataSource,
                          std::vector<SuggestionGenerator::SuggestionData>>)>
           callback);
 
@@ -59,7 +60,8 @@ class MerchantPromoCodeSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
-      const std::vector<std::pair<FillingProduct, std::vector<SuggestionData>>>&
+      const std::vector<
+          std::pair<SuggestionDataSource, std::vector<SuggestionData>>>&
           all_suggestion_data,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 
