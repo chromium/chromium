@@ -33,7 +33,6 @@
 using testing::_;
 using testing::ElementsAre;
 using testing::FloatNear;
-using testing::Invoke;
 using testing::Return;
 
 namespace segmentation_platform {
@@ -168,7 +167,7 @@ TEST_F(RequestHandlerTest, GetPredictionResult) {
           std::make_optional(ModelProvider::Request{1, 2, 3}), false))
       .WillOnce(Return(TrainingRequestId::FromUnsafeValue(15)));
   EXPECT_CALL(*result_provider_, GetSegmentResult(_))
-      .WillOnce(Invoke(
+      .WillOnce(
           [](std::unique_ptr<SegmentResultProvider::GetResultOptions> options) {
             EXPECT_TRUE(options->ignore_db_scores);
             EXPECT_EQ(options->segment_id, kSegmentId);
@@ -180,7 +179,7 @@ TEST_F(RequestHandlerTest, GetPredictionResult) {
                     /*rank=*/2);
             result->model_inputs = {1, 2, 3};
             std::move(options->callback).Run(std::move(result));
-          }));
+          });
 
   base::RunLoop loop;
   request_handler_->GetPredictionResult(
@@ -210,8 +209,8 @@ TEST_F(RequestHandlerTest, ExecuteOndemandAsFallbackCase) {
           std::make_optional(ModelProvider::Request{1, 2, 3}), false))
       .WillOnce(Return(TrainingRequestId::FromUnsafeValue(15)));
   EXPECT_CALL(*result_provider_, GetSegmentResult(_))
-      .WillOnce(Invoke([](std::unique_ptr<
-                           SegmentResultProvider::GetResultOptions> options) {
+      .WillOnce([](std::unique_ptr<SegmentResultProvider::GetResultOptions>
+                       options) {
         EXPECT_TRUE(options->ignore_db_scores);
         EXPECT_EQ(options->segment_id, kSegmentId);
         auto result = std::make_unique<SegmentResultProvider::SegmentResult>(
@@ -220,7 +219,7 @@ TEST_F(RequestHandlerTest, ExecuteOndemandAsFallbackCase) {
             /*rank=*/2);
         result->model_inputs = {1, 2, 3};
         std::move(options->callback).Run(std::move(result));
-      }));
+      });
 
   base::RunLoop loop;
   request_handler_->GetPredictionResult(
@@ -242,7 +241,7 @@ TEST_F(RequestHandlerTest, GetGenericPredictionResult) {
                      std::make_optional(ModelProvider::Request{1}), false))
       .WillOnce(Return(TrainingRequestId::FromUnsafeValue(15)));
   EXPECT_CALL(*result_provider_, GetSegmentResult(_))
-      .WillOnce(Invoke(
+      .WillOnce(
           [](std::unique_ptr<SegmentResultProvider::GetResultOptions> options) {
             EXPECT_TRUE(options->ignore_db_scores);
             EXPECT_EQ(options->segment_id, kSegmentId);
@@ -254,7 +253,7 @@ TEST_F(RequestHandlerTest, GetGenericPredictionResult) {
                     /*rank=*/2);
             result->model_inputs = {1};
             std::move(options->callback).Run(std::move(result));
-          }));
+          });
 
   base::RunLoop loop;
   request_handler_->GetPredictionResult(

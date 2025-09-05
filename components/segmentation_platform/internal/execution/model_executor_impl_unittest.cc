@@ -38,7 +38,6 @@
 using ::base::test::RunOnceCallback;
 using segmentation_platform::processing::FeatureListQueryProcessor;
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 using testing::SetArgReferee;

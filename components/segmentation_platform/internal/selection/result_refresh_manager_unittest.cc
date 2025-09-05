@@ -25,7 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 
 namespace segmentation_platform {
 namespace {
@@ -119,16 +118,16 @@ class ResultRefreshManagerTest : public testing::Test {
       bool ignore_db_scores) {
     EXPECT_CALL(*segment_result_provider, GetSegmentResult(_))
         .WillOnce(
-            Invoke([segment_id, result, result_state, ignore_db_scores](
-                       std::unique_ptr<SegmentResultProvider::GetResultOptions>
-                           options) {
+            [segment_id, result, result_state, ignore_db_scores](
+                std::unique_ptr<SegmentResultProvider::GetResultOptions>
+                    options) {
               EXPECT_EQ(options->ignore_db_scores, ignore_db_scores);
               EXPECT_EQ(options->segment_id, segment_id);
               auto segment_result =
                   std::make_unique<SegmentResultProvider::SegmentResult>(
                       result_state, result, /*rank=*/1);
               std::move(options->callback).Run(std::move(segment_result));
-            }));
+            });
   }
 
   void VerifyIfResultUpdatedInPrefs(const std::string& segmentation_key,

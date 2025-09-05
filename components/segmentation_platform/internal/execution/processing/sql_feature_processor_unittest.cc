@@ -61,14 +61,13 @@ class SqlFeatureProcessorTest : public testing::Test {
                                               ukm_database_.get());
 
     EXPECT_CALL(*ukm_database_, RunReadOnlyQueries)
-        .WillOnce(testing::Invoke(
-            [&processed_queries, &result](
-                const base::flat_map<SqlFeatureProcessor::FeatureIndex,
-                                     CustomSqlQuery>& queries,
-                MockUkmDatabase::QueryCallback callback) {
-              EXPECT_EQ(processed_queries, queries);
-              std::move(callback).Run(true, result);
-            }));
+        .WillOnce([&processed_queries, &result](
+                      const base::flat_map<SqlFeatureProcessor::FeatureIndex,
+                                           CustomSqlQuery>& queries,
+                      MockUkmDatabase::QueryCallback callback) {
+          EXPECT_EQ(processed_queries, queries);
+          std::move(callback).Run(true, result);
+        });
 
     // Process the sql query.
     base::RunLoop loop;

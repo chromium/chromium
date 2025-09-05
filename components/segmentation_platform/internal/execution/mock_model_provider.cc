@@ -16,7 +16,6 @@ namespace segmentation_platform {
 namespace {
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 // Stores the client callbacks to |data|.
@@ -36,10 +35,9 @@ MockModelProvider::MockModelProvider(
         get_client_callback)
     : ModelProvider(segment_id), get_client_callback_(get_client_callback) {
   ON_CALL(*this, InitAndFetchModel(_))
-      .WillByDefault(
-          Invoke([&](const ModelUpdatedCallback& model_updated_callback) {
-            get_client_callback_.Run(model_updated_callback);
-          }));
+      .WillByDefault([&](const ModelUpdatedCallback& model_updated_callback) {
+        get_client_callback_.Run(model_updated_callback);
+      });
 }
 MockModelProvider::~MockModelProvider() = default;
 

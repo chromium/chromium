@@ -39,7 +39,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 
 namespace segmentation_platform {
 namespace {
@@ -214,12 +213,11 @@ TEST_F(RequestDispatcherTest,
   RawResult raw_result1(PredictionStatus::kSucceeded);
   raw_result1.result = CreatePredictionResultWithBinaryClassifier(kTestLabel1);
   EXPECT_CALL(*request_handler1_, GetPredictionResult(_, _, _))
-      .WillRepeatedly(
-          Invoke([&raw_result1](const PredictionOptions& options,
-                                scoped_refptr<InputContext> input_context,
-                                RawResultCallback callback) {
-            std::move(callback).Run(raw_result1);
-          }));
+      .WillRepeatedly([&raw_result1](const PredictionOptions& options,
+                                     scoped_refptr<InputContext> input_context,
+                                     RawResultCallback callback) {
+        std::move(callback).Run(raw_result1);
+      });
 
   ClassificationResult result1(PredictionStatus::kSucceeded);
   result1.ordered_labels.emplace_back(kTestLabel1);
@@ -234,12 +232,11 @@ TEST_F(RequestDispatcherTest,
   RawResult raw_result2(PredictionStatus::kSucceeded);
   raw_result2.result = CreatePredictionResultWithBinaryClassifier(kTestLabel2);
   EXPECT_CALL(*request_handler2_, GetPredictionResult(_, _, _))
-      .WillRepeatedly(
-          Invoke([&raw_result2](const PredictionOptions& options,
-                                scoped_refptr<InputContext> input_context,
-                                RawResultCallback callback) {
-            std::move(callback).Run(raw_result2);
-          }));
+      .WillRepeatedly([&raw_result2](const PredictionOptions& options,
+                                     scoped_refptr<InputContext> input_context,
+                                     RawResultCallback callback) {
+        std::move(callback).Run(raw_result2);
+      });
 
   ClassificationResult result2(PredictionStatus::kSucceeded);
   result2.ordered_labels.emplace_back(kTestLabel2);
@@ -282,12 +279,11 @@ TEST_F(RequestDispatcherTest,
   RawResult raw_result1(PredictionStatus::kSucceeded);
   raw_result1.result = CreatePredictionResultWithBinaryClassifier(kTestLabel1);
   EXPECT_CALL(*request_handler1_, GetPredictionResult(_, _, _))
-      .WillRepeatedly(
-          Invoke([&raw_result1](const PredictionOptions& options,
-                                scoped_refptr<InputContext> input_context,
-                                RawResultCallback callback) {
-            std::move(callback).Run(raw_result1);
-          }));
+      .WillRepeatedly([&raw_result1](const PredictionOptions& options,
+                                     scoped_refptr<InputContext> input_context,
+                                     RawResultCallback callback) {
+        std::move(callback).Run(raw_result1);
+      });
 
   ClassificationResult result1(PredictionStatus::kSucceeded);
   result1.ordered_labels.emplace_back(kTestLabel1);
@@ -302,12 +298,11 @@ TEST_F(RequestDispatcherTest,
   RawResult raw_result2(PredictionStatus::kSucceeded);
   raw_result2.result = CreatePredictionResultWithBinaryClassifier(kTestLabel2);
   EXPECT_CALL(*request_handler2_, GetPredictionResult(_, _, _))
-      .WillRepeatedly(
-          Invoke([&raw_result2](const PredictionOptions& options,
-                                scoped_refptr<InputContext> input_context,
-                                RawResultCallback callback) {
-            std::move(callback).Run(raw_result2);
-          }));
+      .WillRepeatedly([&raw_result2](const PredictionOptions& options,
+                                     scoped_refptr<InputContext> input_context,
+                                     RawResultCallback callback) {
+        std::move(callback).Run(raw_result2);
+      });
 
   ClassificationResult result2(PredictionStatus::kSucceeded);
   result2.ordered_labels.emplace_back("test_label2");
@@ -369,12 +364,11 @@ TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccessAndModelsLoaded) {
   RawResult raw_result1(PredictionStatus::kSucceeded);
   raw_result1.result = CreatePredictionResultWithBinaryClassifier(kTestLabel1);
   EXPECT_CALL(*request_handler1_, GetPredictionResult(_, _, _))
-      .WillRepeatedly(
-          Invoke([&raw_result1](const PredictionOptions& options,
-                                scoped_refptr<InputContext> input_context,
-                                RawResultCallback callback) {
-            std::move(callback).Run(raw_result1);
-          }));
+      .WillRepeatedly([&raw_result1](const PredictionOptions& options,
+                                     scoped_refptr<InputContext> input_context,
+                                     RawResultCallback callback) {
+        std::move(callback).Run(raw_result1);
+      });
 
   ClassificationResult result1(PredictionStatus::kSucceeded);
   result1.ordered_labels.emplace_back(kTestLabel1);
@@ -388,12 +382,11 @@ TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccessAndModelsLoaded) {
   RawResult raw_result2(PredictionStatus::kSucceeded);
   raw_result2.result = CreatePredictionResultWithBinaryClassifier(kTestLabel2);
   EXPECT_CALL(*request_handler2_, GetPredictionResult(_, _, _))
-      .WillRepeatedly(
-          Invoke([&raw_result2](const PredictionOptions& options,
-                                scoped_refptr<InputContext> input_context,
-                                RawResultCallback callback) {
-            std::move(callback).Run(raw_result2);
-          }));
+      .WillRepeatedly([&raw_result2](const PredictionOptions& options,
+                                     scoped_refptr<InputContext> input_context,
+                                     RawResultCallback callback) {
+        std::move(callback).Run(raw_result2);
+      });
 
   ClassificationResult result2(PredictionStatus::kSucceeded);
   result2.ordered_labels.emplace_back(kTestLabel2);
@@ -414,12 +407,11 @@ TEST_F(RequestDispatcherTest, TestAnnotatedNumericResultRequestWithWaiting) {
   RawResult raw_result1(PredictionStatus::kSucceeded);
   raw_result1.result = CreatePredictionResultWithGenericPredictor();
   EXPECT_CALL(*request_handler1_, GetPredictionResult(_, _, _))
-      .WillRepeatedly(
-          Invoke([&raw_result1](const PredictionOptions& options,
-                                scoped_refptr<InputContext> input_context,
-                                RawResultCallback callback) {
-            std::move(callback).Run(raw_result1);
-          }));
+      .WillRepeatedly([&raw_result1](const PredictionOptions& options,
+                                     scoped_refptr<InputContext> input_context,
+                                     RawResultCallback callback) {
+        std::move(callback).Run(raw_result1);
+      });
 
   request_dispatcher_->GetAnnotatedNumericResult(
       kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
@@ -469,11 +461,11 @@ TEST_F(RequestDispatcherTest, TestOnDemandWithFallback) {
   // Request from client.
   RawResult raw_result(PredictionStatus::kFailed);
   EXPECT_CALL(*request_handler1_, GetPredictionResult(_, _, _))
-      .WillOnce(Invoke([&raw_result](const PredictionOptions& options,
-                                     scoped_refptr<InputContext> input_context,
-                                     RawResultCallback callback) {
+      .WillOnce([&raw_result](const PredictionOptions& options,
+                              scoped_refptr<InputContext> input_context,
+                              RawResultCallback callback) {
         std::move(callback).Run(raw_result);
-      }));
+      });
 
   ClassificationResult result(PredictionStatus::kSucceeded);
   result.ordered_labels.emplace_back(kTestLabel1);
@@ -551,12 +543,11 @@ TEST_F(RequestDispatcherTest, TestCachedExecutionWithFallback) {
   RawResult raw_result(PredictionStatus::kSucceeded);
   raw_result.result = CreatePredictionResultWithBinaryClassifier(kTestLabel1);
   EXPECT_CALL(*request_handler3_, GetPredictionResult(_, _, _))
-      .WillRepeatedly(
-          Invoke([&raw_result](const PredictionOptions& options,
-                               scoped_refptr<InputContext> input_context,
-                               RawResultCallback callback) {
-            std::move(callback).Run(raw_result);
-          }));
+      .WillRepeatedly([&raw_result](const PredictionOptions& options,
+                                    scoped_refptr<InputContext> input_context,
+                                    RawResultCallback callback) {
+        std::move(callback).Run(raw_result);
+      });
 
   ClassificationResult result(PredictionStatus::kSucceeded);
   result.ordered_labels.emplace_back(kTestLabel1);

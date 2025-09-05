@@ -36,7 +36,6 @@
 
 using ::base::test::RunOnceCallback;
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 using testing::SetArgReferee;
