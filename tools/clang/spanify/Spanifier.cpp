@@ -168,12 +168,13 @@ AST_MATCHER_P(clang::FunctionDecl,
               parm_var_decl_matcher) {
   const clang::FunctionDecl& function_decl = Node;
 
-  unsigned num_params = function_decl.getNumParams();
+  const unsigned num_params = function_decl.getNumParams();
   bool is_matching = false;
   clang::ast_matchers::internal::BoundNodesTreeBuilder result;
   for (unsigned i = 0; i < num_params; i++) {
     const clang::ParmVarDecl* param = function_decl.getParamDecl(i);
-    clang::ast_matchers::internal::BoundNodesTreeBuilder param_matches;
+    clang::ast_matchers::internal::BoundNodesTreeBuilder param_matches(
+        *Builder);
     if (parm_var_decl_matcher.matches(*param, Finder, &param_matches)) {
       is_matching = true;
       result.addMatch(param_matches);
@@ -731,6 +732,40 @@ clang::SourceRange getSourceRange(const MatchFinder::MatchResult& result) {
                   "\n";
   DumpMatchResult(result);
   assert(false && "Unexpected match in getSourceRange()");
+}
+
+// Unwraps typedef type locs and/or elaborated type locs, and returns the body
+// type loc.
+//
+// Note that using-declared types are also represented with typedef types in
+// clang, so this function works for both 'typedef' and 'using' declarations.
+//
+// Example TypeLoc structures:
+//     // Given T2 where typedef int T1; using T2 = T1;
+//     ElaboratedTypeLoc('T2')
+//       --(getNamedTypeLoc)--> TypedefTypeLoc('T2')
+//         --(getTypedefNameDecl)--> ElaboratedTypeLoc('T1')
+//           --(getNamedTypeLoc)--> TypedefTypeLoc('T1')
+//             --(getTypedefNameDecl)--> BuiltinTypeLoc('int')
+//     => returns BuiltinTypeLoc('int').
+//
+//     // Given base::raw_ptr<int>,
+//     ElaboratedTypeLoc('base::raw_ptr<int>')
+//       --(getNamedTypeLoc)--> TemplateSpecializationTypeLoc('raw_ptr<int>')
+//         --(getArgLoc)--> TemplateArgumentLoc('int')
+//     => returns TemplateSpecializationTypeLoc('raw_ptr<int>').
+clang::TypeLoc UnwrapTypedefTypeLoc(clang::TypeLoc type_loc) {
+  while (const clang::ElaboratedTypeLoc elaborated_type_loc =
+             type_loc.getAs<clang::ElaboratedTypeLoc>()) {
+    type_loc = elaborated_type_loc.getNamedTypeLoc();
+    if (const clang::TypedefTypeLoc typedef_type_loc =
+            type_loc.getAs<clang::TypedefTypeLoc>()) {
+      const clang::TypedefNameDecl* typedef_name_decl =
+          typedef_type_loc.getTypedefNameDecl();
+      type_loc = typedef_name_decl->getTypeSourceInfo()->getTypeLoc();
+    }
+  }
+  return type_loc;
 }
 
 std::string getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
@@ -2587,6 +2622,88 @@ void RewriteComparisonWithCArrayIter(const MatchFinder::MatchResult& result) {
   EmitEdge(rhs, lhs);
 }
 
+// When a function declaration (= function type) gets rewritten, rewrites
+// variables of a function pointer type to which the function is assigned.
+//
+// Example:
+//     // function declaration being spanified
+//     int* func(int* arg);
+//     // function pointer variable to be spanified
+//     int* (*var)(int* arg) = func;
+// In the following implementation, `var` is called LHS and `func` is called
+// RHS.
+//
+// Tests are in: func-ptr-var-original.cc
+void RewriteFunctionPointerType(const MatchFinder::MatchResult& result) {
+  const clang::VarDecl* lhs_var_decl = GetNodeOrCrash<clang::VarDecl>(
+      result, "lhs_funcptrvardecl",
+      "The rewriting target variable of function pointer type must be bound.");
+
+  // Get the FunctionProtoTypeLoc of the LHS variable.
+  clang::FunctionProtoTypeLoc lhs_func_proto_type_loc;
+  {
+    const clang::TypeLoc var_type_loc =
+        UnwrapTypedefTypeLoc(lhs_var_decl->getTypeSourceInfo()->getTypeLoc());
+    if (var_type_loc.getAs<clang::AutoTypeLoc>() ||
+        var_type_loc.getAs<clang::DecltypeTypeLoc>()) {
+      return;  // No need to rewrite auto/decltype types.
+    }
+    const clang::PointerTypeLoc pointer_type_loc =
+        var_type_loc.getAs<clang::PointerTypeLoc>();
+    assert(pointer_type_loc && "Failed to get a PointerTypeLoc.");
+    clang::TypeLoc pointee_type_loc = pointer_type_loc.getPointeeLoc();
+    // Unwrap paren type locs.
+    while (clang::ParenTypeLoc paren_type_loc =
+               pointee_type_loc.getAs<clang::ParenTypeLoc>()) {
+      pointee_type_loc = paren_type_loc.getInnerLoc();
+    }
+    lhs_func_proto_type_loc =
+        pointee_type_loc.getAs<clang::FunctionProtoTypeLoc>();
+  }
+  assert(lhs_func_proto_type_loc && "Failed to get a FunctionProtoTypeLoc.");
+
+  // RHS matches with one of the parameter types or the return type of the
+  // function declaration. Rewrite the one matched.
+  const std::string& rhs_key = GetRHS(result);
+
+  // LHS matches with the function pointer type variable (not a parameter type
+  // nor return type unlike RHS). Find the parameter or return type
+  // corresponding to the RHS match, and rewrite it.
+  std::string lhs_key;
+  if (const clang::ParmVarDecl* rhs_parm_var_decl =
+          result.Nodes.getNodeAs<clang::ParmVarDecl>("rhs_begin")) {
+    // One of the function parameter types matches on RHS.
+    const unsigned parm_index = rhs_parm_var_decl->getFunctionScopeIndex();
+    const clang::ParmVarDecl* lhs_parm_var_decl =
+        lhs_func_proto_type_loc.getParam(parm_index);
+    const clang::TypeLoc lhs_parm_type_loc = UnwrapTypedefTypeLoc(
+        lhs_parm_var_decl->getTypeSourceInfo()->getTypeLoc());
+    if (lhs_parm_type_loc.getAs<clang::ArrayTypeLoc>()) {
+      lhs_key = getNodeFromFunctionArrayParameter(&lhs_parm_type_loc,
+                                                  lhs_parm_var_decl, result);
+    } else if (lhs_parm_type_loc.getAs<clang::PointerTypeLoc>()) {
+      lhs_key = getNodeFromDecl(lhs_parm_var_decl, result);
+    } else if (const clang::TemplateSpecializationTypeLoc lhs_raw_ptr_type_loc =
+                   lhs_parm_type_loc
+                       .getAs<clang::TemplateSpecializationTypeLoc>()) {
+      lhs_key = getNodeFromRawPtrTypeLoc(&lhs_raw_ptr_type_loc, result);
+    } else {
+      assert(false && "Unknown kind of clang::TypeLoc at `lhs_parm_type_loc`");
+    }
+  } else {
+    // The function return type matches on RHS.
+    const clang::PointerTypeLoc lhs_return_type_loc =
+        lhs_func_proto_type_loc.getReturnLoc().getAs<clang::PointerTypeLoc>();
+    assert(lhs_return_type_loc);
+    lhs_key = getNodeFromPointerTypeLoc(&lhs_return_type_loc, result);
+  }
+
+  // Whenever RHS (function type) is rewritten, LHS (function pointer type)
+  // should be rewritten, too.
+  EmitEdge(lhs_key, rhs_key);
+  EmitEdge(rhs_key, lhs_key);
+}
+
 // Spanifies the matched function parameter/return type, and connects relevant
 // function declarations (forward declarations and overridden methods) to each
 // other bidirectionally per the matched function parameter/return type. Note
@@ -2640,7 +2757,7 @@ void RewriteComparisonWithCArrayIter(const MatchFinder::MatchResult& result) {
 //
 // A: Yes, it does suffice. But it's hard to build because GetRHS takes
 // `result` as the argument. When we find a match for arg1 at [2], we no longer
-// have `result` for arg1 at [1]. It's easier to create node_arg1_{1st,2nd] than
+// have `result` for arg1 at [1]. It's easier to create node_arg1_{1st,2nd} than
 // saving the results of GetRHS somewhere and retrieving it.
 void RewriteFunctionParamAndReturnType(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -3379,7 +3496,7 @@ class Spanifier {
     // a = fct();
     // a = reinterpret_cast<>(b);
     // a = (cond) ? expr1 : expr2;
-    auto assignement_relationship = traverse(
+    auto assignment_relationship = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         binaryOperation(hasOperatorName("="),
                         hasOperands(lhs_expr_variations,
@@ -3387,18 +3504,18 @@ class Spanifier {
                                           conditionalOperator(hasTrueExpression(
                                               rhs_expr_variations)))),
                         unless(isExpansionInSystemHeader())));
-    Match(assignement_relationship, MatchAdjacency);
+    Match(assignment_relationship, MatchAdjacency);
 
     // Creates the edge from lhs to false_expr in a ternary conditional
     // operator.
-    auto assignement_relationship2 = traverse(
+    auto assignment_relationship2 = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         binaryOperation(hasOperatorName("="),
                         hasOperands(lhs_expr_variations,
                                     conditionalOperator(hasFalseExpression(
                                         rhs_expr_variations))),
                         unless(isExpansionInSystemHeader())));
-    Match(assignement_relationship2, MatchAdjacency);
+    Match(assignment_relationship2, MatchAdjacency);
 
     // Supports:
     // T* temp = member;
@@ -3418,17 +3535,6 @@ class Spanifier {
             unless(isExpansionInSystemHeader())));
     Match(var_construction, MatchAdjacency);
 
-    // Supports:
-    // it == std::begin(c_array)
-    // it != std::end(c_array)
-    auto equality_op =
-        traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 binaryOperation(
-                     anyOf(hasOperatorName("=="), hasOperatorName("!=")),
-                     hasOperands(ignoringParenCasts(lhs_expr_variations),
-                                 ignoringParenCasts(c_array_iter_call_expr))));
-    Match(equality_op, RewriteComparisonWithCArrayIter);
-
     // Creates the edge from lhs to false_expr in a ternary conditional
     // operator.
     auto var_construction2 = traverse(
@@ -3441,6 +3547,17 @@ class Spanifier {
                     hasFalseExpression(rhs_expr_variations)))))))),
             unless(isExpansionInSystemHeader())));
     Match(var_construction2, MatchAdjacency);
+
+    // Supports:
+    // it == std::begin(c_array)
+    // it != std::end(c_array)
+    auto equality_op =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 binaryOperation(
+                     anyOf(hasOperatorName("=="), hasOperatorName("!=")),
+                     hasOperands(ignoringParenCasts(lhs_expr_variations),
+                                 ignoringParenCasts(c_array_iter_call_expr))));
+    Match(equality_op, RewriteComparisonWithCArrayIter);
 
     // Supports:
     // return member;
@@ -3545,20 +3662,58 @@ class Spanifier {
                  unless(cxxOperatorCallExpr(hasOperatorName("=")))));
     Match(call_expr, MatchAdjacency);
 
+    // Function pointer types to arbitrary function types, including typedef
+    // types and using-aliased types to function pointer types. No restriction
+    // to parameter types and return type, but the following queries require
+    // the function type to be compatible with the RHS function type.
+    auto fct_ptr_type = type(hasUnqualifiedDesugaredType(
+        pointerType(pointee(ignoringParens(functionProtoType())))));
+
+    // Function declaration with pointer/array/raw_ptr parameter types and/or
+    // pointer return type.
+    //
+    // Note that this query matches each of parameter types and return type
+    // respectively.
+    auto fct_decl =
+        functionDecl(
+            eachOf(forEachParmVarDecl(rhs_param),
+                   hasReturnTypeLoc(pointer_type_loc.bind("rhs_type_loc"))),
+            unless(exclusions))
+            .bind("fct_decl");
+    auto fct_decl_expr = expr(ignoringParenCasts(declRefExpr(to(fct_decl))));
+
+    // Supports:
+    //     void (*var)(int*) = func;
+    //     int* (*var)() = func;
+    // and equivalent typedef/using variants like:
+    //     using FuncType = void (*)(int*);
+    //     FuncType var = func;
+    auto fct_ptr_var_construction = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        varDecl(hasType(fct_ptr_type), has(fct_decl_expr), unless(exclusions))
+            .bind("lhs_funcptrvardecl"));
+    Match(fct_ptr_var_construction, RewriteFunctionPointerType);
+
+    // Supports:
+    //     void (*var)(int*); var = func;
+    //     int* (*var)(); var = func;
+    // and equivalent typedef/using variants like:
+    //     typedef int* (*FuncType)();
+    //     FuncType var;
+    //     var = func;
+    auto fct_ptr_var_assignment = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        binaryOperator(hasOperatorName("="),
+                       hasLHS(declRefExpr(
+                           to(varDecl(hasType(fct_ptr_type), unless(exclusions))
+                                  .bind("lhs_funcptrvardecl")))),
+                       hasRHS(fct_decl_expr)));
+    Match(fct_ptr_var_assignment, RewriteFunctionPointerType);
+
     // Map function declaration signature to function definition signature;
     // This is problematic in the case of callbacks defined in function.
-    auto fct_decls_params =
-        traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 functionDecl(forEachParmVarDecl(rhs_param), unless(exclusions))
-                     .bind("fct_decl"));
-    Match(fct_decls_params, RewriteFunctionParamAndReturnType);
-
-    auto fct_decls_returns = traverse(
-        clang::TK_IgnoreUnlessSpelledInSource,
-        functionDecl(hasReturnTypeLoc(pointer_type_loc.bind("rhs_type_loc")),
-                     unless(exclusions))
-            .bind("fct_decl"));
-    Match(fct_decls_returns, RewriteFunctionParamAndReturnType);
+    auto fct_decls = traverse(clang::TK_IgnoreUnlessSpelledInSource, fct_decl);
+    Match(fct_decls, RewriteFunctionParamAndReturnType);
   }
 
  private:
