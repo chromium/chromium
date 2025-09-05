@@ -59,6 +59,21 @@ void DeliverMutation(const HeapVector<Member<MutationRecord>>& records,
   }
 }
 
+void ObserveDocument(WeakMember<Node>& observing,
+                     MutationObserver* observer,
+                     Element* document_element) {
+  if (observing.Get() == document_element) {
+    return;
+  }
+  observer->disconnect();
+  MutationObserverInit* init = MutationObserverInit::Create();
+  init->setChildList(true);
+  DummyExceptionStateForTesting exception_state;
+  observer->observe(document_element, init, exception_state);
+  DCHECK(!exception_state.HadException());
+  observing = document_element;
+}
+
 void ObserveHead(WeakMember<Node>& observing,
                  MutationObserver* observer,
                  HTMLHeadElement* head,
@@ -93,6 +108,7 @@ class FrameMetadataObserverRegistry::PaidContentMutationObserver final
   explicit PaidContentMutationObserver(FrameMetadataObserverRegistry* registry);
 
   void ObserveHead(HTMLHeadElement* head);
+  void ObserveDocument(Element* document_element);
 
   void Disconnect() {
     observer_->disconnect();
@@ -105,6 +121,16 @@ class FrameMetadataObserverRegistry::PaidContentMutationObserver final
 
   void Deliver(const HeapVector<Member<MutationRecord>>& records,
                MutationObserver&) override {
+    for (const auto& record : records) {
+      if (record->type() == "childList") {
+        for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
+          if (IsA<HTMLHeadElement>(record->addedNodes()->item(i))) {
+            registry_->OnPaidContentMetadataChanged();
+            return;
+          }
+        }
+      }
+    }
     DeliverMutation<HTMLScriptElement>(
         records,
         BindRepeating(
@@ -131,6 +157,7 @@ class FrameMetadataObserverRegistry::MetaTagsMutationObserver final
   explicit MetaTagsMutationObserver(FrameMetadataObserverRegistry* registry);
 
   void ObserveHead(HTMLHeadElement* head);
+  void ObserveDocument(Element* document_element);
 
   void Disconnect() {
     observer_->disconnect();
@@ -143,6 +170,16 @@ class FrameMetadataObserverRegistry::MetaTagsMutationObserver final
 
   void Deliver(const HeapVector<Member<MutationRecord>>& records,
                MutationObserver&) override {
+    for (const auto& record : records) {
+      if (record->type() == "childList") {
+        for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
+          if (IsA<HTMLHeadElement>(record->addedNodes()->item(i))) {
+            registry_->OnMetaTagsChanged();
+            return;
+          }
+        }
+      }
+    }
     DeliverMutation<HTMLMetaElement>(
         records,
         BindRepeating(&FrameMetadataObserverRegistry::OnMetaTagsChanged,
@@ -171,14 +208,24 @@ void FrameMetadataObserverRegistry::PaidContentMutationObserver::ObserveHead(
   ::blink::ObserveHead(observing_, observer_.Get(), head, std::nullopt);
 }
 
+void FrameMetadataObserverRegistry::PaidContentMutationObserver::ObserveDocument(
+    Element* document_element) {
+  ::blink::ObserveDocument(observing_, observer_.Get(), document_element);
+}
+
 FrameMetadataObserverRegistry::MetaTagsMutationObserver::
     MetaTagsMutationObserver(FrameMetadataObserverRegistry* registry)
-    : registry_(registry), observer_(MutationObserver::Create(this)) {}
+    : registry_(registry), observer_(MutationObserver::Create(this)) {}  // NO LINT
 
 void FrameMetadataObserverRegistry::MetaTagsMutationObserver::ObserveHead(
     HTMLHeadElement* head) {
   ::blink::ObserveHead(observing_, observer_.Get(), head,
               Vector<String>{"name", "content"});
+}
+
+void FrameMetadataObserverRegistry::MetaTagsMutationObserver::ObserveDocument(
+    Element* document_element) {
+  ::blink::ObserveDocument(observing_, observer_.Get(), document_element);
 }
 
 // static
@@ -436,6 +483,8 @@ bool UpdateObserver(Document* document,
   HTMLHeadElement* head = document->head();
   if (head) {
     mutation_observer->ObserveHead(head);
+  } else if (document->documentElement()) {
+    mutation_observer->ObserveDocument(document->documentElement());
   }
   return true;
 }

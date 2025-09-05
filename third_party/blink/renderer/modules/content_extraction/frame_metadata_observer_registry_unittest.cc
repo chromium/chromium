@@ -446,7 +446,7 @@ TEST_F(FrameMetadataObserverRegistryTest, MetaTagsWithNamelessTag) {
 
 // Re-enable this test once we support observing head elements that are added
 // dynamically.
-TEST_F(FrameMetadataObserverRegistryTest, DISABLED_MetaTagsAddedWithHead) {
+TEST_F(FrameMetadataObserverRegistryTest, MetaTagsAddedWithHead) {
   LoadHTML("<body></body>");
   // Remove the head that was automatically added by the parser, to simulate a
   // document that starts without one.
