@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_empty_table_view_background.h"
@@ -262,8 +262,8 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
   UITableViewCell* cell =
       [self.tableView dequeueReusableCellWithIdentifier:reuseIdentifier
                                            forIndexPath:indexPath];
-  TableViewCell* tableViewCell =
-      base::apple::ObjCCastStrict<TableViewCell>(cell);
+  LegacyTableViewCell* tableViewCell =
+      base::apple::ObjCCastStrict<LegacyTableViewCell>(cell);
   [item configureCell:tableViewCell withStyler:self.styler];
 
   // Enabling `exclusiveTouch` for all cells to prevent simultanoeus cell

@@ -37,11 +37,11 @@ class GURL;
 
 @end
 
-// PriceNotificationsTableViewCell implements an TableViewCell subclass
+// PriceNotificationsTableViewCell implements an LegacyTableViewCell subclass
 // containing a leading image, two text labels (title and url) and a custom
 // UIView containing the item's price laid out vertically, and either a UIButton
 // to initiate tracking the item or a menu button to manage the item.
-@interface PriceNotificationsTableViewCell : TableViewCell
+@interface PriceNotificationsTableViewCell : LegacyTableViewCell
 
 // Sets the item's image.
 - (void)setImage:(UIImage*)productImage;

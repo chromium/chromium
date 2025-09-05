@@ -48,7 +48,7 @@ class GURL;
 
 // Cell to display a Credential where the username and password are interactable
 // and send the data to the delegate.
-@interface ManualFillPasswordCell : TableViewCell
+@interface ManualFillPasswordCell : LegacyTableViewCell
 
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;

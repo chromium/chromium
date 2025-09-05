@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_modal_delegate.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -25,7 +25,7 @@ const CGFloat kAvatarSize = 24;
 #pragma mark - SendTabtoSelfManageDevicesCell
 
 // Cell class for SendTabToSelfManageDevicesItem.
-@interface SendTabtoSelfManageDevicesCell : TableViewCell
+@interface SendTabtoSelfManageDevicesCell : LegacyTableViewCell
 
 // A left-aligned round badge showing the account avatar.
 @property(nonatomic, readonly, strong) UIImageView* avatarBadge;
@@ -139,7 +139,7 @@ const CGFloat kAvatarSize = 24;
   return self;
 }
 
-- (void)configureCell:(TableViewCell*)cell
+- (void)configureCell:(LegacyTableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   SendTabtoSelfManageDevicesCell* accountCell =

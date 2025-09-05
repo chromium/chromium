@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 
 // Cell representation for SettingsCheckItem.
 //  +---------------------------------------------------------+
@@ -18,7 +18,7 @@
 //  | |        |  Multiline detail text         |or button|   |
 //  | +--------+                                +---------+   |
 //  +---------------------------------------------------------+
-@interface SettingsCheckCell : TableViewCell
+@interface SettingsCheckCell : LegacyTableViewCell
 
 // Button which is used as an anchor to show popover with additional
 // information.

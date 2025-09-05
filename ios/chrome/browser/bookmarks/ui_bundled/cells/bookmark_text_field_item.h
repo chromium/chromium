@@ -33,7 +33,7 @@
 
 @end
 
-@interface BookmarkTextFieldCell : TableViewCell
+@interface BookmarkTextFieldCell : LegacyTableViewCell
 
 // Label to display the type of content `self.textField` is displaying.
 @property(nonatomic, strong) UILabel* titleLabel;

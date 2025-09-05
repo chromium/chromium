@@ -9,12 +9,12 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 
 @class IdentityView;
 
 // Cell to display an user identity or the "Add Account…" button.
-@interface TableViewIdentityCell : TableViewCell
+@interface TableViewIdentityCell : LegacyTableViewCell
 
 // Initializes TableViewIdentityCell instance.
 - (instancetype)initWithStyle:(UITableViewCellStyle)style

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_CELL_H_
-#define IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_CELL_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_LEGACY_TABLE_VIEW_CELL_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_LEGACY_TABLE_VIEW_CELL_H_
 
 #import <UIKit/UIKit.h>
 
-// Base class for the TableViewCell used by the TableViewItems.
-@interface TableViewCell : UITableViewCell
+// Base class for the LegacyTableViewCell used by the TableViewItems.
+@interface LegacyTableViewCell : UITableViewCell
 
 // Whether custom separator should be used. The separator can replace the
 // separator provided by UITableViewCell. It is a 0.5pt high line.
@@ -20,4 +20,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_CELL_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_LEGACY_TABLE_VIEW_CELL_H_

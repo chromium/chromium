@@ -7,13 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 
-// A TableViewCell that contains an icon, a text label, a detail text and a
-// switch. If the preferred content size category is an accessibility category,
-// the switch is displayed below the label. Otherwise, it is on the trailing
-// side.
-@interface TableViewSwitchCell : TableViewCell
+// A LegacyTableViewCell that contains an icon, a text label, a detail text and
+// a switch. If the preferred content size category is an accessibility
+// category, the switch is displayed below the label. Otherwise, it is on the
+// trailing side.
+@interface TableViewSwitchCell : LegacyTableViewCell
 
 // UILabel corresponding to `text` from the item.
 @property(nonatomic, readonly, strong) UILabel* textLabel;

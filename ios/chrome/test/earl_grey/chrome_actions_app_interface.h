@@ -60,8 +60,8 @@ typedef NS_ENUM(NSInteger, GREYDirection);
 + (id<GREYAction>)tapAtPointAtxOriginStartPercentage:(CGFloat)x
                               yOriginStartPercentage:(CGFloat)y;
 
-// Action to swipe a TableViewCell enough to display the "Delete" button and
-// not too much to have the cell being deleted right away.
+// Action to swipe a TableViewCell enough to display the "Delete" button and not
+// too much to have the cell being deleted right away.
 + (id<GREYAction>)swipeToShowDeleteButton;
 
 // Action to simulate the behaviour of swiping right using the 3-finger gesture

@@ -195,8 +195,8 @@ bool TooNarrowForBanner(UIView* view) {
       UITableViewCell* cell = [_tableView cellForRowAtIndexPath:indexPath];
       // `cell` may be nil if the row is not currently on screen.
       if (cell) {
-        TableViewCell* tableViewCell =
-            base::apple::ObjCCastStrict<TableViewCell>(cell);
+        LegacyTableViewCell* tableViewCell =
+            base::apple::ObjCCastStrict<LegacyTableViewCell>(cell);
         [self configureCell:tableViewCell item:item identifier:itemIdentifier];
       }
     }
@@ -458,7 +458,7 @@ bool TooNarrowForBanner(UIView* view) {
 
 // Configures the `cell` for the `item` with the given `identifier`. A styler
 // is chosed depending on whether the item should be highlighted or not.
-- (void)configureCell:(TableViewCell*)cell
+- (void)configureCell:(LegacyTableViewCell*)cell
                  item:(TableViewItem*)item
            identifier:(NotificationsItemIdentifier)identifier {
   ChromeTableViewStyler* styler = identifier == self.highlightedItem

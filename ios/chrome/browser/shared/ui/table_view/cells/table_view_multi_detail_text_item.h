@@ -23,10 +23,10 @@
 
 @end
 
-// TableViewCell that displays two leading text labels on top of each other and
-// one trailing text label. The leading text labels are displayed on an
-// unlimited number of lines.
-@interface TableViewMultiDetailTextCell : TableViewCell
+// LegacyTableViewCell that displays two leading text labels on top of each
+// other and one trailing text label. The leading text labels are displayed on
+// an unlimited number of lines.
+@interface TableViewMultiDetailTextCell : LegacyTableViewCell
 
 @property(nonatomic, readonly, strong) UILabel* textLabel;
 @property(nonatomic, readonly, strong) UILabel* leadingDetailTextLabel;

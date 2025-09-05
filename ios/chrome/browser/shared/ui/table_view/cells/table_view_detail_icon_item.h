@@ -60,13 +60,13 @@ enum class BadgeType {
 
 @end
 
-// TableViewDetailIconCell implements an TableViewCell subclass containing an
-// optional leading icon and two text labels: a "main" label and a "detail"
+// TableViewDetailIconCell implements a LegacyTableViewCell subclass containing
+// an optional leading icon and two text labels: a "main" label and a "detail"
 // label. The layout of the two labels is based on `textLayoutConstraintAxis`
 // defined as either (1) horizontally laid out side-by-side and filling the full
 // width of the cell or (2) vertically laid out and filling the full height of
 // the cell. Labels are truncated as needed to fit in the cell.
-@interface TableViewDetailIconCell : TableViewCell
+@interface TableViewDetailIconCell : LegacyTableViewCell
 
 // UILabel corresponding to `text` from the item.
 @property(nonatomic, readonly, strong) UILabel* textLabel;

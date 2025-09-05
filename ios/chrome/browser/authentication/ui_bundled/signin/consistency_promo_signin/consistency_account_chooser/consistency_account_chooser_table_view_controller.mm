@@ -105,7 +105,7 @@ CGFloat kSectionFooterHeight = 8.;
             base::apple::ObjCCastStrict<TableViewIdentityItem>(
                 [self.tableViewModel itemAtIndexPath:previousIndexPath]);
         previousIdentityItem.selected = NO;
-        TableViewCell* oldCell =
+        LegacyTableViewCell* oldCell =
             [self.tableView cellForRowAtIndexPath:previousIndexPath];
         if (oldCell) {
           [previousIdentityItem configureCell:oldCell withStyler:self.styler];
@@ -114,7 +114,8 @@ CGFloat kSectionFooterHeight = 8.;
 
       // Select the new identity and update the cell.
       identityItem.selected = YES;
-      TableViewCell* newCell = [self.tableView cellForRowAtIndexPath:indexPath];
+      LegacyTableViewCell* newCell =
+          [self.tableView cellForRowAtIndexPath:indexPath];
       __weak ConsistencyAccountChooserTableViewController* weakSelf = self;
       ProceduralBlock completionBlock = ^{
         ConsistencyAccountChooserTableViewController* strongSelf = weakSelf;

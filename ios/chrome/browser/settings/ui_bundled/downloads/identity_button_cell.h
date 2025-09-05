@@ -7,12 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 
 @class IdentityButtonControl;
 
 // A table view cell containing an IdentityButtonControl.
-@interface IdentityButtonCell : TableViewCell
+@interface IdentityButtonCell : LegacyTableViewCell
 
 @property(nonatomic, strong, readonly)
     IdentityButtonControl* identityButtonControl;

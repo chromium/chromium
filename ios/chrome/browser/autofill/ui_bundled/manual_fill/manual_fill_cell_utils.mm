@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
@@ -547,7 +547,7 @@ void GiveAccessibilityContextToCellAndButton(UIView* cell_container,
       base::SysNSStringToUTF16(accessibility_context));
 }
 
-void SetUpCellAccessibilityElements(TableViewCell* cell,
+void SetUpCellAccessibilityElements(LegacyTableViewCell* cell,
                                     NSArray<UIView*>* accessibilityElements) {
   // The following two lines are needed to make the cell as a container, as well
   // as its content, accessible.

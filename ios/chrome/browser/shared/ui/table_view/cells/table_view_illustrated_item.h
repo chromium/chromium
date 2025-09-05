@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // TableViewItem for the TableView Illustrated Cell.
@@ -22,8 +22,8 @@
 @property(nonatomic, copy) NSString* buttonText;
 @end
 
-// TableViewCell that displays an image, title, subtitle and button.
-@interface TableViewIllustratedCell : TableViewCell
+// LegacyTableViewCell that displays an image, title, subtitle and button.
+@interface TableViewIllustratedCell : LegacyTableViewCell
 // The imageview that will display the image at the top of the cell.
 @property(nonatomic, readonly, strong) UIImageView* illustratedImageView;
 // Label displaying the title, underneath the image.

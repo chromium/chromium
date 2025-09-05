@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 @class CrURL;
@@ -51,7 +51,7 @@
 // contains a favicon, a title, a URL, and optionally some metadata such as a
 // timestamp or a file size. After configuring the cell, make sure to call
 // configureUILayout:.
-@interface TableViewURLCell : TableViewCell
+@interface TableViewURLCell : LegacyTableViewCell
 
 // The imageview that is displayed on the leading edge of the cell.  This
 // contains a favicon composited on top of an off-white background.

@@ -71,8 +71,8 @@ id<GREYAction> ScrollToTop();
 id<GREYAction> TapAtPointPercentage(CGFloat xOriginStartPercentage,
                                     CGFloat yOriginStartPercentage);
 
-// Action to swipe a TableViewCell enough to display the "Delete" button and
-// not too much to have the cell being deleted right away.
+// Action to swipe a TableViewCell enough to display the "Delete" button and not
+// too much to have the cell being deleted right away.
 id<GREYAction> SwipeToShowDeleteButton();
 
 // Action to simulate the behaviour of swiping right using the 3-finger gesture

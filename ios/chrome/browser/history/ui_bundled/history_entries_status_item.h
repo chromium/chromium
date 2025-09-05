@@ -13,7 +13,7 @@
 @end
 
 // Cell that displays a HistoryEntriesStatusItem.
-@interface HistoryEntriesStatusCell : TableViewCell
+@interface HistoryEntriesStatusCell : LegacyTableViewCell
 @end
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_UI_BUNDLED_HISTORY_ENTRIES_STATUS_ITEM_H_

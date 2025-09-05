@@ -33,12 +33,12 @@ enum class BrowsingDataRemoveMask;
 
 @end
 
-// TableViewClearBrowsingDataCell implements an TableViewCell subclass
+// TableViewClearBrowsingDataCell implements an LegacyTableViewCell subclass
 // containing a leading image icon and three text labels: a "title" label, a
 // "detail" label, and an optional third label in case we need more description
 // for the item. All three labels are laid out one after the other vertically
 // and fill the full width of the cell.
-@interface TableViewClearBrowsingDataCell : TableViewCell
+@interface TableViewClearBrowsingDataCell : LegacyTableViewCell
 
 @property(nonatomic, strong) UILabel* textLabel;
 @property(nonatomic, strong) UILabel* detailTextLabel;

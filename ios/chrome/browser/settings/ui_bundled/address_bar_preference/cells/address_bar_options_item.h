@@ -25,7 +25,7 @@
 // Cell class associated to AddressBarOptionsItem.
 // It presents a view with two custom buttons, each present an address bar
 // preference option.
-@interface AddressBarOptionsCell : TableViewCell
+@interface AddressBarOptionsCell : LegacyTableViewCell
 
 // The preference service delegate.
 @property(nonatomic, weak) id<AddressBarPreferenceServiceDelegate>

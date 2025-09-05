@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 @class CrURL;
@@ -31,7 +31,7 @@
 
 // TabListFromAndroidTableViewCell is used in the Bring Android Tabs prompt.
 // Contains a favicon, title, and URL.
-@interface TabListFromAndroidTableViewCell : TableViewCell
+@interface TabListFromAndroidTableViewCell : LegacyTableViewCell
 
 // The imageview that is displayed on the leading edge of the cell.  This
 // contains a favicon composited on top of an off-white background.

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // Accessory symbol at the leading edge of the cell. These are SF Symbols only.
@@ -49,11 +49,11 @@ typedef NS_ENUM(NSInteger, TableViewDetailTextCellAccessorySymbol) {
 
 @end
 
-// TableViewCell that displays two text labels on top of each other. The text
-// labels are displaying on one line if the preferred content size isn't an
+// LegacyTableViewCell that displays two text labels on top of each other. The
+// text labels are displaying on one line if the preferred content size isn't an
 // Accessibility category. Otherwise they are displayed on an unlimited number
 // of lines.
-@interface TableViewDetailTextCell : TableViewCell
+@interface TableViewDetailTextCell : LegacyTableViewCell
 
 // The text to display.
 @property(nonatomic, readonly, strong) UILabel* textLabel;

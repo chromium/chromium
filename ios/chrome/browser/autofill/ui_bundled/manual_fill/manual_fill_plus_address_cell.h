@@ -46,7 +46,7 @@ class GURL;
 
 // Cell to display a plus address into parts that are interactable
 // and sendable the data to the delegate.
-@interface ManualFillPlusAddressCell : TableViewCell
+@interface ManualFillPlusAddressCell : LegacyTableViewCell
 
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;

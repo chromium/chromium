@@ -11,7 +11,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_site_info.h"
 
-@class TableViewCell;
+@class LegacyTableViewCell;
 
 // Margins of the cell content.
 extern const CGFloat kCellMargin;
@@ -199,7 +199,7 @@ void GiveAccessibilityContextToCellAndButton(UIView* cell_container,
 // Without setting the cell's accessibility elements, VoiceOver would read the
 // elements following the view's hierarchy, meaning that it would follow the
 // back to front order instead of the top to bottom order.
-void SetUpCellAccessibilityElements(TableViewCell* cell,
+void SetUpCellAccessibilityElements(LegacyTableViewCell* cell,
                                     NSArray<UIView*>* accessibilityElements);
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CELL_UTILS_H_

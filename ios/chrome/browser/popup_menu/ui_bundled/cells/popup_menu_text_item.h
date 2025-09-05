@@ -21,7 +21,7 @@
 @end
 
 // Associated cell for the PopupMenuTextItem.
-@interface PopupMenuTextCell : TableViewCell
+@interface PopupMenuTextCell : LegacyTableViewCell
 
 // Text label for the cell.
 @property(nonatomic, strong) UILabel* messageLabel;

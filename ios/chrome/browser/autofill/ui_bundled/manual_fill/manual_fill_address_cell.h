@@ -37,7 +37,7 @@
 
 // Cell to display an Address into parts that are interactable
 // and sendable the data to the delegate.
-@interface ManualFillAddressCell : TableViewCell
+@interface ManualFillAddressCell : LegacyTableViewCell
 
 // Updates the cell with an `address`, a `contentInjector` to be notified and
 // `menuActions` to set up an overflow menu. `cellIndex` indicates the index

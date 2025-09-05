@@ -92,9 +92,9 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 
 @end
 
-// TableViewTextEditCell implements an TableViewCell subclass containing a label
-// and a text field.
-@interface TableViewTextEditCell : TableViewCell
+// TableViewTextEditCell implements an LegacyTableViewCell subclass containing a
+// label and a text field.
+@interface TableViewTextEditCell : LegacyTableViewCell
 
 // Label at the leading edge of the cell. It displays the item's
 // fieldNameLabelText.

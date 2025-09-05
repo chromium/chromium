@@ -6,9 +6,9 @@
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CELLS_INLINE_PROMO_CELL_H_
 
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 
-// TableViewCell with:
+// LegacyTableViewCell with:
 //   - an image overlaid by a new feature badge
 //   - a descriptive label
 //   - a button to get more info
@@ -19,7 +19,7 @@
 // another one for the label and the more info button.
 //
 // Used to display a promo within a table view.
-@interface InlinePromoCell : TableViewCell
+@interface InlinePromoCell : LegacyTableViewCell
 
 // Button to dismiss the promo.
 @property(nonatomic, readonly) UIButton* closeButton;

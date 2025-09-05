@@ -16,7 +16,7 @@
 //  |  |       |   Optional multiline detail text      |
 //  |  +-------+                                       |
 //  +--------------------------------------------------+
-@interface SettingsImageDetailTextCell : TableViewCell
+@interface SettingsImageDetailTextCell : LegacyTableViewCell
 
 // Cell image.
 @property(nonatomic, strong) UIImage* image;

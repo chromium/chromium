@@ -30,7 +30,7 @@ class TemplateURL;
 
 @end
 
-@interface SettingsSearchEngineCell : TableViewCell
+@interface SettingsSearchEngineCell : LegacyTableViewCell
 
 // Cell image.
 @property(nonatomic, strong, readonly) FaviconView* faviconView;

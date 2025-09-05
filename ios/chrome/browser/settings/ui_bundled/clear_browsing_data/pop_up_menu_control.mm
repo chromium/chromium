@@ -133,8 +133,8 @@ constexpr CGFloat kChevronLeadingOffset = 5;
   [super setHighlighted:highlighted];
 
   if (highlighted) {
-    self.backgroundColor =
-        [UIColor systemGray4Color];  // Same colour as a selected TableViewCell.
+    // Same colour as a selected LegacyTableViewCell.
+    self.backgroundColor = [UIColor systemGray4Color];
   } else {
     self.backgroundColor = UIColor.clearColor;
   }

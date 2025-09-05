@@ -47,7 +47,7 @@ constexpr CGFloat kFaviconContainerBorderWidth = 1.5;
   return self;
 }
 
-- (void)configureCell:(TableViewCell*)tableCell
+- (void)configureCell:(LegacyTableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   SettingsSearchEngineCell* cell =
