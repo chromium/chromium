@@ -36,8 +36,7 @@ PlusAddressSettingServiceFactory::PlusAddressSettingServiceFactory()
 
 std::unique_ptr<KeyedService>
 PlusAddressSettingServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<plus_addresses::PlusAddressSettingServiceImpl>(
       plus_addresses::PlusAddressSettingSyncBridge::CreateBridge(
           DataTypeStoreServiceFactory::GetForProfile(profile)

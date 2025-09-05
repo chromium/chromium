@@ -53,15 +53,13 @@ PlusAddressServiceFactory::PlusAddressServiceFactory()
 PlusAddressServiceFactory::~PlusAddressServiceFactory() {}
 
 std::unique_ptr<KeyedService>
-PlusAddressServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+PlusAddressServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   // If the feature is disabled, don't risk any side effects. Just bail.
   if (!base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressesEnabled)) {
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   affiliations::AffiliationService* affiliation_service =
