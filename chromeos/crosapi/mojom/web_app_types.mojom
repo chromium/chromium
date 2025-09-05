@@ -43,6 +43,7 @@ enum WebAppInstallResultCode {
   [MinVersion=6] kNoValidIconsInManifest,
   [MinVersion=7] kNoCustomManifestId,
   [MinVersion=8] kManifestIdMismatch,
+  [MinVersion=9] kFallbackInstallUsingTrustedIcons,
 };
 
 // See |webapps::UninstallResultCode|.

@@ -282,8 +282,8 @@ SkColor IconManagerReadAppIconPixel(WebAppIconManager& icon_manager,
                                     int y) {
   SkColor result = SK_ColorTRANSPARENT;
   base::RunLoop run_loop;
-  icon_manager.ReadUntrustedIcons(
-      app_id, IconPurpose::ANY, {size_px},
+  icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
+      app_id, {size_px}, IconPurpose::ANY,
       base::BindLambdaForTesting(
           [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
             DCHECK(base::Contains(icon_bitmaps, size_px));

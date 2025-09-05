@@ -73,6 +73,16 @@ std::vector<IconUrlWithSize> GetAppIconUrls(
     urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
   }
 
+  // This is usually not needed, since on production,
+  // `web_app_info.trusted_icons` is either empty or computed from
+  // `web_app_info.manifest_icons`. But some tests do not enforce this
+  // invariant, hence this is needed.
+  // In the end, the vector is converted into a set by
+  // `GetValidIconUrlsToDownload()`, so duplicates are removed.
+  for (const apps::IconInfo& info : web_app_info.trusted_icons) {
+    urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
+  }
+
   PopulateIconUrlsForSizeAnyIfNeeded(
       std::ref(urls),
       GetAllIconUrlsForSizeAny(web_app_info.icons_with_size_any.manifest_icons),

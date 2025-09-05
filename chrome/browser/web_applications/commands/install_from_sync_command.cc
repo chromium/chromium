@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -138,6 +139,14 @@ void InstallFromSyncCommand::StartWithLock(
   lock_ = std::move(lock);
   url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
   data_retriever_ = lock_->web_contents_manager().CreateDataRetriever();
+
+  // TODO(crbug.com/443106390): Clean up non-fallback code once primary icon
+  // architecture is running on production for a few milestones.
+  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
+    InstallFallback(
+        webapps::InstallResultCode::kFallbackInstallUsingTrustedIcons);
+    return;
+  }
 
   url_loader_->LoadUrl(
       params_.start_url, &lock_->shared_web_contents(),
@@ -265,6 +274,7 @@ void InstallFromSyncCommand::OnIconsRetrievedForFallbackInfo(
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
   PopulateProductIcons(fallback_install_info_.get(), &icons_map);
+  PopulateTrustedIconBitmaps(*fallback_install_info_.get(), icons_map);
   PopulateOtherIcons(fallback_install_info_.get(), icons_map);
 
   RecordDownloadedIconsHttpResultsCodeClass(

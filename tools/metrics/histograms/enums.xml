@@ -26563,6 +26563,7 @@ others/histograms.xml -->
   <int value="32" label="kNoValidIconsInManifest"/>
   <int value="33" label="kNoCustomManifestId"/>
   <int value="34" label="kManifestIdMismatch"/>
+  <int value="35" label="kFallbackInstallUsingTrustedIcons"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/webapps/browser/install_result_code.h:InstallResultCode) -->

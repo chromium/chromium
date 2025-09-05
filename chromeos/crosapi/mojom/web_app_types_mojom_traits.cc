@@ -84,6 +84,9 @@ crosapi::mojom::WebAppInstallResultCode EnumTraits<
       return crosapi::mojom::WebAppInstallResultCode::kNoCustomManifestId;
     case webapps::InstallResultCode::kManifestIdMismatch:
       return crosapi::mojom::WebAppInstallResultCode::kManifestIdMismatch;
+    case webapps::InstallResultCode::kFallbackInstallUsingTrustedIcons:
+      return crosapi::mojom::WebAppInstallResultCode::
+          kFallbackInstallUsingTrustedIcons;
   };
 }
 
@@ -188,6 +191,10 @@ bool EnumTraits<crosapi::mojom::WebAppInstallResultCode,
       return true;
     case crosapi::mojom::WebAppInstallResultCode::kManifestIdMismatch:
       *output = webapps::InstallResultCode::kManifestIdMismatch;
+      return true;
+    case crosapi::mojom::WebAppInstallResultCode::
+        kFallbackInstallUsingTrustedIcons:
+      *output = webapps::InstallResultCode::kFallbackInstallUsingTrustedIcons;
       return true;
   };
 
