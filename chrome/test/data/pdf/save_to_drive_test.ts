@@ -127,12 +127,13 @@ const tests = [
         getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
     controls.$.save.click();
     await microtasksFinished();
+    const args = await privateProxy.whenCalled('saveToDrive');
+    chrome.test.assertEq(args, 'ORIGINAL');
     chrome.test.assertFalse(bubble.$.dialog.open);
 
     // Save to drive uploading 0/100 bytes.
     privateProxy.sendUploadInProgress(0, 100);
     controls.$.save.click();
-    await privateProxy.whenCalled('saveToDrive');
     await microtasksFinished();
     assertBubbleAndProgressBar(bubble, 0, 100);
     chrome.test.assertFalse(!!bubble.shadowRoot.querySelector('#retry-button'));
@@ -163,6 +164,8 @@ const tests = [
     chrome.test.assertFalse(!!bubble.shadowRoot.querySelector('cr-progress'));
     chrome.test.assertTrue(!!bubble.shadowRoot.querySelector('#retry-button'));
 
+    chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
+
     chrome.test.succeed();
   },
 
@@ -176,8 +179,6 @@ const tests = [
         getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
     controls.$.save.click();
     await microtasksFinished();
-    await privateProxy.whenCalled('saveToDrive');
-    privateProxy.resetResolver('saveToDrive');
     assertBubbleAndProgressBar(bubble, 0, 100);
 
     // Click the cancel button in the bubble and verify the saveToDrive API is
@@ -187,6 +188,8 @@ const tests = [
     await microtasksFinished();
     const args = await privateProxy.whenCalled('saveToDrive');
     chrome.test.assertEq(args, null);
+
+    chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
 
     chrome.test.succeed();
   },

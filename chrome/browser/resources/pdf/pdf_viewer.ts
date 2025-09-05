@@ -1292,8 +1292,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   protected onSaveToDrive_(e: CustomEvent<SaveRequestType>) {
-    PdfViewerPrivateProxyImpl.getInstance().saveToDrive(e.detail);
+    // TODO(crbug.com/427449996): Implement logics to reset the SaveToDriveState
+    // back to UNINITIALIZED after the bubble is closed from the finish or error
+    // state, so the next `onSaveToDrive_` call can re-trigger the upload flow.
     if (this.saveToDriveState_ === SaveToDriveState.UNINITIALIZED) {
+      PdfViewerPrivateProxyImpl.getInstance().saveToDrive(e.detail);
       return;
     }
     const bubble =
