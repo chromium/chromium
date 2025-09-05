@@ -6,6 +6,8 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_impl.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace plugin_vm {
@@ -36,8 +38,11 @@ PluginVmManagerFactory::~PluginVmManagerFactory() = default;
 std::unique_ptr<KeyedService>
 PluginVmManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  auto* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<PluginVmManagerImpl>(profile);
+  return std::make_unique<PluginVmManagerImpl>(application_locale_storage,
+                                               profile);
 }
 
 }  // namespace plugin_vm
