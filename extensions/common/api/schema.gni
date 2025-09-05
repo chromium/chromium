@@ -87,7 +87,7 @@ if (enable_extensions) {
     "system_storage.idl",
     "usb.idl",
     "virtual_keyboard_private.json",
-    "virtual_keyboard.idl",
+    "virtual_keyboard.webidl",
     "web_view_internal.json",
   ]
 
@@ -111,7 +111,7 @@ if (enable_desktop_android_extensions) {
     "system_display.idl",
     "usb.idl",
     "virtual_keyboard_private.json",
-    "virtual_keyboard.idl",
+    "virtual_keyboard.webidl",
   ]
 }
 
