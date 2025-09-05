@@ -95,7 +95,7 @@ if (enable_extensions) {
     extensions_api_schema_files_ += [
       "diagnostics.webidl",
       "media_perception_private.idl",
-      "webcam_private.idl",
+      "webcam_private.webidl",
     ]
   }
 }
