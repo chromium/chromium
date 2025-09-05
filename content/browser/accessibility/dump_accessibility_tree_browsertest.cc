@@ -3357,6 +3357,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("next-on-line-empty-list-item.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityListMarkerMultiline) {
+  RunHtmlTest(FILE_PATH_LITERAL("list-marker-multiline.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityOl) {
   RunHtmlTest(FILE_PATH_LITERAL("ol.html"));
 }

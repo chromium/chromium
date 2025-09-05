@@ -288,7 +288,8 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
   if (IsDetached())
     return nullptr;
 
-  if (IsPartOfAListItem()) {
+  if (IsPartOfAListItem() &&
+      ParentObject()->FirstChildIncludingIgnored() == this) {
     AXObject* candidate = ParentObject()->PreviousOnLine();
     if (candidate) {
       return candidate;
