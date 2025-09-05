@@ -467,188 +467,164 @@ export class StatsRatesCalculator {
   constructor() {
     this.previousReport = null;
     this.currentReport = null;
-    this.statsCalculators = [
-      {
-        type: 'data-channel',
-        metricCalculators: {
-          messagesSent: new RateCalculator('messagesSent', 'timestamp'),
-          messagesReceived: new RateCalculator('messagesReceived', 'timestamp'),
-          bytesSent: new RateCalculator(
-              'bytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
-          bytesReceived: new RateCalculator(
-              'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
-        },
+    this.statsCalculators = {
+      'data-channel': {
+        messagesSent: new RateCalculator('messagesSent', 'timestamp'),
+        messagesReceived: new RateCalculator('messagesReceived', 'timestamp'),
+        bytesSent: new RateCalculator(
+            'bytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
+        bytesReceived: new RateCalculator(
+            'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
       },
-      {
-        type: 'media-source',
-        metricCalculators: {
-          totalAudioEnergy: new AudioLevelRmsCalculator(),
-        },
+      'media-source': {
+        totalAudioEnergy: new AudioLevelRmsCalculator(),
       },
-      {
-        type: 'media-playout',
-        metricCalculators: {
-          totalPlayoutDelay: new RateCalculator('totalPlayoutDelay',
-                                                'totalSamplesCount'),
-        },
+      'media-playout': {
+        totalPlayoutDelay: new RateCalculator('totalPlayoutDelay',
+                                              'totalSamplesCount'),
       },
-      {
-        type: 'outbound-rtp',
-        metricCalculators: {
-          bytesSent: new RateCalculator(
-              'bytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
-          headerBytesSent: new RateCalculator(
-              'headerBytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
-          retransmittedBytesSent: new RateCalculator(
-              'retransmittedBytesSent', 'timestamp',
-              CalculatorModifier.kBytesToBits),
-          packetsSent: new RateCalculator('packetsSent', 'timestamp'),
-          retransmittedPacketsSent:
-              new RateCalculator('retransmittedPacketsSent', 'timestamp'),
-          totalPacketSendDelay: new RateCalculator(
-              'totalPacketSendDelay', 'packetsSent',
-              CalculatorModifier.kMillisecondsFromSeconds),
-          framesEncoded: new RateCalculator('framesEncoded', 'timestamp'),
-          framesSent: new RateCalculator('framesSent', 'timestamp'),
-          totalEncodedBytesTarget: new RateCalculator(
-              'totalEncodedBytesTarget', 'timestamp',
-              CalculatorModifier.kBytesToBits),
-          totalEncodeTime: new RateCalculator(
-              'totalEncodeTime', 'framesEncoded',
-              CalculatorModifier.kMillisecondsFromSeconds),
-          qpSum: new RateCalculator('qpSum', 'framesEncoded'),
-          // Currently limited to a single output.
-          psnrSum: new PsnrRateCalculator('y'),
-          codecId: new CodecCalculator(),
-        },
-      },
-      {
-        type: 'inbound-rtp',
-        metricCalculators: {
-          bytesReceived: new RateCalculator(
-              'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
-          headerBytesReceived: new RateCalculator(
-              'headerBytesReceived', 'timestamp',
-              CalculatorModifier.kBytesToBits),
-          retransmittedBytesReceived: new RateCalculator(
-            'retransmittedBytesReceived', 'timestamp',
+      'outbound-rtp': {
+        bytesSent: new RateCalculator(
+            'bytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
+        headerBytesSent: new RateCalculator(
+            'headerBytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
+        retransmittedBytesSent: new RateCalculator(
+            'retransmittedBytesSent', 'timestamp',
             CalculatorModifier.kBytesToBits),
-          fecBytesReceived: new RateCalculator(
-              'fecBytesReceived', 'timestamp',
-              CalculatorModifier.kBytesToBits),
-          packetsReceived: new RateCalculator('packetsReceived', 'timestamp'),
-          packetsDiscarded: new RateCalculator('packetsDiscarded', 'timestamp'),
-          retransmittedPacketsReceived:
-            new RateCalculator('retransmittedPacketsReceived', 'timestamp'),
-          fecPacketsReceived:
-            new RateCalculator('fecPacketsReceived', 'timestamp'),
-          fecPacketsDiscarded:
-            new RateCalculator('fecPacketsDiscarded', 'timestamp'),
-          framesReceived: [
-            new RateCalculator('framesReceived', 'timestamp'),
-            new DifferenceCalculator('framesReceived',
-                'framesDecoded', 'framesDropped'),
-          ],
-          framesDecoded: new RateCalculator('framesDecoded', 'timestamp'),
-          keyFramesDecoded: new RateCalculator('keyFramesDecoded', 'timestamp'),
-          totalDecodeTime: new RateCalculator(
-              'totalDecodeTime', 'framesDecoded',
-              CalculatorModifier.kMillisecondsFromSeconds),
-          totalInterFrameDelay: new RateCalculator(
-              'totalInterFrameDelay', 'framesDecoded',
-              CalculatorModifier.kMillisecondsFromSeconds),
-          totalSquaredInterFrameDelay: new StandardDeviationCalculator(
-              'totalSquaredInterFrameDelay', 'totalInterFrameDelay',
-              'framesDecoded', 'interFrameDelay'),
-          totalSamplesReceived:
-              new RateCalculator('totalSamplesReceived', 'timestamp'),
-          concealedSamples: [
-            new RateCalculator('concealedSamples', 'timestamp'),
-            new RateCalculator('concealedSamples', 'totalSamplesReceived'),
-          ],
-          silentConcealedSamples:
-              new RateCalculator('silentConcealedSamples', 'timestamp'),
-          insertedSamplesForDeceleration:
-              new RateCalculator('insertedSamplesForDeceleration', 'timestamp'),
-          removedSamplesForAcceleration:
-              new RateCalculator('removedSamplesForAcceleration', 'timestamp'),
-          qpSum: new RateCalculator('qpSum', 'framesDecoded'),
-          totalCorruptionProbability:
-              new RateCalculator(
-                'totalCorruptionProbability', 'corruptionMeasurements'),
-          codecId: new CodecCalculator(),
-          totalAudioEnergy: new AudioLevelRmsCalculator(),
-          jitterBufferDelay: new RateCalculator(
-              'jitterBufferDelay', 'jitterBufferEmittedCount',
-              CalculatorModifier.kMillisecondsFromSeconds),
-          jitterBufferTargetDelay: new RateCalculator(
-              'jitterBufferTargetDelay', 'jitterBufferEmittedCount',
-              CalculatorModifier.kMillisecondsFromSeconds),
-          jitterBufferMinimumDelay: new RateCalculator(
-              'jitterBufferMinimumDelay', 'jitterBufferEmittedCount',
-              CalculatorModifier.kMillisecondsFromSeconds),
-          lastPacketReceivedTimestamp: new DateCalculator(
-              'lastPacketReceivedTimestamp'),
-          estimatedPlayoutTimestamp: new DateCalculator(
-              'estimatedPlayoutTimestamp', kNtpToUnixTimeOffsetMs),
-          totalProcessingDelay: new RateCalculator(
-              'totalProcessingDelay', 'jitterBufferEmittedCount',
-              CalculatorModifier.kMillisecondsFromSeconds),
-          totalAssemblyTime: new RateCalculator(
-              'totalAssemblyTime', 'framesAssembledFromMultiplePackets',
-              CalculatorModifier.kMillisecondsFromSeconds),
-        },
+        packetsSent: new RateCalculator('packetsSent', 'timestamp'),
+        retransmittedPacketsSent:
+            new RateCalculator('retransmittedPacketsSent', 'timestamp'),
+        totalPacketSendDelay: new RateCalculator(
+            'totalPacketSendDelay', 'packetsSent',
+            CalculatorModifier.kMillisecondsFromSeconds),
+        framesEncoded: new RateCalculator('framesEncoded', 'timestamp'),
+        framesSent: new RateCalculator('framesSent', 'timestamp'),
+        totalEncodedBytesTarget: new RateCalculator(
+            'totalEncodedBytesTarget', 'timestamp',
+            CalculatorModifier.kBytesToBits),
+        totalEncodeTime: new RateCalculator(
+            'totalEncodeTime', 'framesEncoded',
+            CalculatorModifier.kMillisecondsFromSeconds),
+        qpSum: new RateCalculator('qpSum', 'framesEncoded'),
+        psnrSum: [
+          new PsnrRateCalculator('y'),
+          new PsnrRateCalculator('u'),
+          new PsnrRateCalculator('v'),
+        ],
+        codecId: new CodecCalculator(),
       },
-      {
-        type: 'remote-inbound-rtp',
-        metricCalculators: {
-          totalRoundTripTime:
-              new RateCalculator('totalRoundTripTime',
-                                 'roundTripTimeMeasurements'),
-        },
+      'inbound-rtp': {
+        bytesReceived: new RateCalculator(
+            'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
+        headerBytesReceived: new RateCalculator(
+            'headerBytesReceived', 'timestamp',
+            CalculatorModifier.kBytesToBits),
+        retransmittedBytesReceived: new RateCalculator(
+          'retransmittedBytesReceived', 'timestamp',
+          CalculatorModifier.kBytesToBits),
+        fecBytesReceived: new RateCalculator(
+            'fecBytesReceived', 'timestamp',
+            CalculatorModifier.kBytesToBits),
+        packetsReceived: new RateCalculator('packetsReceived', 'timestamp'),
+        packetsDiscarded: new RateCalculator('packetsDiscarded', 'timestamp'),
+        retransmittedPacketsReceived:
+          new RateCalculator('retransmittedPacketsReceived', 'timestamp'),
+        fecPacketsReceived:
+          new RateCalculator('fecPacketsReceived', 'timestamp'),
+        fecPacketsDiscarded:
+          new RateCalculator('fecPacketsDiscarded', 'timestamp'),
+        framesReceived: [
+          new RateCalculator('framesReceived', 'timestamp'),
+          new DifferenceCalculator('framesReceived',
+              'framesDecoded', 'framesDropped'),
+        ],
+        framesDecoded: new RateCalculator('framesDecoded', 'timestamp'),
+        keyFramesDecoded: new RateCalculator('keyFramesDecoded', 'timestamp'),
+        totalDecodeTime: new RateCalculator(
+            'totalDecodeTime', 'framesDecoded',
+            CalculatorModifier.kMillisecondsFromSeconds),
+        totalInterFrameDelay: new RateCalculator(
+            'totalInterFrameDelay', 'framesDecoded',
+            CalculatorModifier.kMillisecondsFromSeconds),
+        totalSquaredInterFrameDelay: new StandardDeviationCalculator(
+            'totalSquaredInterFrameDelay', 'totalInterFrameDelay',
+            'framesDecoded', 'interFrameDelay'),
+        totalSamplesReceived:
+          new RateCalculator('totalSamplesReceived', 'timestamp'),
+        concealedSamples: [
+          new RateCalculator('concealedSamples', 'timestamp'),
+          new RateCalculator('concealedSamples', 'totalSamplesReceived'),
+        ],
+        silentConcealedSamples:
+          new RateCalculator('silentConcealedSamples', 'timestamp'),
+        insertedSamplesForDeceleration:
+          new RateCalculator('insertedSamplesForDeceleration', 'timestamp'),
+        removedSamplesForAcceleration:
+          new RateCalculator('removedSamplesForAcceleration', 'timestamp'),
+        qpSum: new RateCalculator('qpSum', 'framesDecoded'),
+        totalCorruptionProbability:
+          new RateCalculator(
+              'totalCorruptionProbability', 'corruptionMeasurements'),
+        codecId: new CodecCalculator(),
+        totalAudioEnergy: new AudioLevelRmsCalculator(),
+        jitterBufferDelay: new RateCalculator(
+            'jitterBufferDelay', 'jitterBufferEmittedCount',
+            CalculatorModifier.kMillisecondsFromSeconds),
+        jitterBufferTargetDelay: new RateCalculator(
+            'jitterBufferTargetDelay', 'jitterBufferEmittedCount',
+            CalculatorModifier.kMillisecondsFromSeconds),
+        jitterBufferMinimumDelay: new RateCalculator(
+            'jitterBufferMinimumDelay', 'jitterBufferEmittedCount',
+            CalculatorModifier.kMillisecondsFromSeconds),
+        lastPacketReceivedTimestamp: new DateCalculator(
+            'lastPacketReceivedTimestamp'),
+        estimatedPlayoutTimestamp: new DateCalculator(
+            'estimatedPlayoutTimestamp', kNtpToUnixTimeOffsetMs),
+        totalProcessingDelay: new RateCalculator(
+            'totalProcessingDelay', 'jitterBufferEmittedCount',
+            CalculatorModifier.kMillisecondsFromSeconds),
+        totalAssemblyTime: new RateCalculator(
+            'totalAssemblyTime', 'framesAssembledFromMultiplePackets',
+            CalculatorModifier.kMillisecondsFromSeconds),
       },
-      {
-        type: 'remote-outbound-rtp',
-        metricCalculators: {
-          remoteTimestamp: new DateCalculator('remoteTimestamp'),
-          totalRoundTripTime:
-              new RateCalculator('totalRoundTripTime',
-                                 'roundTripTimeMeasurements'),
-        },
+      'remote-inbound-rtp': {
+        totalRoundTripTime:
+            new RateCalculator('totalRoundTripTime',
+                               'roundTripTimeMeasurements'),
       },
-      {
-        type: 'transport',
-        metricCalculators: {
-          bytesSent: new RateCalculator(
-              'bytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
-          bytesReceived: new RateCalculator(
-              'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
-          packetsSent: new RateCalculator(
-              'packetsSent', 'timestamp'),
-          packetsReceived: new RateCalculator(
-              'packetsReceived', 'timestamp'),
-        },
+      'remote-outbound-rtp': {
+        remoteTimestamp: new DateCalculator('remoteTimestamp'),
+        totalRoundTripTime:
+            new RateCalculator('totalRoundTripTime',
+                               'roundTripTimeMeasurements'),
       },
-      {
-        type: 'candidate-pair',
-        metricCalculators: {
-          bytesSent: new RateCalculator(
-              'bytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
-          bytesReceived: new RateCalculator(
-              'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
-          packetsSent: new RateCalculator(
-              'packetsSent', 'timestamp'),
-          packetsReceived: new RateCalculator(
-              'packetsReceived', 'timestamp'),
-          totalRoundTripTime:
-              new RateCalculator('totalRoundTripTime', 'responsesReceived'),
-          lastPacketReceivedTimestamp: new DateCalculator(
-              'lastPacketReceivedTimestamp'),
-          lastPacketSentTimestamp: new DateCalculator(
-              'lastPacketSentTimestamp'),
-        },
+      'transport': {
+        bytesSent: new RateCalculator(
+            'bytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
+        bytesReceived: new RateCalculator(
+            'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
+        packetsSent: new RateCalculator(
+            'packetsSent', 'timestamp'),
+        packetsReceived: new RateCalculator(
+            'packetsReceived', 'timestamp'),
       },
-    ];
+      'candidate-pair': {
+        bytesSent: new RateCalculator(
+            'bytesSent', 'timestamp', CalculatorModifier.kBytesToBits),
+        bytesReceived: new RateCalculator(
+            'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
+        packetsSent: new RateCalculator(
+            'packetsSent', 'timestamp'),
+        packetsReceived: new RateCalculator(
+            'packetsReceived', 'timestamp'),
+        totalRoundTripTime:
+            new RateCalculator('totalRoundTripTime', 'responsesReceived'),
+        lastPacketReceivedTimestamp: new DateCalculator(
+            'lastPacketReceivedTimestamp'),
+        lastPacketSentTimestamp: new DateCalculator(
+            'lastPacketSentTimestamp'),
+      },
+    };
   }
 
   addStatsReport(report) {
@@ -661,12 +637,12 @@ export class StatsRatesCalculator {
   // values, such as converting total counters (e.g. bytesSent) to rates (e.g.
   // bytesSent/s).
   updateCalculatedMetrics_() {
-    this.statsCalculators.forEach(statsCalculator => {
-      this.currentReport.getByType(statsCalculator.type).forEach(stats => {
-        Object.keys(statsCalculator.metricCalculators)
+    Object.keys(this.statsCalculators).forEach(statsType => {
+      this.currentReport.getByType(statsType).forEach(stats => {
+        Object.keys(this.statsCalculators[statsType])
             .forEach(originalMetric => {
               let metricCalculators =
-                  statsCalculator.metricCalculators[originalMetric];
+                  this.statsCalculators[statsType][originalMetric];
               if (!Array.isArray(metricCalculators)) {
                 metricCalculators = [metricCalculators];
               }
