@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 class AnnotatedPageContentCapturer;
+class ModelQualityLogsUploader;
 class OptimizationGuideKeyedService;
 
 namespace content {
@@ -34,6 +35,7 @@ class LoginStateChecker : public content::WebContentsObserver {
   using LoginStateResultCallback = base::RepeatingCallback<void(bool)>;
 
   LoginStateChecker(content::WebContents* web_contents,
+                    ModelQualityLogsUploader* logs_uploader,
                     password_manager::PasswordManagerClient* client,
                     LoginStateResultCallback callback);
 
@@ -80,6 +82,7 @@ class LoginStateChecker : public content::WebContentsObserver {
   // Whether a server request is ongoing.
   bool is_request_in_flight_ = false;
   std::optional<optimization_guide::AIPageContentResult> cached_page_content_;
+  const raw_ref<ModelQualityLogsUploader> logs_uploader_;
 
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 

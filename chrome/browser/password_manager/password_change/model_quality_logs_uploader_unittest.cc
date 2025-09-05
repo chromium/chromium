@@ -40,6 +40,16 @@ using LoginPasswordType =
 using ::optimization_guide::TestModelQualityLogsUploaderService;
 
 namespace {
+void VerifyRetryCountForLoginCheck(
+    const optimization_guide::proto::LogAiDataRequest& log,
+    const int expected_retry_count) {
+  EXPECT_EQ(log.password_change_submission()
+                .quality()
+                .logged_in_check()
+                .retry_count(),
+            expected_retry_count);
+}
+
 void CheckOpenFormStatus(const optimization_guide::proto::LogAiDataRequest& log,
                          const QualityStatus& expected_status) {
   EXPECT_EQ(log.password_change_submission().quality().open_form().status(),
@@ -364,6 +374,20 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormTargetElementNotFound) {
       final_log,
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, LoginCheckRetryCountSet) {
+  const int login_state_checks = 3;
+  ModelQualityLogsUploader logs_uploader(web_contents());
+  logs_uploader.SetLoggedInCheckQuality(login_state_checks);
+  VerifyRetryCountForLoginCheck(logs_uploader.GetFinalLog(),
+                                login_state_checks - 1);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, NoLoginCheckPerformed) {
+  ModelQualityLogsUploader logs_uploader(web_contents());
+  logs_uploader.SetLoggedInCheckQuality(0);
+  VerifyRetryCountForLoginCheck(logs_uploader.GetFinalLog(), 0);
 }
 
 TEST_F(ModelQualityLogsUploaderTest, OpenFormFlowInterrupted) {
