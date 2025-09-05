@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -191,6 +192,8 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
   const int autofill_ai_filled_field_count = std::ranges::count(
       form, FillingProduct::kAutofillAi, &AutofillField::filling_product);
 
+  const bool perfect_filling = IsFormPerfectlyFilled(form.ToFormData());
+
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
           client_->GetMqlsUploadService();
       uploader_ &&
@@ -224,6 +227,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
     }
     if (suggestion_filled) {
       mqls_key_metrics->set_filling_correctness(!edited_autofilled_field);
+      mqls_key_metrics->set_perfect_filling(perfect_filling);
     }
   }
 
@@ -245,7 +249,8 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
     builder.SetFillingAcceptance(suggestion_filled);
   }
   if (suggestion_filled) {
-    builder.SetFillingCorrectness(!edited_autofilled_field);
+    builder.SetFillingCorrectness(!edited_autofilled_field)
+        .SetPerfectFilling(perfect_filling);
   }
   builder.Record(client_->GetUkmRecorder());
 }

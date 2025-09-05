@@ -904,6 +904,8 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
 
   test_api(manager()).logger().OnEditedAutofilledField(*form, *form->field(1),
                                                        /*ukm_source_id=*/{});
+  form->field(1)->set_is_autofilled(false);
+  form->field(1)->set_is_user_edited(true);
 
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
                                                  /*submission_state=*/true,
@@ -920,9 +922,42 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
   EXPECT_TRUE(mqls_key_metrics.filling_assistance());
   EXPECT_TRUE(mqls_key_metrics.filling_acceptance());
   EXPECT_FALSE(mqls_key_metrics.filling_correctness());
+  EXPECT_FALSE(mqls_key_metrics.perfect_filling());
   EXPECT_EQ(mqls_key_metrics.autofill_filled_field_count(), 2);
   EXPECT_EQ(mqls_key_metrics.autofill_ai_filled_field_count(), 1);
   EXPECT_EQ(base::to_underlying(mqls_key_metrics.entity_type()), 1);
+}
+
+TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_PerfectFilling) {
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
+
+  // Simulate a perfect filling (i.e. a fill where the user doesn't modify any
+  // field).
+  test_api(manager()).logger().OnFormHasDataToFill(form->global_id(),
+                                                   {kPassport});
+  test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(1),
+                                                  {kPassport},
+                                                  /*ukm_source_id=*/{});
+  test_api(manager()).logger().OnDidFillSuggestion(*form, *form->field(1),
+                                                   kPassport,
+                                                   /*ukm_source_id=*/{});
+  test_api(manager()).logger().OnDidFillField(*form, *form->field(1), kPassport,
+                                              /*ukm_source_id=*/{});
+
+  // The MQLS logs should record a perfect filling here.
+  test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
+                                                 /*submission_state=*/true,
+                                                 /*opt_in_status=*/true);
+  EXPECT_TRUE(GetKeyMetricsLogs().perfect_filling());
+
+  // Simulate a user edit for some field.
+  form->field(2)->set_is_user_edited(true);
+
+  // Now the MQLS logs should not record a perfect filling.
+  test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
+                                                 /*submission_state=*/true,
+                                                 /*opt_in_status=*/true);
+  EXPECT_FALSE(GetKeyMetricsLogs().perfect_filling());
 }
 
 // Tests that KeyMetrics MQLS metrics aren't recorded if the user is not opted

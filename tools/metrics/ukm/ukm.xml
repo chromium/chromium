@@ -3707,6 +3707,12 @@ be describing additional metrics about the same event.
       filling and 0 otherwise.
     </summary>
   </metric>
+  <metric name="PerfectFilling">
+    <summary>
+      Has value 1 if the user didn't edit any field manually at submission time
+      and 0 otherwise.
+    </summary>
+  </metric>
 </event>
 
 <event name="AutofillAi.UserPromptMetrics">
