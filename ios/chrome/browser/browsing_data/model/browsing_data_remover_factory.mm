@@ -38,10 +38,8 @@ BrowsingDataRemoverFactory::BrowsingDataRemoverFactory()
 BrowsingDataRemoverFactory::~BrowsingDataRemoverFactory() = default;
 
 std::unique_ptr<KeyedService>
-BrowsingDataRemoverFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+BrowsingDataRemoverFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   // TODO(crbug.com/40940855): the factory should declare the services
   // used by BrowsingDataRemoverImpl and inject them in the constructor.
-  return std::make_unique<BrowsingDataRemoverImpl>(
-      ProfileIOS::FromBrowserState(context));
+  return std::make_unique<BrowsingDataRemoverImpl>(profile);
 }
