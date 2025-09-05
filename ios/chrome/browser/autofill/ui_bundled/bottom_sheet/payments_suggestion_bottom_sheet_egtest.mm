@@ -858,6 +858,11 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 // Tests that the payment sheet doesn't spam after filling from the KA on an
 // autofocused field This ensures that crbug.com/389077460 doesn't happen.
 - (void)testFillingFromKeyboardOnAutofocus {
+  // TODO(crbug.com/443234028): Test is flaky on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+  }
+
   // Clear the credit cards to remove the default local cards that aren't needed
   // for this test case.
   [AutofillAppInterface clearCreditCardStore];
