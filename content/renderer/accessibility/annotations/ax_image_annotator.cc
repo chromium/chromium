@@ -410,6 +410,12 @@ void AXImageAnnotator::AddImageAnnotationsForNode(WebAXObject& src,
     return;
   }
 
+  if (GetImageData(src).isNull()) {
+    dst->SetImageAnnotationStatus(
+        ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation);
+    return;
+  }
+
   if (HasAnnotationInCache(src)) {
     dst->AddStringAttribute(ax::mojom::StringAttribute::kImageAnnotation,
                             GetImageAnnotation(src));
