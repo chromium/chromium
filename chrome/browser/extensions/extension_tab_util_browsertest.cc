@@ -141,6 +141,37 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(GetActiveWebContents()->GetURL(), expected_url);
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLNormal) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  ExtensionTabUtil::NavigateToURL(
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, web_contents,
+      web_contents->GetBrowserContext(), GURL("chrome://version"));
+  auto url = GetActiveWebContents()->GetURL();
+  EXPECT_THAT(url, GURL("chrome://version"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLCheckFailure) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  content::WebContents* web_contents = GetActiveWebContents();
+  ExtensionTabUtil::NavigateToURL(
+      WindowOpenDisposition::NEW_WINDOW, web_contents,
+      web_contents->GetBrowserContext(), GURL("chrome://version"));
+  // After opening a new window, the last active browser should be the new
+  // one.
+  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+  // Ensure it's not the same as the original browser.
+  ASSERT_NE(browser(), new_browser);
+  auto url = new_browser->tab_strip_model()->GetActiveWebContents()->GetURL();
+  EXPECT_THAT(url, GURL("chrome://version"));
+#else
+  EXPECT_DEATH(ExtensionTabUtil::NavigateToURL(
+                   WindowOpenDisposition::NEW_WINDOW, GetActiveWebContents(),
+                   GetActiveWebContents()->GetBrowserContext(),
+                   GURL("chrome://version")),
+               "");
+#endif
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/41370170): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,

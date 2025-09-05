@@ -1268,6 +1268,9 @@ void ExtensionTabUtil::NavigateToURL(WindowOpenDisposition disposition,
   }
   Navigate(&params);
 #else
+  // Fow now, only new foreground tab disposition is supported on Android.
+  // TODO(crbug.com//440173000): Support other window dispositions for Android.
+  CHECK_EQ(disposition, WindowOpenDisposition::NEW_FOREGROUND_TAB);
   TabModel* const tab_model =
       TabModelList::GetTabModelForWebContents(web_contents);
   std::unique_ptr<content::WebContents> new_contents =
