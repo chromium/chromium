@@ -206,6 +206,7 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   bool initialization_complete_ = false;
   bool in_focused_frame_ = false;
   bool frames_throttled_ = false;
+  bool has_immersive_session_ = false;
 
   std::vector<XrCompatibleCallback> xr_compatible_callbacks_;
 
