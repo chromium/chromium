@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/settings_default_browser_handler.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/browser_process.h"
@@ -38,8 +39,7 @@ bool DefaultBrowserIsDisabledByPolicy() {
 
 #if BUILDFLAG(IS_WIN)
 void PinToTaskbarResult(bool result) {
-  // TODO(crbug.com/393629107): Record metric
-  // Windows.TaskbarPinFromSettingsSucceeded.
+  base::UmaHistogramBoolean("Windows.TaskbarPinFromSettingsSucceeded", result);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

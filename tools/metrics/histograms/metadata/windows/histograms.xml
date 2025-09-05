@@ -379,9 +379,21 @@ chromium-metrics-reviews@google.com.
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
-    The result of calling PinAppToTaskbar() in the first run experience, logged
-    when it is called. It is called when the user has agreed to set Chrome as
-    the default browser and pin Chrome to the taskbar.
+    The bool result passed to PinAppToTaskbar()'s PinResultCallback argument,
+    called from first run experience's set default browser page. The result will
+    be true if pinning succeeded, false otherwise. It is called when the user
+    has agreed to set Chrome as the default browser and pin it to the taskbar.
+  </summary>
+</histogram>
+
+<histogram name="Windows.TaskbarPinFromSettingsSucceeded" enum="Boolean"
+    expires_after="2026-03-01">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
+  <summary>
+    The result of calling PinAppToTaskbar() from settings, logged when it is
+    called. It is called when the user has asked to set Chrome as the default
+    browser and pin Chrome to the taskbar.
   </summary>
 </histogram>
 
