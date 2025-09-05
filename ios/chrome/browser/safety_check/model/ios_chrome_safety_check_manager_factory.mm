@@ -15,11 +15,8 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildServiceInstance(web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS* profile) {
   CHECK(IsSafetyCheckMagicStackEnabled());
-
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
   const scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
 
@@ -46,9 +43,9 @@ IOSChromeSafetyCheckManagerFactory::GetInstance() {
 }
 
 // static
-IOSChromeSafetyCheckManagerFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 IOSChromeSafetyCheckManagerFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildServiceInstance);
+  return base::BindOnce(&BuildServiceInstance);
 }
 
 IOSChromeSafetyCheckManagerFactory::IOSChromeSafetyCheckManagerFactory()
@@ -62,6 +59,6 @@ IOSChromeSafetyCheckManagerFactory::~IOSChromeSafetyCheckManagerFactory() =
 
 std::unique_ptr<KeyedService>
 IOSChromeSafetyCheckManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildServiceInstance(context);
+    ProfileIOS* profile) const {
+  return BuildServiceInstance(profile);
 }
