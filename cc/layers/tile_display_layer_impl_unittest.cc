@@ -513,7 +513,7 @@ TEST_F(TileDisplayLayerImplTest, RemoveTilingRemovesTiling) {
 
   // Add a tiling.
   raw_layer->GetOrCreateTilingFromScaleKey(1.0);
-  EXPECT_NE(raw_layer->GetTilingForTesting(1.0), nullptr);
+  ASSERT_NE(raw_layer->GetTilingForTesting(1.0), nullptr);
 
   // Remove the tiling.
   raw_layer->RemoveTiling(1.0);
@@ -528,7 +528,7 @@ TEST_F(TileDisplayLayerImplTest, RemoveTilingOnNonExistentTilingDoesNotCrash) {
   auto* raw_layer = layer.get();
   host_impl()->active_tree()->AddLayer(std::move(layer));
 
-  EXPECT_EQ(raw_layer->GetTilingForTesting(1.0), nullptr);
+  ASSERT_EQ(raw_layer->GetTilingForTesting(1.0), nullptr);
 
   // This should not crash.
   raw_layer->RemoveTiling(1.0);
