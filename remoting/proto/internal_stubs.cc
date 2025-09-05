@@ -199,10 +199,10 @@ std::string_view GetSupportId(const RemoteSupportHost&) {
 // ============================
 
 std::string_view GetSendHostMessagePath() {
-  return {};
+  return "/fake/for_testing/send_host_message";
 }
 std::string_view GetReceiveClientMessagesPath() {
-  return {};
+  return "/fake/for_testing/receive_client_messages";
 }
 
 std::unique_ptr<ReceiveClientMessagesRequest> GetReceiveClientMessagesRequest(
