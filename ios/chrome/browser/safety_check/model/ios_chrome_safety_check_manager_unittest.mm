@@ -938,20 +938,8 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
             PasswordSafetyCheckState::kDefault);
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kOutOfDate);
-
-  // The Safety Check Notifications project improves how Safety Check state is
-  // restored.
-  if (IsSafetyCheckNotificationsEnabled()) {
-    // If Safety Check Notifications is enabled, the Safe Browsing check
-    // should be restored to `kSafe`.
-    EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
-              SafeBrowsingSafetyCheckState::kSafe);
-  } else {
-    // Otherwise, the Safe Browsing check should be restored to the default
-    // state, as the state is not persisted.
-    EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
-              SafeBrowsingSafetyCheckState::kDefault);
-  }
+  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
+            SafeBrowsingSafetyCheckState::kDefault);
 }
 
 // Tests `DictToInsecurePasswordCounts()` correctly converts a Dict to insecure

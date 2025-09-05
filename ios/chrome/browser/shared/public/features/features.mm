@@ -32,7 +32,7 @@ BASE_FEATURE(SafetyCheckAutorunByManagerKillswitch,
 BASE_FEATURE(SafetyCheckModuleHiddenIfNoIssuesKillswitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(SafetyCheckNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(SafetyCheckNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(OmahaServiceRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -349,7 +349,7 @@ int SafetyCheckNotificationsImpressionLimit() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kSafetyCheckNotifications, kSafetyCheckNotificationsImpressionLimit,
       /*default_value=*/
-      3);
+      0);
 }
 
 bool IsTipsMagicStackEnabled() {

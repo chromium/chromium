@@ -21248,31 +21248,6 @@
             ]
         }
     ],
-    "SafetyCheckNotificationsWithInterstitial": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "SafetyCheckAllowPasswordsNotifications": "true",
-                        "SafetyCheckAllowSafeBrowsingNotifications": "true",
-                        "SafetyCheckAllowUpdateChromeNotifications": "true",
-                        "SafetyCheckNotificationsExperimentType": "1",
-                        "SafetyCheckNotificationsImpressionLimit": "0",
-                        "SafetyCheckNotificationsImpressionTrigger": "1",
-                        "SafetyCheckNotificationsProvisionalEnabled": "true"
-                    },
-                    "enable_features": [
-                        "OmahaServiceRefactor",
-                        "SafetyCheckNotifications"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafetyCheckUnusedSitePermissions": [
         {
             "platforms": [
