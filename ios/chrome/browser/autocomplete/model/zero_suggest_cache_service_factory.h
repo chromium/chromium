@@ -18,9 +18,6 @@ class ZeroSuggestCacheServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static ZeroSuggestCacheService* GetForProfile(ProfileIOS* profile);
   static ZeroSuggestCacheServiceFactory* GetInstance();
-  // Returns the default factory used to build ZeroSuggestCacheService. Can be
-  // registered with AddTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<ZeroSuggestCacheServiceFactory>;
@@ -30,7 +27,7 @@ class ZeroSuggestCacheServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // BrowerStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 }  // namespace ios
 

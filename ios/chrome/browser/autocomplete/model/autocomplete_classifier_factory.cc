@@ -19,14 +19,12 @@
 namespace ios {
 namespace {
 
-std::unique_ptr<KeyedService> BuildAutocompleteClassifier(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildAutocompleteClassifier(ProfileIOS* profile) {
   return std::make_unique<AutocompleteClassifier>(
-      base::WrapUnique(new AutocompleteController(
-          base::WrapUnique(new AutocompleteProviderClientImpl(profile)),
-          AutocompleteClassifier::DefaultOmniboxProviders())),
-      base::WrapUnique(new AutocompleteSchemeClassifierImpl));
+      std::make_unique<AutocompleteController>(
+          std::make_unique<AutocompleteProviderClientImpl>(profile),
+          AutocompleteClassifier::DefaultOmniboxProviders()),
+      std::make_unique<AutocompleteSchemeClassifierImpl>());
 }
 
 }  // namespace
@@ -45,9 +43,9 @@ AutocompleteClassifierFactory* AutocompleteClassifierFactory::GetInstance() {
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 AutocompleteClassifierFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildAutocompleteClassifier);
+  return base::BindOnce(&BuildAutocompleteClassifier);
 }
 
 AutocompleteClassifierFactory::AutocompleteClassifierFactory()
@@ -63,8 +61,8 @@ AutocompleteClassifierFactory::~AutocompleteClassifierFactory() = default;
 
 std::unique_ptr<KeyedService>
 AutocompleteClassifierFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildAutocompleteClassifier(context);
+    ProfileIOS* profile) const {
+  return BuildAutocompleteClassifier(profile);
 }
 
 }  // namespace ios

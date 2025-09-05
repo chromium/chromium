@@ -32,8 +32,7 @@ ZeroSuggestCacheServiceFactory::~ZeroSuggestCacheServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 ZeroSuggestCacheServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<ZeroSuggestCacheService>(
       std::make_unique<AutocompleteSchemeClassifierImpl>(), profile->GetPrefs(),
       OmniboxFieldTrial::kZeroSuggestCacheMaxSize.Get());

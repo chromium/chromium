@@ -22,7 +22,7 @@ class ShortcutsBackendFactory : public RefcountedProfileKeyedServiceFactoryIOS {
       ProfileIOS* profile);
   static ShortcutsBackendFactory* GetInstance();
   // Returns the default factory, useful in tests where it's null by default.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<ShortcutsBackendFactory>;
@@ -30,9 +30,9 @@ class ShortcutsBackendFactory : public RefcountedProfileKeyedServiceFactoryIOS {
   ShortcutsBackendFactory();
   ~ShortcutsBackendFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // RefcountedProfileKeyedServiceFactoryIOS implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

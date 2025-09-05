@@ -29,7 +29,7 @@ ProviderStateServiceFactory::~ProviderStateServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 ProviderStateServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<ProviderStateService>();
 }
 

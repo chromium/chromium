@@ -40,13 +40,12 @@ OnDeviceTailModelServiceFactory::~OnDeviceTailModelServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 OnDeviceTailModelServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   const std::string locale =
       GetApplicationContext()->GetApplicationLocaleStorage()->Get();
   if (!OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled(locale)) {
     return nullptr;
   }
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   OptimizationGuideService* optimization_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);
   return optimization_guide
