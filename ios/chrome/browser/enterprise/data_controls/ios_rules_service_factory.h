@@ -26,16 +26,15 @@ class IOSRulesServiceFactory : public ProfileKeyedServiceFactoryIOS {
   // created.
   static IOSRulesService* GetForProfile(ProfileIOS* profile);
 
- protected:
-  // BrowserStateKeyedServiceFactory overrides.
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
-
  private:
   friend class base::NoDestructor<IOSRulesServiceFactory>;
 
   IOSRulesServiceFactory();
   ~IOSRulesServiceFactory() override;
+
+  // ProfileKeyedServiceFactoryIOS implementation.
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace data_controls

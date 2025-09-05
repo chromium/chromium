@@ -30,8 +30,7 @@ IOSRulesServiceFactory::IOSRulesServiceFactory()
 IOSRulesServiceFactory::~IOSRulesServiceFactory() = default;
 
 std::unique_ptr<KeyedService> IOSRulesServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  auto* profile = ProfileIOS::FromBrowserState(browser_state);
+    ProfileIOS* profile) const {
   return std::make_unique<IOSRulesService>(profile);
 }
 
