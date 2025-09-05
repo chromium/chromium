@@ -26,7 +26,7 @@ class PageContentAnnotationsServiceFactory
   // Returns the default factory used to build PageContentAnnotationsService.
   // Can be registered with AddTestingFactory to use real instances during
   // testing.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<PageContentAnnotationsServiceFactory>;
@@ -34,9 +34,9 @@ class PageContentAnnotationsServiceFactory
   PageContentAnnotationsServiceFactory();
   ~PageContentAnnotationsServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_
