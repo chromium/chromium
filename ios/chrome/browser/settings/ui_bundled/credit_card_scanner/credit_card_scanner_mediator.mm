@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_mediator.h"
 
+#import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_image_processor.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_mediator_delegate.h"
 
 @implementation CreditCardScannerMediator {
@@ -23,9 +24,17 @@
   if (self) {
     _creditCardScannerMediatorDelegate = delegate;
     _creditCardScannerConsumer = consumer;
+    _creditCardScannerImageProcessor =
+        [[CreditCardScannerImageProcessor alloc] initWithConsumer:self];
   }
 
   return self;
+}
+
+- (void)disconnect {
+  _creditCardScannerMediatorDelegate = nil;
+  _creditCardScannerConsumer = nil;
+  _creditCardScannerImageProcessor = nil;
 }
 
 #pragma mark - CreditCardScannerConsumer
@@ -36,15 +45,9 @@
   [_creditCardScannerConsumer setCreditCardNumber:cardNumber
                                   expirationMonth:expirationMonth
                                    expirationYear:expirationYear];
+  _creditCardScannerImageProcessor = nil;
   [_creditCardScannerMediatorDelegate
       creditCardScannerMediatorDidFinishScan:self];
-}
-
-#pragma mark - CreditCardScannedImageDelegate
-
-- (void)processOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-                         viewport:(CGRect)viewport {
-  // TODO(crbug.com/435324025): Process image and extract credit card details.
 }
 
 @end

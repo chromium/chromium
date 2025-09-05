@@ -7,6 +7,7 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_presenting.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_consumer.h"
+#import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_image_processor.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_view_controller.h"
@@ -51,8 +52,9 @@
               consumer:_creditCardScannerConsumer];
 
   _creditCardScannerViewController = [[CreditCardScannerViewController alloc]
-      initWithPresentationProvider:self
-                          delegate:_creditCardScannerMediator];
+      initWithPresentationProvider:self];
+  _creditCardScannerViewController.delegate =
+      _creditCardScannerMediator.creditCardScannerImageProcessor;
 
   _creditCardScannerViewController.modalPresentationStyle =
       UIModalPresentationPageSheet;
@@ -66,7 +68,9 @@
   [super stop];
   [_creditCardScannerViewController dismissViewControllerAnimated:YES
                                                        completion:nil];
+  _creditCardScannerViewController.delegate = nil;
   _creditCardScannerViewController = nil;
+  [_creditCardScannerMediator disconnect];
   _creditCardScannerMediator = nil;
 }
 

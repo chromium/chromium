@@ -19,19 +19,13 @@ extern NSString* const kCreditCardScannerViewID;
 @interface CreditCardScannerViewController
     : ScannerViewController <CreditCardScannerCameraControllerDelegate>
 
-// Arguments `presentationProvider` and `delegate` should not be nil.
-- (instancetype)
-    initWithPresentationProvider:(id<ScannerPresenting>)presentationProvider
-                        delegate:(id<CreditCardScannedImageDelegate>)delegate
-    NS_DESIGNATED_INITIALIZER;
+// The delegate notified when there is a new image from the scanner.
+@property(nonatomic, weak) id<CreditCardScannedImageDelegate> delegate;
 
 - (instancetype)initWithPresentationProvider:
                     (id<ScannerPresenting>)presentationProvider
                                  queryLoader:(id<LoadQueryCommands>)queryLoader
     NS_UNAVAILABLE;
-
-- (instancetype)initWithPresentationProvider:
-    (id<ScannerPresenting>)presentationProvider NS_UNAVAILABLE;
 
 - (instancetype)initWithNibName:(NSString*)name
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;

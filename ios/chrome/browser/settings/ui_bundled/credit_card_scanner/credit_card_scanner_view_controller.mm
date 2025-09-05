@@ -11,9 +11,6 @@
 NSString* const kCreditCardScannerViewID = @"kCreditCardScannerViewID";
 
 @implementation CreditCardScannerViewController {
-  // The delegate notified when there is a new image from the scanner.
-  __weak id<CreditCardScannedImageDelegate> _delegate;
-
   // The rect storing the location of the credit card scanner viewport to set
   // the region of interest of the Vision request.
   //
@@ -21,18 +18,6 @@ NSString* const kCreditCardScannerViewID = @"kCreditCardScannerViewID";
   // `creditCardViewport` can be sent as parameter through the
   // CreditCardScannerCameraControllerDelegate from the background thread.
   CGRect _creditCardViewport;
-}
-
-#pragma mark Lifecycle
-
-- (instancetype)
-    initWithPresentationProvider:(id<ScannerPresenting>)presentationProvider
-                        delegate:(id<CreditCardScannedImageDelegate>)delegate {
-  self = [super initWithPresentationProvider:presentationProvider];
-  if (self) {
-    _delegate = delegate;
-  }
-  return self;
 }
 
 #pragma mark - UIViewController

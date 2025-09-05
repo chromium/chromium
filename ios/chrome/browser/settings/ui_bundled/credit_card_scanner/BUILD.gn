@@ -11,9 +11,13 @@ source_set("credit_card_scanner") {
     "credit_card_scanner_consumer.h",
     "credit_card_scanner_coordinator.h",
     "credit_card_scanner_coordinator.mm",
+    "credit_card_scanner_image_processor.h",
+    "credit_card_scanner_image_processor.mm",
     "credit_card_scanner_mediator.h",
     "credit_card_scanner_mediator.mm",
     "credit_card_scanner_mediator_delegate.h",
+    "credit_card_scanner_string_util.h",
+    "credit_card_scanner_string_util.mm",
     "credit_card_scanner_view.h",
     "credit_card_scanner_view.mm",
     "credit_card_scanner_view_controller.h",
@@ -38,9 +42,13 @@ source_set("credit_card_scanner") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "credit_card_scanner_mediator_unittest.mm" ]
+  sources = [
+    "credit_card_scanner_mediator_unittest.mm",
+    "credit_card_scanner_string_util_unittest.mm",
+  ]
   deps = [
     ":credit_card_scanner",
+    "//base/test:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

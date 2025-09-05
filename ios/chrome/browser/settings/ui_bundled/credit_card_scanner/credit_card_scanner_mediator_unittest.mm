@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_mediator_delegate.h"
 #import "testing/gtest_mac.h"
@@ -25,6 +26,8 @@ class CreditCardScannerMediatorTest : public PlatformTest {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
+
   OCMockObject<CreditCardScannerMediatorDelegate>* mock_delegate_;
   OCMockObject<CreditCardScannerConsumer>* mock_consumer_;
   CreditCardScannerMediator* mediator_;
