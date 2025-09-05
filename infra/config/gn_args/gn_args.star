@@ -401,8 +401,9 @@ gn_args.config(
     },
 )
 
+# The gn suffix distinguishes this from the "clang_tot" gclient config
 gn_args.config(
-    name = "clang_tot",
+    name = "clang_tot_gn",
     args = {
         "llvm_force_head_revision": True,
     },
@@ -411,8 +412,9 @@ gn_args.config(
     ],
 )
 
+# The gn suffix distinguishes this from the "rust_tot" gclient config
 gn_args.config(
-    name = "rust_tot",
+    name = "rust_tot_gn",
     args = {
         "rust_force_head_revision": True,
     },
