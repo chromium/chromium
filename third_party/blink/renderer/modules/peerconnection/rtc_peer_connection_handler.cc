@@ -185,13 +185,19 @@ class CreateSessionDescriptionRequest
 
     auto tracker = tracker_.Lock();
     if (tracker && handler_) {
-      std::string value;
+      StringBuilder result;
       if (desc) {
+        std::string value;
         desc->ToString(&value);
-        value = "type: " + desc->type() + ", sdp: " + value;
+        auto json = std::make_unique<JSONObject>();
+        json->SetString("type", String::FromUTF8(desc->type()));
+        if (!value.empty()) {
+          json->SetString("sdp", String::FromUTF8(value));
+        }
+        json->WriteJSON(&result);
       }
-      tracker->TrackSessionDescriptionCallback(
-          handler_.get(), action_, "OnSuccess", String::FromUTF8(value));
+      tracker->TrackSessionDescriptionCallback(handler_.get(), action_,
+                                               "OnSuccess", result.ToString());
       tracker->TrackSessionId(handler_.get(),
                               String::FromUTF8(desc->session_id()));
     }

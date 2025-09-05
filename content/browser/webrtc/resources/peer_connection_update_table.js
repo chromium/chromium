@@ -169,9 +169,9 @@ export class PeerConnectionUpdateTable {
       valueContainer.parentElement.classList.add('update-log-failure');
     }
 
-    // RTCSessionDescription is serialized as 'type: <type>, sdp:'
-    if (update.value.indexOf(', sdp:') !== -1) {
-      const [type, sdp] = update.value.substring(6).split(', sdp: ');
+    // RTCSessionDescription is serialized as JSON.
+    if (update.value.startsWith("{\"type\":")) {
+      const {type, sdp} = JSON.parse(update.value);
       if (type === 'rollback') {
         // Rollback has no SDP.
         summary.textContent += ' (type: "rollback")';

@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_answer_options_platform.h"
@@ -820,11 +821,17 @@ void PeerConnectionTracker::TrackSetSessionDescription(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  String value = StrCat({"type: ", type, ", sdp: ", sdp});
+  auto json = std::make_unique<JSONObject>();
+  json->SetString("type", type);
+  if (!sdp.empty()) {
+    json->SetString("sdp", sdp);
+  }
+  StringBuilder value;
+  json->WriteJSON(&value);
   SendPeerConnectionUpdate(
       id,
       source == kSourceLocal ? "setLocalDescription" : "setRemoteDescription",
-      value);
+      value.ToString());
 }
 
 void PeerConnectionTracker::TrackSetSessionDescriptionImplicit(
