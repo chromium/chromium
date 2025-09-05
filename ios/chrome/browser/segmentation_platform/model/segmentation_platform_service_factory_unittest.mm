@@ -245,12 +245,11 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
     ProfileData(ProfileData&) = delete;
 
     // Setup environment required to create the SegmentationPlatformService.
-    web::BrowserState* SetUpEnvironment(web::BrowserState* context) {
-      ProfileIOS* setup_profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* SetUpEnvironment(ProfileIOS* setup_profile) {
       setup_profile->GetPrefs()->SetString(kSegmentationClientResultPrefs,
                                            result_pref);
       test_utils->SetupForProfile(setup_profile);
-      return context;
+      return setup_profile;
     }
 
     const std::string result_pref;

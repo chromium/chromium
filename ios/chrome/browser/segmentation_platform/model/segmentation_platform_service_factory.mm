@@ -101,15 +101,12 @@ ShoppingService* GetShoppingService(base::WeakPtr<ProfileIOS> weak_profile) {
 }
 
 std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
-    web::BrowserState* context) {
-  DCHECK(context);
-  DCHECK(!context->IsOffTheRecord());
+    ProfileIOS* profile) {
+  DCHECK(!profile->IsOffTheRecord());
   if (!base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature)) {
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  DCHECK(profile);
   const base::FilePath profile_path = profile->GetStatePath();
   auto* optimization_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);
@@ -262,15 +259,15 @@ SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
 }
 
 // static
-ProfileKeyedServiceFactoryIOS::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 SegmentationPlatformServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildSegmentationPlatformService);
+  return base::BindOnce(&BuildSegmentationPlatformService);
 }
 
 std::unique_ptr<KeyedService>
 SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildSegmentationPlatformService(context);
+    ProfileIOS* profile) const {
+  return BuildSegmentationPlatformService(profile);
 }
 
 void SegmentationPlatformServiceFactory::RegisterProfilePrefs(
