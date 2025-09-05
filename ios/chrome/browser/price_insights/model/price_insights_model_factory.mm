@@ -27,7 +27,6 @@ PriceInsightsModelFactory::PriceInsightsModelFactory()
 PriceInsightsModelFactory::~PriceInsightsModelFactory() {}
 
 std::unique_ptr<KeyedService>
-PriceInsightsModelFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+PriceInsightsModelFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<PriceInsightsModel>();
 }
