@@ -386,7 +386,9 @@ public final class org.chromium.net.Proxy {
   public int getPort();
   public int getScheme();
   public java.lang.String getHost();
+  public java.util.concurrent.Executor getExecutor();
   public org.chromium.net.Proxy$Callback getCallback();
+  public org.chromium.net.Proxy(int, java.lang.String, int, java.util.concurrent.Executor, org.chromium.net.Proxy$Callback);
   public org.chromium.net.Proxy(int, java.lang.String, int, org.chromium.net.Proxy$Callback);
   public static final int HTTP;
   public static final int HTTPS;
@@ -671,4 +673,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<java.lang.String, org.chromium.net.apihelpers.StringCronetCallback> forStringBody(org.chromium.net.apihelpers.RedirectHandler);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: f67a14138f07b5245131c732fe451b2a
+Stamp: ce622dbfb1607bcbab849edc100ea3d8

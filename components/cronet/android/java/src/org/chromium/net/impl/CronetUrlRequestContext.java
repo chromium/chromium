@@ -25,6 +25,7 @@ import org.chromium.net.BidirectionalStream;
 import org.chromium.net.EffectiveConnectionType;
 import org.chromium.net.ExperimentalBidirectionalStream;
 import org.chromium.net.ExperimentalUrlRequest;
+import org.chromium.net.NetError;
 import org.chromium.net.NetworkQualityRttListener;
 import org.chromium.net.NetworkQualityThroughputListener;
 import org.chromium.net.RequestFinishedInfo;
@@ -671,34 +672,67 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("CronetUrlRequestContext#onBeforeTunnelRequest")) {
             VersionSafeProxyCallback callback = mProxyCallbacks.get(chainId);
-            try (var callbackTraceEvent =
-                    ScopedSysTraceEvent.scoped(
-                            "CronetUrlRequestContext#onBeforeTunnelRequest running callback")) {
-                // TODO(https://crbug.com/421341906): Once we support executors, stop calling this
-                // directly (i.e., on Cronet's network thread).
-                callback.onBeforeTunnelRequest(request);
-            }
+            postTaskToExecutor(
+                    callback.getExecutor(),
+                    () -> {
+                        callback.onBeforeTunnelRequest(request);
+                    },
+                    "onBeforeTunnelRequest");
         }
     }
 
     @CalledByNative
-    private @JniType("bool") boolean onTunnelHeadersReceived(
-            int chainId, @JniType("std::vector<std::string>") String[] headers, int statusCode) {
+    private void onTunnelHeadersReceived(
+            int chainId,
+            @JniType("std::vector<std::string>") String[] headers,
+            int statusCode,
+            @NonNull CompletionOnceCallback callback) {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("CronetUrlRequestContext#onTunnelHeadersReceived")) {
             ArrayList<Map.Entry<String, String>> headersList = new ArrayList<>();
             for (int i = 0; i < headers.length; i += 2) {
                 headersList.add(new AbstractMap.SimpleImmutableEntry<>(headers[i], headers[i + 1]));
             }
-            VersionSafeProxyCallback callback = mProxyCallbacks.get(chainId);
-            try (var callbackTraceEvent =
-                    ScopedSysTraceEvent.scoped(
-                            "CronetUrlRequestContext#onTunnelHeadersReceived running callback")) {
-                // TODO(https://crbug.com/421341906): Once net::ProxyDelegate supports async
-                // callbacks, stop calling this directly (i.e., on Cronet's network thread).
-                return callback.onTunnelHeadersReceived(
-                        Collections.unmodifiableList(headersList), statusCode);
-            }
+            VersionSafeProxyCallback proxyCallback = mProxyCallbacks.get(chainId);
+            postTaskToExecutor(
+                    proxyCallback.getExecutor(),
+                    () -> {
+                        try (callback) {
+                            boolean success = false;
+                            // This nested try block is required to execute the finally block
+                            // before `callback` gets closed by the try-with-resources above.
+                            // Without this, we are not guaranteed to call
+                            // CompletionOnceCallback#run before CompletionOnceCallback#close.
+                            try {
+                                success =
+                                        proxyCallback.onTunnelHeadersReceived(
+                                                Collections.unmodifiableList(headersList),
+                                                statusCode);
+                            } finally {
+                                // In case onTunnelHeadersReceived returned false, or threw, report
+                                // it as a failure to //net
+                                // (see Proxy.Callback.onTunnelHeadersReceived documentation).
+                                //
+                                // TODO(https://crbug.com/422428959): Decide whether we want to
+                                // propagate org.chromium.net.Proxy.Callback canceling a tunnel
+                                // establishment request as something else
+                                // (NetError.ERR_TUNNEL_CONNECTION_FAILED?
+                                // NetError.ERR_BLOCKED_BY_CLIENT?
+                                // NetError.ERR_PROXY_TUNNEL_REQUEST_FAILED?). This is currently
+                                // not
+                                // possible, as net::ProxyFallback::CanFalloverToNextProxy does
+                                // not
+                                // try the next proxy for a lot of these errors, unless the
+                                // chain is
+                                // for IP Protection. For the time being, we return another
+                                // error
+                                // for which the next proxy is in the list is always attempted.
+                                callback.run(
+                                        success ? NetError.OK : NetError.ERR_CONNECTION_CLOSED);
+                            }
+                        }
+                    },
+                    "onTunnelHeadersReceived");
         }
     }
 
@@ -1046,6 +1080,19 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             postObservationTaskToExecutor(
                     listener.getExecutor(), task, inflightCallbackCount, "reportRequestFinished");
         }
+    }
+
+    private static void postTaskToExecutor(Executor executor, Runnable task, String name) {
+        executor.execute(
+                () -> {
+                    try (var callbackTraceEvent =
+                            ScopedSysTraceEvent.scoped(
+                                    "CronetUrlRequestContext#postTaskToExecutor "
+                                            + name
+                                            + " running callback")) {
+                        task.run();
+                    }
+                });
     }
 
     private static void postObservationTaskToExecutor(

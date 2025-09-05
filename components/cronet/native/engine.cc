@@ -24,6 +24,7 @@
 #include "components/cronet/url_request_context_config.h"
 #include "components/cronet/version.h"
 #include "components/grpc_support/include/bidirectional_stream_c.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/hash_value.h"
 #include "net/base/proxy_delegate.h"
 #include "net/url_request/url_request_context.h"
@@ -402,9 +403,9 @@ class Cronet_EngineImpl::Callback : public CronetContext::Callback {
       net::ProxyDelegate::OnBeforeTunnelRequestCallback callback) override {
     NOTREACHED();
   }
-  bool OnTunnelHeadersReceived(
-      int chain_id,
-      const net::HttpResponseHeaders& response_headers) override {
+  void OnTunnelHeadersReceived(int chain_id,
+                               const net::HttpResponseHeaders& response_headers,
+                               net::CompletionOnceCallback callback) override {
     NOTREACHED();
   }
 

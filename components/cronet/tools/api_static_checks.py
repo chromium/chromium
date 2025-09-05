@@ -63,6 +63,7 @@ ALLOWED_EXCEPTIONS = [
     'org.chromium.net.impl.VersionSafeProxyOptions/org.chromium.net.impl.VersionSafeProxyOptions -> org/chromium/net/ProxyOptions/getProxyList:()Ljava/util/List;',
     'org.chromium.net.impl.VersionSafeProxyOptions/createProxyCallbackList -> org/chromium/net/ProxyOptions/getProxyList:()Ljava/util/List;',
     'org.chromium.net.impl.VersionSafeProxyOptions/createProxyCallbackList -> org/chromium/net/Proxy/getCallback:()Lorg/chromium/net/Proxy$Callback;',
+    'org.chromium.net.impl.VersionSafeProxyOptions/createProxyCallbackList -> org/chromium/net/Proxy/getExecutor:()Ljava/util/concurrent/Executor;',
     'org.chromium.net.impl.VersionSafeProxyOptions/createProxyOptionsProto -> org/chromium/net/ProxyOptions/getProxyList:()Ljava/util/List;',
     'org.chromium.net.impl.VersionSafeProxyOptions/createProxyOptionsProto -> org/chromium/net/Proxy/getHost:()Ljava/lang/String;',
     'org.chromium.net.impl.VersionSafeProxyOptions/createProxyOptionsProto -> org/chromium/net/Proxy/getPort:()I',

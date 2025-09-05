@@ -31,6 +31,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/cronet/android/completion_once_callback_adapter.h"
 #include "components/cronet/android/cronet_library_loader.h"
 #include "components/cronet/android/proxy_callback_request_adapter.h"
 #include "components/cronet/cronet_prefs_manager.h"
@@ -182,14 +183,18 @@ void CronetContextAdapter::OnBeforeTunnelRequest(
           std::move(callback)));
 }
 
-bool CronetContextAdapter::OnTunnelHeadersReceived(
+void CronetContextAdapter::OnTunnelHeadersReceived(
     int chain_id,
-    const net::HttpResponseHeaders& response_headers) {
+    const net::HttpResponseHeaders& response_headers,
+    net::CompletionOnceCallback callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_CronetUrlRequestContext_onTunnelHeadersReceived(
       env, jcronet_url_request_context_, chain_id,
       ConvertHttpResponseHeadersToVector(response_headers),
-      response_headers.response_code());
+      response_headers.response_code(),
+      CompletionOnceCallbackAdapter::Create(
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          std::move(callback)));
 }
 
 void CronetContextAdapter::Destroy(JNIEnv* env) {

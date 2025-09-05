@@ -52,7 +52,11 @@ final class VersionSafeProxyOptions {
             boolean isDirect = proxy == null;
             // ProxyDelegate callbacks should not be called for direct connection, hence we can
             // safely store a null callback in that case.
-            proxyCallbacks.add(isDirect ? null : new VersionSafeProxyCallback(proxy.getCallback()));
+            proxyCallbacks.add(
+                    isDirect
+                            ? null
+                            : new VersionSafeProxyCallback(
+                                    proxy.getExecutor(), proxy.getCallback()));
         }
         return Collections.unmodifiableList(proxyCallbacks);
     }

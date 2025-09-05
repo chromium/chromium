@@ -32,6 +32,7 @@ import org.chromium.net.ProxyOptions;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /** Test version safe handling of ProxyOptions. */
@@ -83,6 +84,7 @@ public class VersionSafeProxyOptionsTest {
                                         Proxy.HTTP,
                                         "not-existing-hostname",
                                         8080,
+                                        Executors.newSingleThreadExecutor(),
                                         Mockito.mock(Proxy.Callback.class))));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         org.chromium.net.impl.proto.ProxyOptions proxyOptionsProto =
@@ -108,6 +110,7 @@ public class VersionSafeProxyOptionsTest {
                                         Proxy.HTTP,
                                         "not-existing-hostname",
                                         8080,
+                                        Executors.newSingleThreadExecutor(),
                                         Mockito.mock(Proxy.Callback.class))));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         List<VersionSafeProxyCallback> safeProxyCallbacks =
@@ -130,6 +133,7 @@ public class VersionSafeProxyOptionsTest {
                                         Proxy.HTTPS,
                                         "not-existing-hostname",
                                         8080,
+                                        Executors.newSingleThreadExecutor(),
                                         Mockito.mock(Proxy.Callback.class))));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         org.chromium.net.impl.proto.ProxyOptions proxyOptionsProto =
@@ -155,6 +159,7 @@ public class VersionSafeProxyOptionsTest {
                                         Proxy.HTTPS,
                                         "not-existing-hostname",
                                         8080,
+                                        Executors.newSingleThreadExecutor(),
                                         Mockito.mock(Proxy.Callback.class))));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         List<VersionSafeProxyCallback> safeProxyCallbacks =
@@ -179,13 +184,15 @@ public class VersionSafeProxyOptionsTest {
                                         Proxy.HTTPS,
                                         "not-existing-hostname",
                                         8080,
+                                        Executors.newSingleThreadExecutor(),
                                         httpsProxyCallback),
                                 new Proxy(
                                         Proxy.HTTP,
                                         "not-existing-hostname",
                                         8080,
+                                        Executors.newSingleThreadExecutor(),
                                         httpProxyCallback),
-                                (Proxy) null));
+                                null));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         org.chromium.net.impl.proto.ProxyOptions proxyOptionsProto =
                 safeProxyOptions.createProxyOptionsProto();

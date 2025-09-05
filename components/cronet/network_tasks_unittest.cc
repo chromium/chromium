@@ -67,9 +67,9 @@ class NoOpCronetContextCallback : public CronetContext::Callback {
     NOTREACHED();
   }
 
-  bool OnTunnelHeadersReceived(
-      int chain_id,
-      const net::HttpResponseHeaders& response_headers) override {
+  void OnTunnelHeadersReceived(int chain_id,
+                               const net::HttpResponseHeaders& response_headers,
+                               net::CompletionOnceCallback callback) override {
     NOTREACHED();
   }
 };

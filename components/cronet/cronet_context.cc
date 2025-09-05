@@ -889,11 +889,13 @@ void CronetContext::NetworkTasks::OnBeforeTunnelRequest(
   callback_->OnBeforeTunnelRequest(chain_id, std::move(callback));
 }
 
-bool CronetContext::NetworkTasks::OnTunnelHeadersReceived(
+void CronetContext::NetworkTasks::OnTunnelHeadersReceived(
     int chain_id,
-    const net::HttpResponseHeaders& response_headers) {
+    const net::HttpResponseHeaders& response_headers,
+    net::CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
-  return callback_->OnTunnelHeadersReceived(chain_id, response_headers);
+  callback_->OnTunnelHeadersReceived(chain_id, response_headers,
+                                     std::move(callback));
 }
 
 base::Value CronetContext::NetworkTasks::GetNetLogInfo() const {

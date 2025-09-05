@@ -33,6 +33,7 @@ assert(is_cronet_build)
 
 generate_jni("cronet_jni_headers") {
   sources = [
+    "java/src/org/chromium/net/impl/CompletionOnceCallback.java",
     "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
     "java/src/org/chromium/net/impl/CronetLibraryLoader.java",
     "java/src/org/chromium/net/impl/CronetMetrics.java",
@@ -203,6 +204,8 @@ source_set("cronet_static") {
     deps += [ "//components/cronet/native:cronet_native_impl" ]
   }
   sources = [
+    "//components/cronet/android/completion_once_callback_adapter.cc",
+    "//components/cronet/android/completion_once_callback_adapter.h",
     "//components/cronet/android/cronet_bidirectional_stream_adapter.cc",
     "//components/cronet/android/cronet_bidirectional_stream_adapter.h",
     "//components/cronet/android/cronet_context_adapter.cc",
@@ -576,6 +579,7 @@ android_library("cronet_impl_native_java") {
   sources = [
     "java/src/org/chromium/net/impl/AndroidOsBuild.java",
     "java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
+    "java/src/org/chromium/net/impl/CompletionOnceCallback.java",
     "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
     "java/src/org/chromium/net/impl/CronetLibraryLoader.java",
     "java/src/org/chromium/net/impl/CronetRequestCommon.java",
@@ -1423,6 +1427,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/NetworkChangesTest.java",
     "test/javatests/src/org/chromium/net/NetworkErrorLoggingTest.java",
     "test/javatests/src/org/chromium/net/PkpTest.java",
+    "test/javatests/src/org/chromium/net/ProxyNoExecutorBackwardCompatibilityTest.java",
     "test/javatests/src/org/chromium/net/ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest.java",
     "test/javatests/src/org/chromium/net/ProxyTest.java",
     "test/javatests/src/org/chromium/net/QuicTest.java",

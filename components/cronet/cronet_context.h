@@ -118,13 +118,18 @@ class CronetContext {
     // This is used to forward //net's ProxyDelegate::OnTunnelHeadersReceived
     // to, the embedder provided,
     // org.chromium.net.Proxy.Callback#onTunnelHeadersReceived.
-    // Return `true` to allow using the tunnel connection to proxy requests,
-    // `false` to cancel the tunnel connection. When canceled, we will attempt
-    // to connect via the next proxy in the list (see
-    // org.chromium.net.ProxyOptions for more info).
-    virtual bool OnTunnelHeadersReceived(
+    // To allow the tunnel connection to proxy requests, pass `net::OK` to
+    // `callback`.  Instead, to cancel the tunnel connection, pass it a
+    // net::Error other than OK and ERR_IO_PENDING.
+    // When canceled, we will attempt to connect via the next proxy in the list
+    // (see org.chromium.net.ProxyOptions for more info).
+    //
+    // WARNING: `callback` must never be called inline, it must instead be
+    // posted back onto the network thread.
+    virtual void OnTunnelHeadersReceived(
         int chain_id,
-        const net::HttpResponseHeaders& response_headers) = 0;
+        const net::HttpResponseHeaders& response_headers,
+        net::CompletionOnceCallback callback) = 0;
   };
 
   // Constructs CronetContext using |context_config|. The |callback|
@@ -317,9 +322,10 @@ class CronetContext {
         net::ProxyDelegate::OnBeforeTunnelRequestCallback callback);
 
     // See CronetContext::Callback::OnTunnelHeadersReceived.
-    bool OnTunnelHeadersReceived(
+    void OnTunnelHeadersReceived(
         int chain_id,
-        const net::HttpResponseHeaders& response_headers);
+        const net::HttpResponseHeaders& response_headers,
+        net::CompletionOnceCallback callback);
 
     // Initializes Network Quality Estimator (NQE) prefs manager on network
     // thread.
