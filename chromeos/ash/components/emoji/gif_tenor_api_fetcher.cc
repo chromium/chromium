@@ -13,11 +13,13 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "base/version_info/channel.h"
 #include "chromeos/ash/components/channel/channel_info.h"
@@ -114,19 +116,13 @@ std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
 }
 
 const base::Value::List* FindList(
-    data_decoder::DataDecoder::ValueOrError& result,
-    const std::string& key) {
+    base::optional_ref<const base::Value::Dict> result,
+    std::string_view key) {
   if (!result.has_value()) {
     return nullptr;
   }
 
-  const auto* response = result->GetIfDict();
-  if (!response) {
-    return nullptr;
-  }
-
-  const auto* list = response->FindList(key);
-  return list ? list : nullptr;
+  return result->FindList(key);
 }
 
 std::vector<tenor::mojom::GifResponsePtr> ParseGifs(
@@ -251,7 +247,7 @@ std::vector<tenor::mojom::GifResponsePtr> ParseGifs(
 }
 
 base::expected<std::vector<std::string>, GifTenorApiFetcher::Error>
-ParseCategoriesResponse(data_decoder::DataDecoder::ValueOrError result) {
+ParseCategoriesResponse(base::optional_ref<const base::Value::Dict> result) {
   const auto* tags = FindList(result, "tags");
   if (!tags) {
     return base::unexpected(GifTenorApiFetcher::Error::kHttpError);
@@ -277,19 +273,19 @@ ParseCategoriesResponse(data_decoder::DataDecoder::ValueOrError result) {
 
 base::expected<tenor::mojom::PaginatedGifResponsesPtr,
                GifTenorApiFetcher::Error>
-ParsePaginatedGifsResponse(data_decoder::DataDecoder::ValueOrError result) {
+ParsePaginatedGifsResponse(base::optional_ref<const base::Value::Dict> result) {
   const auto* gifs = FindList(result, "results");
   if (!gifs) {
     return base::unexpected(GifTenorApiFetcher::Error::kHttpError);
   }
-  const auto* next = result->GetDict().FindString("next");
+  const auto* next = result->FindString("next");
   return base::ok(tenor::mojom::PaginatedGifResponses::New(next ? *next : "",
                                                            ParseGifs(gifs)));
 }
 
 base::expected<std::vector<tenor::mojom::GifResponsePtr>,
                GifTenorApiFetcher::Error>
-ParseGifsResponse(data_decoder::DataDecoder::ValueOrError result) {
+ParseGifsResponse(base::optional_ref<const base::Value::Dict> result) {
   const auto* gifs = FindList(result, "results");
   if (!gifs) {
     return base::unexpected(GifTenorApiFetcher::Error::kHttpError);
@@ -321,40 +317,39 @@ void FetchCategoriesResponseHandler(
     GifTenorApiFetcher::GetCategoriesCallback callback,
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> response) {
-  if (response->http_status_code == net::HTTP_OK) {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        response->response,
-        base::BindOnce(ParseCategoriesResponse).Then(std::move(callback)));
+  if (response->http_status_code != net::HTTP_OK) {
+    std::move(callback).Run(base::unexpected(GetError(std::move(response))));
     return;
   }
-  std::move(callback).Run(base::unexpected(GetError(std::move(response))));
+
+  std::move(callback).Run(ParseCategoriesResponse(
+      base::JSONReader::ReadDict(response->response, base::JSON_PARSE_RFC)));
 }
 
-// `endpoint_fetcher` may be null.
 void TenorGifsApiResponseHandler(
     GifTenorApiFetcher::TenorGifsApiCallback callback,
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> response) {
-  if (response->http_status_code == net::HTTP_OK) {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        response->response,
-        base::BindOnce(ParsePaginatedGifsResponse).Then(std::move(callback)));
+  if (response->http_status_code != net::HTTP_OK) {
+    std::move(callback).Run(base::unexpected(GetError(std::move(response))));
     return;
   }
-  std::move(callback).Run(base::unexpected(GetError(std::move(response))));
+
+  std::move(callback).Run(ParsePaginatedGifsResponse(
+      base::JSONReader::ReadDict(response->response, base::JSON_PARSE_RFC)));
 }
 
 void FetchGifsByIdsResponseHandler(
     GifTenorApiFetcher::GetGifsByIdsCallback callback,
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> response) {
-  if (response->http_status_code == net::HTTP_OK) {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        response->response,
-        base::BindOnce(ParseGifsResponse).Then(std::move(callback)));
+  if (response->http_status_code != net::HTTP_OK) {
+    std::move(callback).Run(base::unexpected(GetError(std::move(response))));
     return;
   }
-  std::move(callback).Run(base::unexpected(GetError(std::move(response))));
+
+  std::move(callback).Run(ParseGifsResponse(
+      base::JSONReader::ReadDict(response->response, base::JSON_PARSE_RFC)));
 }
 
 }  // namespace
