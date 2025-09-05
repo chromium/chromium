@@ -38,10 +38,7 @@ ImageFetcherServiceFactory::ImageFetcherServiceFactory()
 ImageFetcherServiceFactory::~ImageFetcherServiceFactory() {}
 
 std::unique_ptr<KeyedService>
-ImageFetcherServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+ImageFetcherServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
