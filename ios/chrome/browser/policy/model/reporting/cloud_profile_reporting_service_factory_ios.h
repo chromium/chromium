@@ -24,9 +24,9 @@ class CloudProfileReportingServiceFactoryIOS
       const CloudProfileReportingServiceFactoryIOS&) = delete;
 
  protected:
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 
  private:
   friend base::NoDestructor<CloudProfileReportingServiceFactoryIOS>;

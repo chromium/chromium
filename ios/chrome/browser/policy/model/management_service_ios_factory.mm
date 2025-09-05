@@ -37,9 +37,8 @@ ManagementServiceIOSFactory::~ManagementServiceIOSFactory() = default;
 
 std::unique_ptr<KeyedService>
 ManagementServiceIOSFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  return std::make_unique<ManagementServiceIOS>(
-      ProfileIOS::FromBrowserState(browser_state));
+    ProfileIOS* profile) const {
+  return std::make_unique<ManagementServiceIOS>(profile);
 }
 
 }  // namespace policy

@@ -27,9 +27,9 @@ class ManagementServiceIOSFactory : public ProfileKeyedServiceFactoryIOS {
   ManagementServiceIOSFactory();
   ~ManagementServiceIOSFactory() override;
 
-  // ProfileKeyedServiceFactoryIOS:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace policy
