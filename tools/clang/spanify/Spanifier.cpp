@@ -1677,7 +1677,7 @@ void EmitCArrayIterCallExpr(const std::string& key,
                                       kBaseAutoSpanificationHelperIncludePath));
 }
 
-std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
+std::string GetNodeFromSizeExpr(const clang::Expr* size_expr,
                                 const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const std::string key = NodeKey(size_expr, source_manager);
@@ -2841,12 +2841,14 @@ std::string GetRHSImpl(const MatchFinder::MatchResult& result) {
 
   if (const clang::Expr* size_expr =
           result.Nodes.getNodeAs<clang::Expr>("size_node")) {
-    return getNodeFromSizeExpr(size_expr, result);
+    return GetNodeFromSizeExpr(size_expr, result);
   }
 
   // Not supposed to get here.
   llvm::errs() << "\n"
-                  "Error: getRHS() encountered an unexpected match.\n"
+                  "Error: "
+               << __FUNCTION__
+               << " encountered an unexpected match.\n"
                   "Expected one of : \n"
                   "  - rhs_type_loc\n"
                   "  - rhs_raw_ptr_type_loc\n"
@@ -2856,7 +2858,7 @@ std::string GetRHSImpl(const MatchFinder::MatchResult& result) {
                   "  - size_node\n"
                   "\n";
   DumpMatchResult(result);
-  assert(false && "Unexpected match in getRHS()");
+  assert(false);
 }
 
 // Extracts the rhs node from the match result.
