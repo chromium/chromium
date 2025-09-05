@@ -54,6 +54,8 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/coordinator/default_browser_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public/features.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_collection_view_audience.h"
@@ -82,6 +84,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_state.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_passwords_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_prefs.h"
+#import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -251,6 +254,7 @@ using segmentation_platform::TipIdentifier;
   SendTabPromoMediator* _sendTabPromoMediator;
   SigninCoordinator* _signinCoordinator;
   MagicStackCollectionViewController* _magicStackCollectionView;
+  DefaultBrowserMediator* _defaultBrowserMediator;
 
   raw_ptr<segmentation_platform::SegmentationPlatformService>
       _segmentationService;
@@ -474,6 +478,12 @@ using segmentation_platform::TipIdentifier;
     _appBundlePromoMediator.presentationAudience = self;
     [moduleMediators addObject:_appBundlePromoMediator];
   }
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::kDefaultBrowserMagicStackIos)) {
+    _defaultBrowserMediator = [[DefaultBrowserMediator alloc] init];
+    _defaultBrowserMediator.presentationAudience = self;
+    [moduleMediators addObject:_defaultBrowserMediator];
+  }
 
   ContentSuggestionsViewController* viewController =
       [[ContentSuggestionsViewController alloc] init];
@@ -682,6 +692,38 @@ using segmentation_platform::TipIdentifier;
       presentAppStoreBundlePage:self.magicStackCollectionView
                  withCompletion:^{
                  }];
+}
+
+- (void)didTapDefaultBrowserPromo {
+  DefaultBrowserMagicStackIosVariationType variation =
+      GetDefaultBrowserMagicStackIosVariation();
+
+  if (variation ==
+      DefaultBrowserMagicStackIosVariationType::kTapToDeviceSettings) {
+    NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+#if defined(__IPHONE_18_3) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_3
+    if (@available(iOS 18.3, *)) {
+      if (IsDefaultAppsDestinationAvailable() &&
+          IsUseDefaultAppsDestinationForPromosEnabled()) {
+        url = [NSURL URLWithString:
+                         UIApplicationOpenDefaultApplicationsSettingsURLString];
+      }
+    }
+#endif
+    [[UIApplication sharedApplication] openURL:url
+                                       options:{}
+                             completionHandler:nil];
+
+  } else if (variation ==
+             DefaultBrowserMagicStackIosVariationType::kTapToAppSettings) {
+    id<SettingsCommands> settings_handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SettingsCommands);
+    [settings_handler
+        showDefaultBrowserSettingsFromViewController:nil
+                                        sourceForUMA:
+                                            DefaultBrowserSettingsPageSource::
+                                                kMagicStackCard];
+  }
 }
 
 - (void)openTipDestination:(segmentation_platform::TipIdentifier)tip {

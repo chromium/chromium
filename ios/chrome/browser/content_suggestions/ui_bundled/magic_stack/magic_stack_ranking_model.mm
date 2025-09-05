@@ -43,6 +43,9 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/coordinator/default_browser_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public/features.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/ui/default_browser_config.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_item.h"
@@ -108,6 +111,7 @@ using segmentation_platform::home_modules::LensEphemeralModule;
 using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
 @interface MagicStackRankingModel () <AppBundlePromoMediatorDelegate,
+                                      DefaultBrowserDelegate,
                                       PriceTrackingPromoMediatorDelegate,
                                       SafetyCheckMagicStackMediatorDelegate,
                                       SendTabPromoMediatorDelegate,
@@ -148,6 +152,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   SendTabPromoMediator* _sendTabPromoMediator;
   TipsMagicStackMediator* _tipsMediator;
   AppBundlePromoMediator* _appBundlePromoMediator;
+  DefaultBrowserMediator* _defaultBrowserMediator;
   raw_ptr<TipsManagerIOS> _tipsManager;
   base::TimeTicks ranking_fetch_start_time_;
   ContentSuggestionsModuleType _ephemeralCardToShow;
@@ -216,6 +221,10 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         _appBundlePromoMediator =
             static_cast<AppBundlePromoMediator*>(mediator);
         _appBundlePromoMediator.delegate = self;
+      } else if ([mediator isKindOfClass:[DefaultBrowserMediator class]]) {
+        _defaultBrowserMediator =
+            static_cast<DefaultBrowserMediator*>(mediator);
+        _defaultBrowserMediator.delegate = self;
       } else {
         // Known module mediators need to be handled.
         NOTREACHED();
@@ -341,6 +350,20 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_appBundlePromoMediator.config
+                                animate:YES
+                         withCompletion:completion];
+}
+
+#pragma mark - DefaultBrowserDelegate
+
+- (void)removeDefaultBrowserPromoModuleWithCompletion:
+    (ProceduralBlock)completion {
+  if (![self isMagicStackOrderReady]) {
+    return;
+  }
+
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_defaultBrowserMediator.config
                                 animate:YES
                          withCompletion:completion];
 }
@@ -619,6 +642,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         card = _appBundlePromoMediator.config;
         break;
       }
+    } else if (label == segmentation_platform::kDefaultBrowserPromo) {
+      if (GetDefaultBrowserMagicStackIosVariation() !=
+          DefaultBrowserMagicStackIosVariationType::kDisabled) {
+        _ephemeralCardToShow = ContentSuggestionsModuleType::kDefaultBrowser;
+        card = _defaultBrowserMediator.config;
+        break;
+      }
     }
   }
   if (_ephemeralCardToShow != ContentSuggestionsModuleType::kInvalid && card) {
@@ -850,6 +880,13 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                              kAppBundlePromoEphemeralCard) &&
             _appBundlePromoMediator && _appBundlePromoMediator.config) {
           [magicStackOrder addObject:_appBundlePromoMediator.config];
+        }
+        break;
+      case ContentSuggestionsModuleType::kDefaultBrowser:
+        if (base::FeatureList::IsEnabled(segmentation_platform::features::
+                                             kDefaultBrowserMagicStackIos) &&
+            _defaultBrowserMediator) {
+          [magicStackOrder addObject:_defaultBrowserMediator.config];
         }
         break;
       default:

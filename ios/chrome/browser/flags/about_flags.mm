@@ -99,6 +99,7 @@
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public/features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -1470,6 +1471,17 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
      kMobilePromoOnDesktopAutofillNotification,
      std::size(kMobilePromoOnDesktopAutofillNotification), nullptr},
 };
+
+const FeatureEntry::FeatureParam kDefaultBrowserMagicStackIosDeviceSettings[] =
+    {{kDefaultBrowserMagicStackIosVariation, "1"}};
+const FeatureEntry::FeatureParam kDefaultBrowserMagicStackIosInAppSettings[] = {
+    {kDefaultBrowserMagicStackIosVariation, "2"}};
+
+const FeatureEntry::FeatureVariation kDefaultBrowserMagicStackIosVariations[] =
+    {{" - Tap to Device Settings", kDefaultBrowserMagicStackIosDeviceSettings,
+      std::size(kDefaultBrowserMagicStackIosDeviceSettings), nullptr},
+     {" - Tap to In App Settings", kDefaultBrowserMagicStackIosInAppSettings,
+      std::size(kDefaultBrowserMagicStackIosInAppSettings), nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -2878,8 +2890,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserMagicStackIosName,
      flag_descriptions::kDefaultBrowserMagicStackIosDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         segmentation_platform::features::kDefaultBrowserMagicStackIos)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         segmentation_platform::features::kDefaultBrowserMagicStackIos,
+         kDefaultBrowserMagicStackIosVariations,
+         "DefaultBrowserMagicStackIos")},
     {"lens-search-headers-check-enabled",
      flag_descriptions::kLensSearchHeadersCheckEnabledName,
      flag_descriptions::kLensSearchHeadersCheckEnabledDescription,
