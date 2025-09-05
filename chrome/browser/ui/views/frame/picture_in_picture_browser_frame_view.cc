@@ -954,8 +954,7 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
 
   // TODO(crbug.com/40279642): Don't force dark mode once we support a
   // light mode window.
-  GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark,
-                                    /*background_color=*/std::nullopt);
+  GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
 
 // Fade in animation is disabled for Document and Video Picture-in-Picture on
 // Windows. On Windows, resizable windows can not be translucent. See

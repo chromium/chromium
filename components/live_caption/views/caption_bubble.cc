@@ -1402,8 +1402,7 @@ void CaptionBubble::SetBackgroundColor() {
   }
 
   views::BubbleDialogDelegateView::SetBackgroundColor(background_color);
-  GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark,
-                                    /*background_color=*/std::nullopt);
+  GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
 }
 
 void CaptionBubble::OnLanguageChanged(const std::string& display_language) {

@@ -2408,11 +2408,15 @@ void Widget::OnAXModeAdded(ui::AXMode mode) {
 }
 
 void Widget::SetColorModeOverride(
-    std::optional<ui::ColorProviderKey::ColorMode> color_mode,
-    std::optional<ui::ColorId> background_color) {
-  if (color_mode != color_mode_override_ ||
-      background_color != background_color_) {
+    std::optional<ui::ColorProviderKey::ColorMode> color_mode) {
+  if (color_mode != color_mode_override_) {
     color_mode_override_ = color_mode;
+    ThemeChanged();
+  }
+}
+
+void Widget::SetBackgroundColor(std::optional<ui::ColorId> background_color) {
+  if (background_color != background_color_) {
     background_color_ = background_color;
     ThemeChanged();
   }

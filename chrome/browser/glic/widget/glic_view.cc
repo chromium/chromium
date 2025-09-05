@@ -85,8 +85,7 @@ void GlicView::UpdateBackgroundColor() {
 
   if (views::Widget* widget = GetWidget(); explicit_background && widget) {
     // Set the native widget background color if needed.
-    widget->SetColorModeOverride(
-        /*color_mode=*/std::nullopt, kColorGlicBackground);
+    widget->SetBackgroundColor(kColorGlicBackground);
   }
 }
 
