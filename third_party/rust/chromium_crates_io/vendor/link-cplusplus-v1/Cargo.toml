@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `link-cplusplus-1.0.10` crate.
+# `link-cplusplus-1.0.11` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "link-cplusplus"
-version = "1.0.10"
+version = "1.0.11"
 
 [package.metadata.gnrt]
 is_placeholder = true
