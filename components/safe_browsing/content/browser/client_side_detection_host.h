@@ -315,7 +315,8 @@ class ClientSideDetectionHost
   // last step before sending the ping to the server.
   void MaybeGetAccessToken(
       std::unique_ptr<ClientPhishingRequest> verdict,
-      std::optional<bool> did_match_high_confidence_allowlist);
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_on_device_model_invoked);
 
   // Callback that is called when the server ping back is
   // done. Display an interstitial if |is_phishing| is true.

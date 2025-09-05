@@ -21,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
@@ -58,6 +59,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -1329,6 +1331,10 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
 void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist) {
+  // Use the address of the verdict object as the unique track_id.
+  TRACE_EVENT_BEGIN(/*category=*/"safe_browsing",
+                    /*name=*/"OnDeviceScamDetection",
+                    perfetto::Track::FromPointer(verdict.get()));
   if (verdict->has_llama_forced_trigger_info()) {
     LogLlamaForcedTriggerInfoFields(verdict->llama_forced_trigger_info());
   }
@@ -1342,7 +1348,8 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
       *verdict->mutable_intelligent_scan_info() =
           std::move(intelligent_scan_info);
       MaybeGetAccessToken(std::move(verdict),
-                          did_match_high_confidence_allowlist);
+                          did_match_high_confidence_allowlist,
+                          /*is_on_device_model_invoked=*/false);
       return;
     }
 
@@ -1365,7 +1372,8 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
       *verdict->mutable_intelligent_scan_info() =
           std::move(intelligent_scan_info);
       MaybeGetAccessToken(std::move(verdict),
-                          did_match_high_confidence_allowlist);
+                          did_match_high_confidence_allowlist,
+                          /*is_on_device_model_invoked=*/false);
       return;
     }
 
@@ -1376,7 +1384,8 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
     return;
   }
 
-  MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist);
+  MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist,
+                      /*is_on_device_model_invoked=*/false);
 }
 
 void ClientSideDetectionHost::OnInnerTextComplete(
@@ -1400,8 +1409,8 @@ void ClientSideDetectionHost::OnInnerTextComplete(
     }
     *verdict->mutable_intelligent_scan_info() =
         std::move(intelligent_scan_info);
-    MaybeGetAccessToken(std::move(verdict),
-                        did_match_high_confidence_allowlist);
+    MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist,
+                        /*is_on_device_model_invoked=*/false);
     return;
   }
 
@@ -1437,12 +1446,17 @@ void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
   }
   *verdict->mutable_intelligent_scan_info() = std::move(intelligent_scan_info);
 
-  MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist);
+  MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist,
+                      /*is_on_device_model_invoked=*/true);
 }
 
 void ClientSideDetectionHost::MaybeGetAccessToken(
     std::unique_ptr<ClientPhishingRequest> verdict,
-    std::optional<bool> did_match_high_confidence_allowlist) {
+    std::optional<bool> did_match_high_confidence_allowlist,
+    bool is_on_device_model_invoked) {
+  TRACE_EVENT_END(
+      /*category=*/"safe_browsing", perfetto::Track::FromPointer(verdict.get()),
+      /*arg=*/"inquired_on_device_model", /*value=*/is_on_device_model_invoked);
   if (CanGetAccessToken()) {
     token_fetcher_->Start(base::BindOnce(
         &ClientSideDetectionHost::OnGotAccessToken, weak_factory_.GetWeakPtr(),
