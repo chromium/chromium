@@ -59,7 +59,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     private static final int IPH_TAB_SWITCHER_XR_WAIT_TIME_MS = 5 * 1000;
-    private static final int IPH_TAB_SWITCHER_XR_MIN_TABS = 4;
+    private static final int IPH_TAB_SWITCHER_XR_MIN_TABS = 3;
 
     private final CallbackController mCallbackController = new CallbackController();
     private final Context mContext;
