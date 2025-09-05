@@ -197,6 +197,7 @@ source_set("test_support") {
     ]
 
     deps += [
+      "//chrome/browser/preloading:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/browser/ui/location_bar",

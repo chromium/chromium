@@ -363,6 +363,7 @@ static_library("test_support") {
 
     deps += [
       "//chrome/browser/extensions",
+      "//chrome/browser/preloading:test_support",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_list_interface",
     ]
@@ -466,6 +467,7 @@ static_library("test_support") {
     public_deps += [
       "//apps:test_support",
       "//chrome/browser/extensions:test_support",
+      "//chrome/browser/preloading:test_support",
       "//chrome/browser/ui/autofill:test_support",
       "//chrome/common/extensions/api",
       "//components/guest_view/browser:test_support",
@@ -1412,6 +1414,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/policy:test_support",
+    "//chrome/browser/preloading:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/search_engines",
@@ -1731,6 +1734,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/preloading:prefs",
+      "//chrome/browser/preloading:test_support",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui/autofill",
       "//components/infobars/content",
@@ -1864,6 +1868,7 @@ if (is_android) {
       "//chrome/browser/payments:browser_tests",
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/policy:test_support",
+      "//chrome/browser/preloading:test_support",
       "//chrome/browser/preloading/prefetch:browser_tests",
       "//chrome/browser/preloading/prerender:browser_tests",
       "//chrome/browser/privacy_budget:browser_tests",
@@ -3972,6 +3977,7 @@ if (!is_android) {
       "//chrome/browser/history",
       "//chrome/browser/infobars:test_support",
       "//chrome/browser/notifications",
+      "//chrome/browser/preloading:test_support",
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/sessions",
       "//chrome/browser/signin:signin_promo",
@@ -11325,6 +11331,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/policy:test_support",
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:util",
+      "//chrome/browser/preloading:test_support",
       "//chrome/browser/privacy_sandbox:interactive_ui_tests",
       "//chrome/browser/privacy_sandbox/notice:factory",
       "//chrome/browser/privacy_sandbox/notice:test_support",

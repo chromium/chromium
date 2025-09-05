@@ -281,6 +281,7 @@ source_set("browser_tests") {
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:test_support_ui",
     "//chrome/browser/policy:policy_util",
+    "//chrome/browser/preloading:test_support",
     "//chrome/browser/shortcuts",
     "//chrome/browser/themes",
     "//chrome/browser/ui:ui_features",

@@ -50,6 +50,7 @@ if (!is_android) {
     testonly = true
     deps = [
       ":breadcrumbs",
+      "//chrome/browser/preloading:test_support",
       "//chrome/test:test_support",
       "//components/breadcrumbs/core",
       "//components/breadcrumbs/core:status",
