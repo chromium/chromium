@@ -225,10 +225,8 @@ RoundedDisplayFrameFactory::CreateCompositorFrame(
     // requirements of using hardware overlays.
     const gfx::Transform& buffer_to_target_transform = root_rotation_inverse;
 
-    viz::ResourceId resource_id =
-        resource_manager.OfferResource(std::move(resource));
     viz::TransferableResource transferable_resource =
-        resource_manager.PrepareResourceForExport(resource_id);
+        resource_manager.OfferAndPrepareResourceForExport(std::move(resource));
 
     AppendQuad(transferable_resource, buffer_to_target_transform, *gutter,
                *render_pass);

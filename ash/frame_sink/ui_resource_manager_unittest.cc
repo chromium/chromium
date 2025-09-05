@@ -59,18 +59,18 @@ TEST_F(UiResourceManagerTest, ReuseResource_NoResources) {
 }
 
 TEST_F(UiResourceManagerTest, ReuseResource) {
-  resource_manager_->OfferResource(
+  resource_manager_->OfferResourceForTesting(
       MakeResource(gfx::Size(10, 10), viz::SinglePlaneFormat::kBGRA_8888,
                    kTestUiSourceId_1));
 
-  resource_manager_->OfferResource(MakeResource(
+  resource_manager_->OfferResourceForTesting(MakeResource(
       kDefaultSize, viz::SinglePlaneFormat::kBGRA_8888, kTestUiSourceId_1));
 
-  resource_manager_->OfferResource(
+  resource_manager_->OfferResourceForTesting(
       MakeResource(gfx::Size(10, 20), viz::SinglePlaneFormat::kBGRA_8888,
                    kTestUiSourceId_2));
 
-  resource_manager_->OfferResource(
+  resource_manager_->OfferResourceForTesting(
       MakeResource(gfx::Size(10, 20), viz::SinglePlaneFormat::kBGRA_8888,
                    kTestUiSourceId_2));
 
@@ -105,8 +105,8 @@ TEST_F(UiResourceManagerTest, ReuseResource) {
 }
 
 TEST_F(UiResourceManagerTest, OfferResource) {
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
+  resource_manager_->OfferResourceForTesting(std::make_unique<UiResource>());
+  resource_manager_->OfferResourceForTesting(std::make_unique<UiResource>());
 
   // As soon as we offer a resource, it is available to be used.
   EXPECT_EQ(resource_manager_->available_resources_count(), 2u);
@@ -115,69 +115,37 @@ TEST_F(UiResourceManagerTest, OfferResource) {
 using UiResourceManagerDeathTest = UiResourceManagerTest;
 TEST_F(UiResourceManagerDeathTest,
        NeedToClearAllExportedResourceBeforeDeletingManager) {
-  viz::ResourceId to_be_exported_resource_id =
-      resource_manager_->OfferResource(MakeResource(kDefaultSize));
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
-
-  resource_manager_->PrepareResourceForExport(to_be_exported_resource_id);
+  resource_manager_->OfferResourceForTesting(std::make_unique<UiResource>());
+  resource_manager_->OfferAndPrepareResourceForExport(
+      MakeResource(kDefaultSize));
 
   // The manager cannot be deleted as we still have a exported resource.
   EXPECT_DCHECK_DEATH({ resource_manager_.reset(); });
 }
 
-TEST_F(UiResourceManagerTest, PrepareResourceForExporting_InvalidIds) {
-  resource_manager_->OfferResource(MakeResource(kDefaultSize));
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
-  {
-    // We cannot export a resource that we do not manage.
-    auto transferable_resource =
-        resource_manager_->PrepareResourceForExport(viz::ResourceId(20));
-    EXPECT_TRUE(transferable_resource.is_empty());
-    EXPECT_EQ(resource_manager_->exported_resources_count(), 0u);
-  }
-}
-
 TEST_F(UiResourceManagerTest, PrepareResourceForExporting) {
-  viz::ResourceId to_be_exported_resource_id =
-      resource_manager_->OfferResource(MakeResource(kDefaultSize));
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
+  resource_manager_->OfferResourceForTesting(std::make_unique<UiResource>());
+  resource_manager_->OfferResourceForTesting(std::make_unique<UiResource>());
 
   EXPECT_EQ(resource_manager_->exported_resources_count(), 0u);
-  EXPECT_EQ(resource_manager_->available_resources_count(), 3u);
+  EXPECT_EQ(resource_manager_->available_resources_count(), 2u);
 
-  // The resource in now in the exported_pool.
   viz::TransferableResource transferable_resource =
-      resource_manager_->PrepareResourceForExport(to_be_exported_resource_id);
+      resource_manager_->OfferAndPrepareResourceForExport(
+          MakeResource(kDefaultSize));
 
   // We exported one resources leaving two resources as available.
   EXPECT_EQ(resource_manager_->exported_resources_count(), 1u);
   EXPECT_EQ(resource_manager_->available_resources_count(), 2u);
-
-  EXPECT_EQ(transferable_resource.id, to_be_exported_resource_id);
-}
-
-TEST_F(UiResourceManagerTest, CannotExportAlreadyExportedResource) {
-  viz::ResourceId to_be_exported_resource_id =
-      resource_manager_->OfferResource(MakeResource(kDefaultSize));
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
-
-  resource_manager_->PrepareResourceForExport(to_be_exported_resource_id);
-
-  auto transferable_resource =
-      resource_manager_->PrepareResourceForExport(to_be_exported_resource_id);
-  EXPECT_TRUE(transferable_resource.is_empty());
 }
 
 TEST_F(UiResourceManagerTest, CannotReuseExportedResourcesTillReclaimed) {
-  viz::ResourceId to_be_exported_resource =
-      resource_manager_->OfferResource(MakeResource(kDefaultSize));
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
+  resource_manager_->OfferResourceForTesting(std::make_unique<UiResource>());
+  EXPECT_EQ(resource_manager_->available_resources_count(), 1u);
 
-  EXPECT_EQ(resource_manager_->available_resources_count(), 2u);
-
-  resource_manager_->PrepareResourceForExport(to_be_exported_resource);
+  viz::TransferableResource transferable_resource =
+      resource_manager_->OfferAndPrepareResourceForExport(
+          MakeResource(kDefaultSize));
 
   // We cannot release an exported resource until the resource is reclaimed.
   auto released_resource = resource_manager_->GetResourceToReuse(
@@ -188,7 +156,7 @@ TEST_F(UiResourceManagerTest, CannotReuseExportedResourcesTillReclaimed) {
 
   std::vector<viz::ReturnedResource> returned;
   returned.emplace_back();
-  returned.back().id = to_be_exported_resource;
+  returned.back().id = transferable_resource.id;
   returned.back().count = 1;
   returned.back().lost = false;
 
@@ -205,16 +173,14 @@ TEST_F(UiResourceManagerTest, CannotReuseExportedResourcesTillReclaimed) {
 }
 
 TEST_F(UiResourceManagerTest, ExportedResourcesAreLost) {
-  viz::ResourceId to_be_exported_resource_1 =
-      resource_manager_->OfferResource(MakeResource(kDefaultSize));
-  viz::ResourceId to_be_exported_resource_2 =
-      resource_manager_->OfferResource(MakeResource(kDefaultSize));
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
+  resource_manager_->OfferResourceForTesting(std::make_unique<UiResource>());
+  resource_manager_->OfferResourceForTesting(std::make_unique<UiResource>());
+  resource_manager_->OfferResourceForTesting(std::make_unique<UiResource>());
 
-  resource_manager_->PrepareResourceForExport(to_be_exported_resource_1);
-  resource_manager_->PrepareResourceForExport(to_be_exported_resource_2);
+  resource_manager_->OfferAndPrepareResourceForExport(
+      MakeResource(kDefaultSize));
+  resource_manager_->OfferAndPrepareResourceForExport(
+      MakeResource(kDefaultSize));
 
   EXPECT_EQ(resource_manager_->available_resources_count(), 3u);
   EXPECT_EQ(resource_manager_->exported_resources_count(), 2u);
@@ -228,18 +194,15 @@ TEST_F(UiResourceManagerTest, ExportedResourcesAreLost) {
 }
 
 TEST_F(UiResourceManagerTest, ReclaimResources) {
-  viz::ResourceId to_be_exported_resource_1 =
-      resource_manager_->OfferResource(MakeResource(kDefaultSize));
-  viz::ResourceId to_be_exported_resource_2 =
-      resource_manager_->OfferResource(MakeResource(kDefaultSize));
-
-  resource_manager_->PrepareResourceForExport(to_be_exported_resource_1);
-  resource_manager_->PrepareResourceForExport(to_be_exported_resource_2);
+  auto resource1 = resource_manager_->OfferAndPrepareResourceForExport(
+      MakeResource(kDefaultSize));
+  auto resource2 = resource_manager_->OfferAndPrepareResourceForExport(
+      MakeResource(kDefaultSize));
   {
     // Returning a non-lost resource.
     std::vector<viz::ReturnedResource> returned;
     returned.emplace_back();
-    returned.back().id = to_be_exported_resource_2;
+    returned.back().id = resource2.id;
     returned.back().count = 1;
     returned.back().lost = false;
 
@@ -255,7 +218,7 @@ TEST_F(UiResourceManagerTest, ReclaimResources) {
     // Returning a lost resource.
     std::vector<viz::ReturnedResource> returned;
     returned.emplace_back();
-    returned.back().id = to_be_exported_resource_1;
+    returned.back().id = resource1.id;
     returned.back().count = 1;
     returned.back().lost = true;
 
@@ -272,26 +235,21 @@ TEST_F(UiResourceManagerTest, ReclaimResources) {
     EXPECT_EQ(resource_manager_->available_resources_count(), 1u);
   }
 
-  viz::ResourceId to_be_exported_resource_3 =
-      resource_manager_->OfferResource(MakeResource(kDefaultSize));
-
-  viz::ResourceId to_be_exported_resource_4 =
-      resource_manager_->OfferResource(MakeResource(kDefaultSize));
-
-  // Exporting more resources.
-  resource_manager_->PrepareResourceForExport(to_be_exported_resource_3);
-  resource_manager_->PrepareResourceForExport(to_be_exported_resource_4);
+  auto resource3 = resource_manager_->OfferAndPrepareResourceForExport(
+      MakeResource(kDefaultSize));
+  auto resource4 = resource_manager_->OfferAndPrepareResourceForExport(
+      MakeResource(kDefaultSize));
 
   {
     // Returning multiple resources.
     std::vector<viz::ReturnedResource> returned;
     returned.emplace_back();
-    returned.back().id = to_be_exported_resource_3;
+    returned.back().id = resource3.id;
     returned.back().count = 1;
     returned.back().lost = true;
 
     returned.emplace_back();
-    returned.back().id = to_be_exported_resource_4;
+    returned.back().id = resource4.id;
     returned.back().count = 1;
     returned.back().lost = false;
 

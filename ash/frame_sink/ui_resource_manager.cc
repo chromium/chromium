@@ -69,19 +69,6 @@ std::unique_ptr<UiResource> UiResourceManager::GetResourceToReuse(
   return nullptr;
 }
 
-viz::ResourceId UiResourceManager::OfferResource(
-    std::unique_ptr<UiResource> resource) {
-  if (!resource) {
-    return viz::kInvalidResourceId;
-  }
-
-  viz::ResourceId new_id = id_generator_.GenerateNextId();
-  resource->resource_id = new_id;
-  available_resources_pool_[new_id] = std::move(resource);
-
-  return new_id;
-}
-
 const UiResource* UiResourceManager::PeekExportedResource(
     viz::ResourceId resource_id) const {
   auto iter = exported_resources_pool_.find(resource_id);
@@ -109,6 +96,29 @@ void UiResourceManager::ReclaimResources(
       available_resources_pool_[entry.id] = std::move(resource);
     }
   }
+}
+
+void UiResourceManager::OfferResourceForTesting(
+    std::unique_ptr<UiResource> resource) {
+  OfferResource(std::move(resource));
+}
+
+viz::TransferableResource UiResourceManager::OfferAndPrepareResourceForExport(
+    std::unique_ptr<UiResource> resource) {
+  return PrepareResourceForExport(OfferResource(std::move(resource)));
+}
+
+viz::ResourceId UiResourceManager::OfferResource(
+    std::unique_ptr<UiResource> resource) {
+  if (!resource) {
+    return viz::kInvalidResourceId;
+  }
+
+  viz::ResourceId new_id = id_generator_.GenerateNextId();
+  resource->resource_id = new_id;
+  available_resources_pool_[new_id] = std::move(resource);
+
+  return new_id;
 }
 
 viz::TransferableResource UiResourceManager::PrepareResourceForExport(

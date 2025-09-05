@@ -231,7 +231,7 @@ TEST_F(ViewTreeHostRootViewFrameFactoryTest,
   constexpr gfx::Size kResourceSizes[4] = {
       {200, 100}, {200, 100}, {250, 150}, {50, 25}};
   for (const auto& size : kResourceSizes) {
-    resource_manager_.OfferResource(
+    resource_manager_.OfferResourceForTesting(
         ViewTreeHostRootViewFrameFactory::CreateUiResource(
             size, kTestSharedImageFormat, kTestSourceId,
             /*is_overlay_candidate=*/false));

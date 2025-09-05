@@ -185,10 +185,8 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     resource->damaged = false;
   }
 
-  viz::ResourceId frame_resource_id =
-      resource_manager->OfferResource(std::move(resource));
   viz::TransferableResource transferable_resource =
-      resource_manager->PrepareResourceForExport(frame_resource_id);
+      resource_manager->OfferAndPrepareResourceForExport(std::move(resource));
 
   gfx::Transform target_to_buffer_transform(window_to_buffer_transform);
   target_to_buffer_transform.Scale(1.f / device_scale_factor,

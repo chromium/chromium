@@ -42,15 +42,9 @@ class ASH_EXPORT UiResourceManager {
 
   void ReclaimResources(const std::vector<viz::ReturnedResource>& resources);
 
-  // Give the `resourse` to be managed by the manager. The resource is
-  // immediately available for use and can be exported.
-  viz::ResourceId OfferResource(std::unique_ptr<UiResource> resource);
-
-  // We take the available resource identified by `resource_id`, map it to a
-  // transferable resource and mark it as an exported resource. Only a resource
-  // that is currently being managed can be exported.
-  viz::TransferableResource PrepareResourceForExport(
-      viz::ResourceId resource_id);
+  // Give the `resource` to be managed by the manager and exports it.
+  viz::TransferableResource OfferAndPrepareResourceForExport(
+      std::unique_ptr<UiResource> resource);
 
   // Mark all the managed resources to be damaged.
   void DamageResources();
@@ -65,6 +59,8 @@ class ASH_EXPORT UiResourceManager {
 
   size_t available_resources_count() const;
 
+  void OfferResourceForTesting(std::unique_ptr<UiResource> resource);
+
  private:
   // Returns the resource_id of an available resource of given `size`,
   // `format` and `ui_source_id`. If there is no matching resource available, we
@@ -74,6 +70,16 @@ class ASH_EXPORT UiResourceManager {
                                       UiSourceId ui_source_id) const;
 
   std::unique_ptr<UiResource> ReleaseAvailableResource(
+      viz::ResourceId resource_id);
+
+  // Give the `resourse` to be managed by the manager. The resource is
+  // immediately available for use and can be exported.
+  viz::ResourceId OfferResource(std::unique_ptr<UiResource> resource);
+
+  // We take the available resource identified by `resource_id`, map it to a
+  // transferable resource and mark it as an exported resource. Only a resource
+  // that is currently being managed can be exported.
+  viz::TransferableResource PrepareResourceForExport(
       viz::ResourceId resource_id);
 
   // TODO(zoraiznaeem): If a feature ends up growing the size of pool past 40,

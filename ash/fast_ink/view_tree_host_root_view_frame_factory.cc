@@ -170,10 +170,8 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
     resource->damaged = false;
   }
 
-  viz::ResourceId frame_resource_id =
-      resource_manager.OfferResource(std::move(resource));
   viz::TransferableResource transferable_resource =
-      resource_manager.PrepareResourceForExport(frame_resource_id);
+      resource_manager.OfferAndPrepareResourceForExport(std::move(resource));
 
   auto frame = std::make_unique<viz::CompositorFrame>();
   frame->metadata.begin_frame_ack = begin_frame_ack;

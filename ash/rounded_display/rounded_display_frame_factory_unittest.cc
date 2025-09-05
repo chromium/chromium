@@ -229,7 +229,7 @@ TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
 
   // Populate resources in the resource manager.
   for (const auto* gutter : gutters) {
-    resource_manager_.OfferResource(
+    resource_manager_.OfferResourceForTesting(
         RoundedDisplayFrameFactory::CreateUiResource(gutter->bounds().size(),
                                                      kTestSharedImageFormat,
                                                      gutter->ui_source_id(),
@@ -252,7 +252,7 @@ TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
   // Adding more resources.
   for (int index : {0, 0}) {
     const auto* gutter = gutters.at(index);
-    resource_manager_.OfferResource(
+    resource_manager_.OfferResourceForTesting(
         RoundedDisplayFrameFactory::CreateUiResource(gutter->bounds().size(),
                                                      kTestSharedImageFormat,
                                                      gutter->ui_source_id(),

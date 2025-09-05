@@ -13,6 +13,7 @@
 
 namespace viz {
 class CompositorFrame;
+struct TransferableResource;
 }  // namespace viz
 
 namespace ash {
@@ -34,11 +35,12 @@ class TestFrameFactory {
       const gfx::Size& last_submitted_frame_size,
       float last_submitted_frame_dsf);
 
-  void SetFrameResources(std::vector<viz::ResourceId> frame_resources);
+  void SetFrameResources(
+      std::vector<viz::TransferableResource> frame_resources);
   void SetFrameMetaData(const gfx::Size& frame_size, float dsf);
 
  private:
-  std::vector<viz::ResourceId> latest_frame_resources_;
+  std::vector<viz::TransferableResource> latest_frame_resources_;
   gfx::Size latest_frame_size_;
   float latest_frame_dsf_ = 1.0;
 };

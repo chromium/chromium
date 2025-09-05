@@ -204,9 +204,10 @@ TEST_F(FastInkHostCreateFrameUtilTest, OnlyCreateNewResourcesWhenNecessary) {
       {1000, 404}, {1000, 404}, {250, 150}, {50, 25}};
   auto mailbox = shared_image_->mailbox();
   for (const auto& size : kResourceSizes) {
-    resource_manager_.OfferResource(fast_ink_internal::CreateUiResource(
-        size, fast_ink_internal::kFastInkUiSourceId,
-        /*is_overlay_candidate=*/false, mailbox, gpu::SyncToken()));
+    resource_manager_.OfferResourceForTesting(
+        fast_ink_internal::CreateUiResource(
+            size, fast_ink_internal::kFastInkUiSourceId,
+            /*is_overlay_candidate=*/false, mailbox, gpu::SyncToken()));
   }
 
   EXPECT_EQ(resource_manager_.available_resources_count(), 4u);
