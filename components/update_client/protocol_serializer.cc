@@ -55,11 +55,7 @@ std::string GetOSVersion() {
 }
 
 std::string GetServicePack() {
-#if BUILDFLAG(IS_WIN)
-  return base::win::OSInfo::GetInstance()->service_pack_str();
-#else
   return {};
-#endif
 }
 
 // Returns brand code in the expected format, or an empty string otherwise.

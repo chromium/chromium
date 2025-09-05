@@ -28,7 +28,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
@@ -239,16 +238,8 @@ std::string SysInfo::OperatingSystemName() {
 std::string SysInfo::OperatingSystemVersion() {
   win::OSInfo* os_info = win::OSInfo::GetInstance();
   win::OSInfo::VersionNumber version_number = os_info->version_number();
-  std::string version(StringPrintf("%d.%d.%d", version_number.major,
-                                   version_number.minor, version_number.build));
-  win::OSInfo::ServicePack service_pack = os_info->service_pack();
-  if (service_pack.major != 0) {
-    version += StringPrintf(" SP%d", service_pack.major);
-    if (service_pack.minor != 0) {
-      version += StringPrintf(".%d", service_pack.minor);
-    }
-  }
-  return version;
+  return StringPrintf("%d.%d.%d", version_number.major, version_number.minor,
+                      version_number.build);
 }
 
 // TODO: Implement OperatingSystemVersionComplete, which would include

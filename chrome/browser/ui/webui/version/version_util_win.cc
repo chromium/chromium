@@ -24,8 +24,6 @@ std::string GetFullWindowsVersion() {
   // Server or Desktop
   const bool server =
       gi->version_type() == base::win::VersionType::SUITE_SERVER;
-  // Service Pack
-  const std::string sp = gi->service_pack_str();
 
   if (major == 11) {
     version += (server) ? "Server OS" : "11";
@@ -41,13 +39,11 @@ std::string GetFullWindowsVersion() {
     switch (minor) {
       case 0:
         // Windows Vista or Server 2008
-        version += (server) ? "Server 2008 " : "Vista ";
-        version += sp;
+        version += (server) ? "Server 2008" : "Vista";
         break;
       case 1:
         // Windows 7 or Server 2008 R2
-        version += (server) ? "Server 2008 R2 " : "7 ";
-        version += sp;
+        version += (server) ? "Server 2008 R2" : "7";
         break;
       case 2:
         // Windows 8 or Server 2012
@@ -63,8 +59,7 @@ std::string GetFullWindowsVersion() {
     }
   } else if ((major == 5) && (minor > 0)) {
     // Windows XP or Server 2003
-    version += (server) ? "Server 2003 " : "XP ";
-    version += sp;
+    version += (server) ? "Server 2003" : "XP";
   } else {
     // unknown version
     return base::StringPrintf("unknown version %u.%u", major, minor);

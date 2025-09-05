@@ -68,7 +68,6 @@ base::Version ClientFilterableState::GetOSVersion() {
 
 #if BUILDFLAG(IS_WIN)
   std::string win_version = base::SysInfo::OperatingSystemVersion();
-  base::ReplaceSubstringsAfterOffset(&win_version, 0, " SP", ".");
   ret = base::Version(win_version);
   DCHECK(ret.IsValid()) << win_version;
 #else
