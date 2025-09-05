@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_collection_view_cell.h"
 
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_context_menu_interaction_handler.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_layout_attributes.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_background_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_container.h"
@@ -86,6 +88,20 @@ const float kCornerRadius = 24;
     _contextMenuInteraction = nil;
   }
   [_moduleContainer resetView];
+}
+
+- (void)applyLayoutAttributes:
+    (UICollectionViewLayoutAttributes*)layoutAttributes {
+  MagicStackLayoutAttributes* attributes =
+      base::apple::ObjCCast<MagicStackLayoutAttributes>(layoutAttributes);
+
+  self.contentView.alpha = attributes.subviewAlpha;
+  if (attributes.subviewAlpha == 1) {
+    [_moduleBackgroundView fadeIn];
+  } else {
+    [_moduleBackgroundView fadeOut];
+  }
+  [super applyLayoutAttributes:attributes];
 }
 
 @end

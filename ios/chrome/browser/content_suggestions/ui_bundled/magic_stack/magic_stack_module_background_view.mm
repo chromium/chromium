@@ -15,6 +15,8 @@
 @implementation MagicStackModuleBackgroundView {
   UIView* _backgroundColorView;
   UIVisualEffectView* _backgroundBlurView;
+
+  BOOL _faded;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -40,10 +42,8 @@
   if (_backgroundBlurView) {
     return _backgroundBlurView;
   }
-  UIVisualEffect* blurEffect =
-      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
 
-  _backgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+  _backgroundBlurView = [[UIVisualEffectView alloc] initWithEffect:nil];
   _backgroundBlurView.translatesAutoresizingMaskIntoConstraints = NO;
   return _backgroundBlurView;
 }
@@ -71,6 +71,7 @@
       [_backgroundColorView removeFromSuperview];
       _backgroundColorView = nil;
     }
+    [self updateFadedState];
     return;
   }
 
@@ -89,6 +90,31 @@
   backgroundColorView.backgroundColor =
       colorPalette ? colorPalette.secondaryCellColor
                    : [UIColor colorNamed:kBackgroundColor];
+
+  [self updateFadedState];
+}
+
+- (void)fadeIn {
+  _faded = NO;
+  [self updateFadedState];
+}
+
+- (void)fadeOut {
+  _faded = YES;
+  [self updateFadedState];
+}
+
+// Updates the currently active view to the correct faded state.
+- (void)updateFadedState {
+  if (_backgroundBlurView) {
+    _backgroundBlurView.effect =
+        _faded ? nil
+               : [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
+  }
+
+  if (_backgroundColorView) {
+    _backgroundColorView.alpha = _faded ? 0 : 1;
+  }
 }
 
 @end

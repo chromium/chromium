@@ -7,11 +7,12 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_custom_layout.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_utils.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 
 @implementation MagicStackLayoutConfigurator {
-  UICollectionViewCompositionalLayout* _magicStackLayout;
+  MagicStackCustomLayout* _magicStackLayout;
 }
 
 - (UICollectionViewCompositionalLayout*)magicStackCompositionalLayout {
@@ -21,7 +22,7 @@
     config.contentInsetsReference = UIContentInsetsReferenceNone;
     [config setScrollDirection:UICollectionViewScrollDirectionHorizontal];
     __weak MagicStackLayoutConfigurator* weakSelf = self;
-    _magicStackLayout = [[UICollectionViewCompositionalLayout alloc]
+    _magicStackLayout = [[MagicStackCustomLayout alloc]
         initWithSectionProvider:^(
             NSInteger sectionIndex,
             id<NSCollectionLayoutEnvironment> layoutEnvironment) {
