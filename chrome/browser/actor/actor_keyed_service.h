@@ -24,6 +24,7 @@
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -125,9 +126,11 @@ class ActorKeyedService : public KeyedService {
   using CredentialSelectedCallback = base::RepeatingCallback<void(
       webui::mojom::SelectCredentialDialogResponsePtr)>;
   using RequestToShowCredentialSelectionDialogSubscriberCallback =
-      base::RepeatingCallback<void(TaskId,
-                                   const std::vector<actor_login::Credential>&,
-                                   CredentialSelectedCallback)>;
+      base::RepeatingCallback<void(
+          TaskId,
+          const base::flat_map<std::string, gfx::Image>& icons,
+          const std::vector<actor_login::Credential>&,
+          CredentialSelectedCallback)>;
   base::CallbackListSubscription
   AddRequestToShowCredentialSelectionDialogSubscriberCallback(
       RequestToShowCredentialSelectionDialogSubscriberCallback callback);
@@ -136,6 +139,7 @@ class ActorKeyedService : public KeyedService {
   // for the given task.
   void NotifyRequestToShowCredentialSelectionDialog(
       TaskId task_id,
+      const base::flat_map<std::string, gfx::Image>& icons,
       const std::vector<actor_login::Credential>& credentials);
 
   // Callback for when a credential is selected.

@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base64.h"
 #include "base/test/scoped_feature_list.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -10,16 +13,29 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "ui/compositor/compositor_switches.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace actor {
 namespace {
 
+using ::testing::_;
 using ::testing::NiceMock;
+using ::testing::Return;
 using ::testing::ReturnRef;
+
+const SkBitmap GenerateSquareBitmap(int size, SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocPixels(SkImageInfo::MakeN32(size, size, kOpaque_SkAlphaType));
+  bitmap.eraseColor(color);
+  bitmap.setImmutable();
+  return bitmap;
+}
 
 class MockExecutionEngine : public ExecutionEngine {
  public:
@@ -30,6 +46,7 @@ class MockExecutionEngine : public ExecutionEngine {
               GetActorLoginService,
               (),
               (override));
+  MOCK_METHOD(favicon::FaviconService*, GetFaviconService, (), (override));
 };
 
 using AttemptLoginToolInteractiveUiTestBase =
@@ -56,6 +73,27 @@ class AttemptLoginToolInteractiveUiTest
 
     ON_CALL(mock_execution_engine(), GetActorLoginService())
         .WillByDefault(ReturnRef(mock_login_service_));
+
+    ON_CALL(mock_execution_engine(), GetFaviconService())
+        .WillByDefault(Return(&mock_favicon_service_));
+
+    ON_CALL(mock_favicon_service_, GetFaviconImageForPageURL(_, _, _))
+        .WillByDefault([this](const GURL& page_url,
+                              favicon_base::FaviconImageCallback callback,
+                              base::CancelableTaskTracker* tracker) {
+          favicon_base::FaviconImageResult result;
+          result.image = red_image_;
+          std::move(callback).Run(std::move(result));
+          return static_cast<base::CancelableTaskTracker::TaskId>(1);
+        });
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Must enable the pixel output. Otherwise the PNG icons will not be
+    // rendered.
+    command_line->AppendSwitch(::switches::kEnablePixelOutputInTests);
+    glic::test::InteractiveGlicTestT<
+        AttemptLoginToolInteractiveUiTestBase>::SetUpCommandLine(command_line);
   }
 
   std::unique_ptr<ExecutionEngine> CreateExecutionEngine(
@@ -73,8 +111,15 @@ class AttemptLoginToolInteractiveUiTest
     return credential_id_generator_.GenerateNextId();
   }
 
+  const SkBitmap& red_bitmap() { return red_bitmap_; }
+
  private:
+  const SkBitmap red_bitmap_ = GenerateSquareBitmap(/*size=*/10, SK_ColorRED);
+  const gfx::Image red_image_ = gfx::Image::CreateFrom1xBitmap(red_bitmap_);
+
   MockActorLoginService mock_login_service_;
+  favicon::MockFaviconService mock_favicon_service_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 
   actor_login::Credential::Id::Generator credential_id_generator_;
@@ -102,9 +147,21 @@ IN_PROC_BROWSER_TEST_F(AttemptLoginToolInteractiveUiTest, SmokeTest) {
             static constexpr char kHandleDialogRequest[] =
                 R"js(
       (() => {
+        /** Converts a PNG (Blob) to a base64 encoded string. */
+        function blobToBase64(blob) {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve(reader.result);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        }
+
         window.credentialDialogRequestData = new Promise(resolve => {
           client.browser.selectCredentialDialogRequestHandler().subscribe(
-            request => {
+            async (request) => {
               // Respond to the request by selecting the second credential.
               request.onDialogClosed({
                 response: {
@@ -112,12 +169,25 @@ IN_PROC_BROWSER_TEST_F(AttemptLoginToolInteractiveUiTest, SmokeTest) {
                   selectedCredentialId: request.credentials[1].id,
                 }
               });
+
+              // Convert the Map<string, Blob> to Object<string, string>.
+              const iconPromises = Array.from(request.icons.entries()).map(
+                async ([site, getBlob]) => {
+                  const blob = await getBlob();
+                  const base64 = await blobToBase64(blob);
+                  return [site, base64];
+                }
+              );
+              const base64Icons =
+                Object.fromEntries(await Promise.all(iconPromises));
+
               // Resolve the promise with the request data to be verified in
               // C++.
               resolve({
                 taskId: request.taskId,
                 showDialog: request.showDialog,
                 credentials: request.credentials,
+                icons: base64Icons,
               });
             }
           );
@@ -136,6 +206,13 @@ IN_PROC_BROWSER_TEST_F(AttemptLoginToolInteractiveUiTest, SmokeTest) {
   // shouldn't be placed inside `RunTestSequence()`.
   ExpectOkResult(result);
 
+  // Note that the URL here is actually different from the URL for
+  // `red_bitmap()`. The differences are the metadata but not the pixel values.
+  // The test will compare the pixel values.
+  constexpr char kExpectedIconBase64Url[] =
+      "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+"
+      "9AAAAI0lEQVR4AeyQMQ0AAAyDSP177hwsCCgJHxcp1BgkC99Res8BAAD//"
+      "+wxhQIAAAAGSURBVAMAZIwUAbOgDh0AAAAASUVORK5CYII=";
   auto expected_request =
       base::Value::Dict()
           .Set("taskId", actor_task().id().value())
@@ -151,7 +228,11 @@ IN_PROC_BROWSER_TEST_F(AttemptLoginToolInteractiveUiTest, SmokeTest) {
                                .Set("id", GenerateCredentialId().value())
                                .Set("username", "username2")
                                .Set("sourceSiteOrApp",
-                                    url.GetWithEmptyPath().spec())));
+                                    url.GetWithEmptyPath().spec())))
+          .Set("icons",
+               base::Value::Dict().Set(url.GetWithEmptyPath().spec(),
+                                       base::StrCat({"data:image/png;base64,",
+                                                     kExpectedIconBase64Url})));
 
   // Verify the dialog request content.
   RunTestSequence(InAnyContext(WithElement(
@@ -167,6 +248,13 @@ IN_PROC_BROWSER_TEST_F(AttemptLoginToolInteractiveUiTest, SmokeTest) {
         auto eval_result = content::EvalJs(glic_contents, kGetRequestData);
         const auto& actual_request = eval_result.ExtractDict();
         ASSERT_EQ(expected_request, actual_request);
+        // Decode the icon from the web client, and compare the pixel values.
+        std::optional<std::vector<uint8_t>> decoded_icon =
+            base::Base64Decode(kExpectedIconBase64Url);
+        ASSERT_TRUE(decoded_icon.has_value());
+        ASSERT_TRUE(cc::MatchesBitmap(red_bitmap(),
+                                      gfx::PNGCodec::Decode(*decoded_icon),
+                                      cc::ExactPixelComparator()));
       })));
 
   // We selected the second credential in the dialog.

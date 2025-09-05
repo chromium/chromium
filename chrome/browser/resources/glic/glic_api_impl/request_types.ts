@@ -721,6 +721,8 @@ type StructuredClonableBasicType = string|boolean|number|void|undefined|null;
 type CheckStructuredClonable<T> =
     T extends StructuredClonableBasicType ? never : T extends any[] ?
     CheckStructuredClonable<ArrayElement<T>>:
+    T extends Map<infer K, infer V>?
+    (CheckStructuredClonable<K>&CheckStructuredClonable<V>) :
     T extends Function ?
     ['Function not structured cloneable', T] :
     T extends Promise<any>? ['Promise not structured cloneable', T] :
@@ -827,7 +829,9 @@ export declare interface AnnotatedPageDataPrivate extends
 }
 
 export declare interface SelectCredentialDialogRequestPrivate extends
-    Omit<SelectCredentialDialogRequest, 'onDialogClosed'> {}
+    Omit<SelectCredentialDialogRequest, 'onDialogClosed'|'icons'> {
+  icons: Map<string, RgbaImage>;
+}
 
 /** Reasons why the credential selection dialog request failed. */
 export enum SelectCredentialDialogErrorReason {

@@ -485,10 +485,9 @@ void ExecutionEngine::PromptToSelectCredential(
   }
   credential_selected_callback_ = std::move(callback);
 
-  // TODO(crbug.com/438710031): Surface the icons to the WebClient.
-
   ActorKeyedService::Get(profile_)
-      ->NotifyRequestToShowCredentialSelectionDialog(task_->id(), credentials);
+      ->NotifyRequestToShowCredentialSelectionDialog(task_->id(), icons,
+                                                     credentials);
 }
 
 void ExecutionEngine::OnCredentialSelected(

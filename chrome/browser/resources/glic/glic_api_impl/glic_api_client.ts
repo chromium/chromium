@@ -243,8 +243,19 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
         });
         return;
       }
+      const icons = new Map<string, () => Promise<Blob>>();
+      for (const [id, image] of payload.request.icons.entries()) {
+        let promise: Promise<Blob>|undefined;
+        icons.set(id, () => {
+          if (!promise) {
+            promise = rgbaImageToBlob(image);
+          }
+          return promise;
+        });
+      }
       const requestWithCallback: SelectCredentialDialogRequest = {
         ...payload.request,
+        icons,
         onDialogClosed: resolve,
       };
       this.host.selectCredentialDialogRequestSubject.next(requestWithCallback);

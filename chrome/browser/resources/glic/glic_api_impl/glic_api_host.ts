@@ -30,7 +30,7 @@ import {OneShotTimer} from '../timer.js';
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
-import type {AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate, WebClientRequestTypes} from './request_types.js';
+import type {AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate, WebClientRequestTypes} from './request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
 export enum WebClientState {
@@ -362,7 +362,8 @@ class WebClientImpl implements WebClientInterface {
       request: SelectCredentialDialogRequestMojo):
       Promise<{response: SelectCredentialDialogResponseMojo}> {
     const clientResponse = await this.sender.requestWithResponse(
-        'glicWebClientRequestToShowDialog', {request});
+        'glicWebClientRequestToShowDialog',
+        {request: selectCredentialDialogRequestToClient(request)});
     return {
       response: selectCredentialDialogResponseToMojo(clientResponse.response),
     };
@@ -1911,4 +1912,22 @@ function selectCredentialDialogResponseToMojo(
             null,
         selectedCredentialId: response.selectedCredentialId ?? null,
       };
+}
+
+function selectCredentialDialogRequestToClient(
+    request: SelectCredentialDialogRequestMojo):
+    SelectCredentialDialogRequestPrivate {
+  const icons = new Map<string, RgbaImage>();
+  if (request.icons) {
+    for (const [siteOrApp, value] of Object.entries(request.icons)) {
+      const rgbaImage = bitmapN32ToRGBAImage(value);
+      if (rgbaImage) {
+        icons.set(siteOrApp, rgbaImage);
+      }
+    }
+  }
+  return {
+    ...request,
+    icons,
+  };
 }

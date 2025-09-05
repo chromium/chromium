@@ -1809,7 +1809,10 @@ export declare interface SelectCredentialDialogRequest {
   // The order of `credentials` is based on what the browser believes to be the
   // best match to use.
   credentials: Credential[];
-  // TODO(crbug.com/438710031): Include the optional favicon for the credential.
+  // The optional icons for each credential, encoded as PNG images. The key is
+  // Credential.sourceSiteOrApp. The icons are separated from the credentials
+  // as an optimisation to avoid serializing the same icon multiple times.
+  icons?: Map<string, () => Promise<Blob>>;
 
   // The WebClient must call this function to respond back to the browser when
   // the dialog is closed.

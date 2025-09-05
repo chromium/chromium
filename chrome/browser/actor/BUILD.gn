@@ -304,10 +304,14 @@ source_set("interactive_ui_tests") {
     ":impl",
     ":test_support",
     ":tools_test_support",
+    "//cc:test_support",
     "//chrome/browser/ui:ui_features",
+    "//components/favicon/core/test:test_support",
     "//content/test:browsertest_support",
     "//testing/gtest",
     "//ui/base/interaction:test_support",
+    "//ui/compositor",
+    "//ui/gfx/codec",
   ]
   if (enable_glic) {
     sources = [

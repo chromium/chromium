@@ -142,9 +142,10 @@ ActorKeyedService::AddRequestToShowCredentialSelectionDialogSubscriberCallback(
 
 void ActorKeyedService::NotifyRequestToShowCredentialSelectionDialog(
     TaskId task_id,
+    const base::flat_map<std::string, gfx::Image>& icons,
     const std::vector<actor_login::Credential>& credentials) {
   request_to_show_credential_selection_dialog_callback_list_.Notify(
-      task_id, credentials,
+      task_id, icons, credentials,
       base::BindRepeating(&ActorKeyedService::OnCredentialSelected,
                           weak_ptr_factory_.GetWeakPtr(), task_id));
 }

@@ -1469,6 +1469,7 @@ class GlicWebClientHandler
 
   void RequestToShowCredentialSelectionDialog(
       actor::TaskId task_id,
+      const base::flat_map<std::string, gfx::Image>& icons,
       const std::vector<actor_login::Credential>& credentials,
       actor::ActorKeyedService::CredentialSelectedCallback
           on_credential_selected) {
@@ -1482,12 +1483,18 @@ class GlicWebClientHandler
           credential.id.value(), base::UTF16ToUTF8(credential.username),
           base::UTF16ToUTF8(credential.source_site_or_app)));
     }
+    base::flat_map<std::string, SkBitmap> mojo_icons;
+    for (const auto& [site_or_app, image] : icons) {
+      CHECK(!image.IsEmpty());
+      mojo_icons.insert({site_or_app, image.AsBitmap()});
+    }
     auto dialog_request =
         actor::webui::mojom::SelectCredentialDialogRequest::New(
             task_id.value(),
             // TODO(crbug.com/440147814): `show_dialog` should be based on the
             // user granted permission duration.
-            /*show_dialog=*/true, std::move(mojo_credentials));
+            /*show_dialog=*/true, std::move(mojo_credentials),
+            std::move(mojo_icons));
 
     web_client_->RequestToShowCredentialSelectionDialog(
         std::move(dialog_request), std::move(on_credential_selected));
