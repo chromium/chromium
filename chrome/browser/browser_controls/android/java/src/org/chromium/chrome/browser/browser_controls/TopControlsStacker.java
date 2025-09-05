@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browser_controls;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.ElementType;
@@ -81,6 +82,12 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     private final Map<@TopControlType Integer, TopControlLayer> mControls;
 
     private final BrowserControlsSizer mBrowserControlsSizer;
+    private @BrowserControlsState int mBrowserControlsState;
+
+    private boolean mScrollingDisabled;
+
+    private int mTotalHeight;
+    private int mMinHeight;
 
     /**
      * Constructs the top controls stacker, which is used to calculate heights and offsets for any
@@ -95,7 +102,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     }
 
     /**
-     * Adds a new control layer to the list of active top controls.
+     * Adds a new control layer to the list of active top controls. Note that the control's height
+     * will not be recalculated until {@link #requestLayerUpdate(boolean)} is called.
      *
      * @param newControl TopControlLayer to add to the active controls.
      */
@@ -106,12 +114,24 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     }
 
     /**
-     * Removes a control layer from the list of active top controls.
+     * Removes a control layer from the list of active top controls. Note that the control's height
+     * will not be recalculated until {@link #requestLayerUpdate(boolean)} is called.
      *
      * @param control The TopControlLayer to remove from the active controls.
      */
     public void removeControl(TopControlLayer control) {
         mControls.remove(control.getTopControlType());
+    }
+
+    /**
+     * Sets whether scrolling is disabled for the top controls.
+     *
+     * @param disabled Whether scrolling is disabled.
+     */
+    public void setScrollingDisabled(boolean disabled) {
+        if (mScrollingDisabled == disabled) return;
+        mScrollingDisabled = disabled;
+        updateTopControlsHeight();
     }
 
     /**
@@ -121,15 +141,56 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      * @return The total height of all visible controls in pixels.
      */
     public int getVisibleTopControlsTotalHeight() {
+        // TODO(wenyufu): Introduce #requestLayerUpdate(boolean) to trigger height recalculation.
+        recalculateHeights();
+        return mTotalHeight;
+    }
+
+    /**
+     * Returns the min height of all currently visible {@link TopControlLayer} controls of this
+     * instance.
+     *
+     * @return The min height of all visible controls in pixels.
+     */
+    public int getVisibleTopControlsMinHeight() {
+        // TODO(wenyufu): Introduce #requestLayerUpdate(boolean) to trigger height recalculation.
+        recalculateHeights();
+        return mMinHeight;
+    }
+
+    private void recalculateHeights() {
         int totalHeight = 0;
+        int minHeight = 0;
         for (@TopControlType int type : STACK_ORDER) {
             TopControlLayer layer = mControls.get(type);
             if (layer == null || !layer.contributesToTotalHeight()) continue;
-            if (layer.getTopControlVisibility() == TopControlVisibility.VISIBLE) {
-                totalHeight += layer.getTopControlHeight();
+            if (layer.getTopControlVisibility() != TopControlVisibility.VISIBLE) continue;
+
+            totalHeight += layer.getTopControlHeight();
+            if (isLayerAlwaysVisible(layer)) {
+                minHeight += layer.getTopControlHeight();
             }
         }
-        return totalHeight;
+        mTotalHeight = totalHeight;
+        mMinHeight = minHeight;
+    }
+
+    private boolean isLayerAlwaysVisible(TopControlLayer layer) {
+        if (layer.getScrollBehavior() == ScrollBehavior.NEVER_SCROLLABLE) {
+            return true;
+        }
+
+        if (mScrollingDisabled) {
+            return mBrowserControlsState == BrowserControlsState.SHOWN
+                    || mBrowserControlsState == BrowserControlsState.BOTH;
+        }
+
+        return false;
+    }
+
+    private void updateTopControlsHeight() {
+        recalculateHeights();
+        mBrowserControlsSizer.setTopControlsHeight(mTotalHeight, mMinHeight);
     }
 
     // BrowserControlsStateProvider.Observer implementation:
@@ -142,6 +203,19 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         // Inform any controls that there was a change to the top controls height.
         for (TopControlLayer topControlLayer : mControls.values()) {
             topControlLayer.onTopControlLayerHeightChanged(topControlsHeight, topControlsMinHeight);
+        }
+    }
+
+    @Override
+    public void onControlsConstraintsChanged(
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo,
+            @BrowserControlsState int constraints,
+            boolean shouldUpdateOffsets) {
+        if (mBrowserControlsState == constraints) return;
+        mBrowserControlsState = constraints;
+        if (mScrollingDisabled) {
+            updateTopControlsHeight();
         }
     }
 
