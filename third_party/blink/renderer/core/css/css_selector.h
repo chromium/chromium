@@ -405,6 +405,9 @@ class CORE_EXPORT CSSSelector {
   PseudoType GetPseudoType() const {
     return static_cast<PseudoType>(bits_.get<PseudoTypeField>());
   }
+  PseudoType GetPseudoTypeForOilpan() const {
+    return static_cast<PseudoType>(bits_.get_concurrently<PseudoTypeField>());
+  }
 
   void UpdatePseudoType(const AtomicString&,
                         const CSSParserContext&,
@@ -564,6 +567,9 @@ class CORE_EXPORT CSSSelector {
   MatchType Match() const {
     return static_cast<MatchType>(bits_.get<MatchField>());
   }
+  MatchType MatchForOilpan() const {
+    return static_cast<MatchType>(bits_.get_concurrently<MatchField>());
+  }
   void SetMatch(MatchType match) {
     bits_.set<MatchField>(match);
     DCHECK_EQ(Match(), match);  // using a bitfield.
@@ -599,6 +605,9 @@ class CORE_EXPORT CSSSelector {
   bool HasVisited() const;
 
   bool HasRareData() const { return bits_.get<HasRareDataField>(); }
+  bool HasRareDataForOilpan() const {
+    return bits_.get_concurrently<HasRareDataField>();
+  }
 
   bool IsForPage() const { return bits_.get<IsForPageField>(); }
   void SetForPage() { bits_.set<IsForPageField>(true); }
@@ -646,7 +655,7 @@ class CORE_EXPORT CSSSelector {
   // RuleData bucketing sets is_covered_by_bucketing,
   // and these could happen concurrently. This trips up TSan,
   // even though the race is benign, so use an atomic read
-  // instead of C++ bitfields.
+  // while in the Oilpan thread, instead of C++ bitfields.
   using BitField = ConcurrentlyReadBitField<uint32_t>;
   using RelationField =
       BitField::DefineFirstValue<uint32_t, 4>;  // RelationType

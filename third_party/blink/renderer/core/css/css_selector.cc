@@ -2062,9 +2062,9 @@ void CSSSelector::SetIdentList(
 }
 
 void CSSSelector::Trace(Visitor* visitor) const {
-  if (Match() == kPseudoClass && GetPseudoType() == kPseudoParent) {
+  if (MatchForOilpan() == kPseudoClass && GetPseudoType() == kPseudoParent) {
     visitor->Trace(data_.parent_rule_);
-  } else if (HasRareData()) {
+  } else if (HasRareDataForOilpan()) {
     visitor->Trace(data_.rare_data_);
   }
 }
