@@ -478,6 +478,17 @@ void DataAggregatorService::FetchFromAllSourcesAndEnqueue() {
     return;
   }
 
+  // If the queue is full, halt fetches until we can catch up. Note that
+  // a full queue implies that we've begun the enqueue process for the
+  // first item, which will continue to attempt an enqueue until it
+  // succeeds, at which point it will trigger the enqueue for the next
+  // one. In other words, we should never reach a deadlocked state where
+  // `Fetch()` calls are halted AND enqueues are halted.
+  if (pending_transport_payloads_.size() >= kMaxPayloadQueueSize) {
+    LOG(WARNING) << "Payload queue is at capacity. Forgoing next fetch.";
+    return;
+  }
+
   VLOG(1) << "Fetching data from " << data_source_map_.size() << " sources.";
 
   for (const auto& data_source : data_source_map_) {
@@ -590,12 +601,6 @@ void DataAggregatorService::AddActivePayloadToPendingQueue() {
   pending_payload.set_allocated_log_payload(curr_active_payload);
 
   pending_transport_payloads_.push(std::move(pending_payload));
-
-  // Drop front element if queue grows too large.
-  if (pending_transport_payloads_.size() > kMaxPayloadQueueSize) {
-    LOG(WARNING) << "Payload queue grew too large. Dropping oldest.";
-    pending_transport_payloads_.pop();
-  }
 
   VLOG(2) << "Pushed payload into pending queue. New size: "
           << pending_transport_payloads_.size();
