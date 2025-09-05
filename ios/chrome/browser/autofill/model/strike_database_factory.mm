@@ -29,9 +29,7 @@ StrikeDatabaseFactory::StrikeDatabaseFactory()
 StrikeDatabaseFactory::~StrikeDatabaseFactory() = default;
 
 std::unique_ptr<KeyedService> StrikeDatabaseFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   leveldb_proto::ProtoDatabaseProvider* db_provider =
       profile->GetProtoDatabaseProvider();
 

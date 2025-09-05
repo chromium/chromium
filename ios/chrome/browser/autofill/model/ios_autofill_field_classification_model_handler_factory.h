@@ -26,9 +26,9 @@ class IOSAutofillFieldClassificationModelHandlerFactory
   IOSAutofillFieldClassificationModelHandlerFactory();
   ~IOSAutofillFieldClassificationModelHandlerFactory() override;
 
-  // BrowserStateKeyedServiceFactory overrides:
+  // ProfileKeyedServiceFactoryIOS overrides:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_IOS_AUTOFILL_FIELD_CLASSIFICATION_MODEL_HANDLER_FACTORY_H_

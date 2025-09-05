@@ -66,9 +66,7 @@ PersonalDataManagerFactory::PersonalDataManagerFactory()
 PersonalDataManagerFactory::~PersonalDataManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
-PersonalDataManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+PersonalDataManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   scoped_refptr<autofill::AutofillWebDataService> local_storage =
       ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);

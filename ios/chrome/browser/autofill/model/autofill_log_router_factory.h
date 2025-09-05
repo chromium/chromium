@@ -27,9 +27,9 @@ class AutofillLogRouterFactory : public ProfileKeyedServiceFactoryIOS {
   AutofillLogRouterFactory();
   ~AutofillLogRouterFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace autofill
