@@ -239,6 +239,12 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <variant name="ZeroSuggest" summary="zero-prefix suggest"/>
 </variants>
 
+<variants name="PrefetchFallbackOrInitial">
+  <variant name="Fallback"
+      summary="Recorded for the fallback request after the prefetch fails."/>
+  <variant name="Initial" summary="Recorded for the initial prefetch request."/>
+</variants>
+
 <variants name="PreloadType">
   <variant name=".Prefetch" summary="prefetch"/>
   <variant name=".Prerender" summary="prerender"/>
@@ -4189,7 +4195,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram
-    name="Omnibox.{SearchPrefetch}.HasNoVarySearchHeader.{FallbackOrInitial}.{NavigationOrSuggestionPrefetch}"
+    name="Omnibox.{SearchPrefetch}.HasNoVarySearchHeader2.{PrefetchFallbackOrInitial}.{NavigationOrSuggestionPrefetch}"
     enum="Boolean" expires_after="2026-01-18">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -4200,17 +4206,12 @@ Keep consistent with active providers. Doesn't need to include every provider in
     No-Vary-Search HTTP response header or not. This is only recorded when the
     response is servable.
 
-    {FallbackOrInitial}
+    {PrefetchFallbackOrInitial}
 
     {NavigationOrSuggestionPrefetch}
   </summary>
   <token key="SearchPrefetch" variants="SearchPrefetch"/>
-  <token key="FallbackOrInitial">
-    <variant name="Fallback"
-        summary="Recorded for the fallback request after the prefetch fails."/>
-    <variant name="Initial"
-        summary="Recorded for the initial prefetch request."/>
-  </token>
+  <token key="PrefetchFallbackOrInitial" variants="PrefetchFallbackOrInitial"/>
   <token key="NavigationOrSuggestionPrefetch"
       variants="NavigationOrSuggestionPrefetch"/>
 </histogram>
@@ -4296,7 +4297,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram
-    name="Omnibox.{SearchPrefetch}.ReceivedServableResponse2.{FallbackOrInitial}.{NavigationOrSuggestionPrefetch}"
+    name="Omnibox.{SearchPrefetch}.ReceivedServableResponse2.{PrefetchFallbackOrInitial}.{NavigationOrSuggestionPrefetch}"
     enum="BooleanSuccess" expires_after="2026-01-18">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -4310,17 +4311,12 @@ Keep consistent with active providers. Doesn't need to include every provider in
     A servabled reasponse should contain valid headers and body, with any 200
     response code.
 
-    {FallbackOrInitial}
+    {PrefetchFallbackOrInitial}
 
     {NavigationOrSuggestionPrefetch}
   </summary>
   <token key="SearchPrefetch" variants="SearchPrefetch"/>
-  <token key="FallbackOrInitial">
-    <variant name="Fallback"
-        summary="Recorded for the fallback request after the prefetch fails."/>
-    <variant name="Initial"
-        summary="Recorded for the initial prefetch request."/>
-  </token>
+  <token key="PrefetchFallbackOrInitial" variants="PrefetchFallbackOrInitial"/>
   <token key="NavigationOrSuggestionPrefetch"
       variants="NavigationOrSuggestionPrefetch"/>
 </histogram>
