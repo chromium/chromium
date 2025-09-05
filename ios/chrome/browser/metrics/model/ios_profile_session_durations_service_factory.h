@@ -26,9 +26,9 @@ class IOSProfileSessionDurationsServiceFactory
   ~IOSProfileSessionDurationsServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PROFILE_SESSION_DURATIONS_SERVICE_FACTORY_H_

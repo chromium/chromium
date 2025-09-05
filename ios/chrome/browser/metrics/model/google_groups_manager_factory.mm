@@ -27,9 +27,7 @@ GoogleGroupsManagerFactory::GoogleGroupsManagerFactory()
                                     TestingCreation::kNoServiceForTests) {}
 
 std::unique_ptr<KeyedService>
-GoogleGroupsManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+GoogleGroupsManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<GoogleGroupsManager>(
       *GetApplicationContext()->GetLocalState(), profile->GetProfileName(),
       *profile->GetPrefs());
