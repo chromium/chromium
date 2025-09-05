@@ -439,10 +439,10 @@ class CommandBufferSetup {
 
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
     context_state_->MakeCurrent(nullptr);
-    decoder_.reset(raster::RasterDecoder::Create(
+    decoder_ = raster::RasterDecoder::Create(
         command_buffer_.get(), command_buffer_->service(), &outputter_,
         gpu_feature_info, gpu_preferences_, /*memory_tracker=*/nullptr,
-        shared_image_manager_.get(), context_state_, /*is_privileged=*/true));
+        shared_image_manager_.get(), context_state_, /*is_privileged=*/true);
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
     auto result = decoder_->Initialize(
@@ -465,9 +465,9 @@ class CommandBufferSetup {
             discardable_manager_.get(), passthrough_discardable_manager_.get(),
             shared_image_manager_.get());
     auto* context = context_.get();
-    decoder_.reset(gles2::GLES2Decoder::Create(
-        command_buffer_.get(), command_buffer_->service(), &outputter_,
-        context_group.get()));
+    decoder_ = gles2::GLES2Decoder::Create(command_buffer_.get(),
+                                           command_buffer_->service(),
+                                           &outputter_, context_group.get());
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
     auto result = decoder_->Initialize(context->default_surface(), context,

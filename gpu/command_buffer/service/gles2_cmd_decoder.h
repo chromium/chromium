@@ -103,10 +103,11 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   static const unsigned int kDefaultStencilMask;
 
   // Creates a decoder.
-  static GLES2Decoder* Create(DecoderClient* client,
-                              CommandBufferServiceBase* command_buffer_service,
-                              Outputter* outputter,
-                              ContextGroup* group);
+  static std::unique_ptr<GLES2Decoder> Create(
+      DecoderClient* client,
+      CommandBufferServiceBase* command_buffer_service,
+      Outputter* outputter,
+      ContextGroup* group);
 
   GLES2Decoder(const GLES2Decoder&) = delete;
   GLES2Decoder& operator=(const GLES2Decoder&) = delete;

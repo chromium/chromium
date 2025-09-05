@@ -451,8 +451,8 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
       normalized_init.lose_context_when_out_of_memory;
   attribs.context_type = init.context_type;
 
-  decoder_.reset(GLES2Decoder::Create(this, command_buffer_service_.get(),
-                                      &outputter_, group_.get()));
+  decoder_ = GLES2Decoder::Create(this, command_buffer_service_.get(),
+                                  &outputter_, group_.get());
   decoder_->SetIgnoreCachedStateForTest(ignore_cached_state_for_test_);
   decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 

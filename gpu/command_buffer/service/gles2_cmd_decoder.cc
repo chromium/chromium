@@ -2841,19 +2841,20 @@ GLenum BackFramebuffer::CheckStatus() {
   return api()->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER);
 }
 
-GLES2Decoder* GLES2Decoder::Create(
+std::unique_ptr<GLES2Decoder> GLES2Decoder::Create(
     DecoderClient* client,
     CommandBufferServiceBase* command_buffer_service,
     Outputter* outputter,
     ContextGroup* group) {
   if (group->use_passthrough_cmd_decoder()) {
-    return new GLES2DecoderPassthroughImpl(client, command_buffer_service,
-                                           outputter, group);
+    return std::make_unique<GLES2DecoderPassthroughImpl>(
+        client, command_buffer_service, outputter, group);
   }
 
 // Allow linux to run fuzzers.
 #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER) || BUILDFLAG(IS_LINUX)
-  return new GLES2DecoderImpl(client, command_buffer_service, outputter, group);
+  return std::make_unique<GLES2DecoderImpl>(client, command_buffer_service,
+                                            outputter, group);
 #else
   LOG(FATAL) << "Validating command decoder is not supported.";
 #endif

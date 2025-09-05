@@ -1068,7 +1068,7 @@ constexpr WebGPUDecoderImpl::CommandInfo WebGPUDecoderImpl::command_info[] = {
 
 }  // namespace
 
-WebGPUDecoder* CreateWebGPUDecoderImpl(
+std::unique_ptr<WebGPUDecoder> CreateWebGPUDecoderImpl(
     DecoderClient* client,
     CommandBufferServiceBase* command_buffer_service,
     SharedImageManager* shared_image_manager,
@@ -1097,7 +1097,7 @@ WebGPUDecoder* CreateWebGPUDecoderImpl(
     }
   }
 
-  return new WebGPUDecoderImpl(
+  return std::make_unique<WebGPUDecoderImpl>(
       client, command_buffer_service, shared_image_manager,
       std::move(memory_tracker), outputter, gpu_preferences,
       std::move(shared_context_state), std::move(dawn_caching_interface),

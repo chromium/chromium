@@ -158,10 +158,10 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
 
   command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
 
-  decoder_.reset(RasterDecoder::Create(
+  decoder_ = RasterDecoder::Create(
       this, command_buffer_service_.get(), &outputter_, gpu_feature_info,
-      gpu_preferences_, nullptr /* memory_tracker */, &shared_image_manager_,
-      shared_context_state_, true /* is_privileged */));
+      gpu_preferences_, /*memory_tracker=*/nullptr, &shared_image_manager_,
+      shared_context_state_, /*is_privileged=*/true);
   decoder_->SetIgnoreCachedStateForTest(ignore_cached_state_for_test_);
   decoder_->DisableFlushWorkaroundForTest();
   decoder_->GetLogger()->set_log_synthesized_gl_errors(false);

@@ -35,7 +35,7 @@ namespace raster {
 class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
                                        public CommonDecoder {
  public:
-  static RasterDecoder* Create(
+  static std::unique_ptr<RasterDecoder> Create(
       DecoderClient* client,
       CommandBufferServiceBase* command_buffer_service,
       gles2::Outputter* outputter,

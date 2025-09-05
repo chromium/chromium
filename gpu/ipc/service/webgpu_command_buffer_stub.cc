@@ -108,10 +108,12 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
 
   command_buffer_ =
       std::make_unique<CommandBufferService>(this, memory_tracker_.get());
-  std::unique_ptr<webgpu::WebGPUDecoder> decoder(webgpu::WebGPUDecoder::Create(
-      this, command_buffer_.get(), manager->shared_image_manager(),
-      memory_tracker_.get(), manager->outputter(), manager->gpu_preferences(),
-      std::move(shared_context_state), dawn_cache_options, channel_));
+  std::unique_ptr<webgpu::WebGPUDecoder> decoder =
+      webgpu::WebGPUDecoder::Create(
+          this, command_buffer_.get(), manager->shared_image_manager(),
+          memory_tracker_.get(), manager->outputter(),
+          manager->gpu_preferences(), std::move(shared_context_state),
+          dawn_cache_options, channel_);
 
   scoped_sync_point_client_state_ =
       channel_->scheduler()->CreateSyncPointClientState(

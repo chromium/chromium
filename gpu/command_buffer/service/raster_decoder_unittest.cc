@@ -276,10 +276,10 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
 
   std::unique_ptr<RasterDecoder> CreateDecoder() {
     command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
-    auto decoder = base::WrapUnique(RasterDecoder::Create(
+    auto decoder = RasterDecoder::Create(
         this, command_buffer_service_.get(), &outputter_, gpu_feature_info_,
-        GpuPreferences(), nullptr /* memory_tracker */, &shared_image_manager_,
-        context_state_, true /* is_privileged */));
+        GpuPreferences(), /*memory_tracker=*/nullptr, &shared_image_manager_,
+        context_state_, /*is_privileged=*/true);
     CHECK_EQ(decoder->Initialize(/*enable_gpu_rasterization=*/true,
                                  /*lose_context_when_out_of_memory=*/false),
              ContextResult::kSuccess);

@@ -118,9 +118,10 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
 
   command_buffer_ = std::make_unique<CommandBufferService>(
       this, context_group_->memory_tracker());
-  gles2_decoder_ = gles2::GLES2Decoder::Create(
+  auto decoder = gles2::GLES2Decoder::Create(
       this, command_buffer_.get(), manager->outputter(), context_group_.get());
-  set_decoder_context(std::unique_ptr<DecoderContext>(gles2_decoder_));
+  gles2_decoder_ = decoder.get();
+  set_decoder_context(std::move(decoder));
 
   scoped_sync_point_client_state_ =
       channel_->scheduler()->CreateSyncPointClientState(

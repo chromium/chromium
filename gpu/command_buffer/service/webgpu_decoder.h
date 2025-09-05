@@ -40,7 +40,7 @@ struct DawnCacheOptions {
 class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
                                        public CommonDecoder {
  public:
-  static WebGPUDecoder* Create(
+  static std::unique_ptr<WebGPUDecoder> Create(
       DecoderClient* client,
       CommandBufferServiceBase* command_buffer_service,
       SharedImageManager* shared_image_manager,

@@ -188,9 +188,9 @@ class RecordReplayContext : public GpuControl {
         &passthrough_discardable_manager_, &shared_image_manager_);
     command_buffer_ = std::make_unique<RecordReplayCommandBuffer>();
 
-    decoder_.reset(gles2::GLES2Decoder::Create(
-        command_buffer_.get(), command_buffer_->service(), &outputter_,
-        context_group.get()));
+    decoder_ = gles2::GLES2Decoder::Create(command_buffer_.get(),
+                                           command_buffer_->service(),
+                                           &outputter_, context_group.get());
     command_buffer_->set_handler(decoder_.get());
 
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);

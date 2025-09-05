@@ -15,7 +15,7 @@ namespace gpu {
 namespace webgpu {
 
 // static
-WebGPUDecoder* WebGPUDecoder::Create(
+std::unique_ptr<WebGPUDecoder> WebGPUDecoder::Create(
     DecoderClient* client,
     CommandBufferServiceBase* command_buffer_service,
     SharedImageManager* shared_image_manager,

@@ -943,7 +943,7 @@ constexpr RasterDecoderImpl::CommandInfo RasterDecoderImpl::command_info[] = {
 };
 
 // static
-RasterDecoder* RasterDecoder::Create(
+std::unique_ptr<RasterDecoder> RasterDecoder::Create(
     DecoderClient* client,
     CommandBufferServiceBase* command_buffer_service,
     gles2::Outputter* outputter,
@@ -953,10 +953,10 @@ RasterDecoder* RasterDecoder::Create(
     SharedImageManager* shared_image_manager,
     scoped_refptr<SharedContextState> shared_context_state,
     bool is_privileged) {
-  return new RasterDecoderImpl(client, command_buffer_service, outputter,
-                               gpu_feature_info, gpu_preferences,
-                               std::move(memory_tracker), shared_image_manager,
-                               std::move(shared_context_state), is_privileged);
+  return std::make_unique<RasterDecoderImpl>(
+      client, command_buffer_service, outputter, gpu_feature_info,
+      gpu_preferences, std::move(memory_tracker), shared_image_manager,
+      std::move(shared_context_state), is_privileged);
 }
 
 RasterDecoder::RasterDecoder(DecoderClient* client,

@@ -95,11 +95,12 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
 
   command_buffer_ =
       std::make_unique<CommandBufferService>(this, memory_tracker_.get());
-  std::unique_ptr<raster::RasterDecoder> decoder(raster::RasterDecoder::Create(
-      this, command_buffer_.get(), manager->outputter(),
-      manager->gpu_feature_info(), manager->gpu_preferences(), memory_tracker_,
-      manager->shared_image_manager(), shared_context_state,
-      channel()->is_gpu_host()));
+  std::unique_ptr<raster::RasterDecoder> decoder =
+      raster::RasterDecoder::Create(
+          this, command_buffer_.get(), manager->outputter(),
+          manager->gpu_feature_info(), manager->gpu_preferences(),
+          memory_tracker_, manager->shared_image_manager(),
+          shared_context_state, channel()->is_gpu_host());
 
   scoped_sync_point_client_state_ =
       channel_->scheduler()->CreateSyncPointClientState(

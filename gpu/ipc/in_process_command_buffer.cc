@@ -311,11 +311,11 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       DLOG(ERROR) << "ContextResult::kFatalFailure: WebGPU not enabled";
       return gpu::ContextResult::kFatalFailure;
     }
-    std::unique_ptr<webgpu::WebGPUDecoder> webgpu_decoder(
+    std::unique_ptr<webgpu::WebGPUDecoder> webgpu_decoder =
         webgpu::WebGPUDecoder::Create(
             this, command_buffer_.get(), task_executor_->shared_image_manager(),
             context_group_->memory_tracker(), task_executor_->outputter(),
-            task_executor_->gpu_preferences(), context_state_));
+            task_executor_->gpu_preferences(), context_state_);
     gpu::ContextResult result =
         webgpu_decoder->Initialize(task_executor_->gpu_feature_info());
     if (result != gpu::ContextResult::kSuccess) {
@@ -347,14 +347,14 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       }
 
       context_ = context_state_->context();
-      std::unique_ptr<raster::RasterDecoder> raster_decoder(
+      std::unique_ptr<raster::RasterDecoder> raster_decoder =
           raster::RasterDecoder::Create(
               this, command_buffer_.get(), task_executor_->outputter(),
               task_executor_->gpu_feature_info(),
               task_executor_->gpu_preferences(),
               context_group_->memory_tracker(),
               task_executor_->shared_image_manager(), context_state_,
-              true /*is_privileged*/));
+              /*is_privileged=*/true);
 
       auto result = raster_decoder->Initialize(
           params.attribs->enable_gpu_rasterization,
@@ -407,10 +407,10 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
         return ContextResult::kTransientFailure;
       }
 
-      std::unique_ptr<gles2::GLES2Decoder> gles2_decoder(
+      std::unique_ptr<gles2::GLES2Decoder> gles2_decoder =
           gles2::GLES2Decoder::Create(this, command_buffer_.get(),
                                       task_executor_->outputter(),
-                                      context_group_.get()));
+                                      context_group_.get());
       if (use_virtualized_gl_context_) {
         context_ = base::MakeRefCounted<GLContextVirtual>(
             gl_share_group_.get(), real_context.get(),
