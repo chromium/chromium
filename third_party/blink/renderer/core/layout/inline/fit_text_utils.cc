@@ -130,7 +130,7 @@ float ComputeAdditionalPaintTimeScale(const InlineItemsData& items_data,
   for (InlineCursor descendants = line.CursorForDescendants(); descendants;
        descendants.MoveToNextInlineLeaf()) {
     const auto& current = descendants.Current();
-    if (!current.IsText()) {
+    if (!current.IsText() || !current.TextShapeResult()) {
       continue;
     }
     const Font& font = *current.Style().GetFont();
@@ -260,7 +260,7 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
     for (InlineCursor descendants = cursor.CursorForDescendants(); descendants;
          descendants.MoveToNextInlineLeaf()) {
       const auto& current = descendants.Current();
-      if (!current.IsText()) {
+      if (!current.IsText() || !current.TextShapeResult()) {
         continue;
       }
       const ComputedStyle& style = current->Style();

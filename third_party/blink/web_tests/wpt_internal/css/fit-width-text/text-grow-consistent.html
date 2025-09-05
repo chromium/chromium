@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<link rel="match" href="text-grow-consistent-ref.html">
+<meta name="flags" content="ahem">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<style>
+.target {
+  white-space: pre;
+  width: 120px;
+  margin-bottom: 10px;
+  font: 10px/normal Ahem;
+}
+
+.scale {
+  text-grow: consistent scale;
+  border: 2px solid blue;
+}
+
+.scaleinline {
+  text-grow: consistent scale-inline;
+}
+
+.fontsize {
+  text-grow: consistent font-size;
+  border: 2px solid blue;
+}
+
+</style>
+<body>
+<div class="target scale">ABCDEF
+GHI</div>
+
+<div class="target scaleinline">ABCDEF
+GHI</div>
+
+<div class="target fontsize">ABCDEF
+GHI</div>
+
+
+</body>
