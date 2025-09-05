@@ -19,8 +19,6 @@ namespace autofill {
 // Exposes some testing operations for FormStructure.
 class FormStructureTestApi {
  public:
-  using ShouldBeParsedParams = FormStructure::ShouldBeParsedParams;
-
   explicit FormStructureTestApi(FormStructure& form_structure)
       : form_structure_(form_structure) {}
 

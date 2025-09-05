@@ -54,6 +54,16 @@ using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 class FormData;
 struct FormDataPredictions;
 
+// Production code only uses the default parameters.
+// Unit tests also test other parameters.
+struct ShouldBeParsedParams {
+  size_t min_required_fields =
+      std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
+                kMinRequiredFieldsForUpload});
+  size_t required_fields_for_forms_with_only_password_fields =
+      kRequiredFieldsForFormsWithOnlyPasswordFields;
+};
+
 // FormStructure stores a single HTML form together with the values entered
 // in the fields along with additional information needed by Autofill.
 class FormStructure {
@@ -355,16 +365,6 @@ class FormStructure {
   // Sets each field's `html_type` and `html_mode` based on the field's
   // `parsed_autocomplete` member.
   void SetFieldTypesFromAutocompleteAttribute();
-
-  // Production code only uses the default parameters.
-  // Unit tests also test other parameters.
-  struct ShouldBeParsedParams {
-    size_t min_required_fields =
-        std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
-                  kMinRequiredFieldsForUpload});
-    size_t required_fields_for_forms_with_only_password_fields =
-        kRequiredFieldsForFormsWithOnlyPasswordFields;
-  };
 
   FormStructure(FormSignature form_signature,
                 const std::vector<FieldSignature>& field_signatures);
