@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/prefs/cross_device_pref_tracker_factory.h"
+#include "chrome/browser/sync/prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h"
 
 #include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
-#include "components/sync_preferences/cross_device_pref_tracker_impl.h"
+#include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker_impl.h"
 #include "components/sync_preferences/features.h"
 
 CrossDevicePrefTrackerFactory::CrossDevicePrefTrackerFactory()

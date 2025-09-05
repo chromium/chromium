@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync_preferences/cross_device_pref_tracker_impl.h"
+#include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker_impl.h"
 
 #include "base/check.h"
 #include "components/prefs/pref_service.h"

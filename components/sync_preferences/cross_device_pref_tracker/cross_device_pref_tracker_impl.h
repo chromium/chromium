@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_IMPL_H_
-#define COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_IMPL_H_
+#ifndef COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_IMPL_H_
+#define COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_IMPL_H_
 
 #include <optional>
 #include <string>
@@ -15,7 +15,7 @@
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync_device_info/device_info_tracker.h"
-#include "components/sync_preferences/cross_device_pref_tracker.h"
+#include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
 
 class PrefService;
 
@@ -83,4 +83,4 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
 
 }  // namespace sync_preferences
 
-#endif  // COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_IMPL_H_
+#endif  // COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_IMPL_H_

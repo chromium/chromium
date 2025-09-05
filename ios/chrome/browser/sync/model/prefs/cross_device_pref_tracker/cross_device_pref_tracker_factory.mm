@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker_factory.h"
+#import "ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h"
 
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "components/keyed_service/core/keyed_service.h"
-#import "components/sync_preferences/cross_device_pref_tracker.h"
-#import "components/sync_preferences/cross_device_pref_tracker_impl.h"
+#import "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
+#import "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker_impl.h"
 #import "components/sync_preferences/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -48,7 +48,6 @@ CrossDevicePrefTrackerFactory::BuildServiceInstanceFor(
           sync_preferences::features::kEnableCrossDevicePrefTracker)) {
     return nullptr;
   }
-
 
   // The implementation in `components/sync_preferences` is platform-agnostic.
   return std::make_unique<sync_preferences::CrossDevicePrefTrackerImpl>(

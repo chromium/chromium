@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SYNC_PREFS_CROSS_DEVICE_PREF_TRACKER_FACTORY_H_
-#define CHROME_BROWSER_SYNC_PREFS_CROSS_DEVICE_PREF_TRACKER_FACTORY_H_
+#ifndef CHROME_BROWSER_SYNC_PREFS_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_FACTORY_H_
+#define CHROME_BROWSER_SYNC_PREFS_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
 
 class Profile;
-
-namespace sync_preferences {
-class CrossDevicePrefTracker;
-}  // namespace sync_preferences
 
 // Singleton factory that creates and manages one CrossDevicePrefTracker
 // instance per Profile. The CrossDevicePrefTracker is responsible for
@@ -39,4 +36,4 @@ class CrossDevicePrefTrackerFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-#endif  // CHROME_BROWSER_SYNC_PREFS_CROSS_DEVICE_PREF_TRACKER_FACTORY_H_
+#endif  // CHROME_BROWSER_SYNC_PREFS_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_FACTORY_H_

@@ -12,35 +12,6 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
-source_set("timestamped_pref_value") {
-  sources = [ "timestamped_pref_value/timestamped_pref_value.h" ]
-  deps = [ "//base" ]
-  if (is_android) {
-    sources += [
-      "timestamped_pref_value/timestamped_pref_value_bridge_android.cc",
-      "timestamped_pref_value/timestamped_pref_value_bridge_android.h",
-    ]
-    deps += [ "timestamped_pref_value/android:jni_headers" ]
-  }
-}
-
-source_set("cross_device_pref_tracker") {
-  sources = [
-    "cross_device_pref_tracker.cc",
-    "cross_device_pref_tracker.h",
-    "cross_device_pref_tracker_impl.cc",
-    "cross_device_pref_tracker_impl.h",
-  ]
-
-  deps = [
-    ":timestamped_pref_value",
-    "//base",
-    "//components/keyed_service/core",
-    "//components/prefs",
-    "//components/sync_device_info",
-  ]
-}
-
 static_library("sync_preferences") {
   sources = [
     "dual_layer_user_pref_store.cc",

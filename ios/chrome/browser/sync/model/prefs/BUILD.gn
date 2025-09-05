@@ -2,25 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("cross_device_pref_tracker_factory") {
-  sources = [
-    "cross_device_pref_tracker_factory.h",
-    "cross_device_pref_tracker_factory.mm",
-  ]
-  public_deps = [
-    "//base",
-    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
-  ]
-  deps = [
-    "//components/keyed_service/core",
-    "//components/sync_preferences:cross_device_pref_tracker",
-    "//components/sync_preferences:features",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
-  ]
-}
-
 source_set("prefs") {
   sources = [
     "ios_chrome_syncable_prefs_database.cc",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_H_
-#define COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_H_
+#ifndef COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_H_
+#define COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_H_
 
 #include <optional>
 #include <string>
@@ -13,7 +13,7 @@
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync_device_info/device_info.h"
-#include "components/sync_preferences/timestamped_pref_value/timestamped_pref_value.h"
+#include "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value/timestamped_pref_value.h"
 
 namespace sync_preferences {
 
@@ -65,4 +65,4 @@ class CrossDevicePrefTracker : public KeyedService {
 
 }  // namespace sync_preferences
 
-#endif  // COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_H_
+#endif  // COMPONENTS_SYNC_PREFERENCES_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_H_
