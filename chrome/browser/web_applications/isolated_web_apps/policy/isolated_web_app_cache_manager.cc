@@ -32,6 +32,7 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 
 namespace web_app {
 
@@ -118,7 +119,8 @@ void IwaBundleCacheManager::Start() {
     RemoveCacheForIwaKioskDeletedFromPolicy();
   }
 
-  if (!IsIwaBundleCacheEnabledInCurrentSession()) {
+  if (!content::AreIsolatedWebAppsEnabled(&*profile_) ||
+      !IsIwaBundleCacheEnabledInCurrentSession()) {
     return;
   }
 

@@ -22,11 +22,7 @@ IsolatedWebAppBrowserContextServiceFactory::
 content::BrowserContext*
 IsolatedWebAppBrowserContextServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return content::AreIsolatedWebAppsEnabled(context) &&
-                 // TODO(crbug.com/433468113): Remove off-the-record check.
-                 !context->IsOffTheRecord()
-             ? context
-             : nullptr;
+  return content::AreIsolatedWebAppsEnabled(context) ? context : nullptr;
 }
 
 }  // namespace web_app

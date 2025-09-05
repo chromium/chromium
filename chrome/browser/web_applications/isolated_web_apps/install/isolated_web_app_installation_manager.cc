@@ -44,6 +44,7 @@
 #include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -196,7 +197,9 @@ net::PartialNetworkTrafficAnnotationTag GetDownloadAnnotationTag(
 
 IsolatedWebAppInstallationManager::IsolatedWebAppInstallationManager(
     Profile& profile)
-    : profile_(profile) {}
+    : profile_(profile),
+      are_isolated_web_apps_enabled_(
+          content::AreIsolatedWebAppsEnabled(&profile)) {}
 
 IsolatedWebAppInstallationManager::~IsolatedWebAppInstallationManager() =
     default;
@@ -211,7 +214,7 @@ void IsolatedWebAppInstallationManager::Start() {
   MaybeScheduleGarbageCollection();
 #if BUILDFLAG(IS_CHROMEOS)
   auto& command_line = *base::CommandLine::ForCurrentProcess();
-  if (!HasIwaInstallSwitch(command_line)) {
+  if (!are_isolated_web_apps_enabled_ || !HasIwaInstallSwitch(command_line)) {
     return;
   }
 
@@ -224,10 +227,8 @@ void IsolatedWebAppInstallationManager::Start() {
       KeepAliveOrigin::ISOLATED_WEB_APP_INSTALL,
       KeepAliveRestartOption::DISABLED);
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive;
-  if (!profile_->IsOffTheRecord()) {
-    optional_profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-        &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppInstall);
-  }
+  optional_profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppInstall);
 
   InstallFromCommandLine(command_line, std::move(keep_alive),
                          std::move(optional_profile_keep_alive),
@@ -242,6 +243,10 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeProxy(
     std::optional<web_package::SignedWebBundleId> explicit_bundle_id) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   CHECK(!callback.is_null());
+  if (!are_isolated_web_apps_enabled_) {
+    std::move(callback).Run(base::unexpected("IWAs are not enabled"));
+    return;
+  }
   if (explicit_bundle_id && !explicit_bundle_id->is_for_proxy_mode()) {
     std::move(callback).Run(
         base::unexpected("The bundle_id for devModeProxy installation must "
@@ -271,6 +276,10 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeBundle(
     std::optional<web_package::SignedWebBundleId> expected_bundle_id) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   CHECK(!callback.is_null());
+  if (!are_isolated_web_apps_enabled_) {
+    std::move(callback).Run(base::unexpected("IWAs are not enabled"));
+    return;
+  }
 
   InstallIsolatedWebAppFromInstallSource(
       CreateInstallSource(path, install_surface), std::move(expected_bundle_id),
@@ -284,6 +293,10 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeBundle(
     std::optional<web_package::SignedWebBundleId> expected_bundle_id) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   CHECK(!callback.is_null());
+  if (!are_isolated_web_apps_enabled_) {
+    std::move(callback).Run(base::unexpected("IWAs are not enabled"));
+    return;
+  }
 
   InstallIsolatedWebAppFromInstallSource(
       CreateInstallSource(file, install_surface), std::move(expected_bundle_id),
@@ -300,6 +313,10 @@ void IsolatedWebAppInstallationManager::
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   CHECK(!callback.is_null());
   CHECK(url.SchemeIsHTTPOrHTTPS());
+  if (!are_isolated_web_apps_enabled_) {
+    std::move(callback).Run(base::unexpected("IWAs are not enabled"));
+    return;
+  }
 
   ScopedTempWebBundleFile::Create(base::BindOnce(
       &IsolatedWebAppInstallationManager::DownloadWebBundleToFile,
@@ -318,9 +335,10 @@ bool IsolatedWebAppInstallationManager::HasIwaInstallSwitch(
 void IsolatedWebAppInstallationManager::MaybeInstallIwaFromCommandLine(
     const base::CommandLine& command_line,
     Profile& profile) {
-  if (!HasIwaInstallSwitch(command_line)) {
-    // Early-exit for better performance when none of the IWA-specific command
-    // line switches are present
+  if (!content::AreIsolatedWebAppsEnabled(&profile) ||
+      !HasIwaInstallSwitch(command_line)) {
+    // Early-exit for better performance when the IWAs are not enabled or none
+    // of the IWA-specific command line switches are present
     return;
   }
 
@@ -344,10 +362,8 @@ void IsolatedWebAppInstallationManager::MaybeInstallIwaFromCommandLine(
       KeepAliveOrigin::ISOLATED_WEB_APP_INSTALL,
       KeepAliveRestartOption::DISABLED);
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive;
-  if (!profile.IsOffTheRecord()) {
-    optional_profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-        &profile, ProfileKeepAliveOrigin::kIsolatedWebAppInstall);
-  }
+  optional_profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      &profile, ProfileKeepAliveOrigin::kIsolatedWebAppInstall);
 
   provider->on_registry_ready().Post(
       FROM_HERE,
@@ -417,9 +433,6 @@ void IsolatedWebAppInstallationManager::InstallFromCommandLine(
     base::TaskPriority task_priority) {
   CHECK(keep_alive);
 
-  if (!HasIwaInstallSwitch(command_line)) {
-    return;
-  }
   content::GetUIThreadTaskRunner({task_priority})
       ->PostTask(
           FROM_HERE,
@@ -441,12 +454,6 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromInstallSource(
     // If the browser is shutting down, then there is no point in attempting to
     // install an IWA.
     std::move(callback).Run(base::unexpected("Browser is shutting down"));
-    return;
-  }
-
-  if (profile_->IsOffTheRecord()) {
-    std::move(callback).Run(
-        base::unexpected(std::string("incognito profiles are not supported")));
     return;
   }
 

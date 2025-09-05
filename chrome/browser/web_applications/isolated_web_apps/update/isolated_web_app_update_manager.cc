@@ -112,11 +112,8 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
     auto keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::ISOLATED_WEB_APP_UPDATE,
         KeepAliveRestartOption::DISABLED);
-    auto profile_keep_alive =
-        profile_->IsOffTheRecord()
-            ? nullptr
-            : std::make_unique<ScopedProfileKeepAlive>(
-                  &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
+    auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
 
     provider_->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
         IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
@@ -273,15 +270,7 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
     Profile& profile,
     base::TimeDelta update_discovery_frequency)
     : profile_(profile),
-      automatic_updates_enabled_(
-          content::AreIsolatedWebAppsEnabled(&profile) &&
-          // Similar to extensions, we don't do any automatic updates in guest
-          // sessions.
-          !profile.IsGuestSession() &&
-          // Web Apps are not a thing in off the record profiles, but have
-          // here just in case - we also wouldn't want to automatically update
-          // IWAs in incognito windows.
-          !profile.IsOffTheRecord()),
+      automatic_updates_enabled_(content::AreIsolatedWebAppsEnabled(&profile)),
       update_discovery_frequency_(std::move(update_discovery_frequency)),
       task_queue_{*this},
       key_rotation_backoff_retry_entry_(&kUpdateRetryBackoffPolicy) {}
@@ -297,6 +286,9 @@ void IsolatedWebAppUpdateManager::SetProvider(base::PassKey<WebAppProvider>,
 
 void IsolatedWebAppUpdateManager::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!content::AreIsolatedWebAppsEnabled(&*profile_)) {
+    return;
+  }
 
   has_started_ = true;
   install_manager_observation_.Observe(&provider_->install_manager());
@@ -329,11 +321,8 @@ void IsolatedWebAppUpdateManager::Start() {
     }
 
     // Off the record profiles cannot have `ScopedProfileKeepAlive`s.
-    auto profile_keep_alive =
-        profile_->IsOffTheRecord()
-            ? nullptr
-            : std::make_unique<ScopedProfileKeepAlive>(
-                  &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
+    auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
 
     // During startup of the `IsolatedWebAppUpdateManager`, we do not use
     // `IsolatedWebAppUpdateApplyWaiter`s to wait for all windows to close

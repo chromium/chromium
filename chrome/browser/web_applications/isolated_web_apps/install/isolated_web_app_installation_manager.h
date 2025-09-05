@@ -209,6 +209,8 @@ class IsolatedWebAppInstallationManager {
 
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
+  const bool are_isolated_web_apps_enabled_;
+
   base::RepeatingCallback<void(
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>)>
       on_report_installation_result_ = base::DoNothing();
