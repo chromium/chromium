@@ -1570,10 +1570,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                                /*image_crossorigin_attr=*/false);
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DragCorsSameOriginImageBetweenFrames \
-  DISABLED_DragCorsSameOriginImageBetweenFrames
-#elif BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DragCorsSameOriginImageBetweenFrames \
   DISABLED_DragCorsSameOriginImageBetweenFrames
 #else
@@ -1595,10 +1592,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                                /*image_crossorigin_attr=*/true);
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DragCrossOriginImageBetweenFrames \
-  DISABLED_DragCrossOriginImageBetweenFrames
-#elif BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DragCrossOriginImageBetweenFrames \
   DISABLED_DragCrossOriginImageBetweenFrames
 #else
