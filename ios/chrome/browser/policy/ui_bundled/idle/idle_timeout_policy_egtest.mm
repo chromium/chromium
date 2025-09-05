@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/constants.h"
-#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -41,10 +40,9 @@ using policy_test_utils::SetPolicy;
 
 namespace {
 
-// Wait a bit more than kSnackbarMessageTestDuration to avoid flakiness due to
-// time lags.
-constexpr base::TimeDelta kSnackbarDisappearanceTimeout =
-    kSnackbarMessageTestDuration + base::Seconds(4);
+// kSnackbarDisappearanceTimeout = MDCSnackbarMessageDurationMax + extra 4
+// seconds for avoiding flakiness due to time lags.
+constexpr base::TimeDelta kSnackbarDisappearanceTimeout = base::Seconds(10 + 4);
 
 // Returns a matcher for the idle timeout dialog's "Continue using Chrome"
 // button.

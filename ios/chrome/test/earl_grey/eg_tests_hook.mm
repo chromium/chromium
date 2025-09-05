@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/command_line.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
@@ -45,7 +47,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -291,7 +292,7 @@ base::TimeDelta PasswordCheckMinimumDuration() {
 base::TimeDelta GetOverriddenSnackbarDuration() {
   // Increase the snackbar duration for EGTests for test to catch it more
   // easily.
-  return kSnackbarMessageTestDuration;
+  return base::Seconds(MDCSnackbarMessageDurationMax);
 }
 
 std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {

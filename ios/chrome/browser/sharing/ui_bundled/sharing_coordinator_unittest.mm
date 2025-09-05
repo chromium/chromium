@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
+
+#import <MaterialComponents/MaterialSnackbar.h>
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"

@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/time/time.h"
-
 // Accessibility identifier for the snackbar view.
 extern NSString* const kSnackbarAccessibilityId;
 // Accessibility identifier for the snackbar title label.
@@ -23,9 +21,5 @@ extern NSString* const kSnackbarButtonAccessibilityId;
 extern NSString* const kSnackbarLeadingAccessoryAccessibilityId;
 // Accessibility identifier for the snackbar trailing accessory view.
 extern NSString* const kSnackbarTrailingAccessoryAccessibilityId;
-
-// Test-only duration for snackbars.
-inline constexpr base::TimeDelta kSnackbarMessageTestDuration =
-    base::Seconds(10);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_SNACKBAR_SNACKBAR_CONSTANTS_H_

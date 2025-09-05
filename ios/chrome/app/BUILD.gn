@@ -155,6 +155,7 @@ source_set("unit_tests") {
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/public/provider/chrome/browser/application_mode_fetcher:application_mode_fetcher_api",
     "//ios/testing:block_swizzler",
+    "//ios/third_party/material_components_ios",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",
@@ -543,6 +544,7 @@ source_set("app_internal") {
     "//ios/public/provider/chrome/browser/signin:choice_api",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
+    "//ios/third_party/material_components_ios",
     "//ios/web/common:uikit",
     "//ios/web/public/webui",
     "//net",
@@ -659,6 +661,18 @@ source_set("main") {
     deps += [ "//ios/components/order_file" ]
   }
   assert_no_deps = []
+
+  if (ios_chrome_links_with_material_components_framework) {
+    deps += [
+      "//ios/third_party/material_components_ios:material_components_ios+bundle",
+      "//ios/third_party/material_components_ios:material_components_ios+link",
+    ]
+  } else {
+    assert_no_deps += [
+      "//ios/third_party/material_components_ios:material_components_ios+bundle",
+      "//ios/third_party/material_components_ios:material_components_ios+link",
+    ]
+  }
 }
 
 if (ios_chrome_privacy_manifest != "") {
@@ -796,6 +810,18 @@ chrome_app("chrome") {
   }
 
   assert_no_deps = ios_assert_no_deps + ios_chrome_extra_assert_no_deps
+
+  if (ios_chrome_links_with_material_components_framework) {
+    deps += [
+      "//ios/third_party/material_components_ios:material_components_ios+bundle",
+      "//ios/third_party/material_components_ios:material_components_ios+link",
+    ]
+  } else {
+    assert_no_deps += [
+      "//ios/third_party/material_components_ios:material_components_ios+bundle",
+      "//ios/third_party/material_components_ios:material_components_ios+link",
+    ]
+  }
 
   # Lottie links with GLKit which does not support macCatalyst environment
   # (see https://crbug.com/1394553 for details of the build failure). This
