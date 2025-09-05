@@ -1894,6 +1894,21 @@
             ]
         }
     ],
+    "AttributionReportObserveAppState": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AttributionReportObserveAppState"
+                    ]
+                }
+            ]
+        }
+    ],
     "AudioFocusEnforcementStudy": [
         {
             "platforms": [
