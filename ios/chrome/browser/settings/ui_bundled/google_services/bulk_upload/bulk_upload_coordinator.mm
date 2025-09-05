@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_coordinator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "components/sync/service/sync_service.h"
@@ -119,7 +117,7 @@
 
 - (void)displayInSnackbar:(NSString*)message {
   [self.snackbarCommandsHandler
-      showSnackbarMessage:CreateSnackbarMessage(message)];
+      showCustomSnackbarMessage:CreateCustomSnackbarMessage(message)];
 }
 
 @end

@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 @class BookmarksEditorMediator;
-@class MDCSnackbarMessage;
 
 // Delegate allowing the bookmarks editor mediator to update the coordinator if
 // needed.
