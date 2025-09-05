@@ -54,6 +54,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/test_event_router_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -404,9 +405,20 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
+  TestEventRouterObserver event_router_observer(EventRouter::Get(profile()));
+
   // Navigate to trigger the onCompleted events.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/simple.html")));
+
+  // Check that the EventRouter has received and will dispatch the event.
+  ASSERT_TRUE(base::Contains(event_router_observer.events(),
+                             "webNavigation.onCompleted"));
+  // Wait until the EventRouter has actually dispatched the event.
+  // TODO(crbug.com/40276609): when this is solved, the event will
+  // be dispatched immediately and this won't be necessary.
+  event_router_observer.WaitForDispatchedEventWithName(
+      "webNavigation.onCompleted");
 
   // Execute a script to retrieve the invocation counts.
   const char kGetCountsScript[] = "chrome.test.sendScriptResult(counts);";
