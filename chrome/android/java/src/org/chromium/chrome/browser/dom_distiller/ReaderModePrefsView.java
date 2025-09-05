@@ -115,7 +115,7 @@ public class ReaderModePrefsView extends LinearLayout
         initializeFontButton(R.id.font_serif, FontFamily.SERIF);
         initializeFontButton(R.id.font_monospace, FontFamily.MONOSPACE);
 
-        mFontScalingSlider = findViewById(R.id.font_size);
+        mFontScalingSlider = findViewById(R.id.font_size_slider);
         mFontScalingSlider.setValueFrom(FONT_SCALE_LOWER_BOUND);
         mFontScalingSlider.setValueTo(FONT_SCALE_UPPER_BOUND);
         mFontScalingSlider.setStepSize(FONT_SCALE_STEP_SIZE);
@@ -150,10 +150,6 @@ public class ReaderModePrefsView extends LinearLayout
         SpannableString fontStyleNameString = new SpannableString(line2);
 
         fontStyleSignifierString.setSpan(
-                new TypefaceSpan(typeface), 0, line1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        fontStyleNameString.setSpan(
-                new TypefaceSpan(typeface), 0, line2.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        fontStyleSignifierString.setSpan(
                 new TextAppearanceSpan(
                         getContext(), R.style.TextAppearance_ReaderModePrefsFontStyleSignifier),
                 0,
@@ -165,6 +161,11 @@ public class ReaderModePrefsView extends LinearLayout
                 0,
                 line2.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        // Maintain TypefaceSpan initialization after TextAppearance or it will be overridden.
+        fontStyleSignifierString.setSpan(
+                new TypefaceSpan(typeface), 0, line1.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        fontStyleNameString.setSpan(
+                new TypefaceSpan(typeface), 0, line2.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         // Get font metrics for first line using mock TextPaint to set suitable line height.
         TextPaint mockTextPaint = new TextPaint();

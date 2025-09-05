@@ -73,7 +73,7 @@ public class ReaderModePrefsViewTest {
         assert ((MaterialButton) mReaderModePrefsView.findViewById(R.id.light_mode)).isChecked();
         assert ((MaterialButton) mReaderModePrefsView.findViewById(R.id.font_sans_serif))
                 .isChecked();
-        Slider slider = (Slider) mReaderModePrefsView.findViewById(R.id.font_size);
+        Slider slider = (Slider) mReaderModePrefsView.findViewById(R.id.font_size_slider);
         assert slider.getValue() == 1.0f;
     }
 
@@ -152,7 +152,7 @@ public class ReaderModePrefsViewTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("DomDistiller.Android.FontScalingSelected", 250)
                         .build();
-        Slider slider = (Slider) mReaderModePrefsView.findViewById(R.id.font_size);
+        Slider slider = (Slider) mReaderModePrefsView.findViewById(R.id.font_size_slider);
 
         // Manually force abritary size on the slider for the purposes of simulating drag motion.
         slider.measure(
