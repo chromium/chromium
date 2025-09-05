@@ -145,8 +145,9 @@ void UsbServiceLinux::BlockingTaskRunnerHelper::OnDeviceAdded(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   const char* subsystem = udev_device_get_subsystem(device.get());
-  CHECK(subsystem);
-  CHECK_EQ(subsystem, kUsbSubsystem);
+  if (!subsystem || subsystem != kUsbSubsystem) {
+    return;
+  }
 
   const char* value = udev_device_get_devnode(device.get());
   if (!value)
