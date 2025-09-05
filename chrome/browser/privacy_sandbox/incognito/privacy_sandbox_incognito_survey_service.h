@@ -29,7 +29,7 @@ class PrivacySandboxIncognitoSurveyService : public KeyedService {
     kNonIncognitoProfile = 4,  // Not inside Incognito.
     kMaxValue = kNonIncognitoProfile,
   };
-  // LINT.ThenChange(/tools/metrics/histograms/enums.xml:PrivacySandboxActSurveyStatus)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:PrivacySandboxActSurveyStatus)
 
   using RandIntCallback = base::RepeatingCallback<int(int, int)>;
 
