@@ -286,6 +286,15 @@ CGFloat HorizontalMargin() {
 
 #pragma mark - UIView
 
+- (CGSize)intrinsicContentSize {
+  // In portrait orientation, UIKit returns a default height of 44 on iOS 18 and
+  // earlier, while iOS 26 defaults to 48. In landscape orientation, iOS 18 and
+  // earlier return 32 by default, whereas iOS 26 defaults to 44. It is unclear
+  // what caused it. Therefore, intrinsicContentSize must be set to a fixed
+  // height.
+  return CGSizeMake(UIViewNoIntrinsicMetric, kTabGridTopToolbarHeight);
+}
+
 - (void)didMoveToSuperview {
   if (IsIOSSoftLockEnabled()) {
     if (_scrollBackgroundView) {
