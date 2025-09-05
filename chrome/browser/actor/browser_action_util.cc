@@ -634,12 +634,13 @@ void FetchCallback(
   }
 
   if (!result.has_value()) {
-    // TODO(crbug.com/435210098): There should be some way to message failure to
-    // observe in the returned result.
     auto* actor_service = actor::ActorKeyedService::Get(profile.get());
     actor_service->GetJournal().Log(
         GURL(), task_id, actor::mojom::JournalTrack::kActor, result.error(),
         absl::StrFormat("tabId[%d]", tab_observation->id()));
+    // For now record everything as a timeout.
+    tab_observation->set_result(
+        apc::TabObservation::TAB_OBSERVATION_SCREENSHOT_TIMEOUT);
     return;
   }
 
@@ -649,6 +650,7 @@ void FetchCallback(
   CHECK(fetch_result.screenshot_result.has_value());
   CHECK(fetch_result.annotated_page_content_result.has_value());
 
+  tab_observation->set_result(apc::TabObservation::TAB_OBSERVATION_OK);
   {
     apc::ActionsResult_LatencyInformation_LatencyStep* latency_step =
         latency_info->add_latency_steps();
@@ -768,11 +770,10 @@ void BuildActionsResultWithObservations(
     // implemented by not putting the tab into the LastActedTabs set.
     TabInterface* tab = handle.Get();
     if (!tab) {
-      // TODO(crbug.com/435210098): There should be some way to message failure
-      // to capture an observation to the model (here and in FetchCallback). For
-      // now we leave the observation empty.
       apc::TabObservation* tab_observation = response->add_tabs();
       tab_observation->set_id(handle.raw_value());
+      tab_observation->set_result(
+          apc::TabObservation::TAB_OBSERVATION_TAB_WENT_AWAY);
       actor_service->GetJournal().Log(
           GURL(), task.id(), actor::mojom::JournalTrack::kActor,
           "TabObservationFailed",
