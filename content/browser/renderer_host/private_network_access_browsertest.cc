@@ -44,6 +44,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+// Note: tests in this file are being migrated to work for Local Network Access;
+// please do not add new tests to this file. Instead, tests should be added to
+// content/browser/renderer_host/local_network_access_browsertest.cc
+
 namespace content {
 namespace {
 
@@ -781,39 +785,6 @@ class PrivateNetworkAccessBrowserTestNoBlocking
 //
 // These tests verify the contents of `ClientSecurityState` for top-level
 // documents in various different circumstances.
-
-// This test verifies the contents of the ClientSecurityState for the initial
-// empty document in a new main frame created by the browser.
-//
-// Note: the renderer-created main frame case is exercised by the
-// OpeneeInherits* tests below.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       ClientSecurityStateForInitialEmptyDoc) {
-  // Start a navigation. This forces the RenderFrameHost to initialize its
-  // RenderFrame. The navigation is then cancelled by a HTTP 204 code.
-  // We're left with a RenderFrameHost containing the default
-  // ClientSecurityState values.
-  //
-  // Serve the response from a secure public server, to confirm that none of
-  // the connection's properties are reflected in the committed document, which
-  // is not a secure context and belongs to the `loopback` address space.
-  EXPECT_TRUE(
-      NavigateToURLAndExpectNoCommit(shell(), SecurePublicURL("/nocontent")));
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      root_frame_host()->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-  EXPECT_FALSE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
-            security_state->cross_origin_embedder_policy.value);
-  EXPECT_EQ(network::mojom::PrivateNetworkRequestPolicy::kBlock,
-            security_state->private_network_request_policy);
-
-  // Browser-created empty main frames are trusted to access the local network,
-  // if they execute code injected via DevTools, WebView APIs or extensions.
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
-            security_state->ip_address_space);
-}
 
 // This test verifies the contents of the ClientSecurityState for `about:blank`
 // in a new main frame created by the browser.
@@ -4234,50 +4205,6 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestForNavigations,
   EXPECT_THAT(SecureLoopbackServer().request_observer().RequestMethodsForUrl(
                   target_url),
               IsEmpty());
-}
-
-class LocalNetworkAccessBrowserTest
-    : public PrivateNetworkAccessBrowserTestBase {
- public:
-  LocalNetworkAccessBrowserTest()
-      : PrivateNetworkAccessBrowserTestBase(
-            {
-                network::features::kLocalNetworkAccessChecks,
-            },
-            {}) {}
-};
-
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, CheckSecurityState) {
-  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      root_frame_host()->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_TRUE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
-            security_state->ip_address_space);
-
-  EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn);
-}
-
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, CheckBlockInsteadOfWarn) {
-  PolicyTestContentBrowserClient client;
-  client.SetBlockInsteadOfWarn();
-
-  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      root_frame_host()->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_TRUE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
-            security_state->ip_address_space);
-
-  EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
 }
 
 }  // namespace content

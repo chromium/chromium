@@ -1,0 +1,555 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <memory>
+#include <set>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/thread_annotations.h"
+#include "build/build_config.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
+#include "content/public/common/url_constants.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
+#include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/resource_load_observer.h"
+#include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/http/http_byte_range.h"
+#include "net/http/http_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_overrides_test_utils.h"
+#include "services/network/public/cpp/network_switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+
+namespace content {
+namespace {
+
+using ::net::test_server::METHOD_GET;
+using ::net::test_server::METHOD_OPTIONS;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+
+// These domains are mapped to the IP addresses above using the
+// `--host-resolver-rules` command-line switch. The exact values come from the
+// embedded HTTPS server, which has certificates for these domains
+constexpr char kLoopbackHost[] = "a.test";
+constexpr char kOtherLoopbackHost[] = "d.test";
+// not localhost, but a host with IP address space = kLocal
+constexpr char kLocalHost[] = "b.test";
+constexpr char kPublicHost[] = "c.test";
+
+// Path to a default response served by all servers in this test.
+constexpr char kDefaultPath[] = "/defaultresponse";
+
+// A |ContentBrowserClient| implementation that allows modifying the return
+// value of |ShouldAllowInsecurePrivateNetworkRequests()| at will.
+class PolicyTestContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  PolicyTestContentBrowserClient() = default;
+
+  PolicyTestContentBrowserClient(const PolicyTestContentBrowserClient&) =
+      delete;
+  PolicyTestContentBrowserClient& operator=(
+      const PolicyTestContentBrowserClient&) = delete;
+
+  ~PolicyTestContentBrowserClient() override = default;
+
+  // Adds an origin to the allowlist.
+  void SetAllowInsecurePrivateNetworkRequestsFrom(const url::Origin& origin) {
+    allowlisted_origins_.insert(origin);
+  }
+
+  void SetBlockInsteadOfWarn() { block_instead_of_warn_ = true; }
+
+  ContentBrowserClient::PrivateNetworkRequestPolicyOverride
+  ShouldOverridePrivateNetworkRequestPolicy(
+      content::BrowserContext* browser_context,
+      const url::Origin& origin) override {
+    if (block_instead_of_warn_) {
+      return ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+          kBlockInsteadOfWarn;
+    }
+    return allowlisted_origins_.find(origin) != allowlisted_origins_.end()
+               ? ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+                     kForceAllow
+               : ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+                     kDefault;
+  }
+
+ private:
+  bool block_instead_of_warn_ = false;
+  std::set<url::Origin> allowlisted_origins_;
+};
+
+// An embedded test server connection listener that simply counts connections.
+// Thread-safe.
+class ConnectionCounter
+    : public net::test_server::EmbeddedTestServerConnectionListener {
+ public:
+  ConnectionCounter() = default;
+
+  // Instances of this class are neither copyable nor movable.
+  ConnectionCounter(const ConnectionCounter&) = delete;
+  ConnectionCounter& operator=(const ConnectionCounter&) = delete;
+  ConnectionCounter(ConnectionCounter&&) = delete;
+  ConnectionCounter& operator=(ConnectionCounter&&) = delete;
+
+  // Returns the number of sockets accepted by the servers we are listening to.
+  int count() const {
+    base::AutoLock guard(lock_);
+    return count_;
+  }
+
+ private:
+  // EmbeddedTestServerConnectionListener implementation.
+
+  std::unique_ptr<net::StreamSocket> AcceptedSocket(
+      std::unique_ptr<net::StreamSocket> socket) override {
+    {
+      base::AutoLock guard(lock_);
+      count_++;
+    }
+    return socket;
+  }
+
+  void ReadFromSocket(const net::StreamSocket& socket, int rv) override {}
+
+  // `count_` is incremented on the embedded test server thread and read on the
+  // test thread, so we synchronize accesses with a lock.
+  mutable base::Lock lock_;
+  int count_ GUARDED_BY(lock_) = 0;
+};
+
+class RequestObserver {
+ public:
+  RequestObserver() = default;
+
+  // The returned callback must not outlive this instance.
+  net::test_server::EmbeddedTestServer::MonitorRequestCallback BindCallback() {
+    return base::BindRepeating(&RequestObserver::Observe,
+                               base::Unretained(this));
+  }
+
+  // The origin of the URL is not checked for equality.
+  std::vector<net::test_server::HttpMethod> RequestMethodsForUrl(
+      const GURL& url) const {
+    std::string path = url.PathForRequest();
+    std::vector<net::test_server::HttpMethod> methods;
+    {
+      base::AutoLock guard(lock_);
+      for (const auto& request : requests_) {
+        if (request.GetURL().PathForRequest() == path) {
+          methods.push_back(request.method);
+        }
+      }
+    }
+    return methods;
+  }
+
+ private:
+  void Observe(const net::test_server::HttpRequest& request) {
+    base::AutoLock guard(lock_);
+    requests_.push_back(request);
+  }
+
+  // `requests_` is mutated on the embedded test server thread and read on the
+  // test thread, so we synchronize accesses with a lock.
+  mutable base::Lock lock_;
+  std::vector<net::test_server::HttpRequest> requests_ GUARDED_BY(lock_);
+};
+
+// Removes `prefix` from the start of `str`, if present.
+// Returns nullopt otherwise.
+std::optional<std::string_view> StripPrefix(std::string_view str,
+                                            std::string_view prefix) {
+  if (!base::StartsWith(str, prefix)) {
+    return std::nullopt;
+  }
+
+  return str.substr(prefix.size());
+}
+
+// Returns a pointer to the value of the `header` header in `request`, if any.
+// Returns nullptr otherwise.
+const std::string* FindRequestHeader(
+    const net::test_server::HttpRequest& request,
+    std::string_view header) {
+  const auto it = request.headers.find(header);
+  if (it == request.headers.end()) {
+    return nullptr;
+  }
+
+  return &it->second;
+}
+
+// Returns the `Content-Range` header value for a given `range` of bytes out of
+// the given `total_size` number of bytes.
+std::string GetContentRangeHeader(const net::HttpByteRange& range,
+                                  size_t total_size) {
+  std::string first = base::NumberToString(range.first_byte_position());
+  std::string last = base::NumberToString(range.last_byte_position());
+  std::string total = base::NumberToString(total_size);
+  return base::StrCat({"bytes ", first, "-", last, "/", total});
+}
+
+// An `EmbeddedTestServer` request handler function.
+//
+// Knows how to respond to CORS and PNA preflight requests, as well as regular
+// and range requests.
+//
+// Route: /echorange?<body>
+std::unique_ptr<net::test_server::HttpResponse> HandleRangeRequest(
+    const net::test_server::HttpRequest& request) {
+  std::optional<std::string_view> query =
+      StripPrefix(request.relative_url, "/echorange?");
+  if (!query) {
+    return nullptr;
+  }
+
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+
+  constexpr std::pair<std::string_view, std::string_view> kCopiedHeaders[] = {
+      {"Origin", "Access-Control-Allow-Origin"},
+      {"Access-Control-Request-Private-Network",
+       "Access-Control-Allow-Private-Network"},
+      {"Access-Control-Request-Headers", "Access-Control-Allow-Headers"},
+  };
+  for (const auto& pair : kCopiedHeaders) {
+    const std::string* value = FindRequestHeader(request, pair.first);
+    if (value) {
+      response->AddCustomHeader(pair.second, *value);
+    }
+  }
+
+  // No body for a preflight response.
+  if (request.method == net::test_server::METHOD_OPTIONS) {
+    response->AddCustomHeader("Access-Control-Max-Age", "60");
+    return response;
+  }
+
+  // Cache-Control: max-age=X does not work for range request caching. Use a
+  // strong ETag instead, along with a last modified date. Both are required.
+  response->AddCustomHeader("ETag", "foo");
+  response->AddCustomHeader("Last-Modified", "Fri, 1 Apr 2022 12:34:56 UTC");
+
+  const std::string* range_header = FindRequestHeader(request, "Range");
+  if (!range_header) {
+    // Not a range request. Respond with 200 and the whole query as the body.
+    response->set_content(*query);
+    return response;
+  }
+
+  std::vector<net::HttpByteRange> ranges;
+  if (!net::HttpUtil::ParseRangeHeader(*range_header, &ranges) ||
+      ranges.size() != 1) {
+    response->set_code(net::HTTP_BAD_REQUEST);
+    return response;
+  }
+
+  net::HttpByteRange& range = ranges[0];
+  if (!range.ComputeBounds(query->size())) {
+    response->set_code(net::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE);
+    return response;
+  }
+
+  response->set_code(net::HTTP_PARTIAL_CONTENT);
+  response->AddCustomHeader("Content-Range",
+                            GetContentRangeHeader(range, query->size()));
+  response->set_content(query->substr(range.first_byte_position(),
+                                      range.last_byte_position() + 1));
+  return response;
+}
+
+// A `net::EmbeddedTestServer` that pretends to be in a given IP address space.
+//
+// Set up of the command line in order for this server to be considered a part
+// of `ip_address_space` must be done outside of server creation.
+class FakeAddressSpaceServer {
+ public:
+  FakeAddressSpaceServer(net::EmbeddedTestServer::Type type,
+                         net::test_server::HttpConnection::Protocol protocol,
+                         network::mojom::IPAddressSpace ip_address_space,
+                         const base::FilePath& test_data_path)
+      : server_(type, protocol), ip_address_space_(ip_address_space) {
+    // Use a certificate valid for multiple domains, which we can use to
+    // distinguish `loopback`, `local` and `public` address spaces.
+    server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+    server_.SetConnectionListener(&connection_counter_);
+    server_.RegisterRequestMonitor(request_observer_.BindCallback());
+    server_.RegisterRequestHandler(base::BindRepeating(&HandleRangeRequest));
+    server_.AddDefaultHandlers(test_data_path);
+    CHECK(server_.Start());
+  }
+
+  std::string GenerateCommandLineSwitchOverride() const {
+    return network::GenerateIpAddressSpaceOverride(server_, ip_address_space_);
+  }
+
+  // Returns the underlying test server.
+  net::EmbeddedTestServer& Get() { return server_; }
+
+  // Returns the total number of sockets accepted by this server.
+  int ConnectionCount() const { return connection_counter_.count(); }
+
+  const RequestObserver& request_observer() const { return request_observer_; }
+
+ private:
+  ConnectionCounter connection_counter_;
+  RequestObserver request_observer_;
+  net::EmbeddedTestServer server_;
+  const network::mojom::IPAddressSpace ip_address_space_;
+};
+
+}  // namespace
+
+// This being an integration/browser test, we concentrate on a few behaviors
+// relevant to Local Network Access:
+//
+//  - testing the values of important properties on top-level documents:
+//    - address space
+//    - secure context bit
+//    - private network request policy
+//  - testing the inheritance semantics of these properties
+//  - testing the correct handling of the CSP: treat-as-public-address directive
+//  - testing that subresource requests are subject to LNA checks
+//  - and a few other odds and ends
+//
+// We use the `--ip-address-space-overrides` command-line switch to test against
+// `local` and `public` address spaces, even though all responses are actually
+// served from localhost. Combined with host resolver rules, this lets us define
+// three different domains that map to the different address spaces:
+//
+//  - `a.test` is `loopback`
+//  - `b.test` is `local`
+//  - `c.test` is `public`
+//
+// We also have unit tests that test all possible combinations of source and
+// destination IP address spaces in services/network/url_loader_unittest.cc.
+class LocalNetworkAccessBrowserTestBase : public ContentBrowserTest {
+ public:
+  RenderFrameHostImpl* root_frame_host() {
+    return static_cast<RenderFrameHostImpl*>(
+        shell()->web_contents()->GetPrimaryMainFrame());
+  }
+
+ protected:
+  // Allows subclasses to construct instances with different features enabled.
+  explicit LocalNetworkAccessBrowserTestBase()
+      : insecure_loopback_server_(
+            net::EmbeddedTestServer::TYPE_HTTP,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kLoopback,
+            GetTestDataFilePath()),
+        insecure_local_server_(
+            net::EmbeddedTestServer::TYPE_HTTP,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kLocal,
+            GetTestDataFilePath()),
+        insecure_public_server_(
+            net::EmbeddedTestServer::TYPE_HTTP,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kPublic,
+            GetTestDataFilePath()),
+        secure_loopback_server_(
+            net::EmbeddedTestServer::TYPE_HTTPS,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kLoopback,
+            GetTestDataFilePath()),
+        secure_local_server_(net::EmbeddedTestServer::TYPE_HTTPS,
+                             net::test_server::HttpConnection::Protocol::kHttp1,
+                             network::mojom::IPAddressSpace::kLocal,
+                             GetTestDataFilePath()),
+        secure_public_server_(
+            net::EmbeddedTestServer::TYPE_HTTPS,
+            net::test_server::HttpConnection::Protocol::kHttp1,
+            network::mojom::IPAddressSpace::kPublic,
+            GetTestDataFilePath()) {}
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+
+    // Rules must be added on the main thread, otherwise `AddRule()` segfaults.
+    host_resolver()->AddRule(kLoopbackHost, "127.0.0.1");
+    host_resolver()->AddRule(kOtherLoopbackHost, "127.0.0.1");
+    host_resolver()->AddRule(kLocalHost, "127.0.0.1");
+    host_resolver()->AddRule(kPublicHost, "127.0.0.1");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    // Add correct ip address space overrides.
+    network::AddIpAddressSpaceOverridesToCommandLine(
+        {insecure_loopback_server_.GenerateCommandLineSwitchOverride(),
+         insecure_local_server_.GenerateCommandLineSwitchOverride(),
+         insecure_public_server_.GenerateCommandLineSwitchOverride(),
+         secure_loopback_server_.GenerateCommandLineSwitchOverride(),
+         secure_local_server_.GenerateCommandLineSwitchOverride(),
+         secure_public_server_.GenerateCommandLineSwitchOverride()},
+        *command_line);
+  }
+
+  const FakeAddressSpaceServer& InsecureLoopbackServer() const {
+    return insecure_loopback_server_;
+  }
+
+  const FakeAddressSpaceServer& InsecureLocalServer() const {
+    return insecure_local_server_;
+  }
+
+  const FakeAddressSpaceServer& InsecurePublicServer() const {
+    return insecure_public_server_;
+  }
+
+  const FakeAddressSpaceServer& SecureLoopbackServer() const {
+    return secure_loopback_server_;
+  }
+
+  const FakeAddressSpaceServer& SecureLocalServer() const {
+    return secure_local_server_;
+  }
+
+  const FakeAddressSpaceServer& SecurePublicServer() const {
+    return secure_public_server_;
+  }
+
+  GURL InsecureLoopbackURL(const std::string& path) {
+    return insecure_loopback_server_.Get().GetURL(kLoopbackHost, path);
+  }
+
+  GURL InsecureLocalURL(const std::string& path) {
+    return insecure_local_server_.Get().GetURL(kLocalHost, path);
+  }
+
+  GURL InsecurePublicURL(const std::string& path) {
+    return insecure_public_server_.Get().GetURL(kPublicHost, path);
+  }
+
+  GURL SecureLoopbackURL(const std::string& path) {
+    return secure_loopback_server_.Get().GetURL(kLoopbackHost, path);
+  }
+
+  GURL OtherSecureLoopbackURL(const std::string& path) {
+    return secure_loopback_server_.Get().GetURL(kOtherLoopbackHost, path);
+  }
+
+  GURL SecureLocalURL(const std::string& path) {
+    return secure_local_server_.Get().GetURL(kLocalHost, path);
+  }
+
+  GURL SecurePublicURL(const std::string& path) {
+    return secure_public_server_.Get().GetURL(kPublicHost, path);
+  }
+
+  GURL NullIPURL(const std::string& path) {
+    return insecure_public_server_.Get().GetURL("0.0.0.0", path);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+  FakeAddressSpaceServer insecure_loopback_server_;
+  FakeAddressSpaceServer insecure_local_server_;
+  FakeAddressSpaceServer insecure_public_server_;
+  FakeAddressSpaceServer secure_loopback_server_;
+  FakeAddressSpaceServer secure_local_server_;
+  FakeAddressSpaceServer secure_public_server_;
+};
+
+// Test with insecure local network subresource requests from the `public`
+// address space blocked.
+class LocalNetworkAccessBrowserTest : public LocalNetworkAccessBrowserTestBase {
+ public:
+  LocalNetworkAccessBrowserTest() : LocalNetworkAccessBrowserTestBase() {
+    // Some builders run with field_trial disabled, need to enable this
+    // manually.
+    base::FieldTrialParams params;
+    params["LocalNetworkAccessChecksWarn"] = "false";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        network::features::kLocalNetworkAccessChecks, params);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// ===========================
+// CLIENT SECURITY STATE TESTS
+// ===========================
+//
+// These tests verify the contents of `ClientSecurityState` for top-level
+// documents in various different circumstances.
+
+// This test verifies the contents of the ClientSecurityState for the initial
+// empty document in a new main frame created by the browser.
+//
+// Note: the renderer-created main frame case is exercised by the
+// OpeneeInherits* tests below.
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       ClientSecurityStateForInitialEmptyDoc) {
+  // Start a navigation. This forces the RenderFrameHost to initialize its
+  // RenderFrame. The navigation is then cancelled by a HTTP 204 code.
+  // We're left with a RenderFrameHost containing the default
+  // ClientSecurityState values.
+  //
+  // Serve the response from a secure public server, to confirm that none of
+  // the connection's properties are reflected in the committed document, which
+  // is not a secure context and belongs to the `loopback` address space.
+  EXPECT_TRUE(
+      NavigateToURLAndExpectNoCommit(shell(), SecurePublicURL("/nocontent")));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
+            security_state->cross_origin_embedder_policy.value);
+  EXPECT_EQ(network::mojom::PrivateNetworkRequestPolicy::kBlock,
+            security_state->private_network_request_policy);
+
+  // Browser-created empty main frames are trusted to access the local network,
+  // if they execute code injected via DevTools, WebView APIs or extensions.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLoopback,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, CheckSecurityState) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            security_state->ip_address_space);
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock);
+}
+
+}  // namespace content
