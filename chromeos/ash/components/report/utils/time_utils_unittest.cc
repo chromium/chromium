@@ -216,6 +216,85 @@ TEST(TimeUtilsTest, GetFirstActiveWeek) {
   EXPECT_EQ(result.value(), expected_ts);
 }
 
+TEST(TimeUtilsTest, VpdActivateDateWeekAsTime_2024_W01) {
+  // 2024 starts on a Monday, so week 01 starts on Jan 1st.
+  std::optional<base::Time> result = VpdActivateDateWeekAsTime(2024, 1);
+
+  EXPECT_TRUE(result.has_value());
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2024, 1, 0, 1, 0, 0, 0, 0}, &expected_ts));
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, VpdActivateDateWeekAsTime_2023_W00) {
+  // 2023 starts on a Sunday. Week 00 is Jan 1st.
+  std::optional<base::Time> result = VpdActivateDateWeekAsTime(2023, 0);
+
+  EXPECT_TRUE(result.has_value());
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2023, 1, 0, 1, 0, 0, 0, 0}, &expected_ts));
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, VpdActivateDateWeekAsTime_2023_W01) {
+  // 2023 starts on a Sunday. First Monday is Jan 2nd.
+  std::optional<base::Time> result = VpdActivateDateWeekAsTime(2023, 1);
+
+  EXPECT_TRUE(result.has_value());
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2023, 1, 0, 2, 0, 0, 0, 0}, &expected_ts));
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, VpdActivateDateWeekAsTime_2020_W00) {
+  // 2020 starts on a Wednesday. Week 00 is Jan 1st.
+  std::optional<base::Time> result = VpdActivateDateWeekAsTime(2020, 0);
+
+  EXPECT_TRUE(result.has_value());
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2020, 1, 0, 1, 0, 0, 0, 0}, &expected_ts));
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, VpdActivateDateWeekAsTime_2020_W01) {
+  // 2020 starts on a Wednesday. First Monday is Jan 6th.
+  std::optional<base::Time> result = VpdActivateDateWeekAsTime(2020, 1);
+
+  EXPECT_TRUE(result.has_value());
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2020, 1, 0, 6, 0, 0, 0, 0}, &expected_ts));
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, VpdActivateDateWeekAsTime_2023_W10) {
+  // First Monday of 2023 is Jan 2nd. Week 10 starts 9 weeks after that.
+  std::optional<base::Time> result = VpdActivateDateWeekAsTime(2023, 10);
+
+  EXPECT_TRUE(result.has_value());
+  base::Time expected_ts;
+  EXPECT_TRUE(
+      base::Time::FromUTCExploded({2023, 3, 0, 6, 0, 0, 0, 0}, &expected_ts));
+  EXPECT_EQ(result.value(), expected_ts);
+}
+
+TEST(TimeUtilsTest, InvalidVpdActivateDateWeekAsTime) {
+  // Call the method under test with invalid inputs.
+  std::optional<base::Time> result = VpdActivateDateWeekAsTime(0, -1);
+  EXPECT_FALSE(result.has_value());
+
+  result = VpdActivateDateWeekAsTime(-1, 0);
+  EXPECT_FALSE(result.has_value());
+
+  // Week of year is greater than 53.
+  result = VpdActivateDateWeekAsTime(2023, 54);
+  EXPECT_FALSE(result.has_value());
+}
+
 TEST(TimeUtilsTest, FirstMondayOfISONewYear2000) {
   // Call the method under test.
   std::optional<base::Time> result = FirstMondayOfISONewYear(2000);
@@ -260,63 +339,6 @@ TEST(TimeUtilsTest, FirstMondayOfISONewYear2025) {
   base::Time expected_ts;
   EXPECT_TRUE(
       base::Time::FromUTCExploded({2024, 12, 1, 30, 0, 0, 0, 0}, &expected_ts));
-
-  EXPECT_EQ(result.value(), expected_ts);
-}
-
-TEST(TimeUtilsTest, Iso8601DateWeekAsTime_2023_W18) {
-  // Call method under test and calculate the expected result for comparison.
-  auto result = Iso8601DateWeekAsTime(2023, 18);
-  EXPECT_TRUE(result.has_value());
-  base::Time expected_ts;
-  EXPECT_TRUE(
-      base::Time::FromUTCExploded({2023, 5, 0, 1, 0, 0, 0, 0}, &expected_ts));
-  EXPECT_EQ(result.value(), expected_ts);
-}
-
-TEST(TimeUtilsTest, Iso8601DateWeekAsTime_2026_W01) {
-  // Call method under test and calculate the expected result for comparison.
-  auto result = Iso8601DateWeekAsTime(2026, 1);
-  EXPECT_TRUE(result.has_value());
-  base::Time expected_ts;
-  EXPECT_TRUE(
-      base::Time::FromUTCExploded({2025, 12, 1, 29, 0, 0, 0, 0}, &expected_ts));
-  EXPECT_EQ(result.value(), expected_ts);
-}
-
-TEST(TimeUtilsTest, Iso8601DateWeekAsTime_2026_W53) {
-  // Call method under test and calculate the expected result for comparison.
-  auto result = Iso8601DateWeekAsTime(2026, 53);
-  EXPECT_TRUE(result.has_value());
-  base::Time expected_ts;
-  EXPECT_TRUE(
-      base::Time::FromUTCExploded({2026, 12, 1, 28, 0, 0, 0, 0}, &expected_ts));
-  EXPECT_EQ(result.value(), expected_ts);
-}
-
-TEST(TimeUtilsTest, InvalidIso8601DateWeekAsTime) {
-  // Call the method under test
-  auto result = Iso8601DateWeekAsTime(0, 0);
-  EXPECT_FALSE(result.has_value());
-
-  result = Iso8601DateWeekAsTime(-1, 0);
-  EXPECT_FALSE(result.has_value());
-
-  // Week of year is greater than 53.
-  result = Iso8601DateWeekAsTime(2023, 54);
-  EXPECT_FALSE(result.has_value());
-}
-
-TEST(TimeUtilsTest, Iso8601DateWeekAsTimeWeek53) {
-  // Call the method under test
-  // I.e Year 2020 has 53 weeks instead of 52.
-  auto result = Iso8601DateWeekAsTime(2020, 53);
-  EXPECT_TRUE(result.has_value());
-
-  // Calculate the expected result for comparison.
-  base::Time expected_ts;
-  EXPECT_TRUE(
-      base::Time::FromUTCExploded({2020, 12, 0, 28, 0, 0, 0, 0}, &expected_ts));
 
   EXPECT_EQ(result.value(), expected_ts);
 }
