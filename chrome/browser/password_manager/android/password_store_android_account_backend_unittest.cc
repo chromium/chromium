@@ -21,7 +21,6 @@
 #include "chrome/browser/password_manager/android/fake_password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/mock_password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"

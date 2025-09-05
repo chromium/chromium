@@ -113,7 +113,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
 #include "components/enterprise/connectors/core/features.h"
