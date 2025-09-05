@@ -192,7 +192,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     }
 
     int buffer_count = 0;
-    auto* provider = GetResourceProviderForCanvas2D();
+    auto* provider = GetResourceProvider();
     if (provider) {
       buffer_count = 1;
       if (provider->IsAccelerated()) {
@@ -292,7 +292,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
 
   CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override;
-  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override;
+  CanvasResourceProvider* GetResourceProvider() const override;
   void SetCanvas2DResourceProviderForTesting(
       std::unique_ptr<CanvasResourceProvider> provider,
       const gfx::Size& size);

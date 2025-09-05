@@ -30,7 +30,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
    public:
     virtual ~Delegate() = default;
 
-    virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const = 0;
+    virtual CanvasResourceProvider* GetResourceProvider() const = 0;
     virtual bool IsPageVisible() const = 0;
     virtual bool IsContextLost() const = 0;
     virtual void ResetResourceProviderForCanvas2D() = 0;

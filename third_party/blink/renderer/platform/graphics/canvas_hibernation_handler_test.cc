@@ -42,7 +42,7 @@ class TestHibernationHandlerDelegate
     is_hibernating_ = is_hibernating;
   }
 
-  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
+  CanvasResourceProvider* GetResourceProvider() const override {
     return resource_provider_.get();
   }
   void ResetResourceProviderForCanvas2D() override {
@@ -50,8 +50,8 @@ class TestHibernationHandlerDelegate
   }
 
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderForCanvas2D() {
-    if (GetResourceProviderForCanvas2D()) {
-      return GetResourceProviderForCanvas2D();
+    if (GetResourceProvider()) {
+      return GetResourceProvider();
     }
     constexpr auto kShouldInitialize =
         CanvasResourceProvider::ShouldInitialize::kCallClear;
@@ -136,11 +136,10 @@ void SetPageVisible(
   if (!page_visible) {
     // Trigger hibernation.
     scoped_refptr<StaticBitmapImage> snapshot =
-        delegate->GetResourceProviderForCanvas2D()->Snapshot(
-            FlushReason::kHibernating);
+        delegate->GetResourceProvider()->Snapshot(FlushReason::kHibernating);
     hibernation_handler->SaveForHibernation(
         snapshot->PaintImageForCurrentFrame().GetSwSkImage(),
-        delegate->GetResourceProviderForCanvas2D()->ReleaseRecorder());
+        delegate->GetResourceProvider()->ReleaseRecorder());
     EXPECT_TRUE(hibernation_handler->IsHibernating());
   } else {
     // End hibernation.
@@ -279,7 +278,7 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
   EXPECT_FALSE(handler.is_encoded());
 
   EXPECT_FALSE(handler.IsHibernating());
-  EXPECT_TRUE(delegate.GetResourceProviderForCanvas2D()->IsValid());
+  EXPECT_TRUE(delegate.GetResourceProvider()->IsValid());
 }
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {

@@ -85,7 +85,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   int Height() const final;
 
   bool CanCreateCanvas2dResourceProvider() final;
-  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override;
+  CanvasResourceProvider* GetResourceProvider() const override;
 
   // Offscreen canvas doesn't have any notion of image orientation.
   RespectImageOrientationEnum RespectImageOrientation() const final {

@@ -295,7 +295,7 @@ void BaseRenderingContext2D::RestoreFromInvalidSizeIfNeeded() {
       !host) {
     return;
   }
-  DCHECK(!GetResourceProviderForCanvas2D());
+  DCHECK(!GetResourceProvider());
 
   if (host->IsValidImageSize()) {
     if (dispatch_context_lost_event_timer_.IsActive()) {
@@ -782,7 +782,7 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
 }
 
 bool BaseRenderingContext2D::Is2DCanvasAccelerated() const {
-  auto* resource_provider = GetResourceProviderForCanvas2D();
+  auto* resource_provider = GetResourceProvider();
   return resource_provider ? resource_provider->IsAccelerated()
                            : Host()->ShouldTryToUseGpuRaster();
 }
@@ -804,7 +804,7 @@ BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
     return nullptr;
   }
 
-  CanvasResourceProvider* provider = GetResourceProviderForCanvas2D();
+  CanvasResourceProvider* provider = GetResourceProvider();
   provider->FlushCanvas(reason);
   return provider->Snapshot(reason);
 }
@@ -1509,11 +1509,10 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   gpu::SyncToken canvas_access_sync_token;
   bool performed_copy = false;
   scoped_refptr<gpu::ClientSharedImage> client_si =
-      GetResourceProviderForCanvas2D()
-          ->GetBackingClientSharedImageForExternalWrite(
-              gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                  gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-              canvas_access_sync_token, &performed_copy);
+      GetResourceProvider()->GetBackingClientSharedImageForExternalWrite(
+          gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+              gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
+          canvas_access_sync_token, &performed_copy);
   if (access_options->requireZeroCopy() && performed_copy) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -1591,7 +1590,7 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
   // If this canvas already has a resource provider, this means that drawing has
   // occurred after `transferToWebGPU`. We disallow transferring back in this
   // case, and raise an exception instead.
-  if (GetResourceProviderForCanvas2D()) {
+  if (GetResourceProvider()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The canvas was touched after transferToGPUTexture.");

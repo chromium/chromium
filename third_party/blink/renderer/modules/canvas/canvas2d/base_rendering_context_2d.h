@@ -150,9 +150,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   V8GPUTextureFormat getTextureFormat() const;
 
   virtual bool CanCreateCanvas2dResourceProvider() = 0;
-  virtual CanvasResourceProvider* GetResourceProviderForCanvas2D() const {
-    NOTREACHED();
-  }
+  virtual CanvasResourceProvider* GetResourceProvider() const { NOTREACHED(); }
 
   String lang() const;
   void setLang(const String&);
