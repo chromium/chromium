@@ -14,7 +14,7 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
  public:
   // Type of the factory returned by GetTestingFactory(). Can be registered
   // with TestProfileIOS::Builder::AddTestingFactory().
-  using TestingFactory = ProfileKeyedServiceFactoryIOS::TestingFactory;
+  using TestingFactory = ProfileKeyedServiceFactoryIOS::ProfileTestingFactory;
 
   explicit FakeTabRestoreService();
   ~FakeTabRestoreService() override;

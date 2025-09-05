@@ -61,8 +61,7 @@ void WebSessionStateCacheWrapper::Shutdown() {
 }
 
 std::unique_ptr<KeyedService> BuildWebSessionStateCacheWrapper(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) {
   return std::make_unique<WebSessionStateCacheWrapper>(
       BrowserListFactory::GetForProfile(profile),
       [[WebSessionStateCache alloc] initWithProfile:profile]);
@@ -92,6 +91,6 @@ WebSessionStateCacheFactory::~WebSessionStateCacheFactory() = default;
 
 std::unique_ptr<KeyedService>
 WebSessionStateCacheFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildWebSessionStateCacheWrapper(context);
+    ProfileIOS* profile) const {
+  return BuildWebSessionStateCacheWrapper(profile);
 }

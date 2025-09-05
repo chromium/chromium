@@ -43,9 +43,9 @@ class SessionRestorationServiceFactory final
   SessionRestorationServiceFactory();
   ~SessionRestorationServiceFactory() final;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const final;
+      ProfileIOS* profile) const final;
   void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 

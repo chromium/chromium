@@ -21,7 +21,7 @@
 class TestSessionRestorationService : public SessionRestorationService {
  public:
   // Factory for the KeyedService infrastructure.
-  using TestingFactory = ProfileKeyedServiceFactoryIOS::TestingFactory;
+  using TestingFactory = ProfileKeyedServiceFactoryIOS::ProfileTestingFactory;
 
   TestSessionRestorationService();
   ~TestSessionRestorationService() override;

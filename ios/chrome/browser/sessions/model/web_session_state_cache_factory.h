@@ -26,9 +26,9 @@ class WebSessionStateCacheFactory : public ProfileKeyedServiceFactoryIOS {
   WebSessionStateCacheFactory();
   ~WebSessionStateCacheFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_WEB_SESSION_STATE_CACHE_FACTORY_H_

@@ -346,9 +346,7 @@ SessionRestorationServiceFactory::~SessionRestorationServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 SessionRestorationServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
