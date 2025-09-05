@@ -12,6 +12,7 @@ import tempfile
 from util import jj_log
 from util import run_command
 from util import run_jj
+from util import split_description
 
 _IMMUTABLE_PARENTS = 'parents.filter(|p| p.immutable()).map(|p| p.commit_id())'
 _MUTABLE_PARENTS = 'parents.filter(|p| !p.immutable()).map(|p| p.commit_id())'
@@ -97,18 +98,18 @@ def main(args):
   snapshot_taken = True
   for change in to_upload:
     name = change['name']
-    desc = change['desc']
+    desc, trailers = split_description(change['desc'])
     # Don't trust `git cl presubmit` to pick up on these for stacked changes,
     # since it assumes all the commits will be squashed.
     if change['empty'] == 'true':
       fatal('Attempting to upload an empty change %s', name)
     if not desc:
       fatal('Attempting to upload change with an empty description %s', name)
-    if '\nChange-Id: ' not in desc:
+    if 'Change-Id' not in trailers:
       fatal('Attempting to upload change with no Change-Id %s', name)
-    if '\nBug: ' not in desc and '\nFixed: ' not in desc:
+    if 'Bug' not in trailers and 'Fixed' not in trailers:
       logging.warning(
-          'Change %s has no associated Bug. If this change has an associated' +
+          'Change %s has no associated Bug. If this change has an associated ' +
           'bug, add Bug: [bug number] or Fixed: [bug number].', name)
 
   if not args.bypass_hooks:

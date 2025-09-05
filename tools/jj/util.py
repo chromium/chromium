@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import logging
+import re
 import subprocess
 
 # CSV-file like separators. The templating language doesn't support escaping,
@@ -10,6 +12,8 @@ import subprocess
 # https://en.wikipedia.org/wiki/C0_and_C1_control_codes#Field_separators
 _NEWLINE = '\x1e'
 _COMMA = '\x1f'
+
+_TRAILER = re.compile(r'([a-zA-Z0-9\-_]+): (.*)')
 
 
 def run_command(args: list[str],
@@ -76,3 +80,19 @@ def jj_log(*,
 
   See _log for details."""
   return _log(['log', '-r', revisions], templates, **kwargs)
+
+
+def split_description(description: str) -> tuple[str, dict[str, list[str]]]:
+  """Splits a description into the description and git trailers."""
+  trailers = collections.defaultdict(list)
+  user_desc, sep, trailer_paragraph = description.rstrip().rpartition('\n\n')
+
+  trailer_lines = trailer_paragraph.lstrip().split('\n')
+  # Note: for multiline values, we only retrieve the first line here.
+  for line in trailer_lines:
+    match = _TRAILER.match(line)
+    if match is not None:
+      trailers[match.group(1)].append(match.group(2))
+  if not trailers:
+    return description, {}
+  return user_desc, trailers
