@@ -16,6 +16,27 @@ By default, it will build promptfoo from ToT, but specific behavior can be
 configured via command line arguments, including use of stable releases via npm
 which will likely result in faster setup.
 
+### btrfs Chromium Setup
+
+The prompt eval is intended to be run with Chromium in a btrfs file system.
+The tests should still run in a normal checkout but will be significantly
+slower and take up significantly more disk space. These steps can be used to
+fetch a new Chromium solution in a virtual btrfs file system mounted in your
+home dir.
+
+1.  Ensure btrfs is installed with `sudo apt install btrfs-progs`
+2.  Create the virtual image file with
+    `truncate -s 500G ~/btrfs_virtual_disk.img`
+3.  Format the image with btrfs `mkfs.btrfs ~/btrfs_virtual_disk.img`
+4.  Mount the image `mkdir ~/btrfs && sudo mount -o loop
+    ~/btrfs_virtual_disk.img ~/btrfs`
+5.  Update owner `sudo chown $(whoami):$(id -ng) ~/btrfs`
+6.  Fetch (or move) your Chromium solution into the mount `cd ~/btrfs && fetch
+    chromium`
+
+After Chromium is checked out, `agents/testing/eval_prompts.py` can then
+be run from `~/btrfs/chromium/src/`.
+
 ## Adding Extensions
 
 The script only installs the extensions in the `EXTENSIONS_TO_INSTALL` list at
@@ -25,11 +46,11 @@ extension name to this list.
 ## Adding Tests
 
 Each independent test case should have its own promptfoo yaml config file. See
-the [promptfoo documentation](https://www.promptfoo.dev/docs/configuration/guide/)
-for more information on this. If multiple prompts are expected to result in the
-same behavior, and thus can be tested in the same way, the config file can
-contain multiple prompts. promptfoo will automatically test each prompt
-individually.
+the [promptfoo
+documentation](https://www.promptfoo.dev/docs/configuration/guide/) for more
+information on this. If multiple prompts are expected to result in the same
+behavior, and thus can be tested in the same way, the config file can contain
+multiple prompts. promptfoo will automatically test each prompt individually.
 
 Config files should be placed in a `tests/promptfoo/` subdirectory of the
 relevant prompt or extension directory. After they exist on disk, new yaml
