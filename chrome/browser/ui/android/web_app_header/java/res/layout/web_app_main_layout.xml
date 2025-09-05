@@ -5,14 +5,19 @@
   ~ found in the LICENSE file.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
              android:layout_height="match_parent">
     <ViewStub
         android:id="@+id/web_app_header_layout"
         android:layout="@layout/web_app_header_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/web_app_content"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/web_app_header_layout" />
+</RelativeLayout>

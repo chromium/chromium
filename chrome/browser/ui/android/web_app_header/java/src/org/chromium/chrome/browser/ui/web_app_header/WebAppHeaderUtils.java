@@ -129,6 +129,15 @@ public class WebAppHeaderUtils {
     }
 
     /**
+     * Provides layout id of the webapp content.
+     *
+     * @return webapp content resource id.
+     */
+    public static int getWebAppHeaderContentId() {
+        return R.id.web_app_content;
+    }
+
+    /**
      * Checks whether minimal ui is visible based on the desktop window state and feature flag
      * state.
      *

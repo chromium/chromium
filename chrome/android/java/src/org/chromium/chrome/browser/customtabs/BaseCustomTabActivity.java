@@ -305,12 +305,12 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     @Override
     public void setContentView(int layoutResID) {
         if (WebAppHeaderUtils.isMinimalUiEnabled(mIntentDataProvider)) {
+            final View rootLayout =
+                    getLayoutInflater().inflate(WebAppHeaderUtils.getWebAppHeaderLayoutId(), null);
             final LinearLayout linearLayout =
-                    (LinearLayout)
-                            getLayoutInflater()
-                                    .inflate(WebAppHeaderUtils.getWebAppHeaderLayoutId(), null);
+                    rootLayout.findViewById(WebAppHeaderUtils.getWebAppHeaderContentId());
             getLayoutInflater().inflate(layoutResID, linearLayout, true);
-            super.setContentView(linearLayout);
+            super.setContentView(rootLayout);
         } else {
             super.setContentView(layoutResID);
         }
@@ -319,12 +319,12 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     @Override
     public void setContentView(View view) {
         if (WebAppHeaderUtils.isMinimalUiEnabled(mIntentDataProvider)) {
+            final View rootLayout =
+                    getLayoutInflater().inflate(WebAppHeaderUtils.getWebAppHeaderLayoutId(), null);
             final LinearLayout linearLayout =
-                    (LinearLayout)
-                            getLayoutInflater()
-                                    .inflate(WebAppHeaderUtils.getWebAppHeaderLayoutId(), null);
+                    rootLayout.findViewById(WebAppHeaderUtils.getWebAppHeaderContentId());
             linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            super.setContentView(linearLayout);
+            super.setContentView(rootLayout);
         } else {
             super.setContentView(view);
         }
@@ -333,12 +333,14 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     @Override
     public void setContentView(View view, ViewGroup.LayoutParams params) {
         if (WebAppHeaderUtils.isMinimalUiEnabled(mIntentDataProvider)) {
+            final View rootLayout =
+                    getLayoutInflater().inflate(WebAppHeaderUtils.getWebAppHeaderLayoutId(), null);
+            rootLayout.setLayoutParams(params);
+
             final LinearLayout linearLayout =
-                    (LinearLayout)
-                            getLayoutInflater()
-                                    .inflate(WebAppHeaderUtils.getWebAppHeaderLayoutId(), null);
-            linearLayout.setLayoutParams(params);
+                    rootLayout.findViewById(WebAppHeaderUtils.getWebAppHeaderContentId());
             linearLayout.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
             super.setContentView(linearLayout);
         } else {
             super.setContentView(view, params);
