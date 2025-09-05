@@ -153,11 +153,11 @@ class ScopedMappingSharedMemoryMapping
   raw_ptr<base::WritableSharedMemoryMapping> mapping_;
 };
 
-class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
+class ScopedMappingMappableBuffer : public ClientSharedImage::ScopedMapping {
  public:
-  ScopedMappingGpuMemoryBuffer(const gfx::Size& size, gfx::BufferFormat format)
+  ScopedMappingMappableBuffer(const gfx::Size& size, gfx::BufferFormat format)
       : size_(size), format_(format) {}
-  ~ScopedMappingGpuMemoryBuffer() override {
+  ~ScopedMappingMappableBuffer() override {
     if (buffer_) {
       buffer_->Unmap();
     }
@@ -200,27 +200,21 @@ class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
     CHECK(buffer_);
     return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
   }
-  bool Init(MappableBuffer* gpu_memory_buffer, bool is_already_mapped) {
-    if (!gpu_memory_buffer) {
-      LOG(ERROR) << "No GpuMemoryBuffer.";
+  bool Init(MappableBuffer* mappable_buffer, bool is_already_mapped) {
+    if (!mappable_buffer) {
+      LOG(ERROR) << "No MappableBuffer.";
       return false;
     }
 
-    if (!is_already_mapped && !gpu_memory_buffer->Map()) {
+    if (!is_already_mapped && !mappable_buffer->Map()) {
       LOG(ERROR) << "Failed to map the buffer.";
       return false;
     }
-    buffer_ = gpu_memory_buffer;
+    buffer_ = mappable_buffer;
     return true;
   }
 
  private:
-  // ScopedMappingGpuMemoryBuffer is essentially a wrapper around
-  // GpuMemoryBuffer for now for simplicity and will be removed later.
-  // TODO(crbug.com/40279377): Refactor/Rename GpuMemoryBuffer and its
-  // implementations  as the end goal after all clients using GMB are
-  // converted to use the ScopedMapping and notion of GpuMemoryBuffer is being
-  // removed.
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
   RAW_PTR_EXCLUSION MappableBuffer* buffer_ = nullptr;
   gfx::Size size_;
@@ -355,13 +349,13 @@ ClientSharedImage::ScopedMapping::Create(
 // static
 std::unique_ptr<ClientSharedImage::ScopedMapping>
 ClientSharedImage::ScopedMapping::Create(SharedImageMetadata metadata,
-                                         MappableBuffer* gpu_memory_buffer,
+                                         MappableBuffer* mappable_buffer,
                                          bool is_already_mapped) {
-  auto scoped_mapping = base::WrapUnique(new ScopedMappingGpuMemoryBuffer(
+  auto scoped_mapping = base::WrapUnique(new ScopedMappingMappableBuffer(
       metadata.size,
       viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
           metadata.format)));
-  if (!scoped_mapping->Init(gpu_memory_buffer, is_already_mapped)) {
+  if (!scoped_mapping->Init(mappable_buffer, is_already_mapped)) {
     LOG(ERROR) << "ScopedMapping init failed.";
     return nullptr;
   }
@@ -371,23 +365,23 @@ ClientSharedImage::ScopedMapping::Create(SharedImageMetadata metadata,
 // static
 void ClientSharedImage::ScopedMapping::StartCreateAsync(
     SharedImageMetadata metadata,
-    MappableBuffer* gpu_memory_buffer,
+    MappableBuffer* mappable_buffer,
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb) {
-  gpu_memory_buffer->MapAsync(
+  mappable_buffer->MapAsync(
       base::BindOnce(&ClientSharedImage::ScopedMapping::FinishCreateAsync,
-                     metadata, gpu_memory_buffer, std::move(result_cb)));
+                     metadata, mappable_buffer, std::move(result_cb)));
 }
 
 // static
 void ClientSharedImage::ScopedMapping::FinishCreateAsync(
     SharedImageMetadata metadata,
-    MappableBuffer* gpu_memory_buffer,
+    MappableBuffer* mappable_buffer,
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
     bool success) {
   std::unique_ptr<ClientSharedImage::ScopedMapping> mapping;
   if (success) {
     mapping = ClientSharedImage::ScopedMapping::Create(
-        metadata, gpu_memory_buffer, /*is_already_mapped=*/true);
+        metadata, mappable_buffer, /*is_already_mapped=*/true);
   }
   std::move(result_cb).Run(std::move(mapping));
 }
