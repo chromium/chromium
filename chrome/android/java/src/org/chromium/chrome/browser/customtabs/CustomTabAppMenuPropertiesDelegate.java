@@ -17,6 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -51,6 +52,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /** App menu properties delegate for {@link CustomTabActivity}. */
+@NullMarked
 public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
     private static final String CUSTOM_MENU_ITEM_ID_KEY = "CustomMenuItemId";
     private static final String SHOW_OPEN_IN_BROWSER_MENU_TOP_PARAM =
@@ -421,7 +423,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     }
 
     @Override
-    public Bundle getBundleForMenuItem(int itemId) {
+    public @Nullable Bundle getBundleForMenuItem(int itemId) {
         if (!mItemIdToIndexMap.containsKey(itemId)) {
             return null;
         }
@@ -445,8 +447,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         if (footerTextView != null) {
             Resources res = footer.getResources();
             String appName = res.getString(R.string.app_name);
-            String footerText =
-                    res.getString(R.string.twa_running_in_chrome_template, appName);
+            String footerText = res.getString(R.string.twa_running_in_chrome_template, appName);
             footerTextView.setText(footerText);
         }
 

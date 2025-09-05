@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import android.app.Activity;
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -25,6 +26,7 @@ import org.chromium.ui.base.PageTransition;
  * A {@link TabObserver} that determines whether a custom tab navigation should show the new
  * download UI.
  */
+@NullMarked
 public class CustomTabDownloadObserver extends EmptyTabObserver {
     private final Activity mActivity;
     private final TabObserverRegistrar mTabObserverRegistrar;

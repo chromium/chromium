@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -12,13 +14,14 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.blink.mojom.DisplayMode.EnumType;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -74,15 +77,16 @@ import java.util.function.Supplier;
  * A {@link TabDelegateFactory} class to be used in all {@link Tab} owned by a {@link
  * CustomTabActivity}.
  */
+@NullMarked
 public class CustomTabDelegateFactory implements TabDelegateFactory {
 
     /** A custom external navigation delegate that forbids the intent picker from showing up. */
     static class CustomTabNavigationDelegate extends ExternalNavigationDelegateImpl {
         private static final String TAG = "customtabs";
-        private final String mClientPackageName;
+        private final @Nullable String mClientPackageName;
         private final Verifier mVerifier;
         private final @ActivityType int mActivityType;
-        private final BrowserServicesIntentDataProvider mIntentDataProvider;
+        private final @Nullable BrowserServicesIntentDataProvider mIntentDataProvider;
         private final AuthTabVerifier mAuthTabVerifier;
 
         /** Constructs a new instance of {@link CustomTabNavigationDelegate}. */
@@ -90,7 +94,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 Tab tab,
                 Verifier verifier,
                 @ActivityType int activityType,
-                BrowserServicesIntentDataProvider intentDataProvider,
+                @Nullable BrowserServicesIntentDataProvider intentDataProvider,
                 AuthTabVerifier authTabVerifier) {
             super(tab);
             mClientPackageName = TabAssociatedApp.from(tab).getAppId();
@@ -167,13 +171,14 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
         @Override
         public void returnAsActivityResult(GURL url) {
+            assert mIntentDataProvider != null;
             assert mIntentDataProvider.isAuthTab();
             mAuthTabVerifier.returnAsActivityResult(url);
         }
 
         @Override
         public void maybeRecordExternalNavigationSchemeHistogram(GURL url) {
-            if (mIntentDataProvider.isAuthTab()) return;
+            if (assumeNonNull(mIntentDataProvider).isAuthTab()) return;
 
             // Only record for Custom Tabs that we think are launched for auth purposes.
             Uri urlToLoad = Uri.parse(mIntentDataProvider.getUrlToLoad());
@@ -198,7 +203,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             extends ActivityTabWebContentsDelegateAndroid {
         private static final String TAG = "CustomTabWebContentsDelegate";
 
-        private final Activity mActivity;
+        private final @Nullable Activity mActivity;
         private final @ActivityType int mActivityType;
         private final @Nullable String mWebApkScopeUrl;
         private final @Nullable BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -224,7 +229,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 Supplier<CompositorViewHolder> compositorViewHolderSupplier,
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 Supplier<Boolean> headerControlsVisibilitySupplier,
-                ExclusiveAccessManager exclusiveAccessManager) {
+                @Nullable ExclusiveAccessManager exclusiveAccessManager) {
             super(
                     tab,
                     activity,
@@ -253,6 +258,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
         @Override
         protected void bringActivityToForeground() {
+            assert mActivity != null;
             ((ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE))
                     .moveTaskToFront(mActivity.getTaskId(), 0);
         }
@@ -272,8 +278,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             return url != null
                     && mIntentDataProvider != null
                     && mIntentDataProvider.isTrustedWebActivity()
-                    && mIntentDataProvider
-                            .getAllTrustedWebActivityOrigins()
+                    && assumeNonNull(mIntentDataProvider.getAllTrustedWebActivityOrigins())
                             .contains(Origin.create(url.getSpec()));
         }
 
@@ -292,7 +297,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        protected String getManifestScope() {
+        protected @Nullable String getManifestScope() {
             return mWebApkScopeUrl;
         }
 
@@ -314,7 +319,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
         @Override
         protected boolean isPopup() {
-            return mIntentDataProvider.getUiType() == CustomTabsUiType.POPUP;
+            return assumeNonNull(mIntentDataProvider).getUiType() == CustomTabsUiType.POPUP;
         }
     }
 
@@ -322,7 +327,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final boolean mShouldHideBrowserControls;
     private final boolean mIsOpenedByChrome;
     private final @ActivityType int mActivityType;
-    @Nullable private final String mWebApkScopeUrl;
+    private final @Nullable String mWebApkScopeUrl;
     private final @Nullable BrowserServicesIntentDataProvider mIntentDataProvider;
     private final @DisplayMode.EnumType int mDisplayMode;
     private final boolean mShouldEnableEmbeddedMediaExperience;
@@ -345,10 +350,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final boolean mContextMenuEnabled;
     private final Supplier<Boolean> mHeaderControlsVisibilitySupplier;
 
-    private TabWebContentsDelegateAndroid mWebContentsDelegateAndroid;
-    private ExternalNavigationDelegateImpl mNavigationDelegate;
-    private Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
-    @Nullable private final ExclusiveAccessManager mExclusiveAccessManager;
+    private @Nullable TabWebContentsDelegateAndroid mWebContentsDelegateAndroid;
+    private @Nullable ExternalNavigationDelegateImpl mNavigationDelegate;
+    private @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final @Nullable ExclusiveAccessManager mExclusiveAccessManager;
 
     /**
      * @param activity {@link Activity} instance.
@@ -440,6 +445,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * Creates a basic/empty {@link TabDelegateFactory} for use when creating a hidden tab. It will
      * be replaced when the hidden Tab becomes shown.
      */
+    @SuppressWarnings("NullAway")
+    // TODO (crbug.com/389129271): Callers of this method should use null instead.
     public static CustomTabDelegateFactory createEmpty() {
         return new CustomTabDelegateFactory(
                 null,
@@ -531,16 +538,17 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 mActivityType,
                 tab,
                 tabModelSelector,
-                () -> mEphemeralTabCoordinatorSupplier.get(),
+                () -> assumeNonNull(mEphemeralTabCoordinatorSupplier).get(),
                 CallbackUtils.emptyRunnable(),
                 () -> mSnackbarManager.get(),
                 () -> mBottomSheetController.get());
     }
 
     @Override
-    public ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
+    public @Nullable ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
         if (!mContextMenuEnabled) return null;
 
+        assumeNonNull(mIntentDataProvider);
         @ChromeContextMenuPopulator.ContextMenuMode
         int contextMenuMode = getContextMenuMode(mIntentDataProvider, mActivityType);
         return new ChromeContextMenuPopulatorFactory(
@@ -551,8 +559,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     }
 
     @Override
-    public NativePage createNativePage(
-            String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo) {
+    public @Nullable NativePage createNativePage(
+            String url, @Nullable NativePage candidatePage, Tab tab, @Nullable PdfInfo pdfInfo) {
         // Navigation comes from user pressing "Back to safety" on an interstitial so close the tab.
         // See crbug.com/1270695
         if (UrlConstants.NTP_URL.equals(url) && tab.isShowingErrorPage()) {
@@ -577,11 +585,11 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * @return The {@link CustomTabNavigationDelegate} in this tab. For test purpose only.
      */
     @VisibleForTesting
-    ExternalNavigationDelegateImpl getExternalNavigationDelegate() {
+    @Nullable ExternalNavigationDelegateImpl getExternalNavigationDelegate() {
         return mNavigationDelegate;
     }
 
-    public WebContentsDelegateAndroid getWebContentsDelegate() {
+    public @Nullable WebContentsDelegateAndroid getWebContentsDelegate() {
         return mWebContentsDelegateAndroid;
     }
 

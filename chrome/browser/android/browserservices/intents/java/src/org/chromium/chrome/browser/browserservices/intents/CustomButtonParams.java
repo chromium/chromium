@@ -100,7 +100,7 @@ public interface CustomButtonParams {
     ImageButton buildBottomBarButton(
             Context context,
             ViewGroup parent,
-            OnClickListener listener,
+            @Nullable OnClickListener listener,
             ColorStateList buttonIconTint);
 
     /**

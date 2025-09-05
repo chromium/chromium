@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -21,13 +23,15 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -52,6 +56,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /** Delegate that manages bottom bar area inside of {@link CustomTabActivity}. */
+@NullMarked
 public class CustomTabBottomBarDelegate
         implements BrowserControlsStateProvider.Observer, SwipeGestureListener.SwipeHandler {
     private static final String TAG = "CustomTab";
@@ -78,15 +83,15 @@ public class CustomTabBottomBarDelegate
     private final WindowAndroid mWindowAndroid;
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final BrowserServicesIntentDataProvider mDataProvider;
-    private final Supplier<Tab> mTabProvider;
+    private final Supplier<@Nullable Tab> mTabProvider;
     private final CustomTabNightModeStateController mNightModeStateController;
     private final int mShadowHeightPx;
 
-    private CustomTabBottomBarView mBottomBarView;
-    @Nullable private View mBottomBarContentView;
-    @Nullable private CustomButtonsUpdater mCustomButtonsUpdater;
-    private PendingIntent mClickPendingIntent;
-    private int[] mClickableIDs;
+    private @Nullable CustomTabBottomBarView mBottomBarView;
+    private @MonotonicNonNull View mBottomBarContentView;
+    private @Nullable CustomButtonsUpdater mCustomButtonsUpdater;
+    private @Nullable PendingIntent mClickPendingIntent;
+    private int @Nullable [] mClickableIDs;
     private boolean mShowShadow = true;
     private @Nullable PendingIntent mSwipeUpPendingIntent;
     private boolean mKeepContentView;
@@ -116,7 +121,7 @@ public class CustomTabBottomBarDelegate
             BrowserServicesIntentDataProvider dataProvider,
             BrowserControlsSizer browserControlsSizer,
             CustomTabNightModeStateController nightModeStateController,
-            Supplier<Tab> tabProvider,
+            Supplier<@Nullable Tab> tabProvider,
             CustomTabCompositorContentInitializer compositorContentInitializer) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -353,15 +358,15 @@ public class CustomTabBottomBarDelegate
                         new OverlayPanelManagerObserver() {
                             @Override
                             public void onOverlayPanelShown() {
-                                if (mBottomBarView == null) return;
-                                mBottomBarView
+                                CustomTabBottomBarView bottomBarView = mBottomBarView;
+                                if (bottomBarView == null) return;
+                                bottomBarView
                                         .animate()
                                         .alpha(0)
                                         .setInterpolator(
                                                 Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
                                         .setDuration(SLIDE_ANIMATION_DURATION_MS)
-                                        .withEndAction(
-                                                () -> mBottomBarView.setVisibility(View.GONE))
+                                        .withEndAction(() -> bottomBarView.setVisibility(View.GONE))
                                         .start();
                             }
 
@@ -397,6 +402,7 @@ public class CustomTabBottomBarDelegate
                         new Runnable() {
                             @Override
                             public void run() {
+                                assumeNonNull(mBottomBarView);
                                 ((ViewGroup) mBottomBarView.getParent()).removeView(mBottomBarView);
                                 mBottomBarView = null;
                             }
@@ -464,9 +470,9 @@ public class CustomTabBottomBarDelegate
 
     private static void sendPendingIntentWithUrl(
             PendingIntent pendingIntent,
-            Intent extraIntent,
+            @Nullable Intent extraIntent,
             Activity activity,
-            Supplier<Tab> tabProvider) {
+            Supplier<@Nullable Tab> tabProvider) {
         Intent addedIntent = extraIntent == null ? new Intent() : new Intent(extraIntent);
         Tab tab = tabProvider.get();
         if (tab != null) {

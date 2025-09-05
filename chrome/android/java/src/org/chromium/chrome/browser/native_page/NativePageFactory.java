@@ -434,9 +434,9 @@ public class NativePageFactory {
      */
     public static @Nullable NativePage createNativePageForCustomTab(
             String url,
-            NativePage candidatePage,
+            @Nullable NativePage candidatePage,
             Tab tab,
-            PdfInfo pdfInfo,
+            @Nullable PdfInfo pdfInfo,
             BrowserControlsManager browserControlsManager,
             TabModelSelector tabModelSelector,
             Activity activity) {

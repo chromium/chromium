@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -24,6 +25,7 @@ import java.util.function.Supplier;
 /**
  * Initializes the compositor content (calls {@link ChromeActivity#initializeCompositorContent}).
  */
+@NullMarked
 public class CustomTabCompositorContentInitializer implements NativeInitObserver {
     private final List<Callback<LayoutManagerImpl>> mListeners = new ArrayList<>();
 

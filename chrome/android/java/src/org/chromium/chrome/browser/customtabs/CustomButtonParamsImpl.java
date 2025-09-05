@@ -154,7 +154,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     public ImageButton buildBottomBarButton(
             Context context,
             ViewGroup parent,
-            OnClickListener listener,
+            @Nullable OnClickListener listener,
             ColorStateList buttonIconTint) {
         assert !mIsOnToolbar;
 
@@ -168,6 +168,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         if (mPendingIntent == null) {
             button.setEnabled(false);
         } else {
+            assert listener != null;
             button.setOnClickListener(listener);
         }
         button.setOnLongClickListener(

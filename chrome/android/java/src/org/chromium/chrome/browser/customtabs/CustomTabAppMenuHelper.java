@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -18,11 +20,12 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import java.util.function.Supplier;
 
 /** Helper class for custom tab app menu. */
+@NullMarked
 public class CustomTabAppMenuHelper {
     private static boolean sAppHistoryEnabled = HistoryManager.isAppSpecificHistoryEnabled();
 
     /** Returns {@link CustomTabHistoryIphController} if history menu is enabled on CCT. */
-    public static CustomTabHistoryIphController maybeCreateHistoryIphController(
+    public static @Nullable CustomTabHistoryIphController maybeCreateHistoryIphController(
             AppMenuCoordinator appMenuCoordinator,
             Activity activity,
             ActivityTabProvider activityTabProvider,
