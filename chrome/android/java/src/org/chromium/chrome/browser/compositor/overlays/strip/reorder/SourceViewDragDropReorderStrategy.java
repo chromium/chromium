@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.PointF;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
@@ -41,6 +42,7 @@ import java.util.function.Supplier;
  * Drag and drop reorder - start dragging strip view. Subsequently drag out of, within and back onto
  * strip.
  */
+@NullMarked
 class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     // Drag helpers
     private final TabStripDragHandler mTabStripDragHandler;
@@ -50,14 +52,14 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     private final ReorderSubStrategy mGroupSubStrategy;
 
     // View on strip being dragged.
-    private StripLayoutView mViewBeingDragged;
+    private @Nullable StripLayoutView mViewBeingDragged;
 
     // View offsetX when it was dragged off the strip. Used to re-position the view when dragged
     // back onto strip.
     private float mLastOffsetX;
 
     // Active sub-strategy based on interacting view class.
-    private ReorderSubStrategy mActiveSubStrategy;
+    private @Nullable ReorderSubStrategy mActiveSubStrategy;
 
     SourceViewDragDropReorderStrategy(
             ReorderDelegate reorderDelegate,
@@ -67,11 +69,11 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             TabModel model,
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
-            ObservableSupplierImpl<Token> groupIdToHideSupplier,
+            ObservableSupplierImpl<@Nullable Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
             Supplier<Long> lastReorderScrollTimeSupplier,
-            @NonNull TabStripDragHandler tabStripDragHandler,
-            @NonNull ActionConfirmationManager actionConfirmationManager,
+            TabStripDragHandler tabStripDragHandler,
+            ActionConfirmationManager actionConfirmationManager,
             ReorderStrategy tabStrategy,
             ReorderStrategy multiTabStrategy,
             ReorderStrategy groupStrategy) {
@@ -99,7 +101,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             StripLayoutView[] stripViews,
             StripLayoutTab[] stripTabs,
             StripLayoutGroupTitle[] stripGroupTitles,
-            @NonNull StripLayoutView interactingView,
+            StripLayoutView interactingView,
             PointF startPoint) {
         // Set initial state.
         mViewBeingDragged = interactingView;
@@ -146,6 +148,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         assert mActiveSubStrategy != null : "Attempted to drag without an active sub-strategy.";
         // Delegate to the active substrategy.
         if (reorderType == ReorderType.DRAG_ONTO_STRIP) {
+            assumeNonNull(mViewBeingDragged);
             mActiveSubStrategy.startReorderMode(
                     stripViews, stripTabs, groupTitles, mViewBeingDragged, new PointF(endX, 0f));
         } else if (reorderType == ReorderType.DRAG_WITHIN_STRIP) {
@@ -171,7 +174,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     @Override
-    public StripLayoutView getInteractingView() {
+    public @Nullable StripLayoutView getInteractingView() {
         return mViewBeingDragged;
     }
 
@@ -207,17 +210,16 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         boolean willSkipDialog =
                 mActionConfirmationManager.willSkipUngroupTabAttempt()
                         && !isTabInCollaboration(tabId);
-        return draggingLastTabInGroup
-                && !willSkipDialog;
+        return draggingLastTabInGroup && !willSkipDialog;
     }
 
     private boolean isTabInCollaboration(int tabId) {
-        @Nullable
-        TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(
-                        mTabGroupModelFilter.getTabModel().getProfile());
-        @Nullable
-        String collaborationId =
+
+        var profile = assumeNonNull(mTabGroupModelFilter.getTabModel().getProfile());
+        @Nullable TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(profile);
+
+        @Nullable String collaborationId =
                 TabShareUtils.getCollaborationIdOrNull(
                         tabId, mTabGroupModelFilter.getTabModel(), tabGroupSyncService);
         return TabShareUtils.isCollaborationIdValid(collaborationId);
@@ -268,7 +270,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         }
 
         @Override
-        public StripLayoutView getInteractingView() {
+        public @Nullable StripLayoutView getInteractingView() {
             return mWrappedStrategy.getInteractingView();
         }
 
@@ -310,7 +312,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 StripLayoutView[] stripViews,
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
-                @NonNull StripLayoutView interactingView,
+                StripLayoutView interactingView,
                 PointF startPoint) {
             // 1. Hide compositor buttons.
             mStripUpdateDelegate.setCompositorButtonsVisible(false);
@@ -337,6 +339,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
 
             // 2. Maybe show user prompt when last tab in group is dragged out. Stop reorder and
             // return if so.
+            assumeNonNull(draggedTab);
             boolean draggedLastTabInGroupWithPrompt = shouldShowUserPrompt(draggedTab);
             if (draggedLastTabInGroupWithPrompt) {
                 moveInteractingTabsOutOfGroup(
@@ -363,6 +366,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
 
         @Override
         boolean startViewDragAction(StripLayoutTab[] stripTabs, PointF startPoint) {
+            assumeNonNull(mViewBeingDragged);
             Tab tab = mModel.getTabById(((StripLayoutTab) mViewBeingDragged).getTabId());
             assert tab != null : "No matching Tab found.";
             return mTabStripDragHandler.startTabDragAction(
@@ -431,6 +435,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         @Override
         public void stopReorderMode(
                 StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
+            assumeNonNull(mViewBeingDragged);
             // 1. Show compositor buttons.
             mStripUpdateDelegate.setCompositorButtonsVisible(true);
 
@@ -461,6 +466,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             List<Tab> selectedTabs = new ArrayList<>();
             HashSet<Integer> tabIdsToUnselect = new HashSet();
 
+            assumeNonNull(mViewBeingDragged);
             StripLayoutTab primaryStripTab = (StripLayoutTab) mViewBeingDragged;
             for (StripLayoutTab stripTab : stripTabs) {
                 if (stripTab != null && mModel.isTabMultiSelected(stripTab.getTabId())) {
@@ -537,6 +543,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
 
         @Override
         boolean startViewDragAction(StripLayoutTab[] stripTabs, PointF startPoint) {
+            assumeNonNull(mViewBeingDragged);
             StripLayoutGroupTitle draggedGroupTitle = (StripLayoutGroupTitle) mViewBeingDragged;
             mViewsBeingDragged.add(draggedGroupTitle);
             mViewsBeingDragged.addAll(
@@ -579,7 +586,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     // IN-TEST
     // ============================================================================================
 
-    StripLayoutView getViewBeingDraggedForTesting() {
+    @Nullable StripLayoutView getViewBeingDraggedForTesting() {
         return mViewBeingDragged;
     }
 

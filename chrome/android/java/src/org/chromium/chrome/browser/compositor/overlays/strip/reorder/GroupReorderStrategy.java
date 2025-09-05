@@ -3,17 +3,19 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.graphics.PointF;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
@@ -34,12 +36,13 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /** Tab group reorder - drag collapsed or expanded group within the tab strip. */
+@NullMarked
 public class GroupReorderStrategy extends ReorderStrategyBase {
-    private StripLayoutGroupTitle mInteractingGroupTitle;
+    private @Nullable StripLayoutGroupTitle mInteractingGroupTitle;
     private final ArrayList<StripLayoutView> mInteractingViews = new ArrayList<>();
-    private StripLayoutTab mSelectedTab;
-    private StripLayoutTab mFirstTabInGroup;
-    private StripLayoutTab mLastTabInGroup;
+    private @Nullable StripLayoutTab mSelectedTab;
+    private @Nullable StripLayoutTab mFirstTabInGroup;
+    private @Nullable StripLayoutTab mLastTabInGroup;
 
     GroupReorderStrategy(
             ReorderDelegate reorderDelegate,
@@ -49,7 +52,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             TabModel model,
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
-            ObservableSupplierImpl<Token> groupIdToHideSupplier,
+            ObservableSupplierImpl<@Nullable Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
             Supplier<Long> lastReorderScrollTimeSupplier) {
         super(
@@ -70,7 +73,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             StripLayoutView[] stripViews,
             StripLayoutTab[] stripTabs,
             StripLayoutGroupTitle[] stripGroupTitles,
-            @NonNull StripLayoutView interactingView,
+            StripLayoutView interactingView,
             PointF startPoint) {
         // TODO(crbug.com/394945056): Investigate moving to avoid re-emitting when dragging out,
         //  then back onto the source tab strip.
@@ -97,7 +100,9 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
 
         // If the selected tab is part of the group, lift its container off the toolbar.
         int index = mModel.index();
-        if (mInteractingGroupTitle.getTabGroupId().equals(mModel.getTabAt(index).getTabGroupId())) {
+        if (mInteractingGroupTitle
+                .getTabGroupId()
+                .equals(mModel.getTabAtChecked(index).getTabGroupId())) {
             assert index >= 0 && index < stripTabs.length : "Not synced with TabModel.";
             mSelectedTab = stripTabs[index];
             ArrayList<Animator> animationList = new ArrayList<>();
@@ -114,6 +119,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             float endX,
             float deltaX,
             int reorderType) {
+        assumeNonNull(mInteractingGroupTitle);
         float oldIdealX = mInteractingGroupTitle.getIdealX();
         float oldScrollOffset = mScrollDelegate.getScrollOffset();
         float offset = mInteractingGroupTitle.getOffsetX() + deltaX;
@@ -131,6 +137,8 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
 
         // Clamp the group to the scrollable region. Re-grab the first/last tab index here,
         // since these may have changed as a result of a reorder above.
+        assumeNonNull(mFirstTabInGroup);
+        assumeNonNull(mLastTabInGroup);
         int firstTabIndex =
                 StripLayoutUtils.findIndexForTab(stripTabs, mFirstTabInGroup.getTabId());
         int lastTabIndex = StripLayoutUtils.findIndexForTab(stripTabs, mLastTabInGroup.getTabId());
@@ -178,7 +186,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
     }
 
     @Override
-    public StripLayoutView getInteractingView() {
+    public @Nullable StripLayoutView getInteractingView() {
         return mInteractingGroupTitle;
     }
 
@@ -246,9 +254,9 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
                 groupTitles,
                 stripTabs,
                 offset,
-                mFirstTabInGroup,
-                mLastTabInGroup,
-                mInteractingGroupTitle.getTabGroupId());
+                assumeNonNull(mFirstTabInGroup),
+                assumeNonNull(mLastTabInGroup),
+                assumeNonNull(mInteractingGroupTitle).getTabGroupId());
     }
 
     /**
@@ -290,7 +298,8 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
 
         if (adjTab.getIsPinned()) return false;
 
-        if (mTabGroupModelFilter.isTabInTabGroup(mModel.getTabById(adjStripTab.getTabId()))) {
+        if (mTabGroupModelFilter.isTabInTabGroup(
+                mModel.getTabByIdChecked(adjStripTab.getTabId()))) {
             // Case A: Attempt to drag past adjacent group.
             StripLayoutGroupTitle adjTitle =
                     StripLayoutUtils.findGroupTitle(groupTitles, adjTab.getTabGroupId());

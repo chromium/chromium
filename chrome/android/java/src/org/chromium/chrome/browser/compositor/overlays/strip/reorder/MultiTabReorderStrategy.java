@@ -71,7 +71,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             TabModel model,
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
-            ObservableSupplierImpl<Token> groupIdToHideSupplier,
+            ObservableSupplierImpl<@Nullable Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
             Supplier<Long> lastReorderScrollTimeSupplier,
             Supplier<Boolean> inReorderModeSupplier) {
@@ -272,7 +272,8 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                 return false;
             }
             moveAdjacentTabPastBlock(adjTab, towardEnd);
-            animateViewSliding(StripLayoutUtils.findTabById(stripTabs, adjTab.getId()));
+            var adjStripLayoutTab = StripLayoutUtils.findTabById(stripTabs, adjTab.getId());
+            animateViewSliding(assumeNonNull(adjStripLayoutTab));
             return true;
         }
 
@@ -280,6 +281,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         if (isInGroup) {
             StripLayoutGroupTitle interactingGroupTitle =
                     StripLayoutUtils.findGroupTitle(groupTitles, primaryTab.getTabGroupId());
+            assumeNonNull(interactingGroupTitle);
             float threshold = getDragOutThreshold(interactingGroupTitle, towardEnd);
             if (Math.abs(offset) <= threshold) return false;
             List<StripLayoutTab> interactingTabs = new ArrayList<>(mInteractingTabs);

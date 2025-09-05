@@ -4,18 +4,20 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 
 import android.graphics.PointF;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /** Delegate to manage the reordering logic for the tab strip. */
+@NullMarked
 public class ReorderDelegate {
     // Constants.
     private static final int REORDER_SCROLL_NONE = 0;
@@ -83,7 +86,8 @@ public class ReorderDelegate {
          * @param animateTabAdded Run tab added animation on tabToAnimate if true. Run tab closed
          *     animation if false.
          */
-        void resizeTabStrip(boolean animate, StripLayoutTab tabToAnimate, boolean animateTabAdded);
+        void resizeTabStrip(
+                boolean animate, @Nullable StripLayoutTab tabToAnimate, boolean animateTabAdded);
 
         /**
          * Requests an update to strip (view properties etc) based on current state (eg: reorder,
@@ -119,12 +123,12 @@ public class ReorderDelegate {
     /** Supplier for current tab width. */
     private Supplier<Float> mTabWidthSupplier;
 
-    private ReorderStrategy mActiveStrategy;
+    private @Nullable ReorderStrategy mActiveStrategy;
     private TabReorderStrategy mTabStrategy;
     private MultiTabReorderStrategy mMultiTabStrategy;
     private GroupReorderStrategy mGroupStrategy;
-    @Nullable private SourceViewDragDropReorderStrategy mSourceViewDragDropReorderStrategy;
-    @Nullable private ExternalViewDragDropReorderStrategy mExternalViewDragDropReorderStrategy;
+    private @Nullable SourceViewDragDropReorderStrategy mSourceViewDragDropReorderStrategy;
+    private @Nullable ExternalViewDragDropReorderStrategy mExternalViewDragDropReorderStrategy;
 
     // Auto-scroll State.
     private final ObservableSupplierImpl<Long> mLastReorderScrollTimeSupplier =
@@ -142,7 +146,8 @@ public class ReorderDelegate {
     public boolean isReorderingTab() {
         return getInReorderMode()
                 && ((mActiveStrategy == mSourceViewDragDropReorderStrategy
-                                && mSourceViewDragDropReorderStrategy.isReorderingTab())
+                                && assumeNonNull(mSourceViewDragDropReorderStrategy)
+                                        .isReorderingTab())
                         || mActiveStrategy == mTabStrategy
                         || mActiveStrategy == mMultiTabStrategy);
     }
@@ -189,7 +194,7 @@ public class ReorderDelegate {
             }
         }
         assert false : "Attempted to start reorder on an unexpected view type: " + interactingView;
-        return null;
+        return assumeNonNull(null);
     }
 
     // ============================================================================================
@@ -213,15 +218,16 @@ public class ReorderDelegate {
      * @param groupIdToHideSupplier The {@link ObservableSupplierImpl} for the group ID to hide.
      * @param containerView The tab strip container {@link View}.
      */
+    @Initializer
     public void initialize(
             AnimationHost animationHost,
             StripUpdateDelegate stripUpdateDelegate,
             TabGroupModelFilter tabGroupModelFilter,
             ScrollDelegate scrollDelegate,
-            TabStripDragHandler tabStripDragHandler,
+            @Nullable TabStripDragHandler tabStripDragHandler,
             ActionConfirmationManager actionConfirmationManager,
             Supplier<Float> tabWidthSupplier,
-            ObservableSupplierImpl<Token> groupIdToHideSupplier,
+            ObservableSupplierImpl<@Nullable Token> groupIdToHideSupplier,
             View containerView) {
         mStripUpdateDelegate = stripUpdateDelegate;
         mScrollDelegate = scrollDelegate;
@@ -313,7 +319,7 @@ public class ReorderDelegate {
             StripLayoutView[] stripViews,
             StripLayoutTab[] stripTabs,
             StripLayoutGroupTitle[] stripGroupTitles,
-            @NonNull StripLayoutView interactingView,
+            StripLayoutView interactingView,
             PointF startPoint,
             @ReorderType int reorderType) {
         assert mInitialized && mActiveStrategy == null && !getInReorderMode();
@@ -422,7 +428,7 @@ public class ReorderDelegate {
     }
 
     /** See {@link ReorderStrategy#getInteractingView()} */
-    public StripLayoutView getInteractingView() {
+    public @Nullable StripLayoutView getInteractingView() {
         return mActiveStrategy != null ? mActiveStrategy.getInteractingView() : null;
     }
 
@@ -439,11 +445,13 @@ public class ReorderDelegate {
         // we are adding a visual indicator (a gap between tabs) to indicate where the tab will be
         // added. As such, we need to base this on the most recent x-position of the drag, rather
         // than the interacting view's drawX.
+        assumeNonNull(mActiveStrategy);
+        var activeStrategyInteractingView = assumeNonNull(mActiveStrategy.getInteractingView());
         final float x =
                 isReorderingForTabDrop()
                         ? StripLayoutUtils.adjustXForTabDrop(
                                 mLastReorderX, mTabWidthSupplier, /* isPinned= */ false)
-                        : mActiveStrategy.getInteractingView().getDrawX();
+                        : activeStrategyInteractingView.getDrawX();
 
         // 2. Calculate the gutters for accelerating the scroll speed.
         // Speed: MAX    MIN                  MIN    MAX
@@ -460,7 +468,7 @@ public class ReorderDelegate {
         final float width =
                 isReorderingForTabDrop()
                         ? mTabWidthSupplier.get()
-                        : mActiveStrategy.getInteractingView().getWidth();
+                        : activeStrategyInteractingView.getWidth();
         float dragSpeedRatio = 0.f;
         if ((mReorderScrollState & REORDER_SCROLL_LEFT) != 0 && x < leftMinX) {
             dragSpeedRatio = -(leftMinX - Math.max(x, leftMaxX)) / dragRange;
@@ -546,7 +554,7 @@ public class ReorderDelegate {
      */
     public void setEdgeMarginsForReorder(StripLayoutTab[] stripTabs) {
         if (!mInitialized) return;
-        ((ReorderStrategyBase) mActiveStrategy).setEdgeMarginsForReorder(stripTabs);
+        assumeNonNull((ReorderStrategyBase) mActiveStrategy).setEdgeMarginsForReorder(stripTabs);
     }
 
     // ============================================================================================
@@ -561,7 +569,7 @@ public class ReorderDelegate {
         return mLastReorderX;
     }
 
-    public StripLayoutTab getInteractingTabForTesting() {
-        return (StripLayoutTab) mActiveStrategy.getInteractingView();
+    public @Nullable StripLayoutTab getInteractingTabForTesting() {
+        return (StripLayoutTab) assumeNonNull(mActiveStrategy).getInteractingView();
     }
 }

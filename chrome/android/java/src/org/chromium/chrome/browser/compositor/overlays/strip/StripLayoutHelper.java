@@ -5277,7 +5277,7 @@ public class StripLayoutHelper
     }
 
     /** Returns The currently interacting tab. */
-    StripLayoutTab getInteractingTabForTesting() {
+    @Nullable StripLayoutTab getInteractingTabForTesting() {
         return mReorderDelegate.getInteractingTabForTesting(); // IN-TEST
     }
 
