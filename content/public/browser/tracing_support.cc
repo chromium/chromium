@@ -14,8 +14,8 @@ static constexpr uint64_t kProcessTrackMagic = 0x12E91CFDD3E3509Bul;
 }  // namespace
 
 perfetto::Track GetChildProcessTracingTrack(ChildProcessId process_id) {
-  return perfetto::Track::Global(
-      base::HashCombine(kProcessTrackMagic, process_id));
+  return perfetto::Track::Global(base::HashInts(
+      kProcessTrackMagic, std::hash<ChildProcessId>()(process_id)));
 }
 
 perfetto::NamedTrack CreateTracingTrackUnderChildProcess(

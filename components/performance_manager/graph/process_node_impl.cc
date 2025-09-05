@@ -42,6 +42,10 @@ content::ProcessType ValidateBrowserChildProcessType(
   return process_type;
 }
 
+perfetto::StaticString PriorityToString(const base::TaskPriority& priority) {
+  return perfetto::StaticString(base::TaskPriorityToString(priority));
+}
+
 }  // namespace
 
 ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
@@ -67,7 +71,9 @@ ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
     : process_type_(process_type),
       child_process_host_proxy_(std::move(proxy)),
       tracing_track_(GetTracingTrack(process_type_, child_process_host_proxy_)),
-      priority_(priority) {
+      priority_(priority,
+                perfetto::NamedTrack("Priority", 0, tracing_track_),
+                PriorityToString) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Child process nodes must have a valid proxy.
   switch (process_type) {

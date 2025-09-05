@@ -262,7 +262,8 @@ class ProcessNodeImpl
   // determine the right priority.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       base::TaskPriority,
-      &ProcessNodeObserver::OnPriorityChanged>
+      &ProcessNodeObserver::OnPriorityChanged,
+      TracedWrapper<base::TaskPriority>>
       priority_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A bit field that indicates which type of content this process has hosted,
