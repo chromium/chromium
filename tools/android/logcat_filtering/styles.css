@@ -94,12 +94,10 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  /* Prevent the content underneath from showing through */
-  background-color: var(--controls-bg-color);
   /* Ensure the controls stay on top of other content */
   z-index: 100;
   width: 100%;
-  padding: 25px;
+  padding: 8px 20px;
   display: flex;
   /* Adjust spacing between dropdowns and checkboxes */
   gap: 20px;
@@ -286,6 +284,7 @@ body {
   background-color: var(--text-display-bg-color);
   color: var(--text-display-text-color);
   margin-left: 20px;
+  margin-top: 6em; /* Use em to adjust with page zoom. */
 }
 
 

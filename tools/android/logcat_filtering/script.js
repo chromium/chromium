@@ -238,28 +238,6 @@ const displaySinglePriority = displaySinglePriorityLi.map(li => {
 /** @type {RegExp} */
 const pidRegexPattern = new RegExp('Start proc (\\d+):(.+?)\\/');
 
-// Set the offset of the text display area so that it stays below the controls.
-
-function setTextDisplayAreaOffset() {
-  const controlsHeight = controls.offsetHeight;
-  textDisplayArea.style.marginTop = `${controlsHeight}px`;
-}
-
-setTextDisplayAreaOffset();
-
-// Re-calculate the offset of the text display area whenever the size of the
-// controls change.
-
-const resizeObserver = new ResizeObserver(entries => {
-  for (let entry of entries) {
-    if (entry.target === controls) {
-      setTextDisplayAreaOffset();
-    }
-  }
-});
-
-resizeObserver.observe(controls);
-
 /**
  * Toggles the display of a given dropdown list.
  * @param {HTMLElement} dropdownList The dropdown list element to toggle.
