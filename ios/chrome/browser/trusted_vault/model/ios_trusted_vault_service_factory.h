@@ -26,9 +26,9 @@ class IOSTrustedVaultServiceFactory : public ProfileKeyedServiceFactoryIOS {
   IOSTrustedVaultServiceFactory();
   ~IOSTrustedVaultServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory.
+  // ProfileKeyedServiceFactoryIOS.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_TRUSTED_VAULT_MODEL_IOS_TRUSTED_VAULT_SERVICE_FACTORY_H_
