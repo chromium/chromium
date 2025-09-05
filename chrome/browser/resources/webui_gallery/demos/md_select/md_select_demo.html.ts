@@ -12,7 +12,7 @@ export function getHtml(this: MdSelectDemoElement) {
 <div class="demos">
   <div class="row center">
     <label id="label">Select an option</label>
-    <select id="select" class="md-select" value="${this.selectedOption_}"
+    <select id="select" class="md-select" .value="${this.selectedOption_}"
         @change="${this.onSelectValueChanged_}"
         aria-labelledby="label">
       <option value="one">Option 1</option>
