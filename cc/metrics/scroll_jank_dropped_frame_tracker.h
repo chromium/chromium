@@ -55,24 +55,16 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
   static constexpr const char* kMissedVsyncDuringFlingV4Histogram =
       "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
       "MissedVsyncDuringFlingV4Histogram";
-  static constexpr const char* kMissedVsyncsWindowHistogram =
-      "Event.ScrollJank.MissedVsyncsPercentage.FixedWindow";
   static constexpr const char* kDelayedFramesPerScrollHistogram =
       "Event.ScrollJank.DelayedFramesPercentage.PerScroll";
   static constexpr const char* kDelayedFramesPerScrollV4Histogram =
       "Event.ScrollJank.DelayedFramesPercentage4.PerScroll";
-  static constexpr const char* kMissedVsyncsPerScrollHistogram =
-      "Event.ScrollJank.MissedVsyncsPercentage.PerScroll";
   static constexpr const char* kMissedVsyncsSumInWindowHistogram =
       "Event.ScrollJank.MissedVsyncsSum.FixedWindow";
-  static constexpr const char* kMissedVsyncsSumInVsyncWindowHistogram =
-      "Event.ScrollJank.MissedVsyncsSum.FixedWindow2";
   static constexpr const char* kMissedVsyncsSumInWindowV4Histogram =
       "Event.ScrollJank.MissedVsyncsSum4.FixedWindow";
   static constexpr const char* kMissedVsyncsMaxInWindowHistogram =
       "Event.ScrollJank.MissedVsyncsMax.FixedWindow";
-  static constexpr const char* kMissedVsyncsMaxInVsyncWindowHistogram =
-      "Event.ScrollJank.MissedVsyncsMax.FixedWindow2";
   static constexpr const char* kMissedVsyncsMaxInWindowV4Histogram =
       "Event.ScrollJank.MissedVsyncsMax4.FixedWindow";
   static constexpr const char* kMissedVsyncsMaxPerScrollHistogram =
@@ -85,8 +77,6 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
  private:
   void EmitPerWindowHistogramsAndResetCounters();
   void EmitPerScrollHistogramsAndResetCounters();
-  void EmitPerVsyncWindowHistogramsAndResetCounters();
-  void EmitPerScrollVsyncHistogramsAndResetCounters();
   void EmitPerWindowV4HistogramsAndResetCounters();
   void EmitPerScrollV4HistogramsAndResetCounters();
   void ReportLatestPresentationDataV4(
@@ -181,7 +171,6 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
     int missed_vsyncs = 0;
     int max_missed_vsyncs = 0;
     int num_presented_frames = 0;
-    int num_past_vsyncs = 0;
   };
 
   struct JankDataFixedWindowV4 {
@@ -219,12 +208,8 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
   };
 
   JankData fixed_window_;
-  // TODO(b/306611560): Cleanup experimental per vsync metric or promote to
-  // default.
-  JankData experimental_vsync_fixed_window_;
   JankDataFixedWindowV4 fixed_window_v4_;
   std::optional<JankData> per_scroll_;
-  std::optional<JankData> experimental_per_scroll_vsync_;
   std::optional<JankDataPerScrollV4> per_scroll_v4_;
 
   raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_ = nullptr;
