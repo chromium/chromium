@@ -62,6 +62,29 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Edge"/>
 </enum>
 
+<!-- LINT.IfChange(CfmArtemisLoggerResponse) -->
+
+<enum name="CfmArtemisLoggerResponse">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Other"/>
+  <int value="2" label="DeniedDueToThrottling"/>
+  <int value="3" label="Unauthenticated"/>
+  <int value="4" label="Unavailable"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/chromebox_for_meetings/artemis/data_aggregator_service.h:LoggerResponse) -->
+
+<!-- LINT.IfChange(CfmArtemisSetupStatus) -->
+
+<enum name="CfmArtemisSetupStatus">
+  <int value="0" label="SetupSuccessful"/>
+  <int value="1" label="DeviceInfoServiceBindFailure"/>
+  <int value="2" label="LoggerServiceBindFailure"/>
+  <int value="3" label="NoRobotEmailFound"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/chromebox_for_meetings/artemis/data_aggregator_service.h:SetupStatus) -->
+
 <enum name="DarkModeStatus">
   <int value="0" label="Unavailable"/>
   <int value="1" label="Light"/>

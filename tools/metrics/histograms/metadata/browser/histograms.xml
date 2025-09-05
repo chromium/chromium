@@ -101,6 +101,76 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.Cfm.Artemis.EnqueuedPayloadSize" units="bytes"
+    expires_after="2026-08-01">
+  <owner>ntsirakis@google.com</owner>
+  <owner>kdgwill@google.com</owner>
+  <owner>core-devices@google.com</owner>
+  <summary>
+    Size of enqueued payload. Only recorded on initial enqueue attempt; skipped
+    during retries.
+  </summary>
+</histogram>
+
+<histogram name="Browser.Cfm.Artemis.LoggerServiceResponse"
+    enum="CfmArtemisLoggerResponse" expires_after="2026-08-01">
+  <owner>ntsirakis@google.com</owner>
+  <owner>kdgwill@google.com</owner>
+  <owner>core-devices@google.com</owner>
+  <summary>Response from CfM logger service after enqueue attempt.</summary>
+</histogram>
+
+<histogram name="Browser.Cfm.Artemis.NumberOfRetriesBeforeSuccessfulEnqueue"
+    units="retries" expires_after="2026-08-01">
+  <owner>ntsirakis@google.com</owner>
+  <owner>kdgwill@google.com</owner>
+  <owner>core-devices@google.com</owner>
+  <summary>
+    Number of retry attempts before we successfully enqueue a record. Should be
+    zero for the majority of cases.
+  </summary>
+</histogram>
+
+<histogram name="Browser.Cfm.Artemis.PayloadQueueSize" units="payloads"
+    expires_after="2026-08-01">
+  <owner>ntsirakis@google.com</owner>
+  <owner>kdgwill@google.com</owner>
+  <owner>core-devices@google.com</owner>
+  <summary>
+    The current queue size, recorded after every successful enqueue.
+  </summary>
+</histogram>
+
+<histogram name="Browser.Cfm.Artemis.SetupStatus" enum="CfmArtemisSetupStatus"
+    expires_after="2026-08-01">
+  <owner>ntsirakis@google.com</owner>
+  <owner>kdgwill@google.com</owner>
+  <owner>core-devices@google.com</owner>
+  <summary>
+    Recorded during initial one-time setup steps. Any failures logged will imply
+    that Artemis is effectively disabled. This should skew heavily towards
+    kSetupSucceeded.
+  </summary>
+</histogram>
+
+<histogram name="Browser.Cfm.Artemis.TimeSinceLastSuccessfulEnqueue" units="ms"
+    expires_after="2026-08-01">
+  <owner>ntsirakis@google.com</owner>
+  <owner>kdgwill@google.com</owner>
+  <owner>core-devices@google.com</owner>
+  <summary>The time elapsed between successful enqueue attempts.</summary>
+</histogram>
+
+<histogram name="Browser.Cfm.Artemis.TimeWaitedBeforeEnqueueRetry" units="ms"
+    expires_after="2026-08-01">
+  <owner>ntsirakis@google.com</owner>
+  <owner>kdgwill@google.com</owner>
+  <owner>core-devices@google.com</owner>
+  <summary>
+    The delay performed before a given enqueue retry after a failure.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ChromeOS.HatsStatus" enum="HatsStatus"
     expires_after="2025-10-26">
   <owner>aalsum@chromium.org</owner>
