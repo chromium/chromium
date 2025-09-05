@@ -4,6 +4,7 @@
 
 #include "remoting/host/linux/gnome_remote_desktop_session.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -12,9 +13,12 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "remoting/base/file_path_util_linux.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/linux/dbus_interfaces/org_gnome_Mutter_RemoteDesktop.h"
 #include "remoting/host/linux/dbus_interfaces/org_gnome_Mutter_ScreenCast.h"
+#include "remoting/host/linux/gnome_desktop_display_info_monitor.h"
+#include "remoting/proto/control.pb.h"
 
 namespace remoting {
 
@@ -31,11 +35,31 @@ constexpr ObjectPathCStr kRemoteDesktopObjectPath =
 constexpr char kScreenCastBusName[] = "org.gnome.Mutter.ScreenCast";
 constexpr ObjectPathCStr kScreenCastObjectPath = "/org/gnome/Mutter/ScreenCast";
 
-const ScreenResolution kInitialResolution{{1280, 960}, {96, 96}};
+base::FilePath GetDisplayLayoutFilePath() {
+  return (base::FilePath(
+      GetConfigDirectoryPath().Append(GetHostHash() + ".display_layout.pb")));
+}
+
+std::unique_ptr<protocol::VideoLayout> CreateDefaultLayout() {
+  auto default_layout = std::make_unique<protocol::VideoLayout>();
+  protocol::VideoTrackLayout* track = default_layout->add_video_track();
+  track->set_position_x(0);
+  track->set_position_y(0);
+  track->set_width(1280);
+  track->set_height(960);
+  track->set_x_dpi(96);
+  track->set_y_dpi(96);
+  return default_layout;
+}
 
 }  // namespace
 
-GnomeRemoteDesktopSession::GnomeRemoteDesktopSession() = default;
+GnomeRemoteDesktopSession::GnomeRemoteDesktopSession()
+    : persistent_display_layout_manager_(
+          GetDisplayLayoutFilePath(),
+          std::make_unique<GnomeDesktopDisplayInfoMonitor>(
+              display_config_monitor_.GetWeakPtr()),
+          desktop_resizer_.GetWeakPtr()) {}
 
 GnomeRemoteDesktopSession::~GnomeRemoteDesktopSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -222,21 +246,7 @@ void GnomeRemoteDesktopSession::OnEiSession(
   capture_stream_manager_.Init(&connection_,
                                display_config_monitor_.GetWeakPtr(),
                                screencast_session_path_);
-  capture_stream_manager_.AddStream(
-      kInitialResolution,
-      base::BindOnce(&GnomeRemoteDesktopSession::OnAddStreamResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GnomeRemoteDesktopSession::OnAddStreamResult(
-    base::expected<base::WeakPtr<PipewireCaptureStream>, std::string> result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!result.has_value()) {
-    OnInitError(result.error());
-    return;
-  }
-
+  persistent_display_layout_manager_.Start(CreateDefaultLayout());
   initialization_state_ = InitializationState::kInitialized;
   init_callbacks_.Notify(base::ok());
   DCHECK(init_callbacks_.empty());
