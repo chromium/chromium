@@ -29,6 +29,21 @@ class PointerEvent;
 
 CORE_EXPORT BASE_DECLARE_FEATURE(kPreloadingNoSamePageFragmentAnchorTracking);
 
+// Config for viewport heuristic derived from field trial params.
+struct ViewportHeuristicConfig {
+  // Min/max values of distance_from_pointer_down_ratio for an anchor to be
+  // selected by the heuristic.
+  std::pair<float, float> distance_from_ptr_down_ratio_bounds;
+  // The largest anchor should be larger than the next largest anchor by this
+  // threshold to be selected by the heuristic. More specifically, for the
+  // largest anchor a1, and the next largest anchor a2:
+  // (size(a1) - size(a2)) / size(a2) >= `largest_anchor_threshold`.
+  double largest_anchor_threshold;
+  // Time to wait before informing the browser of the largest anchor element
+  // selected by the heuristic.
+  base::TimeDelta delay;
+};
+
 // Tracks pointerdown events anywhere on a document.  On receiving a pointerdown
 // event, the tracker will retrieve the valid href from the anchor element from
 // the event and will report the href value to the browser process via Mojo. The
@@ -142,6 +157,14 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   WeakMember<HTMLAnchorElementBase> largest_anchor_element_in_viewport_;
   HeapTaskRunnerTimer<AnchorElementInteractionTracker>
       viewport_heuristic_timer_;
+};
+
+struct BLINK_EXPORT ViewportHeuristicConfigTestingScope {
+  ViewportHeuristicConfigTestingScope();
+  ~ViewportHeuristicConfigTestingScope();
+
+ private:
+  ViewportHeuristicConfig config_;
 };
 
 }  // namespace blink

@@ -732,6 +732,7 @@ class AnchorElementInteractionViewportHeuristicsTest
            {"distance_from_ptr_down_hi", "0"},
            {"largest_anchor_threshold", "0.5"}}}},
         {});
+    config_scope_ = std::make_unique<ViewportHeuristicConfigTestingScope>();
   }
 
   static constexpr int kViewportWidth = 400;
@@ -851,6 +852,7 @@ class AnchorElementInteractionViewportHeuristicsTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ViewportHeuristicConfigTestingScope> config_scope_;
 };
 
 TEST_F(AnchorElementInteractionViewportHeuristicsTest, BasicTest) {
