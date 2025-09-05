@@ -48,7 +48,11 @@ struct NET_EXPORT SessionError {
     kSessionProviderWellKnownMalformed = 29,
     kRelyingPartyWellKnownUnavailable = 30,
     kRelyingPartyWellKnownMalformed = 31,
-    kMaxValue = kRelyingPartyWellKnownMalformed,
+    kFederatedKeyThumbprintMismatch = 32,
+    kInvalidFederatedSessionUrl = 33,
+    kInvalidFederatedSession = 34,
+    kInvalidFederatedKey = 35,
+    kMaxValue = kInvalidFederatedKey,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError)
 

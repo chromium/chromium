@@ -499,6 +499,10 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kMissingScope:
     case kNoCredentials:
     case kInvalidScopeIncludeSite:
+    case kFederatedKeyThumbprintMismatch:
+    case kInvalidFederatedSessionUrl:
+    case kInvalidFederatedSession:
+    case kInvalidFederatedKey:
 
     // We do not want to back off on many network connection errors
     // (e.g. internet disconnected), so we do not hit our maximum

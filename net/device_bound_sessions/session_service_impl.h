@@ -208,6 +208,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // null, does nothing.
   void RemoveFetcher(RegistrationFetcher* fetcher);
 
+  // Get the federated provider session specified by
+  // `registration_params`, if allowed.
+  base::expected<Session*, SessionError> GetFederatedProviderSessionIfValid(
+      const RegistrationFetcherParam& registration_params);
+
   // Whether we are waiting on the initial load of saved sessions to complete.
   bool pending_initialization_ = false;
   // Functions to call once initialization completes.
