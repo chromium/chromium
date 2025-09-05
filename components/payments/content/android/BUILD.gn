@@ -53,6 +53,7 @@ static_library("android") {
     "//components/payments/content:utils",
     "//components/payments/content/utility",
     "//components/payments/core",
+    "//components/prefs",
     "//components/ukm/content",
     "//components/url_formatter",
     "//components/webauthn/android",

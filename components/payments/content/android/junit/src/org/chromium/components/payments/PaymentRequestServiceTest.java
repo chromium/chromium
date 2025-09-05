@@ -903,4 +903,14 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                 ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
                 PaymentErrorReason.NOT_ALLOWED_ERROR);
     }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSetPrefsCanMakePayment() {
+        PaymentRequestService service = defaultBuilder().setPrefsCanMakePayment(true).build();
+        Assert.assertTrue(service.prefsCanMakePayment());
+
+        service = defaultBuilder().setPrefsCanMakePayment(false).build();
+        Assert.assertFalse(service.prefsCanMakePayment());
+    }
 }

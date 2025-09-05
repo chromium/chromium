@@ -1213,6 +1213,12 @@ public class PaymentRequestService
 
     // Implements PaymentAppFactoryDelegate:
     @Override
+    public boolean prefsCanMakePayment() {
+        return mDelegate.prefsCanMakePayment();
+    }
+
+    // Implements PaymentAppFactoryDelegate:
+    @Override
     public void setOptOutOffered() {
         mJourneyLogger.setOptOutOffered();
     }

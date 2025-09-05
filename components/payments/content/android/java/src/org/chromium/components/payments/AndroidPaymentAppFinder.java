@@ -362,7 +362,11 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                     String.join(", ", getActivityPackageNames(allInstalledPaymentApps)));
         }
 
-        if (!mIsOffTheRecord) {
+        boolean isReadyToPayQueryRestricted =
+                !mFactoryDelegate.prefsCanMakePayment()
+                        && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                                PaymentFeatureList.RESTRICT_IS_READY_TO_PAY_QUERY);
+        if (!mIsOffTheRecord && !isReadyToPayQueryRestricted) {
             addIntentServiceToServiceMap(
                     WebPaymentIntentHelper.ACTION_IS_READY_TO_PAY, mIsReadyToPayServices);
         }

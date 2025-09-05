@@ -292,6 +292,11 @@ public class PaymentRequestServiceBuilder implements Delegate {
         return this;
     }
 
+    public PaymentRequestServiceBuilder setPrefsCanMakePayment(boolean canMakePayment) {
+        mPrefsCanMakePayment = canMakePayment;
+        return this;
+    }
+
     public PaymentRequestService build() {
         PaymentRequestService service =
                 new PaymentRequestService(
