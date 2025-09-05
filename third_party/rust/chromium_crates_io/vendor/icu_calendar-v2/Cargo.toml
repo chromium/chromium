@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.82"
 name = "icu_calendar"
-version = "2.0.4"
+version = "2.0.3"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -86,7 +86,7 @@ path = "benches/date.rs"
 harness = false
 
 [dependencies.calendrical_calculations]
-version = "0.2.1"
+version = "0.2.0"
 default-features = false
 
 [dependencies.databake]
