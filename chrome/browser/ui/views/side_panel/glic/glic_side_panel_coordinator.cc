@@ -4,52 +4,23 @@
 
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 
-#include "chrome/browser/glic/public/glic_enabling.h"
+#include "base/functional/callback.h"
+#include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/glic_resources.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
-#include "ui/actions/actions.h"
 
 namespace glic {
 
-namespace {
-
-actions::ActionItem* GetGlicActionItem(actions::ActionItem* root_action_item) {
-  actions::ActionItem* glic_action_item =
-      actions::ActionManager::Get().FindAction(kActionSidePanelShowGlic,
-                                               root_action_item);
-  CHECK(glic_action_item);
-  return glic_action_item;
-}
-
-}  // namespace
-
-GlicSidePanelCoordinator::GlicSidePanelCoordinator(
-    Profile* profile,
-    actions::ActionItem* root_action_item,
-    SidePanelCoordinator* side_panel_coordinator)
-    : glic_service_(GlicKeyedServiceFactory::GetGlicKeyedService(profile)),
-      profile_(profile),
-      glic_action_(GetGlicActionItem(root_action_item)),
-      side_panel_coordinator_(side_panel_coordinator) {
-  auto* glic_service = glic::GlicKeyedService::Get(profile_);
-  if (glic_service) {
-    on_glic_enabled_changed_subscription_ =
-        glic_service->enabling().RegisterAllowedChanged(
-            base::BindRepeating(&GlicSidePanelCoordinator::OnGlicEnabledChanged,
-                                base::Unretained(this)));
-  }
-}
+GlicSidePanelCoordinator::GlicSidePanelCoordinator(Profile* profile)
+    : glic_service_(GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {}
 
 void GlicSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
@@ -65,29 +36,6 @@ void GlicSidePanelCoordinator::CreateAndRegisterEntry(
 void GlicSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
   if (glic_service_) {
     glic_service_->ClosePanel();
-  }
-}
-
-void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
-  bool isAllowed = glic::GlicEnabling::IsEnabledForProfile(profile_);
-  // Show / hide browser action.
-  glic_action_->SetVisible(isAllowed);
-  // Register / deregister side panel entry.
-  SidePanelRegistry* global_registry =
-      side_panel_coordinator_->GetWindowRegistry();
-  if (isAllowed) {
-    CreateAndRegisterEntry(global_registry);
-  } else {
-    SidePanelEntry::Key glic_key =
-        SidePanelEntry::Key(SidePanelEntry::Id::kGlic);
-    if (side_panel_coordinator_->IsSidePanelEntryShowing(glic_key)) {
-      side_panel_coordinator_->Close();
-    }
-    SidePanelEntry* glic_entry = global_registry->GetEntryForKey(glic_key);
-    if (glic_entry) {
-      glic_entry->RemoveObserver(this);
-    }
-    global_registry->Deregister(glic_key);
   }
 }
 

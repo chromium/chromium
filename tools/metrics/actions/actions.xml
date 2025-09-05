@@ -51435,7 +51435,6 @@ should be able to be added at any place in this file.
       label="Pinned clear browsing data button"/>
   <suffix name="PinnedCopyLinkButton" label="Pinned copy link button"/>
   <suffix name="PinnedDevToolsButton" label="Pinned developer tools button"/>
-  <suffix name="PinnedGlicButton" label="Pinned glic button"/>
   <suffix name="PinnedNewIncognitoWindowButton"
       label="Pinned new incognito window button"/>
   <suffix name="PinnedPrintButton" label="Pinned print button"/>

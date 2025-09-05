@@ -567,8 +567,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 #if BUILDFLAG(ENABLE_GLIC)
   glic_side_panel_coordinator_ =
       std::make_unique<glic::GlicSidePanelCoordinator>(
-          browser_view->GetProfile(), browser_actions_->root_action_item(),
-          side_panel_coordinator_.get());
+          browser_view->GetProfile());
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   side_panel_coordinator_->Init(browser_view->browser());

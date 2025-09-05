@@ -175,6 +175,7 @@ BrowserActions::BrowserActions(BrowserWindowInterface* bwi)
 
 BrowserActions::~BrowserActions() {
   browser_action_prefs_listener_.reset();
+
   // Extract the unique ptr and destruct it after the raw_ptr to avoid a
   // dangling pointer scenario.
   std::unique_ptr<actions::ActionItem> owned_root_action_item =
@@ -987,13 +988,15 @@ void BrowserActions::InitializeBrowserActions() {
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  root_action_item_->AddChild(
-      SidePanelAction(SidePanelEntryId::kGlic, IDS_SETTINGS_GLIC_PAGE_TITLE,
-                      IDS_SETTINGS_GLIC_PAGE_TITLE,
-                      glic::GlicVectorIconManager::GetVectorIcon(
-                          IDR_GLIC_BUTTON_VECTOR_ICON),
-                      kActionSidePanelShowGlic, bwi, /*is_pinnable=*/true)
-          .Build());
+  if (glic::GlicEnabling::IsEnabledForProfile(profile)) {
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kGlic, IDS_SETTINGS_GLIC_PAGE_TITLE,
+                        IDS_SETTINGS_GLIC_PAGE_TITLE,
+                        glic::GlicVectorIconManager::GetVectorIcon(
+                            IDR_GLIC_BUTTON_VECTOR_ICON),
+                        kActionSidePanelShowGlic, bwi, /*is_pinnable=*/true)
+            .Build());
+  }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   AddListeners();
