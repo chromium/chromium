@@ -19,7 +19,7 @@ class BwgServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the default factory used to build BwgService. Can be registered
   // with AddTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<BwgServiceFactory>;
@@ -27,9 +27,9 @@ class BwgServiceFactory : public ProfileKeyedServiceFactoryIOS {
   BwgServiceFactory();
   ~BwgServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_FACTORY_H_
