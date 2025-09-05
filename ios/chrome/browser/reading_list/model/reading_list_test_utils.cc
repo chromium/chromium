@@ -23,7 +23,7 @@ namespace {
 // the entries provided in `initial_entries`..
 std::unique_ptr<KeyedService> BuildReadingListModelWithFakeStorage(
     std::vector<scoped_refptr<ReadingListEntry>> initial_entries,
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   auto storage = std::make_unique<FakeReadingListModelStorage>();
   base::WeakPtr<FakeReadingListModelStorage> storage_ptr = storage->AsWeakPtr();
   auto reading_list_model = std::make_unique<ReadingListModelImpl>(
@@ -37,7 +37,7 @@ std::unique_ptr<KeyedService> BuildReadingListModelWithFakeStorage(
 
 }  // namespace
 
-ProfileKeyedServiceFactoryIOS::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 ReadingListModelTestingFactoryWithFakeStorage(
     std::vector<scoped_refptr<ReadingListEntry>> initial_entries) {
   return base::BindOnce(&BuildReadingListModelWithFakeStorage,

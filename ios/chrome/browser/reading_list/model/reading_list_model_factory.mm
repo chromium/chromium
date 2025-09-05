@@ -51,9 +51,7 @@ ReadingListModelFactory::ReadingListModelFactory()
 ReadingListModelFactory::~ReadingListModelFactory() {}
 
 std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   syncer::OnceDataTypeStoreFactory store_factory =
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
   auto local_storage =

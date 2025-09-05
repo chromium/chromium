@@ -25,9 +25,9 @@ class ReadingListDownloadServiceFactory : public ProfileKeyedServiceFactoryIOS {
   ReadingListDownloadServiceFactory();
   ~ReadingListDownloadServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_DOWNLOAD_SERVICE_FACTORY_H_

@@ -42,9 +42,7 @@ ReadingListDownloadServiceFactory::~ReadingListDownloadServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 ReadingListDownloadServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   std::unique_ptr<reading_list::ReadingListDistillerPageFactory>
       distiller_page_factory =
           std::make_unique<reading_list::ReadingListDistillerPageFactory>(
