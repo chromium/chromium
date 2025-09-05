@@ -20,6 +20,17 @@ class PrefService;
 
 namespace safe_browsing {
 
+// Describes the reason for an unwanted notification revocation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(NotificationRevocationSource)
+enum class NotificationRevocationSource {
+  kSocialEngineeringBlocklist = 0,
+  kManualSafeBrowsingRevocation = 1,
+  kMaxValue = kManualSafeBrowsingRevocation,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:NotificationRevocationSource)
+
 // This class is for logging Safe Browsing metrics regularly. Metrics are logged
 // everyday or at startup, if the last logging time was more than a day ago.
 // It is also responsible for adding Safe Browsing events in prefs and logging

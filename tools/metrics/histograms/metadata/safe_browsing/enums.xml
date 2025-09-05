@@ -210,6 +210,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Finished displaying persistent notification"/>
 </enum>
 
+<!-- LINT.IfChange(NotificationRevocationSource) -->
+
+<enum name="NotificationRevocationSource">
+  <int value="0" label="Social engineering blocklist"/>
+  <int value="1" label="Manual safe browsing revocation"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/safe_browsing_metrics_collector.h:NotificationRevocationSource) -->
+
 <enum name="SafeBrowsingAllowlistAsyncMatch">
   <int value="0" label="ASYNC"/>
   <int value="1" label="MATCH"/>

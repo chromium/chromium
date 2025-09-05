@@ -23,6 +23,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/constants.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -175,6 +176,10 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   histogram_tester.ExpectUniqueSample(
       safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
       /* expected_count */ 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.NotificationRevocationSource",
+      safe_browsing::NotificationRevocationSource::kSocialEngineeringBlocklist,
+      /* expected_count */ 2);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
@@ -729,6 +734,11 @@ TEST_F(ShowManualNotificationRevocationsTest,
       content_settings_uma_util::ContentSettingTypeToHistogramValue(
           ContentSettingsType::NOTIFICATIONS),
       1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.NotificationRevocationSource",
+      safe_browsing::NotificationRevocationSource::
+          kManualSafeBrowsingRevocation,
+      /* expected_count */ 1);
 }
 
 TEST_F(ShowManualNotificationRevocationsTest,

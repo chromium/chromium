@@ -22,6 +22,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "content/public/test/browser_task_environment.h"
 
 class PermissionRevocationRequestTestBase : public testing::Test {
@@ -160,6 +161,7 @@ TEST_F(PermissionRevocationRequestTest, OriginIsNotOnBlockingLists) {
 }
 
 TEST_F(PermissionRevocationRequestTest, SafeBrowsingTest) {
+  base::HistogramTester histograms;
   const GURL origin_to_revoke = GURL("https://origin.com/");
 
   SetPermission(origin_to_revoke, CONTENT_SETTING_ALLOW);
@@ -189,6 +191,11 @@ TEST_F(PermissionRevocationRequestTest, SafeBrowsingTest) {
   EXPECT_FALSE(safety_hub_util::IsUrlRevokedAbusiveNotification(
       HostContentSettingsMapFactory::GetForProfile(GetTestingProfile()),
       origin_to_revoke));
+
+  histograms.ExpectUniqueSample("SafeBrowsing.NotificationRevocationSource",
+                                safe_browsing::NotificationRevocationSource::
+                                    kManualSafeBrowsingRevocation,
+                                /* expected_count */ 1);
 }
 
 TEST_F(PermissionRevocationRequestTest, PreloadDataTest) {

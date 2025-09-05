@@ -2189,6 +2189,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.NotificationRevocationSource"
+    enum="NotificationRevocationSource" expires_after="2026-08-21">
+  <owner>skrakowi@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the reason an unwanted notification revocation occurred. Logged when
+    the notification permission is revoked.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.NotificationsGlobalCacheList.OriginIsListed"
     enum="BooleanMatched" expires_after="2026-08-11">
   <owner>skrakowi@google.com</owner>

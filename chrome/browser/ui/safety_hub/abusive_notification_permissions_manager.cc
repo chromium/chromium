@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -283,6 +284,9 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
   timer_.Stop();
   if (threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     ExecuteAbusiveNotificationAutoRevocation(hcsm_.get(), url, clock_);
+    base::UmaHistogramEnumeration("SafeBrowsing.NotificationRevocationSource",
+                                  safe_browsing::NotificationRevocationSource::
+                                      kSocialEngineeringBlocklist);
   }
   // Update user pref that stores the time of the last successful blocklist
   // check.
