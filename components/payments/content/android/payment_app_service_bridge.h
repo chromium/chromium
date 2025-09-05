@@ -79,6 +79,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   scoped_refptr<WebPaymentsWebDataService> GetWebPaymentsWebDataService()
       const override;
   bool IsOffTheRecord() const override;
+  bool PrefsCanMakePayment() const override;
   base::WeakPtr<ContentPaymentRequestDelegate> GetPaymentRequestDelegate()
       const override;
   void ShowProcessingSpinner() override;

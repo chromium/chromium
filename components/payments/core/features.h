@@ -46,6 +46,10 @@ BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
 // Used to enable the refreshed fallback flow for Secure Payment Confirmation.
 BASE_DECLARE_FEATURE(kSecurePaymentConfirmationFallback);
 
+// Used to control whether the `kCanMakePaymentEnabled` pref being disabled will
+// stop the IsReadyToPay query from being sent to payment handlers.
+BASE_DECLARE_FEATURE(kRestrictIsReadyToPayQuery);
+
 }  // namespace features
 }  // namespace payments
 

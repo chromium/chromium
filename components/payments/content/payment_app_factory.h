@@ -81,6 +81,7 @@ class PaymentAppFactory {
     virtual scoped_refptr<WebPaymentsWebDataService>
     GetWebPaymentsWebDataService() const = 0;
     virtual bool IsOffTheRecord() const = 0;
+    virtual bool PrefsCanMakePayment() const = 0;
 
     // Returns the merchant provided information, or null if the payment is
     // being aborted.

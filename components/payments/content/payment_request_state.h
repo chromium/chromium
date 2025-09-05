@@ -138,6 +138,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   scoped_refptr<WebPaymentsWebDataService> GetWebPaymentsWebDataService()
       const override;
   bool IsOffTheRecord() const override;
+  bool PrefsCanMakePayment() const override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;
   void OnPaymentAppCreationError(
       const std::string& error_message,

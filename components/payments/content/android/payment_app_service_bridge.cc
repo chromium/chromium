@@ -284,6 +284,12 @@ bool PaymentAppServiceBridge::IsOffTheRecord() const {
   return is_off_the_record_;
 }
 
+bool PaymentAppServiceBridge::PrefsCanMakePayment() const {
+  // TODO: crbug.com/427918761 - Implement this when adding the logic
+  // that requires it for Web Payment Handlers on Android.
+  return true;
+}
+
 base::WeakPtr<ContentPaymentRequestDelegate>
 PaymentAppServiceBridge::GetPaymentRequestDelegate() const {
   // PaymentAppService flow should have short-circuited before this point.

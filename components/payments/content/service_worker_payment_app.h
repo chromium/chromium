@@ -44,6 +44,7 @@ class ServiceWorkerPaymentApp : public PaymentApp {
       base::WeakPtr<PaymentRequestSpec> spec,
       std::unique_ptr<content::StoredPaymentApp> stored_payment_app_info,
       bool is_incognito,
+      bool prefs_can_make_payment,
       const base::RepeatingClosure& show_processing_spinner);
 
   // This constructor is used for a payment app that has not been installed in
@@ -57,6 +58,7 @@ class ServiceWorkerPaymentApp : public PaymentApp {
       std::unique_ptr<WebAppInstallationInfo> installable_payment_app_info,
       const std::string& enabled_method,
       bool is_incognito,
+      bool prefs_can_make_payment,
       const base::RepeatingClosure& show_processing_spinner);
 
   ServiceWorkerPaymentApp(const ServiceWorkerPaymentApp&) = delete;
@@ -135,6 +137,7 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   base::WeakPtr<Delegate> delegate_;
 
   bool is_incognito_;
+  bool prefs_can_make_payment_;
 
   // Disables user interaction by showing a spinner. Used when the app is
   // invoked.
