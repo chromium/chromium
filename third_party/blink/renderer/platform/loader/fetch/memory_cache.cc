@@ -132,6 +132,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "strong_reference_prune_delay",
                    kDefaultStrongReferencePruneDelay);
 
+static constexpr char kPageSavedResourceStrongReferenceSize[] =
+    "Blink.MemoryCache.PageSavedResourceStrongReferenceSize2";
+
 MemoryCache* ReplaceMemoryCacheForTesting(MemoryCache* cache) {
   MemoryCache::Get();
   MemoryCache* old_cache = g_memory_cache->Release();
@@ -506,6 +509,8 @@ void MemoryCache::SaveTieredStrongReference(Resource* resource) {
 void MemoryCache::SavePageResourceStrongReferences(
     HeapVector<Member<Resource>> resources) {
   DCHECK(base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference));
+  base::UmaHistogramCustomCounts(kPageSavedResourceStrongReferenceSize,
+                                 resources.size(), 0, 200, 50);
   for (Resource* resource : resources) {
     resource->UpdateMemoryCacheLastAccessedTime();
     strong_references_.AppendOrMoveToLast(resource);
