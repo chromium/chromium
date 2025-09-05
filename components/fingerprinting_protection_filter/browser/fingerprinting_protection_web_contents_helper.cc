@@ -202,9 +202,8 @@ ThrottleManager* FingerprintingProtectionWebContentsHelper::GetThrottleManager(
     return nullptr;
   }
 
-  // TODO(https://crbug.com/40280666): Consider storing pointers to existing
+  // TODO(https://crbug.com/443256528): Consider storing pointers to existing
   // throttle managers to enable short-circuiting this function in most cases.
-
   if (IsRootNavigationToNewDocument(handle)) {
     auto* container =
         ThrottleManagerInUserDataContainer::GetForNavigationHandle(handle);

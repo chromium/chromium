@@ -116,7 +116,7 @@ void FingerprintingProtectionChildNavigationThrottle::NotifyLoadPolicy() const {
   auto* web_contents_helper =
       FingerprintingProtectionWebContentsHelper::FromWebContents(
           navigation_handle()->GetWebContents());
-  // TODO(https://crbug.com/40280666): Figure out how to initialize the
+  // TODO(https://crbug.com/443258187): Figure out how to initialize the
   // WebContentsHelper in unittests to make it testable.
   if (web_contents_helper == nullptr) {
     return;

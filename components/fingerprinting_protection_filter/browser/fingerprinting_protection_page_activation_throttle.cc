@@ -38,7 +38,7 @@ using ::subresource_filter::ScopedTimers;
 using ::subresource_filter::mojom::ActivationLevel;
 using ::subresource_filter::mojom::ActivationState;
 
-// TODO(https://crbug.com/40280666): This doesn't actually throttle any
+// TODO(https://crbug.com/346777548): This doesn't actually throttle any
 // navigations - use a different object to kick off the
 // `ProfileInteractionManager`.
 FingerprintingProtectionPageActivationThrottle::
