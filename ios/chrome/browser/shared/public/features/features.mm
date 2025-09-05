@@ -785,9 +785,6 @@ constexpr base::FeatureParam<base::TimeDelta> kMultiProfileMigrationGracePeriod{
 BASE_FEATURE(SeparateProfilesForManagedAccountsForceMigration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(SeparateProfilesForManagedAccountsKillSwitch,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(OmahaResyncTimerOnForeground, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(ChromeStartupParametersAsync, base::FEATURE_DISABLED_BY_DEFAULT);

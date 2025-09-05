@@ -756,11 +756,6 @@ extern const base::FeatureParam<base::TimeDelta>
 // own separate profile.
 BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccountsForceMigration);
 
-// Kill switch to turn off `kSeparateProfilesForManagedAccounts`, even if
-// multiple profiles already exist.
-// DO NOT CHECK DIRECTLY, use AreSeparateProfilesForManagedAccountsEnabled()!
-BASE_DECLARE_FEATURE(kSeparateProfilesForManagedAccountsKillSwitch);
-
 // Feature to control resyncing the omaha ping timer on foregrounding.
 BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
 

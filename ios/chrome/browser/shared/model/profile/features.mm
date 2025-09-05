@@ -49,16 +49,6 @@ bool DetermineHasMultipleProfiles() {
 }  // namespace
 
 bool AreSeparateProfilesForManagedAccountsEnabled() {
-  // The APIs to support multiple profiles are only available in iOS 17+, so
-  // consider this feature as disabled in earlier versions.
-  if (!@available(iOS 17, *)) {
-    return false;
-  }
-  // If the killswitch has been triggered, it's off.
-  if (base::FeatureList::IsEnabled(
-          kSeparateProfilesForManagedAccountsKillSwitch)) {
-    return false;
-  }
   // Standard case: Check the regular feature flag.
   if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
     return true;

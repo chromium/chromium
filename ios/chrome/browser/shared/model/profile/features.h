@@ -11,7 +11,7 @@
 
 // Returns whether the feature to put each managed account into its own separate
 // profile is enabled. This is the case if `kSeparateProfilesForManagedAccounts`
-// is enabled *and* the iOS version is >= 17 (required for multiprofile).
+// is enabled.
 bool AreSeparateProfilesForManagedAccountsEnabled();
 
 // YES if Profile-specific push notification handling is enabled.
