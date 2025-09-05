@@ -989,7 +989,6 @@ void GlicWindowControllerImpl::AttachToBrowser(Browser& browser,
 
   auto* side_panel_coordinator = browser.GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
-
   SetWindowState(State::kOpen);
   NotifyIfPanelStateChanged();
 
@@ -1081,9 +1080,12 @@ gfx::Size GlicWindowControllerImpl::GetSize() {
   if (IsDetached()) {
     return GetGlicWidget()->GetSize();
   }
-  // TODO(crbug.com/439745838): Return side panel size when attached.
-  NOTIMPLEMENTED();
-  return gfx::Size();
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(attached_browser_);
+  CHECK(browser_view->unified_side_panel());
+  // This returns the size of the entire side panel (including content,
+  // heading, and surrounding padding).
+  return browser_view->unified_side_panel()->size();
 }
 
 void GlicWindowControllerImpl::SetDraggableAreas(
