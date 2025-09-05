@@ -62,6 +62,7 @@
 #import "components/omnibox/browser/omnibox_metrics_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/sync/service/passphrase_type_metrics_provider.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_count_metrics_provider.h"
@@ -379,9 +380,14 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<IOSPushNotificationsMetricsProvider>());
 
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<
-          regional_capabilities::IOSRegionalCapabilitiesMetricsProvider>());
+  // Only register the RegionalCapabilitiesMetricsProvider if the dynamic
+  // profile country feature is enabled. This is because that feature
+  // significantly changes the cases under which the "Mixed" bucket is emitted.
+  if (base::FeatureList::IsEnabled(switches::kDynamicProfileCountry)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<
+            regional_capabilities::IOSRegionalCapabilitiesMetricsProvider>());
+  }
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {

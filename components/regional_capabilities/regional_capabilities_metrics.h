@@ -68,10 +68,11 @@ using search_engines::SearchEngineChoiceScreenConditions;
 //
 // LINT.IfChange(ActiveRegionalProgram)
 enum class ActiveRegionalProgram {
-  kDefault = 0,
-  kMixed = 1,
-  kWaffle = 2,
-  kTaiyaki = 3,
+  // kUnknown = 0,
+  kDefault = 1,
+  kMixed = 2,
+  kWaffle = 3,
+  kTaiyaki = 4,
   kMaxValue = kTaiyaki,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/regional_capabilities/enums.xml:ActiveRegionalProgram)

@@ -113,6 +113,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/sync/service/passphrase_type_metrics_provider.h"
 #include "components/sync/service/sync_service.h"
@@ -1011,9 +1012,14 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<glic::GlicMetricsProvider>());
 #endif
 
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<
-          regional_capabilities::RegionalCapabilitiesMetricsProvider>());
+  // Only register the RegionalCapabilitiesMetricsProvider if the dynamic
+  // profile country feature is enabled. This is because that feature
+  // significantly changes the cases under which the "Mixed" bucket is emitted.
+  if (base::FeatureList::IsEnabled(switches::kDynamicProfileCountry)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<
+            regional_capabilities::RegionalCapabilitiesMetricsProvider>());
+  }
 }
 
 void ChromeMetricsServiceClient::RegisterUKMProviders() {

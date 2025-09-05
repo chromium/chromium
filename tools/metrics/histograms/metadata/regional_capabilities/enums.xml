@@ -28,10 +28,14 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(ActiveRegionalProgram) -->
 
 <enum name="ActiveRegionalProgram">
-  <int value="0" label="Default"/>
-  <int value="1" label="Mixed"/>
-  <int value="2" label="Waffle"/>
-  <int value="3" label="Taiyaki"/>
+  <int value="0" label="Unknown">This value is not emitted by the client.</int>
+  <int value="1" label="Default"/>
+  <int value="2" label="Mixed">
+    There is more than one non-Default program (eg. Waffle and Taiyaki). If
+    there is one non-Default program then the value of that program is emitted.
+  </int>
+  <int value="3" label="Waffle"/>
+  <int value="4" label="Taiyaki"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:ActiveRegionalProgram) -->

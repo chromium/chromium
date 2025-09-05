@@ -6,6 +6,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "components/country_codes/country_codes.h"
+#import "components/regional_capabilities/program_settings.h"
 #import "components/regional_capabilities/regional_capabilities_metrics.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/regional_capabilities/regional_capabilities_test_utils.h"
@@ -50,47 +51,58 @@ class IOSRegionalCapabilitiesMetricsProviderTest : public PlatformTest {
   IOSRegionalCapabilitiesMetricsProvider metrics_provider_;
 };
 
-TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, NoProfiles_DefaultProgram) {
+TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, NoProfiles_Default) {
   metrics_provider_.ProvideCurrentSessionData(nullptr);
   histogram_tester_.ExpectUniqueSample(
-      "RegionalCapabilities.ActiveRegionalProgram",
+      "RegionalCapabilities.ActiveRegionalProgram2",
       ActiveRegionalProgram::kDefault, 1);
 }
 
-TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, SingleProfile) {
+TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, SingleWaffle_Waffle) {
   CreateTestingProfile("Profile 1", country_codes::CountryId("FR"));
   metrics_provider_.ProvideCurrentSessionData(nullptr);
   histogram_tester_.ExpectUniqueSample(
-      "RegionalCapabilities.ActiveRegionalProgram",
+      "RegionalCapabilities.ActiveRegionalProgram2",
       ActiveRegionalProgram::kWaffle, 1);
 }
 
-TEST_F(IOSRegionalCapabilitiesMetricsProviderTest,
-       SingleProfile_DefaultProgram) {
+TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, SingleDefault_Default) {
   CreateTestingProfile("Profile 1", country_codes::CountryId("US"));
   metrics_provider_.ProvideCurrentSessionData(nullptr);
   histogram_tester_.ExpectUniqueSample(
-      "RegionalCapabilities.ActiveRegionalProgram",
+      "RegionalCapabilities.ActiveRegionalProgram2",
       ActiveRegionalProgram::kDefault, 1);
 }
 
-TEST_F(IOSRegionalCapabilitiesMetricsProviderTest,
-       MultipleProfiles_SameProgram) {
+TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, MultipleWaffle_Waffle) {
   CreateTestingProfile("Profile 1", country_codes::CountryId("FR"));
   CreateTestingProfile("Profile 2", country_codes::CountryId("FR"));
   metrics_provider_.ProvideCurrentSessionData(nullptr);
   histogram_tester_.ExpectUniqueSample(
-      "RegionalCapabilities.ActiveRegionalProgram",
+      "RegionalCapabilities.ActiveRegionalProgram2",
       ActiveRegionalProgram::kWaffle, 1);
 }
 
-TEST_F(IOSRegionalCapabilitiesMetricsProviderTest,
-       MultipleProfiles_DifferentPrograms) {
-  CreateTestingProfile("Profile 1", country_codes::CountryId("FR"));
-  CreateTestingProfile("Profile 2", country_codes::CountryId("US"));
+TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, DefaultAndWaffle_Waffle) {
+  CreateTestingProfile("Profile 1", country_codes::CountryId("US"));
+  CreateTestingProfile("Profile 2", country_codes::CountryId("FR"));
   metrics_provider_.ProvideCurrentSessionData(nullptr);
   histogram_tester_.ExpectUniqueSample(
-      "RegionalCapabilities.ActiveRegionalProgram",
+      "RegionalCapabilities.ActiveRegionalProgram2",
+      ActiveRegionalProgram::kWaffle, 1);
+}
+
+TEST_F(IOSRegionalCapabilitiesMetricsProviderTest, WaffleAndTaiyaki_Mixed) {
+  if (!IsClientCompatibleWithProgram(Program::kTaiyaki)) {
+    GTEST_SKIP() << "Device type does not support the Taiyaki program.";
+  }
+  CreateTestingProfile("Profile 1", country_codes::CountryId("FR"));
+  CreateTestingProfile("Profile 2", country_codes::CountryId("JP"));
+
+  metrics_provider_.ProvideCurrentSessionData(nullptr);
+
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.ActiveRegionalProgram2",
       ActiveRegionalProgram::kMixed, 1);
 }
 
