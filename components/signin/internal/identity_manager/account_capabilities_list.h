@@ -16,6 +16,11 @@
 // expanded differently in some places. The macro has the following signature:
 // ACCOUNT_CAPABILITY(cpp_label, java_label, name).
 
+// Here we rely on build_config.h to not introduce any symbols that can be
+// textually inserted in the code. If that changes in the future, this header
+// should be removed from this file and included transitively instead.
+#include "build/build_config.h"
+
 // clang-format off
 // keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=#endif
 // clang-format on
@@ -26,6 +31,12 @@ ACCOUNT_CAPABILITY(kCanFetchFamilyMemberInfoCapabilityName,
 ACCOUNT_CAPABILITY(kCanHaveEmailAddressDisplayedCapabilityName,
                    CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
                    "accountcapabilities/haytqlldmfya")
+
+#if !BUILDFLAG(IS_ANDROID)
+ACCOUNT_CAPABILITY(kCanMakeChromeSearchEngineChoiceScreenChoice,
+                   CAN_MAKE_CHROME_SEARCH_ENGINE_CHOICE_SCREEN_CHOICE,
+                   "accountcapabilities/ge4tenznmnqxa")
+#endif
 
 ACCOUNT_CAPABILITY(kCanRunChromePrivacySandboxTrialsCapabilityName,
                    CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME,

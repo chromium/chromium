@@ -12,6 +12,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
@@ -73,7 +74,7 @@ signin::Tribool AccountCapabilities::GetCapabilityByName(
 }
 
 // clang-format off
-// keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=#endif,can,has,is,must block=yes
+// keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=AccountCapabilities,#endif block=yes
 // clang-format on
 signin::Tribool AccountCapabilities::can_fetch_family_member_info() const {
   return GetCapabilityByName(kCanFetchFamilyMemberInfoCapabilityName);
@@ -82,6 +83,14 @@ signin::Tribool AccountCapabilities::can_fetch_family_member_info() const {
 signin::Tribool AccountCapabilities::can_have_email_address_displayed() const {
   return GetCapabilityByName(kCanHaveEmailAddressDisplayedCapabilityName);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+signin::Tribool
+AccountCapabilities::can_make_chrome_search_engine_choice_screen_choice()
+    const {
+  return GetCapabilityByName(kCanMakeChromeSearchEngineChoiceScreenChoice);
+}
+#endif
 
 signin::Tribool AccountCapabilities::can_run_chrome_privacy_sandbox_trials()
     const {
@@ -153,8 +162,8 @@ signin::Tribool AccountCapabilities::is_opted_in_to_parental_supervision()
   return GetCapabilityByName(kIsOptedInToParentalSupervisionCapabilityName);
 }
 
-signin::Tribool AccountCapabilities::
-    is_subject_to_account_level_enterprise_policies() const {
+signin::Tribool
+AccountCapabilities::is_subject_to_account_level_enterprise_policies() const {
   return GetCapabilityByName(
       kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName);
 }

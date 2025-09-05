@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 
 AccountCapabilitiesTestMutator::AccountCapabilitiesTestMutator(
@@ -34,6 +35,15 @@ void AccountCapabilitiesTestMutator::set_can_have_email_address_displayed(
   capabilities_
       ->capabilities_map_[kCanHaveEmailAddressDisplayedCapabilityName] = value;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void AccountCapabilitiesTestMutator::set_can_make_chrome_search_engine_choice_screen_choice(
+    bool value) {
+  capabilities_
+      ->capabilities_map_[kCanMakeChromeSearchEngineChoiceScreenChoice] =
+      value;
+}
+#endif
 
 void AccountCapabilitiesTestMutator::set_can_run_chrome_privacy_sandbox_trials(
     bool value) {

@@ -62,6 +62,12 @@ class AccountCapabilities {
   // Chrome can display the email address for accounts with this capability.
   signin::Tribool can_have_email_address_displayed() const;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // The primary account type is suitable for choice screens. Signals that are
+  // not account-type specific should be checked separately.
+  signin::Tribool can_make_chrome_search_engine_choice_screen_choice() const;
+#endif
+
   // Chrome can run privacy sandbox trials for accounts with this capability.
   signin::Tribool can_run_chrome_privacy_sandbox_trials() const;
 
