@@ -157,7 +157,7 @@ source_set("impl") {
     "service/glic_instance.h",
     "service/glic_instance_coordinator_impl.cc",
     "service/glic_instance_coordinator_impl.h",
-    "service/panel_delegate.h",
+    "service/glic_instance_delegate.h",
     "widget/application_hotkey_delegate.cc",
     "widget/application_hotkey_delegate.h",
     "widget/browser_conditions.cc",

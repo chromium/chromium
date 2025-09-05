@@ -37,14 +37,14 @@ GlicUiEmbedder& GlicInstance::embedder() {
   return *embedder_;
 }
 
-void GlicInstance::AttachPanel() {
+void GlicInstance::AttachInstance() {
   if (!attachment_delegate_) {
     return;
   }
   attachment_delegate_->AttachInstance(this);
 }
 
-void GlicInstance::DetachPanel() {
+void GlicInstance::DetachInstance() {
   if (!attachment_delegate_) {
     return;
   }
@@ -114,7 +114,7 @@ void GlicInstance::DisassociateWindow() {
   associated_bwi_ = nullptr;
 }
 
-void GlicInstance::ClosePanelAndShutdown() {
+void GlicInstance::CloseInstanceAndShutdown() {
   NOTIMPLEMENTED();
 }
 void GlicInstance::CreateTab() {

@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_conversation_helper.h"
-#include "chrome/browser/glic/service/panel_delegate.h"
+#include "chrome/browser/glic/service/glic_instance_delegate.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -24,12 +24,12 @@ namespace glic {
 
 class GlicUiEmbedder;
 
-// A Panel owns a single host keeping any state that must exist for the lifetime
-// of the host. When a host is showing the Panel creates a PanelEmbedderDelegate
-// to display the webcontents in. A panel (and host) exist even if it has no
-// PanelEmbedderDelegate showing the panel. A host could have many different
-// PanelEmbedderDelegates during its lifetime.
-class GlicInstance : public PanelDelegate {
+// A GlicInstance owns a single host keeping any state that must exist for the
+// lifetime of the host. When a host is showing, the GlicInstance creates a
+// GlicUiEmbedder to display the webcontents in. An instance (and host) exist
+// even if it has no GlicUiEmbedder showing the UI. A host could have many
+// different GlicUiEmbedders during its lifetime.
+class GlicInstance : public GlicInstanceDelegate {
  public:
   enum class EmbedderType {
     kSidePanel,
@@ -60,13 +60,13 @@ class GlicInstance : public PanelDelegate {
 
   void DisassociateWindow();
 
-  void AttachPanel() override;
-  void DetachPanel() override;
+  void AttachInstance() override;
+  void DetachInstance() override;
   bool IsShowing() const;
   BrowserWindowInterface* associated_bwi() const { return associated_bwi_; }
   const ConversationId& conversation_id() const { return conversation_id_; }
 
-  // These methods should only be called by the GlicPanelCoordinator.
+  // These methods should only be called by the GlicInstanceCoordinator.
   EmbedderType GetEmbedderType();
   void SetEmbedderType(EmbedderType type);
   void Show(tabs::TabInterface* tab);
@@ -78,8 +78,8 @@ class GlicInstance : public PanelDelegate {
   void DisassociateFromTab(tabs::TabInterface* tab);
   bool IsOrphaned() const;
 
-  // PanelDelegate:
-  void ClosePanelAndShutdown() override;
+  // InstanceDelegate:
+  void CloseInstanceAndShutdown() override;
   void CreateTab() override;
   void CreateTask() override;
   void PerformActions() override;
