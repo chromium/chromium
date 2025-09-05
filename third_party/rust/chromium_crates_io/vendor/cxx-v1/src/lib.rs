@@ -363,7 +363,7 @@
 //! </table>
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/cxx/1.0.168")]
+#![doc(html_root_url = "https://docs.rs/cxx/1.0.175")]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(
     improper_ctypes,
@@ -492,7 +492,6 @@ pub type Vector<T> = CxxVector<T>;
 // Not public API.
 #[doc(hidden)]
 pub mod private {
-    pub use crate::cxx_vector::VectorElement;
     pub use crate::extern_type::{verify_extern_kind, verify_extern_type};
     pub use crate::function::FatFunction;
     pub use crate::hash::hash;
@@ -506,11 +505,8 @@ pub mod private {
     pub use crate::rust_type::{ImplBox, ImplVec, RustType};
     #[cfg(feature = "alloc")]
     pub use crate::rust_vec::RustVec;
-    pub use crate::shared_ptr::SharedPtrTarget;
     pub use crate::string::StackString;
-    pub use crate::unique_ptr::UniquePtrTarget;
     pub use crate::unwind::prevent_unwind;
-    pub use crate::weak_ptr::WeakPtrTarget;
     pub use core::{concat, module_path};
     pub use cxxbridge_macro::type_id;
 }

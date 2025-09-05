@@ -95,10 +95,16 @@ where
     /// The resulting shared pointer is **nonempty** regardless of whether the
     /// input pointer is null, but may be either **null** or **nonnull**.
     ///
+    /// # Panics
+    ///
+    /// Panics if `T` is an incomplete type (including `void`) or is not
+    /// destructible.
+    ///
     /// # Safety
     ///
     /// Pointer must either be null or point to a valid instance of T
     /// heap-allocated in C++ by `new`.
+    #[track_caller]
     pub unsafe fn from_raw(raw: *mut T) -> Self {
         let mut shared_ptr = MaybeUninit::<SharedPtr<T>>::uninit();
         let new = shared_ptr.as_mut_ptr().cast();

@@ -1,7 +1,7 @@
 Name: cxxbridge-flags
 URL: https://crates.io/crates/cxxbridge-flags
-Version: 1.0.168
-Revision: 41ec56f5023df69ba7e7e66fd634f61318e8bbfb
+Version: 1.0.175
+Revision: d0f5333fd0c8baf6d26541526ba2ba11fbd3bd9d
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/cxxbridge-flags-v1/LICENSE-APACHE

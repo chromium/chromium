@@ -14,6 +14,7 @@ cargo_crate("lib") {
   crate_type = "proc-macro"
   crate_root = "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/lib.rs"
   sources = [
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/cfg.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/derive.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/expand.rs",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v1/src/generics.rs",
@@ -62,7 +63,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "cxxbridge-macro"
   cargo_pkg_description = "Implementation detail of the `cxx` crate."
   cargo_pkg_repository = "https://github.com/dtolnay/cxx"
-  cargo_pkg_version = "1.0.168"
+  cargo_pkg_version = "1.0.175"
 
   allow_unsafe = false
 

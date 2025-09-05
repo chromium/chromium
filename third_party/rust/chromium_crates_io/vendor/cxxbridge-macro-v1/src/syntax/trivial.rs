@@ -1,4 +1,5 @@
-use crate::syntax::map::UnorderedMap;
+use crate::syntax::cfg::ComputedCfg;
+use crate::syntax::map::{OrderedMap, UnorderedMap};
 use crate::syntax::set::{OrderedSet as Set, UnorderedSet};
 use crate::syntax::{Api, Enum, ExternFn, NamedType, Pair, Struct, Type};
 use proc_macro2::Ident;
@@ -17,7 +18,7 @@ pub(crate) enum TrivialReason<'a> {
 
 pub(crate) fn required_trivial_reasons<'a>(
     apis: &'a [Api],
-    all: &Set<&'a Type>,
+    all: &OrderedMap<&'a Type, ComputedCfg>,
     structs: &UnorderedMap<&'a Ident, &'a Struct>,
     enums: &UnorderedMap<&'a Ident, &'a Enum>,
     cxx: &UnorderedSet<&'a Ident>,
@@ -92,7 +93,10 @@ pub(crate) fn required_trivial_reasons<'a>(
         }
     }
 
-    for ty in all {
+    for (ty, _cfg) in all {
+        // Ignore cfg. For now if any use of an extern type requires it to be
+        // trivial, we enforce that it is trivial in all configurations. This
+        // can potentially be relaxed if there is a motivating use case.
         match ty {
             Type::RustBox(ty) => {
                 if let Type::Ident(ident) = &ty.inner {

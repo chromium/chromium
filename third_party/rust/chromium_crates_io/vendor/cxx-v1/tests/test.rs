@@ -275,7 +275,7 @@ fn test_c_method_calls() {
     assert_eq!(2026, ffi::C::c_static_method());
 
     let val = 42;
-    let mut array = ffi::Array {
+    let mut array = ffi::WithArray {
         a: [0, 0, 0, 0],
         b: ffi::Buffer::default(),
     };
@@ -320,6 +320,24 @@ fn test_unique_to_shared_ptr_null() {
     assert!(unique.is_null());
     let shared = SharedPtr::from(unique);
     assert!(shared.is_null());
+}
+
+#[test]
+fn test_shared_ptr_from_raw() {
+    let shared = unsafe { SharedPtr::<ffi::C>::from_raw(ptr::null_mut()) };
+    assert!(shared.is_null());
+}
+
+#[test]
+#[should_panic = "tests::Undefined is not destructible"]
+fn test_shared_ptr_from_raw_undefined() {
+    unsafe { SharedPtr::<ffi::Undefined>::from_raw(ptr::null_mut()) };
+}
+
+#[test]
+#[should_panic = "tests::Private is not destructible"]
+fn test_shared_ptr_from_raw_private() {
+    unsafe { SharedPtr::<ffi::Private>::from_raw(ptr::null_mut()) };
 }
 
 #[test]

@@ -25,7 +25,10 @@ alias(
 
 rust_binary(
     name = "cxxbridge",
-    srcs = glob(["gen/cmd/src/**/*.rs"]) + [
+    srcs = glob([
+        "gen/cmd/src/**/*.rs",
+        "gen/src/builtin/*.h",
+    ]) + [
         "gen/cmd/src/gen",
         "gen/cmd/src/syntax",
     ],
@@ -68,7 +71,10 @@ rust_library(
 
 rust_library(
     name = "cxx-build",
-    srcs = glob(["gen/build/src/**/*.rs"]) + [
+    srcs = glob([
+        "gen/build/src/**/*.rs",
+        "gen/src/builtin/*.h",
+    ]) + [
         "gen/build/src/gen",
         "gen/build/src/syntax",
     ],
@@ -87,7 +93,10 @@ rust_library(
 
 rust_library(
     name = "cxx-gen",
-    srcs = glob(["gen/lib/src/**/*.rs"]) + [
+    srcs = glob([
+        "gen/lib/src/**/*.rs",
+        "gen/src/builtin/*.h",
+    ]) + [
         "gen/lib/src/gen",
         "gen/lib/src/syntax",
     ],

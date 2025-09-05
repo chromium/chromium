@@ -225,7 +225,6 @@ pub(crate) enum FnKind {
 }
 
 pub(crate) struct Var {
-    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
     pub cfg: CfgExpr,
     pub doc: Doc,
     #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build

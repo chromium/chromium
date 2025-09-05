@@ -4,7 +4,7 @@ use core::hash::{BuildHasher, Hasher};
 
 use crate::seed::SharedSeed;
 
-use crate::{fast, folded_multiply, ARBITRARY0, ARBITRARY8};
+use crate::{fast, folded_multiply, ARBITRARY0, ARBITRARY4};
 
 /// A [`Hasher`] instance implementing foldhash, optimized for quality.
 ///
@@ -12,22 +12,22 @@ use crate::{fast, folded_multiply, ARBITRARY0, ARBITRARY8};
 /// most likely want to use [`RandomState`], [`SeedableRandomState`] or
 /// [`FixedState`] to create [`FoldHasher`]s.
 #[derive(Clone)]
-pub struct FoldHasher {
-    pub(crate) inner: fast::FoldHasher,
+pub struct FoldHasher<'a> {
+    pub(crate) inner: fast::FoldHasher<'a>,
 }
 
-impl FoldHasher {
+impl<'a> FoldHasher<'a> {
     /// Initializes this [`FoldHasher`] with the given per-hasher seed and
     /// [`SharedSeed`].
     #[inline(always)]
-    pub fn with_seed(per_hasher_seed: u64, shared_seed: &SharedSeed) -> FoldHasher {
+    pub const fn with_seed(per_hasher_seed: u64, shared_seed: &'a SharedSeed) -> FoldHasher<'a> {
         FoldHasher {
             inner: fast::FoldHasher::with_seed(per_hasher_seed, shared_seed),
         }
     }
 }
 
-impl Hasher for FoldHasher {
+impl<'a> Hasher for FoldHasher<'a> {
     #[inline(always)]
     fn write(&mut self, bytes: &[u8]) {
         self.inner.write(bytes);
@@ -63,6 +63,12 @@ impl Hasher for FoldHasher {
         self.inner.write_usize(i);
     }
 
+    #[cfg(feature = "nightly")]
+    #[inline(always)]
+    fn write_str(&mut self, s: &str) {
+        self.inner.write_str(s);
+    }
+
     #[inline(always)]
     fn finish(&self) -> u64 {
         folded_multiply(self.inner.finish(), ARBITRARY0)
@@ -70,16 +76,16 @@ impl Hasher for FoldHasher {
 }
 
 /// A [`BuildHasher`] for [`quality::FoldHasher`](FoldHasher) that is randomly initialized.
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct RandomState {
     inner: fast::RandomState,
 }
 
 impl BuildHasher for RandomState {
-    type Hasher = FoldHasher;
+    type Hasher = FoldHasher<'static>;
 
     #[inline(always)]
-    fn build_hasher(&self) -> FoldHasher {
+    fn build_hasher(&self) -> FoldHasher<'static> {
         FoldHasher {
             inner: self.inner.build_hasher(),
         }
@@ -91,7 +97,7 @@ impl BuildHasher for RandomState {
 ///
 /// This can be useful for e.g. testing, but the downside is that this type
 /// has a size of 16 bytes rather than the 8 bytes [`RandomState`] is.
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct SeedableRandomState {
     inner: fast::SeedableRandomState,
 }
@@ -122,7 +128,7 @@ impl SeedableRandomState {
             // the quality hash to ensure better independence between seed
             // and hash.
             inner: fast::SeedableRandomState::with_seed(
-                folded_multiply(per_hasher_seed, ARBITRARY8),
+                folded_multiply(per_hasher_seed, ARBITRARY4),
                 shared_seed,
             ),
         }
@@ -130,10 +136,10 @@ impl SeedableRandomState {
 }
 
 impl BuildHasher for SeedableRandomState {
-    type Hasher = FoldHasher;
+    type Hasher = FoldHasher<'static>;
 
     #[inline(always)]
-    fn build_hasher(&self) -> FoldHasher {
+    fn build_hasher(&self) -> FoldHasher<'static> {
         FoldHasher {
             inner: self.inner.build_hasher(),
         }
@@ -143,7 +149,7 @@ impl BuildHasher for SeedableRandomState {
 /// A [`BuildHasher`] for [`quality::FoldHasher`](FoldHasher) that always has the same fixed seed.
 ///
 /// Not recommended unless you absolutely need determinism.
-#[derive(Copy, Clone, Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct FixedState {
     inner: fast::FixedState,
 }
@@ -157,16 +163,16 @@ impl FixedState {
             // the quality hash to ensure better independence between seed
             // and hash. If the seed is zero the folded multiply is zero,
             // preserving with_seed(0) == default().
-            inner: fast::FixedState::with_seed(folded_multiply(per_hasher_seed, ARBITRARY8)),
+            inner: fast::FixedState::with_seed(folded_multiply(per_hasher_seed, ARBITRARY4)),
         }
     }
 }
 
 impl BuildHasher for FixedState {
-    type Hasher = FoldHasher;
+    type Hasher = FoldHasher<'static>;
 
     #[inline(always)]
-    fn build_hasher(&self) -> FoldHasher {
+    fn build_hasher(&self) -> FoldHasher<'static> {
         FoldHasher {
             inner: self.inner.build_hasher(),
         }

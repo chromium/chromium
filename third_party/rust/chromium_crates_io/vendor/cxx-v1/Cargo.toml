@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.73"
 name = "cxx"
-version = "1.0.168"
+version = "1.0.175"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 links = "cxxbridge1"
@@ -120,20 +120,20 @@ name = "unique_ptr"
 path = "tests/unique_ptr.rs"
 
 [dependencies.cxxbridge-macro]
-version = "=1.0.168"
+version = "=1.0.175"
 
 [dependencies.foldhash]
-version = "0.1"
+version = "0.2"
 default-features = false
 
 [dependencies.link-cplusplus]
-version = "1.0.9"
+version = "1.0.11"
 
 [dev-dependencies.cc]
-version = "1.0.83"
+version = "1.0.101"
 
 [dev-dependencies.cxx-build]
-version = "=1.0.168"
+version = "=1.0.175"
 
 [dev-dependencies.cxx-gen]
 version = "0.7"
@@ -160,18 +160,18 @@ version = "1"
 version = "0.1"
 
 [dev-dependencies.tempfile]
-version = "3"
+version = "3.8"
 
 [dev-dependencies.trybuild]
 version = "1.0.81"
 features = ["diff"]
 
 [build-dependencies.cc]
-version = "1.0.83"
+version = "1.0.101"
 
 [build-dependencies.cxxbridge-flags]
-version = "=1.0.168"
+version = "=1.0.175"
 default-features = false
 
 [target."cfg(any())".build-dependencies.cxxbridge-cmd]
-version = "=1.0.168"
+version = "=1.0.175"

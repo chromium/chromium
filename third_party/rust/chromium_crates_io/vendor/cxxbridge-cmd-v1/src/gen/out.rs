@@ -1,6 +1,7 @@
 use crate::gen::block::Block;
 use crate::gen::builtin::Builtins;
 use crate::gen::include::Includes;
+use crate::gen::pragma::Pragma;
 use crate::gen::Opt;
 use crate::syntax::namespace::Namespace;
 use crate::syntax::Types;
@@ -12,6 +13,7 @@ pub(crate) struct OutFile<'a> {
     pub opt: &'a Opt,
     pub types: &'a Types<'a>,
     pub include: Includes<'a>,
+    pub pragma: Pragma<'a>,
     pub builtin: Builtins<'a>,
     content: RefCell<Content<'a>>,
 }
@@ -38,6 +40,7 @@ impl<'a> OutFile<'a> {
             opt,
             types,
             include: Includes::new(),
+            pragma: Pragma::new(),
             builtin: Builtins::new(),
             content: RefCell::new(Content::new()),
         }
@@ -67,12 +70,19 @@ impl<'a> OutFile<'a> {
 
     pub(crate) fn content(&mut self) -> Vec<u8> {
         self.flush();
+
         let include = &self.include.content.bytes;
+        let pragma_begin = &self.pragma.begin.bytes;
         let builtin = &self.builtin.content.bytes;
         let content = &self.content.get_mut().bytes;
-        let len = include.len() + builtin.len() + content.len() + 2;
-        let mut out = String::with_capacity(len);
+        let pragma_end = &self.pragma.end.bytes;
+
+        let mut out = String::new();
         out.push_str(include);
+        if !out.is_empty() && !pragma_begin.is_empty() {
+            out.push('\n');
+        }
+        out.push_str(pragma_begin);
         if !out.is_empty() && !builtin.is_empty() {
             out.push('\n');
         }
@@ -81,6 +91,10 @@ impl<'a> OutFile<'a> {
             out.push('\n');
         }
         out.push_str(content);
+        if !out.is_empty() && !pragma_end.is_empty() {
+            out.push('\n');
+        }
+        out.push_str(pragma_end);
         if out.is_empty() {
             out.push_str("// empty\n");
         }
@@ -89,8 +103,10 @@ impl<'a> OutFile<'a> {
 
     fn flush(&mut self) {
         self.include.content.flush();
+        self.pragma.begin.flush();
         self.builtin.content.flush();
         self.content.get_mut().flush();
+        self.pragma.end.flush();
     }
 }
 
@@ -108,7 +124,7 @@ impl<'a> PartialEq for Content<'a> {
 }
 
 impl<'a> Content<'a> {
-    fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Content::default()
     }
 

@@ -5,11 +5,3 @@ error: invalid suffix `int` for number literal
   |                  ^^^^ invalid suffix `int`
   |
   = help: the suffix must be one of the numeric types (`u32`, `isize`, `f32`, etc.)
-
-error[E0693]: incorrect `repr(align)` attribute format: `align` takes exactly one argument in parentheses
- --> tests/ui/repr_align_suffixed.rs:1:1
-  |
-1 | #[cxx::bridge]
-  | ^^^^^^^^^^^^^^
-  |
-  = note: this error originates in the attribute macro `cxx::bridge` (in Nightly builds, run with -Z macro-backtrace for more info)

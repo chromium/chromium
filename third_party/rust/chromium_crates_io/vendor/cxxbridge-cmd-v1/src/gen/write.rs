@@ -1,7 +1,8 @@
 use crate::gen::block::Block;
+use crate::gen::guard::Guard;
 use crate::gen::nested::NamespaceEntries;
 use crate::gen::out::OutFile;
-use crate::gen::{builtin, include, Opt};
+use crate::gen::{builtin, include, pragma, Opt};
 use crate::syntax::atom::Atom::{self, *};
 use crate::syntax::instantiate::{ImplKey, NamedImplKey};
 use crate::syntax::map::UnorderedMap as Map;
@@ -30,6 +31,7 @@ pub(super) fn gen(apis: &[Api], types: &Types, opt: &Opt, header: bool) -> Vec<u
     write_generic_instantiations(out);
 
     builtin::write(out);
+    pragma::write(out);
     include::write(out);
 
     out_file.content()
@@ -199,6 +201,7 @@ fn write_std_specializations(out: &mut OutFile, apis: &[Api]) {
                 out.next_section();
                 out.include.cstddef = true;
                 out.include.functional = true;
+                out.pragma.dollar_in_identifier = true;
                 let qualified = strct.name.to_fully_qualified();
                 writeln!(out, "template <> struct hash<{}> {{", qualified);
                 writeln!(
@@ -276,7 +279,7 @@ fn write_struct<'a>(out: &mut OutFile<'a>, strct: &'a Struct, methods: &[&Extern
     let operator_ord = derive::contains(&strct.derives, Trait::PartialOrd);
 
     out.set_namespace(&strct.name.namespace);
-    let guard = format!("CXXBRIDGE1_STRUCT_{}", strct.name.to_symbol());
+    let guard = Guard::new(out, "CXXBRIDGE1_STRUCT", &strct.name);
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
     write_doc(out, "", &strct.doc);
@@ -393,7 +396,7 @@ fn write_struct_using(out: &mut OutFile, ident: &Pair) {
 
 fn write_opaque_type<'a>(out: &mut OutFile<'a>, ety: &'a ExternType, methods: &[&ExternFn]) {
     out.set_namespace(&ety.name.namespace);
-    let guard = format!("CXXBRIDGE1_STRUCT_{}", ety.name.to_symbol());
+    let guard = Guard::new(out, "CXXBRIDGE1_STRUCT", &ety.name);
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
     write_doc(out, "", &ety.doc);
@@ -440,7 +443,7 @@ fn write_opaque_type<'a>(out: &mut OutFile<'a>, ety: &'a ExternType, methods: &[
 
 fn write_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
     out.set_namespace(&enm.name.namespace);
-    let guard = format!("CXXBRIDGE1_ENUM_{}", enm.name.to_symbol());
+    let guard = Guard::new(out, "CXXBRIDGE1_ENUM", &enm.name);
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
     write_doc(out, "", &enm.doc);
@@ -546,6 +549,7 @@ fn write_struct_operator_decls<'a>(out: &mut OutFile<'a>, strct: &'a Struct) {
     out.begin_block(Block::ExternC);
 
     if derive::contains(&strct.derives, Trait::PartialEq) {
+        out.pragma.dollar_in_identifier = true;
         let link_name = mangle::operator(&strct.name, "eq");
         writeln!(
             out,
@@ -564,6 +568,7 @@ fn write_struct_operator_decls<'a>(out: &mut OutFile<'a>, strct: &'a Struct) {
     }
 
     if derive::contains(&strct.derives, Trait::PartialOrd) {
+        out.pragma.dollar_in_identifier = true;
         let link_name = mangle::operator(&strct.name, "lt");
         writeln!(
             out,
@@ -597,6 +602,7 @@ fn write_struct_operator_decls<'a>(out: &mut OutFile<'a>, strct: &'a Struct) {
 
     if derive::contains(&strct.derives, Trait::Hash) {
         out.include.cstddef = true;
+        out.pragma.dollar_in_identifier = true;
         let link_name = mangle::operator(&strct.name, "hash");
         writeln!(
             out,
@@ -616,6 +622,8 @@ fn write_struct_operators<'a>(out: &mut OutFile<'a>, strct: &'a Struct) {
     out.set_namespace(&strct.name.namespace);
 
     if derive::contains(&strct.derives, Trait::PartialEq) {
+        out.pragma.dollar_in_identifier = true;
+
         out.next_section();
         writeln!(
             out,
@@ -642,6 +650,8 @@ fn write_struct_operators<'a>(out: &mut OutFile<'a>, strct: &'a Struct) {
     }
 
     if derive::contains(&strct.derives, Trait::PartialOrd) {
+        out.pragma.dollar_in_identifier = true;
+
         out.next_section();
         writeln!(
             out,
@@ -695,6 +705,7 @@ fn write_struct_operators<'a>(out: &mut OutFile<'a>, strct: &'a Struct) {
 fn write_opaque_type_layout_decls<'a>(out: &mut OutFile<'a>, ety: &'a ExternType) {
     out.set_namespace(&ety.name.namespace);
     out.begin_block(Block::ExternC);
+    out.pragma.dollar_in_identifier = true;
 
     let link_name = mangle::operator(&ety.name, "sizeof");
     writeln!(out, "::std::size_t {}() noexcept;", link_name);
@@ -711,6 +722,7 @@ fn write_opaque_type_layout<'a>(out: &mut OutFile<'a>, ety: &'a ExternType) {
     }
 
     out.set_namespace(&ety.name.namespace);
+    out.pragma.dollar_in_identifier = true;
 
     out.next_section();
     let link_name = mangle::operator(&ety.name, "sizeof");
@@ -740,6 +752,7 @@ fn begin_function_definition(out: &mut OutFile) {
 }
 
 fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
+    out.pragma.dollar_in_identifier = true;
     out.next_section();
     out.set_namespace(&efn.name.namespace);
     out.begin_block(Block::ExternC);
@@ -952,6 +965,7 @@ fn write_rust_function_decl_impl(
     indirect_call: bool,
 ) {
     out.next_section();
+    out.pragma.dollar_in_identifier = true;
     if sig.throws {
         out.builtin.ptr_len = true;
         write!(out, "::rust::repr::PtrLen ");
@@ -1086,6 +1100,7 @@ fn write_rust_function_shim_impl(
         // We've already defined this inside the struct.
         return;
     }
+    out.pragma.dollar_in_identifier = true;
     if matches!(sig.kind, FnKind::Free) {
         // Member functions already documented at their declaration.
         write_doc(out, "", doc);
@@ -1511,6 +1526,8 @@ fn write_rust_box_extern(out: &mut OutFile, key: &NamedImplKey) {
     let inner = resolve.name.to_fully_qualified();
     let instance = resolve.name.to_symbol();
 
+    out.pragma.dollar_in_identifier = true;
+
     writeln!(
         out,
         "{} *cxxbridge1$box${}$alloc() noexcept;",
@@ -1534,6 +1551,7 @@ fn write_rust_vec_extern(out: &mut OutFile, key: &NamedImplKey) {
     let instance = element.to_mangled(out.types);
 
     out.include.cstddef = true;
+    out.pragma.dollar_in_identifier = true;
 
     writeln!(
         out,
@@ -1582,6 +1600,8 @@ fn write_rust_box_impl(out: &mut OutFile, key: &NamedImplKey) {
     let inner = resolve.name.to_fully_qualified();
     let instance = resolve.name.to_symbol();
 
+    out.pragma.dollar_in_identifier = true;
+
     writeln!(out, "template <>");
     begin_function_definition(out);
     writeln!(
@@ -1615,6 +1635,7 @@ fn write_rust_vec_impl(out: &mut OutFile, key: &NamedImplKey) {
     let instance = element.to_mangled(out.types);
 
     out.include.cstddef = true;
+    out.pragma.dollar_in_identifier = true;
 
     writeln!(out, "template <>");
     begin_function_definition(out);
@@ -1706,6 +1727,8 @@ fn write_unique_ptr(out: &mut OutFile, key: &NamedImplKey) {
 fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     out.include.new = true;
     out.include.utility = true;
+    out.pragma.dollar_in_identifier = true;
+
     let inner = ty.to_typename(out.types);
     let instance = ty.to_mangled(out.types);
 
@@ -1721,7 +1744,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     out.builtin.is_complete = true;
     writeln!(
         out,
-        "static_assert(::rust::detail::is_complete<{}>::value, \"definition of `{}` is required\");",
+        "static_assert(::rust::detail::is_complete<::std::remove_extent<{}>::type>::value, \"definition of `{}` is required\");",
         inner, inner,
     );
     writeln!(
@@ -1765,7 +1788,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$unique_ptr${}$raw(::std::unique_ptr<{}> *ptr, {} *raw) noexcept {{",
+        "void cxxbridge1$unique_ptr${}$raw(::std::unique_ptr<{}> *ptr, ::std::unique_ptr<{}>::pointer raw) noexcept {{",
         instance, inner, inner,
     );
     writeln!(out, "  ::new (ptr) ::std::unique_ptr<{}>(raw);", inner);
@@ -1774,7 +1797,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     begin_function_definition(out);
     writeln!(
         out,
-        "{} const *cxxbridge1$unique_ptr${}$get(::std::unique_ptr<{}> const &ptr) noexcept {{",
+        "::std::unique_ptr<{}>::element_type const *cxxbridge1$unique_ptr${}$get(::std::unique_ptr<{}> const &ptr) noexcept {{",
         inner, instance, inner,
     );
     writeln!(out, "  return ptr.get();");
@@ -1783,7 +1806,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     begin_function_definition(out);
     writeln!(
         out,
-        "{} *cxxbridge1$unique_ptr${}$release(::std::unique_ptr<{}> &ptr) noexcept {{",
+        "::std::unique_ptr<{}>::pointer cxxbridge1$unique_ptr${}$release(::std::unique_ptr<{}> &ptr) noexcept {{",
         inner, instance, inner,
     );
     writeln!(out, "  return ptr.release();");
@@ -1812,6 +1835,7 @@ fn write_shared_ptr(out: &mut OutFile, key: &NamedImplKey) {
 
     out.include.new = true;
     out.include.utility = true;
+    out.pragma.dollar_in_identifier = true;
 
     // Some aliases are to opaque types; some are to trivial types. We can't
     // know at code generation time, so we generate both C++ and Rust side
@@ -1857,13 +1881,19 @@ fn write_shared_ptr(out: &mut OutFile, key: &NamedImplKey) {
         writeln!(out, "}}");
     }
 
+    out.builtin.shared_ptr = true;
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$shared_ptr${}$raw(::std::shared_ptr<{}> *ptr, {} *raw) noexcept {{",
+        "bool cxxbridge1$shared_ptr${}$raw(::std::shared_ptr<{}> *ptr, ::std::shared_ptr<{}>::element_type *raw) noexcept {{",
         instance, inner, inner,
     );
-    writeln!(out, "  ::new (ptr) ::std::shared_ptr<{}>(raw);", inner);
+    writeln!(
+        out,
+        "  ::new (ptr) ::rust::shared_ptr_if_destructible<{}>(raw);",
+        inner,
+    );
+    writeln!(out, "  return ::rust::is_destructible<{}>::value;", inner);
     writeln!(out, "}}");
 
     begin_function_definition(out);
@@ -1878,7 +1908,7 @@ fn write_shared_ptr(out: &mut OutFile, key: &NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "{} const *cxxbridge1$shared_ptr${}$get(::std::shared_ptr<{}> const &self) noexcept {{",
+        "::std::shared_ptr<{}>::element_type const *cxxbridge1$shared_ptr${}$get(::std::shared_ptr<{}> const &self) noexcept {{",
         inner, instance, inner,
     );
     writeln!(out, "  return self.get();");
@@ -1901,6 +1931,7 @@ fn write_weak_ptr(out: &mut OutFile, key: &NamedImplKey) {
 
     out.include.new = true;
     out.include.utility = true;
+    out.pragma.dollar_in_identifier = true;
 
     writeln!(
         out,
@@ -1971,6 +2002,7 @@ fn write_cxx_vector(out: &mut OutFile, key: &NamedImplKey) {
     out.include.cstddef = true;
     out.include.utility = true;
     out.builtin.destroy = true;
+    out.pragma.dollar_in_identifier = true;
 
     begin_function_definition(out);
     writeln!(

@@ -1,6 +1,8 @@
 use crate::gen::block::Block;
 use crate::gen::ifndef;
+use crate::gen::include::Includes;
 use crate::gen::out::{Content, OutFile};
+use crate::gen::pragma::Pragma;
 
 #[derive(Default, PartialEq)]
 pub(crate) struct Builtins<'a> {
@@ -32,6 +34,7 @@ pub(crate) struct Builtins<'a> {
     pub is_complete: bool,
     pub destroy: bool,
     pub deleter_if: bool,
+    pub shared_ptr: bool,
     pub alignmax: bool,
     pub content: Content<'a>,
 }
@@ -48,6 +51,7 @@ pub(super) fn write(out: &mut OutFile) {
     }
 
     let include = &mut out.include;
+    let pragma = &mut out.pragma;
     let builtin = &mut out.builtin;
     let out = &mut builtin.content;
 
@@ -131,6 +135,12 @@ pub(super) fn write(out: &mut OutFile) {
         builtin.is_complete = true;
     }
 
+    if builtin.shared_ptr {
+        include.memory = true;
+        include.type_traits = true;
+        builtin.is_complete = true;
+    }
+
     if builtin.is_complete {
         include.cstddef = true;
         include.type_traits = true;
@@ -197,140 +207,61 @@ pub(super) fn write(out: &mut OutFile) {
         ifndef::write(out, builtin.relocatable, "CXXBRIDGE1_RELOCATABLE");
     }
 
+    out.end_block(Block::InlineNamespace("cxxbridge1"));
+    out.end_block(Block::Namespace("rust"));
+
+    macro_rules! write_builtin {
+        ($path:literal) => {
+            write_builtin(out, include, pragma, include_str!($path));
+        };
+    }
+
+    // namespace rust::cxxbridge1
+
     if builtin.rust_str_new_unchecked {
-        out.next_section();
-        writeln!(out, "class Str::uninit {{}};");
-        writeln!(out, "inline Str::Str(uninit) noexcept {{}}");
+        write_builtin!("builtin/rust_str_uninit.h");
     }
 
     if builtin.rust_slice_new {
-        out.next_section();
-        writeln!(out, "template <typename T>");
-        writeln!(out, "class Slice<T>::uninit {{}};");
-        writeln!(out, "template <typename T>");
-        writeln!(out, "inline Slice<T>::Slice(uninit) noexcept {{}}");
+        write_builtin!("builtin/rust_slice_uninit.h");
     }
 
-    out.begin_block(Block::Namespace("repr"));
+    // namespace rust::cxxbridge1::repr
 
     if builtin.repr_fat {
-        include.array = true;
-        include.cstdint = true;
-        out.next_section();
-        writeln!(out, "using Fat = ::std::array<::std::uintptr_t, 2>;");
+        write_builtin!("builtin/repr_fat.h");
     }
 
     if builtin.ptr_len {
-        include.cstddef = true;
-        out.next_section();
-        writeln!(out, "struct PtrLen final {{");
-        writeln!(out, "  void *ptr;");
-        writeln!(out, "  ::std::size_t len;");
-        writeln!(out, "}};");
+        write_builtin!("builtin/ptr_len.h");
     }
 
     if builtin.alignmax {
-        include.cstddef = true;
-        out.next_section();
-        writeln!(out, "#ifndef CXXBRIDGE_ALIGNMAX");
-        writeln!(out, "#define CXXBRIDGE_ALIGNMAX");
-        // This would be cleaner as the following, but GCC does not implement
-        // that correctly. <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=64236>
-        //
-        //     template <::std::size_t... N>
-        //     class alignas(N...) alignmax {};
-        //
-        // Next, it could be this, but MSVC does not implement this correctly.
-        //
-        //     template <::std::size_t... N>
-        //     class alignmax { alignas(N...) union {} members; };
-        //
-        writeln!(out, "template <::std::size_t N>");
-        writeln!(out, "class alignas(N) aligned {{}};");
-        writeln!(out, "template <typename... T>");
-        writeln!(
-            out,
-            "class alignmax_t {{ alignas(T...) union {{}} members; }};",
-        );
-        writeln!(out, "template <::std::size_t... N>");
-        writeln!(out, "using alignmax = alignmax_t<aligned<N>...>;");
-        writeln!(out, "#endif // CXXBRIDGE_ALIGNMAX");
+        write_builtin!("builtin/alignmax.h");
     }
 
-    out.end_block(Block::Namespace("repr"));
-
-    out.begin_block(Block::Namespace("detail"));
+    // namespace rust::cxxbridge1::detail
 
     if builtin.maybe_uninit {
-        include.cstddef = true;
-        include.new = true;
-        out.next_section();
-        writeln!(out, "template <typename T, typename = void *>");
-        writeln!(out, "struct operator_new {{");
-        writeln!(
-            out,
-            "  void *operator()(::std::size_t sz) {{ return ::operator new(sz); }}",
-        );
-        writeln!(out, "}};");
-        out.next_section();
-        writeln!(out, "template <typename T>");
-        writeln!(
-            out,
-            "struct operator_new<T, decltype(T::operator new(sizeof(T)))> {{",
-        );
-        writeln!(
-            out,
-            "  void *operator()(::std::size_t sz) {{ return T::operator new(sz); }}",
-        );
-        writeln!(out, "}};");
+        write_builtin!("builtin/maybe_uninit_detail.h");
     }
 
     if builtin.trycatch {
-        include.string = true;
-        out.next_section();
-        writeln!(out, "class Fail final {{");
-        writeln!(out, "  ::rust::repr::PtrLen &throw$;");
-        writeln!(out, "public:");
-        writeln!(
-            out,
-            "  Fail(::rust::repr::PtrLen &throw$) noexcept : throw$(throw$) {{}}",
-        );
-        writeln!(out, "  void operator()(char const *) noexcept;");
-        writeln!(out, "  void operator()(std::string const &) noexcept;");
-        writeln!(out, "}};");
+        write_builtin!("builtin/trycatch_detail.h");
     }
 
-    out.end_block(Block::Namespace("detail"));
+    // namespace rust::cxxbridge1
 
     if builtin.manually_drop {
-        out.next_section();
-        include.utility = true;
-        writeln!(out, "template <typename T>");
-        writeln!(out, "union ManuallyDrop {{");
-        writeln!(out, "  T value;");
-        writeln!(
-            out,
-            "  ManuallyDrop(T &&value) : value(::std::move(value)) {{}}",
-        );
-        writeln!(out, "  ~ManuallyDrop() {{}}");
-        writeln!(out, "}};");
+        write_builtin!("builtin/manually_drop.h");
     }
 
     if builtin.maybe_uninit {
-        include.cstddef = true;
-        out.next_section();
-        writeln!(out, "template <typename T>");
-        writeln!(out, "union MaybeUninit {{");
-        writeln!(out, "  T value;");
-        writeln!(
-            out,
-            "  void *operator new(::std::size_t sz) {{ return detail::operator_new<T>{{}}(sz); }}",
-        );
-        writeln!(out, "  MaybeUninit() {{}}");
-        writeln!(out, "  ~MaybeUninit() {{}}");
-        writeln!(out, "}};");
+        write_builtin!("builtin/maybe_uninit.h");
     }
 
+    out.begin_block(Block::Namespace("rust"));
+    out.begin_block(Block::InlineNamespace("cxxbridge1"));
     out.begin_block(Block::AnonymousNamespace);
 
     if builtin.rust_str_new_unchecked || builtin.rust_str_repr {
@@ -376,78 +307,158 @@ pub(super) fn write(out: &mut OutFile) {
         writeln!(out, "}};");
     }
 
+    out.end_block(Block::AnonymousNamespace);
+    out.end_block(Block::InlineNamespace("cxxbridge1"));
+    out.end_block(Block::Namespace("rust"));
+
+    // namespace rust::cxxbridge1::(anonymous)
+
     if builtin.rust_error {
-        out.next_section();
-        writeln!(out, "template <>");
-        writeln!(out, "class impl<Error> final {{");
-        writeln!(out, "public:");
-        writeln!(out, "  static Error error(repr::PtrLen repr) noexcept {{");
-        writeln!(out, "    Error error;");
-        writeln!(out, "    error.msg = static_cast<char const *>(repr.ptr);");
-        writeln!(out, "    error.len = repr.len;");
-        writeln!(out, "    return error;");
-        writeln!(out, "  }}");
-        writeln!(out, "}};");
+        write_builtin!("builtin/rust_error.h");
     }
 
     if builtin.destroy {
-        out.next_section();
-        writeln!(out, "template <typename T>");
-        writeln!(out, "void destroy(T *ptr) {{");
-        writeln!(out, "  ptr->~T();");
-        writeln!(out, "}}");
+        write_builtin!("builtin/destroy.h");
     }
 
     if builtin.deleter_if {
-        out.next_section();
-        writeln!(out, "template <bool> struct deleter_if {{");
-        writeln!(out, "  template <typename T> void operator()(T *) {{}}");
-        writeln!(out, "}};");
-        out.next_section();
-        writeln!(out, "template <> struct deleter_if<true> {{");
-        writeln!(
-            out,
-            "  template <typename T> void operator()(T *ptr) {{ ptr->~T(); }}",
-        );
-        writeln!(out, "}};");
+        write_builtin!("builtin/deleter_if.h");
+    }
+
+    if builtin.shared_ptr {
+        write_builtin!("builtin/shared_ptr.h");
     }
 
     if builtin.relocatable_or_array {
-        out.next_section();
-        writeln!(out, "template <typename T>");
-        writeln!(out, "struct IsRelocatableOrArray : IsRelocatable<T> {{}};");
-        writeln!(out, "template <typename T, ::std::size_t N>");
-        writeln!(
-            out,
-            "struct IsRelocatableOrArray<T[N]> : IsRelocatableOrArray<T> {{}};",
-        );
+        write_builtin!("builtin/relocatable_or_array.h");
     }
 
-    out.end_block(Block::AnonymousNamespace);
-    out.end_block(Block::InlineNamespace("cxxbridge1"));
+    // namespace rust::behavior
 
     if builtin.trycatch {
-        out.begin_block(Block::Namespace("behavior"));
-        include.exception = true;
-        include.type_traits = true;
-        include.utility = true;
-        writeln!(out, "class missing {{}};");
-        writeln!(out, "missing trycatch(...);");
-        writeln!(out);
-        writeln!(out, "template <typename Try, typename Fail>");
-        writeln!(out, "static typename ::std::enable_if<");
-        writeln!(
-            out,
-            "    ::std::is_same<decltype(trycatch(::std::declval<Try>(), ::std::declval<Fail>())),",
-        );
-        writeln!(out, "                 missing>::value>::type");
-        writeln!(out, "trycatch(Try &&func, Fail &&fail) noexcept try {{");
-        writeln!(out, "  func();");
-        writeln!(out, "}} catch (::std::exception const &e) {{");
-        writeln!(out, "  fail(e.what());");
-        writeln!(out, "}}");
-        out.end_block(Block::Namespace("behavior"));
+        write_builtin!("builtin/trycatch.h");
+    }
+}
+
+fn write_builtin<'a>(
+    out: &mut Content<'a>,
+    include: &mut Includes,
+    pragma: &mut Pragma<'a>,
+    src: &'a str,
+) {
+    let mut namespace = Vec::new();
+    let mut ready = false;
+
+    for line in src.lines() {
+        if line == "#pragma once" || line.starts_with("#include \".") {
+            continue;
+        } else if let Some(rest) = line.strip_prefix("#include <") {
+            let Includes {
+                custom: _,
+                algorithm,
+                array,
+                cassert,
+                cstddef,
+                cstdint,
+                cstring,
+                exception,
+                functional,
+                initializer_list,
+                iterator,
+                memory,
+                new,
+                ranges,
+                stdexcept,
+                string,
+                string_view,
+                type_traits,
+                utility,
+                vector,
+                basetsd: _,
+                sys_types: _,
+                content: _,
+            } = include;
+            match rest.strip_suffix(">").unwrap() {
+                "algorithm" => *algorithm = true,
+                "array" => *array = true,
+                "cassert" => *cassert = true,
+                "cstddef" => *cstddef = true,
+                "cstdint" => *cstdint = true,
+                "cstring" => *cstring = true,
+                "exception" => *exception = true,
+                "functional" => *functional = true,
+                "initializer_list" => *initializer_list = true,
+                "iterator" => *iterator = true,
+                "memory" => *memory = true,
+                "new" => *new = true,
+                "ranges" => *ranges = true,
+                "stdexcept" => *stdexcept = true,
+                "string" => *string = true,
+                "string_view" => *string_view = true,
+                "type_traits" => *type_traits = true,
+                "utility" => *utility = true,
+                "vector" => *vector = true,
+                _ => unimplemented!("{}", line),
+            }
+        } else if let Some(rest) = line.strip_prefix("#pragma GCC diagnostic ignored \"") {
+            let diagnostic = rest.strip_suffix('"').unwrap();
+            pragma.gnu_diagnostic_ignore.insert(diagnostic);
+            ready = false;
+        } else if let Some(rest) = line.strip_prefix("#pragma clang diagnostic ignored \"") {
+            let diagnostic = rest.strip_suffix('"').unwrap();
+            pragma.clang_diagnostic_ignore.insert(diagnostic);
+            ready = false;
+        } else if line == "namespace {" {
+            namespace.push(Block::AnonymousNamespace);
+            out.begin_block(Block::AnonymousNamespace);
+        } else if let Some(rest) = line.strip_prefix("namespace ") {
+            let name = rest.strip_suffix(" {").unwrap();
+            namespace.push(Block::Namespace(name));
+            out.begin_block(Block::Namespace(name));
+        } else if let Some(rest) = line.strip_prefix("inline namespace ") {
+            let name = rest.strip_suffix(" {").unwrap();
+            namespace.push(Block::InlineNamespace(name));
+            out.begin_block(Block::InlineNamespace(name));
+        } else if line.starts_with("} // namespace") {
+            out.end_block(namespace.pop().unwrap());
+        } else if line.is_empty() && !ready {
+            out.next_section();
+            ready = true;
+        } else if !line.trim_start_matches(' ').starts_with("//") {
+            assert!(ready);
+            writeln!(out, "{}", line);
+        }
     }
 
-    out.end_block(Block::Namespace("rust"));
+    assert!(namespace.is_empty());
+    assert!(ready);
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::gen::include::Includes;
+    use crate::gen::out::Content;
+    use crate::gen::pragma::Pragma;
+    use std::fs;
+
+    #[test]
+    fn test_write_builtin() {
+        let mut builtin_src = Vec::new();
+
+        for entry in fs::read_dir("src/gen/builtin").unwrap() {
+            let path = entry.unwrap().path();
+            let src = fs::read_to_string(path).unwrap();
+            builtin_src.push(src);
+        }
+
+        assert_ne!(builtin_src.len(), 0);
+        builtin_src.sort();
+
+        let mut content = Content::new();
+        let mut include = Includes::new();
+        let mut pragma = Pragma::new();
+        for src in &builtin_src {
+            super::write_builtin(&mut content, &mut include, &mut pragma, src);
+        }
+    }
 }

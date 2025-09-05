@@ -275,3 +275,9 @@ outputs, and feasible to derive the secret values from indirect observation of
 hashes, such as through timing attacks or hash table iteration. Once an attacker
 knows the secret values, they can once again create infinite hash collisions
 with ease.
+
+
+## Acknowledgements
+
+We thank Liam Gray for their suggestions on improving string hashing
+performance.

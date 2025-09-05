@@ -1,3 +1,4 @@
+use crate::syntax::attrs::OtherAttrs;
 use crate::syntax::instantiate::NamedImplKey;
 use crate::syntax::{Lifetimes, NamedType, Pair, Types};
 use proc_macro2::Ident;
@@ -5,6 +6,8 @@ use proc_macro2::Ident;
 #[derive(Copy, Clone)]
 pub(crate) struct Resolution<'a> {
     pub name: &'a Pair,
+    #[allow(dead_code)] // only used by cxxbridge-macro, not cxx-build
+    pub attrs: &'a OtherAttrs,
     pub generics: &'a Lifetimes,
 }
 

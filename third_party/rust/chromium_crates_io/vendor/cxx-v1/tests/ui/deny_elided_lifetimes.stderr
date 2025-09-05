@@ -18,7 +18,7 @@ error: hiding a lifetime that's elided elsewhere is confusing
   --> tests/ui/deny_elided_lifetimes.rs:21:31
    |
 21 |         fn lifetime_elided(s: &i32) -> UniquePtr<Cpp>;
-   |                               ^^^^               --- the same lifetime is hidden here
+   |                               ^^^^               ^^^ the same lifetime is hidden here
    |                               |
    |                               the lifetime is elided here
    |

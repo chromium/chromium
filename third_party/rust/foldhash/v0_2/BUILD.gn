@@ -10,16 +10,16 @@ import("//build/rust/cargo_crate.gni")
 
 cargo_crate("lib") {
   crate_name = "foldhash"
-  epoch = "0.1"
+  epoch = "0.2"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_2/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/convenience.rs",
-    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/fast.rs",
-    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/quality.rs",
-    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_1/src/seed.rs",
+    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_2/src/convenience.rs",
+    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_2/src/fast.rs",
+    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_2/src/quality.rs",
+    "//third_party/rust/chromium_crates_io/vendor/foldhash-v0_2/src/seed.rs",
   ]
   inputs = []
 
@@ -30,7 +30,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A fast, non-cryptographic, minimally DoS-resistant hashing algorithm."
   cargo_pkg_repository = "https://github.com/orlp/foldhash"
-  cargo_pkg_version = "0.1.5"
+  cargo_pkg_version = "0.2.0"
 
   allow_unsafe = true
 

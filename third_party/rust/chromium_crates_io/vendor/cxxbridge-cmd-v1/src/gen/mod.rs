@@ -8,12 +8,14 @@ mod check;
 pub(super) mod error;
 mod file;
 pub(super) mod fs;
+mod guard;
 mod ifndef;
 pub(super) mod include;
 mod names;
 mod namespace;
 mod nested;
 pub(super) mod out;
+mod pragma;
 mod write;
 
 use self::cfg::UnsupportedCfgEvaluator;

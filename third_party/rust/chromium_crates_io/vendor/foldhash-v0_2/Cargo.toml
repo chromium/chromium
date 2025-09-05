@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.60"
 name = "foldhash"
-version = "0.1.5"
+version = "0.2.0"
 authors = ["Orson Peters <orsonpeters@gmail.com>"]
 build = false
 exclude = [
@@ -42,6 +42,7 @@ repository = "https://github.com/orlp/foldhash"
 
 [features]
 default = ["std"]
+nightly = []
 std = []
 
 [lib]
@@ -64,10 +65,13 @@ version = "0.5"
 version = "0.2"
 
 [dev-dependencies.hashbrown]
-version = "0.14"
+version = "0.15"
 
 [dev-dependencies.rand]
 version = "0.8"
+
+[dev-dependencies.rapidhash]
+version = "3.1.0"
 
 [dev-dependencies.uuid]
 version = "1.8"

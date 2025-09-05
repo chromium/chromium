@@ -146,7 +146,7 @@ pub(crate) fn parse(cx: &mut Errors, attrs: Vec<Attribute>, mut parser: Parser) 
             match cfg::parse_attribute(&attr) {
                 Ok(cfg_expr) => {
                     if let Some(cfg) = &mut parser.cfg {
-                        cfg.merge(cfg_expr);
+                        cfg.merge_and(cfg_expr);
                         passthrough_attrs.push(attr);
                         continue;
                     }

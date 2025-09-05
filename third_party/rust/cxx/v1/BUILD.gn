@@ -54,13 +54,13 @@ cargo_crate("lib") {
   cargo_pkg_name = "cxx"
   cargo_pkg_description = "Safe interop between Rust and C++"
   cargo_pkg_repository = "https://github.com/dtolnay/cxx"
-  cargo_pkg_version = "1.0.168"
+  cargo_pkg_version = "1.0.175"
 
   allow_unsafe = true
 
   deps = [
     "//third_party/rust/cxxbridge_macro/v1:lib",
-    "//third_party/rust/foldhash/v0_1:lib",
+    "//third_party/rust/foldhash/v0_2:lib",
   ]
   build_deps = [ "//third_party/rust/cxxbridge_flags/v1:buildrs_support" ]
   features = [

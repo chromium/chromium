@@ -28,7 +28,7 @@ alias(
 rust_binary(
     name = "cxxbridge",
     srcs = glob(["gen/cmd/src/**/*.rs"]),
-    compile_data = ["gen/cmd/src/gen/include/cxx.h"],
+    compile_data = glob(["gen/cmd/src/gen/**/*.h"]),
     edition = "2021",
     deps = [
         "@crates.io//:clap",
@@ -73,7 +73,7 @@ rust_proc_macro(
 rust_library(
     name = "cxx-build",
     srcs = glob(["gen/build/src/**/*.rs"]),
-    compile_data = ["gen/build/src/gen/include/cxx.h"],
+    compile_data = glob(["gen/build/src/gen/**/*.h"]),
     edition = "2021",
     deps = [
         "@crates.io//:cc",
@@ -89,7 +89,7 @@ rust_library(
 rust_library(
     name = "cxx-gen",
     srcs = glob(["gen/lib/src/**/*.rs"]),
-    compile_data = ["gen/lib/src/gen/include/cxx.h"],
+    compile_data = glob(["gen/lib/src/gen/**/*.h"]),
     edition = "2021",
     visibility = ["//visibility:public"],
     deps = [

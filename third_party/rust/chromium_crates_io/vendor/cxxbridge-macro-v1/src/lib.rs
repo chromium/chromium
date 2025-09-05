@@ -6,6 +6,7 @@
     clippy::inherent_to_string,
     clippy::items_after_statements,
     clippy::match_bool,
+    clippy::match_like_matches_macro,
     clippy::match_same_arms,
     clippy::needless_lifetimes,
     clippy::needless_pass_by_value,
@@ -17,10 +18,12 @@
     clippy::too_many_arguments,
     clippy::too_many_lines,
     clippy::toplevel_ref_arg,
-    clippy::uninlined_format_args
+    clippy::uninlined_format_args,
+    clippy::wrong_self_convention
 )]
 #![allow(unknown_lints, mismatched_lifetime_syntaxes)]
 
+mod cfg;
 mod derive;
 mod expand;
 mod generics;

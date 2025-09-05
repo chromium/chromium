@@ -1,12 +1,22 @@
 // These constants may end up unused depending on platform support.
 #[allow(unused)]
-use crate::{ARBITRARY1, ARBITRARY9};
+use crate::{ARBITRARY1, ARBITRARY5};
 
-use super::{folded_multiply, ARBITRARY2, ARBITRARY4, ARBITRARY5, ARBITRARY6, ARBITRARY7};
+use super::{
+    folded_multiply, ARBITRARY10, ARBITRARY11, ARBITRARY2, ARBITRARY6, ARBITRARY7, ARBITRARY8,
+    ARBITRARY9,
+};
 
 /// Used for FixedState, and RandomState if atomics for dynamic init are unavailable.
 const FIXED_GLOBAL_SEED: SharedSeed = SharedSeed {
-    seeds: [ARBITRARY4, ARBITRARY5, ARBITRARY6, ARBITRARY7],
+    seeds: [
+        ARBITRARY6,
+        ARBITRARY7,
+        ARBITRARY8,
+        ARBITRARY9,
+        ARBITRARY10,
+        ARBITRARY11,
+    ],
 };
 
 pub(crate) fn gen_per_hasher_seed() -> u64 {
@@ -66,7 +76,7 @@ pub(crate) fn gen_per_hasher_seed() -> u64 {
 /// and [`SeedableRandomState::with_seed`](crate::fast::SeedableRandomState::with_seed).
 #[derive(Clone, Debug)]
 pub struct SharedSeed {
-    pub(crate) seeds: [u64; 4],
+    pub(crate) seeds: [u64; 6],
 }
 
 impl SharedSeed {
@@ -92,7 +102,7 @@ impl SharedSeed {
     pub const fn from_u64(seed: u64) -> Self {
         macro_rules! mix {
             ($x: expr) => {
-                folded_multiply($x, ARBITRARY9)
+                folded_multiply($x, ARBITRARY5)
             };
         }
 
@@ -100,6 +110,8 @@ impl SharedSeed {
         let seed_b = mix!(mix!(mix!(seed_a)));
         let seed_c = mix!(mix!(mix!(seed_b)));
         let seed_d = mix!(mix!(mix!(seed_c)));
+        let seed_e = mix!(mix!(mix!(seed_d)));
+        let seed_f = mix!(mix!(mix!(seed_e)));
 
         // Zeroes form a weak-point for the multiply-mix, and zeroes tend to be
         // a common input. So we want our global seeds that are XOR'ed with the
@@ -112,6 +124,8 @@ impl SharedSeed {
                 seed_b | FORCED_ONES,
                 seed_c | FORCED_ONES,
                 seed_d | FORCED_ONES,
+                seed_e | FORCED_ONES,
+                seed_f | FORCED_ONES,
             ],
         }
     }
@@ -124,7 +138,7 @@ mod global {
     use core::sync::atomic::{AtomicU8, Ordering};
 
     fn generate_global_seed() -> SharedSeed {
-        let mix = |seed: u64, x: u64| folded_multiply(seed ^ x, ARBITRARY9);
+        let mix = |seed: u64, x: u64| folded_multiply(seed ^ x, ARBITRARY5);
 
         // Use address space layout randomization as our main randomness source.
         // This isn't great, but we don't advertise HashDoS resistance in the first
@@ -180,7 +194,7 @@ mod global {
 
     static GLOBAL_SEED_STORAGE: GlobalSeedStorage = GlobalSeedStorage {
         state: AtomicU8::new(UNINIT),
-        seed: UnsafeCell::new(SharedSeed { seeds: [0; 4] }),
+        seed: UnsafeCell::new(SharedSeed { seeds: [0; 6] }),
     };
 
     /// An object representing an initialized global seed.

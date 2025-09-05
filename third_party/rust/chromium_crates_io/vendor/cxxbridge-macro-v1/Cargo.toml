@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.73"
 name = "cxxbridge-macro"
-version = "1.0.168"
+version = "1.0.175"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = [
@@ -48,20 +48,8 @@ name = "cxxbridge_macro"
 path = "src/lib.rs"
 proc-macro = true
 
-[dependencies.clang-ast]
-version = "0.1.18"
-optional = true
-
-[dependencies.flate2]
-version = "1.0.26"
-optional = true
-
 [dependencies.indexmap]
 version = "2.9.0"
-
-[dependencies.memmap]
-version = "0.7"
-optional = true
 
 [dependencies.proc-macro2]
 version = "1.0.74"
@@ -71,18 +59,6 @@ version = "1.0.35"
 
 [dependencies.rustversion]
 version = "1"
-
-[dependencies.serde]
-version = "1.0.166"
-optional = true
-
-[dependencies.serde_derive]
-version = "1.0.166"
-optional = true
-
-[dependencies.serde_json]
-version = "1.0.100"
-optional = true
 
 [dependencies.syn]
 version = "2.0.46"

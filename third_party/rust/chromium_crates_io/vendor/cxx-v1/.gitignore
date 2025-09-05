@@ -1,3 +1,4 @@
+/.buckconfig.d/
 /.buckconfig.local
 /.buckd
 /bazel-bin

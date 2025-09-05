@@ -188,8 +188,8 @@ impl CxxString {
     /// Ensures that this string's capacity is at least `additional` bytes
     /// larger than its length.
     ///
-    /// The capacity may be increased by more than `additional` bytes if it
-    /// chooses, to amortize the cost of frequent reallocations.
+    /// The capacity may be increased by more than `additional` bytes if the
+    /// implementation chooses, to amortize the cost of frequent reallocations.
     ///
     /// **The meaning of the argument is not the same as
     /// [std::string::reserve][reserve] in C++.** The C++ standard library and

@@ -3,9 +3,9 @@ use proc_macro2::Ident;
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub(crate) enum Block<'a> {
     AnonymousNamespace,
-    Namespace(&'static str),
+    Namespace(&'a str),
     UserDefinedNamespace(&'a Ident),
-    InlineNamespace(&'static str),
+    InlineNamespace(&'a str),
     ExternC,
 }
 
