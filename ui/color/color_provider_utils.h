@@ -116,6 +116,13 @@ void COMPONENT_EXPORT(COLOR)
 void COMPONENT_EXPORT(COLOR)
     CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer);
 
+// Completes default color definitions for the RendererColorIds that are web
+// native.
+void COMPONENT_EXPORT(COLOR)
+    CompleteDefaultWebNativeRendererColorIdsDefinition(ui::ColorMixer& mixer,
+                                                       bool dark_mode,
+                                                       bool high_contrast);
+
 // Completes default color definitions for the RendererColorIds that are non
 // web native.
 void COMPONENT_EXPORT(COLOR)
