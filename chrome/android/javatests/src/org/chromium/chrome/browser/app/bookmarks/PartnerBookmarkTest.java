@@ -169,9 +169,9 @@ public class PartnerBookmarkTest {
         assertEquals(View.GONE, more2.getVisibility());
     }
 
-    // Disabled on android.emulator_12l_landscape - crbug.com/442769979.
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/443216305")
     public void testCannotSelectPartner() throws Exception {
         mBookmarkTestRule.openFolder(mBookmarkTestRule.getMobileFolder());
         View partner = mBookmarkManagerTestingDelegate.getBookmarkViewHolderByPosition(0).itemView;
