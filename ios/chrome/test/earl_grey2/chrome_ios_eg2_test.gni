@@ -132,6 +132,7 @@ template("chrome_ios_eg2_test_app_host") {
       "//ios/third_party/earl_grey2:app_framework+bundle",
       "//ios/third_party/gtx:gtx+bundle",
       ios_application_icons_target,
+      ios_application_icons_target_legacy,
     ]
 
     extra_substitutions = [
