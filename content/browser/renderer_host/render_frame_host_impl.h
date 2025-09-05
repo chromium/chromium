@@ -1535,9 +1535,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
    public:
     struct CookieChangeInfo {
       // The number of observed cookie modifications.
-      int64_t cookie_modification_count_ = 0;
-      // The number of observed HTTPOnly cookie modifications.
-      int64_t http_only_cookie_modification_count_ = 0;
+      int64_t cookie_modification_count = 0;
+      int64_t http_only_cookie_modification_count = 0;
+      // The number of observed cookie modifications that should be removed
+      // since we want to adjust the count by subtracting the number of cookie
+      // modification from the navigation itself.
+      int64_t cookie_modification_removing_count = 0;
+      int64_t http_only_cookie_modification_removing_count = 0;
     };
 
     CookieChangeListener(StoragePartition* storage_partition, GURL& url);
@@ -1557,9 +1561,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
         base::PassKey<content::NavigationRequest> navigation_request,
         uint64_t cookie_modification_count_delta,
         uint64_t http_only_cookie_modification_count_delta) {
-      cookie_change_info_.cookie_modification_count_ -=
+      cookie_change_info_.cookie_modification_removing_count +=
           cookie_modification_count_delta;
-      cookie_change_info_.http_only_cookie_modification_count_ -=
+      cookie_change_info_.http_only_cookie_modification_removing_count +=
           http_only_cookie_modification_count_delta;
     }
 

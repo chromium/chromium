@@ -20,7 +20,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -758,12 +760,34 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
           features::kDeviceBoundSessionTerminationEvictBackForwardCache)) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::
                   kCacheControlNoStoreDeviceBoundSessionTerminated);
-  } else if (render_frame_host->GetCookieChangeInfo()
-                 .http_only_cookie_modification_count_ > 0) {
+    return;
+  }
+
+  const RenderFrameHostImpl::CookieChangeListener::CookieChangeInfo&
+      cookie_change_info = render_frame_host->GetCookieChangeInfo();
+  const std::string kCookieCHangeInfoMetricName =
+      "BackForwardCache.CCNS.CookieChangeInfo.";
+  base::UmaHistogramCounts1000(
+      base::StrCat({kCookieCHangeInfoMetricName, "AllCookies"}),
+      cookie_change_info.cookie_modification_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat(
+          {kCookieCHangeInfoMetricName, "AllCookiesFromMainFrameNavigation"}),
+      cookie_change_info.cookie_modification_removing_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat({kCookieCHangeInfoMetricName, "HttpOnlyCookies"}),
+      cookie_change_info.http_only_cookie_modification_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat({kCookieCHangeInfoMetricName,
+                    "HttpOnlyCookiesFromMainFrameNavigation"}),
+      cookie_change_info.http_only_cookie_modification_removing_count);
+
+  if (cookie_change_info.http_only_cookie_modification_count >
+      cookie_change_info.http_only_cookie_modification_removing_count) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::
                   kCacheControlNoStoreHTTPOnlyCookieModified);
-  } else if (render_frame_host->GetCookieChangeInfo()
-                 .cookie_modification_count_ > 0) {
+  } else if (cookie_change_info.cookie_modification_count >
+             cookie_change_info.cookie_modification_removing_count) {
     // JavaScript cookies are modified but not HTTP cookies. Only restore based
     // on the experiment level.
     if (GetCacheControlNoStoreLevel() <=

@@ -277,6 +277,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BackForwardCache.CCNS.CookieChangeInfo.{CountType}"
+    units="count" expires_after="2026-01-20">
+  <owner>leimy@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Logs the {CountType} cookie change details for a page.
+
+    This is recorded during navigation away from any page configured with
+    Cache-Control: no-store, at the moment the browser checks if the page can be
+    stored in the BFCache.
+  </summary>
+  <token key="CountType">
+    <variant name="AllCookies"/>
+    <variant name="AllCookiesFromMainFrameNavigation"/>
+    <variant name="HttpOnlyCookies"/>
+    <variant name="HttpOnlyCookiesFromMainFrameNavigation"/>
+  </token>
+</histogram>
+
 <histogram name="BackForwardCache.EvictedAfterDocumentRestoredReason"
     enum="BackForwardCacheEvictedAfterDocumentRestoredReason"
     expires_after="2024-09-15">
