@@ -4458,12 +4458,14 @@ const FeatureEntry::FeatureVariation kHistoryOptInEducationalTipVariations[] = {
 const FeatureEntry::FeatureParam kStandardBoundSessionCredentialsStandard[] = {
     {"RequireOriginTrialTokens", "true"},
     {"RefreshQuota", "true"},
-    {"CheckSubdomainRegistration", "true"}};
+    {"CheckSubdomainRegistration", "true"},
+    {"CheckFederatedRegistration", "true"}};
 const FeatureEntry::FeatureParam
     kStandardBoundSessionCredentialsForDevelopers[] = {
         {"RequireOriginTrialTokens", "false"},
         {"RefreshQuota", "false"},
-        {"CheckSubdomainRegistration", "false"}};
+        {"CheckSubdomainRegistration", "false"},
+        {"CheckFederatedRegistration", "false"}};
 
 const FeatureEntry::FeatureVariation
     kStandardBoundSessionCredentialsVariations[] = {

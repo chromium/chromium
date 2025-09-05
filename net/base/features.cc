@@ -576,6 +576,11 @@ BASE_FEATURE_PARAM(bool,
                    &kDeviceBoundSessions,
                    "CheckSubdomainRegistration",
                    true);
+BASE_FEATURE_PARAM(bool,
+                   kDeviceBoundSessionsCheckFederatedRegistration,
+                   &kDeviceBoundSessions,
+                   "CheckFederatedRegistration",
+                   true);
 BASE_FEATURE(kDeviceBoundSessionsOriginTrialFeedback,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -215,6 +215,12 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     key_id_ = key_id;
     provider_url_ = provider_url;
 
+    if (!features::kDeviceBoundSessionsCheckFederatedRegistration.Get()) {
+      StartFetch(request_params.TakeChallenge(),
+                 request_params.TakeAuthorization());
+      return;
+    }
+
     GURL::Replacements replacements;
     replacements.SetPathStr("/.well-known/device-bound-sessions");
     GURL well_known_url = provider_url_.ReplaceComponents(replacements);
