@@ -31,6 +31,10 @@ inline constexpr std::string_view kAutofillAblationSeedPref =
 // AutofillAI.
 inline constexpr char kAutofillAiOptInStatus[] =
     "autofill.autofill_ai.opt_in_status";
+// Integer that is set to the last version where the Autofill AI deduping
+// routine was run. This routine will be run once per version.
+inline constexpr char kAutofillAiLastVersionDeduped[] =
+    "autofill.ai_last_version_deduped";
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Boolean that is true if BNPL on Autofill is enabled.
