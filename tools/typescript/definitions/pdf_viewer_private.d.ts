@@ -83,7 +83,7 @@ declare global {
       export function isAllowedLocalFileAccess(
           url: string, callback: (isAllowed: boolean) => void): void;
       // <if expr="enable_pdf_save_to_drive">
-      export function saveToDrive(saveRequestType: SaveRequestType): void;
+      export function saveToDrive(saveRequestType?: SaveRequestType): void;
       // </if>
       export function setPdfDocumentTitle(title: string): void;
       export function setPdfPluginAttributes(attributes: PdfPluginAttributes):

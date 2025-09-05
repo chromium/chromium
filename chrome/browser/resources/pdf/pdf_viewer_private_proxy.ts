@@ -18,7 +18,7 @@ export interface PdfViewerPrivateProxy {
   onSaveToDriveProgress:
       ChromeEvent<(url: string, progress: SaveToDriveProgress) => void>;
 
-  saveToDrive(saveRequestType: SaveRequestType): void;
+  saveToDrive(saveRequestType?: SaveRequestType): void;
   // </if>
   setPdfDocumentTitle(title: string): void;
 }
@@ -29,7 +29,7 @@ export class PdfViewerPrivateProxyImpl implements PdfViewerPrivateProxy {
       ChromeEvent<(url: string, progress: SaveToDriveProgress) => void> =
           chrome.pdfViewerPrivate.onSaveToDriveProgress;
 
-  saveToDrive(saveRequestType: SaveRequestType): void {
+  saveToDrive(saveRequestType?: SaveRequestType): void {
     chrome.pdfViewerPrivate.saveToDrive(saveRequestType);
   }
   // </if>

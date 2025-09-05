@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PDF_VIEWER_PRIVATE_PDF_VIEWER_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PDF_VIEWER_PRIVATE_PDF_VIEWER_PRIVATE_API_H_
 
+#include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "extensions/browser/extension_function.h"
+#include "pdf/buildflags.h"
 
 namespace extensions {
 
@@ -62,6 +64,14 @@ class PdfViewerPrivateSaveToDriveFunction : public ExtensionFunction {
 
   // Override from ExtensionFunction:
   ResponseAction Run() override;
+
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+ private:
+  ResponseAction RunSaveToDriveFlow(
+      api::pdf_viewer_private::SaveRequestType request_type);
+
+  ResponseAction StopSaveToDriveFlow();
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 };
 
 class PdfViewerPrivateSetPdfDocumentTitleFunction : public ExtensionFunction {

@@ -36,7 +36,7 @@ export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
     this.onSaveToDriveProgress.callListeners(this.streamUrl_, progress);
   }
 
-  saveToDrive(saveRequestType: chrome.pdfViewerPrivate.SaveRequestType): void {
+  saveToDrive(saveRequestType?: chrome.pdfViewerPrivate.SaveRequestType): void {
     this.methodCalled('saveToDrive', saveRequestType);
   }
 
@@ -162,6 +162,31 @@ const tests = [
     await microtasksFinished();
     chrome.test.assertFalse(!!bubble.shadowRoot.querySelector('cr-progress'));
     chrome.test.assertTrue(!!bubble.shadowRoot.querySelector('#retry-button'));
+
+    chrome.test.succeed();
+  },
+
+  async function testSaveToDriveBubbleCancelUpload() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+
+    // Set the save to Drive state to uploading and open the bubble.
+    privateProxy.sendUploadInProgress(0, 100);
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+    controls.$.save.click();
+    await microtasksFinished();
+    await privateProxy.whenCalled('saveToDrive');
+    privateProxy.resetResolver('saveToDrive');
+    assertBubbleAndProgressBar(bubble, 0, 100);
+
+    // Click the cancel button in the bubble and verify the saveToDrive API is
+    // called with the cancelUpload flag.
+    const cancelButton = getRequiredElement(bubble, '#cancel-upload-button');
+    cancelButton.click();
+    await microtasksFinished();
+    const args = await privateProxy.whenCalled('saveToDrive');
+    chrome.test.assertEq(args, null);
 
     chrome.test.succeed();
   },

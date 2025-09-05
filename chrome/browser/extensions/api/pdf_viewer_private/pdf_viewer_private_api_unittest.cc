@@ -402,6 +402,37 @@ TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveFailedIfEventDispatcherNull) {
                 function.get(), R"(["ORIGINAL"])", profile()));
 }
 
+// Succeed in sending a request to cancel the previous request to save a PDF
+// to Drive.
+TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveCancelUpload) {
+  CreateAndClaimStreamContainer();
+  {
+    // Create a new flow to simulate the previous request is in progress.
+    save_to_drive::SaveToDriveFlow::CreateForCurrentDocument(extension_host(),
+                                                             nullptr, nullptr);
+    auto* flow =
+        save_to_drive::SaveToDriveFlow::GetForCurrentDocument(extension_host());
+    ASSERT_TRUE(flow);
+  }
+  {
+    auto function = base::MakeRefCounted<PdfViewerPrivateSaveToDriveFunction>();
+    function->SetRenderFrameHost(extension_host());
+    EXPECT_TRUE(
+        api_test_utils::RunFunction(function.get(), R"([])", profile()));
+  }
+}
+
+// Succeed in sending a request to cancel the previous request to save a PDF
+// to Drive.
+TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveCancelUploadFailedIfNoUpload) {
+  CreateAndClaimStreamContainer();
+  auto function = base::MakeRefCounted<PdfViewerPrivateSaveToDriveFunction>();
+  function->SetRenderFrameHost(extension_host());
+  EXPECT_EQ("Failed to get SaveToDriveFlow",
+            api_test_utils::RunFunctionAndReturnError(function.get(), R"([])",
+                                                      profile()));
+}
+
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 }  // namespace extensions

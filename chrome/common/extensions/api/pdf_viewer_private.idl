@@ -112,9 +112,11 @@ namespace pdfViewerPrivate {
         DOMString url,
         IsAllowedLocalFileAccessCallback callback);
 
-    // Sends a request to save the PDF to Google Drive.
+    // Sends a request to save the PDF to Google Drive if `saveRequestType` is
+    // set. Otherwise, if `saveRequestType` is not set, the default action is
+    // to cancel the existing upload.
     static void saveToDrive(
-        SaveRequestType saveRequestType,
+        optional SaveRequestType saveRequestType,
         optional VoidCallback callback);
 
     // Sets the current tab title to `title` for a full-page PDF.

@@ -156,6 +156,20 @@ ExtensionFunction::ResponseAction PdfViewerPrivateSaveToDriveFunction::Run() {
   std::optional<SaveToDrive::Params> params =
       SaveToDrive::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
+  if (params->save_request_type !=
+      api::pdf_viewer_private::SaveRequestType::kNone) {
+    return RunSaveToDriveFlow(params->save_request_type);
+  }
+  return StopSaveToDriveFlow();
+#else
+  return RespondNow(Error("Not supported"));
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+}
+
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+ExtensionFunction::ResponseAction
+PdfViewerPrivateSaveToDriveFunction::RunSaveToDriveFlow(
+    api::pdf_viewer_private::SaveRequestType request_type) {
   using SaveToDriveFlow = save_to_drive::SaveToDriveFlow;
 
   if (SaveToDriveFlow::GetForCurrentDocument(render_frame_host())) {
@@ -167,17 +181,27 @@ ExtensionFunction::ResponseAction PdfViewerPrivateSaveToDriveFunction::Run() {
     return RespondNow(Error("Failed to create event dispatcher"));
   }
   auto content_reader = std::make_unique<save_to_drive::PDFContentReader>(
-      render_frame_host(), ToMojomSaveRequestType(params->save_request_type));
+      render_frame_host(), ToMojomSaveRequestType(request_type));
   save_to_drive::SaveToDriveFlow::CreateForCurrentDocument(
       render_frame_host(), std::move(event_dispatcher),
       std::move(content_reader));
   auto* flow = SaveToDriveFlow::GetForCurrentDocument(render_frame_host());
   flow->Run();
   return RespondNow(NoArguments());
-#else
-  return RespondNow(Error("Not supported"));
-#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 }
+
+ExtensionFunction::ResponseAction
+PdfViewerPrivateSaveToDriveFunction::StopSaveToDriveFlow() {
+  using SaveToDriveFlow = save_to_drive::SaveToDriveFlow;
+
+  auto* flow = SaveToDriveFlow::GetForCurrentDocument(render_frame_host());
+  if (!flow) {
+    return RespondNow(Error("Failed to get SaveToDriveFlow"));
+  }
+  flow->Stop();
+  return RespondNow(NoArguments());
+}
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 PdfViewerPrivateSetPdfDocumentTitleFunction::
     PdfViewerPrivateSetPdfDocumentTitleFunction() = default;
