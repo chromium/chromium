@@ -269,3 +269,18 @@ cr-icon-button {
 #dialogContent {
   height: 160px;
 }
+
+/* When the policy subtitle is visible, the dialog content needs to be
+ * taller to fit it. The extra 36px accounts for the subtitle's content
+ * (~20px) and its bottom margin (16px). */
+#dialogContent:has(#policySubtitleContainer:not([hidden])) {
+  height: 196px;
+}
+
+#policySubtitleContainer {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  gap: 10px;
+  display: flex;
+  margin-bottom: 16px;
+}

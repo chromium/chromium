@@ -130,10 +130,11 @@ export class MostVisitedElement extends MostVisitedElementBase {
       dialogSaveDisabled_: {type: Boolean, state: true},
       dialogShortcutAlreadyExists_: {type: Boolean, state: true},
       dialogTileUrlError_: {type: String, state: true},
+      dialogIsReadonly_: {type: Boolean, state: true},
       info_: {type: Object, state: true},
 
-      actionMenuEditDisabled_: {type: Boolean, state: true},
       actionMenuRemoveDisabled_: {type: Boolean, state: true},
+      actionMenuViewOrEditTitle_: {type: String, state: true},
 
       isDark_: {
         type: Boolean,
@@ -179,8 +180,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected accessor dialogSaveDisabled_: boolean = true;
   private accessor dialogShortcutAlreadyExists_: boolean = false;
   protected accessor dialogTileUrlError_: string = '';
-  protected accessor actionMenuEditDisabled_: boolean = false;
+  protected accessor dialogIsReadonly_: boolean = false;
   protected accessor actionMenuRemoveDisabled_: boolean = false;
+  protected accessor actionMenuViewOrEditTitle_: string = '';
   protected accessor isDark_: boolean = false;
   private accessor reordering_: boolean = false;
   private accessor maxTiles_: number = 0;
@@ -746,10 +748,13 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }, {once: true});
   }
 
-  protected onEdit_() {
+  protected onViewOrEdit_() {
     this.$.actionMenu.close();
-    this.dialogTitle_ = loadTimeData.getString('editLinkTitle');
     const tile = this.tiles_[this.actionMenuTargetIndex_]!;
+    const isReadonly = !tile.allowUserEdit;
+    this.dialogIsReadonly_ = isReadonly;
+    this.dialogTitle_ =
+        loadTimeData.getString(isReadonly ? 'viewLinkTitle' : 'editLinkTitle');
     this.dialogTileTitle_ = tile.title;
     this.dialogTileUrl_ = tile.url.url;
     this.dialogTileUrlInvalid_ = false;
@@ -771,6 +776,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   protected async onSave_() {
+    if (this.dialogIsReadonly_) {
+      this.$.dialog.close();
+      return;
+    }
     const newUrl = {url: normalizeUrl(this.dialogTileUrl_)!.href};
     this.$.dialog.close();
     let newTitle = this.dialogTileTitle_.trim();
@@ -802,14 +811,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.actionMenuTargetIndex_ = this.getCurrentTargetIndex_(e);
     const item = this.tiles_[this.getCurrentTargetIndex_(e)];
     assert(item);
-    // If the tile cannot be edited or deleted, do not do anything when the
-    // action button is clicked. This currently only applies to enterprise
-    // shortcuts.
-    if (!item.allowUserEdit && !item.allowUserDelete) {
-      return;
-    }
-    this.actionMenuEditDisabled_ = !item.allowUserEdit;
     this.actionMenuRemoveDisabled_ = !item.allowUserDelete;
+    this.actionMenuViewOrEditTitle_ = loadTimeData.getString(
+        item.allowUserEdit ? 'editLinkTitle' : 'viewLink');
     this.$.actionMenu.showAt(e.target as HTMLElement);
   }
 
@@ -976,12 +980,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
         this.tiles_.slice(0, this.maxVisibleTiles_), this.windowProxy_.now());
   }
 
-  protected getMoreActionText_(
-      title: string, allowUserEdit: boolean, allowUserDelete: boolean) {
-    if (this.enterpriseShortcutsEnabled_ && !allowUserEdit &&
-        !allowUserDelete) {
-      return loadTimeData.getString('enterpriseShortcutMoreActionsDisabled');
-    }
+  protected getMoreActionText_(title: string) {
     // Check that 'shortcutMoreActions' is set to more than an empty string,
     // since we do not use this text for third party NTP.
     return loadTimeData.getString('shortcutMoreActions') ?

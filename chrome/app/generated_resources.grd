@@ -7622,11 +7622,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOM_LINKS_EDIT_SHORTCUT" desc="The title for custom link edit shortcut dialog. (On the New Tab Page)">
         Edit shortcut
       </message>
+      <message name="IDS_NTP_CUSTOM_LINKS_SHORTCUT_DETAILS_TITLE" desc="The title of the custom link details dialog. (On the New Tab Page)">
+        Shortcut
+      </message>
       <message name="IDS_NTP_CUSTOM_LINKS_MORE_ACTIONS" desc="The tooltip and accessibility label for the 3 dot menu on a shortcut. (On the New Tab Page)">
         More actions for <ph name="SHORTCUT_TITLE">$1<ex>YouTube</ex></ph> shortcut
       </message>
-      <message name="IDS_NTP_ENTERPRISE_SHORTCUTS_MORE_ACTIONS_DISABLED" desc="The tooltip and accessibility label for the 3 dot menu on an eneterprise shortcut if customization is disabled. (On the New Tab Page)">
-        Customization is disabled by your Admin
+      <message name="IDS_NTP_ENTERPRISE_SHORTCUT_SUBTITLE" desc="The subtitle for the edit shortcut dialog for an enterprise shortcut. (On the New Tab Page)">
+        This setting is managed by your organization
       </message>
       <message name="IDS_UPLOAD_IMAGE_FORMAT" desc="The permitted upload image format for the custom background. (On the New Tab Page)">
         *.jpeg, *.jpg, *.png
@@ -7645,6 +7648,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_CUSTOM_LINKS_DONE" desc="The text label of the custom link done button on the edit shortcut dialog. (On the New Tab Page)">
         Done
+      </message>
+      <message name="IDS_NTP_CUSTOM_LINKS_DETAILS" desc="The text label of the custom link details button. (On the New Tab Page)">
+        Details
       </message>
       <message name="IDS_NTP_CUSTOM_LINKS_INVALID_URL" desc="Error message for when an invalid URL is provided while creating a custom link. (On the New Tab Page)" formatter_data="android_java">
        Type a valid URL

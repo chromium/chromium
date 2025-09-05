@@ -627,6 +627,13 @@ suite('Modification', () => {
       assertTrue(dialog.open);
     });
 
+    test('policy subtitle is hidden', () => {
+      const policySubtitleContainer =
+          mostVisited.$.dialog.querySelector<HTMLElement>(
+              '#policySubtitleContainer');
+      assertFalse(isVisible(policySubtitleContainer));
+    });
+
     test('inputs are initially empty', () => {
       assertEquals('', inputName.value);
       assertEquals('', inputUrl.value);
@@ -809,7 +816,7 @@ suite('Modification', () => {
     queryTiles()[0]!.querySelector<HTMLElement>('#actionMenuButton')!.click();
     assertTrue(actionMenu.open);
     assertFalse(dialog.open);
-    $$<HTMLElement>(mostVisited, '#actionMenuEdit').click();
+    $$<HTMLElement>(mostVisited, '#actionMenuViewOrEdit').click();
     assertFalse(actionMenu.open);
     assertTrue(dialog.open);
   });
@@ -832,7 +839,14 @@ suite('Modification', () => {
       tile = queryTiles()[1]!;
       actionMenuButton = tile.querySelector<HTMLElement>('#actionMenuButton')!;
       actionMenuButton.click();
-      $$<HTMLElement>(mostVisited, '#actionMenuEdit').click();
+      $$<HTMLElement>(mostVisited, '#actionMenuViewOrEdit').click();
+    });
+
+    test('policy subtitle is hidden', () => {
+      const policySubtitleContainer =
+          mostVisited.$.dialog.querySelector<HTMLElement>(
+              '#policySubtitleContainer');
+      assertFalse(isVisible(policySubtitleContainer));
     });
 
     test('edit a tile URL', async () => {
@@ -877,7 +891,7 @@ suite('Modification', () => {
       saveButton.click();
       // Reopen dialog and edit URL.
       actionMenuButton.click();
-      $$<HTMLElement>(mostVisited, '#actionMenuEdit').click();
+      $$<HTMLElement>(mostVisited, '#actionMenuViewOrEdit').click();
       inputUrl.value = 'updated-url';
       await inputUrl.updateComplete;
       saveButton.click();
@@ -1317,11 +1331,7 @@ suite('Prerendering', () => {
 });
 
 suite('EnterpriseShortcuts', () => {
-  suiteSetup(() => {
-    loadTimeData.overrideValues({
-      enterpriseShortcutMoreActionsDisabled: 'Tooltip text',
-    });
-  });
+  suiteSetup(() => {});
 
   setup(async () => {
     await setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
@@ -1362,10 +1372,18 @@ suite('EnterpriseShortcuts', () => {
         /*enterpriseShortcutsEnabled=*/ true);
     const tile = queryTiles()[0]!;
     tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
-    $$<HTMLElement>(mostVisited, '#actionMenuEdit').click();
+    $$<HTMLElement>(mostVisited, '#actionMenuViewOrEdit').click();
     await microtasksFinished();
 
     assertTrue(mostVisited.$.dialog.open);
+    assertEquals(
+        'Edit shortcut',
+        mostVisited.$.dialog.querySelector(
+                                '[slot="title"]')!.textContent!.trim());
+    const policySubtitleContainer =
+        mostVisited.$.dialog.querySelector<HTMLElement>(
+            '#policySubtitleContainer');
+    assertTrue(isVisible(policySubtitleContainer));
     const urlInput = $$<CrInputElement>(mostVisited, '#dialogInputUrl');
     assertTrue(urlInput.readonly);
     const nameInput = $$<CrInputElement>(mostVisited, '#dialogInputName');
@@ -1381,6 +1399,43 @@ suite('EnterpriseShortcuts', () => {
     saveButton.click();
     const [_url, _newUrl, newTitle] = await updateCalled;
     assertEquals('new title', newTitle);
+  });
+
+  test('view dialog is readonly', async () => {
+    await addTiles(
+        [createEnterpriseShortcut(
+            0, /*allowUserEdit=*/ false, /*allowUserDelete=*/ true)],
+        /*customLinksEnabled=*/ false, /*visible=*/ true,
+        /*enterpriseShortcutsEnabled=*/ true);
+    const tile = queryTiles()[0]!;
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    $$<HTMLElement>(mostVisited, '#actionMenuViewOrEdit').click();
+    await microtasksFinished();
+
+    assertTrue(mostVisited.$.dialog.open);
+    assertEquals(
+        'Shortcut',
+        mostVisited.$.dialog.querySelector(
+                                '[slot="title"]')!.textContent!.trim());
+    const policySubtitleContainer =
+        mostVisited.$.dialog.querySelector<HTMLElement>(
+            '#policySubtitleContainer');
+    assertTrue(isVisible(policySubtitleContainer));
+    const urlInput = $$<CrInputElement>(mostVisited, '#dialogInputUrl');
+    assertTrue(urlInput.readonly);
+    const nameInput = $$<CrInputElement>(mostVisited, '#dialogInputName');
+    assertTrue(nameInput.readonly);
+
+    const saveButton =
+        mostVisited.$.dialog.querySelector<CrButtonElement>('.action-button')!;
+    assertFalse(saveButton.disabled);
+    const cancelButton =
+        mostVisited.$.dialog.querySelector<CrButtonElement>('.cancel-button')!;
+    assertTrue(cancelButton.hidden);
+    saveButton.click();
+    await microtasksFinished();
+    assertFalse(mostVisited.$.dialog.open);
+    assertEquals(0, handler.getCallCount('updateMostVisitedTile'));
   });
 
   test('action menu enabled/disabled based on permissions', async () => {
@@ -1406,7 +1461,10 @@ suite('EnterpriseShortcuts', () => {
     tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
     await microtasksFinished();
     assertTrue(mostVisited.$.actionMenu.open);
-    assertFalse($$<HTMLButtonElement>(mostVisited, '#actionMenuEdit').disabled);
+    let viewOrEditButton =
+        $$<HTMLButtonElement>(mostVisited, '#actionMenuViewOrEdit');
+    assertFalse(viewOrEditButton.disabled);
+    assertEquals('Edit shortcut', viewOrEditButton.textContent!.trim());
     assertFalse(
         $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
     mostVisited.$.actionMenu.close();
@@ -1417,7 +1475,10 @@ suite('EnterpriseShortcuts', () => {
     tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
     await microtasksFinished();
     assertTrue(mostVisited.$.actionMenu.open);
-    assertFalse($$<HTMLButtonElement>(mostVisited, '#actionMenuEdit').disabled);
+    viewOrEditButton =
+        $$<HTMLButtonElement>(mostVisited, '#actionMenuViewOrEdit');
+    assertFalse(viewOrEditButton.disabled);
+    assertEquals('Edit shortcut', viewOrEditButton.textContent!.trim());
     assertTrue(
         $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
     mostVisited.$.actionMenu.close();
@@ -1428,7 +1489,10 @@ suite('EnterpriseShortcuts', () => {
     tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
     await microtasksFinished();
     assertTrue(mostVisited.$.actionMenu.open);
-    assertTrue($$<HTMLButtonElement>(mostVisited, '#actionMenuEdit').disabled);
+    viewOrEditButton =
+        $$<HTMLButtonElement>(mostVisited, '#actionMenuViewOrEdit');
+    assertFalse(viewOrEditButton.disabled);
+    assertEquals('Details', viewOrEditButton.textContent!.trim());
     assertFalse(
         $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
     mostVisited.$.actionMenu.close();
@@ -1438,18 +1502,12 @@ suite('EnterpriseShortcuts', () => {
     tile = tileElements[3]!;
     tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
     await microtasksFinished();
-    assertFalse(mostVisited.$.actionMenu.open);
-  });
-
-  test('action menu button has disabled tooltip', async () => {
-    const tile = createEnterpriseShortcut(
-        0, /*allowUserEdit=*/ false, /*allowUserDelete=*/ false);
-    await addTiles(
-        [tile], /*customLinksEnabled=*/ false, /*visible=*/ true,
-        /*enterpriseShortcutsEnabled=*/ true);
-
-    const actionMenuButton =
-        queryTiles()[0]!.querySelector<HTMLElement>('#actionMenuButton')!;
-    assertEquals('Tooltip text', actionMenuButton.title);
+    assertTrue(mostVisited.$.actionMenu.open);
+    viewOrEditButton =
+        $$<HTMLButtonElement>(mostVisited, '#actionMenuViewOrEdit');
+    assertFalse(viewOrEditButton.disabled);
+    assertEquals('Details', viewOrEditButton.textContent!.trim());
+    assertTrue(
+        $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
   });
 });
