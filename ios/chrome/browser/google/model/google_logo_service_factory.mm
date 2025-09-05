@@ -33,8 +33,7 @@ GoogleLogoServiceFactory::GoogleLogoServiceFactory()
 GoogleLogoServiceFactory::~GoogleLogoServiceFactory() = default;
 
 std::unique_ptr<KeyedService> GoogleLogoServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<GoogleLogoService>(
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
