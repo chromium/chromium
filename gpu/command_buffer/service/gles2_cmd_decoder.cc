@@ -6096,12 +6096,6 @@ bool GLES2DecoderImpl::GetHelper(
         }
       }
       return true;
-    case GL_BIND_GENERATES_RESOURCE_CHROMIUM:
-      *num_written = 1;
-      if (params) {
-        params[0] = 0;
-      }
-      return true;
     case GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT:
       *num_written = 1;
       if (params) {
