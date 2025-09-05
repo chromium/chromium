@@ -2114,6 +2114,9 @@ public class TabPersistentStore {
     }
 
     public static boolean shouldSkipTab(Tab tab) {
+        // Don't skip the tab if it is pinned.
+        if (tab.getIsPinned()) return false;
+
         boolean isNtp = tab.isNativePage() && UrlUtilities.isNtpUrl(tab.getUrl());
         if (!isNtp) return false;
 

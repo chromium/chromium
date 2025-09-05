@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -837,6 +838,27 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.saveState();
 
         assertEquals(DirtinessState.CLEAN, TabStateAttributes.from(mTab).getDirtinessState());
+    }
+
+    @Test
+    @Feature({"TabPersistentStore"})
+    public void testShouldSkipTab_PinnedNtpIsNotSkipped() {
+        GURL ntpGurl = new GURL(UrlConstants.NTP_URL);
+        GURL regularGurl = new GURL(REGULAR_TAB_STRING_1);
+
+        // Pinned NTPs should not be skipped.
+        when(mTab.getUrl()).thenReturn(ntpGurl);
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getIsPinned()).thenReturn(true);
+        assertFalse("Pinned NTPs should not be skipped.", TabPersistentStore.shouldSkipTab(mTab));
+
+        // Pinned regular tabs should not be skipped.
+        when(mTab.getUrl()).thenReturn(regularGurl);
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.getIsPinned()).thenReturn(true);
+        assertFalse(
+                "Pinned regular tabs should not be skipped.",
+                TabPersistentStore.shouldSkipTab(mTab));
     }
 
     private void setupSerializationTestMocks() {

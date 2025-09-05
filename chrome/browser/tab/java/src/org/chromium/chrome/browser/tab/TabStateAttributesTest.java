@@ -429,6 +429,20 @@ public class TabStateAttributesTest {
         verify(mAttributesObserver, times(2))
                 .onTabStateDirtinessChanged(mTab, DirtinessState.DIRTY);
 
+        // Test for NTP.
+        mTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        mTab.setIsPinned(true);
+        assertEquals(DirtinessState.DIRTY, TabStateAttributes.from(mTab).getDirtinessState());
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+        verify(mAttributesObserver, times(3))
+                .onTabStateDirtinessChanged(mTab, DirtinessState.DIRTY);
+
+        mTab.setIsPinned(false);
+        assertEquals(DirtinessState.DIRTY, TabStateAttributes.from(mTab).getDirtinessState());
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+        verify(mAttributesObserver, times(4))
+                .onTabStateDirtinessChanged(mTab, DirtinessState.DIRTY);
+
         verify(mAttributesObserver, never())
                 .onTabStateDirtinessChanged(mTab, DirtinessState.UNTIDY);
     }

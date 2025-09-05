@@ -220,7 +220,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
                     @Override
                     public void onTabPinnedStateChanged(Tab tab, boolean isPinned) {
                         if (!tab.isInitialized()) return;
-                        updateIsDirty(DirtinessState.DIRTY);
+                        updateIsDirtyNotCheckingNtp(DirtinessState.DIRTY);
                     }
                 });
     }
