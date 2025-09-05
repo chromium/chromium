@@ -85,19 +85,6 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 }
 
 - (void)resetAnimated:(BOOL)animated {
-  // Icon states are not modified when the Keyboard Accessory Upgrade feature is
-  // enabled, so no need to reset anyhting.
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    return;
-  }
-  __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:animated ? MFAnimationDuration : 0
-                   animations:^{
-                     [weakSelf resetIcons];
-                   }];
-  if (!self.keyboardButton.hidden) {
-    [self setKeyboardButtonHidden:YES animated:animated];
-  }
 }
 
 #pragma mark - Accessors

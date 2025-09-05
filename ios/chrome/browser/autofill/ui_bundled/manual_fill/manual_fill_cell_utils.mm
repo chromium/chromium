@@ -28,10 +28,6 @@ constexpr CGFloat kAutofillFormButtonVerticalInsets = 11;
 // Minimum height of the "Autofill Form" button.
 constexpr CGFloat kAutofillFormButtonMinHeight = 44;
 
-// Bottom margin for the cell content. Used when the Keyboard Accessory Upgrade
-// feature is disabled.
-constexpr CGFloat kCellBottomMargin = 18;
-
 // Line spacing for the cell's header title.
 constexpr CGFloat kHeaderAttributedStringLineSpacing = 2;
 
@@ -46,14 +42,6 @@ constexpr CGFloat kHeaderViewMinHeight = 44;
 
 // Height of the grey separator.
 constexpr CGFloat kSeparatorHeight = 1;
-
-// Horizontal spacing between views. Used when the Keyboard Accessory Upgrade
-// feature is disabled.
-constexpr CGFloat kHorizontalSpacing = 16;
-
-// Vertical spacing between views. Used when the Keyboard Accessory Upgrade
-// feature is disabled.
-constexpr CGFloat kVerticalSpacing = 8;
 
 // Generic vertical spacing between views. Delimits the different parts of the
 // cell and the chip groups.
@@ -89,16 +77,9 @@ void AppendEqualBaselinesConstraints(
       continue;
     }
 
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      [constraints
-          addObject:[view.centerYAnchor
-                        constraintEqualToAnchor:leadingView.centerYAnchor]];
-    } else {
-      [constraints
-          addObject:[view.lastBaselineAnchor
-                        constraintEqualToAnchor:leadingView
-                                                    .lastBaselineAnchor]];
-    }
+    [constraints
+        addObject:[view.centerYAnchor
+                      constraintEqualToAnchor:leadingView.centerYAnchor]];
   }
 }
 
@@ -106,10 +87,6 @@ void AppendEqualBaselinesConstraints(
 // `type`.
 CGFloat GetVerticalSpacingForElementType(
     ManualFillCellView::ElementType element_type) {
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    return kVerticalSpacing;
-  }
-
   switch (element_type) {
     case ManualFillCellView::ElementType::kFirstChipButtonOfGroup:
     case ManualFillCellView::ElementType::kOther:
@@ -137,13 +114,9 @@ CGFloat GetViewWidth(UIView* view) {
 
 // Returns the font for the cell's header title.
 UIFont* TitleFont() {
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    UIFont* font = [UIFont systemFontOfSize:kHeaderAttributedStringTitleFontSize
-                                     weight:UIFontWeightMedium];
-    return [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
-  } else {
-    return [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  }
+  UIFont* font = [UIFont systemFontOfSize:kHeaderAttributedStringTitleFontSize
+                                   weight:UIFontWeightMedium];
+  return [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
 }
 
 // Creates and adds constraints to `constraints`, so as to horizontally lay out
@@ -169,8 +142,7 @@ const CGFloat kCellMargin = 16;
 const CGFloat kChipsHorizontalMargin = -1;
 
 CGFloat GetHorizontalSpacingBetweenChips() {
-  return IsKeyboardAccessoryUpgradeEnabled() ? kSmallSpacingBetweenViews
-                                             : kHorizontalSpacing;
+  return kSmallSpacingBetweenViews;
 }
 
 UIButton* CreateChipWithSelectorAndTarget(SEL action, id target) {
@@ -291,21 +263,12 @@ void AppendHorizontalConstraintsForViews(
         [view.leadingAnchor constraintEqualToAnchor:previous_anchor
                                            constant:spacing];
 
-    if (!is_first_view && IsKeyboardAccessoryUpgradeEnabled()) {
+    if (!is_first_view) {
       // Set the in-between view constraints to a low priority so that the views
       // can be easily reorganized when the width of the `layout_guide` changes.
       constraint.priority = UILayoutPriorityDefaultLow;
     }
     [constraints addObject:constraint];
-
-    if (!IsKeyboardAccessoryUpgradeEnabled()) {
-      [view
-          setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                          forAxis:
-                                              UILayoutConstraintAxisHorizontal];
-      [view setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                              forAxis:UILayoutConstraintAxisHorizontal];
-    }
 
     previous_anchor = view.trailingAnchor;
     is_first_view = NO;
@@ -338,15 +301,6 @@ void AppendHorizontalConstraintsForViews(
         addObject:[last_view.trailingAnchor
                       constraintEqualToAnchor:layout_guide.trailingAnchor
                                      constant:-margin]];
-    if (!IsKeyboardAccessoryUpgradeEnabled()) {
-      // Give all remaining space to the last button, minus margin, as per UX.
-      [last_view
-          setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
-                                          forAxis:
-                                              UILayoutConstraintAxisHorizontal];
-      [last_view setContentHuggingPriority:UILayoutPriorityDefaultLow
-                                   forAxis:UILayoutConstraintAxisHorizontal];
-    }
   }
 
   if (options & AppendConstraintsHorizontalSyncBaselines) {
@@ -430,39 +384,33 @@ NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
                 NSFontAttributeName : TitleFont(),
               }];
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    NSMutableParagraphStyle* title_paragraph_style =
-        [[NSMutableParagraphStyle alloc] init];
-    title_paragraph_style.lineSpacing = kHeaderAttributedStringLineSpacing;
-    title_paragraph_style.lineBreakMode = NSLineBreakByWordWrapping;
-    [attributed_title
-        addAttributes:@{NSParagraphStyleAttributeName : title_paragraph_style}
-                range:NSMakeRange(0, attributed_title.string.length)];
-  }
+  NSMutableParagraphStyle* title_paragraph_style =
+      [[NSMutableParagraphStyle alloc] init];
+  title_paragraph_style.lineSpacing = kHeaderAttributedStringLineSpacing;
+  title_paragraph_style.lineBreakMode = NSLineBreakByWordWrapping;
+  [attributed_title
+      addAttributes:@{NSParagraphStyleAttributeName : title_paragraph_style}
+              range:NSMakeRange(0, attributed_title.string.length)];
 
   if (subtitle && subtitle.length) {
-    NSMutableAttributedString* attributed_subtitle = [[NSMutableAttributedString
-        alloc]
-        initWithString:[NSString stringWithFormat:@"\n%@", subtitle]
-            attributes:@{
-              NSForegroundColorAttributeName :
-                  [UIColor colorNamed:kTextSecondaryColor],
-              NSFontAttributeName : [UIFont
-                  preferredFontForTextStyle:IsKeyboardAccessoryUpgradeEnabled()
-                                                ? UIFontTextStyleCaption1
-                                                : UIFontTextStyleFootnote],
-            }];
+    NSMutableAttributedString* attributed_subtitle =
+        [[NSMutableAttributedString alloc]
+            initWithString:[NSString stringWithFormat:@"\n%@", subtitle]
+                attributes:@{
+                  NSForegroundColorAttributeName :
+                      [UIColor colorNamed:kTextSecondaryColor],
+                  NSFontAttributeName : [UIFont
+                      preferredFontForTextStyle:UIFontTextStyleCaption1],
+                }];
 
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      NSMutableParagraphStyle* subtitle_paragraph_style =
-          [[NSMutableParagraphStyle alloc] init];
-      subtitle_paragraph_style.lineBreakMode = NSLineBreakByWordWrapping;
-      [attributed_subtitle
-          addAttributes:@{
-            NSParagraphStyleAttributeName : subtitle_paragraph_style
-          }
-                  range:NSMakeRange(0, attributed_subtitle.string.length)];
-    }
+    NSMutableParagraphStyle* subtitle_paragraph_style =
+        [[NSMutableParagraphStyle alloc] init];
+    subtitle_paragraph_style.lineBreakMode = NSLineBreakByWordWrapping;
+    [attributed_subtitle
+        addAttributes:@{
+          NSParagraphStyleAttributeName : subtitle_paragraph_style
+        }
+                range:NSMakeRange(0, attributed_subtitle.string.length)];
 
     [attributed_title appendAttributedString:attributed_subtitle];
   }
@@ -489,17 +437,15 @@ UIStackView* CreateHeaderView(UIView* icon,
   header_view.spacing = UIStackViewSpacingUseSystem;  // Spacing of 8px.
   header_view.alignment = UIStackViewAlignmentCenter;
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    [NSLayoutConstraint activateConstraints:@[
-      [header_view.heightAnchor
-          constraintGreaterThanOrEqualToConstant:kHeaderViewMinHeight],
-      [label.topAnchor constraintEqualToAnchor:header_view.topAnchor
-                                      constant:kHeaderViewLabelVerticalPadding],
-      [label.bottomAnchor
-          constraintEqualToAnchor:header_view.bottomAnchor
-                         constant:-kHeaderViewLabelVerticalPadding],
-    ]];
-  }
+  [NSLayoutConstraint activateConstraints:@[
+    [header_view.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kHeaderViewMinHeight],
+    [label.topAnchor constraintEqualToAnchor:header_view.topAnchor
+                                    constant:kHeaderViewLabelVerticalPadding],
+    [label.bottomAnchor
+        constraintEqualToAnchor:header_view.bottomAnchor
+                       constant:-kHeaderViewLabelVerticalPadding],
+  ]];
 
   return header_view;
 }
@@ -538,28 +484,14 @@ UIView* CreateGraySeparatorForContainer(UIView* container) {
   [container addSubview:gray_line];
 
   id<LayoutGuideProvider> safe_area = container.safeAreaLayoutGuide;
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    [NSLayoutConstraint activateConstraints:@[
-      // Vertical constraints.
-      [gray_line.heightAnchor constraintEqualToConstant:kSeparatorHeight],
-      // Horizontal constraints.
-      [gray_line.leadingAnchor constraintEqualToAnchor:safe_area.leadingAnchor
-                                              constant:kCellMargin],
-      [safe_area.trailingAnchor
-          constraintEqualToAnchor:gray_line.trailingAnchor],
-    ]];
-  } else {
-    [NSLayoutConstraint activateConstraints:@[
-      // Vertical constraints.
-      [gray_line.bottomAnchor constraintEqualToAnchor:container.bottomAnchor],
-      [gray_line.heightAnchor constraintEqualToConstant:kSeparatorHeight],
-      // Horizontal constraints.
-      [gray_line.leadingAnchor constraintEqualToAnchor:safe_area.leadingAnchor
-                                              constant:kCellMargin],
-      [safe_area.trailingAnchor constraintEqualToAnchor:gray_line.trailingAnchor
-                                               constant:kCellMargin],
-    ]];
-  }
+  [NSLayoutConstraint activateConstraints:@[
+    // Vertical constraints.
+    [gray_line.heightAnchor constraintEqualToConstant:kSeparatorHeight],
+    // Horizontal constraints.
+    [gray_line.leadingAnchor constraintEqualToAnchor:safe_area.leadingAnchor
+                                            constant:kCellMargin],
+    [safe_area.trailingAnchor constraintEqualToAnchor:gray_line.trailingAnchor],
+  ]];
 
   return gray_line;
 }
@@ -597,16 +529,13 @@ UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
   [content_view addLayoutGuide:layout_guide];
 
   id<LayoutGuideProvider> safe_area = content_view.safeAreaLayoutGuide;
-  CGFloat top_margin = cell_has_header && IsKeyboardAccessoryUpgradeEnabled()
-                           ? kSmallSpacingBetweenViews
-                           : kCellMargin;
-  CGFloat bottom_margin =
-      IsKeyboardAccessoryUpgradeEnabled() ? kCellMargin : kCellBottomMargin;
+  CGFloat top_margin =
+      cell_has_header ? kSmallSpacingBetweenViews : kCellMargin;
   [NSLayoutConstraint activateConstraints:@[
     [layout_guide.topAnchor constraintEqualToAnchor:content_view.topAnchor
                                            constant:top_margin],
     [layout_guide.bottomAnchor constraintEqualToAnchor:content_view.bottomAnchor
-                                              constant:-bottom_margin],
+                                              constant:-kCellMargin],
     [layout_guide.leadingAnchor constraintEqualToAnchor:safe_area.leadingAnchor
                                                constant:kCellMargin],
     [layout_guide.trailingAnchor
@@ -620,36 +549,9 @@ UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
 NSMutableAttributedString* CreateSiteNameLabelAttributedText(
     ManualFillSiteInfo* site_info,
     BOOL should_show_host) {
-  NSString* siteName = site_info.siteName ? site_info.siteName : @"";
-  NSString* host;
-  NSMutableAttributedString* attributedString;
-
-  if (should_show_host) {
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      host = site_info.host;
-    }
-    // If the Keyboard Accessory Upgrade feature is disabled, `host` will be
-    // `nil` here, and so it won't be added to `attributedString` right away.
-    attributedString = CreateHeaderAttributedString(siteName, host);
-
-    if (!IsKeyboardAccessoryUpgradeEnabled()) {
-      host = [NSString stringWithFormat:@" –– %@", site_info.host];
-      NSDictionary* attributes = @{
-        NSForegroundColorAttributeName :
-            [UIColor colorNamed:kTextSecondaryColor],
-        NSFontAttributeName :
-            [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-      };
-      NSAttributedString* hostAttributedString =
-          [[NSAttributedString alloc] initWithString:host
-                                          attributes:attributes];
-      [attributedString appendAttributedString:hostAttributedString];
-    }
-  } else {
-    attributedString = CreateHeaderAttributedString(siteName, nil);
-  }
-
-  return attributedString;
+  return CreateHeaderAttributedString(
+      site_info.siteName ? site_info.siteName : @"",
+      should_show_host ? site_info.host : nil);
 }
 
 void GiveAccessibilityContextToCellAndButton(UIView* cell_container,
@@ -671,12 +573,6 @@ void GiveAccessibilityContextToCellAndButton(UIView* cell_container,
 
 void SetUpCellAccessibilityElements(TableViewCell* cell,
                                     NSArray<UIView*>* accessibilityElements) {
-  // If the Keyboard Accessory Upgrade feature is disabled, keep the default
-  // accessibility behaviour.
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    return;
-  }
-
   // The following two lines are needed to make the cell as a container, as well
   // as its content, accessible.
   cell.isAccessibilityElement = NO;

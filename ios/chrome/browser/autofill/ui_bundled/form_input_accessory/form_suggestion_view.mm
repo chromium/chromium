@@ -195,11 +195,6 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   [UIView animateWithDuration:0.2
       animations:^{
         weakSelf.contentInset = lockedContentInsets;
-      }
-      completion:^(BOOL finished) {
-        if (!IsKeyboardAccessoryUpgradeEnabled()) {
-          weakSelf.delegate = weakSelf;
-        }
       }];
 }
 
@@ -241,9 +236,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.layoutMarginsRelativeArrangement = YES;
   stackView.layoutMargins = [self adjustedLayoutMargins];
-  stackView.spacing = IsKeyboardAccessoryUpgradeEnabled()
-                          ? kSpacing
-                          : kSuggestionHorizontalMargin;
+  stackView.spacing = kSpacing;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:stackView];
   if (IsLiquidGlassEffectEnabled()) {
@@ -337,8 +330,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
 // Performs the scroll hint. This is triggered when the keyboard accessory
 // initially receives suggestions.
 - (void)scrollHint:(void (^)(BOOL finished))completion {
-  if (!IsKeyboardAccessoryUpgradeEnabled() ||
-      !self.stackView.arrangedSubviews.count) {
+  if (!self.stackView.arrangedSubviews.count) {
     if (completion) {
       completion(NO);
     }
@@ -383,9 +375,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   return UIEdgeInsetsMake(
       kSuggestionVerticalMargin,
       kSuggestionHorizontalMargin + (_isCompact ? 0.0 : kLeadingOffset),
-      kSuggestionVerticalMargin,
-      IsKeyboardAccessoryUpgradeEnabled() ? kSuggestionEndHorizontalMargin
-                                          : kSuggestionHorizontalMargin);
+      kSuggestionVerticalMargin, kSuggestionEndHorizontalMargin);
 }
 
 #pragma mark - Setters

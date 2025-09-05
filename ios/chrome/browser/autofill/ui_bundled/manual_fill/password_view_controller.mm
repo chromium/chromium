@@ -135,7 +135,7 @@ enum ManualFallbackItemType : NSInteger {
 
     // When the Keyboard Accessory Upgrade feature is disabled, indents are
     // needed for the header to be aligned with the other table view items.
-    [linkHeader setForceIndents:!IsKeyboardAccessoryUpgradeEnabled()];
+    [linkHeader setForceIndents:NO];
   }
 
   return view;
@@ -161,25 +161,13 @@ enum ManualFallbackItemType : NSInteger {
   // If no items were posted and there is no search bar, present the empty item
   // and return.
   if (!credentials.count && !self.searchController) {
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      TableViewTextHeaderFooterItem* textHeaderFooterItem =
-          [[TableViewTextHeaderFooterItem alloc]
-              initWithType:manual_fill::ManualFallbackItemType::
-                               kNoCredentialsMessage];
-      textHeaderFooterItem.text =
-          l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
-      self.noRegularDataItemsToShowHeaderItem = textHeaderFooterItem;
-    } else {
-      ManualFillTextItem* emptyCredentialItem = [[ManualFillTextItem alloc]
-          initWithType:manual_fill::ManualFallbackItemType::
-                           kNoCredentialsMessage];
-      emptyCredentialItem.text =
-          l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
-      emptyCredentialItem.textColor = [UIColor colorNamed:kDisabledTintColor];
-      emptyCredentialItem.showSeparator = YES;
-      [self presentDataItems:@[ emptyCredentialItem ]];
-      return;
-    }
+    TableViewTextHeaderFooterItem* textHeaderFooterItem =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:manual_fill::ManualFallbackItemType::
+                             kNoCredentialsMessage];
+    textHeaderFooterItem.text =
+        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE);
+    self.noRegularDataItemsToShowHeaderItem = textHeaderFooterItem;
   }
 
   if (!self.searchController &&

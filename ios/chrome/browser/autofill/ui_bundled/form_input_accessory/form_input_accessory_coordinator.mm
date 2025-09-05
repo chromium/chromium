@@ -417,8 +417,7 @@ bool CanReloadInputViews() {
 }
 
 - (void)dismissPopover {
-  if (IsKeyboardAccessoryUpgradeEnabled() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Close the popover view.
     [self stopChildren];
   }
@@ -504,8 +503,6 @@ bool CanReloadInputViews() {
                 didPressManualFillButton:(UIButton*)manualFillButton
                              forDataType:
                                  (manual_fill::ManualFillDataType)dataType {
-  CHECK(IsKeyboardAccessoryUpgradeEnabled());
-
   BOOL invokedOnObfuscatedField =
       [_formInputAccessoryMediator lastFocusedFieldWasObfuscated];
 

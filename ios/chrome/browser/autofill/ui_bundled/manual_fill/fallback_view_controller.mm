@@ -86,9 +86,7 @@ UIColor* GetBackgroundColor() {
   }
 #endif
 
-  return [UIColor colorNamed:IsKeyboardAccessoryUpgradeEnabled()
-                                 ? kGroupedPrimaryBackgroundColor
-                                 : kBackgroundColor];
+  return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
 
 }  // namespace
@@ -122,9 +120,7 @@ UIColor* GetBackgroundColor() {
 }
 
 - (instancetype)init {
-  self = [super initWithStyle:IsKeyboardAccessoryUpgradeEnabled()
-                                  ? ChromeTableViewStyle()
-                                  : UITableViewStylePlain];
+  self = [super initWithStyle:ChromeTableViewStyle()];
 
   if (self) {
     _loadingIndicatorStartingTime = base::Time::Min();
@@ -143,13 +139,8 @@ UIColor* GetBackgroundColor() {
   // Remove extra spacing on top of sections.
   self.tableView.sectionHeaderTopPadding = 0;
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.tableView.separatorInset =
-        UIEdgeInsetsMake(0, kSectionSepatatorLeftInset, 0, 0);
-  } else {
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
-  }
+  self.tableView.separatorInset =
+      UIEdgeInsetsMake(0, kSectionSepatatorLeftInset, 0, 0);
   self.tableView.estimatedRowHeight = 1;
   self.tableView.allowsSelection = NO;
   self.definesPresentationContext = YES;
@@ -367,9 +358,6 @@ UIColor* GetBackgroundColor() {
 
   [self updateEmptyStateMessage];
 
-  BOOL sectionExists = [self.tableViewModel
-      hasSectionForSectionIdentifier:DataItemsSectionIdentifier];
-
   // Determine the index at which the next section should be inserted based on
   // header existance.
   NSInteger sectionIndex =
@@ -378,26 +366,12 @@ UIColor* GetBackgroundColor() {
           ? 1
           : 0;
 
-  // If the Keyboard Accessory Upgrade feature is enabled, remove any excess
-  // data item sections, and present the queued data items.
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    [self removeUnusedDataItemSections];
-    [self presentFallbackItems:self.queuedDataItems
-             startingAtSection:DataItemsSectionIdentifier
-               startingAtIndex:sectionIndex];
-    _dataItemCount = self.queuedDataItems.count;
-  } else {
-    if (!self.queuedDataItems.count && sectionExists) {
-      [self.tableViewModel
-          removeSectionWithIdentifier:DataItemsSectionIdentifier];
-    } else if (self.queuedDataItems.count && !sectionExists) {
-      [self.tableViewModel
-          insertSectionWithIdentifier:DataItemsSectionIdentifier
-                              atIndex:sectionIndex];
-    }
-    [self presentFallbackItems:self.queuedDataItems
-                     inSection:DataItemsSectionIdentifier];
-  }
+  // Remove any excess data item sections, and present the queued data items.
+  [self removeUnusedDataItemSections];
+  [self presentFallbackItems:self.queuedDataItems
+           startingAtSection:DataItemsSectionIdentifier
+             startingAtIndex:sectionIndex];
+  _dataItemCount = self.queuedDataItems.count;
   self.queuedDataItems = nil;
 }
 
@@ -516,10 +490,6 @@ UIColor* GetBackgroundColor() {
 // amongst passwords, cards and addresses to show. However, plus address can
 // still be shown.
 - (void)updateEmptyStateMessage {
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    return;
-  }
-
   BOOL needsEmptyStateHeader = self.noRegularDataItemsToShowHeaderItem;
   BOOL hasEmptyStateSection = [self.tableViewModel
       hasSectionForSectionIdentifier:NoDataItemsSectionIdentifier];

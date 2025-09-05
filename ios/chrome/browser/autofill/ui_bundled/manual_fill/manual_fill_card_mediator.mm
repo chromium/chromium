@@ -48,9 +48,9 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
   switch (record_type) {
     case autofill::CreditCard::RecordType::kLocalCard:
     case autofill::CreditCard::RecordType::kMaskedServerCard:
-      return IsKeyboardAccessoryUpgradeEnabled();
+      return true;
     case autofill::CreditCard::RecordType::kVirtualCard:
-      return NO;
+      return false;
     case autofill::CreditCard::RecordType::kFullServerCard:
       // Full server cards are a temporary cached state and should never be
       // being offered as a suggestion for manual fill.
@@ -297,8 +297,7 @@ std::vector<CreditCard> FetchCards(
   // Check if custom card art is available.
   GURL cardArtURL =
       _personalDataManager->payments_data_manager().GetCardArtURL(creditCard);
-  if (IsKeyboardAccessoryUpgradeEnabled() && !cardArtURL.is_empty() &&
-      cardArtURL.is_valid()) {
+  if (!cardArtURL.is_empty() && cardArtURL.is_valid()) {
     if (const gfx::Image* const image =
             _personalDataManager->payments_data_manager()
                 .GetCachedCardArtImageForUrl(cardArtURL)) {

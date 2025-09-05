@@ -96,8 +96,7 @@
       invokedOnObfuscatedField:NO
           profilePasswordStore:nil
           accountPasswordStore:nil
-        showAutofillFormButton:IsKeyboardAccessoryUpgradeEnabled() &&
-                               [self.injectionHandler
+        showAutofillFormButton:[self.injectionHandler
                                        isActiveFormAPasswordForm]];
   [self.passwordMediator
       setSavedPasswordsPresenter:_savedPasswordsPresenter.get()];

@@ -478,19 +478,8 @@ bool IsRequestDedupingAllowed() {
 // Copies the incoming suggestions, making adjustments if necessary.
 - (NSArray<FormSuggestion*>*)copyAndAdjustSuggestions:
     (NSArray<FormSuggestion*>*)suggestions {
-  BOOL isPlusAddressFeaturesEnabled = base::FeatureList::IsEnabled(
-      plus_addresses::features::kPlusAddressesEnabled);
-
-  if (!IsKeyboardAccessoryUpgradeEnabled() && !isPlusAddressFeaturesEnabled) {
-    return [suggestions copy];
-  }
-
   NSMutableArray<FormSuggestion*>* suggestionsCopy = [NSMutableArray array];
   for (FormSuggestion* suggestion : suggestions) {
-    BOOL isPlusAddressSuggestion =
-        (suggestion.type == autofill::SuggestionType::kCreateNewPlusAddress) ||
-        (suggestion.type == autofill::SuggestionType::kFillExistingPlusAddress);
-
     UIImage* defaultIcon = defaultIconForType(suggestion);
 
     // If there are no icons, but we have a default icon for this suggestion,
@@ -498,9 +487,7 @@ bool IsRequestDedupingAllowed() {
     // `IsKeyboardAccessoryUpgradeEnabled()`, update the icon for this
     // suggestion. Otherwise, only update the icons for the plus address
     // suggestions.
-    BOOL shouldUpdateIcon =
-        (IsKeyboardAccessoryUpgradeEnabled() || isPlusAddressSuggestion) &&
-        !suggestion.icon && defaultIcon;
+    BOOL shouldUpdateIcon = !suggestion.icon && defaultIcon;
 
     if (shouldUpdateIcon) {
       // If we ever get suggestions with metadata here, we'll need to use a

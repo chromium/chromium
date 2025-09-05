@@ -41,20 +41,14 @@
   // On iPad, dismiss the popover before the settings are presented.
   if ((ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
       self.viewController.presentingViewController) {
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      // When the Keyboard Accessory Upgrade feature is enabled on tablets,
-      // fallback coordinators are coordinators of subviews of the expanded
-      // manual fill view, so they can't dismiss the entire popup, otherwise
-      // changing the type of autofill data between passwords, addresses or
-      // credit cards would dismiss the entire popup. In this case, only the
-      // completion block is executed. The popup will be dismissed when the
-      // expanded manual fill coordinator stops.
-      if (completion) {
-        completion();
-      }
-    } else {
-      [self.viewController dismissViewControllerAnimated:true
-                                              completion:completion];
+    // On tablets, fallback coordinators are coordinators of subviews of the
+    // expanded manual fill view, so they can't dismiss the entire popup,
+    // otherwise changing the type of autofill data between passwords, addresses
+    // or credit cards would dismiss the entire popup. In this case, only the
+    // completion block is executed. The popup will be dismissed when the
+    // expanded manual fill coordinator stops.
+    if (completion) {
+      completion();
     }
     return YES;
   } else {

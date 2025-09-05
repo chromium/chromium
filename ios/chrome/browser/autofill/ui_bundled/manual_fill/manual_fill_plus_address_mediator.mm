@@ -211,9 +211,7 @@
   NSMutableArray* items =
       [[NSMutableArray alloc] initWithCapacity:plusAddressesCount];
 
-  NSArray<UIAction*>* menuActions = IsKeyboardAccessoryUpgradeEnabled()
-                                        ? @[ [self createManageMenuAction] ]
-                                        : @[];
+  NSArray<UIAction*>* menuActions = @[ [self createManageMenuAction] ];
 
   for (int i = 0; i < plusAddressesCount; i++) {
     NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(

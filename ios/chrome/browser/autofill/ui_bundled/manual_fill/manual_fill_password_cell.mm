@@ -127,13 +127,8 @@ namespace {
 // cell.
 static const CGFloat kOffsetForConnectedCell = 16;
 
+// The size that the favicon should have.
 constexpr CGFloat kFaviconContainterViewSize = 30;
-
-// Returns the size that the favicon should have.
-CGFloat GetFaviconSize() {
-  return IsKeyboardAccessoryUpgradeEnabled() ? kFaviconContainterViewSize
-                                             : gfx::kFaviconSize;
-}
 
 // Logs the relevant metrics for a tap on the "Autofill form" button.
 void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
@@ -283,25 +278,21 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
                   credential.host)
             : CreateSiteNameLabelAttributedText(credential, shouldShowHost);
     self.siteNameLabel.attributedText = attributedText;
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      self.siteNameLabel.numberOfLines = 0;
-      NSString* accessibilityLabel =
-          [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
-                                     attributedText.string];
-      GiveAccessibilityContextToCellAndButton(
-          self.contentView, self.overflowMenuButton, self.autofillFormButton,
-          accessibilityLabel);
-    }
+    self.siteNameLabel.numberOfLines = 0;
+    NSString* accessibilityLabel =
+        [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
+                                   attributedText.string];
+    GiveAccessibilityContextToCellAndButton(
+        self.contentView, self.overflowMenuButton, self.autofillFormButton,
+        accessibilityLabel);
     self.siteNameLabel.hidden = NO;
     self.faviconView.hidden = NO;
     AddViewToVerticalLeadViews(self.headerView,
                                ManualFillCellView::ElementType::kOther,
                                verticalLeadViews);
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      AddViewToVerticalLeadViews(
-          self.grayLine, ManualFillCellView::ElementType::kHeaderSeparator,
-          verticalLeadViews);
-    }
+    AddViewToVerticalLeadViews(
+        self.grayLine, ManualFillCellView::ElementType::kHeaderSeparator,
+        verticalLeadViews);
   }
   if (menuActions && menuActions.count) {
     self.overflowMenuButton.menu = [UIMenu menuWithChildren:menuActions];
@@ -318,11 +309,9 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   if (credential.username.length) {
     NSString* username = credential.username;
     [self.usernameButton setTitle:username forState:UIControlStateNormal];
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      self.usernameButton.accessibilityLabel = l10n_util::GetNSStringF(
-          IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL,
-          base::SysNSStringToUTF16(username));
-    }
+    self.usernameButton.accessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL,
+        base::SysNSStringToUTF16(username));
   } else {
     NSString* titleString =
         l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_USERNAME);
@@ -338,9 +327,7 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
     [self.passwordButton setTitle:manual_fill::kMaskedPasswordButtonText
                          forState:UIControlStateNormal];
     self.passwordButton.accessibilityLabel = l10n_util::GetNSString(
-        IsKeyboardAccessoryUpgradeEnabled()
-            ? IDS_IOS_MANUAL_FALLBACK_PASSWORD_CHIP_ACCESSIBILITY_LABEL
-            : IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL);
+        IDS_IOS_MANUAL_FALLBACK_PASSWORD_CHIP_ACCESSIBILITY_LABEL);
     [credentialGroupVerticalLeadChips addObject:self.passwordButton];
     self.passwordButton.hidden = NO;
   } else {
@@ -355,7 +342,6 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   }
 
   if (showAutofillFormButton) {
-    CHECK(IsKeyboardAccessoryUpgradeEnabled());
     AddViewToVerticalLeadViews(self.autofillFormButton,
                                ManualFillCellView::ElementType::kOther,
                                verticalLeadViews);
@@ -429,13 +415,12 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
 
-  self.faviconView = IsKeyboardAccessoryUpgradeEnabled()
-                         ? [[FaviconContainerView alloc] init]
-                         : [[FaviconView alloc] init];
+  self.faviconView = [[FaviconContainerView alloc] init];
   self.faviconView.translatesAutoresizingMaskIntoConstraints = NO;
   self.faviconView.clipsToBounds = YES;
   [NSLayoutConstraint activateConstraints:@[
-    [self.faviconView.widthAnchor constraintEqualToConstant:GetFaviconSize()],
+    [self.faviconView.widthAnchor
+        constraintEqualToConstant:kFaviconContainterViewSize],
     [self.faviconView.heightAnchor
         constraintEqualToAnchor:self.faviconView.widthAnchor],
   ]];
@@ -516,14 +501,9 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
 
 // Sets up the favicon with the given `attributes`.
 - (void)setUpFaviconViewWithAttributes:(FaviconAttributes*)attributes {
-  FaviconView* favicon;
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    FaviconContainerView* faviconContainerView =
-        static_cast<FaviconContainerView*>(self.faviconView);
-    favicon = faviconContainerView.faviconView;
-  } else {
-    favicon = static_cast<FaviconView*>(self.faviconView);
-  }
+  FaviconContainerView* faviconContainerView =
+      static_cast<FaviconContainerView*>(self.faviconView);
+  FaviconView* favicon = faviconContainerView.faviconView;
   favicon.accessibilityIdentifier =
       manual_fill::kExpandedManualFillPasswordFaviconID;
   [favicon configureWithAttributes:attributes];

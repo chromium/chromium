@@ -86,8 +86,7 @@ using manual_fill::ManualFillDataType;
   [super stop];
 
   // On iPad, dismiss the popover.
-  if (IsKeyboardAccessoryUpgradeEnabled() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
       self.viewController.presentingViewController) {
     [self.viewController dismissViewControllerAnimated:true completion:nil];
   }

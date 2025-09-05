@@ -141,7 +141,7 @@ bool ShouldShowGPayIcon(autofill::CreditCard::RecordType card_record_type) {
       return false;
     case autofill::CreditCard::RecordType::kMaskedServerCard:
     case autofill::CreditCard::RecordType::kVirtualCard:
-      return IsKeyboardAccessoryUpgradeEnabled();
+      return true;
     case autofill::CreditCard::RecordType::kFullServerCard:
       // Full server cards are a temporary cached state and are not given as
       // suggestions for manual fill.
@@ -283,22 +283,20 @@ CGFloat GPayIconTopAnchorOffset() {
   [self populateViewsWithCardData:card menuActions:menuActions];
   [self verticallyArrangeViews:card];
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    NSString* accessibilityLabel =
-        [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
-                                   self.cardLabel.attributedText.string];
+  NSString* accessibilityLabel =
+      [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
+                                 self.cardLabel.attributedText.string];
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (ShouldShowGPayIcon(self.card.recordType)) {
-      accessibilityLabel =
-          [NSString stringWithFormat:@"%@, %@", accessibilityLabel,
-                                     l10n_util::GetNSString(
-                                         IDS_IOS_AUTOFILL_WALLET_SERVER_NAME)];
-    }
-#endif
-    GiveAccessibilityContextToCellAndButton(
-        self.contentView, self.overflowMenuButton, self.autofillFormButton,
-        accessibilityLabel);
+  if (ShouldShowGPayIcon(self.card.recordType)) {
+    accessibilityLabel =
+        [NSString stringWithFormat:@"%@, %@", accessibilityLabel,
+                                   l10n_util::GetNSString(
+                                       IDS_IOS_AUTOFILL_WALLET_SERVER_NAME)];
   }
+#endif
+  GiveAccessibilityContextToCellAndButton(
+      self.contentView, self.overflowMenuButton, self.autofillFormButton,
+      accessibilityLabel);
 }
 
 #pragma mark - Private
@@ -327,12 +325,7 @@ CGFloat GPayIconTopAnchorOffset() {
   [self.contentView addSubview:self.headerView];
   [accessibilityElements addObject:self.overflowMenuButton];
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.headerSeparator = CreateGraySeparatorForContainer(self.contentView);
-  } else {
-    // This separator is used to delimit this cell from the others.
-    CreateGraySeparatorForContainer(self.contentView);
-  }
+  self.headerSeparator = CreateGraySeparatorForContainer(self.contentView);
 
   UILabel* expirationDateSeparatorLabel;
 
@@ -421,12 +414,6 @@ CGFloat GPayIconTopAnchorOffset() {
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
 
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    // Without this set, Voice Over will read the content vertically instead of
-    // horizontally.
-    self.contentView.shouldGroupAccessibilityChildren = YES;
-  }
-
   [NSLayoutConstraint activateConstraints:staticConstraints];
 }
 
@@ -487,28 +474,25 @@ CGFloat GPayIconTopAnchorOffset() {
         buttonTitles:@[ card.CVC ]];
   }
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.cardNumberLabeledChip.singleButton.accessibilityLabel =
-        l10n_util::GetNSStringF(
-            IDS_IOS_MANUAL_FALLBACK_CARD_NUMBER_CHIP_ACCESSIBILITY_LABEL,
-            base::SysNSStringToUTF16(
-                CardNumberLastFourDigits(card.obfuscatedNumber)));
-    self.expirationDateLabeledChip.expirationMonthButton.accessibilityLabel =
-        l10n_util::GetNSStringF(
-            IDS_IOS_MANUAL_FALLBACK_EXPIRATION_MONTH_CHIP_ACCESSIBILITY_LABEL,
-            base::SysNSStringToUTF16(card.expirationMonth));
-    self.expirationDateLabeledChip.expirationYearButton.accessibilityLabel =
-        l10n_util::GetNSStringF(
-            IDS_IOS_MANUAL_FALLBACK_EXPIRATION_YEAR_CHIP_ACCESSIBILITY_LABEL,
-            base::SysNSStringToUTF16(card.expirationYear));
-    self.cardholderLabeledChip.singleButton.accessibilityLabel =
-        l10n_util::GetNSStringF(
-            IDS_IOS_MANUAL_FALLBACK_CARDHOLDER_CHIP_ACCESSIBILITY_LABEL,
-            base::SysNSStringToUTF16(card.cardHolder));
-    self.CVCLabeledChip.singleButton.accessibilityLabel =
-        l10n_util::GetNSString(
-            IDS_IOS_MANUAL_FALLBACK_CVC_CHIP_ACCESSIBILITY_LABEL);
-  }
+  self.cardNumberLabeledChip.singleButton.accessibilityLabel =
+      l10n_util::GetNSStringF(
+          IDS_IOS_MANUAL_FALLBACK_CARD_NUMBER_CHIP_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(
+              CardNumberLastFourDigits(card.obfuscatedNumber)));
+  self.expirationDateLabeledChip.expirationMonthButton.accessibilityLabel =
+      l10n_util::GetNSStringF(
+          IDS_IOS_MANUAL_FALLBACK_EXPIRATION_MONTH_CHIP_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(card.expirationMonth));
+  self.expirationDateLabeledChip.expirationYearButton.accessibilityLabel =
+      l10n_util::GetNSStringF(
+          IDS_IOS_MANUAL_FALLBACK_EXPIRATION_YEAR_CHIP_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(card.expirationYear));
+  self.cardholderLabeledChip.singleButton.accessibilityLabel =
+      l10n_util::GetNSStringF(
+          IDS_IOS_MANUAL_FALLBACK_CARDHOLDER_CHIP_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(card.cardHolder));
+  self.CVCLabeledChip.singleButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_MANUAL_FALLBACK_CVC_CHIP_ACCESSIBILITY_LABEL);
 }
 
 // Positions the UIViews vertically.
@@ -520,11 +504,9 @@ CGFloat GPayIconTopAnchorOffset() {
                              ManualFillCellView::ElementType::kOther,
                              verticalLeadViews);
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    AddViewToVerticalLeadViews(
-        self.headerSeparator, ManualFillCellView::ElementType::kHeaderSeparator,
-        verticalLeadViews);
-  }
+  AddViewToVerticalLeadViews(self.headerSeparator,
+                             ManualFillCellView::ElementType::kHeaderSeparator,
+                             verticalLeadViews);
 
   // Holds the chip buttons related to the card that are vertical leads.
   NSMutableArray<UIView*>* cardInfoGroupVerticalLeadChips =
@@ -539,13 +521,11 @@ CGFloat GPayIconTopAnchorOffset() {
         self.cardInstructionTextView,
         ManualFillCellView::ElementType::kVirtualCardInstructions,
         verticalLeadViews);
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      AddViewToVerticalLeadViews(
-          self.cardInstructionsSeparator,
-          ManualFillCellView::ElementType::kCardInstructionsSeparator,
-          verticalLeadViews);
-      self.cardInstructionsSeparator.hidden = NO;
-    }
+    AddViewToVerticalLeadViews(
+        self.cardInstructionsSeparator,
+        ManualFillCellView::ElementType::kCardInstructionsSeparator,
+        verticalLeadViews);
+    self.cardInstructionsSeparator.hidden = NO;
     self.cardInstructionTextView.hidden = NO;
   } else {
     self.cardInstructionTextView.hidden = YES;
@@ -574,7 +554,6 @@ CGFloat GPayIconTopAnchorOffset() {
                                    verticalLeadViews);
 
   if (_showAutofillFormButton) {
-    CHECK(IsKeyboardAccessoryUpgradeEnabled());
     AddViewToVerticalLeadViews(self.autofillFormButton,
                                ManualFillCellView::ElementType::kOther,
                                verticalLeadViews);
@@ -794,11 +773,8 @@ CGFloat GPayIconTopAnchorOffset() {
   [cardIcon setContentHuggingPriority:UILayoutPriorityDefaultHigh
                               forAxis:UILayoutConstraintAxisHorizontal];
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    cardIcon.contentMode = UIViewContentModeScaleAspectFill;
-    [cardIcon.widthAnchor constraintEqualToConstant:kCardIconWidth].active =
-        YES;
-  }
+  cardIcon.contentMode = UIViewContentModeScaleAspectFill;
+  [cardIcon.widthAnchor constraintEqualToConstant:kCardIconWidth].active = YES;
 
   return cardIcon;
 }

@@ -139,9 +139,7 @@ std::vector<AutofillProfile> FetchAddresses(
         [[ManualFillAddress alloc] initWithProfile:_addresses[i]];
 
     NSArray<UIAction*>* menuActions =
-        IsKeyboardAccessoryUpgradeEnabled()
-            ? @[ [self createMenuEditActionForAddress:_addresses[i]] ]
-            : @[];
+        @[ [self createMenuEditActionForAddress:_addresses[i]] ];
 
     NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
         base::i18n::MessageFormatter::FormatWithNamedArgs(

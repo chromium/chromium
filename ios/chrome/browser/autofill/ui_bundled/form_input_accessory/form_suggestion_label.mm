@@ -28,15 +28,10 @@ using autofill::SuggestionType;
 
 namespace {
 
-// The string ' ••••••••' appended to the username of a password suggestion.
-constexpr NSString* kPasswordFormSuggestionSuffix = @" ••••••••";
-
 // Font size of button titles.
 constexpr CGFloat kIpadFontSize = 15;
 constexpr CGFloat kIphoneFontSize = 14;
 
-// The horizontal space between the edge of the background and the text.
-constexpr CGFloat kBorderWidth = 14;
 // The horizontal space between the edge of the background and the text for the
 // large keyboard accessory.
 constexpr CGFloat kSmallBorderWidth = 12;
@@ -88,12 +83,7 @@ UIFont* TextFont(BOOL bold, BOOL is_title) {
       (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
           ? kIpadFontSize
           : kIphoneFontSize;
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    return is_title ? TitleFont(font_size) : SubtitleFont(font_size);
-  } else {
-    return bold ? [UIFont boldSystemFontOfSize:font_size]
-                : [UIFont systemFontOfSize:font_size];
-  }
+  return is_title ? TitleFont(font_size) : SubtitleFont(font_size);
 }
 
 // Creates a label with the given `text` and `alpha` suitable for use in a
@@ -313,11 +303,6 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
 
 // Returns the text to display for a password suggestion.
 NSString* PasswordSuggestionDisplayText(NSString* suggestion_value) {
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    return [suggestion_value
-        stringByAppendingString:kPasswordFormSuggestionSuffix];
-  }
-
   if ([suggestion_value length] == 0) {
     return l10n_util::GetNSString(IDS_IOS_AUTOFILL_PASSWORD_NO_USERNAME);
   }
@@ -404,26 +389,25 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
             : suggestion.value;
 
     BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      // On phones, store the suggestion information in a stack view so that it
-      // can be selectively truncated if necessary.
-      if (!isTablet) {
-        UIStackView* verticalStackView =
-            [[UIStackView alloc] initWithArrangedSubviews:@[]];
-        verticalStackView.axis = UILayoutConstraintAxisVertical;
-        verticalStackView.alignment = UIStackViewAlignmentLeading;
-        verticalStackView.layoutMarginsRelativeArrangement = YES;
-        verticalStackView.layoutMargins =
-            UIEdgeInsetsMake(0, suggestion.icon ? kSpacing : 0, 0, 0);
-        verticalStackView.spacing = kVerticalSpacing;
-        [stackView addArrangedSubview:verticalStackView];
 
-        // Insert the next subviews vertically instead of horizontally.
-        stackView = verticalStackView;
-      }
+    // On phones, store the suggestion information in a stack view so that it
+    // can be selectively truncated if necessary.
+    if (!isTablet) {
+      UIStackView* verticalStackView =
+          [[UIStackView alloc] initWithArrangedSubviews:@[]];
+      verticalStackView.axis = UILayoutConstraintAxisVertical;
+      verticalStackView.alignment = UIStackViewAlignmentLeading;
+      verticalStackView.layoutMarginsRelativeArrangement = YES;
+      verticalStackView.layoutMargins =
+          UIEdgeInsetsMake(0, suggestion.icon ? kSpacing : 0, 0, 0);
+      verticalStackView.spacing = kVerticalSpacing;
+      [stackView addArrangedSubview:verticalStackView];
+
+      // Insert the next subviews vertically instead of horizontally.
+      stackView = verticalStackView;
     }
 
-    if (isTablet && IsKeyboardAccessoryUpgradeEnabled()) {
+    if (isTablet) {
       // On tablets, the stage manager causes an issue where an infinite loop
       // happens if we add stack views here, so we can't use more stack views
       // until the stage manager issue is fixed. As a workaround, on tablets,
@@ -468,7 +452,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
         setAccessibilityIdentifier:kFormSuggestionLabelAccessibilityIdentifier];
 
     // On phones, set a maximum width to save space on the keyboard accessory.
-    if (!isTablet && IsKeyboardAccessoryUpgradeEnabled()) {
+    if (!isTablet) {
       CGFloat maximumWidth = [self maximumWidth:accessoryTrailingView
                                 suggestionCount:numberOfSuggestions];
       if (maximumWidth < CGFLOAT_MAX) {
@@ -494,7 +478,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 - (void)layoutSubviews {
   [super layoutSubviews];
   [self setCornerRadius:[self cornerRadius]];
-  if (!IsLiquidGlassEffectEnabled() && IsKeyboardAccessoryUpgradeEnabled()) {
+  if (!IsLiquidGlassEffectEnabled()) {
     self.layer.shadowRadius = kShadowRadius;
     self.layer.shadowOffset = CGSizeMake(0, kShadowVerticalOffset);
     self.layer.shadowOpacity = kShadowOpacity;
@@ -558,19 +542,16 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
     return UIColor.clearColor;
   }
 
-  return
-      [UIColor colorNamed:IsKeyboardAccessoryUpgradeEnabled() ? kBackgroundColor
-                                                              : kGrey100Color];
+  return [UIColor colorNamed:kBackgroundColor];
 }
 
 // Corner radius of the suggestion chips.
 - (CGFloat)cornerRadius {
-  return IsKeyboardAccessoryUpgradeEnabled() ? kCornerRadius
-                                             : self.bounds.size.height / 2.0;
+  return kCornerRadius;
 }
 
 - (CGFloat)borderWidth {
-  return IsKeyboardAccessoryUpgradeEnabled() ? kSmallBorderWidth : kBorderWidth;
+  return kSmallBorderWidth;
 }
 
 // Returns whether this label is for a credit card suggestion.
@@ -581,8 +562,8 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
 // Resize the icon if it's a credit card icon which requires an upscaling.
 - (UIImage*)resizeIconIfNecessary:(UIImage*)icon {
-  if (IsKeyboardAccessoryUpgradeEnabled() && [self isCreditCardSuggestion] &&
-      icon && icon.size.width > 0 && icon.size.width < kSuggestionIconWidth) {
+  if ([self isCreditCardSuggestion] && icon && icon.size.width > 0 &&
+      icon.size.width < kSuggestionIconWidth) {
     // For a simple image resize, we can keep the same underlying image
     // and only adjust the ratio.
     CGFloat ratio = icon.size.width / kSuggestionIconWidth;

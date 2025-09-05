@@ -39,7 +39,7 @@ enum ManualFallbackItemType : NSInteger {
                            cards.count);
 
   self.noRegularDataItemsToShowHeaderItem = nil;
-  if (!cards.count && IsKeyboardAccessoryUpgradeEnabled()) {
+  if (!cards.count) {
     TableViewTextHeaderFooterItem* textHeaderFooterItem =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:manual_fill::ManualFallbackItemType::kNoCardsMessage];

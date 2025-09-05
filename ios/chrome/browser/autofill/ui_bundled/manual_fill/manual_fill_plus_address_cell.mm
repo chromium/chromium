@@ -24,13 +24,8 @@
 
 namespace {
 
+// The size that the favicon should have.
 constexpr CGFloat kFaviconContainterViewSize = 30;
-
-// Returns the size that the favicon should have.
-CGFloat GetFaviconSize() {
-  return IsKeyboardAccessoryUpgradeEnabled() ? kFaviconContainterViewSize
-                                             : gfx::kFaviconSize;
-}
 
 }  // namespace
 
@@ -189,22 +184,18 @@ CGFloat GetFaviconSize() {
   NSAttributedString* attributedText =
       CreateSiteNameLabelAttributedText(plusAddress, /*should_show_host=*/YES);
   self.siteNameLabel.attributedText = attributedText;
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.siteNameLabel.numberOfLines = 0;
-    self.accessibilityLabel =
-        [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
-                                   attributedText.string];
-  }
+  self.siteNameLabel.numberOfLines = 0;
+  self.accessibilityLabel =
+      [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
+                                 attributedText.string];
   self.siteNameLabel.hidden = NO;
   self.faviconView.hidden = NO;
   AddViewToVerticalLeadViews(self.headerView,
                              ManualFillCellView::ElementType::kOther,
                              verticalLeadViews);
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    AddViewToVerticalLeadViews(
-        self.grayLine, ManualFillCellView::ElementType::kHeaderSeparator,
-        verticalLeadViews);
-  }
+  AddViewToVerticalLeadViews(self.grayLine,
+                             ManualFillCellView::ElementType::kHeaderSeparator,
+                             verticalLeadViews);
   if (menuActions && menuActions.count) {
     self.overflowMenuButton.menu = [UIMenu menuWithChildren:menuActions];
     self.overflowMenuButton.hidden = NO;
@@ -219,11 +210,9 @@ CGFloat GetFaviconSize() {
   // Plus Address chip button.
   [self.plusAddressButton setTitle:plusAddress.plusAddress
                           forState:UIControlStateNormal];
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.plusAddressButton.accessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL,
-        base::SysNSStringToUTF16(plusAddress.plusAddress));
-  }
+  self.plusAddressButton.accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(plusAddress.plusAddress));
   [plusAddressGroupVerticalLeadChips addObject:self.plusAddressButton];
 
   AddChipGroupsToVerticalLeadViews(@[ plusAddressGroupVerticalLeadChips ],
@@ -257,14 +246,13 @@ CGFloat GetFaviconSize() {
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
 
-  self.faviconView = IsKeyboardAccessoryUpgradeEnabled()
-                         ? [[FaviconContainerView alloc] init]
-                         : [[FaviconView alloc] init];
+  self.faviconView = [[FaviconContainerView alloc] init];
   self.faviconView.translatesAutoresizingMaskIntoConstraints = NO;
   self.faviconView.clipsToBounds = YES;
   self.faviconView.hidden = YES;
   [NSLayoutConstraint activateConstraints:@[
-    [self.faviconView.widthAnchor constraintEqualToConstant:GetFaviconSize()],
+    [self.faviconView.widthAnchor
+        constraintEqualToConstant:kFaviconContainterViewSize],
     [self.faviconView.heightAnchor
         constraintEqualToAnchor:self.faviconView.widthAnchor],
   ]];
@@ -317,14 +305,9 @@ CGFloat GetFaviconSize() {
 
 // Sets up the favicon with the given `attributes`.
 - (void)setUpFaviconViewWithAttributes:(FaviconAttributes*)attributes {
-  FaviconView* favicon;
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    FaviconContainerView* faviconContainerView =
-        static_cast<FaviconContainerView*>(self.faviconView);
-    favicon = faviconContainerView.faviconView;
-  } else {
-    favicon = static_cast<FaviconView*>(self.faviconView);
-  }
+  FaviconContainerView* faviconContainerView =
+      static_cast<FaviconContainerView*>(self.faviconView);
+  FaviconView* favicon = faviconContainerView.faviconView;
   favicon.accessibilityIdentifier =
       manual_fill::kExpandedManualFillPlusAddressFaviconID;
   [favicon configureWithAttributes:attributes];

@@ -73,7 +73,7 @@ enum ManualFallbackItemType : NSInteger {
                            addresses.count);
 
   self.noRegularDataItemsToShowHeaderItem = nil;
-  if (!addresses.count && IsKeyboardAccessoryUpgradeEnabled()) {
+  if (!addresses.count) {
     TableViewTextHeaderFooterItem* textHeaderFooterItem =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:manual_fill::ManualFallbackItemType::

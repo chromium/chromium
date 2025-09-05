@@ -234,21 +234,7 @@ NSArray* FindDescendantToolbarItemsForActionName(
     (void (^)(bool, bool))completionHandler {
   DCHECK(completionHandler);
 
-  if (!_webState || IsKeyboardAccessoryUpgradeEnabled()) {
-    completionHandler(false, false);
-    return;
-  }
-
-  web::WebFrame* frame = [self webFrame];
-
-  if (!frame) {
-    completionHandler(false, false);
-    return;
-  }
-
-  autofill::SuggestionControllerJavaScriptFeature::GetInstance()
-      ->FetchPreviousAndNextElementsPresenceInFrame(
-          frame, base::BindOnce(completionHandler));
+  completionHandler(false, false);
 }
 
 #pragma mark - Private

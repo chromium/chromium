@@ -160,8 +160,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
     // TODO(crbug.com/326398845): Completely remove the
     // `_manualFillAccessoryViewController` property (and its class) once the
     // Keyboard Accessory Upgrade feature has launched both on iPhone and iPad.
-    _manualFillAccessoryViewController.view.hidden =
-        IsKeyboardAccessoryUpgradeEnabled();
+    _manualFillAccessoryViewController.view.hidden = YES;
     _keyboardWasClosed = YES;
 
     if (@available(iOS 17, *)) {
@@ -219,11 +218,8 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 
   // Exit the manual fill view, so that the next time the keyboard opens, it is
   // showing the keyboard and not the manual fill view.
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    // Reset the delegate.
-    [self.formInputAccessoryViewControllerDelegate
-        formInputAccessoryViewControllerReset:self];
-  }
+  [self.formInputAccessoryViewControllerDelegate
+      formInputAccessoryViewControllerReset:self];
 
   // Whether the keyboard was closed the next time the keyboard accessory opens.
   _keyboardWasClosed = YES;
@@ -232,11 +228,6 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 #pragma mark - Public
 
 - (void)lockManualFallbackView {
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    return;
-  }
-
-  [self.formSuggestionView lockTrailingView];
 }
 
 - (void)reset {
@@ -412,8 +403,6 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 // Invoked after the user taps any of the `manual fill` buttons.
 - (void)manualFillButtonPressed:(UIButton*)button
                     forDataType:(manual_fill::ManualFillDataType)dataType {
-  DCHECK(IsKeyboardAccessoryUpgradeEnabled());
-
   // Hide the keyboard accessory while the expanded view is visible (iPhone
   // only).
   self.formInputAccessoryView.hidden =
@@ -471,41 +460,27 @@ UIImage* GetManualFillSymbol() {
   BOOL isTabletFormFactor =
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    UIImage* closeButtonSymbol = nil;
-    // When using liquid glass (on iOS 26+), the close button symbol uses the
-    // default checkmark symbol.
-    if (!IsLiquidGlassEffectEnabled()) {
-      closeButtonSymbol = DefaultSymbolWithPointSize(kKeyboardDownSymbol,
-                                                     kSymbolActionPointSize);
-    }
-
-    [formInputAccessoryView
-              setUpWithLeadingView:self.leadingView
-                navigationDelegate:self.navigationDelegate
-                  manualFillSymbol:GetManualFillSymbol()
-          passwordManualFillSymbol:CustomSymbolWithPointSize(
-                                       kPasswordSymbol, kSymbolActionPointSize)
-        creditCardManualFillSymbol:DefaultSymbolWithPointSize(
-                                       kCreditCardSymbol,
-                                       kSymbolActionPointSize)
-           addressManualFillSymbol:CustomSymbolWithPointSize(
-                                       kLocationSymbol, kSymbolActionPointSize)
-                 closeButtonSymbol:closeButtonSymbol
-                isTabletFormFactor:isTabletFormFactor];
-    [formInputAccessoryView setIsCompact:[self isCompact]];
-  } else {
-    if (isTabletFormFactor) {
-      [formInputAccessoryView
-          setUpWithLeadingView:self.leadingView
-            customTrailingView:self.manualFillAccessoryViewController.view];
-    } else {
-      self.formSuggestionView.trailingView =
-          self.manualFillAccessoryViewController.view;
-      [formInputAccessoryView setUpWithLeadingView:self.leadingView
-                                navigationDelegate:self.navigationDelegate];
-    }
+  UIImage* closeButtonSymbol = nil;
+  // When using liquid glass (on iOS 26+), the close button symbol uses the
+  // default checkmark symbol.
+  if (!IsLiquidGlassEffectEnabled()) {
+    closeButtonSymbol =
+        DefaultSymbolWithPointSize(kKeyboardDownSymbol, kSymbolActionPointSize);
   }
+
+  [formInputAccessoryView
+            setUpWithLeadingView:self.leadingView
+              navigationDelegate:self.navigationDelegate
+                manualFillSymbol:GetManualFillSymbol()
+        passwordManualFillSymbol:CustomSymbolWithPointSize(
+                                     kPasswordSymbol, kSymbolActionPointSize)
+      creditCardManualFillSymbol:DefaultSymbolWithPointSize(
+                                     kCreditCardSymbol, kSymbolActionPointSize)
+         addressManualFillSymbol:CustomSymbolWithPointSize(
+                                     kLocationSymbol, kSymbolActionPointSize)
+               closeButtonSymbol:closeButtonSymbol
+              isTabletFormFactor:isTabletFormFactor];
+  [formInputAccessoryView setIsCompact:[self isCompact]];
 
   if (!isTabletFormFactor) {
     formInputAccessoryView.accessibilityViewIsModal = YES;
@@ -665,8 +640,7 @@ UIImage* GetManualFillSymbol() {
     [self updateOmniboxTypingShieldVisibility];
   }
 
-  if (IsKeyboardAccessoryUpgradeEnabled() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     BOOL isCompact = [self isCompact];
     [self.formInputAccessoryView setIsCompact:isCompact];
     [self.formSuggestionView setIsCompact:isCompact];
