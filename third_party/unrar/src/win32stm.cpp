@@ -52,7 +52,7 @@ void ExtractStreams20(Archive &Arc,const std::wstring &FileName)
   std::wstring StreamName;
   CharToWide(Arc.StreamHead.StreamName,StreamName);
 
-  if (StreamName[0]!=':')
+  if (StreamName[0]!=':' || StreamName.find_first_of(L"\\/")!=std::wstring::npos)
   {
     uiMsg(UIERROR_STREAMBROKEN,Arc.FileName,FileName);
     ErrHandler.SetErrorCode(RARX_CRC);
@@ -128,7 +128,8 @@ void ExtractStreams20(Archive &Arc,const std::wstring &FileName)
 void ExtractStreams(Archive &Arc,const std::wstring &FileName,bool TestMode)
 {
   std::wstring StreamName=GetStreamNameNTFS(Arc);
-  if (StreamName[0]!=':')
+
+  if (StreamName[0]!=':' || StreamName.find_first_of(L"\\/")!=std::wstring::npos)
   {
     uiMsg(UIERROR_STREAMBROKEN,Arc.FileName,FileName);
     ErrHandler.SetErrorCode(RARX_CRC);
