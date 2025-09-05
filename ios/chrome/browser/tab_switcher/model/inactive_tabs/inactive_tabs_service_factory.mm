@@ -30,12 +30,10 @@ InactiveTabsServiceFactory::InactiveTabsServiceFactory()
 
 InactiveTabsServiceFactory::~InactiveTabsServiceFactory() = default;
 
-#pragma mark BrowserStateKeyedServiceFactory
+#pragma mark ProfileKeyedServiceFactoryIOS
 
 std::unique_ptr<KeyedService>
-InactiveTabsServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+InactiveTabsServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<InactiveTabsService>(
       profile->GetPrefs(), BrowserListFactory::GetForProfile(profile));
 }
