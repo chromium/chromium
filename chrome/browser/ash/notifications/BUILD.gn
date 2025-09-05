@@ -25,8 +25,6 @@ static_library("notifications") {
     "kiosk_external_update_notification.h",
     "low_disk_notification.cc",
     "low_disk_notification.h",
-    "multi_capture_notifications.cc",
-    "multi_capture_notifications.h",
     "request_system_proxy_credentials_view.cc",
     "request_system_proxy_credentials_view.h",
     "screen_capture_notification_ui_ash.cc",
@@ -100,7 +98,6 @@ source_set("unit_tests") {
     "low_disk_notification_unittest.cc",
     "mock_adb_sideloading_policy_change_notification.cc",
     "mock_adb_sideloading_policy_change_notification.h",
-    "multi_capture_notifications_unittest.cc",
     "request_system_proxy_credentials_view_unittest.cc",
     "update_required_notification_unittest.cc",
   ]

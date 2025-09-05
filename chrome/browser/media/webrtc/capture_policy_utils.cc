@@ -140,31 +140,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-bool IsMultiScreenCaptureAllowed(const std::optional<GURL>& url) {
-#if BUILDFLAG(IS_CHROMEOS)
-  content::BrowserContext* context =
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-          user_manager::UserManager::Get()->GetPrimaryUser());
-  if (!context) {
-    return false;
-  }
-  auto* service =
-      policy::MultiScreenCapturePolicyServiceFactory::GetForBrowserContext(
-          context);
-  if (!service) {
-    return false;
-  }
-
-  if (url.has_value()) {
-    return service->IsMultiScreenCaptureAllowed(*url);
-  } else {
-    return service->GetAllowListSize() > 0;
-  }
-#else
-  return false;
-#endif
-}
-
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 bool IsTransientActivationRequiredForGetDisplayMedia(
     content::WebContents* contents) {

@@ -72,8 +72,6 @@ void ShowCaptureTerminatedDialog(content::WebContents* contents);
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-bool IsMultiScreenCaptureAllowed(const std::optional<GURL>& url);
-
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 bool IsTransientActivationRequiredForGetDisplayMedia(
     content::WebContents* contents);

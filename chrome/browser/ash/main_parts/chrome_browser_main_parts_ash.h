@@ -79,7 +79,6 @@ class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class AuthEventsRecorder;
 class MagicBoostControllerAsh;
-class MultiCaptureNotifications;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
@@ -218,7 +217,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<LowDiskNotification> low_disk_notification_;
   std::unique_ptr<KioskController> kiosk_controller_;
   std::unique_ptr<AmbientClientImpl> ambient_client_;
-  std::unique_ptr<MultiCaptureNotifications> multi_capture_notifications_;
 
   std::unique_ptr<ShortcutMappingPrefService> shortcut_mapping_pref_service_;
   std::unique_ptr<ChromeKeyboardControllerClient>

@@ -134,7 +134,6 @@
 #include "chrome/browser/ash/notifications/debugd_notification_handler.h"
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
-#include "chrome/browser/ash/notifications/multi_capture_notifications.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/performance/doze_mode_power_status_scheduler.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
@@ -1072,8 +1071,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // Needs to be initialized after crosapi_manager_.
   metrics::structured::ChromeStructuredMetricsDelegate::Get()->Initialize();
 
-  multi_capture_notifications_ = std::make_unique<MultiCaptureNotifications>();
-
   // Initialize Cellular Carrier Lock provisioning manager before login
   carrier_lock_manager_ = carrier_lock::CarrierLockManager::Create(
       g_browser_process->local_state(), g_browser_process->gcm_driver(),
@@ -1744,8 +1741,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // Cleans up dbus services depending on ash.
   dbus_services_->PreAshShutdown();
-
-  multi_capture_notifications_.reset();
 
   // vc_app_service_client_ has to be destructed before PostMainMessageLoopRun.
   vc_app_service_client_.reset();
