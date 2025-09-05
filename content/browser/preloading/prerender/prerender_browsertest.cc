@@ -873,6 +873,9 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   void TestTimerResetWhenPageGoBackToForeground(Visibility visibility);
   void TestCancelPrerenderWithTargetBlankWhenTimeout(Visibility visibility);
   void TestEmbedderTriggerWithUnsupportedScheme(const GURL& prerendering_url);
+  void TestSequentialPrerenderingVisibilityStateTransition(
+      Visibility initial_visibility,
+      Visibility background_visibility);
 
   net::test_server::EmbeddedTestServer& ssl_server() { return ssl_server_; }
 
@@ -7783,26 +7786,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderLowMemoryBrowserTest, NoPrerender) {
       blink::mojom::SpeculationEagerness::kImmediate)});
 }
 
-class PrerenderSequentialPrerenderingBrowserTest : public PrerenderBrowserTest {
- public:
-  PrerenderSequentialPrerenderingBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    // Explicitly enables blink::features::kPrerender2InNewTab to override
-    // SpeculationRulesTargetHint.
-    enabled_features.push_back(base::test::FeatureRefAndParams(
-        blink::features::kPrerender2InNewTab, {}));
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
-  }
-
- protected:
-  void TestSequentialPrerenderingVisibilityStateTransition(
-      Visibility initial_visibility,
-      Visibility background_visibility);
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 namespace {
 
 // Records all the navigation start and finish events until the navigation to
@@ -7857,8 +7840,7 @@ class SequentialPrerenderObserver : public WebContentsObserver {
 
 // Tests that multiple prerenderings should be enqueued and the pending request
 // starts right after the previous prerender calls DidFinishNavigation.
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
-                       SequentialPrerendering) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SequentialPrerendering) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
@@ -7913,7 +7895,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
 // Tests that a cancelled request in the pending queue is skipped and the next
 // prerender starts.
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        SkipCancelledPrerenderAndStartNextPrerender) {
   net::test_server::ControllableHttpResponse response1(
       embedded_test_server(), "/empty.html?prerender1");
@@ -7979,7 +7961,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 // Test to make sure that the completion of iframe navigation in a prerendering
 // page doesn't start another pending prerender request.
 IN_PROC_BROWSER_TEST_F(
-    PrerenderSequentialPrerenderingBrowserTest,
+    PrerenderBrowserTest,
     IframeNavigationFinishDontDisruptPrerenderNavigationFinish) {
   net::test_server::ControllableHttpResponse response2(
       embedded_test_server(), "/empty.html?prerender2");
@@ -8026,8 +8008,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that if PrerenderHostRegistry is attempting to activate a pending
 // prerender host, it will be successfully canceled with the final status of
 // `kActivatedBeforeStarted`.
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
-                       ActivateBeforePrerenderStarts) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateBeforePrerenderStarts) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/empty.html?prerender1");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -8089,8 +8070,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
 // Test that if 1 more than the limit number of URLs are specified in the
 // speculation rule, the final one prerender is cancelled.
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
-                       ExceedTheRequestNumberLimit) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ExceedTheRequestNumberLimit) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/empty.html?prerender1");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -8131,7 +8111,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
 // Test that the requests from embedder are handled immediately regardless of
 // the requests from speculation rules.
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        EmbedderPrerenderHandledImmediately) {
   net::test_server::ControllableHttpResponse prerender1_response(
       embedded_test_server(), "/empty.html?prerender1");
@@ -8189,7 +8169,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 // Tests that if the running prerender is cancelled by
 // PrerenderHostRegistry::CancelHost(), the next pending prerender starts its
 // navigation.
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        RunningHostCancellationStartPendingPrerender) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/empty.html?prerender1");
@@ -8239,7 +8219,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 // Tests that if the running prerender is cancelled by
 // PrerenderHostRegistry::CancelHosts(), the next pending prerender
 // starts its navigation.
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        SpeculationRulesUpdateStartPendingPrerender) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/empty.html?prerender1");
@@ -8304,7 +8284,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
 // Test that a pending prerender should have the
 // `PreloadingTriggeringOutcome::kTriggeredButPending`.
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PreloadingTriggeringOutcomeForPendingPrerender) {
   net::test_server::ControllableHttpResponse response1(
       embedded_test_server(), "/empty.html?prerender1");
@@ -8395,7 +8375,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 // another already prerendered page, other pending prerender's outcome is
 // recorded as `kTriggeredButPending`.
 IN_PROC_BROWSER_TEST_F(
-    PrerenderSequentialPrerenderingBrowserTest,
+    PrerenderBrowserTest,
     PreloadingTriggeringOutcomeForStartingPrerenderBeforeDestruction) {
   net::test_server::ControllableHttpResponse response2(
       embedded_test_server(), "/empty.html?prerender2");
@@ -8462,7 +8442,7 @@ IN_PROC_BROWSER_TEST_F(
 // Test that all the prerender hosts except the one to be activated are
 // cancelled regardless of their status right after the PrerenderHostRegistry
 // receives the activation request.
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        CancelAllPrerenderUponActivationRequestArrival) {
   net::test_server::ControllableHttpResponse response3(
       embedded_test_server(), "/empty.html?prerender3");
@@ -8565,8 +8545,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
 // Tests that prerendering in a new tab multiple times and activating one of
 // them succeed.
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
-                       MultipleNewTabPrerendering) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MultipleNewTabPrerendering) {
   GURL initial_url = GetUrl("/simple_links.html");
   std::vector<GURL> prerendering_urls = {GetUrl("/title2.html"),
                                          GetUrl("/title2.html?2"),
@@ -8631,10 +8610,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 // the current tab gets visible then we start the next prerender if we have some
 // pending prerender hosts. Note that if the initial visibility is background,
 // there is still one prerender allowed to be running.
-void PrerenderSequentialPrerenderingBrowserTest::
-    TestSequentialPrerenderingVisibilityStateTransition(
-        Visibility initial_visibility,
-        Visibility next_visibility) {
+void PrerenderBrowserTest::TestSequentialPrerenderingVisibilityStateTransition(
+    Visibility initial_visibility,
+    Visibility next_visibility) {
   net::test_server::ControllableHttpResponse response1(
       embedded_test_server(), "/empty.html?prerender1");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -8731,43 +8709,43 @@ void PrerenderSequentialPrerenderingBrowserTest::
   EXPECT_TRUE(prerender2_observer.was_activated());
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderInBackground_InitialyVisible_Hidden) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::VISIBLE,
                                                       Visibility::HIDDEN);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderInBackground_InitialyVisible_Occluded) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::VISIBLE,
                                                       Visibility::OCCLUDED);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderInBackground_InitialyOccluded_Hidden) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::OCCLUDED,
                                                       Visibility::HIDDEN);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderInBackground_InitialyOccluded_Occluded) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::OCCLUDED,
                                                       Visibility::OCCLUDED);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderInBackground_InitialyHidden_Hidden) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::HIDDEN,
                                                       Visibility::HIDDEN);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderInBackground_InitialyHidden_Occluded) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::HIDDEN,
                                                       Visibility::OCCLUDED);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderInBackground_InitialyHidden_Visible) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::HIDDEN,
                                                       Visibility::VISIBLE);
@@ -8782,7 +8760,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   PrerenderWhenInitiatorInBackground_Queue_Processing
 #endif
 IN_PROC_BROWSER_TEST_F(
-    PrerenderSequentialPrerenderingBrowserTest,
+    PrerenderBrowserTest,
     MAYBE_PrerenderWhenInitiatorInBackground_Queue_Processing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
