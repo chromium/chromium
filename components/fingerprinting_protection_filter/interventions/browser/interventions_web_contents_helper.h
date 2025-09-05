@@ -22,8 +22,6 @@ class InterventionsWebContentsHelper
     : public content::WebContentsUserData<InterventionsWebContentsHelper>,
       public content::WebContentsObserver {
  public:
-  // TODO(https://crbug.com/380458351): Add incognito bool upon creation of this
-  // WebContentsHelper.
   static void CreateForWebContents(content::WebContents* web_contents,
                                    bool is_incognito);
 

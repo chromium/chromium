@@ -28,6 +28,4 @@ bool IsCanvasInterventionsEnabledForIncognitoState(bool is_incognito) {
          kCanvasNoiseInRegularMode.Get();
 }
 
-// TODO(crbug.com/380463018): Add base::FeatureParams for signatures.
-
 }  // namespace fingerprinting_protection_interventions::features
