@@ -71,6 +71,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -111,6 +112,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -1785,6 +1787,27 @@ public class BookmarkTest {
         openBookmarkManager();
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         onView(withText("Tracked products")).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    public void testEdgeToEdge() throws InterruptedException {
+        openBookmarkManager();
+        RecyclerView recyclerView = mBookmarkManagerCoordinator.getRecyclerViewForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ObservableSupplier<EdgeToEdgeController> supplier =
+                            mBookmarkActivity.getEdgeToEdgeSupplier();
+                    EdgeToEdgeController edgeToEdgeController =
+                            supplier == null ? null : supplier.get();
+                    int bottomInset =
+                            edgeToEdgeController != null && edgeToEdgeController.isDrawingToEdge()
+                                    ? edgeToEdgeController.getBottomInsetPx()
+                                    : 0;
+                    assertEquals(bottomInset, recyclerView.getPaddingBottom());
+                });
     }
 
     private void openBookmarkManager() throws InterruptedException {

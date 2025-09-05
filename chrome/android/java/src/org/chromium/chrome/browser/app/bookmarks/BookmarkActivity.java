@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -70,7 +71,9 @@ public class BookmarkActivity extends SnackbarActivity {
                         mBookmarkOpener,
                         new BookmarkManagerOpenerImpl(),
                         PriceDropNotificationManagerFactory.create(profile),
-                        /* edgeToEdgePadAdjusterGenerator= */ null);
+                        /* edgeToEdgePadAdjusterGenerator= */ view ->
+                                EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                                        view, getEdgeToEdgeSupplier()));
         String url = getIntent().getDataString();
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
         mBookmarkManagerCoordinator.updateForUrl(url);
