@@ -1436,11 +1436,13 @@ bool ExtensionDownloader::IterateFetchCredentialsAfterFailure(
       if (response_code == net::HTTP_UNAUTHORIZED &&
           fetch->oauth2_attempt_count <= kMaxOAuth2Attempts) {
         DCHECK(identity_manager_);
-        identity_manager_->RemoveAccessTokenFromCache(
-            identity_manager_->GetPrimaryAccountId(
-                signin::ConsentLevel::kSignin),
-            signin::OAuthConsumerId::kExtensionDownloader, access_token_);
-        access_token_.clear();
+        if (!access_token_.empty()) {
+          identity_manager_->RemoveAccessTokenFromCache(
+              identity_manager_->GetPrimaryAccountId(
+                  signin::ConsentLevel::kSignin),
+              signin::OAuthConsumerId::kExtensionDownloader, access_token_);
+          access_token_.clear();
+        }
         return true;
       }
       // Either there is no Gaia identity available, the active identity
