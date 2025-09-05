@@ -1659,23 +1659,6 @@ bool HistoryBackend::CanAddURL(const GURL& url) const {
   return delegate_->CanAddURL(url);
 }
 
-bool HistoryBackend::GetAllTypedURLs(URLRows* urls) {
-  DCHECK(urls);
-  if (!db_)
-    return false;
-  std::vector<URLID> url_ids;
-  if (!db_->GetAllURLIDsForTransition(ui::PAGE_TRANSITION_TYPED, &url_ids))
-    return false;
-  urls->reserve(url_ids.size());
-  for (const auto& url_id : url_ids) {
-    URLRow url;
-    if (!db_->GetURLRow(url_id, &url))
-      return false;
-    urls->push_back(url);
-  }
-  return true;
-}
-
 bool HistoryBackend::GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) {
   if (db_)
     return db_->GetMostRecentVisitForURL(id, visit_row);

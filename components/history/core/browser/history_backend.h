@@ -646,8 +646,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   bool CanAddURL(const GURL& url) const override;
 
-  bool GetAllTypedURLs(URLRows* urls);
-
   // TODO(manukh): It's confusing to have 5 methods for fetching URLs' visits
   //   and continuously adding more methods for each use case. Maybe we can
   //   satisfy all the callsites with just a few generic methods. E.g.:
