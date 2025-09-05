@@ -23,9 +23,9 @@ class NtpBackgroundServiceFactory : public ProfileKeyedServiceFactoryIOS {
   NtpBackgroundServiceFactory();
   ~NtpBackgroundServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_NTP_BACKGROUND_SERVICE_FACTORY_H_

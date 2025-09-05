@@ -33,8 +33,7 @@ UserUploadedImageManagerFactory::~UserUploadedImageManagerFactory() {}
 
 std::unique_ptr<KeyedService>
 UserUploadedImageManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<UserUploadedImageManager>(
       profile->GetStatePath(),
       base::ThreadPool::CreateSequencedTaskRunner(

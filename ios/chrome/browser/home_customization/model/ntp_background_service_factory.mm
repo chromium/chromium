@@ -30,8 +30,8 @@ NtpBackgroundServiceFactory::~NtpBackgroundServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 NtpBackgroundServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<NtpBackgroundService>(
       GetApplicationContext()->GetApplicationLocaleStorage(),
-      context->GetSharedURLLoaderFactory());
+      profile->GetSharedURLLoaderFactory());
 }

@@ -23,9 +23,9 @@ class UserUploadedImageManagerFactory : public ProfileKeyedServiceFactoryIOS {
   UserUploadedImageManagerFactory();
   ~UserUploadedImageManagerFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_USER_UPLOADED_IMAGE_MANAGER_FACTORY_H_
