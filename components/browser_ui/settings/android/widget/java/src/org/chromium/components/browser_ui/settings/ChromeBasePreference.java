@@ -34,6 +34,7 @@ import org.chromium.build.annotations.Nullable;
 public class ChromeBasePreference extends Preference implements CustomStyledPreference {
     private final @Nullable ColorStateList mIconTint;
     private final int mBackgroundStyle;
+    private final int mBackgroundColor;
     private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
 
     /** Indicates if the preference uses a custom layout. */
@@ -62,6 +63,8 @@ public class ChromeBasePreference extends Preference implements CustomStyledPref
         mBackgroundStyle =
                 a.getInt(
                         R.styleable.ChromeBasePreference_backgroundStyle, BackgroundStyle.STANDARD);
+        mBackgroundColor =
+                a.getInt(R.styleable.ChromeBasePreference_backgroundColor, DEFAULT_COLOR);
         a.recycle();
 
         mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
@@ -117,5 +120,10 @@ public class ChromeBasePreference extends Preference implements CustomStyledPref
     @Override
     public int getCustomBackgroundStyle() {
         return mBackgroundStyle;
+    }
+
+    @Override
+    public int getCustomBackgroundColor() {
+        return mBackgroundColor;
     }
 }

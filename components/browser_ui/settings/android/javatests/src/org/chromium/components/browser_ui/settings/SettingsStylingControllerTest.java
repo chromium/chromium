@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 
 import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_COLOR;
@@ -26,9 +27,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.CustomStyledPreference.BackgroundStyle;
+import org.chromium.components.browser_ui.settings.test.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** Tests for {@link SettingsStylingController}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -382,5 +385,88 @@ public class SettingsStylingControllerTest {
         ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
         assertEquals(1, styles.size());
         assertEquals(backgroundColor, (int) styles.get(0).getBackgroundColor());
+    }
+
+    @Test
+    @SmallTest
+    public void testCustomBackgroundStyleFromXml() {
+        mSettingsRule
+                .getPreferenceFragment()
+                .addPreferencesFromResource(R.xml.test_settings_custom_preference_screen);
+
+        ArrayList<PreferenceStyle> preferenceStyles = mController.generatePreferenceStyles();
+
+        List<Preference> visiblePreferences = new ArrayList<>();
+        for (int i = 0; i < mPreferenceScreen.getPreferenceCount(); i++) {
+            Preference p = mPreferenceScreen.getPreference(i);
+            if (p.isVisible()) {
+                visiblePreferences.add(p);
+            }
+        }
+        assertEquals(
+                "The number of preferenceStyles should match the number of visible preferences.",
+                visiblePreferences.size(),
+                preferenceStyles.size());
+
+        Preference preferenceWithCardStyle =
+                mPreferenceScreen.findPreference("test_preference_card");
+        int preferenceCardIndex = visiblePreferences.indexOf(preferenceWithCardStyle);
+        assertNotEquals(
+                "Preference 'test_preference_card' not found in visible preferences.",
+                -1,
+                preferenceCardIndex);
+
+        // Check the preference with a backgroundStyle card.
+        PreferenceStyle styleCard = preferenceStyles.get(preferenceCardIndex);
+        assertEquals(mDefaultRadius, styleCard.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, styleCard.getBottomRadius(), 0);
+        assertEquals(mVerticalMargin, styleCard.getTopMargin());
+        assertEquals(mVerticalMargin + mSectionBottomMargin, styleCard.getBottomMargin());
+        assertEquals(mBackgroundColor, styleCard.getBackgroundColor());
+
+        Preference prefWithCustomColor = mPreferenceScreen.findPreference("test_preference_color");
+        int pref2Index = visiblePreferences.indexOf(prefWithCustomColor);
+        assertNotEquals(
+                "Preference 'test_preference_color' not found in visible preferences.",
+                -1,
+                pref2Index);
+
+        // Check the preference with a custom color.
+        PreferenceStyle styleCustomColor = preferenceStyles.get(pref2Index);
+        assertEquals(mDefaultRadius, styleCustomColor.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, styleCustomColor.getBottomRadius(), 0);
+        assertEquals(mVerticalMargin, styleCustomColor.getTopMargin());
+        assertEquals(mVerticalMargin + mSectionBottomMargin, styleCustomColor.getBottomMargin());
+        assertEquals(
+                mContext.getColor(android.R.color.holo_blue_light),
+                styleCustomColor.getBackgroundColor());
+
+        Preference preferenceWithStandardStyle =
+                mPreferenceScreen.findPreference("test_preference_standard");
+        int preferenceStandardIndex = visiblePreferences.indexOf(preferenceWithStandardStyle);
+        assertNotEquals(
+                "Preference 'test_preference_standard' not found in visible preferences.",
+                -1,
+                preferenceStandardIndex);
+
+        // Check the preference with a backgroundStyle standard.
+        PreferenceStyle styleStandard = preferenceStyles.get(preferenceStandardIndex);
+        assertEquals(mDefaultRadius, styleStandard.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, styleStandard.getBottomRadius(), 0);
+        assertEquals(mVerticalMargin, styleStandard.getTopMargin());
+        assertEquals(mVerticalMargin + mSectionBottomMargin, styleStandard.getBottomMargin());
+        assertEquals(mBackgroundColor, styleStandard.getBackgroundColor());
+
+        Preference preferenceWithNoneStyle =
+                mPreferenceScreen.findPreference("test_preference_none");
+        int preferenceNoneIndex = visiblePreferences.indexOf(preferenceWithNoneStyle);
+        assertNotEquals(
+                "Preference 'test_preference_none' not found in visible preferences.",
+                -1,
+                preferenceNoneIndex);
+
+        // Check the preference with a backgroundStyle none.
+        PreferenceStyle styleNone = preferenceStyles.get(preferenceNoneIndex);
+        assertSame(PreferenceStyle.EMPTY, styleNone);
     }
 }

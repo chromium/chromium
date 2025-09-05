@@ -214,6 +214,7 @@ android_resources("java_test_resources") {
     "widget/java_test_resources/res/xml/test_chrome_base_checkbox_preference_screen.xml",
     "widget/java_test_resources/res/xml/test_chrome_base_preference_screen.xml",
     "widget/java_test_resources/res/xml/test_chrome_switch_preference_screen.xml",
+    "widget/java_test_resources/res/xml/test_settings_custom_preference_screen.xml",
   ]
   deps = [
     ":java_resources",

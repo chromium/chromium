@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.settings;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -36,12 +37,21 @@ public class CardPreference extends TextMessagePreference {
     private @Nullable ChromeImageView mIcon;
     private @Nullable ChromeImageView mCloseIcon;
     private boolean mShouldCenterIcon;
+    private final int mBackgroundStyle;
+    private final int mBackgroundColor;
 
     /** Constructor for inflating from XML. */
     public CardPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.card_preference);
         setSelectable(false);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChromeBasePreference);
+        mBackgroundStyle =
+                a.getInt(
+                        R.styleable.ChromeBasePreference_backgroundStyle, BackgroundStyle.STANDARD);
+        mBackgroundColor =
+                a.getInt(R.styleable.ChromeBasePreference_backgroundColor, DEFAULT_COLOR);
+        a.recycle();
     }
 
     @Override
@@ -116,5 +126,22 @@ public class CardPreference extends TextMessagePreference {
      */
     public void setShouldCenterIcon(boolean shouldCenterIcon) {
         mShouldCenterIcon = shouldCenterIcon;
+    }
+
+    @Override
+    public @BackgroundStyle int getCustomBackgroundStyle() {
+        return mBackgroundStyle;
+    }
+
+    @Override
+    public int getCustomBackgroundColor() {
+        return mBackgroundColor;
+    }
+
+    @Override
+    public int getCustomHorizontalMargin() {
+        // TODO (crbug.com/439911511): Remove the custom horizontal margin along with
+        // android:layout_marginHorizontal value in card_preference.xml.
+        return 0;
     }
 }
