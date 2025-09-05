@@ -10,6 +10,7 @@
 #import "base/callback_list.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
+#import "base/types/expected.h"
 #import "components/user_data_importer/utility/safari_data_import_client.h"
 
 @protocol SafariDataItemConsumer;
@@ -17,7 +18,8 @@
 
 // A C++ class that provides a platform-specific implementation for
 // `SafariDataImportClient` on iOS.
-class IOSSafariDataImportClient : public SafariDataImportClient {
+class IOSSafariDataImportClient
+    : public user_data_importer::SafariDataImportClient {
  public:
   // Container for the callbacks registered with
   // `RegisterCallbackOnImportFailure`.
@@ -46,12 +48,14 @@ class IOSSafariDataImportClient : public SafariDataImportClient {
 
   // SafariDataImportClient:
   void OnTotalFailure() override;
-  void OnBookmarksReady(size_t count) override;
-  void OnHistoryReady(size_t estimated_count,
-                      std::vector<std::u16string> profiles) override;
+  void OnBookmarksReady(user_data_importer::CountOrError result) override;
+  void OnHistoryReady(
+      user_data_importer::CountOrError estimated_count) override;
   void OnPasswordsReady(
-      const password_manager::ImportResults& results) override;
-  void OnPaymentCardsReady(size_t count) override;
+      base::expected<password_manager::ImportResults,
+                     user_data_importer::ImportPreparationError> results)
+      override;
+  void OnPaymentCardsReady(user_data_importer::CountOrError result) override;
   void OnBookmarksImported(size_t count) override;
   void OnHistoryImported(size_t count) override;
   void OnPasswordsImported(

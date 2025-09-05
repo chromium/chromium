@@ -6,7 +6,17 @@
 #define COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORT_CLIENT_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/import_results.h"
+
+namespace user_data_importer {
+
+enum class ImportPreparationError {
+  // The import of this data type is blocked by enterprise policy.
+  kBlockedByPolicy,
+};
+
+using CountOrError = base::expected<size_t, ImportPreparationError>;
 
 // Interface for clients (e.g., UIs) which use the SafariDataImporter to
 // import user data from Safari.
@@ -20,14 +30,13 @@ class SafariDataImportClient {
   virtual void OnTotalFailure() = 0;
 
   // Invoked when the number of bookmarks in the input file has been determined.
-  virtual void OnBookmarksReady(size_t count) = 0;
+  virtual void OnBookmarksReady(CountOrError result) = 0;
 
   // Invoked when the number of history items in the input file has been
   // determined. Unlike other data types, this is an estimate and not an exact
   // count. An input file may contain one history file per Safari profile; the
   // names of these profiles are passed in `profiles`.
-  virtual void OnHistoryReady(size_t estimated_count,
-                              std::vector<std::u16string> profiles) = 0;
+  virtual void OnHistoryReady(CountOrError estimated_count) = 0;
 
   // Invoked when the number of passwords in the input file has been determined.
   // The results object provides detailed information about passwords with a
@@ -35,11 +44,12 @@ class SafariDataImportClient {
   // different saved password for the same username/URL); the Client must use
   // this information to resolve conflicts and continue the import flow.
   virtual void OnPasswordsReady(
-      const password_manager::ImportResults& results) = 0;
+      base::expected<password_manager::ImportResults, ImportPreparationError>
+          results) = 0;
 
   // Invoked when the number of payment cards in the input file has been
   // determined.
-  virtual void OnPaymentCardsReady(size_t count) = 0;
+  virtual void OnPaymentCardsReady(CountOrError result) = 0;
 
   // Phase two: executing import
 
@@ -67,5 +77,7 @@ class SafariDataImportClient {
   // method to vend weak pointers to `self`.
   virtual base::WeakPtr<SafariDataImportClient> AsWeakPtr() = 0;
 };
+
+}  // namespace user_data_importer
 
 #endif  // COMPONENTS_USER_DATA_IMPORTER_UTILITY_SAFARI_DATA_IMPORT_CLIENT_H_
