@@ -1101,13 +1101,6 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   CHECK(!ReadingListModelFactory::HasModel(this));
   browser_sync::MaybeMigrateSyncingUserToSignedIn(GetPath(), GetPrefs());
 
-#if BUILDFLAG(IS_ANDROID)
-  // On Android StartupData creates proto database provider for the profile
-  // before profile is created, so move ownership to storage partition.
-  GetDefaultStoragePartition()->SetProtoDatabaseProvider(
-      g_browser_process->startup_data()->TakeProtoDatabaseProvider());
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
   // If this is a kiosk profile, reset some of its prefs which should not
   // persist between sessions.
@@ -1407,6 +1400,17 @@ ProfileImpl::GetReduceAcceptLanguageControllerDelegate() {
 content::OriginTrialsControllerDelegate*
 ProfileImpl::GetOriginTrialsControllerDelegate() {
   return OriginTrialsFactory::GetForBrowserContext(this);
+}
+
+std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
+ProfileImpl::TakeDefaultProtoDatabaseProvider() {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android StartupData creates proto database provider for the profile
+  // before profile is created, so move ownership to storage partition.
+  return g_browser_process->startup_data()->TakeProtoDatabaseProvider();
+#else
+  return nullptr;
+#endif
 }
 
 std::unique_ptr<download::InProgressDownloadManager>
