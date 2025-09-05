@@ -1669,25 +1669,6 @@ static_library("browser") {
     "webauthn/webauthn_pref_names.h",
     "webauthn/webauthn_switches.cc",
     "webdata_services/web_data_service_factory.cc",
-    "webid/federated_identity_account_keyed_permission_context.cc",
-    "webid/federated_identity_account_keyed_permission_context.h",
-    "webid/federated_identity_api_permission_context.cc",
-    "webid/federated_identity_api_permission_context.h",
-    "webid/federated_identity_api_permission_context_factory.cc",
-    "webid/federated_identity_api_permission_context_factory.h",
-    "webid/federated_identity_auto_reauthn_permission_context.cc",
-    "webid/federated_identity_auto_reauthn_permission_context.h",
-    "webid/federated_identity_auto_reauthn_permission_context_factory.cc",
-    "webid/federated_identity_auto_reauthn_permission_context_factory.h",
-    "webid/federated_identity_identity_provider_registration_context.cc",
-    "webid/federated_identity_identity_provider_registration_context.h",
-    "webid/federated_identity_identity_provider_signin_status_context.cc",
-    "webid/federated_identity_identity_provider_signin_status_context.h",
-    "webid/federated_identity_permission_context.cc",
-    "webid/federated_identity_permission_context.h",
-    "webid/federated_identity_permission_context_factory.cc",
-    "webid/federated_identity_permission_context_factory.h",
-    "webid/identity_provider_permission_request.cc",
   ]
 
   if (is_chromeos) {
@@ -1854,6 +1835,11 @@ static_library("browser") {
     # TODO(crbug.com/353332589): Remove once profile_manager.h has been moved
     # into the //chrome/browser/profiles target.
     "//chrome/browser/regional_capabilities:metrics_provider_impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency once
+    # c/b/browser_features.h gets componentized. It is included by
+    # c/b/webid/federated_identity_api_permission_context.cc.
+    "//chrome/browser/webid:impl",
   ]
 
   public_deps = [
@@ -2082,6 +2068,7 @@ static_library("browser") {
     "//chrome/browser/webauthn",
     "//chrome/browser/webdata_services",
     "//chrome/browser/webid",
+    "//chrome/browser/webid:impl",
 
     # TODO(crbug.com/369436587): Remove this dependency when
     # c/b/policy/configuration_policy_handler_list_factory.cc gets modularized.
