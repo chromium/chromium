@@ -1976,8 +1976,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
                                 Platform::WebGLContextInfo*);
 
   scoped_refptr<ExternalCanvasResource> ExportLowLatencyCanvasResource(
-      SourceDrawingBuffer source_buffer,
-      bool export_only_if_update);
+      SourceDrawingBuffer source_buffer);
 
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider();
 

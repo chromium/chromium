@@ -1909,20 +1909,14 @@ void WebGLRenderingContextBase::SizeChanged() {
 
 scoped_refptr<ExternalCanvasResource>
 WebGLRenderingContextBase::ExportLowLatencyCanvasResource(
-    SourceDrawingBuffer source_buffer,
-    bool export_only_if_update) {
+    SourceDrawingBuffer source_buffer) {
   CHECK(Host()->LowLatencyEnabled());
 
   if (isContextLost() || !GetDrawingBuffer()) {
     return nullptr;
   }
 
-  bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
-
-  if (!must_paint_to_canvas_ && !cleared_content && export_only_if_update) {
-    return nullptr;
-  }
-
+  ClearIfComposited(kClearCallerOther);
   must_paint_to_canvas_ = false;
 
   return GetDrawingBuffer()->ExportLowLatencyCanvasResource();
@@ -1933,8 +1927,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
   if (CanUseDrawingBufferSIWithoutCopyForLowLatency()) {
-    auto resource = ExportLowLatencyCanvasResource(
-        source_buffer, /*export_only_if_update=*/false);
+    auto resource = ExportLowLatencyCanvasResource(source_buffer);
     return resource ? resource->Bitmap() : nullptr;
   }
 
@@ -2023,8 +2016,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
   if (CanUseDrawingBufferSIWithoutCopyForLowLatency()) {
-    return ExportLowLatencyCanvasResource(source_buffer,
-                                          /*export_only_if_update=*/false);
+    return ExportLowLatencyCanvasResource(source_buffer);
   }
 
   auto* resource_provider =
