@@ -61,12 +61,14 @@ void AutofillBubbleControllerBase::HideBubble() {
   if (IsShowingBubble()) {
     bubble_view_->Hide();
     bubble_view_ = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(
             features::kAutofillShowBubblesBasedOnPriorities)) {
       if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
         manager->OnBubbleHiddenByController(*this);
       }
     }
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 }
 

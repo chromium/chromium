@@ -22,8 +22,6 @@ source_set("autofill") {
     "autofill_suggestion_controller.h",
     "autofill_suggestion_controller_utils.h",
     "bubble_controller_base.h",
-    "bubble_manager.h",
-    "bubble_manager_impl.h",
     "chrome_autofill_client.h",
     "next_idle_barrier.h",
     "popup_controller_common.h",
@@ -84,6 +82,8 @@ source_set("autofill") {
       "autofill_field_promo_controller_impl.h",
       "autofill_field_promo_view.h",
       "autofill_popup_controller_impl.h",
+      "bubble_manager.h",
+      "bubble_manager_impl.h",
       "delete_address_profile_dialog_controller.h",
       "delete_address_profile_dialog_controller_impl.h",
       "delete_address_profile_dialog_view.h",
@@ -124,8 +124,6 @@ source_set("impl") {
     "autofill_popup_hide_helper.cc",
     "autofill_suggestion_controller.cc",
     "autofill_suggestion_controller_utils.cc",
-    "bubble_manager.cc",
-    "bubble_manager_impl.cc",
     "chrome_autofill_client.cc",
     "next_idle_barrier.cc",
     "popup_controller_common.cc",
@@ -199,6 +197,8 @@ source_set("impl") {
       "autofill_context_menu_manager.cc",
       "autofill_field_promo_controller_impl.cc",
       "autofill_popup_controller_impl.cc",
+      "bubble_manager.cc",
+      "bubble_manager_impl.cc",
       "delete_address_profile_dialog_controller_impl.cc",
       "edit_address_profile_dialog_controller_impl.cc",
       "save_address_bubble_controller.cc",
@@ -239,7 +239,6 @@ source_set("unit_tests") {
   sources = [
     "autofill_client_provider_unittest.cc",
     "autofill_suggestion_controller_unittest.cc",
-    "bubble_manager_impl_unittest.cc",
     "chrome_autofill_client_unittest.cc",
   ]
 
@@ -313,6 +312,7 @@ source_set("unit_tests") {
       "address_editor_controller_unittest.cc",
       "autofill_field_promo_controller_impl_unittest.cc",
       "autofill_popup_controller_impl_unittest.cc",
+      "bubble_manager_impl_unittest.cc",
       "save_address_bubble_controller_unittest.cc",
       "update_address_bubble_controller_unittest.cc",
     ]
