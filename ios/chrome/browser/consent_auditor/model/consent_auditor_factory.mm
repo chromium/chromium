@@ -47,13 +47,10 @@ ConsentAuditorFactory::ConsentAuditorFactory()
 ConsentAuditorFactory::~ConsentAuditorFactory() {}
 
 std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  ProfileIOS* ios_profile = ProfileIOS::FromBrowserState(browser_state);
-
+    ProfileIOS* profile) const {
   std::unique_ptr<consent_auditor::ConsentSyncBridge> consent_sync_bridge;
   syncer::OnceDataTypeStoreFactory store_factory =
-      DataTypeStoreServiceFactory::GetForProfile(ios_profile)
-          ->GetStoreFactory();
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::USER_CONSENTS,
