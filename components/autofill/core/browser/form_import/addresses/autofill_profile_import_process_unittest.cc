@@ -1054,12 +1054,11 @@ TEST_F(AutofillProfileImportProcessTest, ImportingHomeAndWorkProfileSuperset) {
   import_data.AcceptWithoutEdits();
   EXPECT_TRUE(import_data.ProfilesChanged());
 
-  // Confirm two profiles exist post-import: the original `home_profile` and a
-  // merged superset profile of type `kAccount`.
+  // Confirm that only the superset profile exists.
   EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
               testing::UnorderedPointwise(
                   CompareWithRecordType(),
-                  {observed_profile.ConvertToAccountProfile(), home_profile}));
+                  {observed_profile.ConvertToAccountProfile()}));
 }
 
 // Tests that when importing a superset of Home & Work profile, metrics are
