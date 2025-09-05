@@ -47,7 +47,7 @@ const char kDumpFile[] = "file";
 
 int Help() {
   printf("dump_cache path_to_files [options]\n");
-  printf("Dumps internal cache structures.\n");
+  printf("Dumps internal cache structures for blockfile cache.\n");
   printf("warning: input files may be modified by this tool\n\n");
   printf("--dump-headers: show file headers\n");
   printf("--dump-contents [-v] [--full-key] [--csv]: list all entries\n");
