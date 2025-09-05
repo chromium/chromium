@@ -843,7 +843,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.metrics") {
     "src/org/chromium/chrome/browser/metrics/MainIntentBehaviorMetricsIntegrationTest.java",
     "src/org/chromium/chrome/browser/metrics/SessionMetricsTest.java",
     "src/org/chromium/chrome/browser/metrics/StartupLoadingMetricsTest.java",
-    "src/org/chromium/chrome/browser/metrics/UmaActivityObserverTest.java",
   ]
 
   deps = [ ":chrome_test_java_helper" ]

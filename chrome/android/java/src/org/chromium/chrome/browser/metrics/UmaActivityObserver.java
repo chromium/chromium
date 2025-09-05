@@ -4,12 +4,8 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import android.app.Activity;
 import android.content.Context;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -35,43 +31,10 @@ public class UmaActivityObserver implements DestroyObserver {
     private TabModelSelector mLatestTabModelSelector;
     private AndroidPermissionDelegate mLatestAndroidPermissionDelegate;
 
-    /** Activities that implement this interface manage their own UMA Session starting/ending. */
-    public interface UmaSessionAwareActivity {}
-
-    private static ApplicationStatus.@Nullable ActivityStateListener sAppActivityListener;
-
-    static {
-        doStaticInit();
-    }
-
-    private static void doStaticInit() {
-        // Handles the case where we open a non-UMA aware activity like Bookmarks over CTA, and then
-        // the user hides the Bookmarks Activity (which should end the session).
-        sAppActivityListener =
-                new ApplicationStatus.ActivityStateListener() {
-                    @Override
-                    public void onActivityStateChange(Activity activity, int newState) {
-                        if (activity instanceof UmaSessionAwareActivity) return;
-                        if (newState != ActivityState.STOPPED
-                                && newState != ActivityState.DESTROYED) {
-                            return;
-                        }
-                        if (sActiveObserver == null) return;
-                        if (ApplicationStatus.getStateForApplication()
-                                == ApplicationState.HAS_RUNNING_ACTIVITIES) {
-                            return;
-                        }
-                        sActiveObserver.endUmaSessionInternal(false, true);
-                    }
-                };
-        ApplicationStatus.registerStateListenerForAllActivities(sAppActivityListener);
-    }
-
     public UmaActivityObserver(
             Context context,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             @ActivityType int activityType) {
-        assert context instanceof UmaSessionAwareActivity;
         mUmaSessionStats = new UmaSessionStats(context);
         lifecycleDispatcher.register(this);
         mActivityType = activityType;
@@ -103,7 +66,7 @@ public class UmaActivityObserver implements DestroyObserver {
                     sActiveObserver = this;
                     return;
                 }
-                sActiveObserver.endUmaSessionInternal(false, false);
+                sActiveObserver.endUmaSessionInternal(false);
             }
             sActiveObserver = this;
 
@@ -138,15 +101,8 @@ public class UmaActivityObserver implements DestroyObserver {
      */
     public void endUmaSession() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
-            for (Activity activity : ApplicationStatus.getRunningActivities()) {
-                if (activity instanceof UmaSessionAwareActivity) continue;
-                if (ApplicationStatus.getStateForActivity(activity) == ActivityState.RESUMED) {
-                    // Don't end the session if an Activity like Settings/Bookmarks is still
-                    // visible.
-                    return;
-                }
-            }
-            endUmaSessionInternal(true, true);
+            sVisibleObservers.remove(this);
+            endUmaSessionInternal(true);
         } else {
             if (sActiveObserver == null) {
                 return;
@@ -158,12 +114,8 @@ public class UmaActivityObserver implements DestroyObserver {
         }
     }
 
-    private void endUmaSessionInternal(boolean startNextVisibleSession, boolean removeObserver) {
-        if (removeObserver) {
-            sVisibleObservers.remove(this);
-        }
+    private void endUmaSessionInternal(boolean startNextVisibleSession) {
         if (sActiveObserver != this) return;
-
         // Record session metrics.
         mUmaSessionStats.logAndEndSession();
         sActiveObserver = null;
@@ -185,7 +137,7 @@ public class UmaActivityObserver implements DestroyObserver {
     public void onDestroy() {
         if (sActiveObserver == null) return; // Ensures native library has been initialized.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
-            endUmaSessionInternal(true, true);
+            endUmaSession();
         }
     }
 }
