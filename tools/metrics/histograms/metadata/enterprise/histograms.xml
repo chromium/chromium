@@ -2603,7 +2603,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ManagedScreensaver.EngagementTime.Slideshow"
-    units="ms" expires_after="2025-10-09">
+    units="ms" expires_after="2026-09-05">
   <owner>mpetrisor@chromium.org</owner>
   <owner>imprivata-eng@google.com</owner>
   <summary>
@@ -2614,7 +2614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ManagedScreensaver.ImageCount" units="count"
-    expires_after="2025-10-09">
+    expires_after="2026-09-05">
   <owner>mpetrisor@chromium.org</owner>
   <owner>imprivata-eng@google.com</owner>
   <summary>
