@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -67,7 +68,8 @@ class HttpStreamPool::Job {
     // Called when a stream is ready.
     virtual void OnStreamReady(Job* job,
                                std::unique_ptr<HttpStream> stream,
-                               NextProto negotiated_protocol) = 0;
+                               NextProto negotiated_protocol,
+                               std::optional<SessionSource> session_source) = 0;
     // Called when stream attempts failed.
     virtual void OnStreamFailed(Job* job,
                                 int status,
@@ -112,7 +114,8 @@ class HttpStreamPool::Job {
 
   // Called by the associated AttemptManager when a stream is ready.
   void OnStreamReady(std::unique_ptr<HttpStream> stream,
-                     NextProto negotiated_protocol);
+                     NextProto negotiated_protocol,
+                     std::optional<SessionSource> session_source);
 
   // Called by the associated AttemptManager when stream attempts failed.
   void OnStreamFailed(int rv,

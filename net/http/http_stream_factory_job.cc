@@ -1065,6 +1065,8 @@ int HttpStreamFactory::Job::SetSpdyHttpStreamOrBidirectionalStreamImpl(
   auto dns_aliases = session_->spdy_session_pool()->GetDnsAliasesForSessionKey(
       spdy_session_key_);
 
+  used_existing_spdy_session_ = existing_spdy_session_ != nullptr;
+
   if (is_websocket_) {
     DCHECK_NE(job_type_, PRECONNECT);
     DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);

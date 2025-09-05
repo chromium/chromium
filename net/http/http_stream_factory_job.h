@@ -221,6 +221,13 @@ class HttpStreamFactory::Job
 
   JobType job_type() const { return job_type_; }
 
+  // Indicates whether this job used an existing SPDY session. Only valid after
+  // this created an HttpStream with SPDY.
+  bool used_existing_spdy_session() const {
+    DCHECK(used_existing_spdy_session_.has_value());
+    return *used_existing_spdy_session_;
+  }
+
   bool using_existing_quic_session() const {
     return using_existing_quic_session_;
   }
@@ -458,6 +465,10 @@ class HttpStreamFactory::Job
 
   // Initialized when we have an existing SpdySession.
   base::WeakPtr<SpdySession> existing_spdy_session_;
+
+  // Indicates whether this job created an HttpStream using an existing SPDY
+  // session. Only valid when using SPDY.
+  std::optional<bool> used_existing_spdy_session_;
 
   // Which SpdySessions in the pool to use. Note that, if requesting an HTTP URL
   // through an HTTPS proxy, this key corresponds to the last proxy in the proxy

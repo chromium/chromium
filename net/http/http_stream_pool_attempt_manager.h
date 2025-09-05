@@ -23,6 +23,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/priority_queue.h"
@@ -431,12 +432,15 @@ class HttpStreamPool::AttemptManager
 
   void MaybeStartDraining();
 
-  void MaybeCreateSpdyStreamAndNotify(base::WeakPtr<SpdySession> spdy_session);
+  void MaybeCreateSpdyStreamAndNotify(base::WeakPtr<SpdySession> spdy_session,
+                                      SessionSource session_source);
 
-  void MaybeCreateQuicStreamAndNotify(QuicChromiumClientSession* quic_session);
+  void MaybeCreateQuicStreamAndNotify(QuicChromiumClientSession* quic_session,
+                                      SessionSource session_source);
 
   void NotifyStreamReady(std::unique_ptr<HttpStream> stream,
-                         NextProto negotiated_protocol);
+                         NextProto negotiated_protocol,
+                         std::optional<SessionSource> session_source);
 
   // Called when a SPDY session is ready to use. Cancels in-flight attempts.
   // Closes idle streams. Completes request/preconnect jobs.

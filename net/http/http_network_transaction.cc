@@ -740,6 +740,11 @@ void HttpNetworkTransaction::PopulateLoadTimingInternalInfo(
     load_timing_internal_info->initialize_stream_delay =
         initialize_stream_end_time_ - initialize_stream_start_time_;
   }
+
+  if (stream_request_completion_details_.has_value()) {
+    load_timing_internal_info->session_source =
+        stream_request_completion_details_->session_source;
+  }
 }
 
 bool HttpNetworkTransaction::GetRemoteEndpoint(IPEndPoint* endpoint) const {
@@ -1133,6 +1138,7 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
       stream_request_->completed() ? stream_request_->negotiated_protocol()
                                    : NextProto::kProtoUnknown);
   create_stream_end_time_ = base::TimeTicks::Now();
+  stream_request_completion_details_ = stream_request_->completion_details();
   RecordStreamRequestResult(result);
   CopyConnectionAttemptsFromStreamRequest();
   if (result == OK) {

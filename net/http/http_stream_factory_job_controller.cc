@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
@@ -1116,7 +1117,24 @@ void HttpStreamFactory::JobController::MarkRequestComplete(Job* job) {
   if (request_) {
     AlternateProtocolUsage alternate_protocol_usage =
         CalculateAlternateProtocolUsage(job);
-    request_->Complete(job->negotiated_protocol(), alternate_protocol_usage);
+    std::optional<SessionSource> session_source = std::nullopt;
+    switch (job->negotiated_protocol()) {
+      case NextProto::kProtoUnknown:
+      case NextProto::kProtoHTTP11:
+        break;
+      case NextProto::kProtoHTTP2:
+        session_source = job->used_existing_spdy_session()
+                             ? SessionSource::kExisting
+                             : SessionSource::kNew;
+        break;
+      case NextProto::kProtoQUIC:
+        session_source = job->using_existing_quic_session()
+                             ? SessionSource::kExisting
+                             : SessionSource::kNew;
+        break;
+    }
+    request_->Complete(
+        {job->negotiated_protocol(), alternate_protocol_usage, session_source});
     ReportAlternateProtocolUsage(alternate_protocol_usage,
                                  HasGoogleHost(request_info_.url));
   }

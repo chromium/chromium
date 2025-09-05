@@ -25,6 +25,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
@@ -1671,7 +1672,8 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
       << "active=" << group_->ActiveStreamSocketCount()
       << ", limit=" << pool()->max_stream_sockets_per_group();
 
-  NotifyStreamReady(std::move(http_stream), negotiated_protocol);
+  NotifyStreamReady(std::move(http_stream), negotiated_protocol,
+                    /*session_source=*/std::nullopt);
 }
 
 bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
@@ -1706,7 +1708,8 @@ void HttpStreamPool::AttemptManager::MaybeStartDraining() {
 }
 
 void HttpStreamPool::AttemptManager::MaybeCreateSpdyStreamAndNotify(
-    base::WeakPtr<SpdySession> spdy_session) {
+    base::WeakPtr<SpdySession> spdy_session,
+    SessionSource session_source) {
   if (request_jobs_.empty()) {
     return;
   }
@@ -1731,14 +1734,16 @@ void HttpStreamPool::AttemptManager::MaybeCreateSpdyStreamAndNotify(
   while (!streams.empty()) {
     std::unique_ptr<SpdyHttpStream> stream = std::move(streams.back());
     streams.pop_back();
-    NotifyStreamReady(std::move(stream), NextProto::kProtoHTTP2);
+    NotifyStreamReady(std::move(stream), NextProto::kProtoHTTP2,
+                      session_source);
     CHECK(weak_this);
   }
   CHECK(request_jobs_.empty());
 }
 
 void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
-    QuicChromiumClientSession* quic_session) {
+    QuicChromiumClientSession* quic_session,
+    SessionSource session_source) {
   if (request_jobs_.empty()) {
     return;
   }
@@ -1761,7 +1766,7 @@ void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
   while (!streams.empty()) {
     std::unique_ptr<QuicHttpStream> stream = std::move(streams.back());
     streams.pop_back();
-    NotifyStreamReady(std::move(stream), NextProto::kProtoQUIC);
+    NotifyStreamReady(std::move(stream), NextProto::kProtoQUIC, session_source);
     CHECK(weak_this);
   }
   CHECK(request_jobs_.empty());
@@ -1769,13 +1774,14 @@ void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
 
 void HttpStreamPool::AttemptManager::NotifyStreamReady(
     std::unique_ptr<HttpStream> stream,
-    NextProto negotiated_protocol) {
+    NextProto negotiated_protocol,
+    std::optional<SessionSource> session_source) {
   Job* job = ExtractFirstJobToNotify();
   CHECK(job);
   TRACE_EVENT_INSTANT("net.stream", "AttemptManager::NotifyStreamReady", track_,
                       NetLogWithSourceToFlow(job->request_net_log()),
                       "negotiated_protocol", negotiated_protocol);
-  job->OnStreamReady(std::move(stream), negotiated_protocol);
+  job->OnStreamReady(std::move(stream), negotiated_protocol, session_source);
   MaybeStartDraining();
 }
 
@@ -1791,7 +1797,15 @@ void HttpStreamPool::AttemptManager::HandleSpdySessionReady(
 
   group_->Refresh(kSwitchingToHttp2, refresh_group_reason);
   NotifyPreconnectsComplete(OK);
-  MaybeCreateSpdyStreamAndNotify(spdy_session);
+
+  CHECK(refresh_group_reason == StreamSocketCloseReason::kSpdySessionCreated ||
+        refresh_group_reason ==
+            StreamSocketCloseReason::kUsingExistingSpdySession);
+  SessionSource session_source =
+      refresh_group_reason == StreamSocketCloseReason::kSpdySessionCreated
+          ? SessionSource::kNew
+          : SessionSource::kExisting;
+  MaybeCreateSpdyStreamAndNotify(spdy_session, session_source);
 }
 
 void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
@@ -1808,7 +1822,15 @@ void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
 
   group_->Refresh(kSwitchingToHttp3, refresh_group_reason);
   NotifyPreconnectsComplete(OK);
-  MaybeCreateQuicStreamAndNotify(quic_session);
+
+  CHECK(refresh_group_reason == StreamSocketCloseReason::kQuicSessionCreated ||
+        refresh_group_reason ==
+            StreamSocketCloseReason::kUsingExistingQuicSession);
+  SessionSource session_source =
+      refresh_group_reason == StreamSocketCloseReason::kQuicSessionCreated
+          ? SessionSource::kNew
+          : SessionSource::kExisting;
+  MaybeCreateQuicStreamAndNotify(quic_session, session_source);
 }
 
 HttpStreamPool::Job* HttpStreamPool::AttemptManager::ExtractFirstJobToNotify() {

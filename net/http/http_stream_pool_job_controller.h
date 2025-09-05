@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/load_states.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -72,7 +73,8 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   const NetLogWithSource& net_log() const override;
   void OnStreamReady(Job* job,
                      std::unique_ptr<HttpStream> stream,
-                     NextProto negotiated_protocol) override;
+                     NextProto negotiated_protocol,
+                     std::optional<SessionSource> session_source) override;
   void OnStreamFailed(Job* job,
                       int status,
                       const NetErrorDetails& net_error_details,
@@ -145,8 +147,10 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   // Calls the request's Complete() and tells the delegate that `stream` is
   // ready. Used when there is an existing QUIC/SPDY session that can serve
   // the request.
-  void CallRequestCompleteAndStreamReady(std::unique_ptr<HttpStream> stream,
-                                         NextProto negotiated_protocol);
+  void CallRequestCompleteAndStreamReady(
+      std::unique_ptr<HttpStream> stream,
+      NextProto negotiated_protocol,
+      std::optional<SessionSource> session_source);
 
   // Calls the request's stream failed callback.
   void CallOnStreamFailed(int status,

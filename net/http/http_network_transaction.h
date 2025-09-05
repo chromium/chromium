@@ -394,6 +394,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   ProxyInfo proxy_info_;
 
   std::unique_ptr<HttpStreamRequest> stream_request_;
+  std::optional<HttpStreamRequest::CompletionDetails>
+      stream_request_completion_details_;
   std::unique_ptr<HttpStream> stream_;
 
   // True if we've validated the headers that the stream parser has returned.

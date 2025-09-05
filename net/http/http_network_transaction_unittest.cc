@@ -54,6 +54,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
@@ -20278,6 +20279,11 @@ TEST_P(HttpNetworkTransactionTest, UseIPConnectionPooling) {
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
 
+  LoadTimingInternalInfo load_timing_internal1;
+  trans1.PopulateLoadTimingInternalInfo(&load_timing_internal1);
+  EXPECT_THAT(load_timing_internal1.session_source,
+              ::testing::Optional(SessionSource::kNew));
+
   std::string response_data;
   ASSERT_THAT(ReadTransaction(&trans1, &response_data), IsOk());
   EXPECT_EQ("hello!", response_data);
@@ -20308,6 +20314,11 @@ TEST_P(HttpNetworkTransactionTest, UseIPConnectionPooling) {
   expected_transport.endpoint = IPEndPoint(IPAddress(1, 2, 3, 4), 443);
   expected_transport.negotiated_protocol = NextProto::kProtoHTTP2;
   EXPECT_THAT(connected_handler2.transports(), ElementsAre(expected_transport));
+
+  LoadTimingInternalInfo load_timing_internal2;
+  trans2.PopulateLoadTimingInternalInfo(&load_timing_internal2);
+  EXPECT_THAT(load_timing_internal2.session_source,
+              ::testing::Optional(SessionSource::kExisting));
 
   response = trans2.GetResponseInfo();
   ASSERT_TRUE(response);

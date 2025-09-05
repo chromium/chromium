@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
@@ -193,7 +194,8 @@ void HttpStreamPool::JobController::HandleStreamRequest(
             &HttpStreamPool::JobController::CallRequestCompleteAndStreamReady,
             weak_ptr_factory_.GetWeakPtr(),
             std::move(stream_with_protocol->stream),
-            stream_with_protocol->negotiated_protocol));
+            stream_with_protocol->negotiated_protocol,
+            SessionSource::kExisting));
     return;
   }
 
@@ -309,7 +311,8 @@ const NetLogWithSource& HttpStreamPool::JobController::net_log() const {
 void HttpStreamPool::JobController::OnStreamReady(
     Job* job,
     std::unique_ptr<HttpStream> stream,
-    NextProto negotiated_protocol) {
+    NextProto negotiated_protocol,
+    std::optional<SessionSource> session_source) {
   SetJobResult(job, OK);
   // Use PostTask to align the behavior with HttpStreamFactory::Job, see
   // https://crrev.com/2827533002.
@@ -318,7 +321,7 @@ void HttpStreamPool::JobController::OnStreamReady(
       FROM_HERE,
       base::BindOnce(&JobController::CallRequestCompleteAndStreamReady,
                      weak_ptr_factory_.GetWeakPtr(), std::move(stream),
-                     negotiated_protocol));
+                     negotiated_protocol, session_source));
 }
 
 void HttpStreamPool::JobController::OnStreamFailed(
@@ -568,11 +571,13 @@ void HttpStreamPool::JobController::StartAltSvcQuicPreconnect() {
 
 void HttpStreamPool::JobController::CallRequestCompleteAndStreamReady(
     std::unique_ptr<HttpStream> stream,
-    NextProto negotiated_protocol) {
+    NextProto negotiated_protocol,
+    std::optional<SessionSource> session_source) {
   CHECK(stream_request_);
   CHECK(delegate_);
-  stream_request_->Complete(negotiated_protocol,
-                            ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON);
+  stream_request_->Complete({negotiated_protocol,
+                             ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON,
+                             session_source});
   delegate_->OnStreamReady(proxy_info_, std::move(stream));
 }
 

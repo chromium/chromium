@@ -30,6 +30,7 @@
 #include "net/base/features.h"
 #include "net/base/hex_utils.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
@@ -573,6 +574,11 @@ TEST_P(SpdyNetworkTransactionTest, Get) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/1.1 200", out.status_line);
   EXPECT_EQ("hello!", out.response_data);
+
+  LoadTimingInternalInfo load_timing_internal;
+  helper.trans()->PopulateLoadTimingInternalInfo(&load_timing_internal);
+  EXPECT_THAT(load_timing_internal.session_source,
+              ::testing::Optional(SessionSource::kNew));
 }
 
 TEST_P(SpdyNetworkTransactionTest, SetPriority) {
@@ -681,6 +687,11 @@ TEST_P(SpdyNetworkTransactionTest, SetPriorityOnExistingStream) {
   ASSERT_TRUE(response2->headers);
   EXPECT_EQ(HttpConnectionInfo::kHTTP2, response2->connection_info);
   EXPECT_EQ("HTTP/1.1 200", response2->headers->GetStatusLine());
+
+  LoadTimingInternalInfo load_timing_internal;
+  trans2.PopulateLoadTimingInternalInfo(&load_timing_internal);
+  EXPECT_THAT(load_timing_internal.session_source,
+              ::testing::Optional(SessionSource::kExisting));
 }
 
 // Create two requests: a lower priority one first, then a higher priority one.
@@ -1026,6 +1037,32 @@ TEST_P(SpdyNetworkTransactionTest, ThreeGets) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/1.1 200", out.status_line);
   EXPECT_EQ("hello!hello!", out.response_data);
+
+  // Check whether transactions used a new or an existing session. For
+  // HappyEyeballsV3, all transactions are considered using a new session
+  // because they are managed together in the HttpStreamPool. This would be a
+  // reasonable behavior. However, the non-HEv3 path, i.e., HttpStreamFactory,
+  // doesn't manage these transactions (HttpStreamFactory::JobControllers)
+  // together so the first transaction is considered using a new session and
+  // subsequent transactions are considered using an existing session.
+  //
+  // TODO(crbug.com/441134585): Consider fixing this inconsistency by updating
+  // the non-HEv3 path.
+  auto get_session_source = [&](const HttpNetworkTransaction& trans) {
+    LoadTimingInternalInfo load_timing_internal;
+    trans.PopulateLoadTimingInternalInfo(&load_timing_internal);
+    CHECK(load_timing_internal.session_source.has_value());
+    return *load_timing_internal.session_source;
+  };
+  if (HappyEyeballsV3Enabled()) {
+    EXPECT_EQ(get_session_source(trans1), SessionSource::kNew);
+    EXPECT_EQ(get_session_source(trans2), SessionSource::kNew);
+    EXPECT_EQ(get_session_source(trans3), SessionSource::kNew);
+  } else {
+    EXPECT_EQ(get_session_source(trans1), SessionSource::kNew);
+    EXPECT_EQ(get_session_source(trans2), SessionSource::kExisting);
+    EXPECT_EQ(get_session_source(trans3), SessionSource::kExisting);
+  }
 }
 
 TEST_P(SpdyNetworkTransactionTest, TwoGetsLateBinding) {

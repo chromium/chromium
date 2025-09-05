@@ -804,9 +804,12 @@ class QuicNetworkTransactionTest
                                                    version_, std::nullopt);
   }
 
-  void SendRequestAndExpectQuicResponse(std::string_view expected) {
+  void SendRequestAndExpectQuicResponse(
+      std::string_view expected,
+      std::optional<SessionSource> expected_session_source = std::nullopt) {
     SendRequestAndExpectQuicResponseMaybeFromProxy(
-        expected, 443, kQuic200RespStatusLine, version_, std::nullopt);
+        expected, 443, kQuic200RespStatusLine, version_,
+        /*proxy_chain=*/std::nullopt, expected_session_source);
   }
 
   void AddQuicAlternateProtocolMapping(
@@ -999,7 +1002,8 @@ class QuicNetworkTransactionTest
       uint16_t port,
       std::string_view status_line,
       const quic::ParsedQuicVersion& version,
-      std::optional<ProxyChain> proxy_chain) {
+      std::optional<ProxyChain> proxy_chain,
+      std::optional<SessionSource> expected_session_source = std::nullopt) {
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
     RunTransaction(&trans);
     CheckWasQuicResponse(&trans, status_line, version);
@@ -1013,6 +1017,13 @@ class QuicNetworkTransactionTest
       EXPECT_TRUE(trans.GetResponseInfo()->dns_aliases.empty());
     } else {
       EXPECT_TRUE(trans.GetResponseInfo()->proxy_chain.is_direct());
+    }
+
+    if (expected_session_source.has_value()) {
+      LoadTimingInternalInfo load_timing_internal;
+      trans.PopulateLoadTimingInternalInfo(&load_timing_internal);
+      EXPECT_THAT(load_timing_internal.session_source,
+                  ::testing::Optional(*expected_session_source));
     }
   }
 
@@ -1331,6 +1342,99 @@ TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithEmptyTrailers) {
 
   // Delete the session while the MockQuicData is still in scope.
   session_.reset();
+}
+
+// Run two transactions concurrently and confirm they are considered using the
+// newly created single session.
+TEST_P(QuicNetworkTransactionTest, TwoGets) {
+  context_.params()->origins_to_force_quic_on.insert(
+      HostPortPair::FromString("mail.example.org:443"));
+
+  MockQuicData quic_data(version_);
+  int sent_packet_num = 0;
+  int received_packet_num = 0;
+  const quic::QuicStreamId stream_id1 =
+      GetNthClientInitiatedBidirectionalStreamId(0);
+  const quic::QuicStreamId stream_id2 =
+      GetNthClientInitiatedBidirectionalStreamId(1);
+  // HTTP/3 SETTINGS are always the first thing sent on a connection
+  quic_data.AddWrite(SYNCHRONOUS,
+                     ConstructInitialSettingsPacket(++sent_packet_num));
+  // The GET requests with no body are sent next.
+  quic_data.AddWrite(SYNCHRONOUS, ConstructClientRequestHeadersPacket(
+                                      ++sent_packet_num, stream_id1, true,
+                                      GetRequestHeaders("GET", "https", "/")));
+
+  quic_data.AddWrite(SYNCHRONOUS, ConstructClientRequestHeadersPacket(
+                                      ++sent_packet_num, stream_id2, true,
+                                      GetRequestHeaders("GET", "https", "/")));
+
+  // Read the first response headers.
+  quic_data.AddRead(ASYNC, ConstructServerResponseHeadersPacket(
+                               ++received_packet_num, stream_id1, false,
+                               GetResponseHeaders("200")));
+  // Read the first response body.
+  quic_data.AddRead(SYNCHRONOUS, ConstructServerDataPacket(
+                                     ++received_packet_num, stream_id1, true,
+                                     ConstructDataFrame(kQuicRespData)));
+  // Acknowledge the previous two received packets.
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientAckPacket(++sent_packet_num, received_packet_num, 1));
+
+  // Read the second response headers.
+  quic_data.AddRead(ASYNC, ConstructServerResponseHeadersPacket(
+                               ++received_packet_num, stream_id2, false,
+                               GetResponseHeaders("200")));
+  // Read the second response body.
+  quic_data.AddRead(SYNCHRONOUS, ConstructServerDataPacket(
+                                     ++received_packet_num, stream_id2, true,
+                                     ConstructDataFrame(kQuicRespData)));
+  // Acknowledge the previous two received packets.
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientAckPacket(++sent_packet_num, received_packet_num, 1));
+
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
+  // Connection close on shutdown.
+  quic_data.AddWrite(SYNCHRONOUS, ConstructClientAckAndConnectionClosePacket(
+                                      ++sent_packet_num, received_packet_num, 1,
+                                      quic::QUIC_CONNECTION_CANCELLED,
+                                      "net error", quic::NO_IETF_QUIC_ERROR));
+
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  CreateSession();
+
+  HttpRequestInfo request1 = request_;
+  HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session_.get());
+  TestCompletionCallback callback1;
+
+  HttpRequestInfo request2 = request_;
+  HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session_.get());
+  TestCompletionCallback callback2;
+
+  trans1.Start(&request1, callback1.callback(), net_log_with_source_);
+  trans2.Start(&request2, callback2.callback(), net_log_with_source_);
+  EXPECT_THAT(callback1.WaitForResult(), IsOk());
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+
+  std::string resp1;
+  ASSERT_THAT(ReadTransaction(&trans1, &resp1), IsOk());
+  EXPECT_EQ(resp1, kQuicRespData);
+
+  std::string resp2;
+  ASSERT_THAT(ReadTransaction(&trans2, &resp2), IsOk());
+  EXPECT_EQ(resp2, kQuicRespData);
+
+  auto get_session_source = [&](const HttpNetworkTransaction& trans) {
+    LoadTimingInternalInfo load_timing_internal;
+    trans.PopulateLoadTimingInternalInfo(&load_timing_internal);
+    CHECK(load_timing_internal.session_source.has_value());
+    return *load_timing_internal.session_source;
+  };
+  EXPECT_EQ(get_session_source(trans1), SessionSource::kNew);
+  EXPECT_EQ(get_session_source(trans2), SessionSource::kNew);
 }
 
 TEST_P(QuicNetworkTransactionTest, WriteErrorHandshakeConfirmed) {
@@ -3979,8 +4083,8 @@ TEST_P(QuicNetworkTransactionTest, UseExistingAlternativeServiceForQuic) {
 
   SendRequestAndExpectHttpResponse(kHttpRespData);
 
-  SendRequestAndExpectQuicResponse(kQuicRespData);
-  SendRequestAndExpectQuicResponse(kQuicRespData);
+  SendRequestAndExpectQuicResponse(kQuicRespData, SessionSource::kNew);
+  SendRequestAndExpectQuicResponse(kQuicRespData, SessionSource::kExisting);
 }
 
 // Pool to existing session with matching quic::QuicServerId
@@ -4052,7 +4156,7 @@ TEST_P(QuicNetworkTransactionTest, PoolByOrigin) {
       supported_versions_);
   // First request opens connection to `kDestination1`
   // with quic::QuicServerId.host() == kDefaultServerHostName.
-  SendRequestAndExpectQuicResponse(kQuicRespData);
+  SendRequestAndExpectQuicResponse(kQuicRespData, SessionSource::kNew);
 
   // Set up alternative service entry to a different destination.
   alternative_service =
@@ -4062,7 +4166,7 @@ TEST_P(QuicNetworkTransactionTest, PoolByOrigin) {
       supported_versions_);
   // Second request pools to existing connection with same quic::QuicServerId,
   // even though alternative service destination is different.
-  SendRequestAndExpectQuicResponse(kQuicRespData);
+  SendRequestAndExpectQuicResponse(kQuicRespData, SessionSource::kExisting);
 }
 
 // Pool to existing session with matching destination and matching certificate

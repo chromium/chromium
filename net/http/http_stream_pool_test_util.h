@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
@@ -322,7 +323,8 @@ class TestJobDelegate : public HttpStreamPool::Job::Delegate {
   // HttpStreamPool::Job::Delegate implementations:
   void OnStreamReady(HttpStreamPool::Job* job,
                      std::unique_ptr<HttpStream> stream,
-                     NextProto negotiated_protocol) override;
+                     NextProto negotiated_protocol,
+                     std::optional<SessionSource> session_source) override;
   RequestPriority priority() const override;
   HttpStreamPool::RespectLimits respect_limits() const override;
   const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs()

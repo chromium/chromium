@@ -7,6 +7,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_attempt_manager.h"
@@ -421,9 +422,11 @@ void TestJobDelegate::CreateAndStartJob(HttpStreamPool& pool) {
   job_->Start();
 }
 
-void TestJobDelegate::OnStreamReady(HttpStreamPool::Job* job,
-                                    std::unique_ptr<HttpStream> stream,
-                                    NextProto negotiated_protocol) {
+void TestJobDelegate::OnStreamReady(
+    HttpStreamPool::Job* job,
+    std::unique_ptr<HttpStream> stream,
+    NextProto negotiated_protocol,
+    std::optional<SessionSource> session_source) {
   negotiated_protocol_ = negotiated_protocol;
   SetResult(OK);
 }

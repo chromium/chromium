@@ -188,8 +188,10 @@ void HttpStreamPool::Job::AddConnectionAttempts(
   }
 }
 
-void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
-                                        NextProto negotiated_protocol) {
+void HttpStreamPool::Job::OnStreamReady(
+    std::unique_ptr<HttpStream> stream,
+    NextProto negotiated_protocol,
+    std::optional<SessionSource> session_source) {
   CHECK(delegate_);
   CHECK(!result_.has_value());
   CHECK(!negotiated_protocol_);
@@ -206,7 +208,8 @@ void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
       ->http_network_session()
       ->proxy_resolution_service()
       ->ReportSuccess(delegate_->proxy_info());
-  delegate_->OnStreamReady(this, std::move(stream), negotiated_protocol);
+  delegate_->OnStreamReady(this, std::move(stream), negotiated_protocol,
+                           session_source);
 }
 
 void HttpStreamPool::Job::OnStreamFailed(
