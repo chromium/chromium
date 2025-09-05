@@ -38,6 +38,7 @@ class GLSurface;
 
 namespace gpu {
 
+struct ContextCreationAttribs;
 class DecoderClient;
 
 namespace gles2 {
@@ -45,6 +46,7 @@ namespace gles2 {
 class ContextGroup;
 class CopyTexImageResourceManager;
 class CopyTextureCHROMIUMResourceManager;
+struct DisallowedFeatures;
 class FramebufferManager;
 class GLES2Util;
 class Logger;
@@ -150,6 +152,25 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   Outputter* outputter() const override;
 
   int GetRasterDecoderId() const override;
+
+  // Initializes the graphics context. Can create an offscreen
+  // decoder with a frame buffer that can be referenced from the parent.
+  // Takes ownership of GLContext.
+  // Parameters:
+  //  surface: the GL surface to render to.
+  //  context: the GL context to render to.
+  //  offscreen: whether to make the context offscreen or not. When FBO 0 is
+  //      bound, offscreen contexts render to an internal buffer, onscreen ones
+  //      to the surface.
+  //  offscreen_size: the size if the GL context is offscreen.
+  // Returns:
+  //   true if successful.
+  virtual gpu::ContextResult Initialize(
+      const scoped_refptr<gl::GLSurface>& surface,
+      const scoped_refptr<gl::GLContext>& context,
+      bool offscreen,
+      const gles2::DisallowedFeatures& disallowed_features,
+      const ContextCreationAttribs& attrib_helper) = 0;
 
   // Set the surface associated with the default FBO.
   virtual void SetSurface(const scoped_refptr<gl::GLSurface>& surface) = 0;

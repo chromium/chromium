@@ -15,6 +15,7 @@
 
 namespace gpu {
 
+struct ContextCreationAttribs;
 class DecoderClient;
 struct GpuFeatureInfo;
 struct GpuPreferences;
@@ -24,6 +25,7 @@ class SharedContextState;
 class SharedImageManager;
 
 namespace gles2 {
+struct DisallowedFeatures;
 class Outputter;
 }  // namespace gles2
 
@@ -64,7 +66,7 @@ class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
                            const scoped_refptr<gl::GLContext>& context,
                            bool offscreen,
                            const gles2::DisallowedFeatures& disallowed_features,
-                           const ContextCreationAttribs& attrib_helper) final;
+                           const ContextCreationAttribs& attrib_helper);
 
  protected:
   WebGPUDecoder(DecoderClient* client,
