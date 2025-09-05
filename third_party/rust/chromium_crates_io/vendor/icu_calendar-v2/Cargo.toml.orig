@@ -5,7 +5,7 @@
 [package]
 name = "icu_calendar"
 description = "Date APIs for Gregorian and non-Gregorian calendars"
-version = "2.0.3"
+version = "2.0.4"
 
 authors.workspace = true
 categories.workspace = true

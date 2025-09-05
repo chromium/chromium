@@ -75,7 +75,7 @@ impl PackedHijriYearInfo {
         month_lengths: [bool; 12],
         start_day: RataDie,
     ) -> Self {
-        let start_offset = start_day.until(Self::mean_synodic_start_day(extended_year));
+        let start_offset = start_day.since(Self::mean_synodic_start_day(extended_year));
 
         debug_assert!(
             -8 < start_offset && start_offset < 8,
