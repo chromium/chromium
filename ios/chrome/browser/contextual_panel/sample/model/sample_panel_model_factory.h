@@ -23,9 +23,9 @@ class SamplePanelModelFactory : public ProfileKeyedServiceFactoryIOS {
   SamplePanelModelFactory();
   ~SamplePanelModelFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_MODEL_FACTORY_H_

@@ -26,6 +26,6 @@ SamplePanelModelFactory::SamplePanelModelFactory()
 SamplePanelModelFactory::~SamplePanelModelFactory() {}
 
 std::unique_ptr<KeyedService> SamplePanelModelFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<SamplePanelModel>();
 }
