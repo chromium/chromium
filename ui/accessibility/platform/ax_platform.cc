@@ -143,6 +143,16 @@ void AXPlatform::OnUiaProviderRequested(bool uia_provider_enabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   delegate_->OnUiaProviderRequested(uia_provider_enabled);
 }
+
+void AXPlatform::SetUiaClientServiced(bool uia_client_serviced) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  has_serviced_uia_clients_ = uia_client_serviced;
+}
+
+bool AXPlatform::HasServicedUiaClients() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return has_serviced_uia_clients_;
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)

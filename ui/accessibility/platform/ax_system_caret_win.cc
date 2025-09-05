@@ -43,12 +43,8 @@ AXSystemCaretWin::~AXSystemCaretWin() {
   }
 }
 
-Microsoft::WRL::ComPtr<IAccessible> AXSystemCaretWin::GetCaret() const {
-  Microsoft::WRL::ComPtr<IAccessible> caret_accessible;
-  HRESULT hr = static_cast<AXPlatformNodeWin&>(*caret_).QueryInterface(
-      IID_PPV_ARGS(&caret_accessible));
-  DCHECK(SUCCEEDED(hr));
-  return caret_accessible;
+IAccessible* AXSystemCaretWin::GetCaret() const {
+  return static_cast<AXPlatformNodeWin*>(caret_.get());
 }
 
 void AXSystemCaretWin::MoveCaretTo(const gfx::Rect& bounds_physical_pixels) {

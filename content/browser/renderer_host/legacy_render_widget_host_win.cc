@@ -279,9 +279,14 @@ LRESULT LegacyRenderWidgetHostHWND::OnEraseBkGnd(UINT message,
 LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
                                                 WPARAM w_param,
                                                 LPARAM l_param) {
-  // Only the lower 32 bits of l_param are valid when checking the object id
-  // because it sometimes gets sign-extended incorrectly (but not always).
-  DWORD obj_id = static_cast<DWORD>(static_cast<DWORD_PTR>(l_param));
+  if (!host_) {
+    // Do not service WM_GETOBJECT messages once Destroy() has been called.
+    return 0;
+  }
+
+  // Casting the signed pointer-sized LPARAM to a signed LONG is well-defined:
+  // only the low-order 32-bits are preserved.
+  const auto obj_id = static_cast<LONG>(l_param);
 
   if (kIdScreenReaderHoneyPot == obj_id) {
     // When an MSAA client has responded to fake event for this id,
@@ -291,57 +296,55 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
     return 0;
   }
 
-  if (!host_) {
+  // The window will only service accessibility requests after processing a
+  // WM_CREATE message and before processing a WM_DESTROY message; see
+  // https://learn.microsoft.com/windows/win32/winauto/wm-getobject#remarks.
+  if (!may_service_accessibility_requests_) {
     return 0;
   }
 
-  const bool is_uia_request = static_cast<DWORD>(UiaRootObjectId) == obj_id;
-  const bool is_uia_active =
-      is_uia_request && ::ui::AXPlatform::GetInstance().IsUiaProviderEnabled();
-  const bool is_msaa_request = static_cast<DWORD>(OBJID_CLIENT) == obj_id;
+  switch (obj_id) {
+    case UiaRootObjectId:
+      if (ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
+        // Return the IRawElementProviderSimple for the window's client area to
+        // a UI Automation client.
+        CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
+            .OnUiaProviderRequested(/*uia_provider_enabled=*/true);
 
-  if (is_uia_active && disconnecting_fragment_root_) {
-    // An application that calls UiaDisconnectProvider should not respond to a
-    // re-entrant WM_GETOBJECT message by returning a pointer to the provider
-    // that it is trying to disconnect.
-    // https://learn.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiadisconnectprovider
-    return 0;
-  }
+        Microsoft::WRL::ComPtr<IRawElementProviderSimple> root;
+        GetOrCreateWindowRootAccessible(/*is_uia_request=*/true)
+            ->QueryInterface(IID_PPV_ARGS(&root));
 
-  if (is_uia_request) {
-    CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
-        .OnUiaProviderRequested(is_uia_active);
-  }
-
-  if (is_uia_active || is_msaa_request) {
-    gfx::NativeViewAccessible root =
-        GetOrCreateWindowRootAccessible(is_uia_request);
-
-    if (is_uia_active) {
-      Microsoft::WRL::ComPtr<IRawElementProviderSimple> root_uia;
-      root->QueryInterface(IID_PPV_ARGS(&root_uia));
-
-      // Return the UIA object via UiaReturnRawElementProvider(). See:
-      // https://docs.microsoft.com/en-us/windows/win32/winauto/wm-getobject
-      did_return_uia_object_ = true;
-      return UiaReturnRawElementProvider(hwnd(), w_param, l_param,
-                                         root_uia.Get());
-    } else {
-      if (!root) {
-        return 0;
+        ui::AXPlatform::GetInstance().SetUiaClientServiced(true);
+        return ::UiaReturnRawElementProvider(hwnd(), w_param, l_param,
+                                             root.Get());
       }
 
-      Microsoft::WRL::ComPtr<IAccessible> root_msaa(root);
-      return LresultFromObject(IID_IAccessible, w_param, root_msaa.Get());
-    }
-  }
+      // The UIA Provider is not enabled. The client will most likely try again
+      // for OBJID_CLIENT.
+      CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
+          .OnUiaProviderRequested(/*uia_provider_enabled=*/false);
+      break;
 
-  if (static_cast<DWORD>(OBJID_CARET) == obj_id && host_->HasFocus()) {
-    DCHECK(ax_system_caret_);
-    Microsoft::WRL::ComPtr<IAccessible> ax_system_caret_accessible =
-        ax_system_caret_->GetCaret();
-    return LresultFromObject(IID_IAccessible, w_param,
-                             ax_system_caret_accessible.Get());
+    case OBJID_CLIENT:
+      // Return the IAccessible for the web content to an MSAA client.
+      if (IAccessible* root =
+              GetOrCreateWindowRootAccessible(/*is_uia_request=*/false)) {
+        return ::LresultFromObject(IID_IAccessible, w_param, root);
+      }
+      break;
+
+    case OBJID_CARET:
+      // Return the IAccessible for the window's caret to an MSAA client.
+      if (host_->HasFocus()) {
+        DCHECK(ax_system_caret_);
+        return ::LresultFromObject(IID_IAccessible, w_param,
+                                   ax_system_caret_->GetCaret());
+      }
+      break;
+
+    default:
+      break;
   }
 
   return 0;
@@ -604,21 +607,35 @@ LRESULT LegacyRenderWidgetHostHWND::OnSize(UINT message,
   return 0;
 }
 
+LRESULT LegacyRenderWidgetHostHWND::OnCreate(UINT message,
+                                             WPARAM w_param,
+                                             LPARAM l_param) {
+  // The window may begin responding to WM_GETOBJECT messages from this point
+  // until WM_DESTROY is received; see
+  // https://learn.microsoft.com/windows/win32/winauto/wm-getobject#remarks.
+  may_service_accessibility_requests_ = true;
+
+  return 0;
+}
+
 LRESULT LegacyRenderWidgetHostHWND::OnDestroy(UINT message,
                                               WPARAM w_param,
                                               LPARAM l_param) {
-  if (ax_fragment_root_ &&
-      base::FeatureList::IsEnabled(features::kUiaDisconnectRootProviders)) {
-    // Note that the fragment root's element provider is being disconnected so
-    // that re-entrant WM_GETOBJECT messages are not serviced.
-    disconnecting_fragment_root_ = true;
+  // The window will no longer service WM_GETOBJECT messages from this point
+  // onward; see
+  // https://learn.microsoft.com/windows/win32/winauto/wm-getobject#remarks.
+  may_service_accessibility_requests_ = false;
 
-    // Clean up UIA resources associated with this window's fragment root; see
+  if (auto& ax_platform = ui::AXPlatform::GetInstance();
+      ax_platform.HasServicedUiaClients()) {
+    // Clean up UIA resources associated with this window's fragment root if all
+    // providers have not previously been disconnected; see
     // https://learn.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiadisconnectprovider.
-    ::UiaDisconnectProvider(ax_fragment_root_->GetProvider());
-  }
+    if (ax_platform.IsUiaProviderEnabled() &&
+        base::FeatureList::IsEnabled(features::kUiaDisconnectRootProviders)) {
+      ::UiaDisconnectProvider(ax_fragment_root_->GetProvider());
+    }
 
-  if (did_return_uia_object_) {
     // Disassociate this window from MSAA clients that are observing events; see
     // https://docs.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiareturnrawelementprovider#remarks
     ::UiaReturnRawElementProvider(hwnd(), 0, 0, nullptr);

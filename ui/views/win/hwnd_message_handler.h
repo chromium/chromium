@@ -803,10 +803,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // cause re-entrancy during teardown. https://crbug.com/1087553
   bool did_return_uia_object_;
 
-  // Set to true immediately before disconnecting the fragment root's element
-  // provider. From that point onward, any request for UiaRootObjectId via
-  // WM_GET_OBJECT will be ignored.
-  bool disconnecting_fragment_root_ = false;
+  // Set to true once WM_CREATE handling has completed and back to false before
+  // processing WM_DESTROY. Requests for accessibility objects via WM_GETOBJECT
+  // are ignored outside of this window.
+  bool may_service_accessibility_requests_ = false;
 
   // The location where the user clicked on the caption. We cache this when we
   // receive the WM_NCLBUTTONDOWN message. We use this in the subsequent

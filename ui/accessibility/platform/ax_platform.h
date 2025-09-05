@@ -156,6 +156,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // automation root object for a window. `uia_provider_enabled` is true when
   // the request was satisfied, and false when the request was refused.
   void OnUiaProviderRequested(bool uia_provider_enabled);
+
+  // Notes that an inbound request from a UIA client has been serviced; for
+  // example, by calling UiaReturnRawElementProvider to give it a window's
+  // root object.
+  void SetUiaClientServiced(bool uia_client_serviced);
+
+  // Returns true if a UIA client has been serviced; see above.
+  bool HasServicedUiaClients();
 #endif
 
   // A very basic accessible property was used, such as role, name or location.
@@ -235,6 +243,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   bool screen_reader_honeypot_queried_ GUARDED_BY_CONTEXT(thread_checker_) =
       false;
   bool is_name_used_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+  bool has_serviced_uia_clients_ GUARDED_BY_CONTEXT(thread_checker_) = false;
 #endif
 
   THREAD_CHECKER(thread_checker_);

@@ -108,6 +108,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
                                 OnMouseRange)
     CR_MESSAGE_HANDLER_EX(WM_NCCALCSIZE, OnNCCalcSize)
     CR_MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
+    CR_MESSAGE_HANDLER_EX(WM_CREATE, OnCreate)
     CR_MESSAGE_HANDLER_EX(WM_DESTROY, OnDestroy)
     CR_MESSAGE_HANDLER_EX(DM_POINTERHITTEST, OnPointerHitTest)
   CR_END_MSG_MAP()
@@ -165,6 +166,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   LRESULT OnSetCursor(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnNCCalcSize(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnSize(UINT message, WPARAM w_param, LPARAM l_param);
+  LRESULT OnCreate(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnDestroy(UINT message, WPARAM w_param, LPARAM l_param);
 
   LRESULT OnPointerHitTest(UINT message, WPARAM w_param, LPARAM l_param);
@@ -190,16 +192,10 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // Implements IRawElementProviderFragmentRoot when UIA is enabled.
   std::unique_ptr<ui::AXFragmentRootWin> ax_fragment_root_;
 
-  // Set to true when we return a UIA object. Determines whether we need to
-  // call UIA to clean up object references on window destruction.
-  // This is important to avoid triggering a cross-thread COM call which could
-  // cause re-entrancy during teardown. https://crbug.com/1087553
-  bool did_return_uia_object_ = false;
-
-  // Set to true immediately before disconnecting the fragment root's element
-  // provider. From that point onward, any request for UiaRootObjectId via
-  // WM_GET_OBJECT will be ignored.
-  bool disconnecting_fragment_root_ = false;
+  // Set to true once WM_CREATE handling has completed and back to false before
+  // processing WM_DESTROY. Requests for accessibility objects via WM_GETOBJECT
+  // are ignored outside of this window.
+  bool may_service_accessibility_requests_ = false;
 
   // This class provides functionality to register the legacy window as a
   // Direct Manipulation consumer. This allows us to support smooth scroll
