@@ -30,9 +30,9 @@ class VisitedURLRankingServiceFactory : public ProfileKeyedServiceFactoryIOS {
   VisitedURLRankingServiceFactory();
   ~VisitedURLRankingServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_VISITED_URL_RANKING_MODEL_VISITED_URL_RANKING_SERVICE_FACTORY_H_
