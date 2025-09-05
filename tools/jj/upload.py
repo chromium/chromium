@@ -70,8 +70,12 @@ def main(args):
   logging.basicConfig(level=logging.getLevelNamesMapping()[args.verbosity])
 
   revs = args.revisions + args.revision
+  implicit_revs = False
+  # If no revisions are provided, we will upload `@` unless it is empty and
+  # descriptionless, in which case we upload 'parents(@)'.
   if len(revs) == 0:
-    fatal('No revision specified to upload')
+    rev = '@'
+    implicit_revs = True
   elif len(revs) == 1:
     rev = revs[0]
   else:
@@ -96,6 +100,16 @@ def main(args):
       ignore_working_copy=snapshot_taken,
   )
   snapshot_taken = True
+  if implicit_revs:
+    # It's in reverse topological order, so to_upload[0] is the working copy '@'
+    wc = to_upload[0]
+    if not split_description(wc['desc'])[0] and wc['empty'] == 'true':
+      logging.info('No revisions provided and working copy is empty and ' +
+                   'descriptionless, uploading parents(@)')
+      to_upload.remove(wc)
+    else:
+      logging.info('No revisions provided, uploading working copy')
+
   for change in to_upload:
     name = change['name']
     desc, trailers = split_description(change['desc'])
