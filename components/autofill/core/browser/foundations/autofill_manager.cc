@@ -622,14 +622,6 @@ void AutofillManager::ParseFormsAsync(
     parsed_forms.push_back(form_data);
   }
 
-  // Remove duplicates by their FormGlobalId. Otherwise, after moving the forms
-  // into `form_structures_`, duplicates may be destroyed and we'd end up with
-  // dangling pointers.
-  std::ranges::sort(form_structures, {}, &FormStructure::global_id);
-  auto repeated =
-      std::ranges::unique(form_structures, {}, &FormStructure::global_id);
-  form_structures.erase(repeated.begin(), repeated.end());
-
   ParseFormsAsyncCommon(
       std::move(form_structures),
       base::BindOnce(
