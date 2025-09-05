@@ -400,10 +400,9 @@ class MagicStackRankingModelTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  web::BrowserState* SetUpEnvironment(web::BrowserState* context) {
-    ProfileIOS* setup_profile = ProfileIOS::FromBrowserState(context);
-    segmentation_test_utils_->SetupForProfile(setup_profile);
-    return context;
+  ProfileIOS* SetUpEnvironment(ProfileIOS* profile) {
+    segmentation_test_utils_->SetupForProfile(profile);
+    return profile;
   }
 
   ProfileIOS* GetProfile() { return profile_.get(); }
