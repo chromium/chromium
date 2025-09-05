@@ -57,7 +57,6 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/shared/ui/util/image",
@@ -91,7 +90,6 @@ source_set("autofill_agent_delegate") {
     "//base",
     "//components/autofill/ios/browser",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
   ]
 }
 
@@ -107,7 +105,6 @@ source_set("model_shared") {
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -233,7 +230,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/web/model:web_internal",

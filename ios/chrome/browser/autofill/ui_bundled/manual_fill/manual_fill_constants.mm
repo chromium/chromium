@@ -39,9 +39,6 @@ NSString* const kMaskedPasswordButtonText = @"••••••••";
 
 // Payments
 
-NSString* const kAccessoryAddressAccessibilityIdentifier =
-    @"ManualFillAccessoryAddressAccessibilityIdentifier";
-
 NSString* const kPaymentManualFillGPayLogoID = @"PaymentManualFillGPayLogoID";
 
 NSString* const kCardTableViewAccessibilityIdentifier =
@@ -54,9 +51,6 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
     @"ManualFillAddPaymentMethodAccessibilityIdentifier";
 
 // Addresses
-
-NSString* const kAccessoryCreditCardAccessibilityIdentifier =
-    @"ManualFillAccessoryCreditCardAccessibilityIdentifier";
 
 NSString* const kAddressTableViewAccessibilityIdentifier =
     @"ManualFillManualFillAddressTableViewAccessibilityIdentifier";

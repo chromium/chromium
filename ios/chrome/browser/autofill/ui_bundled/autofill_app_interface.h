@@ -157,9 +157,6 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Sets the CVC storage preference.
 + (void)setPaymentCvcStorageEnabled:(BOOL)enabled;
 
-// Returns true if the Keyboard Accessory Upgrade feature is enabled.
-+ (BOOL)isKeyboardAccessoryUpgradeEnabled;
-
 // Returns true if the dynamically loading fields on input feature is enabled.
 + (BOOL)isDynamicallyLoadFieldsOnInputEnabled;
 

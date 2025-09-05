@@ -32,9 +32,8 @@ namespace {
 constexpr CGFloat kIpadFontSize = 15;
 constexpr CGFloat kIphoneFontSize = 14;
 
-// The horizontal space between the edge of the background and the text for the
-// large keyboard accessory.
-constexpr CGFloat kSmallBorderWidth = 12;
+// The horizontal space between the edge of the background and the text.
+constexpr CGFloat kBorderWidth = 12;
 // The space between items in the label.
 constexpr CGFloat kSpacing = 4;
 // The corner radius of the label.
@@ -63,7 +62,7 @@ constexpr CGFloat kHighlightColorAlpha = 0.5;
 // represents the width of the stack view minus the width of the first
 // suggestion.
 constexpr CGFloat kHalfCreditCardIconOffset =
-    2 * kSmallBorderWidth + 2 * kSpacing + 0.5 * kSuggestionIconWidth;
+    2 * kBorderWidth + 2 * kSpacing + 0.5 * kSuggestionIconWidth;
 
 // Returns the font for the title line of the suggestion.
 UIFont* TitleFont(CGFloat font_size) {
@@ -357,7 +356,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
     stackView.alignment = UIStackViewAlignmentCenter;
     stackView.layoutMarginsRelativeArrangement = YES;
     stackView.layoutMargins =
-        UIEdgeInsetsMake(0, [self borderWidth], 0, [self borderWidth]);
+        UIEdgeInsetsMake(0, kBorderWidth, 0, kBorderWidth);
     stackView.spacing = kSpacing;
     stackView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:stackView];
@@ -538,11 +537,8 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
 // Color of the suggestion chips.
 - (UIColor*)customBackgroundColor {
-  if (IsLiquidGlassEffectEnabled()) {
-    return UIColor.clearColor;
-  }
-
-  return [UIColor colorNamed:kBackgroundColor];
+  return IsLiquidGlassEffectEnabled() ? UIColor.clearColor
+                                      : [UIColor colorNamed:kBackgroundColor];
 }
 
 // Corner radius of the suggestion chips.
@@ -551,7 +547,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 }
 
 - (CGFloat)borderWidth {
-  return kSmallBorderWidth;
+  return kBorderWidth;
 }
 
 // Returns whether this label is for a credit card suggestion.

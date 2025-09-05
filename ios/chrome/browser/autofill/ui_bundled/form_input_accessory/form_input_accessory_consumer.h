@@ -28,12 +28,6 @@
 // Hides or shows the manual fill address button.
 @property(nonatomic) BOOL addressButtonHidden;
 
-// Enables or disables the next button if any.
-@property(nonatomic) BOOL formInputNextButtonEnabled;
-
-// Enables or disables the previous button if any.
-@property(nonatomic) BOOL formInputPreviousButtonEnabled;
-
 // Main type of the form suggestions.
 @property(nonatomic) autofill::FillingProduct mainFillingProduct;
 

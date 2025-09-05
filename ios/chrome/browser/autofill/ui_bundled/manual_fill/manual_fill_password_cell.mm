@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
@@ -28,17 +27,6 @@
 
 // The credential for this item.
 @property(nonatomic, strong, readonly) ManualFillCredential* credential;
-
-// The cell won't show a title (site name) label if it is connected to the
-// previous password item.
-// TODO(crbug.com/326398845): Remove once the Keyboard Accessory Upgrade feature
-// has launched both on iPhone and iPad.
-@property(nonatomic, assign) BOOL isConnectedToPreviousItem;
-
-// The separator line won't show if it is connected to the next password item.
-// TODO(crbug.com/326398845): Remove once the Keyboard Accessory Upgrade feature
-// has launched both on iPhone and iPad.
-@property(nonatomic, assign) BOOL isConnectedToNextItem;
 
 // The delegate for this item.
 @property(nonatomic, weak, readonly) id<ManualFillContentInjector>
@@ -68,8 +56,6 @@
 }
 
 - (instancetype)initWithCredential:(ManualFillCredential*)credential
-         isConnectedToPreviousItem:(BOOL)isConnectedToPreviousItem
-             isConnectedToNextItem:(BOOL)isConnectedToNextItem
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
                        menuActions:(NSArray<UIAction*>*)menuActions
@@ -80,8 +66,6 @@
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _credential = credential;
-    _isConnectedToPreviousItem = isConnectedToPreviousItem;
-    _isConnectedToNextItem = isConnectedToNextItem;
     _contentInjector = contentInjector;
     _menuActions = menuActions;
     _cellIndex = cellIndex;
@@ -97,8 +81,6 @@
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   [cell setUpWithCredential:self.credential
-        isConnectedToPreviousCell:self.isConnectedToPreviousItem
-            isConnectedToNextCell:self.isConnectedToNextItem
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
                         cellIndex:_cellIndex
@@ -122,10 +104,6 @@
 @end
 
 namespace {
-
-// The offset to apply to a cell's top margin when connected to the previous
-// cell.
-static const CGFloat kOffsetForConnectedCell = 16;
 
 // The size that the favicon should have.
 constexpr CGFloat kFaviconContainterViewSize = 30;
@@ -166,9 +144,8 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
 // and an overflow button.
 @property(nonatomic, strong) UIView* headerView;
 
-// The favicon for the credential. Of type FaviconView when the Keyboard
-// Accessory Upgrade is disabled, and FaviconContainerView when enabled.
-@property(nonatomic, strong) UIView* faviconView;
+// The favicon for the credential.
+@property(nonatomic, strong) FaviconContainerView* faviconContainerView;
 
 // The label with the site name and host.
 @property(nonatomic, strong) UILabel* siteNameLabel;
@@ -182,9 +159,7 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
 // A button showing "••••••••" to resemble a password.
 @property(nonatomic, strong) UIButton* passwordButton;
 
-// Separator line. When the Keyboard Accessory Upgrade feature is enbaled, used
-// to delimit the header from the rest of the cell. When disabled, used when
-// needed to delimit cells.
+// Separator line. Used to delimit the header from the rest of the cell.
 @property(nonatomic, strong) UIView* grayLine;
 
 // The delegate in charge of processing the user actions in this cell.
@@ -240,8 +215,6 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
 }
 
 - (void)setUpWithCredential:(ManualFillCredential*)credential
-      isConnectedToPreviousCell:(BOOL)isConnectedToPreviousCell
-          isConnectedToNextCell:(BOOL)isConnectedToNextCell
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
                       cellIndex:(NSInteger)cellIndex
@@ -262,38 +235,33 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   std::vector<ManualFillCellView> verticalLeadViews;
 
   // Header.
-  if (isConnectedToPreviousCell) {
-    self.siteNameLabel.hidden = YES;
-    self.faviconView.hidden = YES;
-  } else {
-    BOOL shouldShowHost =
-        credential.host && credential.host.length &&
-        ![credential.host isEqualToString:credential.siteName];
+  BOOL shouldShowHost = credential.host && credential.host.length &&
+                        ![credential.host isEqualToString:credential.siteName];
 
-    NSAttributedString* attributedText =
-        credential.isBackupCredential
-            ? CreateHeaderAttributedString(
-                  l10n_util::GetNSString(
-                      IDS_IOS_MANUAL_FALLBACK_RECOVERY_PASSWORD_SUGGESTION_TITLE),
-                  credential.host)
-            : CreateSiteNameLabelAttributedText(credential, shouldShowHost);
-    self.siteNameLabel.attributedText = attributedText;
-    self.siteNameLabel.numberOfLines = 0;
-    NSString* accessibilityLabel =
-        [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
-                                   attributedText.string];
-    GiveAccessibilityContextToCellAndButton(
-        self.contentView, self.overflowMenuButton, self.autofillFormButton,
-        accessibilityLabel);
-    self.siteNameLabel.hidden = NO;
-    self.faviconView.hidden = NO;
-    AddViewToVerticalLeadViews(self.headerView,
-                               ManualFillCellView::ElementType::kOther,
-                               verticalLeadViews);
-    AddViewToVerticalLeadViews(
-        self.grayLine, ManualFillCellView::ElementType::kHeaderSeparator,
-        verticalLeadViews);
-  }
+  NSAttributedString* attributedText =
+      credential.isBackupCredential
+          ? CreateHeaderAttributedString(
+                l10n_util::GetNSString(
+                    IDS_IOS_MANUAL_FALLBACK_RECOVERY_PASSWORD_SUGGESTION_TITLE),
+                credential.host)
+          : CreateSiteNameLabelAttributedText(credential, shouldShowHost);
+  self.siteNameLabel.attributedText = attributedText;
+  self.siteNameLabel.numberOfLines = 0;
+  NSString* accessibilityLabel =
+      [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
+                                 attributedText.string];
+  GiveAccessibilityContextToCellAndButton(
+      self.contentView, self.overflowMenuButton, self.autofillFormButton,
+      accessibilityLabel);
+  self.siteNameLabel.hidden = NO;
+  self.faviconContainerView.hidden = NO;
+  AddViewToVerticalLeadViews(self.headerView,
+                             ManualFillCellView::ElementType::kOther,
+                             verticalLeadViews);
+  AddViewToVerticalLeadViews(self.grayLine,
+                             ManualFillCellView::ElementType::kHeaderSeparator,
+                             verticalLeadViews);
+
   if (menuActions && menuActions.count) {
     self.overflowMenuButton.menu = [UIMenu menuWithChildren:menuActions];
     self.overflowMenuButton.hidden = NO;
@@ -337,10 +305,6 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   AddChipGroupsToVerticalLeadViews(@[ credentialGroupVerticalLeadChips ],
                                    verticalLeadViews);
 
-  if (isConnectedToNextCell) {
-    self.grayLine.hidden = YES;
-  }
-
   if (showAutofillFormButton) {
     AddViewToVerticalLeadViews(self.autofillFormButton,
                                ManualFillCellView::ElementType::kOther,
@@ -352,9 +316,8 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
 
   // Set and activate constraints.
   self.dynamicConstraints = [[NSMutableArray alloc] init];
-  CGFloat offset = isConnectedToPreviousCell ? -kOffsetForConnectedCell : 0;
-  AppendVerticalConstraintsSpacingForViews(
-      self.dynamicConstraints, verticalLeadViews, self.layoutGuide, offset);
+  AppendVerticalConstraintsSpacingForViews(self.dynamicConstraints,
+                                           verticalLeadViews, self.layoutGuide);
   [NSLayoutConstraint activateConstraints:self.dynamicConstraints];
 }
 
@@ -379,17 +342,15 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   symbolImageView.translatesAutoresizingMaskIntoConstraints = NO;
   symbolImageView.backgroundColor = self.backgroundColor;
 
-  FaviconContainerView* faviconContainerView =
-      static_cast<FaviconContainerView*>(self.faviconView);
-  [faviconContainerView setFaviconBackgroundColor:self.backgroundColor];
-  faviconContainerView.hidden = NO;
-  [faviconContainerView addSubview:symbolImageView];
+  [self.faviconContainerView setFaviconBackgroundColor:self.backgroundColor];
+  self.faviconContainerView.hidden = NO;
+  [self.faviconContainerView addSubview:symbolImageView];
 
   [NSLayoutConstraint activateConstraints:@[
     [symbolImageView.centerXAnchor
-        constraintEqualToAnchor:self.faviconView.centerXAnchor],
+        constraintEqualToAnchor:self.faviconContainerView.centerXAnchor],
     [symbolImageView.centerYAnchor
-        constraintEqualToAnchor:self.faviconView.centerYAnchor],
+        constraintEqualToAnchor:self.faviconContainerView.centerYAnchor],
   ]];
 
   _customSymbolImageView = symbolImageView;
@@ -400,10 +361,8 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
 // Creates and sets up the view hierarchy.
 - (void)createViewHierarchy {
   // Holds the views that should be accessible. The ordering in which views are
-  // added to this array will reflect the order followed by VoiceOver. When the
-  // Keyboard Accessory Upgrade feature is enabled, subviews that need to be
-  // read by VoiceOver must be added to this array. Otherwise, they will be
-  // ignored.
+  // added to this array will reflect the order followed by VoiceOver. Subviews
+  // that need to be read by VoiceOver must be added to this array.
   NSMutableArray<UIView*>* accessibilityElements =
       [[NSMutableArray alloc] initWithObjects:self.contentView, nil];
 
@@ -415,20 +374,20 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
 
-  self.faviconView = [[FaviconContainerView alloc] init];
-  self.faviconView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.faviconView.clipsToBounds = YES;
+  self.faviconContainerView = [[FaviconContainerView alloc] init];
+  self.faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.faviconContainerView.clipsToBounds = YES;
   [NSLayoutConstraint activateConstraints:@[
-    [self.faviconView.widthAnchor
+    [self.faviconContainerView.widthAnchor
         constraintEqualToConstant:kFaviconContainterViewSize],
-    [self.faviconView.heightAnchor
-        constraintEqualToAnchor:self.faviconView.widthAnchor],
+    [self.faviconContainerView.heightAnchor
+        constraintEqualToAnchor:self.faviconContainerView.widthAnchor],
   ]];
 
   self.siteNameLabel = CreateLabel();
   self.overflowMenuButton = CreateOverflowMenuButton(_cellIndex);
-  self.headerView = CreateHeaderView(self.faviconView, self.siteNameLabel,
-                                     self.overflowMenuButton);
+  self.headerView = CreateHeaderView(
+      self.faviconContainerView, self.siteNameLabel, self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];
   [accessibilityElements addObject:self.overflowMenuButton];
   AppendHorizontalConstraintsForViews(staticConstraints, @[ self.headerView ],
@@ -442,7 +401,6 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   [accessibilityElements addObject:self.usernameButton];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.usernameButton ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.passwordButton = CreateChipWithSelectorAndTarget(
@@ -451,7 +409,6 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   [accessibilityElements addObject:self.passwordButton];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.passwordButton ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.autofillFormButton = CreateAutofillFormButton();
@@ -501,12 +458,9 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
 
 // Sets up the favicon with the given `attributes`.
 - (void)setUpFaviconViewWithAttributes:(FaviconAttributes*)attributes {
-  FaviconContainerView* faviconContainerView =
-      static_cast<FaviconContainerView*>(self.faviconView);
-  FaviconView* favicon = faviconContainerView.faviconView;
-  favicon.accessibilityIdentifier =
+  self.faviconContainerView.faviconView.accessibilityIdentifier =
       manual_fill::kExpandedManualFillPasswordFaviconID;
-  [favicon configureWithAttributes:attributes];
+  [self.faviconContainerView.faviconView configureWithAttributes:attributes];
 }
 
 @end

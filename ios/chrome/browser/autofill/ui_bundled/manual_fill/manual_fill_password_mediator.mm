@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/passwords/model/password_counter_delegate_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/saved_passwords_presenter_observer.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -295,8 +294,6 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
     ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
                  initWithCredential:manualFillCredential
-          isConnectedToPreviousItem:NO
-              isConnectedToNextItem:NO
                     contentInjector:self
                         menuActions:menuActions
                           cellIndex:i

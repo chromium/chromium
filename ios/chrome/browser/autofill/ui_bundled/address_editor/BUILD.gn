@@ -39,7 +39,6 @@ source_set("autofill_shared_ui") {
     "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
     "//ios/chrome/browser/settings/ui_bundled/autofill:shared_ui",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",

@@ -11,7 +11,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -76,11 +75,6 @@
 @end
 
 @interface ManualFillAddressCell ()
-
-// The label with the line1 -- line2.
-// TODO(crbug.com/326398845): Remove property once the Keyboard Accessory
-// Upgrade feature has launched both on iPhone and iPad.
-@property(nonatomic, strong) UILabel* addressLabel;
 
 // The dynamic constraints for all the lines (i.e. not set in createView).
 @property(nonatomic, strong)
@@ -171,7 +165,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [super prepareForReuse];
   [self resetDynamicContraints];
 
-  self.addressLabel.text = @"";
   [self.firstNameButton setTitle:@"" forState:UIControlStateNormal];
   [self.middleNameButton setTitle:@"" forState:UIControlStateNormal];
   [self.lastNameButton setTitle:@"" forState:UIControlStateNormal];
@@ -269,7 +262,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.contentView addSubview:self.companyButton];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.companyButton ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.line1Button =
@@ -277,7 +269,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.contentView addSubview:self.line1Button];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.line1Button ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.line2Button =
@@ -285,7 +276,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.contentView addSubview:self.line2Button];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.line2Button ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.zipButton =
@@ -309,7 +299,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.contentView addSubview:self.phoneNumberButton];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.phoneNumberButton ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.emailAddressButton =
@@ -317,7 +306,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.contentView addSubview:self.emailAddressButton];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.emailAddressButton ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   self.autofillFormButton = CreateAutofillFormButton();
@@ -513,7 +501,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   }
 
   // City, state, ZIP code and country are presented on the same line when
-  // possible. Used when the Keyboard Accessory Upgrade feature is enabled.
+  // possible.
   NSMutableArray<UIView*>* cityStateZipCountryLineViews =
       [[NSMutableArray alloc] init];
 

@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -304,10 +303,8 @@ CGFloat GPayIconTopAnchorOffset() {
 // Creates and sets up the view hierarchy.
 - (void)createViewHierarchy {
   // Holds the views that should be accessible. The ordering in which views are
-  // added to this array will reflect the order followed by VoiceOver. When the
-  // Keyboard Accessory Upgrade feature is enabled, subviews that need to be
-  // read by VoiceOver must be added to this array. Otherwise, they will be
-  // ignored.
+  // added to this array will reflect the order followed by VoiceOver. Subviews
+  // that need to be read by VoiceOver must be added to this array.
   NSMutableArray<UIView*>* accessibilityElements =
       [[NSMutableArray alloc] initWithObjects:self.contentView, nil];
 
@@ -392,19 +389,15 @@ CGFloat GPayIconTopAnchorOffset() {
       staticConstraints, @[ self.cardInstructionTextView ], self.layoutGuide);
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.cardNumberLabeledChip ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide, self.gPayIcon);
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.expirationDateLabeledChip ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.cardholderLabeledChip ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.CVCLabeledChip ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
   [staticConstraints
       addObject:[self.gPayIcon.topAnchor

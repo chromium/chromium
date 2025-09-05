@@ -638,8 +638,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       // Show any plus_address suggestions.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
       if (!popup_suggestion.labels.empty() &&
-          !popup_suggestion.labels.front().empty() &&
-          _delegate.isKeyboardAccessoryUpgradeEnabled) {
+          !popup_suggestion.labels.front().empty()) {
         displayDescription =
             SysUTF16ToNSString(popup_suggestion.labels[0][0].value);
       }

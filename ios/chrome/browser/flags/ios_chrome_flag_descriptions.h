@@ -429,9 +429,6 @@ extern const char kIOSEnableRealtimeEventReportingDescription[];
 extern const char kIOSFillRecoveryPasswordName[];
 extern const char kIOSFillRecoveryPasswordDescription[];
 
-extern const char kIOSKeyboardAccessoryUpgradeName[];
-extern const char kIOSKeyboardAccessoryUpgradeDescription[];
-
 extern const char kIOSOmniboxAimShortcutName[];
 extern const char kIOSOmniboxAimShortcutDescription[];
 

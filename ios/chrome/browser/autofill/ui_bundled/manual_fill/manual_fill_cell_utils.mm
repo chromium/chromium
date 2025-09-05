@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
@@ -129,7 +128,7 @@ void LayViewsHorizontally(NSArray<UIView*>* views,
                           NSMutableArray<UIView*>* vertical_lead_views,
                           UIView* trailing_view) {
   AppendHorizontalConstraintsForViews(
-      constraints, views, guide, 0,
+      constraints, views, guide,
       AppendConstraintsHorizontalSyncBaselines |
           AppendConstraintsHorizontalEqualOrSmallerThanGuide,
       trailing_view);
@@ -139,7 +138,6 @@ void LayViewsHorizontally(NSArray<UIView*>* views,
 }  // namespace
 
 const CGFloat kCellMargin = 16;
-const CGFloat kChipsHorizontalMargin = -1;
 
 CGFloat GetHorizontalSpacingBetweenChips() {
   return kSmallSpacingBetweenViews;
@@ -159,21 +157,12 @@ void AppendVerticalConstraintsSpacingForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     const std::vector<ManualFillCellView>& manual_fill_cell_views,
     UILayoutGuide* layout_guide) {
-  AppendVerticalConstraintsSpacingForViews(constraints, manual_fill_cell_views,
-                                           layout_guide, 0);
-}
-
-void AppendVerticalConstraintsSpacingForViews(
-    NSMutableArray<NSLayoutConstraint*>* constraints,
-    const std::vector<ManualFillCellView>& manual_fill_cell_views,
-    UILayoutGuide* layout_guide,
-    CGFloat offset) {
   NSLayoutYAxisAnchor* previous_anchor = layout_guide.topAnchor;
   for (const ManualFillCellView& manual_fill_cell_view :
        manual_fill_cell_views) {
     CGFloat spacing =
         manual_fill_cell_view == manual_fill_cell_views.front()
-            ? offset
+            ? 0
             : GetVerticalSpacingForElementType(manual_fill_cell_view.type);
 
     UIView* view = manual_fill_cell_view.view;
@@ -219,33 +208,23 @@ void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
     UILayoutGuide* layout_guide) {
-  AppendHorizontalConstraintsForViews(constraints, views, layout_guide, 0);
+  AppendHorizontalConstraintsForViews(constraints, views, layout_guide,
+                                      AppendConstraintsNone);
 }
 
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
     UILayoutGuide* layout_guide,
-    CGFloat margin) {
-  AppendHorizontalConstraintsForViews(constraints, views, layout_guide, margin,
-                                      0);
-}
-
-void AppendHorizontalConstraintsForViews(
-    NSMutableArray<NSLayoutConstraint*>* constraints,
-    NSArray<UIView*>* views,
-    UILayoutGuide* layout_guide,
-    CGFloat margin,
     AppendConstraints options) {
-  AppendHorizontalConstraintsForViews(constraints, views, layout_guide, margin,
-                                      options, nil);
+  AppendHorizontalConstraintsForViews(constraints, views, layout_guide, options,
+                                      nil);
 }
 
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
     UILayoutGuide* layout_guide,
-    CGFloat margin,
     AppendConstraints options,
     UIView* trailing_view) {
   if (views.count == 0) {
@@ -256,8 +235,7 @@ void AppendHorizontalConstraintsForViews(
 
   BOOL is_first_view = YES;
   for (UIView* view in views) {
-    CGFloat spacing =
-        is_first_view ? margin : GetHorizontalSpacingBetweenChips();
+    CGFloat spacing = is_first_view ? 0 : kSmallSpacingBetweenViews;
 
     NSLayoutConstraint* constraint =
         [view.leadingAnchor constraintEqualToAnchor:previous_anchor
@@ -293,14 +271,12 @@ void AppendHorizontalConstraintsForViews(
     [constraints
         addObject:[last_view.trailingAnchor
                       constraintLessThanOrEqualToAnchor:layout_guide
-                                                            .trailingAnchor
-                                               constant:-margin]];
+                                                            .trailingAnchor]];
 
   } else {
     [constraints
         addObject:[last_view.trailingAnchor
-                      constraintEqualToAnchor:layout_guide.trailingAnchor
-                                     constant:-margin]];
+                      constraintEqualToAnchor:layout_guide.trailingAnchor]];
   }
 
   if (options & AppendConstraintsHorizontalSyncBaselines) {
@@ -345,7 +321,7 @@ void LayViewsHorizontallyWhenPossible(
 
     if (fits_horizontally) {
       [horizontal_views addObject:view];
-      available_width -= (view_width + GetHorizontalSpacingBetweenChips());
+      available_width -= (view_width + kSmallSpacingBetweenViews);
     } else {
       LayViewsHorizontally(
           horizontal_views, guide, constraints, vertical_lead_views,
@@ -355,8 +331,8 @@ void LayViewsHorizontallyWhenPossible(
       // Start new row of views.
       [horizontal_views removeAllObjects];
       [horizontal_views addObject:view];
-      available_width = GetLayoutGuideWidth(guide) - view_width -
-                        GetHorizontalSpacingBetweenChips();
+      available_width =
+          GetLayoutGuideWidth(guide) - view_width - kSmallSpacingBetweenViews;
     }
   }
 

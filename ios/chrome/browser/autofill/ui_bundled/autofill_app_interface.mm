@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -699,10 +698,6 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
       [self personalDataManager];
   personalDataManager->payments_data_manager().SetPaymentsCvcStorageEnabled(
       enabled);
-}
-
-+ (BOOL)isKeyboardAccessoryUpgradeEnabled {
-  return IsKeyboardAccessoryUpgradeEnabled();
 }
 
 + (BOOL)isDynamicallyLoadFieldsOnInputEnabled {

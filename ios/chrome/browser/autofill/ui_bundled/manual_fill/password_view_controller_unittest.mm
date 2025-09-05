@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ui/base/device_form_factor.h"
@@ -137,8 +136,6 @@ TEST_P(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
   // Add an password data item.
   ManualFillCredentialItem* password_item =
       [[ManualFillCredentialItem alloc] initWithCredential:credential
-                                 isConnectedToPreviousItem:NO
-                                     isConnectedToNextItem:NO
                                            contentInjector:nil
                                                menuActions:@[]
                                                  cellIndex:0
@@ -205,8 +202,6 @@ TEST_P(PasswordViewControllerTest, PlusAddressInCredentialSection) {
                                   isBackupCredential:NO];
   ManualFillCredentialItem* password_item =
       [[ManualFillCredentialItem alloc] initWithCredential:credential
-                                 isConnectedToPreviousItem:NO
-                                     isConnectedToNextItem:NO
                                            contentInjector:nil
                                                menuActions:@[]
                                                  cellIndex:0

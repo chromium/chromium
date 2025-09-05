@@ -98,8 +98,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
 
 }  // namespace
 
-@interface FormSuggestionView () <FormSuggestionLabelDelegate,
-                                  UIScrollViewDelegate>
+@interface FormSuggestionView () <FormSuggestionLabelDelegate>
 
 // The FormSuggestions that are displayed by this view.
 @property(nonatomic) NSArray<FormSuggestion*>* suggestions;
@@ -180,22 +179,6 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
                    animations:^{
                      weakSelf.contentInset = UIEdgeInsetsZero;
                    }];
-}
-
-- (void)lockTrailingView {
-  if (!self.superview || !self.trailingView) {
-    return;
-  }
-  LayoutOffset layoutOffset = CGRectGetLeadingLayoutOffsetInBoundingRect(
-      self.trailingView.frame, {CGPointZero, self.contentSize});
-  // Because of the way the scroll view is transformed for RTL, the insets don't
-  // need to be directed.
-  UIEdgeInsets lockedContentInsets = UIEdgeInsetsMake(0, -layoutOffset, 0, 0);
-  __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:0.2
-      animations:^{
-        weakSelf.contentInset = lockedContentInsets;
-      }];
 }
 
 #pragma mark - UIView
@@ -388,20 +371,6 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   _trailingView = subview;
   if (_stackView) {
     [_stackView addArrangedSubview:_trailingView];
-  }
-}
-
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  DCHECK(!IsKeyboardAccessoryUpgradeEnabled());
-
-  CGFloat offset = self.contentOffset.x;
-  CGFloat inset = self.contentInset.left;  // Inset is negative when locked.
-  CGFloat diff = offset + inset;
-  if (diff < -55) {
-    [self.formSuggestionViewDelegate
-        formSuggestionViewShouldResetFromPull:self];
   }
 }
 

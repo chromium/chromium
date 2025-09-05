@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
 
-#import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

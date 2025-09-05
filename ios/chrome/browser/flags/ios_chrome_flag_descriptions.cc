@@ -752,11 +752,6 @@ const char kIOSFillRecoveryPasswordDescription[] =
     "When enabled, users will be able to attempt to log in using a recovery "
     "password if the main one didn't work.";
 
-const char kIOSKeyboardAccessoryUpgradeName[] =
-    "Enable the keyboard accessory upgrade on iOS";
-const char kIOSKeyboardAccessoryUpgradeDescription[] =
-    "When enabled, the upgraded keyboard accessory UI will be presented.";
-
 const char kIOSOmniboxAimShortcutName[] = "Enable the omnibox aim shortcut";
 const char kIOSOmniboxAimShortcutDescription[] =
     "When enabled, an aim shortcut entrypoint will be displayed when the "

@@ -30,9 +30,6 @@ class WebState;
                   messageAction:(void (^)(void))messageAction
                completionAction:(void (^)(BOOL))completionAction;
 
-// Whether or not the Keyboard Accessory Upgrade feature is enabled.
-@property(nonatomic, readonly) BOOL isKeyboardAccessoryUpgradeEnabled;
-
 @end
 
 // Handles autofill form suggestions. Reads forms from the page, sends them to

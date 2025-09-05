@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"

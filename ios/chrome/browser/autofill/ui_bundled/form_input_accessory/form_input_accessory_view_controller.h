@@ -28,10 +28,6 @@
 // The layout guide center to use to refer to the first suggestion label.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
-// Shows the manual fallback icons as the first option in the suggestions bar,
-// and locks them in that position.
-- (void)lockManualFallbackView;
-
 // Tells the view to restore the manual fallback icons to a clean state. That
 // means no icon selected and the manual fallback view is unlocked.
 - (void)reset;

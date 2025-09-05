@@ -20,10 +20,6 @@ id<GREYMatcher> FormSuggestionViewMatcher() {
   return grey_accessibilityID(kFormSuggestionsViewAccessibilityIdentifier);
 }
 
-id<GREYMatcher> PasswordIconMatcher() {
-  return grey_accessibilityID(kAccessoryPasswordAccessibilityIdentifier);
-}
-
 id<GREYMatcher> KeyboardIconMatcher() {
   return grey_accessibilityID(kAccessoryKeyboardAccessibilityIdentifier);
 }
@@ -56,10 +52,6 @@ id<GREYMatcher> PasswordButtonMatcher() {
   return grey_buttonTitle(kMaskedPasswordButtonText);
 }
 
-id<GREYMatcher> ProfilesIconMatcher() {
-  return grey_accessibilityID(kAccessoryAddressAccessibilityIdentifier);
-}
-
 id<GREYMatcher> ProfilesTableViewMatcher() {
   return grey_accessibilityID(kAddressTableViewAccessibilityIdentifier);
 }
@@ -72,10 +64,6 @@ id<GREYMatcher> ProfileTableViewWindowMatcher() {
   id<GREYMatcher> classMatcher = grey_kindOfClass([UIWindow class]);
   id<GREYMatcher> parentMatcher = grey_descendant(ProfilesTableViewMatcher());
   return grey_allOf(classMatcher, parentMatcher, nil);
-}
-
-id<GREYMatcher> CreditCardIconMatcher() {
-  return grey_accessibilityID(kAccessoryCreditCardAccessibilityIdentifier);
 }
 
 id<GREYMatcher> CreditCardTableViewMatcher() {

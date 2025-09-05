@@ -6,17 +6,14 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
 
-// Leading and trailing padding for the button. Used when the
-// Keyboard Accessory Upgrade feature is enabled.
+// Leading and trailing padding for the button.
 constexpr CGFloat kChipHorizontalPadding = 12;
 
-// Top and bottom padding for the button. Used when the
-// Keyboard Accessory Upgrade feature is enabled.
+// Top and bottom padding for the button.
 constexpr CGFloat kChipVerticalPadding = 11.5;
 
 // Minimal height and width for the button.
@@ -43,11 +40,6 @@ constexpr CGFloat kLineSpacing = 6;
   self = [super initWithFrame:frame];
   if (self) {
     [self initializeStyling];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(updateTitleLabelFont)
-               name:UIContentSizeCategoryDidChangeNotification
-             object:nil];
   }
   return self;
 }
@@ -151,12 +143,6 @@ constexpr CGFloat kLineSpacing = 6;
   self.translatesAutoresizingMaskIntoConstraints = NO;
 
   self.titleLabel.adjustsFontForContentSizeCategory = YES;
-
-  [self updateTitleLabelFont];
-
-}
-
-- (void)updateTitleLabelFont {
 }
 
 @end

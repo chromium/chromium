@@ -74,7 +74,6 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -1023,7 +1022,6 @@ bool CanReloadInputViews() {
 // Updates the keyboard accessory to the state it should be in when a manual
 // fill view is displayed.
 - (void)updateKeyboardAccessoryForManualFilling {
-  [_formInputAccessoryViewController lockManualFallbackView];
   _formInputAccessoryMediator.suggestionsEnabled = NO;
 }
 

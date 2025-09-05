@@ -27,7 +27,6 @@ source_set("branding_ui") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/util",

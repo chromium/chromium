@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_profile_edit_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"

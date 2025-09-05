@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "ui/base/l10n/l10n_util.h"

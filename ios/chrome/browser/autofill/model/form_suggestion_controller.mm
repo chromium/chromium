@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.mm"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/common/url_scheme_util.h"
@@ -483,10 +482,8 @@ bool IsRequestDedupingAllowed() {
     UIImage* defaultIcon = defaultIconForType(suggestion);
 
     // If there are no icons, but we have a default icon for this suggestion,
-    // copy the suggestion and add the default icon. If
-    // `IsKeyboardAccessoryUpgradeEnabled()`, update the icon for this
-    // suggestion. Otherwise, only update the icons for the plus address
-    // suggestions.
+    // copy the suggestion and add the default icon, otherwise, update the icon
+    // for this suggestion.
     BOOL shouldUpdateIcon = !suggestion.icon && defaultIcon;
 
     if (shouldUpdateIcon) {
