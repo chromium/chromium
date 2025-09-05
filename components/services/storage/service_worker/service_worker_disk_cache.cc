@@ -68,12 +68,11 @@ int ServiceWorkerDiskCacheEntry::Read(int index,
                                       net::IOBuffer* buf,
                                       int buf_len,
                                       net::CompletionOnceCallback callback) {
-  if (offset < 0 || offset > std::numeric_limits<int32_t>::max())
-    return net::ERR_INVALID_ARGUMENT;
-  if (!disk_cache_entry_)
+  if (!disk_cache_entry_) {
     return net::ERR_ABORTED;
-  return disk_cache_entry_->ReadData(index, static_cast<int>(offset), buf,
-                                     buf_len, std::move(callback));
+  }
+  return disk_cache_entry_->ReadData(index, offset, buf, buf_len,
+                                     std::move(callback));
 }
 
 int ServiceWorkerDiskCacheEntry::Write(int index,
@@ -81,13 +80,12 @@ int ServiceWorkerDiskCacheEntry::Write(int index,
                                        net::IOBuffer* buf,
                                        int buf_len,
                                        net::CompletionOnceCallback callback) {
-  if (offset < 0 || offset > std::numeric_limits<int32_t>::max())
-    return net::ERR_INVALID_ARGUMENT;
-  if (!disk_cache_entry_)
+  if (!disk_cache_entry_) {
     return net::ERR_ABORTED;
+  }
   const bool kTruncate = true;
-  return disk_cache_entry_->WriteData(index, static_cast<int>(offset), buf,
-                                      buf_len, std::move(callback), kTruncate);
+  return disk_cache_entry_->WriteData(index, offset, buf, buf_len,
+                                      std::move(callback), kTruncate);
 }
 
 int64_t ServiceWorkerDiskCacheEntry::GetSize(int index) {
