@@ -30,7 +30,7 @@ class TipsManagerIOSFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the default factory used to build `TipsManagerIOS`. Can be
   // registered with `SetTestingFactory()` to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<TipsManagerIOSFactory>;
@@ -38,11 +38,11 @@ class TipsManagerIOSFactory : public ProfileKeyedServiceFactoryIOS {
   TipsManagerIOSFactory();
   ~TipsManagerIOSFactory() override;
 
-  // `BrowserStateKeyedServiceFactory` implementation.
+  // `ProfileKeyedServiceFactoryIOS` implementation.
   // Creates and returns an `TipsManagerIOS` instance for the given
   // `context`.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };
