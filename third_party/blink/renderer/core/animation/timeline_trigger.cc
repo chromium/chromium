@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/animation/deferred_timeline.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
-#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 #include "third_party/blink/renderer/core/animation/timeline_range.h"
 #include "third_party/blink/renderer/core/animation/view_timeline.h"
@@ -435,6 +434,11 @@ void TimelineTrigger::HandlePostTripAdd(Animation* animation,
       animation->PauseInternal(exception_state);
       animation->SetPausedForTrigger(true);
   };
+}
+
+void TimelineTrigger::WillAddAnimation(Animation* animation,
+                                       ExceptionState& exception_state) {
+  animation->PauseInternal(exception_state);
 }
 
 void TimelineTrigger::DidAddAnimation(Animation* animation,

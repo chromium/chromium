@@ -2898,6 +2898,11 @@ interface EventTarget
     method dispatchEvent
     method removeEventListener
     method when
+interface EventTrigger : AnimationTrigger
+    attribute @@toStringTag
+    getter eventTarget
+    getter eventType
+    method constructor
 interface External
     attribute @@toStringTag
     method AddSearchProvider

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_trigger_options.h"
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 
 namespace blink {
 
@@ -92,6 +93,8 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
   }
 
  private:
+  void WillAddAnimation(Animation* animation,
+                        ExceptionState& exception_state) override;
   void DidAddAnimation(Animation* animation,
                        ExceptionState& exception_state) override;
   void DidRemoveAnimation(Animation* animation) override;

@@ -6,13 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_TRIGGER_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_timelinerangeoffset.h"
-#include "third_party/blink/renderer/core/animation/animation_timeline.h"
-#include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
+
+class Animation;
 
 class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -55,6 +56,8 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   }
 
  private:
+  virtual void WillAddAnimation(Animation* animation,
+                                ExceptionState& exception_state);
   virtual void DidAddAnimation(Animation* animation,
                                ExceptionState& exception_state);
   virtual void DidRemoveAnimation(Animation* animation);

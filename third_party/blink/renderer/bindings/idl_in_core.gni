@@ -20,6 +20,8 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/animation/document_timeline.idl",
   "//third_party/blink/renderer/core/animation/document_timeline_options.idl",
   "//third_party/blink/renderer/core/animation/effect_timing.idl",
+  "//third_party/blink/renderer/core/animation/event_trigger.idl",
+  "//third_party/blink/renderer/core/animation/event_trigger_options.idl",
   "//third_party/blink/renderer/core/animation/get_animations_options.idl",
   "//third_party/blink/renderer/core/animation/keyframe_animation_options.idl",
   "//third_party/blink/renderer/core/animation/keyframe_effect.idl",

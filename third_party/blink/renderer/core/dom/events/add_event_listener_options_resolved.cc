@@ -6,12 +6,10 @@
 
 namespace blink {
 
-AddEventListenerOptionsResolved::AddEventListenerOptionsResolved()
-    : passive_forced_for_document_target_(false), passive_specified_(false) {}
+AddEventListenerOptionsResolved::AddEventListenerOptionsResolved() {}
 
 AddEventListenerOptionsResolved::AddEventListenerOptionsResolved(
-    const AddEventListenerOptions* options)
-    : passive_forced_for_document_target_(false), passive_specified_(false) {
+    const AddEventListenerOptions* options) {
   DCHECK(options);
   // AddEventListenerOptions
   if (options->hasPassive())

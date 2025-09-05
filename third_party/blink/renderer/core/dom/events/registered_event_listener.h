@@ -101,6 +101,8 @@ class RegisteredEventListener final
 
   void SetRemoved() { removed_ = true; }
 
+  bool IsAnimationTrigger() const { return animation_trigger_; }
+
  private:
   Member<EventListener> callback_;
   unsigned use_capture_ : 1;
@@ -110,6 +112,7 @@ class RegisteredEventListener final
   unsigned passive_forced_for_document_target_ : 1;
   unsigned passive_specified_ : 1;
   unsigned removed_ : 1;
+  unsigned animation_trigger_ : 1;
 };
 
 bool operator==(const RegisteredEventListener&, const RegisteredEventListener&);

@@ -198,6 +198,8 @@ blink_core_sources("animation") {
     "effect_stack.h",
     "element_animations.cc",
     "element_animations.h",
+    "event_trigger.cc",
+    "event_trigger.h",
     "image_list_property_functions.h",
     "image_slice_property_functions.h",
     "inert_effect.cc",
