@@ -47,10 +47,10 @@ class TranslateAgent : public content::RenderFrameObserver,
   // Updates page registration in translate driver.
   void RenewPageRegistration();
 
-  // Lets the translation system know that we are preparing to navigate to
-  // the specified URL. If there is anything that can or should be done before
-  // this URL loads, this is the time to prepare for it.
-  void PrepareForUrl(const GURL& url);
+  // Lets the translation system know that we are preparing to navigate.
+  // If there is anything that can or should be done before
+  // this document loads, this is the time to prepare for it.
+  void PrepareForNewDocument();
 
   // mojom::TranslateAgent implementation.
   void TranslateFrame(const std::string& translate_script,

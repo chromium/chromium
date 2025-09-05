@@ -240,12 +240,10 @@ void ChromeRenderFrameObserver::ReadyToCommitNavigation(
   if (render_frame()->IsMainFrame() && web_cache_impl_)
     web_cache_impl_->ExecutePendingClearCache();
 
-  // Let translate_agent do any preparatory work for loading a URL.
-  if (!translate_agent_)
-    return;
-
-  translate_agent_->PrepareForUrl(
-      render_frame()->GetWebFrame()->GetDocument().Url());
+  // Let translate_agent do any preparatory work before the new document loads.
+  if (translate_agent_) {
+    translate_agent_->PrepareForNewDocument();
+  }
 }
 
 void ChromeRenderFrameObserver::DidSetPageLifecycleState(
