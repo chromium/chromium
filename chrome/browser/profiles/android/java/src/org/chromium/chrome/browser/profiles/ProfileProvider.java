@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.profiles;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -24,8 +22,28 @@ public interface ProfileProvider {
      */
     @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded);
 
-    /** Return whether the OffTheRecord has been created. */
-    boolean hasOffTheRecordProfile();
+    /** Deprecated. */
+    default boolean hasOffTheRecordProfile() {
+        return getOffTheRecordProfile() != null;
+    }
+
+    /**
+     * Return the OffTheRecord profile associated with {@link #getOriginalProfile()}, or null if
+     * there isn't one.
+     */
+    default @Nullable Profile getOffTheRecordProfile() {
+        return getOffTheRecordProfile(false);
+    }
+
+    /**
+     * Return the OffTheRecord profile associated with {@link #getOriginalProfile()}, creating one
+     * if there is not one already.
+     */
+    default Profile getOrCreateOffTheRecordProfile() {
+        Profile ret = getOffTheRecordProfile(true);
+        assert ret != null;
+        return ret;
+    }
 
     /**
      * Utility for getting (and creating if necessary) the appropriate {@link Profile} from the
@@ -35,10 +53,10 @@ public interface ProfileProvider {
         assert profileProvider != null;
         Profile profile =
                 incognito
-                        ? profileProvider.getOffTheRecordProfile(true)
+                        ? profileProvider.getOrCreateOffTheRecordProfile()
                         : profileProvider.getOriginalProfile();
-        if (incognito != assumeNonNull(profile).isOffTheRecord()) {
-            throw new IllegalStateException("Incognito mismatch");
+        if (incognito != profile.isOffTheRecord()) {
+            throw new IllegalStateException();
         }
         return profile;
     }

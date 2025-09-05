@@ -64,16 +64,10 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
             IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
         }
 
-        if (mProfileProviderSupplier.get().hasOffTheRecordProfile()) {
-            ProfileManager.destroyWhenAppropriate(
-                    mProfileProviderSupplier
-                            .get()
-                            .getOffTheRecordProfile(/* createIfNeeded= */ false));
+        Profile otrProfile = mProfileProviderSupplier.get().getOffTheRecordProfile();
+        if (otrProfile != null) {
+            ProfileManager.destroyWhenAppropriate(otrProfile);
         }
-    }
-
-    public Profile getProfile() {
-        return mProfileProviderSupplier.get().getOffTheRecordProfile(/* createIfNeeded= */ true);
     }
 
     private void initializeIncognito() {

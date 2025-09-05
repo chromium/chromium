@@ -535,15 +535,10 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                     @Override
                     public @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded) {
                         if (!mInitiatorTab.getProfile().isOffTheRecord()) {
-                            throw new IllegalStateException(
-                                    "Attempting to access invalid incognito profile from PiP");
+                            assert !createIfNeeded;
+                            return null;
                         }
                         return mInitiatorTab.getProfile();
-                    }
-
-                    @Override
-                    public boolean hasOffTheRecordProfile() {
-                        return mInitiatorTab.isIncognito();
                     }
                 };
         supplier.set(profileProvider);

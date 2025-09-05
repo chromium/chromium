@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -40,7 +41,7 @@ public class CookiesFetcherTest {
 
     @Mock private Profile mProfile1;
     @Mock private Profile mIncognitoProfile1;
-    @Mock private ProfileProvider mProfileProvider;
+    @Spy private ProfileProvider mProfileProvider;
 
     @Mock private CookiesFetcher.Natives mCookiesFetcherJni;
     @Mock private ImportantFileWriterAndroid.Natives mImportantFileWriterJni;
@@ -142,8 +143,6 @@ public class CookiesFetcherTest {
 
     private void setupProfileProvider(Profile originalProfile, Profile incognitoProfile) {
         Mockito.when(mProfileProvider.getOriginalProfile()).thenReturn(originalProfile);
-        Mockito.when(mProfileProvider.hasOffTheRecordProfile())
-                .thenReturn(incognitoProfile != null);
         Mockito.when(mProfileProvider.getOffTheRecordProfile(Mockito.anyBoolean()))
                 .thenReturn(incognitoProfile);
     }

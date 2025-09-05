@@ -31,11 +31,6 @@ public class HeadlessTabModelSelectorImpl extends TabModelSelectorImpl {
                     public @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded) {
                         return profile.getPrimaryOtrProfile(createIfNeeded);
                     }
-
-                    @Override
-                    public boolean hasOffTheRecordProfile() {
-                        return profile.hasPrimaryOtrProfile();
-                    }
                 };
         OneshotSupplierImpl<ProfileProvider> ourProfileProviderSupplier =
                 new OneshotSupplierImpl<>();

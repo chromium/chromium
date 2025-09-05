@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import org.chromium.base.Holder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -84,7 +82,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                     mTabUngrouperFactory.create(/* isIncognitoBranded= */ true, filterHolder);
             TabCollectionTabModelImpl model =
                     new TabCollectionTabModelImpl(
-                            assumeNonNull(mProfileProvider.getOffTheRecordProfile(true)),
+                            mProfileProvider.getOrCreateOffTheRecordProfile(),
                             mActivityType,
                             /* isArchivedTabModel= */ false,
                             mRegularTabCreator,
@@ -101,7 +99,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
             return model;
         }
         return new TabModelImpl(
-                assumeNonNull(mProfileProvider.getOffTheRecordProfile(true)),
+                mProfileProvider.getOrCreateOffTheRecordProfile(),
                 mActivityType,
                 mRegularTabCreator,
                 mIncognitoTabCreator,

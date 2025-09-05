@@ -24,6 +24,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
@@ -113,7 +114,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public TabModelInitializer tabModelInitializer;
     @Mock public MockWebContents webContents;
     @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
-    @Mock public ProfileProvider profileProvider;
+    @Spy public ProfileProvider profileProvider;
     @Mock public CipherFactory cipherFactory;
     @Mock public PowerManager powerManager;
     @Mock private Profile mProfile;

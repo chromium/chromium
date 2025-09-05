@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -135,19 +137,14 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
 
                     @Override
                     public Profile getOriginalProfile() {
-                        throw new IllegalStateException(
-                                "Unexpected access of the original profile.");
+                        assert false;
+                        return assumeNonNull(null);
                     }
 
                     @Override
                     public @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded) {
-                        throw new IllegalStateException(
-                                "Unexpected access of the incognito profile.");
-                    }
-
-                    @Override
-                    public boolean hasOffTheRecordProfile() {
-                        return false;
+                        assert !createIfNeeded;
+                        return null;
                     }
                 };
         supplier.set(profileProvider);

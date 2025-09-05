@@ -94,9 +94,6 @@ public class ActivityProfileProviderTest {
         ProfileProvider provider = providerSupplier.get();
         Assert.assertNotNull(provider);
 
-        provider.hasOffTheRecordProfile();
-        verify(mOriginalProfile).hasPrimaryOtrProfile();
-
         provider.getOffTheRecordProfile(false);
         verify(mOriginalProfile).getPrimaryOtrProfile(eq(false));
 
@@ -127,9 +124,6 @@ public class ActivityProfileProviderTest {
 
         provider.getOriginalProfile();
         Assert.assertEquals(0, otrProfileIdHelper.getCallCount());
-
-        provider.hasOffTheRecordProfile();
-        verify(mOriginalProfile).hasOffTheRecordProfile(eq(otrProfileId));
 
         provider.getOffTheRecordProfile(false);
         verify(mOriginalProfile).getOffTheRecordProfile(eq(otrProfileId), eq(false));
