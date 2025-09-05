@@ -94,6 +94,7 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
 
   // mojom::SubresourceFilterAgent:
   void ActivateForNextCommittedLoad(
+      const GURL& url,
       mojom::ActivationStatePtr activation_state,
       const std::optional<blink::FrameAdEvidence>& ad_evidence) override {
     last_activation_ = std::move(activation_state);

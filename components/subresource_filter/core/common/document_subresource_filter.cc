@@ -120,7 +120,7 @@ LoadPolicy DocumentSubresourceFilter::GetLoadPolicy(
 const url_pattern_index::flat::UrlRule*
 DocumentSubresourceFilter::FindMatchingUrlRule(
     const GURL& subresource_url,
-    url_pattern_index::proto::ElementType subresource_type) {
+    url_pattern_index::proto::ElementType subresource_type) const {
   if (activation_state_.filtering_disabled_for_document) {
     return nullptr;
   }

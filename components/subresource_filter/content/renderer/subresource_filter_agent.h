@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
@@ -23,6 +24,8 @@ class WebDocumentSubresourceFilter;
 }  // namespace blink
 
 namespace subresource_filter {
+
+BASE_DECLARE_FEATURE(kSubresourceFilterPrewarm);
 
 class UnverifiedRulesetDealer;
 class WebDocumentSubresourceFilterImpl;
@@ -106,6 +109,7 @@ class SubresourceFilterAgent
 
   // mojom::SubresourceFilterAgent:
   void ActivateForNextCommittedLoad(
+      const GURL& url,
       mojom::ActivationStatePtr activation_state,
       const std::optional<blink::FrameAdEvidence>& ad_evidence) override;
 
@@ -118,14 +122,18 @@ class SubresourceFilterAgent
       content::RenderFrame* render_frame);
 
   void RecordHistogramsOnFilterCreation(
-      const mojom::ActivationState& activation_state);
+      const mojom::ActivationState& activation_state,
+      const GURL& url);
   void ResetInfoForNextDocument();
 
   virtual const mojom::ActivationState
   GetInheritedActivationStateForNewDocument();
 
-  void ConstructFilter(const mojom::ActivationState activation_state,
-                       const GURL& url);
+  std::unique_ptr<WebDocumentSubresourceFilterImpl> ConstructFilter(
+      const mojom::ActivationState& activation_state,
+      const GURL& url);
+  void ConstructAndSetFilter(const mojom::ActivationState& activation_state,
+                             const GURL& url);
 
   mojom::SubresourceFilterHost* GetSubresourceFilterHost();
 
@@ -148,6 +156,8 @@ class SubresourceFilterAgent
 
   mojom::ActivationState activation_state_for_next_document_;
 
+  std::unique_ptr<WebDocumentSubresourceFilterImpl> filter_for_next_document_;
+
   // Use associated interface to make sure mojo messages are ordered with regard
   // to legacy IPC messages.
   mojo::AssociatedRemote<mojom::SubresourceFilterHost> subresource_filter_host_;
@@ -156,6 +166,8 @@ class SubresourceFilterAgent
 
   base::WeakPtr<WebDocumentSubresourceFilterImpl>
       filter_for_last_created_document_;
+
+  bool any_filter_created_ = false;
   base::WeakPtrFactory<SubresourceFilterAgent> weak_ptr_factory_{this};
 };
 
