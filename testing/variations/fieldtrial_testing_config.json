@@ -13847,21 +13847,6 @@
             ]
         }
     ],
-    "IOSTailoredNonModalDBPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TailoredNonModalDBPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSTrustedVaultNotification": [
         {
             "platforms": [
