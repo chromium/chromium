@@ -140,6 +140,26 @@ ContextProviderCommandBuffer::CreateForWebGL(
 
 // static
 scoped_refptr<ContextProviderCommandBuffer>
+ContextProviderCommandBuffer::CreateForWebGPU(
+    scoped_refptr<gpu::GpuChannelHost> channel,
+    const GURL& active_url,
+    command_buffer_metrics::ContextType type,
+    base::SharedMemoryMapper* buffer_mapper) {
+  gpu::ContextCreationAttribs attributes;
+  // TODO(kainino): It's not clear yet how GPU preferences work for WebGPU.
+  attributes.gpu_preference = gl::GpuPreference::kHighPerformance;
+  attributes.enable_gles2_interface = false;
+  attributes.context_type = gpu::CONTEXT_TYPE_WEBGPU;
+
+  return base::MakeRefCounted<ContextProviderCommandBuffer>(
+      std::move(channel), /*stream_id=*/0, gpu::SchedulingPriority::kNormal,
+      active_url, /*automatic_flushes=*/true,
+      /*support_locking=*/false, gpu::SharedMemoryLimits::ForWebGPUContext(),
+      attributes, type, buffer_mapper);
+}
+
+// static
+scoped_refptr<ContextProviderCommandBuffer>
 ContextProviderCommandBuffer::CreateForRaster(
     scoped_refptr<gpu::GpuChannelHost> channel,
     int32_t stream_id,

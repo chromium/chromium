@@ -99,6 +99,12 @@ class ContextProviderCommandBuffer
       bool enable_gpu_rasterization,
       bool lose_context_when_out_of_memory);
 
+  static scoped_refptr<ContextProviderCommandBuffer> CreateForWebGPU(
+      scoped_refptr<gpu::GpuChannelHost> channel,
+      const GURL& active_url,
+      command_buffer_metrics::ContextType type,
+      base::SharedMemoryMapper* buffer_mapper);
+
   ContextProviderCommandBuffer(
       scoped_refptr<gpu::GpuChannelHost> channel,
       int32_t stream_id,

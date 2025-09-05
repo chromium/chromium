@@ -803,14 +803,6 @@ static std::unique_ptr<blink::WebGraphicsContext3DProvider>
 CreateWebGPUGraphicsContext3DImpl(
     const blink::WebURL& document_url,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
-  gpu::ContextCreationAttribs attributes;
-  // TODO(kainino): It's not clear yet how GPU preferences work for WebGPU.
-  attributes.gpu_preference = gl::GpuPreference::kHighPerformance;
-  attributes.enable_gles2_interface = false;
-  attributes.context_type = gpu::CONTEXT_TYPE_WEBGPU;
-
-  constexpr bool automatic_flushes = true;
-  constexpr bool support_locking = false;
 
   // WebGPU GPUBuffers, which are backed by shared memory transfer buffers, may
   // be accessed as ArrayBuffers from JavaScript. As such, the underlying
@@ -824,12 +816,9 @@ CreateWebGPUGraphicsContext3DImpl(
       gin::GetSharedMemoryMapperForArrayBuffers();
 
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
-      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
-          std::move(gpu_channel_host), kGpuStreamIdDefault,
-          kGpuStreamPriorityDefault, GURL(document_url), automatic_flushes,
-          support_locking, gpu::SharedMemoryLimits::ForWebGPUContext(),
-          attributes, viz::command_buffer_metrics::ContextType::WEBGPU,
-          buffer_mapper));
+      viz::ContextProviderCommandBuffer::CreateForWebGPU(
+          std::move(gpu_channel_host), GURL(document_url),
+          viz::command_buffer_metrics::ContextType::WEBGPU, buffer_mapper));
 }
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
