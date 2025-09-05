@@ -149,7 +149,7 @@ class CONTENT_EXPORT RenderThreadImpl
   static void RegisterSchemes();
 
   // RenderThread implementation:
-  IPC::SyncChannel* GetChannel() override;
+  IPC::ChannelProxy* GetChannel() override;
   std::string GetLocale() override;
 
   // base::trace_event::TraceLog::AsyncEnabledStateObserver implementation:

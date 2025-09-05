@@ -20,6 +20,10 @@
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 
+namespace IPC {
+class ChannelProxy;
+}  // namespace IPC
+
 namespace content {
 
 namespace mojom {
@@ -42,7 +46,7 @@ class MockRenderThread : public RenderThread {
   }
 
   // RenderThread implementation:
-  IPC::SyncChannel* GetChannel() override;
+  IPC::ChannelProxy* GetChannel() override;
   std::string GetLocale() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
   void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;

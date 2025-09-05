@@ -23,7 +23,6 @@
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/child/child_thread.h"
-#include "ipc/ipc.mojom.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -40,7 +39,7 @@
 #endif
 
 namespace IPC {
-class SyncChannel;
+class ChannelProxy;
 class UrgentMessageObserver;
 }  // namespace IPC
 
@@ -97,7 +96,7 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   void SetFieldTrialGroup(const std::string& trial_name,
                           const std::string& group_name) override;
 
-  IPC::SyncChannel* channel() { return channel_.get(); }
+  IPC::ChannelProxy* channel() { return channel_.get(); }
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner() const {
     return main_thread_runner_;
@@ -176,7 +175,7 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   mutable mojo::Remote<mojom::FontCacheWin> font_cache_win_;
 #endif
 
-  std::unique_ptr<IPC::SyncChannel> channel_;
+  std::unique_ptr<IPC::ChannelProxy> channel_;
 
   // The OnChannelError() callback was invoked - the channel is dead, don't
   // attempt to communicate.
