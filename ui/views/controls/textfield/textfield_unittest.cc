@@ -1754,6 +1754,40 @@ TEST_F(TextfieldTest, TextInputType) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD, textfield_->GetTextInputType());
 }
 
+TEST_F(TextfieldTest, NumberInputType_FiltersNonDigitCharacters) {
+  InitTextfield();
+
+  // Set the textfield to accept number input.
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_NUMBER);
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_NUMBER, textfield_->GetTextInputType());
+
+  // Test inserting digits. They should be accepted.
+  SendKeyEvent(ui::VKEY_1);
+  EXPECT_EQ(u"1", textfield_->GetText());
+
+  // Test inserting a non-digit character. It should be ignored.
+  SendKeyEvent(ui::VKEY_A);
+  EXPECT_EQ(u"1", textfield_->GetText());
+
+  // Test inserting a string with only digits. It should be accepted.
+  textfield_->InsertText(
+      u"234",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_EQ(u"1234", textfield_->GetText());
+
+  // Test inserting a string with mixed characters. Only digits should be kept.
+  textfield_->InsertText(
+      u"5a6b7",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_EQ(u"1234567", textfield_->GetText());
+
+  // Test inserting a string with only non-digits. It should be ignored.
+  textfield_->InsertText(
+      u"abc",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_EQ(u"1234567", textfield_->GetText());
+}
+
 TEST_F(TextfieldTest, OnKeyPress) {
   InitTextfield();
 

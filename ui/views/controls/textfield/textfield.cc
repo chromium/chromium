@@ -190,9 +190,17 @@ bool IsControlKeyModifier(int flags) {
 #endif
 }
 
-bool IsValidCharToInsert(const char16_t& ch) {
+bool IsValidCharToInsert(const char16_t& ch, ui::TextInputType input_type) {
   // Filter out all control characters, including tab and new line characters.
-  return (ch >= 0x20 && ch < 0x7F) || ch > 0x9F;
+  if ((ch < 0x20 || ch >= 0x7f) && ch <= 0x9f) {
+    return false;
+  }
+
+  if (input_type == ui::TEXT_INPUT_TYPE_NUMBER) {
+    return ch >= '0' && ch <= '9';
+  }
+
+  return true;
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1678,7 +1686,9 @@ void Textfield::InsertText(const std::u16string& new_text,
                            InsertTextCursorBehavior cursor_behavior) {
   std::u16string filtered_new_text;
   std::ranges::copy_if(new_text, std::back_inserter(filtered_new_text),
-                       IsValidCharToInsert);
+                       [this](char16_t ch) {
+                         return IsValidCharToInsert(ch, GetTextInputType());
+                       });
 
   if (GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE ||
       filtered_new_text.empty()) {
@@ -1705,7 +1715,7 @@ void Textfield::InsertChar(const ui::KeyEvent& event) {
   // On Windows AltGr is represented by Alt+Ctrl or Right Alt, and on Linux it's
   // a different flag that we don't care about.
   const char16_t ch = event.GetCharacter();
-  const bool should_insert_char = IsValidCharToInsert(ch) &&
+  const bool should_insert_char = IsValidCharToInsert(ch, GetTextInputType()) &&
                                   !ui::IsSystemKeyModifier(event.flags()) &&
                                   !IsControlKeyModifier(event.flags());
   if (GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE || !should_insert_char) {

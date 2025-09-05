@@ -80,7 +80,7 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
     code_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
     code_field_->SetObscuredGlyphSpacing(kObscuredGlyphSpacingDp);
   } else {
-    code_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_NUMBER);
+    code_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
   }
 }
 
