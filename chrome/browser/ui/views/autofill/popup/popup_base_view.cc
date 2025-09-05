@@ -33,7 +33,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_palette.h"
@@ -454,7 +453,7 @@ gfx::Rect PopupBaseView::GetTopWindowBounds() const {
 
 gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
     const gfx::Rect& element_bounds,
-    const gfx::Rect& visible_content_area_bounds,
+    const gfx::Rect& max_bounds_for_popup,
     const gfx::Size& preferred_size,
     base::span<const views::BubbleArrowSide> preferred_popup_sides) {
   views::BubbleBorder* border = static_cast<views::BubbleBorder*>(
@@ -470,7 +469,7 @@ gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
 
   // Deduce the arrow and the position.
   views::BubbleBorder::Arrow arrow = GetOptimalPopupPlacement(
-      /*visible_content_area_bounds=*/visible_content_area_bounds,
+      /*content_area_bounds=*/max_bounds_for_popup,
       /*element_bounds=*/element_bounds,
       /*popup_preferred_size=*/preferred_size,
       /*right_to_left=*/delegate_->GetElementTextDirection() ==
@@ -493,7 +492,7 @@ gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
     border->set_arrow(arrow);
     border->AddArrowToBubbleCornerAndPointTowardsAnchor(
         element_bounds, popup_bounds,
-        visible_content_area_bounds.y() - kMaxPopupWebContentsTopYOverflow);
+        max_bounds_for_popup.y() - kMaxPopupWebContentsTopYOverflow);
   }
 
   return popup_bounds;
@@ -509,21 +508,18 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
       PopupMayExceedContentAreaBounds(GetWebContents()) ? top_window_bounds
                                                         : content_area_bounds;
 
-  // Intersect with the current monitor's work area to avoid showing popups
-  // outside the screen.
-  gfx::Rect visible_content_area_bounds =
-      IntersectWithDisplayBounds(max_bounds_for_popup);
-
   gfx::Rect element_bounds = gfx::ToEnclosingRect(delegate_->element_bounds());
 
   // An element is never outside the content area if it is contained by the
-  // `visible_content_area_bounds`. This also applies if the element is empty,
+  // `content_area_bounds`. This also applies if the element is empty,
   // which means that either the height or the width is 0. An element can be
   // empty in case the popup is anchored to a caret, which has a 0 width.
-  if (!visible_content_area_bounds.Contains(element_bounds)) {
-    // If the element exceeds the visible content area, ensure that the popup
-    // is still visually attached to the input element.
-    element_bounds.Intersect(visible_content_area_bounds);
+  // TODO(crbug.com/430555440) - We want the element also to intersect with
+  // the screen bounds.
+  if (!content_area_bounds.Contains(element_bounds)) {
+    // If the element exceeds the content area, ensure that the popup is still
+    // visually attached to the input element.
+    element_bounds.Intersect(content_area_bounds);
     if (element_bounds.IsEmpty()) {
       HideController(SuggestionHidingReason::kElementOutsideOfContentArea);
       return false;
@@ -535,21 +531,17 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   element_bounds.Inset(
       gfx::Insets::VH(/*vertical=*/-kElementBorderPadding, /*horizontal=*/0));
 
-  // At least one row of the popup should be shown in the bounds of the
-  // visible content area so that the user notices the presence of the popup.
+  // At least one row of the popup should be shown in the bounds of the content
+  // area so that the user notices the presence of the popup.
   int item_height =
       children().size() > 0 ? children()[0]->GetPreferredSize().height() : 0;
-  // That function checks whether the popup element has enough place to render
-  // either to the top of the focused element or to the bottom of the focused
-  // element.
-  if (!CanShowDropdownHere(item_height, visible_content_area_bounds,
-                           element_bounds)) {
+  if (!CanShowDropdownHere(item_height, max_bounds_for_popup, element_bounds)) {
     HideController(SuggestionHidingReason::kInsufficientSpace);
     return false;
   }
 
   gfx::Rect popup_bounds = GetOptimalPositionAndPlaceArrowOnPopup(
-      element_bounds, visible_content_area_bounds, preferred_size,
+      element_bounds, max_bounds_for_popup, preferred_size,
       kDefaultPreferredPopupSides);
 
   if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
