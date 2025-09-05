@@ -27,11 +27,6 @@ Profile* GetProfileFromJava(
     const JavaParamRef<jobject>& java_android_browser_window) {
   base::android::ScopedJavaLocalRef<jobject> j_profile =
       Java_AndroidBrowserWindow_getProfile(env, java_android_browser_window);
-  CHECK(!j_profile.is_null())
-      << "AndroidBrowserWindow is for desktop Android, which assumes that the "
-         "associated profile will never be null for the lifetime of the "
-         "window. See documentation of BrowserWindowInterface::GetProfile() "
-         "for details.";
   return Profile::FromJavaObject(j_profile);
 }
 
@@ -41,8 +36,9 @@ Profile* GetProfileFromJava(
 static jlong JNI_AndroidBrowserWindow_Create(
     JNIEnv* env,
     const JavaParamRef<jobject>& caller,
-    jint browser_window_type) {
-  Profile* profile = GetProfileFromJava(env, caller);
+    jint browser_window_type,
+    const JavaParamRef<jobject>& j_profile) {
+  Profile* profile = Profile::FromJavaObject(j_profile);
   return reinterpret_cast<intptr_t>(new AndroidBrowserWindow(
       env, caller,
       static_cast<BrowserWindowInterface::Type>(browser_window_type), profile));

@@ -184,7 +184,9 @@ public final class ChromeAndroidTaskUnitTestSupport {
     private static AndroidBrowserWindow.Natives createMockAndroidBrowserWindowNatives() {
         var mockAndroidBrowserWindowNatives = mock(AndroidBrowserWindow.Natives.class);
         when(mockAndroidBrowserWindowNatives.create(
-                        /* caller= */ any(), /* browserWindowType= */ anyInt()))
+                        /* caller= */ any(),
+                        /* browserWindowType= */ anyInt(),
+                        /* profile= */ any()))
                 .thenReturn(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
 
         AndroidBrowserWindowJni.setInstanceForTesting(mockAndroidBrowserWindowNatives);

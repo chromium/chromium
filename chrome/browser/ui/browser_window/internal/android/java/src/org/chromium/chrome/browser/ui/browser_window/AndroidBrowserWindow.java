@@ -39,7 +39,10 @@ final class AndroidBrowserWindow {
         if (mNativeAndroidBrowserWindow == 0) {
             mNativeAndroidBrowserWindow =
                     AndroidBrowserWindowJni.get()
-                            .create(this, mChromeAndroidTask.getBrowserWindowType());
+                            .create(
+                                    this,
+                                    mChromeAndroidTask.getBrowserWindowType(),
+                                    mChromeAndroidTask.getProfile());
         }
         return mNativeAndroidBrowserWindow;
     }
@@ -96,9 +99,13 @@ final class AndroidBrowserWindow {
          * @param caller The Java object calling this method.
          * @param browserWindowType The browser window type as defined in the native {@code
          *     BrowserWindowInterface::Type} enum.
+         * @param profile The {@link Profile} associated with the {@code AndroidBrowserWindow}.
          * @return The address of the native {@code AndroidBrowserWindow}.
          */
-        long create(AndroidBrowserWindow caller, @BrowserWindowType int browserWindowType);
+        long create(
+                AndroidBrowserWindow caller,
+                @BrowserWindowType int browserWindowType,
+                Profile profile);
 
         /**
          * Destroys the native {@code AndroidBrowserWindow}.

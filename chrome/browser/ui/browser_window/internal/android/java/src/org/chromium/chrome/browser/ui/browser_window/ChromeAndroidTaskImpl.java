@@ -276,7 +276,10 @@ final class ChromeAndroidTaskImpl
     @Override
     public Profile getProfile() {
         Profile profile = mProfileSupplier.get();
-        assert profile != null;
+        assert profile != null
+                : "ChromeAndroidTask supports BrowserWindowInterface, which assumes that the"
+                      + " associated profile will never be null for the lifetime of the window. See"
+                      + " documentation of BrowserWindowInterface::GetProfile() for details.";
         return profile;
     }
 
