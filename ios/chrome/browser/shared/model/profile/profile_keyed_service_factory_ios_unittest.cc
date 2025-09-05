@@ -41,9 +41,9 @@ class DummyServiceFactory final : public ProfileKeyedServiceFactoryIOS {
     return GetServiceForProfileAs<DummyService>(profile, false);
   }
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const final {
+      ProfileIOS* profile) const final {
     return std::make_unique<DummyService>();
   }
 };

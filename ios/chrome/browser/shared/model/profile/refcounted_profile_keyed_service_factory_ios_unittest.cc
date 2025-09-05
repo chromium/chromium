@@ -49,9 +49,9 @@ class DummyServiceFactory final
     return GetServiceForProfileAs<DummyService>(profile, false);
   }
 
-  // RefcountedBrowserStateKeyedServiceFactory:
+  // RefcountedProfileKeyedServiceFactoryIOS:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const final {
+      ProfileIOS* profile) const final {
     return base::MakeRefCounted<DummyService>();
   }
 };
