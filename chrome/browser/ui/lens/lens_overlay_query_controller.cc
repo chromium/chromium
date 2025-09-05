@@ -838,10 +838,7 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
   }
 
   lens::LensOverlayServerClusterInfoResponse server_response;
-  const std::string response_string = response->response;
-  bool parse_successful = server_response.ParseFromArray(
-      response_string.data(), response_string.size());
-  if (!parse_successful) {
+  if (!server_response.ParseFromString(response->response)) {
     // If there was an error with the cluster info request, we should still try
     // and send the full image request as a fallback.
     PrepareAndFetchFullImageRequest();
@@ -1108,10 +1105,7 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   }
 
   lens::LensOverlayServerResponse server_response;
-  const std::string response_string = response->response;
-  bool parse_successful = server_response.ParseFromArray(
-      response_string.data(), response_string.size());
-  if (!parse_successful) {
+  if (!server_response.ParseFromString(response->response)) {
     RunFullImageCallbackForError();
     return;
   }
@@ -1421,9 +1415,7 @@ bool LensOverlayQueryController::MaybeRetryPageContentUpload(
   if (remaining_chunk_retries > 0) {
     remaining_chunk_retries--;
     lens::LensOverlayServerResponse server_response;
-    const std::string response_string = response->response;
-    bool parse_successful = server_response.ParseFromArray(
-        response_string.data(), response_string.size());
+    bool parse_successful = server_response.ParseFromString(response->response);
     if (parse_successful &&
         server_response.error().error_type() ==
             LensOverlayServerError_ErrorType::
@@ -1903,10 +1895,7 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
   }
 
   lens::LensOverlayServerResponse server_response;
-  const std::string response_string = response->response;
-  bool parse_successful = server_response.ParseFromArray(
-      response_string.data(), response_string.size());
-  if (!parse_successful) {
+  if (!server_response.ParseFromString(response->response)) {
     RunInteractionCallbackForError();
     return;
   }
