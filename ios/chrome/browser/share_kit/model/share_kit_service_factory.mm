@@ -44,8 +44,7 @@ ShareKitServiceFactory::ShareKitServiceFactory()
 ShareKitServiceFactory::~ShareKitServiceFactory() = default;
 
 std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   CHECK(!profile->IsOffTheRecord());
 
   collaboration::CollaborationService* collaboration_service =
