@@ -67,13 +67,26 @@ constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
             // model precision (f32→f32, f16→f16) and disable dynamic
             // quantization. See:
             // https://docs.openvino.ai/2025/openvino-workflow/running-inference/optimize-inference/precision-control.html.
+            //
+            // On OpenVINO GPU, the default `fp16` precision specified by
+            // `INFERENCE_PRECISION_HINT` can override the `ACCURACY` mode set
+            // by `EXECUTION_MODE_HINT`. To improve robustness and ensure
+            // accurate inference results, we explicitly set
+            // `INFERENCE_PRECISION_HINT`
+            //  to `dynamic`.
             .config_entries =
                 (const Environment::SessionConfigEntry[]){
                     {.key = "ep.openvinoexecutionprovider.load_config",
                      .value = R"({
-         "GPU": {"EXECUTION_MODE_HINT": "ACCURACY"},
-         "NPU": {"EXECUTION_MODE_HINT": "ACCURACY"}
-       })"}},
+                            "GPU": {
+                                "EXECUTION_MODE_HINT": "ACCURACY",
+                                "INFERENCE_PRECISION_HINT": "dynamic"
+                            },
+                            "NPU": {
+                                "EXECUTION_MODE_HINT": "ACCURACY"
+                            }
+                        })"},
+                },
         },
     },
 });
