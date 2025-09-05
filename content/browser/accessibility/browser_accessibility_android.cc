@@ -2525,14 +2525,17 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
 
   switch (GetNameFrom()) {
     case ax::mojom::NameFrom::kAttribute:
+      // A non-visible name from an attribute must *not* be mapped to the
+      // visible text property.
+
       if (ui::IsContainerOnAndroid(GetRole())) {
         name_to_cache_ = AndroidNameTo::kContainerTitle;
+      } else if (ui::IsImage(GetRole())) {
+        // An image's alt text is its contentDescription.
+        name_to_cache_ = AndroidNameTo::kContentDescription;
       } else if (ui::SupportsNamingWithChildContent(GetRole())) {
         // TODO(crbug.com/438478760): Revisit kNameFromAttribute mapping to
         // contentDescription logic.
-        // TODO(crbug.com/438477684): Nodes with role images that have a name
-        // coming from kAttribute should also be setting
-        // `AndroidNameTo::kContentDescription`.
         name_to_cache_ = AndroidNameTo::kContentDescription;
       } else if (base::FeatureList::IsEnabled(
                      features::

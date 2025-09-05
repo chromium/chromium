@@ -10,7 +10,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++View text:"doc-chapter" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docChapter", roleDescription="chapter"]
 ++View text:"doc-colophon" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docColophon", roleDescription="colophon"]
 ++View text:"doc-conclusion" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docConclusion", roleDescription="conclusion"]
-++View text:"doc-cover" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docCover", hasImage="true", roleDescription="cover"]
+++View contentDescription:"doc-cover" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docCover", hasImage="true", roleDescription="cover"]
 ++View text:"doc-credit" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docCredit", roleDescription="credit"]
 ++View text:"doc-credits" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docCredits", roleDescription="credits"]
 ++View text:"doc-dedication" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docDedication", roleDescription="dedication"]

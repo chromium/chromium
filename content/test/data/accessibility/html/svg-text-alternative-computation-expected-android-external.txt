@@ -11,7 +11,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++Image actions:[AX_FOCUS] bundle:[chromeRole="svgRoot", hasImage="true", roleDescription="graphic"]
 ++++++View text:"Circle (from aria-labelledby)" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="graphicsSymbol", hasImage="true", roleDescription="graphics symbol"]
 ++++Image actions:[AX_FOCUS] bundle:[chromeRole="svgRoot", hasImage="true", roleDescription="graphic"]
-++++++View text:"Circle (from aria-label)" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="graphicsSymbol", hasImage="true", roleDescription="graphics symbol"]
+++++++View contentDescription:"Circle (from aria-label)" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="graphicsSymbol", hasImage="true", roleDescription="graphics symbol"]
 ++++Image actions:[AX_FOCUS] bundle:[chromeRole="svgRoot", hasImage="true", roleDescription="graphic"]
 ++++++View text:"Circle (from title)" tooltipText:"Circle (from title)" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="graphicsSymbol", hasImage="true", roleDescription="graphics symbol"]
 ++++Image actions:[AX_FOCUS] bundle:[chromeRole="svgRoot", hasImage="true", roleDescription="graphic"]

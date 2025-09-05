@@ -11,7 +11,7 @@ android.webkit.WebView focusable focused
 ++++android.widget.Image role_description='graphic'
 ++++++android.view.View role_description='graphics symbol' interesting name='Circle (from aria-labelledby)'
 ++++android.widget.Image role_description='graphic'
-++++++android.view.View role_description='graphics symbol' interesting name='Circle (from aria-label)'
+++++++android.view.View role_description='graphics symbol' interesting content_description='Circle (from aria-label)'
 ++++android.widget.Image role_description='graphic'
 ++++++android.view.View role_description='graphics symbol' interesting name='Circle (from title)' tooltip_text='Circle (from title)'
 ++++android.widget.Image role_description='graphic'
