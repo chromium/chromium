@@ -200,7 +200,11 @@ std::vector<std::u16string> GetLabelsForSuggestions(
 }
 
 // Returns entities whose set of fields and values to be filled are not subsets
-// of another.
+// of another. This function favors server entities, for example if
+// two entities (one being local and one being server) are going to fill the
+// same fields with the same values, this function will keep the server one.
+// Note that `s` is expected to be sorted by descending priority and favor
+// higher-priority suggestions.
 std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
     const std::vector<const EntityInstance*>& entities,
     const AttributeTypeAssignment& type_assignment,
@@ -227,6 +231,15 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
     }
   }
 
+  auto is_server_entity = [](const EntityInstance& entity) {
+    switch (entity.record_type()) {
+      case EntityInstance::RecordType::kServerWallet:
+        return true;
+      case EntityInstance::RecordType::kLocal:
+        return false;
+    }
+    NOTREACHED();
+  };
   std::vector<const EntityInstance*> deduped_entities;
   for (size_t i = 0; i < entities.size(); ++i) {
     bool erase_i = false;
@@ -240,12 +253,24 @@ std::vector<const EntityInstance*> DedupedEntitiesForSuggestions(
                                                   fields_to_values[j].size();
       // Erase `i` iff:
       // - `i` is a proper subset of `j` for some `j`.
-      // - `i` is equal to `j` for some j < i.
-      if ((j_includes_i && !j_equals_i) || (j_equals_i && i > j)) {
+      // - `i` is equal to `j` and `i` is not a server entity while `j` is.
+      // - `i` is equal to `j` for some j < i and `i` is not a server entity.
+      // - `i` is equal to `j` for some j < i and both `i` and `j` are server
+      // entities.
+      const bool i_is_proper_subset_of_j = j_includes_i && !j_equals_i;
+      const bool i_is_server_entity = is_server_entity(*entities[i]);
+      const bool j_is_server_entity = is_server_entity(*entities[j]);
+      const bool i_and_j_are_server_entities =
+          i_is_server_entity && j_is_server_entity;
+      if (i_is_proper_subset_of_j ||
+          (j_equals_i &&
+           ((!i_is_server_entity && j_is_server_entity) ||
+            (i > j && (!i_is_server_entity || i_and_j_are_server_entities))))) {
         erase_i = true;
         break;
       }
     }
+
     if (!erase_i) {
       deduped_entities.push_back(entities[i]);
     }
@@ -402,8 +427,8 @@ std::vector<const EntityInstance*> GetEntitiesForSuggestion(
       relevant_entities.push_back(&entity);
     }
   }
-  return OrderedEntitiesForSuggestion(
-      DedupedEntitiesForSuggestions(relevant_entities, assignment, app_locale));
+  return DedupedEntitiesForSuggestions(
+      OrderedEntitiesForSuggestion(relevant_entities), assignment, app_locale);
 }
 
 std::vector<Suggestion> CreateAutofillAiFillingSuggestions(

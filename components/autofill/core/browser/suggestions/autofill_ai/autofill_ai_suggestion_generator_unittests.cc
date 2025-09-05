@@ -478,6 +478,70 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                              HasMainText(GetPassportName(passport1))));
 }
 
+// Test that if several entities are the same, only the last server entity
+// suggestion is shown to the user.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_DedupeSuggestions_FavorServerSuggestions) {
+  EntityInstance passport1 = MakePassportWithRandomGuid({});
+  EntityInstance passport2 = MakePassportWithRandomGuid({});
+  EntityInstance passport3 = MakePassportWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance passport4 = MakePassportWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  SetEntities({passport1, passport2, passport3, passport4});
+  SetForm({NAME_FULL, PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY});
+
+  // Sets `passport4` to have been used so that it is ranked higher and is
+  // picked instead of `passport3`.
+  edm().RecordEntityUsed(passport4.guid(), base::Time::Now());
+  webdata_helper().WaitUntilIdle();
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  // Note that two of the resulting suggestions are a line separator and a
+  // footer.
+  ASSERT_EQ(suggestions.size(), 3u);
+  const Suggestion::AutofillAiPayload* payload =
+      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
+  ASSERT_TRUE(payload);
+  EXPECT_EQ(payload->guid, passport4.guid());
+  EXPECT_THAT(suggestions,
+              SuggestionsAre(HasMainText(GetPassportName(passport4))));
+}
+
+// Test that if a server entity is a subset of a local one, we do not favor it.
+// Instead we delete it.
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_DedupeSuggestions_ServerSuggestionIsSubsetOfLocalSuggestion) {
+  EntityInstance passport1 = MakePassportWithRandomGuid();
+  EntityInstance passport2 = MakePassportWithRandomGuid(
+      {.expiry_date = nullptr,
+       .record_type = EntityInstance::RecordType::kServerWallet});
+  SetEntities({passport1, passport2});
+
+  SetForm({NAME_FULL, PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY,
+           PASSPORT_EXPIRATION_DATE});
+
+  // Sets `passport1` to have been used so that it is ranked higher and is
+  // picked instead of `passport2`.
+  edm().RecordEntityUsed(passport1.guid(), base::Time::Now());
+  webdata_helper().WaitUntilIdle();
+
+  // `passport2` is deduped because it is a proper subset of `passport1`.
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  // Note that two of the resulting suggestions are a line separator and a
+  // footer.
+  ASSERT_EQ(suggestions.size(), 3u);
+  const Suggestion::AutofillAiPayload* payload =
+      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
+  ASSERT_TRUE(payload);
+  EXPECT_EQ(payload->guid, passport1.guid());
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              SuggestionsAre(HasMainText(GetPassportName(passport1))));
+}
+
 TEST_F(AutofillAiSuggestionGeneratorTest,
        GetFillingSuggestion_GroupEntitiesOfSameType) {
   EntityInstance passport1 =
