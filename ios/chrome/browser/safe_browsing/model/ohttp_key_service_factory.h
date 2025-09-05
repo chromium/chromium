@@ -25,7 +25,7 @@ class OhttpKeyServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the default factory. Can be used to force instantiation during
   // testing.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<OhttpKeyServiceFactory>;
@@ -33,9 +33,9 @@ class OhttpKeyServiceFactory : public ProfileKeyedServiceFactoryIOS {
   OhttpKeyServiceFactory();
   ~OhttpKeyServiceFactory() override = default;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_OHTTP_KEY_SERVICE_FACTORY_H_

@@ -29,9 +29,9 @@ class HashRealTimeServiceFactory : public ProfileKeyedServiceFactoryIOS {
   HashRealTimeServiceFactory();
   ~HashRealTimeServiceFactory() override = default;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_HASH_REALTIME_SERVICE_FACTORY_H_

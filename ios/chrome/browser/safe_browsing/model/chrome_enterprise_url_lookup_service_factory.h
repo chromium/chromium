@@ -34,9 +34,9 @@ class ChromeEnterpriseRealTimeUrlLookupServiceFactory
   ChromeEnterpriseRealTimeUrlLookupServiceFactory();
   ~ChromeEnterpriseRealTimeUrlLookupServiceFactory() override;
 
-  // ProfileKeyedServiceFactoryIOS:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace safe_browsing

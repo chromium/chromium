@@ -32,8 +32,7 @@ TailoredSecurityServiceFactory::TailoredSecurityServiceFactory()
 
 std::unique_ptr<KeyedService>
 TailoredSecurityServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+    ProfileIOS* profile) const {
   return std::make_unique<safe_browsing::ChromeTailoredSecurityService>(
       profile, IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile));

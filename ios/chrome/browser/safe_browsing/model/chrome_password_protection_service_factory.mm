@@ -45,13 +45,12 @@ ChromePasswordProtectionServiceFactory::ChromePasswordProtectionServiceFactory()
 
 std::unique_ptr<KeyedService>
 ChromePasswordProtectionServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
+    ProfileIOS* profile) const {
   SafeBrowsingService* safe_browsing_service =
       GetApplicationContext()->GetSafeBrowsingService();
   if (!safe_browsing_service) {
     return nullptr;
   }
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<ChromePasswordProtectionService>(
       safe_browsing_service, profile,
       ios::HistoryServiceFactory::GetForProfile(

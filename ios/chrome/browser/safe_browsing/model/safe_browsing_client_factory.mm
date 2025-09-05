@@ -74,9 +74,7 @@ SafeBrowsingClientFactory::SafeBrowsingClientFactory()
 }
 
 std::unique_ptr<KeyedService>
-SafeBrowsingClientFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+SafeBrowsingClientFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   safe_browsing::HashRealTimeService* hash_real_time_service = nullptr;
   if (base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups)) {
     hash_real_time_service = HashRealTimeServiceFactory::GetForProfile(profile);

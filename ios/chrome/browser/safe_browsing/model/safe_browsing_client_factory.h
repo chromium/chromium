@@ -26,9 +26,9 @@ class SafeBrowsingClientFactory : public ProfileKeyedServiceFactoryIOS {
   SafeBrowsingClientFactory();
   ~SafeBrowsingClientFactory() override = default;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_CLIENT_FACTORY_H_

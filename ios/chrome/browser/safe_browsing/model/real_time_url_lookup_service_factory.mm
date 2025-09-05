@@ -53,7 +53,7 @@ RealTimeUrlLookupServiceFactory::RealTimeUrlLookupServiceFactory()
 
 std::unique_ptr<KeyedService>
 RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
+    ProfileIOS* profile) const {
   SafeBrowsingService* safe_browsing_service =
       GetApplicationContext()->GetSafeBrowsingService();
   if (!safe_browsing_service) {
@@ -70,7 +70,6 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   // requests.
   safe_browsing::ReferrerChainProvider* referrer_chain_provider = nullptr;
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::RealTimeUrlLookupService>(
       safe_browsing_service->GetURLLoaderFactory(),
       VerdictCacheManagerFactory::GetForProfile(profile),

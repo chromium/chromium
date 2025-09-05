@@ -36,9 +36,7 @@ VerdictCacheManagerFactory::VerdictCacheManagerFactory()
 }
 
 std::unique_ptr<KeyedService>
-VerdictCacheManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+VerdictCacheManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<safe_browsing::VerdictCacheManager>(
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),

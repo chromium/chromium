@@ -42,14 +42,12 @@ HashRealTimeServiceFactory::HashRealTimeServiceFactory()
 }
 
 std::unique_ptr<KeyedService>
-HashRealTimeServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
+HashRealTimeServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   SafeBrowsingService* safe_browsing_service =
       GetApplicationContext()->GetSafeBrowsingService();
   if (!safe_browsing_service) {
     return nullptr;
   }
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::HashRealTimeService>(
       base::BindRepeating(&GetNetworkContext),
       VerdictCacheManagerFactory::GetForProfile(profile),

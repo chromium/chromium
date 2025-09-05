@@ -31,9 +31,7 @@ SafeBrowsingHelperFactory::SafeBrowsingHelperFactory()
 }
 
 std::unique_ptr<KeyedService>
-SafeBrowsingHelperFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+SafeBrowsingHelperFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<SafeBrowsingHelper>(
       profile->GetPrefs(), GetApplicationContext()->GetSafeBrowsingService(),
       SafeBrowsingMetricsCollectorFactory::GetForProfile(profile));
