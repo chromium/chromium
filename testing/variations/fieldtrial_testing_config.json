@@ -3979,8 +3979,7 @@
             "platforms": [
                 "chromeos",
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
@@ -6698,29 +6697,59 @@
             ]
         }
     ],
-    "CommitAvailableMemoryPressureThresholds": [
+    "CommitBasedMemoryPressureWin": [
         {
             "platforms": [
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "MediumThresholds",
-                    "params": {
-                        "CommitAvailableCriticalThresholdMB": "750",
-                        "CommitAvailableModerateThresholdMB": "1500"
-                    },
-                    "enable_features": [
-                        "CommitAvailableMemoryPressureThresholds"
-                    ]
-                },
-                {
-                    "name": "HigherThresholds",
+                    "name": "All",
                     "params": {
                         "CommitAvailableCriticalThresholdMB": "1000",
                         "CommitAvailableModerateThresholdMB": "2000"
                     },
                     "enable_features": [
+                        "BoostClosingTabs",
+                        "CommitAvailableMemoryPressureThresholds",
+                        "PageAllocatorRetryOnCommitFailure",
+                        "TerminationTargetPolicy"
+                    ]
+                },
+                {
+                    "name": "CommitBasedMemoryPressure",
+                    "params": {
+                        "CommitAvailableCriticalThresholdMB": "1000",
+                        "CommitAvailableModerateThresholdMB": "2000"
+                    },
+                    "enable_features": [
+                        "CommitAvailableMemoryPressureThresholds"
+                    ],
+                    "disable_features": [
+                        "BoostClosingTabs",
+                        "PageAllocatorRetryOnCommitFailure",
+                        "TerminationTargetPolicy"
+                    ]
+                },
+                {
+                    "name": "BoostClosingTab",
+                    "enable_features": [
+                        "BoostClosingTabs"
+                    ],
+                    "disable_features": [
+                        "CommitAvailableMemoryPressureThresholds",
+                        "PageAllocatorRetryOnCommitFailure",
+                        "TerminationTargetPolicy"
+                    ]
+                },
+                {
+                    "name": "TerminateRendererOnCommitExhaustion",
+                    "enable_features": [
+                        "PageAllocatorRetryOnCommitFailure",
+                        "TerminationTargetPolicy"
+                    ],
+                    "disable_features": [
+                        "BoostClosingTabs",
                         "CommitAvailableMemoryPressureThresholds"
                     ]
                 }
@@ -25012,31 +25041,6 @@
                     },
                     "enable_features": [
                         "TcpConnectionPoolSizeTrial"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TerminateRendererOnBrowserCommitExhaustion": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "RetryOnly",
-                    "enable_features": [
-                        "PageAllocatorRetryOnCommitFailure"
-                    ],
-                    "disable_features": [
-                        "TerminationTargetPolicy"
-                    ]
-                },
-                {
-                    "name": "RetryAndTerminate",
-                    "enable_features": [
-                        "PageAllocatorRetryOnCommitFailure",
-                        "TerminationTargetPolicy"
                     ]
                 }
             ]
