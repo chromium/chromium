@@ -356,6 +356,10 @@ BASE_FEATURE(kSavePasswordHashFromProfilePicker,
              "SavePasswordHashFromProfilePicker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kShowManualNotificationRevocationsSafetyHub,
+             "ShowManualNotificationRevocationsSafetyHub",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShowWarningsForSuspiciousNotifications,
              "ShowWarningsForSuspiciousNotifications",
 #if BUILDFLAG(IS_ANDROID)
@@ -420,6 +424,7 @@ base::Value::List GetFeatureStatusList() {
       &kLocalListsUseSBv5,
       &kNotificationTelemetrySwb,
       &kReportNotificationContentDetectionData,
+      &kShowManualNotificationRevocationsSafetyHub,
       &kShowWarningsForSuspiciousNotifications,
       &kSuspiciousSiteTriggerQuotaFeature,
       &kTailoredSecurityIntegration,

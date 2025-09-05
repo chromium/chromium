@@ -17,7 +17,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/content_metrics_helper.h"
@@ -47,8 +47,9 @@ void MaybeIgnoreAbusiveNotificationAutoRevocation(
       threat_type != SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     return;
   }
-  safety_hub_util::SetRevokedAbusiveNotificationPermission(hcsm.get(), url,
-                                                           /*is_ignored=*/true);
+  AbusiveNotificationPermissionsManager::
+      SetRevokedAbusiveNotificationPermission(hcsm.get(), url,
+                                              /*is_ignored=*/true);
 }
 
 SafeBrowsingBlockingPage*

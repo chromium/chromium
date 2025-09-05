@@ -116,29 +116,6 @@ bool IsAbusiveNotificationRevocationIgnored(HostContentSettingsMap* hcsm,
   return false;
 }
 
-void SetRevokedAbusiveNotificationPermission(
-    HostContentSettingsMap* hcsm,
-    GURL url,
-    bool is_ignored,
-    const content_settings::ContentSettingConstraints& constraints) {
-  DCHECK(url.is_valid());
-  // If the `url` should be ignore during future auto revocation, then the
-  // constraint should not expire. If the lifetime is zero, then the setting
-  // does not expire.
-  if (is_ignored) {
-    DCHECK(constraints.lifetime().is_zero());
-    DCHECK(constraints.expiration() == base::Time());
-  }
-  hcsm->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(base::Value::Dict().Set(
-          safety_hub::kRevokedStatusDictKeyStr,
-          is_ignored ? safety_hub::kIgnoreStr : safety_hub::kRevokeStr)),
-      constraints);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 base::Value::Dict GetVersionCardData() {
   base::Value::Dict result;
