@@ -489,6 +489,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     if enable_d3d12_encoder:
       args.append('--enable-features=D3D12VideoEncodeAccelerator')
+      args.append('--disable-features=MediaFoundationVideoEncodeAccelerator')
 
     if cls.CameraCanShowFourColors(cls.platform.GetOSName()):
       args.append('--use-file-for-fake-video-capture=' + four_colors_img_path)

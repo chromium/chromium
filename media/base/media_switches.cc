@@ -1511,6 +1511,8 @@ BASE_FEATURE(kMediaFoundationD3DVideoProcessing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMediaFoundationSharedImageEncode,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMediaFoundationVideoEncodeAccelerator,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Controls whether muted media stream audio should continue to render.

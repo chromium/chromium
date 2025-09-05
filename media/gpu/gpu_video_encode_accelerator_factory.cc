@@ -191,8 +191,11 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
     vea_factory_functions->push_back(
         base::BindRepeating(&CreateD3D12VEA, gpu_workarounds, gpu_device));
   }
-  vea_factory_functions->push_back(base::BindRepeating(
-      &CreateMediaFoundationVEA, gpu_preferences, gpu_workarounds, gpu_device));
+  if (base::FeatureList::IsEnabled(kMediaFoundationVideoEncodeAccelerator)) {
+    vea_factory_functions->push_back(
+        base::BindRepeating(&CreateMediaFoundationVEA, gpu_preferences,
+                            gpu_workarounds, gpu_device));
+  }
 #endif
 #if BUILDFLAG(IS_FUCHSIA)
   if (base::FeatureList::IsEnabled(kFuchsiaMediacodecVideoEncoder)) {

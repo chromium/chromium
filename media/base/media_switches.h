@@ -542,6 +542,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kD3D12SharedImageEncode);
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationD3DVideoProcessing);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationSharedImageEncode);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationVideoEncodeAccelerator);
 #endif
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kRenderMutedAudio);
