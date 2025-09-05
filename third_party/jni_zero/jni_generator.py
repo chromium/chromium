@@ -324,7 +324,7 @@ def _generate_header(jni_mode,
                      enable_definition_macros,
                      include_path_prefix,
                      extra_includes=None):
-  user_includes = [f'{include_path_prefix}jni_export.h']
+  user_includes = [f'{include_path_prefix}jni_zero_internal.h']
   if extra_includes:
     user_includes += extra_includes
   preamble, epilogue = header_common.header_preamble(
