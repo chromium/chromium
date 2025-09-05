@@ -45,7 +45,6 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -1001,53 +1000,7 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
       texsubimage2d_callback_;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
-void MailboxHoldersReleased(const gpu::SyncToken& sync_token) {}
-#endif
 }  // namespace
-
-// NOTE: The below test tests behavior when PaintCanvasVideoRenderer is used
-// without GPU raster. It is not relevant on Android, where GPU raster is
-// always used.
-#if !BUILDFLAG(IS_ANDROID)
-// Test that PaintCanvasVideoRenderer::Paint doesn't crash when GrContext is
-// unable to wrap a video frame texture (eg due to being abandoned).
-TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
-  auto context_provider = viz::TestContextProvider::Create();
-  CHECK(context_provider);
-  context_provider->BindToCurrentSequence();
-  CHECK(context_provider->GrContext());
-  context_provider->GrContext()->abandonContext();
-
-  cc::SkiaPaintCanvas canvas(AllocBitmap(kWidth, kHeight));
-
-  gfx::Size size(kWidth, kHeight);
-  // We try copying the contents of the source VideoFrame *into* the
-  // cached SI over the raster interface.
-  gpu::SharedImageMetadata metadata;
-  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
-  metadata.size = size;
-  metadata.color_space = gfx::ColorSpace::CreateSRGB();
-  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
-  metadata.alpha_type = kOpaque_SkAlphaType;
-  metadata.usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ;
-  scoped_refptr<gpu::ClientSharedImage> shared_image =
-      gpu::ClientSharedImage::CreateForTesting(metadata);
-  auto video_frame = VideoFrame::WrapSharedImage(
-      PIXEL_FORMAT_NV12, shared_image, gpu::SyncToken(),
-      base::BindOnce(MailboxHoldersReleased), size, gfx::Rect(size), size,
-      kNoTimestamp);
-
-  cc::PaintFlags flags;
-  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
-  PaintCanvasVideoRenderer::PaintParams params;
-  params.dest_rect = kNaturalRect;
-  renderer_.Paint(std::move(video_frame), &canvas, flags, params,
-                  context_provider.get());
-}
-#endif
-
-void EmptyCallback(const gpu::SyncToken& sync_token) {}
 
 TEST_F(PaintCanvasVideoRendererTest, CorrectFrameSizeToVisibleRect) {
   constexpr int fWidth{16}, fHeight{16};
