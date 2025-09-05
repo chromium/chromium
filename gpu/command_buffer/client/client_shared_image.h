@@ -395,7 +395,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   SyncToken creation_sync_token_;
   SyncToken destruction_sync_token_;
 
-  std::unique_ptr<MappableBuffer> gpu_memory_buffer_;
+  std::unique_ptr<MappableBuffer> mappable_buffer_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
   std::optional<gfx::BufferUsage> buffer_usage_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;

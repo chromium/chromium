@@ -462,7 +462,7 @@ ClientSharedImage::ClientSharedImage(
       sii_holder_(std::move(sii_holder)),
       texture_target_(exported_si.texture_target_) {
   if (exported_si.buffer_handle_) {
-    gpu_memory_buffer_ = CreateMappableBufferFromHandle(
+    mappable_buffer_ = CreateMappableBufferFromHandle(
         std::move(exported_si.buffer_handle_.value()), metadata_.size,
         viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
             metadata_.format),
@@ -486,7 +486,7 @@ ClientSharedImage::ClientSharedImage(ExportedSharedImage exported_si)
       buffer_usage_(exported_si.buffer_usage_),
       texture_target_(exported_si.texture_target_) {
   if (exported_si.buffer_handle_) {
-    gpu_memory_buffer_ = CreateMappableBufferFromHandle(
+    mappable_buffer_ = CreateMappableBufferFromHandle(
         std::move(exported_si.buffer_handle_.value()), metadata_.size,
         viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
             metadata_.format),
@@ -512,7 +512,7 @@ ClientSharedImage::ClientSharedImage(
       metadata_(info.meta),
       debug_label_(info.debug_label),
       creation_sync_token_(sync_token),
-      gpu_memory_buffer_(CreateMappableBufferFromHandle(
+      mappable_buffer_(CreateMappableBufferFromHandle(
           std::move(handle_info.handle),
           metadata_.size,
           viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
@@ -527,9 +527,9 @@ ClientSharedImage::ClientSharedImage(
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
-  CHECK(gpu_memory_buffer_);
+  CHECK(mappable_buffer_);
   texture_target_ = ComputeTextureTargetForSharedImage(
-      metadata_, gpu_memory_buffer_->GetType(), sii_holder_->Get());
+      metadata_, mappable_buffer_->GetType(), sii_holder_->Get());
 }
 
 ClientSharedImage::ClientSharedImage(const Mailbox& mailbox,
@@ -558,8 +558,8 @@ size_t ClientSharedImage::GetStrideForVideoFrame(uint32_t plane_index) const {
             format()),
         plane_index);
   }
-  CHECK(gpu_memory_buffer_);
-  return gpu_memory_buffer_->stride(plane_index);
+  CHECK(mappable_buffer_);
+  return mappable_buffer_->stride(plane_index);
 }
 
 // Returns whether the underlying resource is shared memory without needing to
@@ -569,8 +569,8 @@ bool ClientSharedImage::IsSharedMemoryForVideoFrame() const {
   if (async_map_invoked_callback_for_testing_) {
     return true;
   }
-  CHECK(gpu_memory_buffer_);
-  return gpu_memory_buffer_->GetType() ==
+  CHECK(mappable_buffer_);
+  return mappable_buffer_->GetType() ==
          gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
 }
 
@@ -578,8 +578,8 @@ bool ClientSharedImage::AsyncMappingIsNonBlocking() const {
   if (async_map_invoked_callback_for_testing_) {
     return true;
   }
-  CHECK(gpu_memory_buffer_);
-  return gpu_memory_buffer_->AsyncMappingIsNonBlocking();
+  CHECK(mappable_buffer_);
+  return mappable_buffer_->AsyncMappingIsNonBlocking();
 }
 
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
@@ -587,7 +587,7 @@ std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
   if (shared_memory_mapping_.IsValid()) {
     scoped_mapping = ScopedMapping::Create(metadata_, &shared_memory_mapping_);
   } else {
-    scoped_mapping = ScopedMapping::Create(metadata_, gpu_memory_buffer_.get(),
+    scoped_mapping = ScopedMapping::Create(metadata_, mappable_buffer_.get(),
                                            /*is_already_mapped=*/false);
   }
 
@@ -623,14 +623,14 @@ void ClientSharedImage::MapAsync(
     return;
   }
 
-  ScopedMapping::StartCreateAsync(metadata_, gpu_memory_buffer_.get(),
+  ScopedMapping::StartCreateAsync(metadata_, mappable_buffer_.get(),
                                   std::move(result_cb));
 }
 
 gfx::GpuMemoryBufferHandle ClientSharedImage::CloneGpuMemoryBufferHandle()
     const {
-  CHECK(gpu_memory_buffer_);
-  return gpu_memory_buffer_->CloneHandle();
+  CHECK(mappable_buffer_);
+  return mappable_buffer_->CloneHandle();
 }
 
 uint32_t ClientSharedImage::GetTextureTarget() {
@@ -658,8 +658,8 @@ ExportedSharedImage ClientSharedImage::Export(bool with_buffer_handle) {
   }
   std::optional<gfx::GpuMemoryBufferHandle> buffer_handle;
   std::optional<gfx::BufferUsage> buffer_usage;
-  if (with_buffer_handle && gpu_memory_buffer_) {
-    buffer_handle = gpu_memory_buffer_->CloneHandle();
+  if (with_buffer_handle && mappable_buffer_) {
+    buffer_handle = mappable_buffer_->CloneHandle();
     buffer_usage = buffer_usage_.value();
   }
   return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_,
@@ -748,8 +748,8 @@ ClientSharedImage::BeginGLAccessForCopySharedImage(InterfaceBase* gl_interface,
 
 #if BUILDFLAG(IS_WIN)
 void ClientSharedImage::SetUsePreMappedMemory(bool use_premapped_memory) {
-  CHECK(gpu_memory_buffer_);
-  gpu_memory_buffer_->SetUsePreMappedMemory(use_premapped_memory);
+  CHECK(mappable_buffer_);
+  mappable_buffer_->SetUsePreMappedMemory(use_premapped_memory);
 }
 #endif
 
@@ -823,13 +823,13 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
       viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
           info.meta.format),
       buffer_usage, &handle);
-  auto gpu_memory_buffer = MappableBufferSharedMemory::CreateFromHandle(
+  auto mappable_buffer = MappableBufferSharedMemory::CreateFromHandle(
       std::move(handle), info.meta.size,
       viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
           info.meta.format),
       buffer_usage);
 
-  // Since the |gpu_memory_buffer| here is always a shared memory, clear the
+  // Since the |mappable_buffer| here is always a shared memory, clear the
   // external sampler prefs if it is already set by client.
   // https://issues.chromium.org/339546249.
   if (info.meta.format.PrefersExternalSampler()) {
@@ -838,7 +838,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
 
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
       mailbox, info, sync_token, sii_holder, gfx::SHARED_MEMORY_BUFFER);
-  client_si->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
+  client_si->mappable_buffer_ = std::move(mappable_buffer);
   client_si->buffer_usage_ = buffer_usage;
   return client_si;
 }
