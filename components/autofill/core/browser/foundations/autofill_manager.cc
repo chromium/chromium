@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
+#include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -301,7 +302,7 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
 
     // Configure the query encoding for this form and add it to the appropriate
     // collection of forms: queryable vs non-queryable.
-    if (form_structure.ShouldBeQueried()) {
+    if (ShouldBeQueried(form_structure)) {
       queryable_forms.push_back(&form_structure);
     }
 
@@ -588,7 +589,7 @@ void AutofillManager::ParseFormsAsync(
     }
 
     auto form_structure = std::make_unique<FormStructure>(form_data);
-    if (!form_structure->ShouldBeParsed(log_manager())) {
+    if (!ShouldBeParsed(*form_structure, log_manager())) {
       LogCurrentFieldTypes(*form_structure);
       continue;
     }
@@ -647,7 +648,7 @@ void AutofillManager::ParseFormAsync(
   }
 
   auto form_structure = std::make_unique<FormStructure>(form_data);
-  if (!form_structure->ShouldBeParsed(log_manager())) {
+  if (!ShouldBeParsed(*form_structure, log_manager())) {
     LogCurrentFieldTypes(*form_structure);
     // For Autocomplete, events need to be handled even for forms that cannot be
     // parsed.

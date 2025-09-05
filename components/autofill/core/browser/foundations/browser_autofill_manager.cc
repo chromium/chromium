@@ -91,6 +91,7 @@
 #include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/filling/payments/field_filling_payments_util.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
@@ -1115,7 +1116,9 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
 
   // Don't send suggestions or track forms that should not be parsed.
   const bool got_autofillable_form =
-      form_structure && form_structure->ShouldBeParsed() && autofill_field;
+      form_structure &&
+      ShouldBeParsed(*form_structure, /*log_manager=*/nullptr) &&
+      autofill_field;
 
   if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields(trigger_source) &&
       got_autofillable_form &&
@@ -2653,7 +2656,7 @@ const FormData& BrowserAutofillManager::last_query_form() const {
 
 bool BrowserAutofillManager::ShouldUploadForm(const FormStructure& form) {
   return client().IsAutofillEnabled() && !client().IsOffTheRecord() &&
-         form.ShouldBeUploaded();
+         ShouldBeUploaded(form);
 }
 
 void BrowserAutofillManager::
@@ -3450,7 +3453,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
   // effort.
   bool should_upload_ukm =
       autofill_metrics::ShouldRecordUkm() &&
-      form_structure.ShouldUploadUkm(/*require_classified_field=*/true);
+      ShouldUploadUkm(form_structure, /*require_classified_field=*/true);
 
   for (const auto& autofill_field : form_structure) {
     if (should_upload_ukm) {
@@ -3483,8 +3486,8 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
 
   if (base::FeatureList::IsEnabled(features::kAutofillUKMExperimentalFields) &&
       !metrics_->form_submitted_timestamp.is_null() &&
-      form_structure.ShouldUploadUkm(
-          /*require_classified_field=*/false)) {
+      ShouldUploadUkm(form_structure,
+                      /*require_classified_field=*/false)) {
     client()
         .GetFormInteractionsUkmLogger()
         .LogAutofillFormWithExperimentalFieldsCountAtFormRemove(

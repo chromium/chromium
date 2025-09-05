@@ -43,7 +43,7 @@ class FormStructureShouldTest : public testing::Test {
     regex_predictions.ApplyTo(form_structure.fields());
     form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                 LanguageCode(""), nullptr);
-    return form_structure.IsAutofillable();
+    return IsAutofillable(form_structure);
   }
 
  private:

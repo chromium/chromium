@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -200,7 +201,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // is available to use as a baseline.
   std::vector<const AutofillProfile*> profiles =
       client_->GetPersonalDataManager().address_data_manager().GetProfiles();
-  if (observed_submission && form->IsAutofillable()) {
+  if (observed_submission && IsAutofillable(*form)) {
     AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
         profiles.size());
   }
@@ -233,7 +234,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   }
 
   FormStructure::FormAssociations form_associations;
-  if (form->IsAutofillable()) {
+  if (IsAutofillable(*form)) {
     form_associations = client_->GetFormDataImporter()->GetFormAssociations(
         form->form_signature());
   }
@@ -398,21 +399,21 @@ void VotesUploader::UploadVote(
 
   // If the form is submitted, we don't need to send pending votes from blur
   // (un-focus) events.
-  if (submitted_form->ShouldRunHeuristics() ||
-      submitted_form->ShouldRunHeuristicsForSingleFields() ||
-      submitted_form->ShouldBeQueried()) {
+  if (ShouldRunHeuristics(*submitted_form) ||
+      ShouldRunHeuristicsForSingleFields(*submitted_form) ||
+      ShouldBeQueried(*submitted_form)) {
     autofill_metrics::LogQualityMetrics(
         *submitted_form, submitted_form->form_parsed_timestamp(),
         initial_interaction_timestamp, submission_timestamp,
         client_->GetFormInteractionsUkmLogger(), ukm_source_id,
         observed_submission);
   }
-  if (!submitted_form->ShouldBeUploaded()) {
+  if (!ShouldBeUploaded(*submitted_form)) {
     return;
   }
   if (autofill_metrics::ShouldRecordUkm() &&
-      submitted_form->ShouldUploadUkm(
-          /*require_classified_field=*/true)) {
+      ShouldUploadUkm(*submitted_form,
+                      /*require_classified_field=*/true)) {
     AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
         client_->GetUkmRecorder(), ukm_source_id, *submitted_form,
         submission_timestamp);

@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
-#include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
@@ -110,34 +109,6 @@ class FormStructure {
   // defined by the given CreditCardFormCompleteness level.
   bool IsCompleteCreditCardForm(
       CreditCardFormCompleteness credit_card_form_completeness) const;
-
-  [[nodiscard]] bool ShouldBeParsed(LogManager* log_manager = nullptr) const {
-    return autofill::ShouldBeParsed(*this, log_manager);
-  }
-
-  [[nodiscard]] bool ShouldRunHeuristics() const {
-    return autofill::ShouldRunHeuristics(*this);
-  }
-
-  [[nodiscard]] bool ShouldRunHeuristicsForSingleFields() const {
-    return autofill::ShouldRunHeuristicsForSingleFields(*this);
-  }
-
-  [[nodiscard]] bool ShouldBeQueried() const {
-    return autofill::ShouldBeQueried(*this);
-  }
-
-  [[nodiscard]] bool ShouldBeUploaded() const {
-    return autofill::ShouldBeUploaded(*this);
-  }
-
-  [[nodiscard]] bool ShouldUploadUkm(bool require_classified_field) const {
-    return autofill::ShouldUploadUkm(*this, require_classified_field);
-  }
-
-  [[nodiscard]] bool IsAutofillable() const {
-    return autofill::IsAutofillable(*this);
-  }
 
   // This enum defines the behavior of RetrieveFromCache, which needs to adapt
   // to the reason for retrieving data from the cache.
