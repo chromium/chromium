@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.data_import;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
@@ -43,10 +44,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.url.GURL;
 
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -121,47 +120,12 @@ public class TargetServiceGrpcTest {
     @Test
     @MediumTest
     public void testImportBookmarks_Basic() throws Exception {
-        String bookmarksFilePath =
-                UrlUtils.getTestFilePath("android/bookmarks/Valid_entries.html");
-        byte[] bookmarksContent = Files.readAllBytes(Paths.get(bookmarksFilePath));
+        String bookmarksFilePath = UrlUtils.getTestFilePath("android/bookmarks/Valid_entries.html");
+        ParcelFileDescriptor file =
+                ParcelFileDescriptor.open(
+                        new File(bookmarksFilePath), ParcelFileDescriptor.MODE_READ_ONLY);
 
-        ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
-        ParcelFileDescriptor readSide = pipe[0];
-
-        // The write side of the pipe will be closed automatically by the AutoCloseOutputStream.
-        try (FileOutputStream fos = new ParcelFileDescriptor.AutoCloseOutputStream(pipe[1])) {
-            fos.write(bookmarksContent);
-        }
-
-        Metadata headers = new Metadata();
-        headers.put(
-                DataImporterServiceImpl.ParcelableMetadataInterceptor.PFD_METADATA_KEY, readSide);
-
-        BrowserFileMetadata fileMetadata =
-                BrowserFileMetadata.newBuilder()
-                        .setFileType(BrowserFileType.BROWSER_FILE_TYPE_BOOKMARKS)
-                        .build();
-        ImportItemRequest request =
-                ImportItemRequest.newBuilder()
-                        .setItemType(SystemAppApiItemType.SYSTEM_APP_API_ITEM_TYPE_BROWSER_DATA)
-                        .setSessionId(SESSION_ID)
-                        .setFileMetadata(
-                                Proto3Any.newBuilder().setValue(fileMetadata.toByteString()))
-                        .build();
-
-        TargetServiceGrpc.TargetServiceBlockingStub stubWithHeaders =
-                mStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(headers));
-        stubWithHeaders.importItem(request);
-
-        ImportItemsDoneRequest doneRequest =
-                ImportItemsDoneRequest.newBuilder()
-                        .setItemType(SystemAppApiItemType.SYSTEM_APP_API_ITEM_TYPE_BROWSER_DATA)
-                        .setSessionId(SESSION_ID)
-                        .setStatus(ImportItemsDoneRequest.CompleteStatus.COMPLETE_STATUS_SUCCESS)
-                        .build();
-        ImportItemsDoneResponse doneResponse = mStub.importItemsDone(doneRequest);
-        assertEquals(
-                /* amount of successful imported files */ 1, doneResponse.getSuccessItemCount());
+        importBrowserFile(file, BrowserFileType.BROWSER_FILE_TYPE_BOOKMARKS);
 
         final BookmarkModel bookmarkModel = waitForBookmarkModelLoaded();
         runOnUiThreadBlocking(
@@ -196,6 +160,78 @@ public class TargetServiceGrpcTest {
                             "Speed Test",
                             bookmarkModel.getBookmarkById(bookmarkId).getTitle());
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testImportReadingList() throws Exception {
+        String readinglistFilePath =
+                UrlUtils.getTestFilePath("android/bookmarks/Valid_reading_list_entry.html");
+        ParcelFileDescriptor file =
+                ParcelFileDescriptor.open(
+                        new File(readinglistFilePath), ParcelFileDescriptor.MODE_READ_ONLY);
+
+        importBrowserFile(file, BrowserFileType.BROWSER_FILE_TYPE_READING_LIST);
+
+        runOnUiThreadBlocking(
+                () -> ChromeBrowserInitializer.getInstance().handleSynchronousStartup());
+        final BookmarkModel bookmarkModel = waitForBookmarkModelLoaded();
+        runOnUiThreadBlocking(
+                () -> {
+                    BookmarkId readingListFolder =
+                            bookmarkModel.getLocalOrSyncableReadingListFolder();
+                    assertFalse(
+                            "Reading list should not be empty",
+                            bookmarkModel.getChildIds(readingListFolder).isEmpty());
+                    GURL url = new GURL("https://www.chromium.org/");
+                    assertTrue(
+                            "Reading list item should be present", bookmarkModel.isBookmarked(url));
+                    List<BookmarkId> bookmarkIds = bookmarkModel.searchBookmarks(url.getSpec(), 1);
+                    assertFalse("Bookmark ID list should not be empty", bookmarkIds.isEmpty());
+                    BookmarkId bookmarkId = bookmarkIds.get(0);
+                    assertEquals(
+                            "Reading list item title should match",
+                            "Chromium",
+                            bookmarkModel.getBookmarkById(bookmarkId).getTitle());
+                    assertEquals(
+                            "Item should be in reading list folder",
+                            readingListFolder,
+                            bookmarkModel.getBookmarkById(bookmarkId).getParentId());
+                });
+    }
+
+    private void importBrowserFile(ParcelFileDescriptor readSide, BrowserFileType fileType) {
+        Metadata headers = new Metadata();
+        headers.put(
+                DataImporterServiceImpl.ParcelableMetadataInterceptor.PFD_METADATA_KEY, readSide);
+
+        BrowserFileMetadata fileMetadata =
+                BrowserFileMetadata.newBuilder().setFileType(fileType).build();
+        ImportItemRequest request =
+                ImportItemRequest.newBuilder()
+                        .setItemType(SystemAppApiItemType.SYSTEM_APP_API_ITEM_TYPE_BROWSER_DATA)
+                        .setSessionId(SESSION_ID)
+                        .setFileMetadata(
+                                Proto3Any.newBuilder().setValue(fileMetadata.toByteString()))
+                        .build();
+
+        TargetServiceGrpc.TargetServiceBlockingStub stubWithHeaders =
+                mStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(headers));
+        ImportItemResponse response = stubWithHeaders.importItem(request);
+        assertNotNull(response);
+        assertEquals(
+                ImportItemResponse.TransferError.TRANSFER_ERROR_UNSPECIFIED,
+                response.getTransferError());
+
+        ImportItemsDoneRequest doneRequest =
+                ImportItemsDoneRequest.newBuilder()
+                        .setItemType(SystemAppApiItemType.SYSTEM_APP_API_ITEM_TYPE_BROWSER_DATA)
+                        .setSessionId(SESSION_ID)
+                        .setStatus(ImportItemsDoneRequest.CompleteStatus.COMPLETE_STATUS_SUCCESS)
+                        .build();
+        ImportItemsDoneResponse doneResponse = mStub.importItemsDone(doneRequest);
+        assertEquals(
+                /* amount of successful imported files */ 1, doneResponse.getSuccessItemCount());
     }
 
     /**
