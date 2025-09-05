@@ -9649,3 +9649,6 @@ crbug.com/442509324 http/tests/devtools/device-mode/device-mode-toolbar.js [ Fai
 
 # Gardener 2025-09-01
 crbug.com/442030691 compositing/video/video-poster.html [ Failure Pass ]
+
+# Gardener 2025-09-05
+crbug.com/443161677 [ Win11-arm64 ] http/tests/inspector-protocol/network/get-durable-response-gzip-body.js [ Failure Timeout ]
