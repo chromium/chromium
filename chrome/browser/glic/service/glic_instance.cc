@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -20,15 +21,14 @@ namespace glic {
 GlicInstance::GlicInstance(
     Profile* profile,
     BrowserWindowInterface* bwi,
+    std::unique_ptr<Host> host,
     ConversationId conversation_id,
-    Host& host,
     base::WeakPtr<AttachmentDelegate> attachment_delegate)
     : profile_(profile),
       associated_bwi_(bwi),
-
       attachment_delegate_(attachment_delegate),
       conversation_id_(conversation_id),
-      host_(host) {}
+      host_(std::move(host)) {}
 
 GlicInstance::~GlicInstance() = default;
 

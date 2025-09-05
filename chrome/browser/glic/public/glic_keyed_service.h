@@ -224,6 +224,10 @@ class GlicKeyedService : public KeyedService {
   // chrome://glic.
   bool IsGlicWebUi(content::WebContents* web_contents);
 
+  // Get the Host associated with the given browser's active tab, or null
+  // if there is none.
+  Host* GetHostForActiveTab(BrowserWindowInterface* bwi);
+
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
   // callbacks.

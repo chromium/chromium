@@ -23,11 +23,10 @@ class Host;
 // A class for managing sending zero state suggestions through the mojo api.
 class GlicZeroStateSuggestionsManager {
  public:
-  explicit GlicZeroStateSuggestionsManager(
+  GlicZeroStateSuggestionsManager(
       GlicSharingManagerImpl* sharing_manager,
       GlicWindowController* window_controller,
-      contextual_cueing::ContextualCueingService* contextual_cueing_service,
-      Host* host);
+      contextual_cueing::ContextualCueingService* contextual_cueing_service);
   virtual ~GlicZeroStateSuggestionsManager();
 
   // Callback to send zero state suggestions to the webui on tab changes.
@@ -75,6 +74,8 @@ class GlicZeroStateSuggestionsManager {
       std::vector<std::string> returned_suggestions);
 
   base::WeakPtr<GlicZeroStateSuggestionsManager> GetWeakPtr();
+
+  Host& host();
 
   // Owned by the glic_keyed_service.
   raw_ptr<GlicSharingManagerImpl> sharing_manager_;

@@ -9,10 +9,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
-#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
-#include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
-#include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_conversation_helper.h"
 #include "chrome/browser/glic/service/panel_delegate.h"
@@ -25,6 +21,8 @@ class TabInterface;
 }
 
 namespace glic {
+
+class GlicUiEmbedder;
 
 // A Panel owns a single host keeping any state that must exist for the lifetime
 // of the host. When a host is showing the Panel creates a PanelEmbedderDelegate
@@ -48,8 +46,8 @@ class GlicInstance : public PanelDelegate {
 
   GlicInstance(Profile* profile,
                BrowserWindowInterface* bwi,
+               std::unique_ptr<Host> host,
                ConversationId conversation_id,
-               Host& host,
                base::WeakPtr<AttachmentDelegate> attachment_delegate);
   ~GlicInstance() override;
 
@@ -106,10 +104,10 @@ class GlicInstance : public PanelDelegate {
   raw_ptr<BrowserWindowInterface> associated_bwi_ = nullptr;
   base::WeakPtr<AttachmentDelegate> attachment_delegate_;
   const ConversationId conversation_id_;
-  raw_ref<Host> host_;
 
   base::flat_map<tabs::TabInterface*, base::CallbackListSubscription>
       associated_tab_subscriptions_;
+  std::unique_ptr<Host> host_;
   base::WeakPtrFactory<GlicInstance> weak_ptr_factory_{this};
 };
 

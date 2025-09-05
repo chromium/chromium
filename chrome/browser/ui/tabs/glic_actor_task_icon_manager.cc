@@ -32,12 +32,10 @@ using glic::mojom::CurrentView;
 GlicActorTaskIconManager::GlicActorTaskIconManager(
     Profile* profile,
     actor::ActorKeyedService* actor_service,
-    glic::GlicWindowController& window_controller,
-    glic::Host& host)
+    glic::GlicWindowController& window_controller)
     : profile_(profile),
       actor_service_(actor_service),
-      window_controller_(window_controller),
-      host_(host) {
+      window_controller_(window_controller) {
   CHECK(actor_service);
   RegisterSubscriptions();
 }
@@ -66,7 +64,8 @@ void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   // Reset suppression every time a new actor task state change occurs.
   suppress_task_icon_text_ = false;
   current_task_id_ = task_id;
-  UpdateTaskIcon(window_controller_->state(), host_->GetPrimaryCurrentView());
+  UpdateTaskIcon(window_controller_->state(),
+                 window_controller_->host().GetPrimaryCurrentView());
 }
 
 void GlicActorTaskIconManager::Shutdown() {}

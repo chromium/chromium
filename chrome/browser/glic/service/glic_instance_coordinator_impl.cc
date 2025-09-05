@@ -53,11 +53,13 @@
 
 namespace glic {
 
-Host& GlicInstanceCoordinatorImpl::host() const {
+// TODO(refactor): Remove.
+Host& GlicInstanceCoordinatorImpl::host() {
   NOTIMPLEMENTED();
   return host_manager_->primary_host();
 }
 
+// TODO(refactor): Remove.
 HostManager& GlicInstanceCoordinatorImpl::host_manager() {
   NOTIMPLEMENTED();
   return *host_manager_;
@@ -74,6 +76,21 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
 
+GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
+    tabs::TabInterface* tab) {
+  auto* helper = GlicConversationHelper::From(tab);
+  CHECK(helper);
+
+  auto conversation_id = helper->GetConversationId();
+  if (conversation_id.has_value()) {
+    if (auto* instance = GetInstanceFor(conversation_id.value())) {
+      return instance;
+    }
+  }
+
+  return nullptr;
+}
+
 void GlicInstanceCoordinatorImpl::OnBrowserAdded(Browser* browser) {}
 
 void GlicInstanceCoordinatorImpl::OnBrowserRemoved(Browser* browser) {
@@ -84,6 +101,13 @@ void GlicInstanceCoordinatorImpl::OnInstanceOrphaned(GlicInstance* instance) {
   if (!IsFloatingInstance(instance)) {
     RemoveInstance(instance);
   }
+}
+
+Host* GlicInstanceCoordinatorImpl::GetHostForTab(tabs::TabInterface* tab) {
+  if (GlicInstance* instance = GetInstanceForTab(tab)) {
+    return &instance->host();
+  }
+  return nullptr;
 }
 
 void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
@@ -325,15 +349,12 @@ void GlicInstanceCoordinatorImpl::DetachInstance(GlicInstance* instance) {
 
 GlicInstance* GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceForTab(
     tabs::TabInterface* tab) {
+  if (GlicInstance* instance = GetInstanceForTab(tab)) {
+    return instance;
+  }
+
   auto* helper = GlicConversationHelper::From(tab);
   CHECK(helper);
-
-  auto conversation_id = helper->GetConversationId();
-  if (conversation_id.has_value()) {
-    if (auto* instance = GetInstanceFor(conversation_id.value())) {
-      return instance;
-    }
-  }
 
   // If the tab is not part of a conversation, we will check if the browser
   // window is.
@@ -363,9 +384,9 @@ GlicInstance* GlicInstanceCoordinatorImpl::CreateGlicInstance(
     BrowserWindowInterface* bwi) {
   // TODO: Sync this id with the web client.
   ConversationId new_conversation_id = base::Uuid::GenerateRandomV4();
-  auto new_instance =
-      std::make_unique<GlicInstance>(profile_, bwi, new_conversation_id, host(),
-                                     weak_ptr_factory_.GetWeakPtr());
+  auto new_instance = std::make_unique<GlicInstance>(
+      profile_, bwi, CreateHost(), new_conversation_id,
+      weak_ptr_factory_.GetWeakPtr());
   if (bwi) {
     browser_to_conversation_map_[bwi] = new_conversation_id;
   }
@@ -420,6 +441,18 @@ bool GlicInstanceCoordinatorImpl::IsFloatingInstance(GlicInstance* instance) {
 
 void GlicInstanceCoordinatorImpl::ReattachFloatingInstance() {
   NOTIMPLEMENTED();
+}
+
+std::unique_ptr<Host> GlicInstanceCoordinatorImpl::CreateHost() {
+  auto host = std::make_unique<Host>(
+      profile_, base::BindOnce(&GlicInstanceCoordinatorImpl::OnDestroyingHost,
+                               base::Unretained(this)));
+  host_manager_->AddHost(host.get());
+  return host;
+}
+
+void GlicInstanceCoordinatorImpl::OnDestroyingHost(Host* host) {
+  host_manager_->RemoveHost(host);
 }
 
 }  // namespace glic

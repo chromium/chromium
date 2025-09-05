@@ -34,7 +34,6 @@ class GlicSharingManagerImpl : public GlicSharingManager {
  public:
   GlicSharingManagerImpl(Profile* profile,
                          GlicWindowController* window_controller,
-                         Host* host,
                          GlicMetrics* metrics);
   ~GlicSharingManagerImpl() override;
 

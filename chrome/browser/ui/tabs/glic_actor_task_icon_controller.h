@@ -40,6 +40,7 @@ class GlicActorTaskIconController {
   void UpdateCurrentTaskIconUiState();
 
   const raw_ptr<Profile> profile_;
+  raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<TabStripActionContainer> tab_strip_action_container_;
 
   std::vector<base::CallbackListSubscription>

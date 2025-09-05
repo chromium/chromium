@@ -42,7 +42,7 @@ GlicActorTaskIconManagerFactory::BuildServiceInstanceForBrowserContext(
   auto* glic_service = glic::GlicKeyedService::Get(context);
   return std::make_unique<GlicActorTaskIconManager>(
       profile, ActorKeyedServiceFactory::GetActorKeyedService(context),
-      glic_service->window_controller(), glic_service->host());
+      glic_service->window_controller());
 }
 
 }  // namespace tabs

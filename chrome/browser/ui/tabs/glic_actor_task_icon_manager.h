@@ -42,8 +42,7 @@ class GlicActorTaskIconManager : public KeyedService {
  public:
   GlicActorTaskIconManager(Profile* profile,
                            actor::ActorKeyedService* actor_service,
-                           glic::GlicWindowController& window_controller,
-                           glic::Host& host);
+                           glic::GlicWindowController& window_controller);
   ~GlicActorTaskIconManager() override;
 
   // Called whenever floaty updates.
@@ -90,7 +89,6 @@ class GlicActorTaskIconManager : public KeyedService {
   raw_ptr<Profile> profile_;
   raw_ptr<actor::ActorKeyedService> actor_service_;
   raw_ref<glic::GlicWindowController> window_controller_;
-  raw_ref<glic::Host> host_;
 
   // TODO(mjenn): Update implementation for multi-tab actuation.
   actor::TaskId current_task_id_;

@@ -34,6 +34,10 @@ class Size;
 class Point;
 }  // namespace gfx
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace glic {
 // Distance the detached window should be from the top and the right of the
 // display when opened unassociated to a browser.
@@ -74,8 +78,10 @@ class GlicWindowController {
   virtual ~GlicWindowController() = default;
 
   // TODO(refactor): Add multi-instance Host getters
-  virtual Host& host() const = 0;
+  virtual Host& host() = 0;
   virtual HostManager& host_manager() = 0;
+
+  virtual Host* GetHostForTab(tabs::TabInterface* tab) = 0;
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.

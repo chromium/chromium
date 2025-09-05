@@ -84,7 +84,9 @@ class Host {
     virtual void ContextAccessIndicatorChanged(bool enabled) {}
   };
 
-  explicit Host(Profile* profile);
+  using DestructionCallback = base::OnceCallback<void(Host*)>;
+
+  Host(Profile* profile, DestructionCallback destruction_callback);
   Host(const Host&) = delete;
   ~Host();
   Host& operator=(const Host&) = delete;
@@ -247,6 +249,8 @@ class Host {
   }
 
   raw_ptr<Profile> profile_;
+  DestructionCallback destruction_callback_;
+
   // Null before `Initialize()` and after `Shutdown()`.
   raw_ptr<Delegate> delegate_;
   base::ObserverList<Observer> observers_;
@@ -273,9 +277,14 @@ class HostManager {
   explicit HostManager(Profile* profile);
   ~HostManager();
 
-  void Initialize(Host::Delegate* delegate);
+  // TODO(refactor): Remove.
+  Host& primary_host();
+
   void Shutdown();
   void Destroy();
+
+  void AddHost(Host* host);
+  void RemoveHost(Host* host);
 
   // Called when a `GlicPageHandler` is created.
   Host* WebUIPageHandlerAdded(GlicPageHandler* page_handler);
@@ -291,17 +300,13 @@ class HostManager {
   // Returns whether `contents` is the glic WebUI web contents.
   bool IsGlicWebUi(content::WebContents* contents);
 
-  // The primary host which can be shown in a floating window. All other hosts
-  // are ignored.
-  Host& primary_host() { return primary_host_; }
-
   Host* FindHostForTabForTesting(tabs::TabInterface& tab);
 
  private:
   class DummyHostDelegate;
   std::vector<Host*> GetAllHosts();
   raw_ptr<Profile> profile_;
-  Host primary_host_;
+  std::vector<Host*> instance_hosts_;
   std::unique_ptr<DummyHostDelegate> dummy_host_delegate_;
   // Hosts for any unclaimed page handlers, which is approximately limited to
   // chrome://glic in tabs. These are only important for developers, and do not

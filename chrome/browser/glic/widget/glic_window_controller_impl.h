@@ -144,8 +144,9 @@ class GlicWindowControllerImpl
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
-  Host& host() const override;
+  Host& host() override;
   HostManager& host_manager() override;
+  Host* GetHostForTab(tabs::TabInterface* tab) override;
 
  private:
 
@@ -306,6 +307,7 @@ class GlicWindowControllerImpl
   void HandleWindowDragWithOffset(gfx::Vector2d mouse_offset);
 
   const raw_ptr<Profile> profile_;
+  Host host_;
   std::unique_ptr<HostManager> host_manager_;
 
   // Exists when the glic panel is open and in window mode.

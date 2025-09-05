@@ -51,7 +51,6 @@ GlicGetContextResult TransformFetcherResult(
 GlicSharingManagerImpl::GlicSharingManagerImpl(
     Profile* profile,
     GlicWindowController* window_controller,
-    Host* host,
     GlicMetrics* metrics)
     : focused_browser_manager_(window_controller),
       focused_tab_manager_(&focused_browser_manager_),

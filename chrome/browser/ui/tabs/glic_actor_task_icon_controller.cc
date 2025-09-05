@@ -15,6 +15,7 @@
 namespace tabs {
 using glic::GlicKeyedService;
 using glic::GlicWindowController;
+using glic::Host;
 using glic::mojom::CurrentView;
 
 DEFINE_USER_DATA(GlicActorTaskIconController);
@@ -22,6 +23,7 @@ GlicActorTaskIconController::GlicActorTaskIconController(
     BrowserWindowInterface* browser,
     TabStripActionContainer* tab_strip_action_container)
     : profile_(browser->GetProfile()),
+      browser_(browser),
       tab_strip_action_container_(tab_strip_action_container),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
@@ -52,10 +54,21 @@ void GlicActorTaskIconController::RegisterTaskIconStateCallback() {
 void GlicActorTaskIconController::UpdateCurrentTaskIconUiState() {
   if (auto* manager =
           GlicActorTaskIconManagerFactory::GetForProfile(profile_)) {
-    OnStateUpdate(
-        GlicKeyedService::Get(profile_)->window_controller().state(),
-        GlicKeyedService::Get(profile_)->host().GetPrimaryCurrentView(),
-        manager->GetCurrentActorTaskIconState());
+    auto* glic_service = GlicKeyedService::Get(profile_);
+
+    CurrentView current_view = CurrentView::kConversation;
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      Host* host = glic_service->GetHostForActiveTab(browser_);
+      if (host) {
+        current_view = host->GetPrimaryCurrentView();
+      }
+    } else {
+      current_view =
+          glic_service->window_controller().host().GetPrimaryCurrentView();
+    }
+
+    OnStateUpdate(glic_service->window_controller().state(), current_view,
+                  manager->GetCurrentActorTaskIconState());
   }
 }
 

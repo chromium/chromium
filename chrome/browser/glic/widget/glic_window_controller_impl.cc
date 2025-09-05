@@ -298,6 +298,7 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
     GlicKeyedService* glic_service,
     GlicEnabling* enabling)
     : profile_(profile),
+      host_(profile, base::DoNothing()),
       host_manager_(std::make_unique<HostManager>(profile)),
       window_finder_(std::make_unique<WindowFinder>()),
       glic_service_(glic_service),
@@ -308,7 +309,8 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
     previous_position_ = GetPreviousPositionFromPrefs(profile_->GetPrefs());
   }
   application_hotkey_manager_ = MakeApplicationHotkeyManager(GetWeakPtr());
-  host_manager_->Initialize(this);
+  host_.Initialize(this);
+  host_manager_->AddHost(&host_);
   host_observation_.Observe(&host());
 }
 
@@ -621,12 +623,16 @@ void GlicWindowControllerImpl::SetPreviousPositionForTesting(
   previous_position_ = position;
 }
 
-Host& GlicWindowControllerImpl::host() const {
-  return host_manager_->primary_host();
+Host& GlicWindowControllerImpl::host() {
+  return host_;
 }
 
 HostManager& GlicWindowControllerImpl::host_manager() {
   return *host_manager_;
+}
+
+Host* GlicWindowControllerImpl::GetHostForTab(tabs::TabInterface* tab) {
+  return &host_;
 }
 
 void GlicWindowControllerImpl::Show(Browser* browser,
@@ -1458,7 +1464,7 @@ void GlicWindowControllerImpl::Reload() {
 }
 
 bool GlicWindowControllerImpl::IsWarmed() const {
-  return !!host().contents_container();
+  return const_cast<Host&>(host_).contents_container();
 }
 
 base::WeakPtr<GlicWindowController> GlicWindowControllerImpl::GetWeakPtr() {

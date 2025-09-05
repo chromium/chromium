@@ -126,7 +126,6 @@ GlicKeyedService::GlicKeyedService(
       sharing_manager_(
           std::make_unique<GlicSharingManagerImpl>(profile,
                                                    &window_controller(),
-                                                   &host(),
                                                    metrics_.get())),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
       auth_controller_(std::make_unique<AuthController>(profile,
@@ -138,8 +137,7 @@ GlicKeyedService::GlicKeyedService(
           std::make_unique<GlicZeroStateSuggestionsManager>(
               sharing_manager_.get(),
               &window_controller(),
-              contextual_cueing_service,
-              &host())),
+              contextual_cueing_service)),
       contextual_cueing_service_(contextual_cueing_service),
       actor_keyed_service_(actor_keyed_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
@@ -170,7 +168,6 @@ GlicKeyedService::GlicKeyedService(
 }
 
 GlicKeyedService::~GlicKeyedService() {
-  host_manager().Destroy();
   metrics_->SetControllers(nullptr, nullptr);
 }
 
@@ -185,6 +182,7 @@ void GlicKeyedService::Shutdown() {
   if (glic_profile_manager) {
     glic_profile_manager->OnServiceShutdown(this);
   }
+  host_manager().Destroy();
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
@@ -706,7 +704,7 @@ bool GlicKeyedService::IsActiveWebContents(content::WebContents* contents) {
   if (!contents) {
     return false;
   }
-  return contents == host_manager().primary_host().webui_contents() ||
+  return host_manager().IsGlicWebUi(contents) ||
          contents == fre_controller().GetWebContents();
 }
 
@@ -763,6 +761,21 @@ HostManager& GlicKeyedService::host_manager() {
     NOTIMPLEMENTED();
   }
   return window_controller().host_manager();
+}
+
+Host* GlicKeyedService::GetHostForActiveTab(BrowserWindowInterface* bwi) {
+  if (UseDefaultWindowController()) {
+    NOTREACHED();
+  }
+
+  // TODO(refactor): Add a method for getting the floating instance.
+  CHECK(bwi);
+  tabs::TabInterface* tab = bwi->GetActiveTabInterface();
+  if (!tab) {
+    return nullptr;
+  }
+
+  return window_controller().GetHostForTab(tab);
 }
 
 }  // namespace glic

@@ -21,6 +21,7 @@ using glic::MockGlicWindowController;
 using glic::mojom::CurrentView;
 using testing::AllOf;
 using testing::Field;
+using testing::ReturnRef;
 using testing::Values;
 
 class MockTaskIconStateChangeSubscriber {
@@ -42,10 +43,10 @@ class GlicActorTaskIconManagerTest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     actor_service_ = std::make_unique<ActorKeyedServiceFake>(profile_.get());
     window_controller_ = std::make_unique<MockGlicWindowController>();
-    host_ = std::make_unique<Host>(profile_.get());
+    host_ = std::make_unique<Host>(profile_.get(), base::DoNothing());
+    ON_CALL(*window_controller_, host).WillByDefault(ReturnRef(*host_));
     manager_ = std::make_unique<GlicActorTaskIconManager>(
-        profile_.get(), actor_service_.get(), *window_controller_.get(),
-        *host_.get());
+        profile_.get(), actor_service_.get(), *window_controller_.get());
   }
 
   ActorKeyedServiceFake* actor_service() { return actor_service_.get(); }
