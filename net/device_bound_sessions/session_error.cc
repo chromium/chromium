@@ -60,6 +60,7 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kInvalidFederatedSessionUrl:
     case kInvalidFederatedSession:
     case kInvalidFederatedKey:
+    case kTooManyRelyingOriginLabels:
       NOTREACHED();
   }
 }
@@ -106,6 +107,7 @@ bool SessionError::IsServerError() const {
     case kInvalidFederatedSessionUrl:
     case kInvalidFederatedSession:
     case kInvalidFederatedKey:
+    case kTooManyRelyingOriginLabels:
       NOTREACHED();
   }
 }

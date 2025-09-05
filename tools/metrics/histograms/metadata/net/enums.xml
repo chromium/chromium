@@ -264,6 +264,7 @@ chromium-metrics-reviews@google.com.
   <int value="33" label="Federated provider URL not valid"/>
   <int value="34" label="Federated session invalid"/>
   <int value="35" label="Federated key invalid"/>
+  <int value="36" label="Too many relying origin labels in .well-known"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

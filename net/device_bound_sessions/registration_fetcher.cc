@@ -15,6 +15,7 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
@@ -100,6 +101,50 @@ void SignChallengeWithKey(
       base::BindOnce(&OnDataSigned, expected_algorithm.value(),
                      std::ref(unexportable_key_service), header_and_payload,
                      std::move(callback)));
+}
+
+// Returns the registrable origin label for `origin_str`, or empty if the origin
+// is invalid or not registrable.
+std::string GetOriginLabel(const std::string& origin_str) {
+  GURL url(origin_str);
+  if (!url.is_valid()) {
+    return "";
+  }
+
+  std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
+      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  const std::string::size_type dot_index = domain.find('.');
+  if (dot_index == std::string::npos) {
+    return "";
+  }
+
+  return domain.substr(0, dot_index);
+}
+
+bool WithinOriginLabelLimit(const std::vector<std::string>& relying_origins,
+                            const std::string& target_origin) {
+  constexpr size_t kMaxLabels = 5;
+  base::flat_set<std::string> labels_seen;
+  for (const std::string& origin_str : relying_origins) {
+    std::string label = GetOriginLabel(origin_str);
+    if (label.empty()) {
+      continue;
+    }
+
+    if (!base::Contains(labels_seen, label)) {
+      if (labels_seen.size() >= kMaxLabels) {
+        continue;
+      }
+
+      labels_seen.insert(std::move(label));
+    }
+
+    if (origin_str == target_origin) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 RegistrationFetcher::FetcherType* g_mock_fetcher = nullptr;
@@ -318,12 +363,16 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return SessionError::ErrorType::kSessionProviderWellKnownMalformed;
     }
 
-    // TODO(crbug.com/430338388): Put an upper limit on the number of
-    // registrable origin labels in this list.
+    std::string target_origin =
+        url::Origin::Create(fetcher_endpoint_).Serialize();
     if (!maybe_params->relying_origins.has_value() ||
-        !base::Contains(*maybe_params->relying_origins,
-                        url::Origin::Create(fetcher_endpoint_).Serialize())) {
+        !base::Contains(*maybe_params->relying_origins, target_origin)) {
       return SessionError::ErrorType::kFederatedNotAuthorized;
+    }
+
+    if (!WithinOriginLabelLimit(*maybe_params->relying_origins,
+                                target_origin)) {
+      return SessionError::ErrorType::kTooManyRelyingOriginLabels;
     }
 
     return SessionError::ErrorType::kSuccess;

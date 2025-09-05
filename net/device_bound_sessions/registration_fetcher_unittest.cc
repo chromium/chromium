@@ -2243,6 +2243,118 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedRelyingNotAuthorized) {
             SessionError::ErrorType::kFederatedNotAuthorized);
 }
 
+TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedTooManyRelying) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnForHostAndPath, "provider.a.test",
+                          "/.well-known/device-bound-sessions",
+                          base::BindRepeating(&ReturnWellKnown,
+                                              R"json({
+                                                "relying_origins": [
+                                                  "https://rp.b1.test:$1",
+                                                  "https://rp.b2.test:$1",
+                                                  "https://rp.b3.test:$1",
+                                                  "https://rp.b4.test:$1",
+                                                  "https://rp.b5.test:$1",
+                                                  "https://rp.a.test:$1"
+                                                ]
+                                              })json")));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnForHostAndPath, "rp.a.test", "/.well-known/device-bound-sessions",
+      base::BindRepeating(&ReturnWellKnown,
+                          R"json({
+                            "provider_origin": "https://provider.a.test:$1"
+                          })json")));
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  unexportable_keys::UnexportableKeyId key = CreateKey();
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+  auto session_or_error =
+      FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
+  ASSERT_FALSE(session_or_error.has_value());
+  EXPECT_EQ(session_or_error.error().type,
+            SessionError::ErrorType::kTooManyRelyingOriginLabels);
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       FederatedTooManyRelyingFirstLabelAllowed) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnForHostAndPath, "provider.a.test",
+                          "/.well-known/device-bound-sessions",
+                          base::BindRepeating(&ReturnWellKnown,
+                                              R"json({
+                                                "relying_origins": [
+                                                  "https://a-is-allowed-because-its-first.a.test:$1",
+                                                  "https://rp.b1.test:$1",
+                                                  "https://rp.b2.test:$1",
+                                                  "https://rp.b3.test:$1",
+                                                  "https://rp.b4.test:$1",
+                                                  "https://rp.b5.test:$1",
+                                                  "https://rp.a.test:$1"
+                                                ]
+                                              })json")));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnForHostAndPath, "rp.a.test", "/.well-known/device-bound-sessions",
+      base::BindRepeating(&ReturnWellKnown,
+                          R"json({
+                            "provider_origin": "https://provider.a.test:$1"
+                          })json")));
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  unexportable_keys::UnexportableKeyId key = CreateKey();
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+  auto session_or_error =
+      FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
+  ASSERT_TRUE(session_or_error.has_value());
+  EXPECT_EQ((*session_or_error)->unexportable_key_id(), key);
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       FederatedNotRegistrableDoesNotCount) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnForHostAndPath, "provider.a.test",
+                          "/.well-known/device-bound-sessions",
+                          base::BindRepeating(&ReturnWellKnown,
+                                              R"json({
+                                                "relying_origins": [
+                                                  "https://tld",
+                                                  "http://?not-a=url",
+                                                  "http:///path",
+                                                  "http:///path2",
+                                                  "http:///path3",
+                                                  "https://rp.a.test:$1"
+                                                ]
+                                              })json")));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnForHostAndPath, "rp.a.test", "/.well-known/device-bound-sessions",
+      base::BindRepeating(&ReturnWellKnown,
+                          R"json({
+                            "provider_origin": "https://provider.a.test:$1"
+                          })json")));
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  unexportable_keys::UnexportableKeyId key = CreateKey();
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("rp.a.test", "/"), kSessionIdentifier, kChallenge);
+  auto session_or_error =
+      FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
+  ASSERT_TRUE(session_or_error.has_value());
+  EXPECT_EQ((*session_or_error)->unexportable_key_id(), key);
+}
+
 class RegistrationTokenHelperTest : public testing::Test {
  public:
   RegistrationTokenHelperTest() : unexportable_key_service_(task_manager_) {}
