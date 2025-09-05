@@ -44,12 +44,11 @@ LanguageDetectionModelServiceFactory::~LanguageDetectionModelServiceFactory() =
 
 std::unique_ptr<KeyedService>
 LanguageDetectionModelServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   if (!translate::IsTFLiteLanguageDetectionEnabled() ||
       !optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     return nullptr;
   }
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   auto* opt_guide = OptimizationGuideServiceFactory::GetForProfile(profile);
   if (!opt_guide) {
     // The optimization guide service must be available for the translate model
