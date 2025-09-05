@@ -159,7 +159,8 @@ void MediaFoundationVideoEncoderSharedState::GetSupportedProfilesInternal() {
         GetMaxTemporalLayer(codec, activates, workarounds_);
     auto bitrate_mode = VideoEncodeAccelerator::kConstantMode |
                         VideoEncodeAccelerator::kVariableMode;
-    if (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC) {
+    if (codec == VideoCodec::kH264 || codec == VideoCodec::kHEVC ||
+        codec == VideoCodec::kAV1 || codec == VideoCodec::kVP9) {
       bitrate_mode |= VideoEncodeAccelerator::kExternalMode;
     }
 
