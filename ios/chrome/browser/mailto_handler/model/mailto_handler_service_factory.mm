@@ -36,9 +36,7 @@ MailtoHandlerServiceFactory::~MailtoHandlerServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 MailtoHandlerServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   MailtoHandlerConfiguration* config =
       [[MailtoHandlerConfiguration alloc] init];
 
