@@ -38,6 +38,7 @@ source_set("save_to_drive") {
     "//chrome/browser/signin",
     "//chrome/common/extensions",
     "//chrome/common/extensions/api",
+    "//components/drive",
     "//components/endpoint_fetcher",
     "//components/pdf/browser",
     "//content/public/browser",

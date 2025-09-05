@@ -10,11 +10,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
+#include "components/drive/drive_api_util.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -25,6 +28,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
+#include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/socket/socket.h"
@@ -39,6 +43,12 @@ using extensions::api::pdf_viewer_private::SaveToDriveProgress;
 using extensions::api::pdf_viewer_private::SaveToDriveStatus;
 
 constexpr char kDeveloperKey[] = "X-Developer-Key";
+
+constexpr std::string_view kMetadataContentType =
+    "Content-Type: application/json; charset=UTF-8";
+constexpr std::string_view kParentFolderUrl =
+    "https://www.googleapis.com/drive/v3beta/files";
+constexpr std::string_view kSuggestedFolderName = "Saved From Chrome";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("save_to_drive", R"(
@@ -76,6 +86,28 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
   })");
 
 constexpr base::TimeDelta kDefaultTimeout = base::Seconds(30);
+
+std::optional<DriveUploader::Item> ParseClientFolderResponse(
+    std::unique_ptr<endpoint_fetcher::EndpointResponse> endpoint_response) {
+  if (!endpoint_response || endpoint_response->response.empty() ||
+      endpoint_response->http_status_code != net::HTTP_OK) {
+    return std::nullopt;
+  }
+  std::optional<base::Value::Dict> dict =
+      base::JSONReader::ReadDict(endpoint_response->response);
+  if (!dict) {
+    return std::nullopt;
+  }
+  const std::string* file_id = dict->FindString("id");
+  if (!file_id) {
+    return std::nullopt;
+  }
+  const std::string* file_name = dict->FindString("name");
+  if (!file_name) {
+    return std::nullopt;
+  }
+  return DriveUploader::Item{*file_id, *file_name};
+}
 
 }  // namespace
 
@@ -134,10 +166,40 @@ void DriveUploader::OnFetchAccessToken(
   progress.error_type = SaveToDriveErrorType::kNoError;
   progress_callback_.Run(std::move(progress));
 
-  // TODO(crbug.com/435142523): Implement the rest of the DriveUploader
-  // 1. Get the parent folder.
-  // 2. Call UploadFile() to upload the file.
-  // 3. Notify caller about the upload progress.
+  FetchParentFolder();
+}
+
+void DriveUploader::FetchParentFolder() {
+  GURL url = GURL(kParentFolderUrl);
+  url = net::AppendOrReplaceQueryParameter(url, "create_as_client_folder",
+                                           "true");
+  base::Value::Dict metadata;
+  metadata.Set("name", kSuggestedFolderName);
+  metadata.Set("mimeType", drive::util::kDriveFolderMimeType);
+  std::optional<std::string> metadata_string = base::WriteJson(metadata);
+  parent_endpoint_fetcher_ = CreateEndpointFetcher(
+      url, endpoint_fetcher::HttpMethod::kPost, kMetadataContentType,
+      *metadata_string, oauth_headers_, base::DoNothing());
+  parent_endpoint_fetcher_->Fetch(base::BindOnce(
+      &DriveUploader::OnFetchParentFolder, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DriveUploader::OnFetchParentFolder(
+    std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
+  parent_folder_ = ParseClientFolderResponse(std::move(response));
+  SaveToDriveProgress progress;
+  if (!parent_folder_) {
+    progress.status = SaveToDriveStatus::kUploadFailed;
+    progress.error_type = SaveToDriveErrorType::kParentFolderSelectionFailed;
+    progress_callback_.Run(std::move(progress));
+    return;
+  }
+
+  progress.status = SaveToDriveStatus::kFetchParentFolder;
+  progress.error_type = SaveToDriveErrorType::kNoError;
+  progress_callback_.Run(std::move(progress));
+
+  UploadFile();
 }
 
 std::unique_ptr<endpoint_fetcher::EndpointFetcher>

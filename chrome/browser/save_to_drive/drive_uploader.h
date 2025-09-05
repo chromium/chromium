@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAVE_TO_DRIVE_DRIVE_UPLOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -21,6 +22,7 @@ class Profile;
 namespace endpoint_fetcher {
 enum class HttpMethod;
 class EndpointFetcher;
+struct EndpointResponse;
 using UploadProgressCallback =
     base::RepeatingCallback<void(uint64_t, uint64_t)>;
 }  // namespace endpoint_fetcher
@@ -78,6 +80,13 @@ class DriveUploader {
 
   DriveUploaderType get_drive_uploader_type_for_testing() const;
 
+  // Metadata of a Drive item. This is used to parse the response from the
+  // Drive API.
+  struct Item {
+    std::string id;
+    std::string name;
+  };
+
  protected:
   // Convenience function to create an `EndpointFetcher` to make HTTP requests
   // to Drive.
@@ -92,6 +101,14 @@ class DriveUploader {
   void OnFetchAccessToken(GoogleServiceAuthError error,
                           signin::AccessTokenInfo access_token_info);
 
+  // Fetches a special folder using Drive API to use as the parent folder
+  // for the uploaded file.
+  void FetchParentFolder();
+
+  // Handles the response from the Drive API when fetching the parent folder.
+  void OnFetchParentFolder(
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
+
   const DriveUploaderType drive_uploader_type_;
   const std::string title_;
   const AccountInfo account_info_;
@@ -100,6 +117,8 @@ class DriveUploader {
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher> parent_endpoint_fetcher_;
+  std::optional<Item> parent_folder_;
 
   base::WeakPtrFactory<DriveUploader> weak_ptr_factory_{this};
 };

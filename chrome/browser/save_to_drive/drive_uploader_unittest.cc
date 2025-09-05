@@ -8,14 +8,21 @@
 #include <string>
 #include <utility>
 
+#include "base/json/json_writer.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,12 +31,23 @@ namespace save_to_drive {
 
 namespace {
 
+using base::test::TestFuture;
 using extensions::api::pdf_viewer_private::SaveToDriveErrorType;
 using extensions::api::pdf_viewer_private::SaveToDriveProgress;
 using extensions::api::pdf_viewer_private::SaveToDriveStatus;
 using testing::_;
 using testing::AllOf;
 using testing::Field;
+
+constexpr std::string_view kErrorResponseHeader =
+    "HTTP/1.1 500 Internal Server Error\nContent-Type: application/json\n\n";
+constexpr std::string_view kParentFolderUrl =
+    "https://www.googleapis.com/drive/v3beta/"
+    "files?create_as_client_folder=true";
+constexpr std::string_view kSuccessFulResponseHeader =
+    "HTTP/1.1 200 OK\nContent-Type: text/html\n\n";
+constexpr std::string_view kTestFileId = "test_file_id";
+constexpr std::string_view kTestFolderName = "test_folder";
 
 class MockContentReader : public ContentReader {
  public:
@@ -58,6 +76,8 @@ class FakeDriveUploader : public DriveUploader {
   ~FakeDriveUploader() override = default;
 
   MOCK_METHOD(void, UploadFile, (), (override));
+
+  const std::optional<Item>& parent_folder() const { return parent_folder_; }
 };
 
 class DriveUploaderTest : public testing::Test {
@@ -132,6 +152,111 @@ TEST_F(DriveUploaderTest, NoRefreshToken) {
                               SaveToDriveErrorType::kOauthError))));
 
   uploader->Start();
+}
+
+class FetchParentFolderTest : public DriveUploaderTest {
+ public:
+  FetchParentFolderTest() = default;
+  FetchParentFolderTest(const FetchParentFolderTest&) = delete;
+  FetchParentFolderTest& operator=(const FetchParentFolderTest&) = delete;
+  ~FetchParentFolderTest() override = default;
+
+  void VerifyParentFolderResponse(std::string_view response_header,
+                                  std::string_view response_body,
+                                  std::optional<DriveUploader::Item> expected) {
+    auto account_info = test_env()->MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
+    const content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+        [&](content::URLLoaderInterceptor::RequestParams* params) {
+          if (params->url_request.url.spec() == kParentFolderUrl) {
+            content::URLLoaderInterceptor::WriteResponse(
+                response_header, response_body, params->client.get());
+            return true;
+          }
+          return false;
+        }));
+
+    EXPECT_CALL(progress_callback_, Run(Field(&SaveToDriveProgress::status,
+                                              SaveToDriveStatus::kFetchOauth)));
+    TestFuture<void> future;
+    FakeDriveUploader uploader("test_title", std::move(account_info),
+                               progress_callback_.Get(), profile_.get());
+
+    if (expected.has_value()) {
+      EXPECT_CALL(progress_callback_,
+                  Run(Field(&SaveToDriveProgress::status,
+                            SaveToDriveStatus::kFetchParentFolder)))
+          .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+      EXPECT_CALL(uploader, UploadFile());
+    } else {
+      EXPECT_CALL(
+          progress_callback_,
+          Run(AllOf(Field(&SaveToDriveProgress::status,
+                          SaveToDriveStatus::kUploadFailed),
+                    Field(&SaveToDriveProgress::error_type,
+                          SaveToDriveErrorType::kParentFolderSelectionFailed))))
+          .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
+    }
+
+    uploader.Start();
+
+    test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+        "access_token", base::Time::Now() + base::Hours(1));
+
+    EXPECT_TRUE(future.Wait());
+
+    // Verify that the parent folder is set correctly.
+    const std::optional<DriveUploader::Item>& parent_folder =
+        uploader.parent_folder();
+    EXPECT_EQ(parent_folder.has_value(), expected.has_value());
+
+    if (expected.has_value()) {
+      EXPECT_EQ(parent_folder->id, expected->id);
+      EXPECT_EQ(parent_folder->name, expected->name);
+    }
+  }
+};
+
+TEST_F(FetchParentFolderTest, Success) {
+  base::Value::Dict response;
+  response.Set("id", kTestFileId);
+  response.Set("name", kTestFolderName);
+  std::optional<std::string> response_string = base::WriteJson(response);
+  ASSERT_TRUE(response_string.has_value());
+  VerifyParentFolderResponse(
+      kSuccessFulResponseHeader, *response_string,
+      DriveUploader::Item{.id = std::string(kTestFileId),
+                          .name = std::string(kTestFolderName)});
+}
+
+TEST_F(FetchParentFolderTest, EmptyResponse) {
+  VerifyParentFolderResponse(kSuccessFulResponseHeader, "", std::nullopt);
+}
+
+TEST_F(FetchParentFolderTest, InvalidJson) {
+  VerifyParentFolderResponse(kSuccessFulResponseHeader, "{\"id=", std::nullopt);
+}
+
+TEST_F(FetchParentFolderTest, InternalError) {
+  VerifyParentFolderResponse(kErrorResponseHeader, "{}", std::nullopt);
+}
+
+TEST_F(FetchParentFolderTest, MissingId) {
+  base::Value::Dict response;
+  response.Set("name", kTestFolderName);
+  std::optional<std::string> response_string = base::WriteJson(response);
+  ASSERT_TRUE(response_string.has_value());
+  VerifyParentFolderResponse(kSuccessFulResponseHeader, *response_string,
+                             std::nullopt);
+}
+
+TEST_F(FetchParentFolderTest, MissingName) {
+  base::Value::Dict response;
+  response.Set("id", kTestFileId);
+  std::optional<std::string> response_string = base::WriteJson(response);
+  ASSERT_TRUE(response_string.has_value());
+  VerifyParentFolderResponse(kSuccessFulResponseHeader, *response_string,
+                             std::nullopt);
 }
 
 }  // namespace
