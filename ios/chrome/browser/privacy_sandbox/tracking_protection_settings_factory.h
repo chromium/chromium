@@ -27,11 +27,11 @@ class TrackingProtectionSettingsFactory : public ProfileKeyedServiceFactoryIOS {
   TrackingProtectionSettingsFactory();
   ~TrackingProtectionSettingsFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PRIVACY_SANDBOX_TRACKING_PROTECTION_SETTINGS_FACTORY_H_

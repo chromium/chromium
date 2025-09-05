@@ -48,9 +48,7 @@ TrackingProtectionSettingsFactory::~TrackingProtectionSettingsFactory() =
 
 std::unique_ptr<KeyedService>
 TrackingProtectionSettingsFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   return std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
       profile->GetPrefs(),
       ios::HostContentSettingsMapFactory::GetForProfile(profile),
