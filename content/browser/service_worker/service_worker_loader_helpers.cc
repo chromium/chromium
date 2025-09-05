@@ -17,6 +17,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/service_worker/service_worker_consts.h"
+#include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -454,6 +455,16 @@ bool IsEligibleForSyntheticResponseInternal(
   }
 
   return false;
+}
+
+bool IsSyntheticResponseDryRunModeEnabled() {
+  if (ServiceWorkerSyntheticResponseManager::IsDryRunModeEnabledForTesting()) {
+    return true;
+  }
+  static const bool is_dry_run(
+      blink::features::kServiceWorkerSyntheticResponseDryRun.Get());
+
+  return is_dry_run;
 }
 
 }  // namespace service_worker_loader_helpers

@@ -64,6 +64,10 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   void StartSyntheticResponse(FetchCallback callback);
   SyntheticResponseStatus Status() const { return status_; }
 
+  // The static function to override the dry run mode.
+  static void SetDryRunMode(bool enabled);
+  static bool IsDryRunModeEnabledForTesting();
+
  private:
   class SyntheticResponseURLLoaderClient;
 
@@ -104,6 +108,8 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   std::optional<RaceNetworkRequestWriteBufferManager> write_buffer_manager_;
   mojo::Remote<blink::mojom::ServiceWorkerStreamCallback> stream_callback_;
   std::optional<RaceNetworkRequestSimpleBufferManager> simple_buffer_manager_;
+
+  static bool dry_run_mode_for_testing_;
 
   base::WeakPtrFactory<ServiceWorkerSyntheticResponseManager> weak_factory_{
       this};

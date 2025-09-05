@@ -48,6 +48,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -323,6 +324,8 @@ void ServiceWorkerMainResourceLoader::StartRequest(
           head_update_params.load_timing_info = response_head_->load_timing;
           head_update_params.initial_service_worker_status =
               initial_service_worker_status_.value();
+          head_update_params.is_synthetic_response_dry_run_mode =
+              is_synthetic_response_used_;
           Fallback(std::move(head_update_params));
 
           // If the kServiceWorkerStaticRouterStartServiceWorker feature is
@@ -1033,6 +1036,29 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
     // Synthetic response is not enabled in reloading the page.
     RecordSyntheticResponseEligibility(
         SyntheticResponseEligibility::kNotEligibleByReload);
+    return false;
+  }
+
+  if (service_worker_loader_helpers::IsSyntheticResponseDryRunModeEnabled()) {
+    if (version->GetResponseHeadForSyntheticResponse()) {
+      // With dry-run mode, update `is_synthetic_response_used_` here. This will
+      // update the actual response head through `ResponseHeadUpdateParams` and
+      // pass the information to the renderer.
+      is_synthetic_response_used_ = true;
+      RecordSyntheticResponseEligibility(
+          SyntheticResponseEligibility::kEligible);
+    } else {
+      // If dry-run mode, do not dispatch a network request for the synthetic
+      // response. Instead, set a fake response headers to
+      // `ServiceWorkerVersion` if it doesn't exist in order to simulate the
+      // next navigation is eligible for the synthetic response.
+      network::mojom::URLResponseHeadPtr fake_response_head =
+          network::mojom::URLResponseHead::New();
+      version->SetResponseHeadForSyntheticResponse(
+          std::move(fake_response_head));
+      RecordSyntheticResponseEligibility(
+          SyntheticResponseEligibility::kNotEligibleByNoHeaderStored);
+    }
     return false;
   }
 

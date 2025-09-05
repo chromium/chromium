@@ -1463,6 +1463,9 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
         head_update_params_.load_timing_info
             .service_worker_router_evaluation_start;
   }
+  if (head_update_params_.is_synthetic_response_dry_run_mode) {
+    head->from_synthetic_response = true;
+  }
 
   // If the default loader (network) was used to handle the URL load request
   // we need to see if the interceptors want to potentially create a new

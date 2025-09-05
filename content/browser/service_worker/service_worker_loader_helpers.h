@@ -106,7 +106,7 @@ bool IsEligibleForSyntheticResponseInternal(
     const GURL& client_url,
     const std::string& allowed_url,
     const base::flat_set<std::string>& denied_url_params);
-
+bool IsSyntheticResponseDryRunModeEnabled();
 }  // namespace service_worker_loader_helpers
 
 }  // namespace content
