@@ -57,19 +57,11 @@ bool AreAutofillLoyaltyCardSpecificsValid(
 }
 
 bool IsSyncWalletFlightReservationsEnabled() {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return base::FeatureList::IsEnabled(syncer::kSyncWalletFlightReservations);
-#else
-  return false;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 bool IsSyncWalletVehicleRegistrationsEnabled() {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return base::FeatureList::IsEnabled(syncer::kSyncWalletVehicleRegistrations);
-#else
-  return false;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 }  // namespace

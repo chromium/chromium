@@ -103,14 +103,9 @@ class ValuableSyncBridgeTest : public testing::Test {
  public:
   // Creates the `bridge()` and mocks its `ValuablesTable`.
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kSyncMoveValuablesToProfileDb
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-        ,
-        syncer::kSyncWalletVehicleRegistrations
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    };
-    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
+    feature_list_.InitWithFeatures({syncer::kSyncMoveValuablesToProfileDb,
+                                    syncer::kSyncWalletVehicleRegistrations},
+                                   /*disabled_features=*/{});
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&valuables_table_);
     db_.AddTable(&sync_metadata_table_);
@@ -495,7 +490,6 @@ TEST_F(ValuableSyncBridgeTest, SetEntities_ProfileDbMigrationFeatureDisabled) {
               UnorderedElementsAre(local_vehicle));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Tests that `GetAllDataForDebugging()` returns all vehicle registrations.
 TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForVehicleRegistrations) {
   EntityInstance local_vehicle = GetLocalVehicleEntityInstance(
@@ -562,6 +556,5 @@ TEST_F(ValuableSyncBridgeTest, SetEntities_ClearsExistingEntities) {
   EXPECT_THAT(GetAllEntityInstancesFromTable(),
               UnorderedElementsAre(local_vehicle, new_wallet_vehicle));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace autofill
