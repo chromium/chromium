@@ -234,7 +234,7 @@
 <translation id="1382194467192730611">‏سرپرست دستگاه USB را مجاز کرد</translation>
 <translation id="1384725838384960382">برگ اصالت‌سنجی اطلاعات کاربری پرداخت امن</translation>
 <translation id="1386623374109090026">حاشیه‌نویسی</translation>
-<translation id="138810468159004008">مجاز بودن درحین بازدید از سایت</translation>
+<translation id="138810468159004008">اجازه دادن درحین بازدید از سایت</translation>
 <translation id="139161720020179799">خاکستری تیره ۱</translation>
 <translation id="1391625539203220400">‏IBAN در این دستگاه ذخیره شود؟</translation>
 <translation id="1392813880755413602">‏ارائه OpenDocument</translation>
@@ -242,7 +242,7 @@
 <translation id="1393071644879491291">‏مهاجمان ممکن است در سایتی که می‌خواستید بازدید کنید شما را فریب دهند تا نرم‌افزاری نصب کنید یا مواردی مثل گذرواژه، شماره تلفن، یا شماره کارت اعتباری‌تان را افشا کنید. ‫Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">سبز روشن</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
-<translation id="1406812885827747674">این دفعه مجاز است</translation>
+<translation id="1406812885827747674">این دفعه اجازه دادن</translation>
 <translation id="14070772729708640">فایل‌ها باموفقیت در پوشه <ph name="FOLDER_NAME" /> در <ph name="CLOUD_PROVIDER" /> بارگذاری شد</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="1408696301184924537">‏برای اینکه این IBAN دفعه بعد به‌طور خودکار تکمیل شود، آن را در «حساب Google» خود ذخیره کنید</translation>
@@ -1525,7 +1525,7 @@
 <translation id="3570079787344939099">پیمایش و بزرگ‌نمایی</translation>
 <translation id="357244642999988503">برداشتن ستون</translation>
 <translation id="3574305903863751447"><ph name="CITY" />، <ph name="STATE" /> <ph name="COUNTRY" /></translation>
-<translation id="3575121482199441727">مجاز برای این سایت</translation>
+<translation id="3575121482199441727">اجازه دادن برای این سایت</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">گزینه نام خیابان انتخاب شد</translation>
 <translation id="3576616784287504635">صفحه جاسازی‌شده‌ای در <ph name="SITE" /> می‌گوید</translation>
@@ -1975,7 +1975,7 @@
 <translation id="4285498937028063278">برداشتن سنجاق</translation>
 <translation id="4287495839370498922">‏حریم خصوصی بهبودیافته آگهی در Chrome</translation>
 <translation id="4288101205645068104">حذف خودرو</translation>
-<translation id="4290920330097335010">همیشه غیرمجاز</translation>
+<translation id="4290920330097335010">هرگز اجازه ندادن</translation>
 <translation id="4296207570293932800">اکنون ویژگی جدیدی برای حریم خصوصی آگهی‌ها دردسترس است</translation>
 <translation id="4297502707443874121">ریزعکس صفحه <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> به‌روز شد</translation>
@@ -2261,7 +2261,7 @@
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4807098396393229769">نام روی کارت</translation>
 <translation id="4809079943450490359">دستورالعمل‌ها از سرپرست دستگاهتان:</translation>
-<translation id="4811450222531576619">با منبع و موضوعش آشنا شوید</translation>
+<translation id="4811450222531576619">آشنا شدن با منبع و موضوع آن</translation>
 <translation id="4813512666221746211">خطای شبکه</translation>
 <translation id="4814114628197290459">‏حذف IBAN</translation>
 <translation id="4816341377198595747">دکمه «جستجوی نشانک‌ها»، برای جستجوی نشانک‌ها، فعال کنید</translation>
@@ -3685,7 +3685,7 @@
 <translation id="7219179957768738017">اتصال از <ph name="SSL_VERSION" /> استفاده می‌کند.</translation>
 <translation id="7220786058474068424">درحال پردازش</translation>
 <translation id="7221855153210829124">نمایش اعلان‌ها</translation>
-<translation id="722454870747268814">برگه ناشناس جدید</translation>
+<translation id="722454870747268814">زبانه ناشناس جدید</translation>
 <translation id="7226892411756387078">متن ساده</translation>
 <translation id="7227293336683593977">سابقه قیمت</translation>
 <translation id="7228306718910595403">وضعیت صلاحیت برای گواهینامه اتحادیه اروپا</translation>

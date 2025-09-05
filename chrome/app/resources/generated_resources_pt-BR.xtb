@@ -498,7 +498,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1331065030686329928">Gerenciar o grupo de guias "<ph name="GROUP_NAME" />"</translation>
 <translation id="1331977651797684645">Fui eu.</translation>
 <translation id="1333489022424033687">Alguns recursos em <ph name="ORIGIN" /> podem não funcionar até que você limpe os dados de outros sites armazenados no dispositivo</translation>
-<translation id="1333965224356556482">Não permitir que os sites acessem seu local</translation>
+<translation id="1333965224356556482">Não permitir que os sites acessem sua localização</translation>
 <translation id="1335282218035876586">Seu Chromebook deixou de receber atualizações de segurança e de software. Faça upgrade para ter a melhor experiência possível.</translation>
 <translation id="133535873114485416">Entrada preferencial</translation>
 <translation id="1335929031622236846">Inscrever seu dispositivo</translation>
@@ -599,7 +599,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1410797069449661718">Rolar até a primeira guia</translation>
 <translation id="1410806973194718079">Não foi possível verificar as políticas</translation>
 <translation id="1411400282355634827">Redefinir todas as permissões de dispositivos Bluetooth?</translation>
-<translation id="1414315029670184034">Não permitir que os sites usem sua câmera</translation>
+<translation id="1414315029670184034">Não permitir que os sites usem a câmera</translation>
 <translation id="1414648216875402825">Você está atualizando para uma versão instável do <ph name="PRODUCT_NAME" /> que contém recursos que estão em fase de teste. Falhas e erros inesperados ocorrerão. Continue com cautela.</translation>
 <translation id="1415708812149920388">Acesso de leitura para a área de transferência negado</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID de extensão "<ph name="EXTENSION_ID" />") não é permitido neste tipo de sessão.</translation>
@@ -1617,7 +1617,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2098805196501063469">Verificar senhas restantes</translation>
 <translation id="2099883893520019102">Últimos 15 minutos</translation>
 <translation id="2101225219012730419">Versão:</translation>
-<translation id="2102396546234652240">Não permitir que os sites usem seu microfone</translation>
+<translation id="2102396546234652240">Não permitir que os sites usem o microfone</translation>
 <translation id="2102495993840063010">Apps Android</translation>
 <translation id="2104166991923847969">Desativar ponto de acesso automaticamente</translation>
 <translation id="2105809836724866556">Módulo "<ph name="MODULE_TITLE" />" oculto</translation>
@@ -2119,7 +2119,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2442916515643169563">Sombra do texto</translation>
 <translation id="2443487764245141020">Talvez os sites também precisem reconhecer seu dispositivo com um identificador</translation>
 <translation id="244475495405467108">Fechar guias à esquerda</translation>
-<translation id="2444874983932528148">Continue facilmente de onde parou</translation>
+<translation id="2444874983932528148">Continue de onde parou</translation>
 <translation id="2445081178310039857">O diretório raiz da extensão é obrigatório.</translation>
 <translation id="2445484935443597917">Criar um novo perfil</translation>
 <translation id="2445726032315793326">Lupa parcial</translation>
@@ -3082,7 +3082,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3109724472072898302">Recolhido</translation>
 <translation id="3112292765614504292">Tamanho do app: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Adicionou esta guia</translation>
-<translation id="311394601889664316">Não permitir que os sites editem arquivos ou pastas no seu dispositivo</translation>
+<translation id="311394601889664316">Não permitir que os sites editem arquivos ou pastas no dispositivo</translation>
 <translation id="3113970906450647715">Botão liberado</translation>
 <translation id="3115147772012638511">Aguardando o cache...</translation>
 <translation id="3115580024857770654">Recolher tudo</translation>
@@ -4282,7 +4282,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3930968231047618417">Cor do plano de fundo</translation>
 <translation id="3932356525934356570">Fixar <ph name="EXTENSION_NAME" /></translation>
 <translation id="3932477678113677556">Tamanho máximo de <ph name="MAX" /> caracteres</translation>
-<translation id="3933121352599513978">Recolher solicitações indesejadas (recomendado)</translation>
+<translation id="3933121352599513978">Fechar solicitações indesejadas (recomendado)</translation>
 <translation id="3936260554100916852">O dispositivo <ph name="DEVICE_NAME" /> está compartilhando uma rede Wi-Fi com você</translation>
 <translation id="3936390757709632190">&amp;Abrir áudio em uma nova guia</translation>
 <translation id="3937640725563832867">Nome alternativo do emissor do certificado</translation>
@@ -7235,7 +7235,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6077189836672154517">Dicas e atualizações sobre o <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Fale para digitar</translation>
 <translation id="6078121669093215958">{0,plural, =1{Visitante}one{# janela de visitante aberta}other{# janelas de visitante abertas}}</translation>
-<translation id="6078323886959318429">Adicionar atalho</translation>
+<translation id="6078323886959318429">Incluir atalho</translation>
 <translation id="6078752646384677957">Verifique seu microfone e os níveis de áudio.</translation>
 <translation id="608029822688206592">Nenhuma rede encontrada. Insira o chip e tente novamente.</translation>
 <translation id="6080689532560039067">Verifique a hora do seu sistema</translation>
@@ -9656,7 +9656,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7792012425874949788">Ocorreu algo errado no login</translation>
 <translation id="7792336732117553384">&amp;Gerenciar perfis do Chrome</translation>
-<translation id="7792388396321542707">Interromper compartilhamento</translation>
+<translation id="7792388396321542707">Parar de compartilhar</translation>
 <translation id="779308894558717334">Verde-claro</translation>
 <translation id="7793098747275782155">Azul-escuro</translation>
 <translation id="7796453472368605346">Diacríticos</translation>

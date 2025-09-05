@@ -1308,7 +1308,7 @@
 <translation id="1901303067676059328">すべて選択(&amp;A)</translation>
 <translation id="1901760057081700494">タイムゾーンは現在 <ph name="TIME_ZONE_ENTRY" /> に設定されています。タイムゾーンを自動的に更新するには、<ph name="BEGIN_LINK" />システムの位置情報へのアクセスをオンにしてください<ph name="END_LINK" />。</translation>
 <translation id="1904580727789512086">アクセスした URL は Google アカウントに保存されます</translation>
-<translation id="1906181697255754968">多くのサイトは、作業内容を自動的に保存するためにデバイスのファイルやフォルダにアクセスします。</translation>
+<translation id="1906181697255754968">通常、作業内容を自動的に保存したりするため、サイトがデバイスのファイルやフォルダにアクセスする場合があります</translation>
 <translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />では他にもさまざまな拡張機能やテーマを入手できます</translation>
 <translation id="1907044622262489040">音声で入力できます。音声入力を開始するには、検索+D キーを使用します。</translation>
 <translation id="1907659324308286326">一部の Thunderbolt または USB4 アクセサリーは、正しく動作するためにメモリにアクセスする必要があります。</translation>
@@ -5582,7 +5582,7 @@
 <translation id="4881685975363383806">次回表示しない</translation>
 <translation id="4881695831933465202">開く</translation>
 <translation id="4882312758060467256">このサイトへのアクセスが許可されています</translation>
-<translation id="4882919381756638075">多くのサイトは、ビデオチャットなどの通信機能にマイクを使用します。</translation>
+<translation id="4882919381756638075">通常、ビデオチャットなどの通信機能を使用するため、サイトがマイクを使用する場合があります</translation>
 <translation id="4883436287898674711"><ph name="WEBSITE_1" /> の全サイト</translation>
 <translation id="48838266408104654">タスク マネージャ(&amp;T)</translation>
 <translation id="4884937942297374058">保護強化機能がオフになっています</translation>
@@ -6054,7 +6054,7 @@
 <translation id="5230190638672215545">「ươ」を入力するには「uow」と入力します。</translation>
 <translation id="5230516054153933099">ウィンドウ</translation>
 <translation id="5232714764496316200">Google レンズで宿題サポート</translation>
-<translation id="5233019165164992427">NaCl デバッグ ポート</translation>
+<translation id="5233019165164992427">NaCl デバッグポート</translation>
 <translation id="5233231016133573565">プロセス ID</translation>
 <translation id="5233638681132016545">新しいタブ</translation>
 <translation id="5233736638227740678">貼り付け(&amp;P)</translation>
@@ -9285,7 +9285,7 @@
 <translation id="7570548610653957960">文書読解サポート</translation>
 <translation id="7571643774869182231">更新に必要な空き容量がありません</translation>
 <translation id="7573172247376861652">バッテリー充電</translation>
-<translation id="7573594921350120855">多くのサイトは、ビデオチャットなどの通信機能にビデオカメラを使用します。</translation>
+<translation id="7573594921350120855">通常、ビデオチャットなどの通信機能を使用するため、サイトがビデオカメラを使用する場合があります</translation>
 <translation id="7575272930307342804">ナビゲーション コントロール</translation>
 <translation id="757660455834887988">許可 – <ph name="PERMISSION_DETAILS" />。デバイスにカメラを接続してください。</translation>
 <translation id="7576690715254076113">部単位で印刷</translation>
@@ -9448,7 +9448,7 @@
 <translation id="7679895819123160382">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。<ph name="PRODUCT_NAME" /> では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。安全な接続は、管理者が構成した一部のドメインでは使用されません。</translation>
 <translation id="7680416688940118410">タッチスクリーンの調整</translation>
 <translation id="7681095912841365527">サイトに Bluetooth の使用が許可されています</translation>
-<translation id="7681597159868843240">多くのサイトは、バーチャル リアリティやフィットネス トラッキングなどの機能にデバイスのモーション センサーを使用します</translation>
+<translation id="7681597159868843240">通常、バーチャル リアリティやフィットネス トラッキングなどの機能を使用するため、サイトがデバイスのモーション センサーを使用する場合があります</translation>
 <translation id="7681757571815416227"><ph name="DOMAIN" /> プロフィールでデバイスを使用するには、デバイスに関する情報を組織に提供する必要があります。
 
 これには、インストールしたソフトウェア、ファイル、ブラウザ、デバイスのオペレーティング システム、IP アドレスに関する情報が含まれます。</translation>
@@ -10553,7 +10553,7 @@
 <translation id="8431977087510901105">カーソルの設定がリセットされました</translation>
 <translation id="8433186206711564395">ネットワーク設定</translation>
 <translation id="8434109185104929038">読書コーナー</translation>
-<translation id="8434480141477525001">NaCl デバッグ ポート</translation>
+<translation id="8434480141477525001">NaCl デバッグポート</translation>
 <translation id="8434837876193928924">タブグループの詳細</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{このタブを修正}other{これらのタブを修正}}</translation>
 <translation id="8436800506934625875">Google パスワード マネージャーの英数字のリカバリ PIN を作成</translation>
@@ -10948,7 +10948,7 @@
 <translation id="8710550057342691420">類似のタブを整理</translation>
 <translation id="8711402221661888347">ピクルス</translation>
 <translation id="8711538096655725662">アクセスしたすべてのサイトで自動的に実行します</translation>
-<translation id="8712637175834984815">理解した</translation>
+<translation id="8712637175834984815">理解しました</translation>
 <translation id="8713110120305151436">クイック設定にユーザー補助オプションを表示する</translation>
 <translation id="8713570323158206935"><ph name="BEGIN_LINK1" />システム情報<ph name="END_LINK1" />を送信する</translation>
 <translation id="8713761545374852805">レビュー、メール、ソーシャル メディアの投稿、エッセイなどを書く際にサポートを利用できます</translation>

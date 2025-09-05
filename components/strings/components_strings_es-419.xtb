@@ -2468,7 +2468,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5144613843429436866">Permitiste que este sitio use tu <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Código de error en la respuesta de la política</translation>
 <translation id="5146995429444047494">Se bloquearon las notificaciones de <ph name="ORIGIN" /></translation>
-<translation id="514704532284964975"><ph name="URL" /> quiere ver y cambiar la información de los dispositivos NFC que presionas con tu teléfono</translation>
+<translation id="514704532284964975"><ph name="URL" /> quiere ver y cambiar la información de los dispositivos NFC a los que acercas el teléfono</translation>
 <translation id="5147633291963801297">Consulta las reducciones de precio en el panel lateral</translation>
 <translation id="5148809049217731050">Hacia arriba</translation>
 <translation id="5148889558173091794">Tu organización bloqueó <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque incumple una política. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -4595,7 +4595,7 @@ Detalles adicionales:
 <translation id="8767765348545497220">Cerrar el cuadro de ayuda</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 forma de pago}other{# formas de pago}}</translation>
 <translation id="8768225988514678921">Botón Crear presentación: actívalo para crear una nueva presentación de Google en Presentaciones rápidamente</translation>
-<translation id="8769662576926275897">Detalles de la tarjeta</translation>
+<translation id="8769662576926275897">Datos de la tarjeta</translation>
 <translation id="8769858749286369844">Canela 2</translation>
 <translation id="8770286973007342895">Cortadoras de césped</translation>
 <translation id="8772387130037509473">Yoga y pilates</translation>
