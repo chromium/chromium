@@ -282,7 +282,7 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
 
   HTMLCanvasElement& CanvasElement() const { return *canvas_element_; }
   cc::PaintCanvas& Canvas() {
-    return Context2D()->GetResourceProvider()->Canvas();
+    return Context2D()->GetResourceProviderForTesting()->Canvas();
   }
   CanvasRenderingContext2D* Context2D() const {
     return static_cast<CanvasRenderingContext2D*>(
@@ -1917,7 +1917,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
   Context2D()->GetOrCreateCanvas2DResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_THAT(Context2D()->GetResourceProvider(), Pointee(IsValid()));
+  EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), Pointee(IsValid()));
 
   // Set a minimal restoration delay to make the test fast.
   Context2D()->SetTryRestoreContextIntervalForTesting(base::Microseconds(10));
@@ -1935,7 +1935,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
         MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(Context2D()->IsContextLost());
-    EXPECT_THAT(Context2D()->GetResourceProvider(), IsNull());
+    EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
   }
 
   // Wait for context to be restored.
@@ -1948,7 +1948,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     run_loop.Run();
     EXPECT_FALSE(Context2D()->IsContextLost());
     EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-    EXPECT_THAT(Context2D()->GetResourceProvider(), Pointee(IsValid()));
+    EXPECT_THAT(Context2D()->GetResourceProviderForTesting(),
+                Pointee(IsValid()));
   }
 }
 
@@ -1960,7 +1961,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
   Context2D()->GetOrCreateCanvas2DResourceProvider();
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_THAT(Context2D()->GetResourceProvider(), Pointee(IsValid()));
+  EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), Pointee(IsValid()));
 
   // Set a minimal restoration delay to make the test fast.
   Context2D()->SetTryRestoreContextIntervalForTesting(base::Microseconds(10));
@@ -1978,7 +1979,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
         MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(Context2D()->IsContextLost());
-    EXPECT_THAT(Context2D()->GetResourceProvider(), IsNull());
+    EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
   }
 
   // Context restoration will fail, wait for the context to give up.
@@ -1988,7 +1989,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     Context2D()->SetRestoreFailedCallbackForTesting(run_loop.QuitClosure());
     run_loop.Run();
     EXPECT_TRUE(Context2D()->IsContextLost());
-    EXPECT_THAT(Context2D()->GetResourceProvider(), IsNull());
+    EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
   }
 }
 
@@ -2178,7 +2179,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Trigger resource provider creation.
   Context2D()->fillRect(3, 3, 1, 1);
-  EXPECT_TRUE(!!Context2D()->GetResourceProvider());
+  EXPECT_TRUE(!!Context2D()->GetResourceProviderForTesting());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
 
   auto* box = CanvasElement().GetLayoutBoxModelObject();
@@ -2203,7 +2204,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(features::IsCanvas2DHibernationEnabled(),
             painting_layer->SelfNeedsRepaint());
   EXPECT_EQ(features::IsCanvas2DHibernationEnabled(),
-            !Context2D()->GetResourceProvider());
+            !Context2D()->GetResourceProviderForTesting());
 
   // The page is hidden so it doesn't make sense to paint, and doing so will
   // DCHECK. Update all other lifecycle phases.
@@ -2337,7 +2338,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   run_loop.Run();
   EXPECT_FALSE(Context2D()->IsContextLost());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
-  EXPECT_THAT(Context2D()->GetResourceProvider(), Pointee(IsValid()));
+  EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), Pointee(IsValid()));
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
@@ -2692,11 +2693,12 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoResourceRecyclingWhenPageHidden) {
   CreateContext(kNonOpaque);
 
-  EXPECT_THAT(Context2D()->GetResourceProvider(), IsNull());
+  EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
 
   Context2D()->fillRect(3, 3, 1, 1);
 
-  const CanvasResourceProvider* provider = Context2D()->GetResourceProvider();
+  const CanvasResourceProvider* provider =
+      Context2D()->GetResourceProviderForTesting();
   ASSERT_THAT(provider, NotNull());
   EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);
 
@@ -2838,7 +2840,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Run hibernation task.
   RunIdleTasks();
-  EXPECT_FALSE(Context2D()->GetResourceProvider());
+  EXPECT_FALSE(Context2D()->GetResourceProviderForTesting());
   EXPECT_TRUE(handler.IsHibernating());
 
   // Wait for encoding to complete on a background thread.
@@ -2891,7 +2893,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Run hibernation task.
   RunIdleTasks();
 
-  ASSERT_FALSE(Context2D()->GetResourceProvider());
+  ASSERT_FALSE(Context2D()->GetResourceProviderForTesting());
   ASSERT_TRUE(handler.IsHibernating());
   ASSERT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
 
@@ -3075,15 +3077,19 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
   NonThrowableExceptionState exception_state;
 
   Context2D()->fillRect(0, 0, 5, 5);
-  EXPECT_TRUE(
-      Context2D()->GetResourceProvider()->Recorder().HasRecordedDrawOps());
+  EXPECT_TRUE(Context2D()
+                  ->GetResourceProviderForTesting()
+                  ->Recorder()
+                  .HasRecordedDrawOps());
 
   Context2D()->drawImage(frame, 0, 0, 10, 10, 0, 0, 10, 10, exception_state);
   EXPECT_FALSE(exception_state.HadException());
   // The drawImage Operation is supposed to trigger a flush, which means that
   // There should not be any Recorded ops at this point.
-  EXPECT_FALSE(
-      Context2D()->GetResourceProvider()->Recorder().HasRecordedDrawOps());
+  EXPECT_FALSE(Context2D()
+                   ->GetResourceProviderForTesting()
+                   ->Recorder()
+                   .HasRecordedDrawOps());
 }
 
 TEST_P(CanvasRenderingContext2DTest, FlushRestoresClipStack) {

@@ -85,7 +85,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   int Height() const final;
 
   bool CanCreateCanvas2dResourceProvider() final;
-  CanvasResourceProvider* GetResourceProvider() const override;
 
   // Offscreen canvas doesn't have any notion of image orientation.
   RespectImageOrientationEnum RespectImageOrientation() const final {
@@ -152,6 +151,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   bool ResolveFont(const String& new_font) override;
 
  private:
+  CanvasResourceProvider* GetResourceProvider() const override;
   void FinalizeFrame(FlushReason) final;
 
   bool IsPaintable() const final;

@@ -292,7 +292,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
 
   CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override;
-  CanvasResourceProvider* GetResourceProvider() const override;
   void SetCanvas2DResourceProviderForTesting(
       std::unique_ptr<CanvasResourceProvider> provider,
       const gfx::Size& size);
@@ -300,6 +299,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   // TODO(crbug.com/352263194): Migrate canvas_rendering_context_2d_test.cc
   // callsites and make this method private.
   CanvasHibernationHandler* GetHibernationHandler() const;
+
+  CanvasResourceProvider* GetResourceProviderForTesting() const {
+    return GetResourceProvider();
+  }
 
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
@@ -322,6 +325,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   FRIEND_TEST_ALL_PREFIXES(CanvasRenderingContext2DTestAccelerated,
                            PrepareMailboxWhenContextIsLostWithFailedRestore);
 
+  CanvasResourceProvider* GetResourceProvider() const override;
   void Dispose() override;
 
   std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider();
