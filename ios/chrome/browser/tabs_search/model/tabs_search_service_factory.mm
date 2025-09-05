@@ -54,9 +54,7 @@ TabsSearchServiceFactory::TabsSearchServiceFactory()
 TabsSearchServiceFactory::~TabsSearchServiceFactory() = default;
 
 std::unique_ptr<KeyedService> TabsSearchServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   const bool is_off_the_record = profile->IsOffTheRecord();
   return std::make_unique<TabsSearchService>(
       is_off_the_record, BrowserListFactory::GetForProfile(profile),
