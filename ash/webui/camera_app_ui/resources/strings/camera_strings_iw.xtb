@@ -41,7 +41,7 @@
 <translation id="2501853267655415902">צילום הסרטון הופסק</translation>
 <translation id="2517472476991765520">סריקה</translation>
 <translation id="2549985041256363841">צילום סרטון</translation>
-<translation id="2577915835281444458">ההקלטה תיפסק בקרוב. יש לעבור להגדרות האחסון במכשיר כדי לפנות מקום.</translation>
+<translation id="2577915835281444458">ההקלטה תיפסק בקרוב. עליך לעבור להגדרות האחסון במכשיר כדי לפנות מקום.</translation>
 <translation id="2599796128805996109">מצלמה אחורית</translation>
 <translation id="2654491636277477479">העתקת הטקסט שזוהה</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> שנ'</translation>
@@ -67,7 +67,7 @@
 <translation id="3642192109456033823">הסרטון בעיבוד…</translation>
 <translation id="3789724198583203151">סיבוב ב-90 מעלות נגד כיוון השעון</translation>
 <translation id="3810838688059735925">סרטון</translation>
-<translation id="4060608699153044055">לא ניתן לצלם כי אין מספיק מקום אחסון במכשיר. כדי לצלם סרטון, עליך לפנות מקום במכשיר.</translation>
+<translation id="4060608699153044055">אי אפשר להקליט כי אין מספיק נפח אחסון במכשיר. כדי לצלם סרטון, צריך לפנות מקום במכשיר.</translation>
 <translation id="4061162772429051350">‎<ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">השהיית ההקלטה</translation>
 <translation id="4121305183798804752">זוהה מסמך</translation>
@@ -77,7 +77,7 @@
 <translation id="4445542136948522167">הפסקת הצילום</translation>
 <translation id="4570032796877367747">מצלמה קדמית</translation>
 <translation id="4598556348158889687">ניהול אחסון</translation>
-<translation id="4620818268515773682">החלפת המצב של השתקת המיקרופון. ההשתקה כבויה</translation>
+<translation id="4620818268515773682">החלפת המצב של השתקת המיקרופון. ההשתקה מושבתת</translation>
 <translation id="4628948037717959914">תמונה</translation>
 <translation id="4649291346448517080">לא ניתן לשמור את הקובץ</translation>
 <translation id="4695379108709712600">מתבצעת תזוזה למעלה</translation>
@@ -88,8 +88,8 @@
 <translation id="495170559598752135">פעולות</translation>
 <translation id="4984613436295737187">‏Quad HD‏ (1440p)</translation>
 <translation id="5034763830503483128">יחס הגובה-רוחב של התמונה</translation>
-<translation id="5057360777601936059">המצלמה אינה זמינה כרגע.
-        יש לבדוק אם המצלמה מחוברת כראוי.</translation>
+<translation id="5057360777601936059">המצלמה לא זמינה כרגע.
+        צריך לבדוק אם המצלמה מחוברת נכון.</translation>
 <translation id="5157591164390831335">‏זוהתה כתובת URL.</translation>
 <translation id="5163387177077603948">מתבצעת תזוזה לימין</translation>
 <translation id="5235304959032763950">16 על 9</translation>
@@ -148,7 +148,7 @@
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7670511624014457267">60 FPS</translation>
 <translation id="7671804233658741790">הפינה השמאלית התחתונה במסמך</translation>
-<translation id="7684446460490665873">צילום סרטון בהילוך מהיר</translation>
+<translation id="7684446460490665873">‏צילום סרטון Time Lapse</translation>
 <translation id="7692090236657809299">הפעלה של הזזה, הטיה וזום</translation>
 <translation id="7726641833034062494">צילום סרטון רגיל</translation>
 <translation id="7748344063862150053">הפינה השמאלית העליונה במסמך</translation>
@@ -168,7 +168,7 @@
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8732462232047530626">תצוגה מקדימה של מטא-נתונים</translation>
 <translation id="874854738381978209">‏זוהתה רשת Wi-Fi.</translation>
-<translation id="8815966864175525708">מעבר לצילום תמונת דיוקן</translation>
+<translation id="8815966864175525708">מעבר לצילום תמונות לאורך</translation>
 <translation id="8828441885228359828">המשך הצילום</translation>
 <translation id="8870695351537079478">לא ניתן להתחיל בצילום סרטון</translation>
 <translation id="8880167521484863515">4 על 3</translation>
@@ -178,5 +178,5 @@
 <translation id="906331135292332864">התמונה עוברת עיבוד…</translation>
 <translation id="9161584225258678723">Time Lapse</translation>
 <translation id="922762992951083513">השיקוף מופעל</translation>
-<translation id="945522503751344254"> שליחת משוב</translation>
+<translation id="945522503751344254">שליחת משוב</translation>
 </translationbundle>

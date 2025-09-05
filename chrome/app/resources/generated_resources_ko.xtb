@@ -1264,7 +1264,7 @@
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />등록하기 전에 <ph name="DEVICE_OS" />에서 기기 소유권을 가질 수 있도록 TPM을 삭제해야 합니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />TPM 기기를 완전히 끌 수도 있습니다. 데이터는 소프트웨어 암호화를 통해 계속 안전하게 저장되지만 하드웨어 지원 인증서와 같은 특정 보안 기능은 중지됩니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />재부팅하고 시스템 BIOS/UEFI 설정을 입력하여 TPM 설정을 변경할 수 있습니다. 기기 모델에 따라 설정을 변경하는 단계가 다를 수 있습니다. 자세한 내용을 확인하려면 재부팅하기 전에 별도의 기기에서 <ph name="DEVICE_OS" /> 도움말(g.co/flex/TPMHelp)을 참고하세요.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="1851551847729706116">이 탭에 <ph name="TAB_NAME" /> 공유</translation>
+<translation id="1851551847729706116">이 탭에 <ph name="TAB_NAME" /> 공유 중</translation>
 <translation id="1854180393107901205">전송 중지</translation>
 <translation id="1856715684130786728">위치 추가...</translation>
 <translation id="185766080319917408">런처 키가 왼쪽 Alt 키 왼쪽에 있음</translation>
@@ -2280,7 +2280,7 @@
 <translation id="2533649878691950253">내가 일반적으로 이 옵션을 허용하지 않으므로 사이트에서 나의 정확한 위치를 확인하지 못하도록 차단했습니다.</translation>
 <translation id="253434972992662860">일시중지(&amp;P)</translation>
 <translation id="253498598929009420">사이트에서 화면의 콘텐츠를 볼 수 있습니다.</translation>
-<translation id="253557089021624350">프로그램 사용자 수</translation>
+<translation id="253557089021624350">연결 유지 활동 수</translation>
 <translation id="2535799430745250929">모바일 네트워크가 없습니다.</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" />에서 다음 파일과 폴더를 보고 수정할 수 있습니다.</translation>
 <translation id="2537927931785713436">가상 머신 이미지 확인 중</translation>
@@ -11399,7 +11399,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8957656266859671822">계정 선택</translation>
 <translation id="8957757410289731985">프로필 맞춤설정</translation>
 <translation id="8959144235813727886">사이트 및 앱</translation>
-<translation id="895944840846194039">자바스크립트 메모리</translation>
+<translation id="895944840846194039">JavaScript 메모리</translation>
 <translation id="8960208913905765425">빠른 답변 단위 변환</translation>
 <translation id="8960638196855923532">이제 휴대전화의 알림과 앱을 확인할 수 있습니다.</translation>
 <translation id="8962051932294470566">한 번에 하나의 파일만 공유할 수 있습니다. 현재 전송이 완료되면 다시 시도해 보세요.</translation>

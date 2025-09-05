@@ -502,7 +502,7 @@
 <translation id="1331065030686329928">مدیریت کردن گروه برگه «<ph name="GROUP_NAME" />»</translation>
 <translation id="1331977651797684645">من بودم.</translation>
 <translation id="1333489022424033687">تا وقتی داده‌هایی را که سایت‌های دیگر در دستگاهتان ذخیره کرده‌اند پاک نکنید، ممکن است برخی از ویژگی‌ها در <ph name="ORIGIN" /> کار نکند.</translation>
-<translation id="1333965224356556482">به سایت‌ها اجازه داده نشود مکان شما را ببینند</translation>
+<translation id="1333965224356556482">اجازه ندادن به سایت‌ها برای دیدن مکان شما</translation>
 <translation id="1335282218035876586">‏Chromebook شما دیگر به‌روزرسانی‌های امنیتی و نرم‌افزاری را دریافت نمی‌کند. برای داشتن بهترین تجربه، Chromebook خود را ارتقا دهید.</translation>
 <translation id="133535873114485416">ورودی ترجیحی</translation>
 <translation id="1335929031622236846">دستگاهتان را ثبت‌نام کنید</translation>
@@ -863,7 +863,7 @@
 <translation id="1588870296199743671">بازکردن پیوند با...</translation>
 <translation id="1588919647604819635">روی کارت کلیک راست کنید</translation>
 <translation id="1589055389569595240">نمایش املا و گرامر</translation>
-<translation id="1590478605309955960">گروه‌های برگه در همه دستگاه‌های واردشده به حساب به‌طور خودکار ذخیره و به‌روز می‌شود.</translation>
+<translation id="1590478605309955960">گروه‌های زبانه در همه دستگاه‌های واردشده به حساب به‌طور خودکار ذخیره و به‌روز می‌شود.</translation>
 <translation id="15916883652754430">تنظیمات صدای سیستم</translation>
 <translation id="1592074621872221573">‏<ph name="MANAGER" /> اشکال‌زدایی «پل اشکال‌زدایی Android» ‏(ADB) را غیرفعال کرده است که باعث بازنشانی <ph name="DEVICE_TYPE" /> شما خواهد شد. قبل از بازراه‌اندازی از فایل‌هایتان پشتیبان‌گیری کنید.</translation>
 <translation id="1592126057537046434">ترجمه «پاسخ‌های سریع»</translation>
@@ -1321,7 +1321,7 @@
 <translation id="1896043844785689584">برای تنظیم اثر انگشت، از فرزندتان بخواهید حسگر اثر انگشت را در پایین گوشه سمت راست صفحه‌کلید لمس کند. داده‌های اثر انگشت فرزندتان به‌صورت ایمن ذخیره می‌شود و هرگز از این <ph name="DEVICE_TYPE" /> خارج نمی‌شود.</translation>
 <translation id="1897120393475391208">از گذرواژه قوی استفاده کنید</translation>
 <translation id="1897860317037652061">اسکن انجام نشد</translation>
-<translation id="1898804291554630487">سؤال درباره این صفحه</translation>
+<translation id="1898804291554630487">پرسش درباره این صفحه</translation>
 <translation id="1900305421498694955">‏ممکن است برنامه‌های Google Play برای خواندن فایل‌های موجود در دستگاه‌های ذخیره‌سازی خارجی و نوشتن در آن‌ها، نیازمند دسترسی کامل به سیستم فایل باشند. فایل‌ها و پوشه‌های ایجادشده در دستگاه برای هر فردی که از درایو خارجی استفاده می‌کند، نمایان است. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">از سرپرست بخواهید این برنامه را به‌روزرسانی کند</translation>
 <translation id="1901303067676059328">انتخاب &amp;همه</translation>
@@ -1626,7 +1626,7 @@
 <translation id="2098805196501063469">بررسی گذرواژه‌های باقی‌مانده</translation>
 <translation id="2099883893520019102">‫۱۵ دقیقه گذشته</translation>
 <translation id="2101225219012730419">نسخه:</translation>
-<translation id="2102396546234652240">به سایت‌ها اجازه داده نشود از میکروفون استفاده کنند</translation>
+<translation id="2102396546234652240">اجازه ندادن به سایت‌ها برای استفاده از میکروفون شما</translation>
 <translation id="2102495993840063010">‏برنامه‌های Android</translation>
 <translation id="2104166991923847969">خاموش شدن خودکار نقطه اتصال</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> پنهان شده است</translation>
@@ -2921,7 +2921,7 @@
 <translation id="2989805286512600854">باز کردن در برگهٔ جدید</translation>
 <translation id="2990313168615879645">‏افزودن «حساب Google»</translation>
 <translation id="2990375978470734995">برای اعمال شدن این تغییر، لوازم جانبی خارجی را دوباره متصل کنید.</translation>
-<translation id="2990583317361835189">به سایت‌ها اجازه داده نشود از حسگرهای حرکتی استفاده کنند</translation>
+<translation id="2990583317361835189">اجازه ندادن به سایت‌ها اجازه برای استفاده از حسگرهای حرکتی</translation>
 <translation id="2991182900092497283">لطفاً دلیلی برای جای‌گذاری این داده وارد کنید:</translation>
 <translation id="2992931425024192067">نمایش کل محتوای اعلان</translation>
 <translation id="2993517869960930405">اطلاعات برنامه</translation>
@@ -3689,7 +3689,7 @@
 <translation id="3549827561154008969">بارگیری ازسر گرفته شد</translation>
 <translation id="3550593477037018652">قطع اتصال شبکه تلفن همراه</translation>
 <translation id="3550915441744863158">‏Chrome به صورت خودکار به‌روزرسانی می‌شود تا همیشه تازه‌ترین نسخه را در اختیار داشته باشید.</translation>
-<translation id="3551320343578183772">بستن برگه</translation>
+<translation id="3551320343578183772">بستن زبانه</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">هنگام «خروج» پاک شد</translation>
 <translation id="3553442438687311630">‏اصالت‌سنجی Microsoft</translation>
@@ -3724,7 +3724,7 @@
 <translation id="3569682580018832495"><ph name="ORIGIN" /> می‌تواند فایل‌ها و پوشه‌های زیر را مشاهده کند</translation>
 <translation id="3571734092741541777">تنظیم</translation>
 <translation id="3572031449439748861">‫<ph name="NUM_EXTENSIONS" /> افزونه خاموش شد</translation>
-<translation id="3575121482199441727">مجاز برای این سایت</translation>
+<translation id="3575121482199441727">اجازه دادن برای این سایت</translation>
 <translation id="3575224072358507281">‏طبق خط‌مشی رازداری خود (measurementlab.net/privacy)، نشانی IP و نتایج سنجش شبکه را برای Measurement Lab جمع‌آوری کند</translation>
 <translation id="3577036603268648505">در فضای آنلاین ایمن‌تر باشید</translation>
 <translation id="3577473026931028326">مشکلی پیش آمد. دوباره امتحان کنید.</translation>
@@ -3822,7 +3822,7 @@
 <translation id="364100968401221170">‏برای حذف کردن داده‌های مرور از همه دستگاه‌های همگام‌سازی‌شده و «حساب Google»، <ph name="BEGIN_LINK" />به سیستم وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="3641070112313110357">‏«Steam ویژه Chromebook» (بتا) باید به‌روزرسانی شود. ‫Chromebook را بازراه‌اندازی کنید و دوباره امتحان کنید.</translation>
 <translation id="3641299252000913351">سفت‌افزار مودم درحال به‌روزرسانی است. دستگاه را خاموش نکنید.</translation>
-<translation id="3641456520301071208">سایت‌ها می‌توانند مکان شما را درخواست کنند</translation>
+<translation id="3641456520301071208">اجازه داشتن سایت‌ها برای خواستن مکان شما</translation>
 <translation id="3642064270296434810">‏اکنون می‌توانید از «لنز Google» برای جستجوی هر چیزی که در صفحه‌نمایش می‌بینید استفاده کنید</translation>
 <translation id="3642070413432681490">مکان‌نمای دایره‌ای</translation>
 <translation id="3642699533549879077">وقتی فرد دیگری به صفحه‌نمایشتان نگاه کند، هشداری دریافت خواهید کرد و محتوای اعلان پنهان خواهد شد.</translation>
@@ -5758,7 +5758,7 @@
 <translation id="4989966318180235467">بازرسی صفحه &amp;پس‌زمینه</translation>
 <translation id="4990673372047946816">دوربینی دردسترس نیست</translation>
 <translation id="4991420928586866460">در نظر گرفتن کلیدهای ردیف بالا به عنوان کلیدهای عملکرد</translation>
-<translation id="4991873517942703737">سؤال درباره این سند</translation>
+<translation id="4991873517942703737">پرسش درباره این سند</translation>
 <translation id="4992443049233195791">‏تنظیمات فایل Microsoft 365</translation>
 <translation id="4992458225095111526">‏تأیید Powerwash</translation>
 <translation id="4992473555164495036">سرپرست سیستم روش‌های ورودی دردسترس را محدود کرده است.</translation>
@@ -6067,7 +6067,7 @@
 <translation id="5208988882104884956">نیم‌عرض</translation>
 <translation id="5209320130288484488">دستگاهی یافت نشد</translation>
 <translation id="5209513429611499188">‏دستگاه‌های HID با چند بار استفاده از مجموع <ph name="USAGE_PAGE" /> استفاده از صفحه</translation>
-<translation id="5210365745912300556">بستن برگه</translation>
+<translation id="5210365745912300556">بستن زبانه</translation>
 <translation id="5213114823401215820">باز کردن مجدد گروه بسته‌شده</translation>
 <translation id="5213481667492808996">سرویس داده «<ph name="NAME" />» شما آماده استفاده است</translation>
 <translation id="5213891612754844763">نمایش تنظیمات پروکسی</translation>
@@ -10123,7 +10123,7 @@
 <translation id="80790299200510644">جستجوی تصویر</translation>
 <translation id="8079606020824373126">‏«مدیر گذرواژه Google» می‌تواند حسابتان را با گذرواژه‌ای قوی به‌روز کند و آن را در <ph name="EMAIL" /> ذخیره کند. <ph name="PASSWORD_CHANGE" /></translation>
 <translation id="80798452873915119">سایت‌ها می‌توانند درخواست کنند پنجره‌های همه نمایشگرهایتان را مدیریت کنند</translation>
-<translation id="8080028325999236607">بستن همه برگه‌ها</translation>
+<translation id="8080028325999236607">بستن همه زبانه‌ها</translation>
 <translation id="8080530871547404884">تا زمانی‌که همه زبانه‌های <ph name="ORIGIN" /> را نبندید، این سایت می‌تواند <ph name="FILENAME" /> را مشاهده کند و نسخه‌های خودش را از آن بسازد</translation>
 <translation id="8081989000209387414">‏اشکال‌زدایی ADB (پل اشکال‌زدایی Android) غیرفعال شود؟</translation>
 <translation id="8082106343289440791">با «<ph name="DEVICE_NAME" />» مرتبط شود؟</translation>
@@ -10233,7 +10233,7 @@
 <translation id="815347678407292813">‏ممکن است مکان شما همچنان ازطریق نشانی IP شما برای برنامه‌ها و وب‌سایت‌ها نمایان باشد</translation>
 <translation id="8154790740888707867">فایلی وجود ندارد</translation>
 <translation id="815491593104042026">وای! اصالت‌سنجی انجام نشد زیرا برای استفاده از نشانی وب غیر امن (<ph name="BLOCKED_URL" />) پیکربندی شده بود. لطفاً با سرپرستتان تماس بگیرید.</translation>
-<translation id="8155214519979960765">برای ورود مجدد به سیستم با گذرکلید در این دستگاه، باید هویتتان را تأیید کنید. اگر گزینه ورود به سیستم دیگری مانند گذرواژه دارید، می‌توانید از آن برای ورود به سیستم استفاده کنید.</translation>
+<translation id="8155214519979960765">برای ورود مجدد به سیستم با گذرکلید در این دستگاه، باید هویتتان را درستی‌سنجی کنید. اگر گزینه ورود به سیستم دیگری مانند گذرواژه دارید، می‌توانید از آن برای ورود به سیستم استفاده کنید.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{گذرواژه لورفته‌ای پیدا نشد}=1{{COUNT} گذرواژه لورفته}one{{COUNT} گذرواژه لورفته}other{{COUNT} گذرواژه لورفته}}</translation>
 <translation id="8157248655669507702">برای نصب نمایه سیم‌کارت داخلی، داده تلفن همراه را فعال کنید</translation>
 <translation id="8157704005178149728">درحال راه‌اندازی نظارت</translation>
@@ -11386,7 +11386,7 @@
 <translation id="8946359700442089734">ویژگی‌های رفع اشکال در این دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /> کاملاً فعال نشدند.</translation>
 <translation id="8946954897220903437">جمع کردن همه درخواست‌ها در نوار نشانی</translation>
 <translation id="894763922177556086">خوب</translation>
-<translation id="895054485242522631">سایت‌ها می‌توانند از حسگرهای حرکتی استفاده کنند</translation>
+<translation id="895054485242522631">اجازه دادن به سایت‌ها برای استفاده از حسگرهای حرکتی</translation>
 <translation id="8951256747718668828">خطایی رخ داد و بازیابی کامل نشد</translation>
 <translation id="8951465597020890363">درهرصورت از حالت مهمان خارج می‌شوید؟</translation>
 <translation id="8952831374766033534">گزینه پیکربندی پشتیبانی نمی‌شود: <ph name="ERROR_LINE" /></translation>
@@ -11877,7 +11877,7 @@
 <translation id="981121421437150478">آفلاین</translation>
 <translation id="982083952953998237">افزودن محدودیت</translation>
 <translation id="98235653036850093">سلام، <ph name="PROFILE_NAME" /></translation>
-<translation id="983192555821071799">بستن همه برگه‌ها</translation>
+<translation id="983192555821071799">بستن همه زبانه‌ها</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - دوربین و میکروفون درحال ضبط هستند</translation>
 <translation id="984705303330760860">افزودن زبان‌های غلط‌گیر املایی</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>

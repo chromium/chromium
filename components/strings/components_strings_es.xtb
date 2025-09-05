@@ -1548,7 +1548,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="357244642999988503">Quitar columna</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3574520980813687946">Añadir información nueva a la dirección</translation>
-<translation id="3575121482199441727">Permitir en este sitio web</translation>
+<translation id="3575121482199441727">Permitir en este sitio</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Opción de nombre de calle seleccionada</translation>
 <translation id="3576616784287504635">Una página insertada en <ph name="SITE" /> dice</translation>
@@ -2247,7 +2247,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4730977633786878901">Reseñas</translation>
 <translation id="4731638775147756694">Tu administrador ha bloqueado esta aplicación</translation>
 <translation id="4732860731866514038">Descargando el paquete de idioma <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
-<translation id="4733082559415072992"><ph name="URL" /> quiere utilizar la ubicación de tu dispositivo</translation>
+<translation id="4733082559415072992"><ph name="URL" /> quiere usar la ubicación de tu dispositivo</translation>
 <translation id="473414950835101501">Usar tus cámaras</translation>
 <translation id="4736825316280949806">Reinicia Chromium</translation>
 <translation id="4736934858538408121">Tarjeta virtual</translation>
@@ -2441,7 +2441,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Se necesita un certificado raíz para "<ph name="SOFTWARE_NAME" />", pero no está instalado. El administrador de TI debe comprobar las instrucciones de configuración de "<ph name="SOFTWARE_NAME" />" para solucionar este problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5034930251282078640">¿Añadir a la comparación?</translation>
-<translation id="503498442187459473"><ph name="HOST" /> quiere utilizar la cámara y el micrófono</translation>
+<translation id="503498442187459473"><ph name="HOST" /> quiere usar la cámara y el micrófono</translation>
 <translation id="5035135400558156732">Jardinería</translation>
 <translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Tamaño de fuente</translation>
@@ -2796,7 +2796,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5610807607761827392">Puedes gestionar las tarjetas y las direcciones en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">Guardar en la cuenta</translation>
 <translation id="561165882404867731">Traduce esta página con el Traductor de Google</translation>
-<translation id="5612720917913232150"><ph name="URL" /> quiere utilizar la ubicación de tu ordenador</translation>
+<translation id="5612720917913232150"><ph name="URL" /> quiere usar la ubicación de tu ordenador</translation>
 <translation id="5614520971155863709">Juegos de cartas</translation>
 <translation id="5617785978844309968">Mostrar todas las tablas comparativas</translation>
 <translation id="5617949217645503996">La página <ph name="HOST_NAME" /> te ha redirigido demasiadas veces.</translation>
@@ -3686,7 +3686,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7107249414147762907">No se puede acceder a este PDF. No se ha extraído texto.</translation>
 <translation id="7107427078069498123">Huellas digitales SHA-256</translation>
 <translation id="7108338896283013870">Ocultar</translation>
-<translation id="7108634116785509031"><ph name="HOST" /> quiere utilizar la cámara</translation>
+<translation id="7108634116785509031"><ph name="HOST" /> quiere usar la cámara</translation>
 <translation id="7108819624672055576">Permitido por una extensión</translation>
 <translation id="7109510814665441393">Juegos de carreras y coches</translation>
 <translation id="7110116949943042888">Trabajos temporales y estacionales</translation>

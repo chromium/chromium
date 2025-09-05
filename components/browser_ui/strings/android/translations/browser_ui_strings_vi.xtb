@@ -465,7 +465,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="6231752747840485235">Gỡ cài đặt "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Nhấn vào Ứng dụng trình duyệt &gt; Chrome</translation>
 <translation id="6262191102408817757">Dựa trên thẻ gần đây nhất của bạn</translation>
-<translation id="6262279340360821358">Đã chặn <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
+<translation id="6262279340360821358">Đã chặn: <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Các trang web có thể xin phép gửi thông báo</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
@@ -541,7 +541,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7243246278722455312">Bảng tuỳ chỉnh trang thẻ mới của bạn ở dưới cùng</translation>
 <translation id="7243308994586599757">Có các tùy chọn ở gần cuối màn hình</translation>
 <translation id="7250468141469952378">Đã chọn <ph name="ITEM_COUNT" /></translation>
-<translation id="7260727271532453612">Đã cho phép <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
+<translation id="7260727271532453612">Đã cho phép: <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị thực tế ảo. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị thực tế ảo.</translation>
 <translation id="728412880473384942">Các trang web này nhanh hơn nhưng kém an toàn hơn</translation>
 <translation id="7366415735885268578">Thêm trang web</translation>
@@ -598,7 +598,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8007176423574883786">Tắt cho thiết bị này</translation>
 <translation id="802154636333426148">Tải xuống không thành công</translation>
 <translation id="8042586301629853791">Sắp xếp theo:</translation>
-<translation id="8051193500142930381">Các tính năng cần sử dụng máy ảnh sẽ không hoạt động</translation>
+<translation id="8051193500142930381">Những tính năng cần sử dụng camera sẽ không hoạt động</translation>
 <translation id="8056330801132235235">Chrome mặc định</translation>
 <translation id="8067883171444229417">Phát video</translation>
 <translation id="8068648041423924542">Không thể chọn chứng chỉ.</translation>
@@ -616,7 +616,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8168435359814927499">Nội dung</translation>
 <translation id="818487310457576362">Kéo từ bên cạnh màn hình để thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="8186479265534291036">Trang web không hoạt động? Bạn đã chặn cookie của bên thứ ba</translation>
-<translation id="8197286292360124385">Đã cho phép <ph name="PERMISSION_1" /></translation>
+<translation id="8197286292360124385">Đã cho phép: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8211406090763984747">Kết nối này an toàn</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

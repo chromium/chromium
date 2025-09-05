@@ -151,7 +151,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2682367912565197520">Elimina il livello di zoom salvato</translation>
 <translation id="2683434792633810741">Vuoi eliminare e reimpostare?</translation>
-<translation id="2685514716378236873">App non autorizzate</translation>
+<translation id="2685514716378236873">Autorizzazione negata</translation>
 <translation id="2713106313042589954">Disattiva fotocamera</translation>
 <translation id="2717722538473713889">Indirizzi email</translation>
 <translation id="2726059656860238749">Avvia Chrome con l'omnibox in primo piano per ridurre i tempi di avvio sui dispositivi di fascia bassa.</translation>
@@ -421,7 +421,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5822675474983796325">Riquadro inferiore di Personalizza la pagina Nuova scheda aperto a schermo intero</translation>
 <translation id="5833899990800318936">Non consentire ai siti di usare JavaScript</translation>
-<translation id="583673505367439042">I siti possono chiedere di modificare file o cartelle sul dispositivo</translation>
+<translation id="583673505367439042">I siti possono chiedere di modificare file e cartelle sul dispositivo</translation>
 <translation id="5844448279347999754">Quando l'opzione è attiva, i siti possono chiedere di vedere testo e immagini salvati negli appunti. Quando l'opzione è disattivata, i siti non possono vedere il testo o le immagini salvati negli appunti.</translation>
 <translation id="5853982612236235577">Quando l'opzione è attiva, i siti possono chiedere di poter inviare notifiche. Quando l'opzione è disattivata, i siti non possono inviare notifiche.</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -664,7 +664,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="8676374126336081632">Cancella testo inserito</translation>
 <translation id="8681886425883659911">Gli annunci vengono bloccati sui siti noti che mostrano annunci invasivi o fuorvianti</translation>
 <translation id="868929229000858085">Cerca nei contatti</translation>
-<translation id="8707904142362025782">Il sito può chiedere di utilizzare la fotocamera</translation>
+<translation id="8707904142362025782">Il sito può chiedere di utilizzare la videocamera</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8715862698998036666">Trascina dall'alto e scorri dal bordo sinistro o destro per uscire dalla modalità a schermo intero.</translation>
 <translation id="8719283222052720129">Attiva l'autorizzazione per l'app <ph name="APP_NAME" /> nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>

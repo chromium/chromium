@@ -2279,7 +2279,7 @@
 <translation id="2548347166720081527">已允许使用<ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">重置 eSIM 卡配置文件缓存</translation>
 <translation id="2549985041256363841">开始录制</translation>
-<translation id="2550212893339833758">已交换的内存</translation>
+<translation id="2550212893339833758">交换内存</translation>
 <translation id="2550596535588364872">允许“<ph name="EXTENSION_NAME" />”打开“<ph name="FILE_NAME" />”？</translation>
 <translation id="2552230905527343195">无法添加当前标签页</translation>
 <translation id="2552966063069741410">时区</translation>
@@ -3378,7 +3378,7 @@
 <translation id="3347086966102161372">复制图片地址(&amp;O)</translation>
 <translation id="3348038390189153836">检测到可移除的设备</translation>
 <translation id="3348131053948466246">建议的表情符号。按向上或向下箭头键即可浏览，按 Enter 键即可插入。</translation>
-<translation id="3349933790966648062">内存占用空间</translation>
+<translation id="3349933790966648062">内存占用</translation>
 <translation id="3350450887151703713">重放 10 秒</translation>
 <translation id="3351472127384196879">添加或寻找触控笔按钮</translation>
 <translation id="3353786022389205125">开启“从休眠状态唤醒时显示锁定屏幕”，然后重试</translation>
@@ -5985,7 +5985,7 @@
 <translation id="516747639689914043">超文本传输协议 (HTTP)</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5171045022955879922">搜索或输入网址</translation>
-<translation id="5171343362375269016">已交换的内存</translation>
+<translation id="5171343362375269016">交换内存</translation>
 <translation id="5172855596271336236">有 1 台受管理的打印机。</translation>
 <translation id="5173668317844998239">向您的安全密钥中添加指纹和删除其中保存的指纹</translation>
 <translation id="5174169235862638850">已将密码复制到剪贴板</translation>
@@ -8004,7 +8004,7 @@
 <translation id="6635944431854494329">所有者可以通过“设置”&gt;“高级”&gt;“自动向 Google 发送诊断数据和使用情况数据”来控制这项功能。</translation>
 <translation id="6636258750460740634">历史记录</translation>
 <translation id="6636623428211296678">探索下方的更多设置，或立即结束</translation>
-<translation id="6639554308659482635">SQLite 使用的内存</translation>
+<translation id="6639554308659482635">SQLite 内存</translation>
 <translation id="6640268266988685324">已打开的标签页</translation>
 <translation id="6642720633335369752">要查看所有已打开的应用窗口，请从屏幕底部向上滑动并按住屏幕。</translation>
 <translation id="664290675870910564">选择网络</translation>
@@ -8412,7 +8412,7 @@
 <translation id="6910211073230771657">已删除</translation>
 <translation id="6910274140210351823">忧郁</translation>
 <translation id="691102290537033604">此扩展程序将能够运行未经 Google 审核的代码。这可能不安全，仅在您清楚了解相关风险并确认操作安全的情况下，才应启用此功能。</translation>
-<translation id="6911734910326569517">内存占用空间</translation>
+<translation id="6911734910326569517">内存占用</translation>
 <translation id="6912007319859991306">移动网络 SIM 卡 PIN 码</translation>
 <translation id="6912380255120084882">尝试改用其他设备</translation>
 <translation id="691289340230098384">字幕偏好设置</translation>
@@ -9506,7 +9506,7 @@
 <translation id="7684718995427157417">要创建和测试您的应用，请启用 Android 调试桥 (ADB)。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且您会需要将设备恢复出厂设置才能停用 ADB。</translation>
 <translation id="7684913007876670600">若要显示此页面的简化视图，请打开侧边栏并从中选择“阅读模式”</translation>
 <translation id="7685038817958445325">无法投放</translation>
-<translation id="7685049629764448582">JavaScript 使用的内存</translation>
+<translation id="7685049629764448582">JavaScript 内存</translation>
 <translation id="7685087414635069102">必须输入 PIN 码</translation>
 <translation id="7685351732518564314">按 <ph name="DEVICE_NAME" /> 上的按钮。</translation>
 <translation id="7686086654630106285">详细了解网站建议的广告</translation>
@@ -10837,7 +10837,7 @@
 <translation id="8601206103050338563">TLS WWW 客户端身份验证</translation>
 <translation id="8602674530529411098">应用（Beta 版）</translation>
 <translation id="8602851771975208551">您计算机上的其他程序添加了一个应用，该应用可能会改变 Chrome 的工作方式。</translation>
-<translation id="8605428685123651449">SQLite 使用的内存</translation>
+<translation id="8605428685123651449">SQLite 内存</translation>
 <translation id="8607171490667464784">处于闲置状态且使用电池时</translation>
 <translation id="8607661817136110841">您的标签页分组</translation>
 <translation id="8607828412110648570">请确保您的蓝牙设备处于配对模式且就在附近。应仅与您信任的设备配对。此 Chromebook 上的所有账号都可以看到已配对的设备。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11369,7 +11369,7 @@
 <translation id="8957656266859671822">选择您的账号</translation>
 <translation id="8957757410289731985">自定义个人资料</translation>
 <translation id="8959144235813727886">网站和应用</translation>
-<translation id="895944840846194039">JavaScript 使用的内存</translation>
+<translation id="895944840846194039">JavaScript 内存</translation>
 <translation id="8960208913905765425">快速解答单位换算</translation>
 <translation id="8960638196855923532">您现在可以查看手机中的通知和应用</translation>
 <translation id="8962051932294470566">您一次只能分享 1 个文件。请在当前传输任务完成后重试。</translation>
