@@ -178,8 +178,7 @@ HandoffButtonController::~HandoffButtonController() = default;
 
 void HandoffButtonController::UpdateState(const HandoffButtonState& state,
                                           bool is_visible) {
-  is_active_ = state.is_active;
-  if (!is_active_) {
+  if (!state.is_active) {
     CloseButton(views::Widget::ClosedReason::kUnspecified);
     return;
   }
@@ -278,7 +277,7 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
 }
 
 void HandoffButtonController::ShouldShowButton(bool& show) {
-  show = is_active_ && is_visible_;
+  show = is_visible_;
 }
 
 gfx::Rect HandoffButtonController::GetHandoffButtonBounds(

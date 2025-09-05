@@ -84,7 +84,6 @@ class HandoffButtonController {
 
   tabs::TabDialogManager* GetTabDialogManager();
 
-  bool is_active_ = false;
   bool is_visible_ = false;
   HandoffButtonState::ControlOwnership ownership_ =
       HandoffButtonState::ControlOwnership::kActor;
