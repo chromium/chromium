@@ -1165,6 +1165,15 @@ WIN_10_LOW_END_HP_CANDIDATE = PerfPlatform(
     1,
     'win',
     is_fyi=True)
+WIN_DELL_PRO_16 = PerfPlatform(
+    'win-dell-pro-16-perf',
+    'Windows Dell Pro 16 Laptop with Intel Core Ultra 7 255U',
+    _WIN_10_BENCHMARK_CONFIGS,
+    2,
+    'win',
+    executables=_WIN_10_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL,
+    is_fyi=True)
 CHROMEOS_KEVIN_PERF_FYI = PerfPlatform('chromeos-kevin-perf-fyi',
                                        '',
                                        _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS,
