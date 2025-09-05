@@ -127,6 +127,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
 
         mMediator =
                 new ExtensionsMenuMediator(
+                        mContext,
                         profileSupplier,
                         mCurrentTabSupplier,
                         mExtensionModels,

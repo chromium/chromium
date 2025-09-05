@@ -19,6 +19,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -26,8 +27,12 @@
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
+
+// Typography is not supported in Android yet.
+#if !BUILDFLAG(IS_ANDROID)
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
+#endif
 
 namespace {
 
@@ -45,6 +50,7 @@ gfx::ImageSkiaRep ScaleImageSkiaRep(const gfx::ImageSkiaRep& rep,
 }
 
 // Make sure the background color is opaque. See http://crbug.com/619499
+// TODO(crbug.com/441643015): Remove ui color deps and use Android color system
 SkColor GetBadgeBackgroundColor(IconWithBadgeImageSource::Badge* badge,
                                 const ui::ColorProvider* color_provider) {
   return SkColorGetA(badge->background_color) == SK_AlphaTRANSPARENT
@@ -97,8 +103,18 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
           : badge_->text_color;
 
   constexpr int badge_height = 14;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Since typography is not currently supported on Android, we use a hardcode
+  // way to set the text now.
+  constexpr int kBadgeFontSize = 11;
+  gfx::FontList base_font =
+      gfx::FontList(gfx::Font(std::string(), kBadgeFontSize));
+#else
   gfx::FontList base_font = views::TypographyProvider::Get().GetFont(
       views::style::CONTEXT_BADGE, views::style::STYLE_SECONDARY);
+#endif
+
   std::u16string utf16_text = base::UTF8ToUTF16(badge_->text);
 
   constexpr int kMaxTextWidth = 23;

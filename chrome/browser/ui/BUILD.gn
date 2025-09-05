@@ -972,6 +972,10 @@ static_library("ui") {
       "//url",
     ]
 
+    # TODO(crbug.com/441643015): Remove ui color deps and use Android color
+    # system
+    deps += [ "//chrome/browser/ui/color:color_headers" ]
+
     # TODO(b/335257259): Resolve circular deps.
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [ "//chrome/browser/facilitated_payments" ]
@@ -988,6 +992,8 @@ static_library("ui") {
         "android/extensions/extension_keybinding_registry_android.h",
         "android/extensions/extension_util_bridge.cc",
         "android/extensions/extension_util_bridge.h",
+        "extensions/icon_with_badge_image_source.cc",
+        "extensions/icon_with_badge_image_source.h",
       ]
 
       deps += [

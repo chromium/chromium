@@ -7,18 +7,25 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyFloat;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Looper;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,6 +47,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridgeJni;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -67,6 +75,7 @@ public class ExtensionsMenuMediatorTest {
     @Mock private ExtensionActionsBridge.Natives mActionsBridgeJniMock;
     @Mock private Runnable mDataReadyCallback;
     @Mock private Callback<Boolean> mOnExtensionsSupportedCallback;
+    @Mock private WebContents mWebContents;
 
     private ExtensionActionsBridge mActionsBridge;
     private MockTab mTab1;
@@ -79,6 +88,7 @@ public class ExtensionsMenuMediatorTest {
     @Before
     public void setUp() {
         ExtensionActionsBridgeJni.setInstanceForTesting(mActionsBridgeJniMock);
+        Context context = ApplicationProvider.getApplicationContext();
 
         // Provide good defaults for action queries via JNI.
         mActionsBridge = new ExtensionActionsBridge(ACTIONS_BRIDGE_POINTER);
@@ -99,27 +109,52 @@ public class ExtensionsMenuMediatorTest {
                 .thenReturn(new ExtensionAction("b", "another title of b"));
         when(mActionsBridgeJniMock.getAction(ACTIONS_BRIDGE_POINTER, "c", TAB2_ID))
                 .thenReturn(new ExtensionAction("c", "another title of c"));
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "a", TAB1_ID))
-                .thenReturn(ICON_RED);
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "b", TAB1_ID))
-                .thenReturn(ICON_GREEN);
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "c", TAB1_ID))
-                .thenReturn(ICON_BLUE);
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "a", TAB2_ID))
-                .thenReturn(ICON_CYAN);
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "b", TAB2_ID))
-                .thenReturn(ICON_MAGENTA);
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "c", TAB2_ID))
-                .thenReturn(ICON_YELLOW);
+        when(mActionsBridgeJniMock.getActionIcon(
+                        eq(ACTIONS_BRIDGE_POINTER),
+                        anyString(),
+                        anyInt(),
+                        eq(mWebContents),
+                        anyInt(),
+                        anyInt(),
+                        anyFloat()))
+                .thenAnswer(
+                        invocation -> {
+                            String actionId = invocation.getArgument(1);
+                            int tabId = invocation.getArgument(2);
+                            if (tabId == TAB1_ID) {
+                                switch (actionId) {
+                                    case "a":
+                                        return ICON_RED;
+                                    case "b":
+                                        return ICON_GREEN;
+                                    case "c":
+                                        return ICON_BLUE;
+                                }
+                            } else if (tabId == TAB2_ID) {
+                                switch (actionId) {
+                                    case "a":
+                                        return ICON_CYAN;
+                                    case "b":
+                                        return ICON_MAGENTA;
+                                    case "c":
+                                        return ICON_YELLOW;
+                                }
+                            }
+                            return null;
+                        });
 
         // Initialize common objects.
         mTab1 = new MockTab(TAB1_ID, mProfile);
         mTab2 = new MockTab(TAB2_ID, mProfile);
+        mTab1.setWebContentsOverrideForTesting(mWebContents);
+        mTab2.setWebContentsOverrideForTesting(mWebContents);
         mProfileSupplier = new ObservableSupplierImpl<>();
         mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mModels = new ModelList();
+
         mMediator =
                 new ExtensionsMenuMediator(
+                        context,
                         mProfileSupplier,
                         mCurrentTabSupplier,
                         mModels,

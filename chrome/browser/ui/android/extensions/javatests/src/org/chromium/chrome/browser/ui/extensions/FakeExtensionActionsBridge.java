@@ -341,9 +341,18 @@ public class FakeExtensionActionsBridge {
 
         @Override
         public @Nullable Bitmap getActionIcon(
-                long nativeExtensionActionsBridge, String actionId, int tabId) {
+                long nativeExtensionActionsBridge,
+                String actionId,
+                int tabId,
+                @Nullable WebContents webContents,
+                int canvasWidthDp,
+                int canvasHeightDp,
+                float scaleFactor) {
             return getProfileModelOrThrow(nativeExtensionActionsBridge)
                     .getAction(actionId, tabId)
+                    // The current icon test implementation merely returns a pre-defined icon and
+                    // therefore does not need use the canvas dimensions, scale factor, or
+                    // webContents for our test cases now.
                     .getIcon();
         }
 

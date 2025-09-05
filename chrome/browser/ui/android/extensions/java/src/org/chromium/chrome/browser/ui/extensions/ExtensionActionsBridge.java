@@ -111,9 +111,22 @@ public class ExtensionActionsBridge {
      * <p>While loading the icon, this method returns a transparent icon.
      */
     @Nullable
-    public Bitmap getActionIcon(String actionId, int tabId) {
+    public Bitmap getActionIcon(
+            String actionId,
+            int tabId,
+            @Nullable WebContents webContents,
+            int canvasWidthDp,
+            int canvasHeightDp,
+            float scaleFactor) {
         return ExtensionActionsBridgeJni.get()
-                .getActionIcon(mNativeExtensionActionsBridge, actionId, tabId);
+                .getActionIcon(
+                        mNativeExtensionActionsBridge,
+                        actionId,
+                        tabId,
+                        webContents,
+                        canvasWidthDp,
+                        canvasHeightDp,
+                        scaleFactor);
     }
 
     /**
@@ -244,7 +257,11 @@ public class ExtensionActionsBridge {
         @Nullable Bitmap getActionIcon(
                 long nativeExtensionActionsBridge,
                 @JniType("std::string") String actionId,
-                int tabId);
+                int tabId,
+                @Nullable @JniType("content::WebContents*") WebContents webContents,
+                int canvasWidthDp,
+                int canvasHeightDp,
+                float scaleFactor);
 
         @JniType("ExtensionAction::ShowAction")
         int runAction(

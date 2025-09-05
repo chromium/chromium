@@ -79,6 +79,11 @@ found in the LICENSE file.
     <!-- Extension Action Button Menu dimensions -->
     <dimen name="extension_action_button_list_menu_width" tools:ignore="UnusedResources">300dp</dimen>
 
+    <!-- Toolbar Extension Action Button Icon Canvas dimensions -->
+    <!-- The canvas will contain both icon itself and badge if it exists. -->
+    <dimen name="extension_action_icon_canvas_width" tools:ignore="UnusedResources">34dp</dimen>
+    <dimen name="extension_action_icon_canvas_height" tools:ignore="UnusedResources">34dp</dimen>
+
     <!-- Extension Action Popup dimensions -->
     <dimen name="extension_action_popup_min_width" tools:ignore="UnusedResources">25dp</dimen>
     <dimen name="extension_action_popup_min_height" tools:ignore="UnusedResources">25dp</dimen>

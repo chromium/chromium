@@ -17,6 +17,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Looper;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -51,9 +54,9 @@ public class ExtensionActionListMediatorTest {
     private static final Bitmap ICON_MAGENTA = createSimpleIcon(Color.MAGENTA);
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Context mContext;
     @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private WebContents mWebContents;
 
     private FakeExtensionActionsBridge mFakeExtensionActionsBridge;
     private FakeExtensionActionsBridge.ProfileModel mProfileModel;
@@ -66,18 +69,21 @@ public class ExtensionActionListMediatorTest {
 
     @Before
     public void setUp() {
+        Context context = ApplicationProvider.getApplicationContext();
         mFakeExtensionActionsBridge = new FakeExtensionActionsBridge();
         mFakeExtensionActionsBridge.install();
 
         // Initialize common objects.
         mTab1 = new MockTab(TAB1_ID, mProfile);
         mTab2 = new MockTab(TAB2_ID, mProfile);
+        mTab1.setWebContentsOverrideForTesting(mWebContents);
+        mTab2.setWebContentsOverrideForTesting(mWebContents);
         mProfileSupplier = new ObservableSupplierImpl<>();
         mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mModels = new ModelList();
         mMediator =
                 new ExtensionActionListMediator(
-                        mContext, mWindowAndroid, mModels, mProfileSupplier, mCurrentTabSupplier);
+                        context, mWindowAndroid, mModels, mProfileSupplier, mCurrentTabSupplier);
 
         // Wait for the main thread to settle.
         shadowOf(Looper.getMainLooper()).idle();

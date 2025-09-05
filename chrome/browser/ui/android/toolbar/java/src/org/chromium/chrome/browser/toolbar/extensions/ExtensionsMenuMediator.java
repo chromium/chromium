@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import org.chromium.base.Callback;
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -26,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 class ExtensionsMenuMediator implements Destroyable {
     private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
+    private final Context mContext;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Runnable mOnUpdateFinishedRunnable;
     private final Callback<Boolean> mOnExtensionsAvailableCallback;
@@ -35,6 +38,7 @@ class ExtensionsMenuMediator implements Destroyable {
     @Nullable private Profile mProfile;
 
     public ExtensionsMenuMediator(
+            Context context,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> currentTabSupplier,
             ModelList extensionModels,
@@ -45,6 +49,7 @@ class ExtensionsMenuMediator implements Destroyable {
 
         mOnUpdateFinishedRunnable = onUpdateFinishedRunnable;
         mOnExtensionsAvailableCallback = onExtensionsAvailableCallback;
+        mContext = context;
 
         mExtensionActionsUpdateHelper =
                 new ExtensionActionsUpdateHelper(
@@ -89,7 +94,13 @@ class ExtensionsMenuMediator implements Destroyable {
                 ExtensionActionsBridge extensionActionsBridge, int tabId, String actionId) {
             ExtensionAction action = extensionActionsBridge.getAction(actionId, tabId);
             assert action != null;
-            Bitmap icon = extensionActionsBridge.getActionIcon(actionId, tabId);
+
+            Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
+            WebContents webContents = currentTab == null ? null : currentTab.getWebContents();
+
+            Bitmap icon =
+                    ExtensionActionIconUtil.getActionIcon(
+                            mContext, extensionActionsBridge, actionId, tabId, webContents);
             assert icon != null;
             return new ListItem(
                     0,

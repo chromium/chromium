@@ -43,7 +43,11 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
   base::android::ScopedJavaLocalRef<jobject> GetActionIcon(
       JNIEnv* env,
       const ToolbarActionsModel::ActionId& action_id,
-      int tab_id);
+      int tab_id,
+      const content::WebContents* web_contents,
+      int canvas_width_dp,
+      int canvas_height_dp,
+      float scale_factor);
   ExtensionAction::ShowAction RunAction(
       JNIEnv* env,
       const ToolbarActionsModel::ActionId& action_id,

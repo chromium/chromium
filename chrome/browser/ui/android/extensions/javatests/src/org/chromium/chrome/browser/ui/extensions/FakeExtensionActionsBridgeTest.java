@@ -119,7 +119,7 @@ public class FakeExtensionActionsBridgeTest {
     @Test
     public void testActionIcon() {
         mProfileModel.putAction("a", new ActionData.Builder().setIcon(ICON_RED).build());
-        assertTrue(mBridge.getActionIcon("a", 1).sameAs(ICON_RED));
+        assertTrue(mBridge.getActionIcon("a", 1, mWebContents, 12, 12, 1.0f).sameAs(ICON_RED));
     }
 
     @Test

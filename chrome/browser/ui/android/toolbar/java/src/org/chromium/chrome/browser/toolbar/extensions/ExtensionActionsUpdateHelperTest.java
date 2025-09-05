@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonPrope
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridgeJni;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -47,6 +48,9 @@ public class ExtensionActionsUpdateHelperTest {
     private static final int TAB1_ID = 111;
     private static final int TAB2_ID = 222;
     private static final long ACTIONS_BRIDGE_POINTER = 10000L;
+    private static final int ICON_CANVAS_WIDTH_DP = 12;
+    private static final int ICON_CANVAS_HEIGHT_DP = 12;
+    private static final float SCALE_FACTOR = 1.0f;
 
     private static final Bitmap ICON_RED = createSimpleIcon(Color.RED);
     private static final Bitmap ICON_BLUE = createSimpleIcon(Color.BLUE);
@@ -61,6 +65,7 @@ public class ExtensionActionsUpdateHelperTest {
     @Mock private Profile mProfile;
     @Mock private ExtensionActionsBridge.Natives mActionsBridgeJniMock;
     @Mock private ExtensionActionsUpdateHelper.ActionsUpdateDelegate mDelegate;
+    @Mock private WebContents mWebContents;
 
     private ExtensionActionsBridge mActionsBridge;
     private MockTab mTab1;
@@ -100,17 +105,59 @@ public class ExtensionActionsUpdateHelperTest {
                 .thenReturn(new ExtensionAction("b", "another title of b"));
         when(mActionsBridgeJniMock.getAction(ACTIONS_BRIDGE_POINTER, "c", TAB2_ID))
                 .thenReturn(new ExtensionAction("c", "another title of c"));
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "a", TAB1_ID))
+        when(mActionsBridgeJniMock.getActionIcon(
+                        ACTIONS_BRIDGE_POINTER,
+                        "a",
+                        TAB1_ID,
+                        mWebContents,
+                        ICON_CANVAS_WIDTH_DP,
+                        ICON_CANVAS_HEIGHT_DP,
+                        SCALE_FACTOR))
                 .thenReturn(ICON_RED);
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "b", TAB1_ID))
+        when(mActionsBridgeJniMock.getActionIcon(
+                        ACTIONS_BRIDGE_POINTER,
+                        "b",
+                        TAB1_ID,
+                        mWebContents,
+                        ICON_CANVAS_WIDTH_DP,
+                        ICON_CANVAS_HEIGHT_DP,
+                        SCALE_FACTOR))
                 .thenReturn(ICON_GREEN);
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "c", TAB1_ID))
+        when(mActionsBridgeJniMock.getActionIcon(
+                        ACTIONS_BRIDGE_POINTER,
+                        "c",
+                        TAB1_ID,
+                        mWebContents,
+                        ICON_CANVAS_WIDTH_DP,
+                        ICON_CANVAS_HEIGHT_DP,
+                        SCALE_FACTOR))
                 .thenReturn(ICON_BLUE);
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "a", TAB2_ID))
+        when(mActionsBridgeJniMock.getActionIcon(
+                        ACTIONS_BRIDGE_POINTER,
+                        "a",
+                        TAB2_ID,
+                        mWebContents,
+                        ICON_CANVAS_WIDTH_DP,
+                        ICON_CANVAS_HEIGHT_DP,
+                        SCALE_FACTOR))
                 .thenReturn(ICON_CYAN);
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "b", TAB2_ID))
+        when(mActionsBridgeJniMock.getActionIcon(
+                        ACTIONS_BRIDGE_POINTER,
+                        "b",
+                        TAB2_ID,
+                        mWebContents,
+                        ICON_CANVAS_WIDTH_DP,
+                        ICON_CANVAS_HEIGHT_DP,
+                        SCALE_FACTOR))
                 .thenReturn(ICON_MAGENTA);
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "c", TAB2_ID))
+        when(mActionsBridgeJniMock.getActionIcon(
+                        ACTIONS_BRIDGE_POINTER,
+                        "c",
+                        TAB2_ID,
+                        mWebContents,
+                        ICON_CANVAS_WIDTH_DP,
+                        ICON_CANVAS_HEIGHT_DP,
+                        SCALE_FACTOR))
                 .thenReturn(ICON_YELLOW);
 
         when(mDelegate.createActionModel(any(), anyInt(), any()))
@@ -120,7 +167,14 @@ public class ExtensionActionsUpdateHelperTest {
                             int tabId = invocation.getArgument(1);
                             String actionId = invocation.getArgument(2);
                             ExtensionAction action = bridge.getAction(actionId, tabId);
-                            Bitmap icon = bridge.getActionIcon(actionId, tabId);
+                            Bitmap icon =
+                                    bridge.getActionIcon(
+                                            actionId,
+                                            tabId,
+                                            mWebContents,
+                                            ICON_CANVAS_WIDTH_DP,
+                                            ICON_CANVAS_HEIGHT_DP,
+                                            SCALE_FACTOR);
                             PropertyModel model =
                                     new PropertyModel.Builder(
                                                     ExtensionActionButtonProperties.ALL_KEYS)
@@ -248,7 +302,14 @@ public class ExtensionActionsUpdateHelperTest {
         assertItemAt(1, "b", "title of b", ICON_GREEN);
 
         // Simulate changing the icon.
-        when(mActionsBridgeJniMock.getActionIcon(ACTIONS_BRIDGE_POINTER, "a", TAB1_ID))
+        when(mActionsBridgeJniMock.getActionIcon(
+                        ACTIONS_BRIDGE_POINTER,
+                        "a",
+                        TAB1_ID,
+                        mWebContents,
+                        ICON_CANVAS_WIDTH_DP,
+                        ICON_CANVAS_HEIGHT_DP,
+                        SCALE_FACTOR))
                 .thenReturn(ICON_WHITE);
         mActionsBridge.onActionIconUpdated("a");
 

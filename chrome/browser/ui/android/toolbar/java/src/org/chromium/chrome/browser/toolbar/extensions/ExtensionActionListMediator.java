@@ -141,7 +141,13 @@ class ExtensionActionListMediator implements Destroyable {
                 ExtensionActionsBridge extensionActionsBridge, int tabId, String actionId) {
             ExtensionAction action = extensionActionsBridge.getAction(actionId, tabId);
             assert action != null;
-            Bitmap icon = extensionActionsBridge.getActionIcon(actionId, tabId);
+
+            Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
+            WebContents webContents = currentTab == null ? null : currentTab.getWebContents();
+
+            Bitmap icon =
+                    ExtensionActionIconUtil.getActionIcon(
+                            mContext, extensionActionsBridge, actionId, tabId, webContents);
             assert icon != null;
 
             return new ListItem(
