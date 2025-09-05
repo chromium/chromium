@@ -15451,42 +15451,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, WarmingUpCCDoesntInvokeCrashes) {
   EXPECT_TRUE(prerender_observer.was_activated());
 }
 
-class PrerenderTargetHintKillSwitchBrowserTest : public PrerenderBrowserTest {
- public:
-  PrerenderTargetHintKillSwitchBrowserTest() {
-    feature_list_.InitWithFeatures({}, {blink::features::kPrerender2InNewTab});
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PrerenderBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII("enable-blink-features",
-                                    "SpeculationRulesTargetHint");
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PrerenderTargetHintKillSwitchBrowserTest,
-                       Prerender2InNewTabKillSwitch) {
-  const GURL initial_url = GetUrl("/simple_links.html");
-  const GURL prerender_url = GetUrl("/title2.html");
-
-  // Navigate to an initial page which has a link to `prerender_url`.
-  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
-
-  // Start prerendering `prerender_url`.
-  test::PrerenderHostCreationWaiter host_creation_waiter;
-  AddPrerendersAsync({prerender_url},
-                     /*eagerness=*/std::nullopt,
-                     /*target_hint=*/"_blank");
-  FrameTreeNodeId host_id = host_creation_waiter.Wait();
-  auto* prerender_web_contents = WebContents::FromFrameTreeNodeId(host_id);
-  // kPrerender2InNewTab is expected to suppress Prerendering into new tab and
-  // the prerendered page is expected to fall back into same tab version.
-  ASSERT_EQ(prerender_web_contents, web_contents_impl());
-}
-
 // Tests the PrerenderHostId of the navigations in main frame and subframes.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderHostIdAssignedToNavigationRequest) {
