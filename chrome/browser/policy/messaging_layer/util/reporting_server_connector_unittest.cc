@@ -40,7 +40,6 @@ using testing::ContainerEq;
 using testing::DoAll;
 using testing::Eq;
 using testing::HasSubstr;
-using testing::Invoke;
 using testing::SizeIs;
 using testing::StartsWith;
 using testing::WithArg;

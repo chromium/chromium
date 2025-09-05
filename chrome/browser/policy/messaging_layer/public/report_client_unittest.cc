@@ -45,7 +45,6 @@
 
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::Ne;
 using ::testing::SizeIs;
 using ::testing::StrEq;

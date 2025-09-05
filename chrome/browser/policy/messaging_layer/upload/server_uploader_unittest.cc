@@ -26,7 +26,6 @@
 
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::MockFunction;
 using ::testing::Property;
 using ::testing::Return;
@@ -131,7 +130,7 @@ TEST_P(ServerUploaderTest, ProcessesRecord) {
   const bool force_confirm_flag = force_confirm();
   auto handler = std::make_unique<TestRecordHandler>();
   EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _, _))
-      .WillOnce(WithArgs<0, 4, 5, 6, 7>(Invoke(
+      .WillOnce(WithArgs<0, 4, 5, 6, 7>(
           [&force_confirm_flag](
               bool need_encryption_key, UploadEnqueuedCallback enqueued_cb,
               CompletionCallback callback,
@@ -144,7 +143,7 @@ TEST_P(ServerUploaderTest, ProcessesRecord) {
             std::move(config_file_attached_cb).Run(ConfigFile());
             std::move(callback).Run(
                 SuccessfulUploadResponse{.force_confirm = force_confirm_flag});
-          })));
+          }));
 
   StrictMock<TestSuccessfulUpload> successful_upload;
   EXPECT_CALL(successful_upload, Call(_, _)).Times(1);
@@ -202,7 +201,7 @@ TEST_P(ServerUploaderTest, ProcessesRecords) {
   const bool force_confirm_flag = force_confirm();
   auto handler = std::make_unique<TestRecordHandler>();
   EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _, _))
-      .WillOnce(WithArgs<0, 4, 5, 6, 7>(Invoke(
+      .WillOnce(WithArgs<0, 4, 5, 6, 7>(
           [&force_confirm_flag](
               bool need_encryption_key, UploadEnqueuedCallback enqueued_cb,
               CompletionCallback callback,
@@ -215,7 +214,7 @@ TEST_P(ServerUploaderTest, ProcessesRecords) {
             std::move(config_file_attached_cb).Run(ConfigFile());
             std::move(callback).Run(
                 SuccessfulUploadResponse{.force_confirm = force_confirm_flag});
-          })));
+          }));
 
   StrictMock<TestSuccessfulUpload> successful_upload;
   EXPECT_CALL(successful_upload, Call(_, _)).Times(1);
@@ -256,14 +255,14 @@ TEST_P(ServerUploaderTest, ReportsFailureToProcess) {
 
   auto handler = std::make_unique<TestRecordHandler>();
   EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _, _))
-      .WillOnce(WithArgs<4, 5>(Invoke([](UploadEnqueuedCallback enqueued_cb,
-                                         CompletionCallback callback) {
+      .WillOnce(WithArgs<4, 5>([](UploadEnqueuedCallback enqueued_cb,
+                                  CompletionCallback callback) {
         std::move(enqueued_cb)
             .Run(base::unexpected(
                 Status(error::FAILED_PRECONDITION, "Fail for test")));
         std::move(callback).Run(base::unexpected(
             Status(error::FAILED_PRECONDITION, "Fail for test")));
-      })));
+      }));
 
   StrictMock<TestSuccessfulUpload> successful_upload;
   EXPECT_CALL(successful_upload, Call(_, _)).Times(0);
@@ -316,7 +315,7 @@ TEST_P(ServerUploaderTest, ReportWithZeroRecords) {
   auto handler = std::make_unique<TestRecordHandler>();
   if (need_encryption_key()) {
     EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _, _))
-        .WillOnce(WithArgs<0, 4, 5, 6>(Invoke(
+        .WillOnce(WithArgs<0, 4, 5, 6>(
             [&force_confirm_flag](
                 bool need_encryption_key, UploadEnqueuedCallback enqueued_cb,
                 CompletionCallback callback,
@@ -328,7 +327,7 @@ TEST_P(ServerUploaderTest, ReportWithZeroRecords) {
               }
               std::move(callback).Run(SuccessfulUploadResponse{
                   .force_confirm = force_confirm_flag});
-            })));
+            }));
   } else {
     EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _, _)).Times(0);
   }
@@ -370,14 +369,13 @@ TEST_P(ServerUploaderFailureTest, ReportsFailureToUpload) {
 
   auto handler = std::make_unique<TestRecordHandler>();
   EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _, _))
-      .WillOnce(WithArgs<4, 5>(Invoke([error_code](
-                                          UploadEnqueuedCallback enqueued_cb,
-                                          CompletionCallback callback) {
+      .WillOnce(WithArgs<4, 5>([error_code](UploadEnqueuedCallback enqueued_cb,
+                                            CompletionCallback callback) {
         std::move(enqueued_cb)
             .Run(base::unexpected(Status(error_code, "Fail for test")));
         std::move(callback).Run(
             base::unexpected(Status(error_code, "Failing for test")));
-      })));
+      }));
 
   StrictMock<TestSuccessfulUpload> successful_upload;
   EXPECT_CALL(successful_upload, Call(_, _)).Times(0);

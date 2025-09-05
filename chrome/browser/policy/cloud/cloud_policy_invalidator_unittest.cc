@@ -180,7 +180,7 @@ void CloudPolicyInvalidatorTestBase::ConnectCore() {
       std::make_unique<testing::NiceMock<MockCloudPolicyClient>>();
 
   ON_CALL(*client, FetchPolicy(PolicyFetchReason::kInvalidation))
-      .WillByDefault(testing::Invoke([this]() { ++policy_refresh_count_; }));
+      .WillByDefault([this]() { ++policy_refresh_count_; });
 
   client->SetDMToken("dm");
   core_.Connect(std::move(client));

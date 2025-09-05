@@ -1252,7 +1252,7 @@ class ExtensionPinningTest : public extensions::ExtensionBrowserTest {
           OnExtensionInstallationFailed(
               testing::_,
               extensions::InstallStageTracker::FailureReason::NO_UPDATE))
-          .WillOnce(testing::Invoke([&]() { run_loop.Quit(); }));
+          .WillOnce([&]() { run_loop.Quit(); });
       updater->CheckNow(std::move(params));
       run_loop.Run();
     }

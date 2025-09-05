@@ -51,7 +51,6 @@ using ::testing::ContainerEq;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Gt;
-using ::testing::Invoke;
 using ::testing::InvokeArgument;
 using ::testing::IsEmpty;
 using ::testing::MockFunction;
