@@ -406,4 +406,102 @@ TEST_F(TileDisplayLayerImplTest, MissingTileResultsInCheckerBoardQuad) {
       raw_layer->safe_opaque_background_color());
 }
 
+// Verifies that the layer appends quads from the highest-resolution tiling
+// when multiple tilings are available.
+TEST_F(TileDisplayLayerImplTest, AppendsQuadsFromHighestResolutionTilingByDefault) {
+  constexpr gfx::Size kLayerBounds(1300, 1900);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+  constexpr float kOpacity = 1.0;
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+  raw_layer->draw_properties().opacity = kOpacity;
+
+  // Create two tilings with different scales.
+  auto& low_res_tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  low_res_tiling.SetTileSize(kLayerBounds);
+  low_res_tiling.SetTilingRect(kLayerRect);
+  auto& high_res_tiling = raw_layer->GetOrCreateTilingFromScaleKey(2.0);
+  high_res_tiling.SetTileSize(kLayerBounds);
+  high_res_tiling.SetTilingRect(kLayerRect);
+
+  // Set content for the high-res tiling only.
+  auto resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents contents =
+      TileDisplayLayerImpl::TileResource(resource_id, kLayerBounds,
+                                         /*is_checkered=*/false);
+  high_res_tiling.SetTileContents(TileIndex{0, 0}, contents,
+                                  /*update_damage=*/true);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  // Verify that the quad is from the high-res tiling.
+  EXPECT_EQ(render_pass->quad_list.size(), 1u);
+  EXPECT_EQ(render_pass->quad_list.front()->resource_id, resource_id);
+}
+
+// Verifies that the layer can be forced to append quads from a
+// lower-resolution tiling if the ideal contents scale matches that tiling.
+TEST_F(TileDisplayLayerImplTest, AppendsQuadsFromIdealResolutionTiling) {
+  constexpr gfx::Size kLayerBounds(1300, 1900);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+  constexpr float kOpacity = 1.0;
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+  raw_layer->draw_properties().opacity = kOpacity;
+
+  // Create two tilings with different scales.
+  auto& low_res_tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  low_res_tiling.SetTileSize(kLayerBounds);
+  low_res_tiling.SetTilingRect(kLayerRect);
+  auto& high_res_tiling = raw_layer->GetOrCreateTilingFromScaleKey(2.0);
+  high_res_tiling.SetTileSize(kLayerBounds);
+  high_res_tiling.SetTilingRect(kLayerRect);
+
+  // Set content for the low-resolution tiling only.
+  auto low_res_resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents low_res_contents =
+      TileDisplayLayerImpl::TileResource(low_res_resource_id, kLayerBounds,
+                                         /*is_checkered=*/false);
+  low_res_tiling.SetTileContents(TileIndex{0, 0}, low_res_contents,
+                                 /*update_damage=*/true);
+
+  // With an identity transform, the ideal contents scale is 1.0, so the
+  // low-resolution tiling should be chosen.
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  // Verify that the quad is from the low-res tiling.
+  EXPECT_EQ(render_pass->quad_list.size(), 1u);
+  EXPECT_EQ(render_pass->quad_list.front()->resource_id, low_res_resource_id);
+}
+
 }  // namespace cc
