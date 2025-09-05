@@ -63,6 +63,8 @@ dictionary RTCRtpStreamStats : RTCStats {
 // https://w3c.github.io/webrtc-stats/#receivedrtpstats-dict*
 dictionary RTCReceivedRtpStreamStats : RTCRtpStreamStats {
   unsigned long long   packetsReceived;
+  unsigned long long   packetsReceivedWithEct1;
+  unsigned long long   packetsReceivedWithCe;
   long long            packetsLost;
   double               jitter;
 };
@@ -183,6 +185,8 @@ dictionary RTCOutboundRtpStreamStats : RTCSentRtpStreamStats {
   DOMString            scalabilityMode;
   // https://w3c.github.io/webrtc-provisional-stats/#RTCOutboundRtpStreamStats-dict*
   DOMString            contentType;
+
+  unsigned long long   packetsSentWithEct1;
 };
 
 // https://w3c.github.io/webrtc-stats/#rtcqualitylimitationreason-enum
@@ -276,6 +280,7 @@ dictionary RTCTransportStats : RTCStats {
   RTCDtlsRole           dtlsRole;
   DOMString             srtpCipher;
   unsigned long         selectedCandidatePairChanges;
+  unsigned long         ccbfMessagesReceived;
   // https://w3c.github.io/webrtc-provisional-stats/#RTCTransportStats-dict*
   DOMString rtcpTransportStatsId;
 };

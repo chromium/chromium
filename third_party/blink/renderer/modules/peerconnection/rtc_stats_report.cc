@@ -123,6 +123,10 @@ RTCInboundRtpStreamStats* ToV8Stat(
   // RTCReceivedRtpStreamStats
   SET_STAT(webrtc_stat.packets_lost, v8_stat->setPacketsLost);
   SET_STAT(webrtc_stat.jitter, v8_stat->setJitter);
+  SET_STAT(webrtc_stat.packets_received_with_ect1,
+           v8_stat->setPacketsReceivedWithEct1);
+  SET_STAT(webrtc_stat.packets_received_with_ce,
+           v8_stat->setPacketsReceivedWithCe);
   // RTCInboundRtpStreamStats
   SET_STAT(webrtc_stat.track_identifier, v8_stat->setTrackIdentifier);
   SET_STAT(webrtc_stat.mid, v8_stat->setMid);
@@ -311,6 +315,8 @@ RTCOutboundRtpStreamStats* ToV8Stat(
   }
   // https://w3c.github.io/webrtc-provisional-stats/#dom-rtcoutboundrtpstreamstats-contenttype
   SET_STAT(webrtc_stat.content_type, v8_stat->setContentType);
+
+  SET_STAT(webrtc_stat.packets_sent_with_ect1, v8_stat->setPacketsSentWithEct1);
   return v8_stat;
 }
 
@@ -453,6 +459,8 @@ RTCTransportStats* ToV8Stat(ScriptState* script_state,
   SET_STAT(webrtc_stat.srtp_cipher, v8_stat->setSrtpCipher);
   SET_STAT(webrtc_stat.selected_candidate_pair_changes,
            v8_stat->setSelectedCandidatePairChanges);
+  SET_STAT(webrtc_stat.ccfb_messages_received,
+           v8_stat->setCcbfMessagesReceived);
   // https://w3c.github.io/webrtc-provisional-stats/#dom-rtctransportstats-rtcptransportstatsid
   SET_STAT(webrtc_stat.rtcp_transport_stats_id,
            v8_stat->setRtcpTransportStatsId);
