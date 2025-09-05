@@ -16,3 +16,17 @@ const char kMobilePromoOnDesktopPromoTypeParam[] =
     "mobile_promo_on_desktop_promo_type";
 const char kMobilePromoOnDesktopNotificationParam[] =
     "mobile_promo_on_desktop_notification";
+
+MobilePromoOnDesktopPromoType MobilePromoOnDesktopTypeEnabled() {
+  if (!base::FeatureList::IsEnabled(kMobilePromoOnDesktop)) {
+    return MobilePromoOnDesktopPromoType::kDisabled;
+  }
+  return static_cast<MobilePromoOnDesktopPromoType>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          kMobilePromoOnDesktop, kMobilePromoOnDesktopPromoTypeParam, 1));
+}
+
+bool IsMobilePromoOnDesktopNotificationsEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kMobilePromoOnDesktop, kMobilePromoOnDesktopNotificationParam, false);
+}
