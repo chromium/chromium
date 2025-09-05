@@ -27,10 +27,12 @@ TEST_F(OverlayControlsFadeAnimationTest, AnimatesViewLayerOpacity) {
   const float middle_hide_opacity = view->layer()->opacity();
   EXPECT_LT(middle_hide_opacity, 1.0);
   EXPECT_GT(middle_hide_opacity, 0.0);
+  EXPECT_TRUE(view->GetVisible());
 
   // By the end of the animation, the opacity should be 0.
   task_environment()->FastForwardBy(base::Milliseconds(200));
   EXPECT_EQ(view->layer()->opacity(), 0.0);
+  EXPECT_FALSE(view->GetVisible());
 
   // Create an animation to show the view.
   animation = std::make_unique<OverlayControlsFadeAnimation>(
@@ -42,10 +44,12 @@ TEST_F(OverlayControlsFadeAnimationTest, AnimatesViewLayerOpacity) {
   const float middle_show_opacity = view->layer()->opacity();
   EXPECT_GT(middle_show_opacity, 0.0);
   EXPECT_LT(middle_show_opacity, 1.0);
+  EXPECT_TRUE(view->GetVisible());
 
   // By the end of the animation, the opacity should be 1.
   task_environment()->FastForwardBy(base::Milliseconds(200));
   EXPECT_EQ(view->layer()->opacity(), 1.0);
+  EXPECT_TRUE(view->GetVisible());
 }
 
 }  // namespace

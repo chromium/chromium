@@ -24,5 +24,6 @@ OverlayControlsFadeAnimation::~OverlayControlsFadeAnimation() = default;
 
 void OverlayControlsFadeAnimation::AnimateToState(double state) {
   const double opacity = (type_ == Type::kToShown) ? state : (1.0 - state);
+  controls_->SetVisible(opacity != 0);
   controls_->layer()->SetOpacity(opacity);
 }
