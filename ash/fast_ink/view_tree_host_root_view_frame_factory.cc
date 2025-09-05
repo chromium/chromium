@@ -287,15 +287,14 @@ ViewTreeHostRootViewFrameFactory::AcquireUiResource(
     const gfx::Size& size,
     bool is_overlay_candidate,
     UiResourceManager& resource_manager) const {
-  viz::ResourceId reusable_resource_id = resource_manager.FindResourceToReuse(
+  std::unique_ptr<UiResource> ui_resource = resource_manager.GetResourceToReuse(
       size, kSharedImageFormat, kUiSourceId);
 
   std::unique_ptr<ViewTreeHostUiResource> resource;
 
-  if (reusable_resource_id != viz::kInvalidResourceId) {
-    resource = base::WrapUnique(static_cast<ViewTreeHostUiResource*>(
-        resource_manager.ReleaseAvailableResource(reusable_resource_id)
-            .release()));
+  if (ui_resource) {
+    resource = base::WrapUnique(
+        static_cast<ViewTreeHostUiResource*>(ui_resource.release()));
   } else {
     resource = CreateUiResource(size, kSharedImageFormat, kUiSourceId,
                                 is_overlay_candidate);

@@ -32,19 +32,13 @@ class ASH_EXPORT UiResourceManager {
 
   ~UiResourceManager();
 
-  // Returns the resource_id of an available resource of given `size`,
-  // `format` and `ui_source_id`. If there is no matching resource available, we
-  // return `viz::kInvalidResourceId`.
-  viz::ResourceId FindResourceToReuse(const gfx::Size& size,
-                                      viz::SharedImageFormat format,
-                                      UiSourceId ui_source_id) const;
-
-  const UiResource* PeekAvailableResource(viz::ResourceId resource_id) const;
+  // Returns an available resource of given `size`, `format` and `ui_source_id`
+  // if exists.
+  std::unique_ptr<UiResource> GetResourceToReuse(const gfx::Size& size,
+                                                 viz::SharedImageFormat format,
+                                                 UiSourceId ui_source_id);
 
   const UiResource* PeekExportedResource(viz::ResourceId resource_id) const;
-
-  std::unique_ptr<UiResource> ReleaseAvailableResource(
-      viz::ResourceId resource_id);
 
   void ReclaimResources(const std::vector<viz::ReturnedResource>& resources);
 
@@ -72,6 +66,16 @@ class ASH_EXPORT UiResourceManager {
   size_t available_resources_count() const;
 
  private:
+  // Returns the resource_id of an available resource of given `size`,
+  // `format` and `ui_source_id`. If there is no matching resource available, we
+  // return `viz::kInvalidResourceId`.
+  viz::ResourceId FindResourceToReuse(const gfx::Size& size,
+                                      viz::SharedImageFormat format,
+                                      UiSourceId ui_source_id) const;
+
+  std::unique_ptr<UiResource> ReleaseAvailableResource(
+      viz::ResourceId resource_id);
+
   // TODO(zoraiznaeem): If a feature ends up growing the size of pool past 40,
   // use a fixed size circular list as a pool and get rid of least recently used
   // resources.

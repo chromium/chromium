@@ -40,11 +40,10 @@ std::unique_ptr<UiResource> AcquireUiResource(
     gpu::Mailbox mailbox,
     gpu::SyncToken sync_token) {
   CHECK(!mailbox.IsZero());
-  viz::ResourceId reusable_resource_id = resource_manager->FindResourceToReuse(
+  std::unique_ptr<UiResource> resource = resource_manager->GetResourceToReuse(
       size, kFastInkSharedImageFormat, kFastInkUiSourceId);
-  std::unique_ptr<UiResource> resource;
-  if (reusable_resource_id != viz::kInvalidResourceId) {
-    resource = resource_manager->ReleaseAvailableResource(reusable_resource_id);
+
+  if (resource) {
     CHECK(mailbox == resource->mailbox());
   } else {
     resource = CreateUiResource(size, kFastInkUiSourceId, is_overlay_candidate,

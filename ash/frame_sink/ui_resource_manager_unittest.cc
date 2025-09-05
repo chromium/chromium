@@ -51,11 +51,11 @@ class UiResourceManagerTest : public testing::Test {
 };
 
 TEST_F(UiResourceManagerTest, ReuseResource_NoResources) {
-  viz::ResourceId resource_id = resource_manager_->FindResourceToReuse(
+  auto resource = resource_manager_->GetResourceToReuse(
       gfx::Size(100, 100), viz::SinglePlaneFormat::kBGRA_8888,
       kTestUiSourceId_1);
 
-  EXPECT_EQ(resource_id, viz::kInvalidResourceId);
+  EXPECT_FALSE(resource);
 }
 
 TEST_F(UiResourceManagerTest, ReuseResource) {
@@ -77,33 +77,31 @@ TEST_F(UiResourceManagerTest, ReuseResource) {
   EXPECT_EQ(resource_manager_->available_resources_count(), 4u);
 
   // When we have no match in the currently available resources.
-  viz::ResourceId resource_id = resource_manager_->FindResourceToReuse(
+  auto resource = resource_manager_->GetResourceToReuse(
       gfx::Size(100, 100), viz::SinglePlaneFormat::kBGRA_8888,
       kTestUiSourceId_1);
 
-  EXPECT_EQ(resource_id, viz::kInvalidResourceId);
+  EXPECT_FALSE(resource);
 
   // When we have the requested resource.
-  resource_id = resource_manager_->FindResourceToReuse(
+  resource = resource_manager_->GetResourceToReuse(
       gfx::Size(10, 10), viz::SinglePlaneFormat::kBGRA_8888, kTestUiSourceId_1);
 
-  EXPECT_NE(resource_id, viz::kInvalidResourceId);
+  EXPECT_TRUE(resource);
 
-  auto* found_resource = resource_manager_->PeekAvailableResource(resource_id);
-  EXPECT_EQ(found_resource->ui_source_id, kTestUiSourceId_1);
-  EXPECT_EQ(found_resource->format, viz::SinglePlaneFormat::kBGRA_8888);
-  EXPECT_EQ(found_resource->resource_size, gfx::Size(10, 10));
+  EXPECT_EQ(resource->ui_source_id, kTestUiSourceId_1);
+  EXPECT_EQ(resource->format, viz::SinglePlaneFormat::kBGRA_8888);
+  EXPECT_EQ(resource->resource_size, gfx::Size(10, 10));
 
   // When we have multiple matching resources, return any matching resource.
-  resource_id = resource_manager_->FindResourceToReuse(
+  resource = resource_manager_->GetResourceToReuse(
       gfx::Size(10, 20), viz::SinglePlaneFormat::kBGRA_8888, kTestUiSourceId_2);
 
-  EXPECT_NE(resource_id, viz::kInvalidResourceId);
-  found_resource = resource_manager_->PeekAvailableResource(resource_id);
+  EXPECT_TRUE(resource);
 
-  EXPECT_EQ(found_resource->ui_source_id, kTestUiSourceId_2);
-  EXPECT_EQ(found_resource->format, viz::SinglePlaneFormat::kBGRA_8888);
-  EXPECT_EQ(found_resource->resource_size, gfx::Size(10, 20));
+  EXPECT_EQ(resource->ui_source_id, kTestUiSourceId_2);
+  EXPECT_EQ(resource->format, viz::SinglePlaneFormat::kBGRA_8888);
+  EXPECT_EQ(resource->resource_size, gfx::Size(10, 20));
 }
 
 TEST_F(UiResourceManagerTest, OfferResource) {
@@ -128,24 +126,12 @@ TEST_F(UiResourceManagerDeathTest,
 }
 
 TEST_F(UiResourceManagerTest, PrepareResourceForExporting_InvalidIds) {
-  viz::ResourceId to_be_released_resource =
-      resource_manager_->OfferResource(MakeResource(kDefaultSize));
+  resource_manager_->OfferResource(MakeResource(kDefaultSize));
   resource_manager_->OfferResource(std::make_unique<UiResource>());
   {
     // We cannot export a resource that we do not manage.
     auto transferable_resource =
         resource_manager_->PrepareResourceForExport(viz::ResourceId(20));
-    EXPECT_TRUE(transferable_resource.is_empty());
-    EXPECT_EQ(resource_manager_->exported_resources_count(), 0u);
-
-    resource_manager_->ReleaseAvailableResource(to_be_released_resource);
-  }
-  {
-    // We cannot export a resource that was released for the manager.
-    resource_manager_->ReleaseAvailableResource(to_be_released_resource);
-
-    auto transferable_resource =
-        resource_manager_->PrepareResourceForExport(to_be_released_resource);
     EXPECT_TRUE(transferable_resource.is_empty());
     EXPECT_EQ(resource_manager_->exported_resources_count(), 0u);
   }
@@ -184,28 +170,7 @@ TEST_F(UiResourceManagerTest, CannotExportAlreadyExportedResource) {
   EXPECT_TRUE(transferable_resource.is_empty());
 }
 
-TEST_F(UiResourceManagerTest, ReleaseResource_InvalidIds) {
-  // We can only release a resource that we currently manage.
-  const auto released_resource =
-      resource_manager_->ReleaseAvailableResource(viz::ResourceId(20));
-  EXPECT_FALSE(released_resource);
-}
-
-TEST_F(UiResourceManagerTest, ReleaseResource) {
-  viz::ResourceId to_be_released_resource =
-      resource_manager_->OfferResource(std::make_unique<UiResource>());
-  resource_manager_->OfferResource(std::make_unique<UiResource>());
-
-  EXPECT_EQ(resource_manager_->available_resources_count(), 2u);
-
-  auto released_resource =
-      resource_manager_->ReleaseAvailableResource(to_be_released_resource);
-
-  EXPECT_EQ(resource_manager_->available_resources_count(), 1u);
-  EXPECT_EQ(released_resource->resource_id, to_be_released_resource);
-}
-
-TEST_F(UiResourceManagerTest, CannotReleaseExportedResourcesTillReclaimed) {
+TEST_F(UiResourceManagerTest, CannotReuseExportedResourcesTillReclaimed) {
   viz::ResourceId to_be_exported_resource =
       resource_manager_->OfferResource(MakeResource(kDefaultSize));
   resource_manager_->OfferResource(std::make_unique<UiResource>());
@@ -215,8 +180,8 @@ TEST_F(UiResourceManagerTest, CannotReleaseExportedResourcesTillReclaimed) {
   resource_manager_->PrepareResourceForExport(to_be_exported_resource);
 
   // We cannot release an exported resource until the resource is reclaimed.
-  auto released_resource =
-      resource_manager_->ReleaseAvailableResource(to_be_exported_resource);
+  auto released_resource = resource_manager_->GetResourceToReuse(
+      kDefaultSize, viz::SinglePlaneFormat::kBGRA_8888, kTestUiSourceId_1);
 
   EXPECT_FALSE(released_resource);
   EXPECT_EQ(resource_manager_->exported_resources_count(), 1u);
@@ -229,13 +194,14 @@ TEST_F(UiResourceManagerTest, CannotReleaseExportedResourcesTillReclaimed) {
 
   resource_manager_->ReclaimResources(returned);
 
-  viz::ResourceId to_be_released_resource = to_be_exported_resource;
+  EXPECT_EQ(resource_manager_->exported_resources_count(), 0u);
+  EXPECT_EQ(resource_manager_->available_resources_count(), 2u);
 
-  // Now that we reclaimed the exported resource, we can now release it.
-  released_resource =
-      resource_manager_->ReleaseAvailableResource(to_be_released_resource);
-
-  EXPECT_EQ(to_be_released_resource, released_resource->resource_id);
+  // Now that we reclaimed the exported resource, we can now reuse it.
+  released_resource = resource_manager_->GetResourceToReuse(
+      kDefaultSize, viz::SinglePlaneFormat::kBGRA_8888, kTestUiSourceId_1);
+  EXPECT_TRUE(released_resource);
+  EXPECT_EQ(resource_manager_->available_resources_count(), 1u);
 }
 
 TEST_F(UiResourceManagerTest, ExportedResourcesAreLost) {

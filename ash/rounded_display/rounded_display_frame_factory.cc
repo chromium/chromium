@@ -167,15 +167,14 @@ RoundedDisplayFrameFactory::AcquireUiResource(
     UiResourceManager& resource_manager) const {
   gfx::Size resource_size = gutter.bounds().size();
 
-  viz::ResourceId reusable_resource_id = resource_manager.FindResourceToReuse(
+  std::unique_ptr<UiResource> ui_resource = resource_manager.GetResourceToReuse(
       resource_size, kSharedImageFormat, gutter.ui_source_id());
 
   std::unique_ptr<RoundedDisplayUiResource> resource;
 
-  if (reusable_resource_id != viz::kInvalidResourceId) {
-    resource = base::WrapUnique(static_cast<RoundedDisplayUiResource*>(
-        resource_manager.ReleaseAvailableResource(reusable_resource_id)
-            .release()));
+  if (ui_resource) {
+    resource = base::WrapUnique(
+        static_cast<RoundedDisplayUiResource*>(ui_resource.release()));
   } else {
     resource = CreateUiResource(resource_size, kSharedImageFormat,
                                 gutter.ui_source_id(), gutter.NeedsOverlays());

@@ -58,6 +58,17 @@ std::unique_ptr<UiResource> UiResourceManager::ReleaseAvailableResource(
   return to_be_release_resource;
 }
 
+std::unique_ptr<UiResource> UiResourceManager::GetResourceToReuse(
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    UiSourceId ui_source_id) {
+  viz::ResourceId id = FindResourceToReuse(size, format, ui_source_id);
+  if (id != viz::kInvalidResourceId) {
+    return ReleaseAvailableResource(id);
+  }
+  return nullptr;
+}
+
 viz::ResourceId UiResourceManager::OfferResource(
     std::unique_ptr<UiResource> resource) {
   if (!resource) {
@@ -69,17 +80,6 @@ viz::ResourceId UiResourceManager::OfferResource(
   available_resources_pool_[new_id] = std::move(resource);
 
   return new_id;
-}
-
-const UiResource* UiResourceManager::PeekAvailableResource(
-    viz::ResourceId resource_id) const {
-  auto iter = available_resources_pool_.find(resource_id);
-
-  if (iter != available_resources_pool_.end()) {
-    return iter->second.get();
-  }
-
-  return nullptr;
 }
 
 const UiResource* UiResourceManager::PeekExportedResource(
