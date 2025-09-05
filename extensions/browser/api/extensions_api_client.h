@@ -141,9 +141,9 @@ class ExtensionsAPIClient {
   virtual void ClearActionCount(content::BrowserContext* context,
                                 const Extension& extension);
 
-  // A method to open file: URL for tests.
-  virtual void OpenFileUrl(const GURL& file_url,
-                           content::BrowserContext* browser_context);
+  // A method to open file: URL for tests (e.g. chrome.test.openFileUrl).
+  virtual void OpenFileUrlForTesting(const GURL& file_url,
+                                     content::BrowserContext* browser_context);
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Creates the AppViewGuestDelegate.

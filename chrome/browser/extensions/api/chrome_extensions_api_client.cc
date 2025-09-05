@@ -284,7 +284,7 @@ void ChromeExtensionsAPIClient::ClearActionCount(
   }
 }
 
-void ChromeExtensionsAPIClient::OpenFileUrl(
+void ChromeExtensionsAPIClient::OpenFileUrlForTesting(
     const GURL& file_url,
     content::BrowserContext* browser_context) {
   CHECK(file_url.is_valid());

@@ -58,8 +58,8 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
                          bool clear_badge_text) override;
   void ClearActionCount(content::BrowserContext* context,
                         const Extension& extension) override;
-  void OpenFileUrl(const GURL& file_url,
-                   content::BrowserContext* browser_context) override;
+  void OpenFileUrlForTesting(const GURL& file_url,
+                             content::BrowserContext* browser_context) override;
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   std::unique_ptr<AppViewGuestDelegate> CreateAppViewGuestDelegate()
       const override;
