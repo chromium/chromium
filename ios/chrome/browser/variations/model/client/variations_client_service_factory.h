@@ -23,9 +23,9 @@ class VariationsClientServiceFactory : public ProfileKeyedServiceFactoryIOS {
   VariationsClientServiceFactory();
   ~VariationsClientServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_VARIATIONS_MODEL_CLIENT_VARIATIONS_CLIENT_SERVICE_FACTORY_H_

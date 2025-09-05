@@ -31,7 +31,6 @@ VariationsClientServiceFactory::~VariationsClientServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 VariationsClientServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return std::make_unique<VariationsClientService>(
-      ProfileIOS::FromBrowserState(context));
+    ProfileIOS* profile) const {
+  return std::make_unique<VariationsClientService>(profile);
 }
