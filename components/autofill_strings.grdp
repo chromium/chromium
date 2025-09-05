@@ -960,14 +960,8 @@
   <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_BODY" desc="The body text in a promotional bubble that appears beneath the title: “Autofill just got better”. * “Turn on”: This new feature is opt in, so we want to encourage users to click “Go to settings” and turn the feature on. “enhanced autofill” is what we're calling this new feature. We want users to associate the new feature with the familiar autofill functionality they're already used to but want to convey how it's different (AI). * “automatically” should feel valuable to users as the autofill service is making tasks for them simpler. * “more fields”: the existing autofill functionality in Chrome covers things like passwords, credit cards, and building addresses. With this new service, we can also cover 1) passports, 2) vehicles, and 3) driver's licenses.">
     Turn on enhanced autofill to automatically fill more fields
   </message>
-  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_SEE_HOW" desc="The right of two buttons that’s the user’s path learning more and turning on enhanced autofill. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
-    See how
-  </message>
   <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TURN_ON" desc="The right of two buttons that’s the user’s path learning more and turning on enhanced autofill. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
     Turn on
-  </message>
-    <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TRY_IT" desc="The right of two buttons that’s the user’s path learning more and turning on enhanced autofill. This button label should pair with the title (in other words, assume the user doesn’t read the body text. Does the title and primary button label make sense together)?">
-    Try it
   </message>
   <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_MAYBE_LATER" desc="The left of two buttons that’s essentially the user’s path to not learning more or turning on enhanced autofill. “Maybe later” conveys that the user won’t do it now but that they’ll have the choice to do it later. Localizer has existing translations of this button label.">
     Maybe later
