@@ -542,8 +542,15 @@ public final class TabGridViewBinderUnitTest {
     public void testMediaIndicator() {
         mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
-
         verify(mViewGroup).setMediaIndicator(eq(MediaState.AUDIBLE));
+
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.MUTED);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mViewGroup).setMediaIndicator(eq(MediaState.MUTED));
+
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);
+        verify(mViewGroup).setMediaIndicator(eq(MediaState.NONE));
     }
 
     @Test

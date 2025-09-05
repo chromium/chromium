@@ -34,6 +34,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
 import org.chromium.chrome.browser.tab.Tab.MediaState;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
@@ -209,20 +210,20 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
     }
 
     void setMediaIndicator(@MediaState int mediaState) {
-        // TODO(crbug.com/430072416): Update state for muted tabs once the setting controls are
-        // implemented.
+        // TODO(crbug.com/430072416): Add other media indicators.
         TextView tabTitle = findViewById(R.id.tab_title);
         ImageView tabMediaIndicator = findViewById(R.id.media_indicator_icon);
+        tabMediaIndicator.setImageResource(TabUtils.getMediaIndicatorDrawable(mediaState));
         ConstraintLayout.LayoutParams titleParams =
                 (ConstraintLayout.LayoutParams) tabTitle.getLayoutParams();
 
         int mediaIndicatorVisibility = View.GONE;
         switch (mediaState) {
             case MediaState.AUDIBLE:
+            case MediaState.MUTED:
                 titleParams.endToEnd = R.id.media_indicator_icon;
                 mediaIndicatorVisibility = View.VISIBLE;
                 break;
-            case MediaState.MUTED:
             case MediaState.RECORDING:
             case MediaState.SHARING:
             case MediaState.NONE:

@@ -376,6 +376,10 @@ public class TabUtils {
 
     public static @DrawableRes int getMediaIndicatorDrawable(@MediaState int mediaState) {
         // TODO(crbug.com/430072416): Add other media indicators.
-        return mediaState == MediaState.AUDIBLE ? R.drawable.volume_up_24dp : Resources.ID_NULL;
+        return switch (mediaState) {
+            case MediaState.AUDIBLE -> R.drawable.volume_up_24dp;
+            case MediaState.MUTED -> R.drawable.volume_off_24dp;
+            default -> Resources.ID_NULL;
+        };
     }
 }

@@ -86,6 +86,7 @@ class WebContentsObserverProxy : public WebContentsObserver {
   void OnWebContentsFocused(RenderWidgetHost*) override;
   void OnWebContentsLostFocus(RenderWidgetHost*) override;
   void MediaSessionCreated(MediaSession* media_session) override;
+  void DidUpdateAudioMutingState(bool muted) override;
 
   base::android::ScopedJavaGlobalRef<jobject> java_observer_;
   GURL base_url_of_last_started_data_url_;

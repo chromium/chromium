@@ -130,6 +130,10 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
     }
 
+    public @Nullable WebContentsObserver getWebContentsObserverForTesting() {
+        return mObserver;
+    }
+
     private void showSadTab(SadTab sadTab) {
         sadTab.show(
                 mTab.getThemedApplicationContext(),
@@ -418,13 +422,25 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void mediaStartedPlaying() {
-            // TODO(crbug.com/430072416): Identify when audio is muted.
-            mTab.setMediaState(MediaState.AUDIBLE);
+            WebContents contents = mTab.getWebContents();
+            if (contents == null) {
+                mTab.setMediaState(MediaState.NONE);
+            } else {
+                mTab.setMediaState(contents.isAudioMuted() ? MediaState.MUTED : MediaState.AUDIBLE);
+            }
         }
 
         @Override
         public void mediaStoppedPlaying() {
             mTab.setMediaState(MediaState.NONE);
+        }
+
+        @Override
+        public void didUpdateAudioMutingState(boolean muted) {
+            @MediaState int state = mTab.getMediaState();
+            if (state == MediaState.AUDIBLE || state == MediaState.MUTED) {
+                mTab.setMediaState(muted ? MediaState.MUTED : MediaState.AUDIBLE);
+            }
         }
     }
 }

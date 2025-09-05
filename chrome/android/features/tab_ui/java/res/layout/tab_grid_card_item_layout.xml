@@ -90,7 +90,6 @@ found in the LICENSE file.
           android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
         <ImageView
             android:id="@+id/media_indicator_icon"
-            android:src="@drawable/volume_up_24dp"
             android:layout_height="@dimen/tab_grid_card_header_height"
             android:layout_width="@dimen/tab_grid_card_header_height"
             android:layout_gravity="center_vertical"
