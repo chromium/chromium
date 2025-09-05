@@ -74,6 +74,14 @@ struct ProfileWithText {
   std::u16string text;
 };
 
+// Used to hold the relevant data for address on typing suggestions between
+// fetching and generating phases of the suggestion generation.
+struct AddressOnTypingSuggestionData {
+  std::u16string suggestion_text;
+  FieldType type;
+  std::string guid;
+};
+
 Suggestion CreateUndoOrClearFormSuggestion() {
 #if BUILDFLAG(IS_IOS)
   std::u16string value =
@@ -622,10 +630,7 @@ SuggestionType GetSuggestionType(FormFieldData trigger_field) {
              : SuggestionType::kAddressEntry;
 }
 
-}  // namespace
-
-// TODO(crbug.com/409962888): Handle address suggestions on typing.
-std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
+std::vector<AddressOnTypingSuggestionData> GetAddressOnTypingSuggestionData(
     const AddressDataManager& address_data_manager,
     const std::u16string& field_contents) {
   // Get the profiles to suggest, which are already sorted by relevance.
@@ -674,8 +679,8 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   static constexpr FieldTypeSet kTypesWithLessRequiredMatchingCharacters = {
       ADDRESS_HOME_ZIP};
 
-  std::vector<Suggestion> suggestions;
   std::set<std::u16string> suggestions_text;
+  std::vector<AddressOnTypingSuggestionData> suggestion_data;
   // The number of profiles that data will be derived from when generating
   // suggestions.
   static constexpr size_t kMaxNumberProfilesToUse = 2;
@@ -728,14 +733,30 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
       // `ADDRESS_HOME_LINE1` and
       // `ADDRESS_HOME_STREET_ADDRESS` hold the same data.
       if (!suggestions_text.contains(suggestion_text)) {
-        suggestions.emplace_back(suggestion_text,
-                                 SuggestionType::kAddressEntryOnTyping);
-        suggestions.back().field_by_field_filling_type_used = type;
-        suggestions.back().payload = Suggestion::AutofillProfilePayload(
-            Suggestion::Guid(profile->guid()));
+        suggestion_data.push_back({suggestion_text, type, profile->guid()});
         suggestions_text.insert(suggestion_text);
       }
     }
+  }
+
+  return suggestion_data;
+}
+
+}  // namespace
+
+// TODO(crbug.com/409962888): Handle address suggestions on typing.
+std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
+    const AddressDataManager& address_data_manager,
+    const std::u16string& field_contents) {
+  std::vector<Suggestion> suggestions;
+
+  for (const AddressOnTypingSuggestionData& data :
+       GetAddressOnTypingSuggestionData(address_data_manager, field_contents)) {
+    suggestions.emplace_back(data.suggestion_text,
+                             SuggestionType::kAddressEntryOnTyping);
+    suggestions.back().field_by_field_filling_type_used = data.type;
+    suggestions.back().payload =
+        Suggestion::AutofillProfilePayload(Suggestion::Guid(data.guid));
   }
   if (suggestions.size() > 0) {
     // TODO(crbug.com/381994105): Consider adding undo.
