@@ -147,7 +147,7 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(kNoiseDurationMetricName,
                                           elapsed_time, base::Microseconds(50),
-                                          base::Milliseconds(50), 50);
+                                          base::Milliseconds(100), 100);
   UMA_HISTOGRAM_COUNTS_1M(kCanvasSizeMetricName,
                           pixmap_to_noise.width() * pixmap_to_noise.height());
   UseCounter::Count(execution_context, WebFeature::kCanvasReadbackNoise);
