@@ -20,7 +20,7 @@ class PhotosServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static PhotosServiceFactory* GetInstance();
 
   // Returns the default factory.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<PhotosServiceFactory>;
@@ -28,9 +28,9 @@ class PhotosServiceFactory : public ProfileKeyedServiceFactoryIOS {
   PhotosServiceFactory();
   ~PhotosServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_SERVICE_FACTORY_H_
