@@ -873,9 +873,9 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     PrefetchMatchResolver::FindPrefetchForTesting(
         prefetch_service(), std::move(key),
         PrefetchServiceWorkerState::kDisallowed,
+        /*is_nav_prerender=*/false,
         GetServingPageMetricsContainerForMostRecentNavigation(),
-        std::move(callback),
-        /*is_nav_prerender=*/false);
+        std::move(callback));
   }
 
   PrefetchServingHandle GetPrefetchToServe(
@@ -958,9 +958,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     auto key = PrefetchKey(initiator_document_token, url);
     PrefetchMatchResolver::FindPrefetchForTesting(
         prefetch_service(), std::move(key),
-        PrefetchServiceWorkerState::kDisallowed,
-        std::move(serving_page_metrics_container), std::move(callback),
-        is_nav_prerender);
+        PrefetchServiceWorkerState::kDisallowed, is_nav_prerender,
+        std::move(serving_page_metrics_container), std::move(callback));
 
     return res;
   }

@@ -137,10 +137,10 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       PrefetchService& prefetch_service,
       PrefetchKey navigated_key,
       PrefetchServiceWorkerState expected_service_worker_state,
+      bool is_nav_prerender,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           serving_page_metrics_container,
-      Callback callback,
-      bool is_nav_prerender);
+      Callback callback);
 
  private:
   struct CandidateData final {
@@ -150,6 +150,17 @@ class CONTENT_EXPORT PrefetchMatchResolver final
     base::WeakPtr<PrefetchContainer> prefetch_container;
     std::unique_ptr<base::OneShotTimer> timeout_timer;
   };
+
+  static void FindPrefetchInternal1(
+      base::WeakPtr<NavigationRequest> navigation_request,
+      PrefetchService& prefetch_service,
+      PrefetchKey navigated_key,
+      PrefetchServiceWorkerState expected_service_worker_state,
+      bool is_nav_prerender,
+      base::WeakPtr<PrerenderHost> prerender_host,
+      base::WeakPtr<PrefetchServingPageMetricsContainer>
+          serving_page_metrics_container,
+      Callback callback);
 
   explicit PrefetchMatchResolver(
       base::WeakPtr<NavigationRequest> navigation_request,
@@ -175,9 +186,9 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   // - This implementation has timeout: `CandidateData::timeout_timer`.
   // - This implementation collects candidate prefetches first. So, it doesn't
   //   handle prefetches started after this method started.
-  void FindPrefetchInternal(PrefetchService& prefetch_service,
-                            base::WeakPtr<PrefetchServingPageMetricsContainer>
-                                serving_page_metrics_container);
+  void FindPrefetchInternal2(PrefetchService& prefetch_service,
+                             base::WeakPtr<PrefetchServingPageMetricsContainer>
+                                 serving_page_metrics_container);
   // Each candidate `PrefetchContainer` proceeds to
   //
   //    `RegisterCandidate()` (required)
