@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -1982,6 +1983,84 @@ TEST(PNGTests, RecoveringToReadFirstFrameAfterSecondFrameFailure) {
     ASSERT_TRUE(frame1b);
     EXPECT_EQ(frame1b->GetStatus(), ImageFrame::kFrameEmpty);
   }
+}
+
+// Regression test for https://crbug.com/428205250 where an `fcTL` appearing
+// before `IDAT` violates the spec which says that in "the fcTL chunk
+// corresponding to the default image [...] the x_offset and y_offset fields
+// must be 0 [and] the width and height fields must equal the corresponding
+// fields from the IHDR chunk."
+TEST(PNGTests, SmallFctlBeforeIdat) {
+  // In all the test inputs below we have:
+  // - IHDR: dimensions=50x50
+  // - IDAT: red 50x50 pixels
+  // - fcTL: dimensions=50x50 offset=10,10
+  // - fdAT: red 30x30 pixels
+  std::array<const char*, 2> kTestFiles = {
+      // acTL: frame_count=1, num_plays=1:
+      "/images/resources/ihdr50_actl_fctl30_idat.png",
+      // No acTL chunk in this test input:
+      "/images/resources/ihdr50_fctl30_idat.png",
+  };
+  for (const char* file : kTestFiles) {
+    SCOPED_TRACE(testing::Message() << "Testing '" << file << "'");
+    scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(file);
+    ASSERT_TRUE(data);
+    EXPECT_FALSE(data->empty());
+
+    auto decoder = CreatePNGDecoder();
+    ASSERT_TRUE(decoder);
+    decoder->SetData(data.get(), true);
+    decoder->DecodeFrameBufferAtIndex(0);
+
+    // We don't check/enforce an exact output for this malformed input.
+    // The main verification here is that no assertions are violated,
+    // and no crashes happen.
+    ASSERT_TRUE(decoder->Failed());
+  }
+}
+
+// Regression test for a scenario somewhat-but-not-quite related to
+// https://crbug.com/428205250: an image with the following chunks:
+//
+// - IHDR: dimensions=50x50
+// - acTL: frame_count=1, num_plays=1
+// - IDAT: red 50x50 pixels
+// - fcTL: dimensions=50x50 offset=10,10
+// - fdAT: red 30x30 pixels
+//
+// The spec only restricts `fcTL` dimensions to be the same as `IHDR` dimensions
+// when `fcTL` appears before and applies to an `IDAT` chunk (i.e. for "fcTL
+// chunk corresponding to the default image").  Therefore it seems okay that the
+// input above has 30x30 `fcTL` / `fdAT` as the very first frame of an
+// animation.
+//
+// The spec says that "the output buffer must be completely initialized to fully
+// transparent black at the beginning of each play".  Therefore the input above
+// should probably result in a red 30x30 square, surrounded by a 10-pixels-wide
+// margin of "fully transparent" (alpha=0) "black" (r=g=b=0).
+TEST(PNGTests, Ihdr50ActlIdatFctl30Fdat) {
+  const char* png_file = "/images/resources/ihdr50_actl_idat_fctl30_fdat.png";
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(png_file);
+  ASSERT_TRUE(data);
+  EXPECT_FALSE(data->empty());
+
+  auto decoder = CreatePNGDecoder();
+  ASSERT_TRUE(decoder);
+
+  decoder->SetData(data.get(), true);
+  const ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  EXPECT_FALSE(decoder->Failed());
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+  EXPECT_EQ(gfx::Rect(10, 10, 30, 30), frame->OriginalFrameRect());
+  EXPECT_EQ(gfx::Size(50, 50), decoder->Size());
+
+  SkColor center = frame->Bitmap().getColor(25, 25);
+  EXPECT_EQ(center, SkColorSetARGB(255, 255, 0, 0));
+
+  SkColor margin = frame->Bitmap().getColor(5, 5);
+  EXPECT_EQ(margin, SkColorSetARGB(0, 0, 0, 0));
 }
 
 }  // namespace
