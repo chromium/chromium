@@ -17,6 +17,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -242,6 +243,38 @@ TEST_F(GlicMediaIntegrationTest, PeerConnectionPreventsTranscription) {
 
   auto* context = GetContext();
   EXPECT_TRUE(context->is_excluded_from_transcript_for_testing());
+}
+
+TEST_F(GlicMediaIntegrationTest, PeerConnectionExcludesAllSubframes) {
+  auto* integration = GetIntegration();
+  auto* main_frame = rfh();
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com/"));
+  const GURL subframe_url("https://www.subframe.com/");
+  content::RenderFrameHost* subframe =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          subframe_url, content::RenderFrameHostTester::For(main_frame)
+                            ->AppendChild("subframe"));
+
+  // Create contexts for both frames.
+  auto* main_context =
+      GlicMediaContext::GetOrCreateForCurrentDocument(main_frame);
+  auto* subframe_context =
+      GlicMediaContext::GetOrCreateForCurrentDocument(subframe);
+
+  // Add a peer connection to the main frame.
+  integration->OnPeerConnectionAddedForTesting(main_frame);
+
+  // Verify both frames are excluded.
+  EXPECT_TRUE(main_context->is_excluded_from_transcript_for_testing());
+  EXPECT_TRUE(subframe_context->is_excluded_from_transcript_for_testing());
+
+  // Remove the peer connection.
+  integration->OnPeerConnectionRemovedForTesting(main_frame);
+
+  // Verify both frames are no longer excluded.
+  EXPECT_FALSE(main_context->is_excluded_from_transcript_for_testing());
+  EXPECT_FALSE(subframe_context->is_excluded_from_transcript_for_testing());
 }
 
 TEST_F(GlicMediaIntegrationTest, ExcludedOriginsStopTranscription) {

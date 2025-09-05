@@ -47,8 +47,9 @@ class GlicMediaIntegration {
       content::RenderFrameHost* rfh,
       optimization_guide::proto::ContentNode* context_root) = 0;
 
-  // Pretend that a peer connection has been added.
+  // Pretend that a peer connection has been added / removed.
   virtual void OnPeerConnectionAddedForTesting(content::RenderFrameHost*) = 0;
+  virtual void OnPeerConnectionRemovedForTesting(content::RenderFrameHost*) = 0;
 
   // Set the possibly empty list of origins to exclude from transcription.
   virtual void SetExcludedOrigins(

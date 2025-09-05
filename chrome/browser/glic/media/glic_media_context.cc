@@ -43,7 +43,10 @@ GlicMediaContext::~GlicMediaContext() {
 bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
   Transcript* transcript = GetOrCreateTranscript();
   if (!transcript) {
-    return false;
+    // Do not turn off transcription here, since there's no way to re-enable it
+    // later.  For example, if `IsExcludedByTranscript()` changes, then we'd be
+    // stuck without transcription.
+    return true;
   }
 
   // Discard results that have multiple media timestamps.  These happen around
@@ -245,20 +248,22 @@ GlicMediaContext::GetTranscriptChunks() const {
 }
 
 void GlicMediaContext::OnPeerConnectionAdded() {
-  is_excluded_from_transcript_ = true;
+  num_peer_connections_++;
+}
+
+void GlicMediaContext::OnPeerConnectionRemoved() {
+  if (num_peer_connections_ > 0) {
+    num_peer_connections_--;
+  }
 }
 
 bool GlicMediaContext::IsExcludedFromTranscript() const {
-  if (is_excluded_from_transcript_) {
-    return true;
-  }
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
-  is_excluded_from_transcript_ |= MediaCaptureDevicesDispatcher::GetInstance()
-                                      ->GetMediaStreamCaptureIndicator()
-                                      ->IsCapturingUserMedia(web_contents);
-
-  return is_excluded_from_transcript_;
+  return num_peer_connections_ > 0 ||
+         MediaCaptureDevicesDispatcher::GetInstance()
+             ->GetMediaStreamCaptureIndicator()
+             ->IsCapturingUserMedia(web_contents);
 }
 
 void GlicMediaContext::RemoveOverlappingChunks(

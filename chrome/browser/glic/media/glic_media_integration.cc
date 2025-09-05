@@ -44,15 +44,35 @@ class GlicMediaPeerConnectionObserver
       return;
     }
 
-    // For now, attribute everything to the primary main frame of the
-    // WebContents, even for subframes.
-    auto* context = glic::GlicMediaContext::GetOrCreateForCurrentDocument(
-        wc->GetPrimaryMainFrame());
-    if (!context) {
+    // Attribute this to all frames in the WebContents.
+    wc->ForEachRenderFrameHost([](content::RenderFrameHost* rfh) {
+      if (auto* context =
+              glic::GlicMediaContext::GetOrCreateForCurrentDocument(rfh)) {
+        context->OnPeerConnectionAdded();
+      }
+    });
+  }
+
+  void OnPeerConnectionRemoved(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      int lid) override {
+    auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id);
+    if (!rfh) {
       return;
     }
 
-    context->OnPeerConnectionAdded();
+    auto* wc = content::WebContents::FromRenderFrameHost(rfh);
+    if (!wc) {
+      return;
+    }
+
+    // Attribute this to all frames in the WebContents.
+    wc->ForEachRenderFrameHost([](content::RenderFrameHost* rfh) {
+      if (auto* context =
+              glic::GlicMediaContext::GetOrCreateForCurrentDocument(rfh)) {
+        context->OnPeerConnectionRemoved();
+      }
+    });
   }
 };
 
@@ -70,6 +90,7 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
       content::RenderFrameHost* rfh,
       optimization_guide::proto::ContentNode* context_root) override;
   void OnPeerConnectionAddedForTesting(content::RenderFrameHost*) override;
+  void OnPeerConnectionRemovedForTesting(content::RenderFrameHost*) override;
   void SetExcludedOrigins(
       const std::vector<url::Origin>& excluded_origins) override;
 
@@ -236,6 +257,12 @@ void GlicMediaIntegrationImpl::OnPeerConnectionAddedForTesting(
   auto id = rfh->GetGlobalId();
   rtc_observer_->OnPeerConnectionAdded(id, /*lid=*/0, /*pid=*/{}, /*url=*/"",
                                        /*rtc_configuration=*/"");
+}
+
+void GlicMediaIntegrationImpl::OnPeerConnectionRemovedForTesting(
+    content::RenderFrameHost* rfh) {
+  auto id = rfh->GetGlobalId();
+  rtc_observer_->OnPeerConnectionRemoved(id, /*lid=*/0);
 }
 
 void GlicMediaIntegrationImpl::SetExcludedOrigins(

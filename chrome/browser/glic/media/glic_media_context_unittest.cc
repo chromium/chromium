@@ -173,7 +173,7 @@ TEST_F(GlicMediaContextTest, AudioCaptureStopsTranscription) {
   ASSERT_TRUE(capture_dispatcher->IsCapturingAudio(web_contents()));
 
   // Send a transcription and verify that it is ignored.
-  EXPECT_FALSE(context()->OnResult(
+  EXPECT_TRUE(context()->OnResult(
       media::SpeechRecognitionResult("ABC", /*is_final=*/true)));
   EXPECT_EQ(context()->GetContext(), "");
 
@@ -184,9 +184,53 @@ TEST_F(GlicMediaContextTest, PeerConnectionStopsTranscription) {
   // Send a transcription and verify that it is ignored once a peer connection
   // is added to the WebContents.
   context()->OnPeerConnectionAdded();
-  EXPECT_FALSE(context()->OnResult(
+  EXPECT_TRUE(context()->OnResult(
       media::SpeechRecognitionResult("ABC", /*is_final=*/true)));
   EXPECT_EQ(context()->GetContext(), "");
+}
+
+TEST_F(GlicMediaContextTest, PeerConnectionAddedAndRemovedResetsExclusion) {
+  context()->OnPeerConnectionAdded();
+  EXPECT_TRUE(context()->is_excluded_from_transcript_for_testing());
+  context()->OnPeerConnectionRemoved();
+  EXPECT_FALSE(context()->is_excluded_from_transcript_for_testing());
+}
+
+TEST_F(GlicMediaContextTest, ExclusionRemainsIfUserMediaIsActive) {
+  // Enable user media capture.
+  auto capture_dispatcher = MediaCaptureDevicesDispatcher::GetInstance()
+                                ->GetMediaStreamCaptureIndicator();
+  const blink::MediaStreamDevice audio_device(
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "id", "name");
+  blink::mojom::StreamDevices devices(audio_device, {});
+  auto stream =
+      capture_dispatcher->RegisterMediaStream(web_contents(), devices);
+  stream->OnStarted(base::DoNothing(), content::MediaStreamUI::SourceCallback(),
+                    std::string(), {},
+                    content::MediaStreamUI::StateChangeCallback());
+  ASSERT_TRUE(capture_dispatcher->IsCapturingAudio(web_contents()));
+
+  // Add and remove a peer connection.
+  context()->OnPeerConnectionAdded();
+  EXPECT_TRUE(context()->is_excluded_from_transcript_for_testing());
+  context()->OnPeerConnectionRemoved();
+
+  // Exclusion should remain active because of user media.
+  EXPECT_TRUE(context()->is_excluded_from_transcript_for_testing());
+
+  stream.reset();
+}
+
+TEST_F(GlicMediaContextTest, ExclusionRemainsIfPeerConnectionsAreActive) {
+  context()->OnPeerConnectionAdded();
+  context()->OnPeerConnectionAdded();
+  EXPECT_TRUE(context()->is_excluded_from_transcript_for_testing());
+
+  context()->OnPeerConnectionRemoved();
+  EXPECT_TRUE(context()->is_excluded_from_transcript_for_testing());
+
+  context()->OnPeerConnectionRemoved();
+  EXPECT_FALSE(context()->is_excluded_from_transcript_for_testing());
 }
 
 TEST_F(GlicMediaContextTest, OnResult_FinalResultWithTiming_EmptyContext) {
@@ -535,13 +579,13 @@ TEST_F(GlicMediaContextTest, GetMediaSessionIfExists_FiltersByRoutedFrame) {
   // If the routed frame is not `rfh()`, then `OnResult` should do nothing.
   // nullptr, in this case, is just something that is not rfh().
   ON_CALL(mock_media_session(), GetRoutedFrame).WillByDefault(Return(nullptr));
-  EXPECT_EQ(context()->OnResult(CreateSpeechRecognitionResult("test", true)),
-            false);
+  EXPECT_TRUE(context()->OnResult(CreateSpeechRecognitionResult("test", true)));
+  EXPECT_EQ(context()->GetContext(), "");
 
   // If the routed frame is `rfh()`, then it should return the session.
   ON_CALL(mock_media_session(), GetRoutedFrame).WillByDefault(Return(rfh()));
-  EXPECT_EQ(context()->OnResult(CreateSpeechRecognitionResult("test", true)),
-            true);
+  EXPECT_TRUE(context()->OnResult(CreateSpeechRecognitionResult("test", true)));
+  EXPECT_EQ(context()->GetContext(), "test");
 }
 
 }  // namespace glic

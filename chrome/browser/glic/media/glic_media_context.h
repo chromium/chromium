@@ -35,6 +35,7 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
   std::string GetContext() const;
 
   void OnPeerConnectionAdded();
+  void OnPeerConnectionRemoved();
 
   bool is_excluded_from_transcript_for_testing() {
     return IsExcludedFromTranscript();
@@ -141,7 +142,7 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
   // Map from media session title to transcript.
   std::map<std::u16string, std::unique_ptr<Transcript>> transcripts_by_title_;
 
-  mutable bool is_excluded_from_transcript_ = false;
+  size_t num_peer_connections_ = 0;
 };
 
 }  // namespace glic
