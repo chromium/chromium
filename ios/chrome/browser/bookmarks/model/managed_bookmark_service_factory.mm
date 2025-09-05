@@ -32,9 +32,7 @@ std::string GetManagedBookmarksDomain(ProfileIOS* profile) {
           ->GetCachedHostedDomainForIdentity(identity));
 }
 
-std::unique_ptr<KeyedService> BuildManagedBookmarkModel(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildManagedBookmarkModel(ProfileIOS* profile) {
   // base::Unretained is safe because ManagedBookmarkService will
   // be destroyed before the profile it is attached to.
   return std::make_unique<bookmarks::ManagedBookmarkService>(
@@ -59,9 +57,9 @@ ManagedBookmarkServiceFactory* ManagedBookmarkServiceFactory::GetInstance() {
 }
 
 // static
-ManagedBookmarkServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 ManagedBookmarkServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildManagedBookmarkModel);
+  return base::BindOnce(&BuildManagedBookmarkModel);
 }
 
 ManagedBookmarkServiceFactory::ManagedBookmarkServiceFactory()
@@ -72,6 +70,6 @@ ManagedBookmarkServiceFactory::~ManagedBookmarkServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 ManagedBookmarkServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildManagedBookmarkModel(context);
+    ProfileIOS* profile) const {
+  return BuildManagedBookmarkModel(profile);
 }

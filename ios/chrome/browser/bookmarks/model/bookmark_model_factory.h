@@ -24,7 +24,7 @@ class BookmarkModelFactory : public ProfileKeyedServiceFactoryIOS {
   static BookmarkModelFactory* GetInstance();
 
   // Returns the default factory, useful in tests where it's null by default.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<BookmarkModelFactory>;
@@ -32,11 +32,11 @@ class BookmarkModelFactory : public ProfileKeyedServiceFactoryIOS {
   BookmarkModelFactory();
   ~BookmarkModelFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios
