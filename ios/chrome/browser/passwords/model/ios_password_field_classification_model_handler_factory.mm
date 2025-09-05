@@ -42,8 +42,7 @@ IOSPasswordFieldClassificationModelHandlerFactory::
 
 std::unique_ptr<KeyedService>
 IOSPasswordFieldClassificationModelHandlerFactory::BuildServiceInstanceFor(
-    web::BrowserState* state) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(state);
+    ProfileIOS* profile) const {
   OptimizationGuideService* optimization_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);
   if (!optimization_guide) {

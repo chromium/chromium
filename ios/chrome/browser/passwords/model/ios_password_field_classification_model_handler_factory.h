@@ -26,9 +26,9 @@ class IOSPasswordFieldClassificationModelHandlerFactory
   IOSPasswordFieldClassificationModelHandlerFactory();
   ~IOSPasswordFieldClassificationModelHandlerFactory() override;
 
-  // BrowserStateKeyedServiceFactory overrides:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_FIELD_CLASSIFICATION_MODEL_HANDLER_FACTORY_H_

@@ -39,7 +39,7 @@ IOSChromePasswordSenderServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromePasswordSenderServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::OUTGOING_PASSWORD_SHARING_INVITATION,

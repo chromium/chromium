@@ -34,7 +34,7 @@ PasswordManagerLogRouterFactory::~PasswordManagerLogRouterFactory() = default;
 
 std::unique_ptr<KeyedService>
 PasswordManagerLogRouterFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<LogRouter>();
 }
 

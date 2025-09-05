@@ -26,7 +26,7 @@ class IOSChromePasswordCheckManagerFactory
   ~IOSChromePasswordCheckManagerFactory() override;
 
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_CHECK_MANAGER_FACTORY_H_

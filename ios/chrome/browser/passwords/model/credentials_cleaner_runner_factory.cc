@@ -28,6 +28,6 @@ CredentialsCleanerRunnerFactory::GetForProfile(ProfileIOS* profile) {
 
 std::unique_ptr<KeyedService>
 CredentialsCleanerRunnerFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
+    ProfileIOS* profile) const {
   return std::make_unique<password_manager::CredentialsCleanerRunner>();
 }

@@ -45,8 +45,7 @@ IOSChromePasswordCheckManagerFactory::~IOSChromePasswordCheckManagerFactory() =
 
 scoped_refptr<RefcountedKeyedService>
 IOSChromePasswordCheckManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return base::MakeRefCounted<IOSChromePasswordCheckManager>(
       profile->GetPrefs(),
       IOSChromeBulkLeakCheckServiceFactory::GetForProfile(profile),

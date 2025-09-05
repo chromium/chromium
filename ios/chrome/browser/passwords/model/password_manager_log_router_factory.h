@@ -28,9 +28,9 @@ class PasswordManagerLogRouterFactory : public ProfileKeyedServiceFactoryIOS {
   PasswordManagerLogRouterFactory();
   ~PasswordManagerLogRouterFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

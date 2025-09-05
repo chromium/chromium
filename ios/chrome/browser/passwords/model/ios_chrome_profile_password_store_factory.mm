@@ -70,8 +70,7 @@ IOSChromeProfilePasswordStoreFactory::~IOSChromeProfilePasswordStoreFactory() {}
 
 scoped_refptr<RefcountedKeyedService>
 IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabase(password_manager::kProfileStore,
                                             profile->GetStatePath(),
