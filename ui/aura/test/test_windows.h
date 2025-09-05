@@ -30,8 +30,6 @@ std::unique_ptr<Window> CreateTestWindow(WindowBuilderParams params = {},
 // Creates a test window. If parent window is nullptr, then the caller must take
 // ownership of the created window.
 // Deprecated: Use CreateTestWindow above.
-Window* CreateTestWindowWithId(int id, Window* parent);
-Window* CreateTestWindowWithBounds(const gfx::Rect& bounds, Window* parent);
 Window* CreateTestWindow(SkColor color,
                          int id,
                          const gfx::Rect& bounds,

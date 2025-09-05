@@ -2461,8 +2461,8 @@ TEST_F(GestureRecognizerTest, GestureEventTouchLockIgnoresOtherScreens) {
 // by the root window's gesture sequence.
 TEST_F(GestureRecognizerTest, GestureEventOutsideRootWindowTap) {
   TimedEvents tes;
-  std::unique_ptr<aura::Window> window(CreateTestWindowWithBounds(
-      gfx::Rect(-100, -100, 2000, 2000), root_window()));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow({.bounds = {-100, -100, 2000, 2000}}, root_window()));
 
   gfx::Point pos1(-10, -10);
   ui::TouchEvent press1(ui::EventType::kTouchPressed, pos1, tes.Now(),
@@ -2656,7 +2656,7 @@ TEST_F(GestureRecognizerTest, CaptureSendsGestureEnd) {
   EXPECT_TRUE(delegate->tap_down());
 
   std::unique_ptr<aura::Window> capture(
-      CreateTestWindowWithBounds(gfx::Rect(10, 10, 200, 200), root_window()));
+      CreateTestWindow({.bounds = {10, 10, 200, 200}}, root_window()));
   capture->SetCapture();
   RunAllPendingInMessageLoop();
 
@@ -2712,7 +2712,7 @@ TEST_F(GestureRecognizerTest, CaptureDoesNotCancelFinishedTouches) {
 
   // Create a new window and set it as the new capture window.
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindowWithBounds(gfx::Rect(100, 100, 300, 300), root_window()));
+      CreateTestWindow({.bounds = {100, 100, 300, 300}}, root_window()));
   window2->SetCapture();
   RunAllPendingInMessageLoop();
   // Check that setting capture does not generate any synthetic touch-cancels

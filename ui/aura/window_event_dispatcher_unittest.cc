@@ -312,10 +312,12 @@ class TestEventClient : public client::EventClient {
       : root_window_(root_window), lock_(false) {
     client::SetEventClient(root_window_, this);
     Window* lock_window =
-        test::CreateTestWindowWithBounds(root_window_->bounds(), root_window_);
+        test::CreateTestWindow({.bounds = root_window_->bounds()}, root_window_)
+            .release();
     lock_window->SetId(kLockWindowId);
     Window* non_lock_window =
-        test::CreateTestWindowWithBounds(root_window_->bounds(), root_window_);
+        test::CreateTestWindow({.bounds = root_window_->bounds()}, root_window_)
+            .release();
     non_lock_window->SetId(kNonLockWindowId);
   }
 
@@ -365,11 +367,13 @@ TEST_F(WindowEventDispatcherTest, GetCanProcessEventsWithinSubtree) {
   client.GetNonLockWindow()->AddPreTargetHandler(&nonlock_ef);
   client.GetLockWindow()->AddPreTargetHandler(&lock_ef);
 
-  Window* w1 = test::CreateTestWindowWithBounds(gfx::Rect(10, 10, 20, 20),
-                                                client.GetNonLockWindow());
+  Window* w1 = test::CreateTestWindow({.bounds = {10, 10, 20, 20}},
+                                      client.GetNonLockWindow())
+                   .release();
   w1->SetId(1);
-  Window* w2 = test::CreateTestWindowWithBounds(gfx::Rect(30, 30, 20, 20),
-                                                client.GetNonLockWindow());
+  Window* w2 = test::CreateTestWindow({.bounds = {30, 30, 20, 20}},
+                                      client.GetNonLockWindow())
+                   .release();
   w2->SetId(2);
   std::unique_ptr<Window> w3(test::CreateTestWindowWithDelegate(
       &d, 3, gfx::Rect(30, 30, 20, 20), client.GetLockWindow()));
@@ -3251,8 +3255,9 @@ TEST_F(WindowEventDispatcherTest, TargetIsDestroyedByHeldEvent) {
   // Create a window which has a focus, so should receive all KeyEvents.
   ConsumeKeyHandler key_handler;
   // Not using std::unique_ptr<> intentionally
-  aura::Window* focused(test::CreateTestWindowWithBounds(
-      gfx::Rect(200, 200, 100, 100), root_window()));
+  aura::Window* focused =
+      test::CreateTestWindow({.bounds = {200, 200, 100, 100}}, root_window())
+          .release();
   focused->SetProperty(client::kSkipImeProcessing, true);
   focused->AddPostTargetHandler(&key_handler);
   focused->Show();

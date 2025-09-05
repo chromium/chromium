@@ -26,13 +26,7 @@ std::unique_ptr<Window> CreateTestWindow(WindowBuilderParams params,
       .Build();
 }
 
-Window* CreateTestWindowWithId(int id, Window* parent) {
-  return CreateTestWindowWithDelegate(NULL, id, gfx::Rect(), parent);
-}
 
-Window* CreateTestWindowWithBounds(const gfx::Rect& bounds, Window* parent) {
-  return CreateTestWindowWithDelegate(NULL, 0, bounds, parent);
-}
 
 Window* CreateTestWindow(SkColor color,
                          int id,

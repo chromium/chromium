@@ -127,7 +127,7 @@ TEST_F(ShadowControllerTest, ShadowBounds) {
 TEST_F(ShadowControllerTest, ShadowBoundsDetached) {
   const gfx::Rect kInitialBounds(20, 30, 400, 300);
   std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithBounds(kInitialBounds, root_window()));
+      aura::test::CreateTestWindow({.bounds = kInitialBounds}, root_window()));
   window->Show();
   const ui::Shadow* shadow = ShadowController::GetShadowForWindow(window.get());
   ASSERT_TRUE(shadow);

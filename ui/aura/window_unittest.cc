@@ -1289,9 +1289,9 @@ TEST_F(WindowTest, ReleaseCaptureOnDestroy) {
 
 TEST_F(WindowTest, GetBoundsInRootWindow) {
   std::unique_ptr<Window> viewport(
-      CreateTestWindowWithBounds(gfx::Rect(0, 0, 300, 300), root_window()));
+      CreateTestWindow({.bounds{0, 0, 300, 300}}, root_window()));
   std::unique_ptr<Window> child(
-      CreateTestWindowWithBounds(gfx::Rect(0, 0, 100, 100), viewport.get()));
+      CreateTestWindow({.bounds = {100, 100}}, viewport.get()));
   // Sanity check.
   EXPECT_EQ("0,0 100x100", child->GetBoundsInRootWindow().ToString());
 
@@ -1306,14 +1306,14 @@ TEST_F(WindowTest, GetBoundsInRootWindow) {
 }
 
 TEST_F(WindowTest, GetBoundsInRootWindowWithLayers) {
-  std::unique_ptr<Window> viewport(
-      CreateTestWindowWithBounds(gfx::Rect(0, 0, 300, 300), root_window()));
+  std::unique_ptr<Window> viewport =
+      CreateTestWindow({.bounds = gfx::Rect(0, 0, 300, 300)}, root_window());
 
   std::unique_ptr<Window> widget(
-      CreateTestWindowWithBounds(gfx::Rect(0, 0, 200, 200), viewport.get()));
+      CreateTestWindow({.bounds = {200, 200}}, viewport.get()));
 
   std::unique_ptr<Window> child(
-      CreateTestWindowWithBounds(gfx::Rect(0, 0, 100, 100), widget.get()));
+      CreateTestWindow({.bounds = {100, 100}}, widget.get()));
 
   // Sanity check.
   EXPECT_EQ("0,0 100x100", child->GetBoundsInRootWindow().ToString());
@@ -1333,13 +1333,13 @@ TEST_F(WindowTest, GetBoundsInRootWindowWithLayers) {
 
 TEST_F(WindowTest, GetBoundsInRootWindowWithLayersAndTranslations) {
   std::unique_ptr<Window> viewport(
-      CreateTestWindowWithBounds(gfx::Rect(0, 0, 300, 300), root_window()));
+      CreateTestWindow({.bounds = {300, 300}}, root_window()));
 
-  std::unique_ptr<Window> widget(
-      CreateTestWindowWithBounds(gfx::Rect(0, 0, 200, 200), viewport.get()));
+  std::unique_ptr<Window> widget =
+      CreateTestWindow({.bounds = {200, 200}}, viewport.get());
 
   std::unique_ptr<Window> child(
-      CreateTestWindowWithBounds(gfx::Rect(0, 0, 100, 100), widget.get()));
+      CreateTestWindow({.bounds = {100, 100}}, widget.get()));
 
   // Sanity check.
   EXPECT_EQ("0,0 100x100", child->GetBoundsInRootWindow().ToString());
@@ -1930,7 +1930,7 @@ TEST_F(WindowTest, SetBoundsInternalShouldCheckTargetBounds) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::unique_ptr<Window> w1(
-      CreateTestWindowWithBounds(gfx::Rect(0, 0, 100, 100), root_window()));
+      CreateTestWindow({.bounds = {100, 100}}, root_window()));
 
   EXPECT_TRUE(w1->layer());
   w1->layer()->GetAnimator()->set_disable_timer_for_test(true);
@@ -3758,12 +3758,10 @@ class WindowActualScreenBoundsTest
   // WindowTest:
   void SetUp() override {
     WindowTest::SetUp();
-    viewport_ = std::unique_ptr<Window>(CreateTestWindowWithBounds(
-        gfx::Rect(/*x=*/100, /*y=*/50, /*width=*/200, /*height=*/200),
-        root_window()));
-    child_ = std::unique_ptr<Window>(CreateTestWindowWithBounds(
-        gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/100, /*height*/ 100),
-        viewport_.get()));
+    viewport_ = std::unique_ptr<Window>(
+        CreateTestWindow({.bounds = {100, 50, 200, 200}}, root_window()));
+    child_ = std::unique_ptr<Window>(
+        CreateTestWindow({.bounds = {100, 100}}, viewport_.get()));
   }
 
   void TearDown() override {

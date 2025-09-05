@@ -20,7 +20,7 @@ using ImeUtilChromeosTest = aura::test::AuraTestBase;
 TEST_F(ImeUtilChromeosTest, RestoreWindowBounds) {
   const gfx::Rect bounds(10, 20, 100, 200);
   aura::Window* window =
-      aura::test::CreateTestWindowWithBounds(bounds, root_window());
+      aura::test::CreateTestWindow({.bounds = bounds}, root_window()).release();
 
   EXPECT_EQ(nullptr, window->GetProperty(kVirtualKeyboardRestoreBoundsKey));
   EXPECT_EQ(bounds, window->bounds());
@@ -38,7 +38,7 @@ TEST_F(ImeUtilChromeosTest, RestoreWindowBounds) {
 TEST_F(ImeUtilChromeosTest, EnsureWindowNotInRect_NotCovered) {
   const gfx::Rect bounds(0, 0, 100, 200);
   aura::Window* window =
-      aura::test::CreateTestWindowWithBounds(bounds, root_window());
+      aura::test::CreateTestWindow({.bounds = bounds}, root_window()).release();
   EXPECT_EQ(bounds, window->bounds());
   EXPECT_EQ(bounds, window->GetBoundsInScreen());
 
@@ -54,7 +54,8 @@ TEST_F(ImeUtilChromeosTest, EnsureWindowNotInRect_NotCovered) {
 TEST_F(ImeUtilChromeosTest, EnsureWindowNotInRect_MoveUp) {
   const gfx::Rect original_bounds(10, 100, 100, 10);
   aura::Window* window =
-      aura::test::CreateTestWindowWithBounds(original_bounds, root_window());
+      aura::test::CreateTestWindow({.bounds = original_bounds}, root_window())
+          .release();
   EXPECT_EQ(original_bounds, window->bounds());
   EXPECT_EQ(original_bounds, window->GetBoundsInScreen());
 
@@ -71,7 +72,8 @@ TEST_F(ImeUtilChromeosTest, EnsureWindowNotInRect_MoveUp) {
 TEST_F(ImeUtilChromeosTest, EnsureWindowNotInRect_MoveToTop) {
   const gfx::Rect original_bounds(10, 10, 100, 100);
   aura::Window* window =
-      aura::test::CreateTestWindowWithBounds(original_bounds, root_window());
+      aura::test::CreateTestWindow({.bounds = original_bounds}, root_window())
+          .release();
   EXPECT_EQ(original_bounds, window->bounds());
   EXPECT_EQ(original_bounds, window->GetBoundsInScreen());
 
@@ -100,7 +102,8 @@ TEST_F(ImeUtilChromeosTest, EnsureWindowNotInRect_MoveToTop) {
 TEST_F(ImeUtilChromeosTest, MoveUpThenRestore) {
   const gfx::Rect original_bounds(50, 50, 100, 100);
   aura::Window* window =
-      aura::test::CreateTestWindowWithBounds(original_bounds, root_window());
+      aura::test::CreateTestWindow({.bounds = original_bounds}, root_window())
+          .release();
   EXPECT_EQ(original_bounds, window->bounds());
   EXPECT_EQ(original_bounds, window->GetBoundsInScreen());
 
