@@ -548,6 +548,20 @@ class PrivacySandboxServiceTest : public testing::Test {
     return mock_privacy_sandbox_countries_.get();
   }
 
+  void MoveToEEA() {
+    ON_CALL(*mock_privacy_sandbox_countries(), IsConsentCountry())
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*mock_privacy_sandbox_countries(), IsRestOfWorldCountry())
+        .WillByDefault(testing::Return(false));
+  }
+
+  void MoveToROW() {
+    ON_CALL(*mock_privacy_sandbox_countries(), IsConsentCountry())
+        .WillByDefault(testing::Return(false));
+    ON_CALL(*mock_privacy_sandbox_countries(), IsRestOfWorldCountry())
+        .WillByDefault(testing::Return(true));
+  }
+
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
   content::BrowserTaskEnvironment* browser_task_environment() {
@@ -2800,6 +2814,73 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
   histogram_tester_.ExpectBucketCount(
       kPromptMigrationHistogram,
       PromptTypeCombination::kPSNoticeEEA_NSNoticeEEA, 1);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       UserMigratesToEEAAfterRowAckWithNoticeServiceEnabled) {
+  feature_list()->InitAndEnableFeature(
+      privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService);
+  // User starts in ROW.
+  MoveToROW();
+
+  // A ROW notice is shown.
+  RunTestCase(
+      TestState{}, TestInput{{kForceChromeBuild, true}},
+      TestOutput{{kPromptType, static_cast<int>(PromptType::kM1NoticeROW)},
+                 {kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)}});
+
+  // User acknowledges the notice.
+  RunTestCase(TestState{},
+              TestInput{{kForceChromeBuild, true},
+                        {kPromptAction, static_cast<int>(kNoticeAcknowledge)}},
+              TestOutput{{kPromptType, static_cast<int>(PromptType::kNone)},
+                         {kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
+
+  // User moves to EEA.
+  MoveToEEA();
+
+  // A consent prompt should be shown.
+  RunTestCase(
+      TestState{}, TestInput{{kForceChromeBuild, true}},
+      TestOutput{{kPromptType, static_cast<int>(PromptType::kM1Consent)},
+                 {kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)}});
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       UserMigratesToEEAAfterRowAckWithNoticeServiceDisabled) {
+  feature_list()->InitAndDisableFeature(
+      privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService);
+  // User starts in ROW.
+  MoveToROW();
+
+  // A ROW notice is shown.
+  RunTestCase(
+      TestState{}, TestInput{{kForceChromeBuild, true}},
+      TestOutput{{kPromptType, static_cast<int>(PromptType::kM1NoticeROW)},
+                 {kM1PromptSuppressedReason,
+                  static_cast<int>(PromptSuppressedReason::kNone)}});
+
+  // User acknowledges the notice.
+  RunTestCase(TestState{},
+              TestInput{{kForceChromeBuild, true},
+                        {kPromptAction, static_cast<int>(kNoticeAcknowledge)}},
+              TestOutput{{kPromptType, static_cast<int>(PromptType::kNone)},
+                         {kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
+
+  // User moves to EEA.
+  MoveToEEA();
+
+  // A consent prompt should be shown, but isn't. This is a known bug in the PS
+  // implementation. The fix is to be deployed using the
+  // kPrivacySandboxGetPromptFromNoticeService above.
+  RunTestCase(TestState{}, TestInput{{kForceChromeBuild, true}},
+              TestOutput{{kPromptType, static_cast<int>(PromptType::kNone)},
+                         {kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
 }
 
 TEST_F(PrivacySandboxServiceM1ConsentPromptTest,
