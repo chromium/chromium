@@ -38,7 +38,8 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
           <div>
             File size:
             <span class="value">
-              ${baseInfo.fileSize.toLocaleString('en-US')} Bytes
+              ${(Number(baseInfo.fileSize) / 1024 / 1024).
+                toLocaleString('en-US', {maximumFractionDigits : 2})} MiB
             </value>
           </div>
         </div>` : html``}
