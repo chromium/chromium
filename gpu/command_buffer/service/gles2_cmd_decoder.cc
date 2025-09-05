@@ -2979,17 +2979,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   lose_context_when_out_of_memory_ =
       attrib_helper.lose_context_when_out_of_memory;
 
-  // If the failIfMajorPerformanceCaveat context creation attribute was true
-  // and we are using a software renderer, fail.
-  if (attrib_helper.fail_if_major_perf_caveat &&
-      feature_info_->feature_flags().is_software_webgl) {
-    // Must not destroy ContextGroup if it is not initialized.
-    group_ = nullptr;
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-                  "fail_if_major_perf_caveat + software gl";
-    return gpu::ContextResult::kFatalFailure;
-  }
-
   // Only create ES 3.1 contexts with the passthrough cmd decoder.
   if (attrib_helper.context_type == CONTEXT_TYPE_OPENGLES31_FOR_TESTING) {
     // Must not destroy ContextGroup if it is not initialized.

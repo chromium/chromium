@@ -959,9 +959,6 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
                    "missing GL_ANGLE_request_extension");
   FAIL_INIT_IF_NOT(feature_info_->feature_flags().khr_debug,
                    "missing GL_KHR_debug");
-  FAIL_INIT_IF_NOT(!attrib_helper.fail_if_major_perf_caveat ||
-                       !feature_info_->feature_flags().is_software_webgl,
-                   "fail_if_major_perf_caveat + software gl");
   FAIL_INIT_IF_NOT(!attrib_helper.enable_gpu_rasterization,
                    "GPU rasterization not supported");
   FAIL_INIT_IF_NOT(!IsES31ForTestingContextType(attrib_helper.context_type) ||

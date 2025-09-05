@@ -105,6 +105,15 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
         manager->shared_image_manager());
   }
 
+  // If the `fail_if_major_perf_caveat` context creation attribute was true
+  // and we are using a software renderer, fail.
+  if (init_params.attribs.fail_if_major_perf_caveat &&
+      context_group_->feature_info()->feature_flags().is_software_webgl) {
+    LOG(ERROR) << "ContextResult::kFatalFailure: "
+                  "fail_if_major_perf_caveat + software gl";
+    return gpu::ContextResult::kFatalFailure;
+  }
+
 #if BUILDFLAG(IS_MAC)
   // Virtualize GpuPreference::kLowPower contexts by default on OS X to prevent
   // performance regressions when enabling FCM.
