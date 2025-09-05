@@ -42,7 +42,8 @@
     <div id="tabGroupsContainer">
       ${this.getTabGroups_().map(item => html`
         <cr-button class="tab-group"
-            @click="${() => this.onTabGroupClick_(item.id)}">
+            @click="${() => this.onTabGroupClick_(item.id)}"
+            aria-label="${this.ariaLabels.get(item.id)}">
           <div class="row-content">
             <ntp-icon-container class="icon-container"
                 .style="background-color: var(${this.computeTabGroupColor_(item.color)})"

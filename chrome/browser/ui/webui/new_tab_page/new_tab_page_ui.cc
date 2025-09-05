@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/untrusted_source.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
@@ -694,6 +695,12 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
           should_animate_wallpaper_search_button);
   source->AddInteger("wallpaperSearchButtonHideCondition",
                      ntp_features::GetWallpaperSearchButtonHideCondition());
+
+  // Add a handler to provide pluralized strings.
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString("modulesTabGroupsTabsText",
+                                            IDS_SAVED_TAB_GROUP_TABS_COUNT);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {IconContainerElement, TabGroupsModuleElement} from 'chrome://new-tab-page/lazy_load.js';
-import {colorIdToString, tabGroupsDescriptor, TabGroupsProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {colorIdToString, NTPPluralStringProxyImpl, tabGroupsDescriptor, TabGroupsProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {Color} from 'chrome://new-tab-page/tab_group_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
 import type {TabGroup} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
@@ -12,6 +12,7 @@ import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
@@ -447,6 +448,35 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
 
     // Assert.
     assertFalse(!!module);
+  });
+
+  test('compute aria lables for tab groups', async () => {
+    // Arrange.
+    const pluralString = new TestPluralStringProxy();
+    pluralString.text = '2 tabs';
+    NTPPluralStringProxyImpl.setInstance(pluralString);
+
+    const module = await createModule([
+      {
+        id: '0',
+        color: Color.kBlue,
+        title: 'Group 1',
+        updateTime: 'Recently used',
+        deviceName: 'Test Device',
+        faviconUrls: [],
+        totalTabCount: 2,
+        isSharedTabGroup: true,
+      },
+    ]);
+    assertTrue(!!module);
+
+    const groups =
+        module.shadowRoot.querySelectorAll<CrButtonElement>('.tab-group');
+    assertEquals(1, groups.length);
+
+    // Assert.
+    const expectedLabel = '2 tabs Group 1 Recently used • Test Device shared';
+    assertEquals(expectedLabel, groups[0]!.getAttribute('aria-label'));
   });
 
   suite('with zero state flag enabled', () => {
