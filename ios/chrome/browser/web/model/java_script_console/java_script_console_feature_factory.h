@@ -23,9 +23,9 @@ class JavaScriptConsoleFeatureFactory : public ProfileKeyedServiceFactoryIOS {
   JavaScriptConsoleFeatureFactory();
   ~JavaScriptConsoleFeatureFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_FACTORY_H_
