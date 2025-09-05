@@ -22,6 +22,7 @@
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/choice_made_location.h"
+#include "components/search_engines/search_engine_choice/buildflags.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service_test_base.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -112,8 +113,7 @@ const ui::DeviceFormFactorSet kNonPhoneFormFactors =
 
 SearchEngineChoiceScreenConditions IfSupported(
     SearchEngineChoiceScreenConditions condition) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(CHROME_FOR_TESTING)
+#if !BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
   return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
 #else
   return condition;

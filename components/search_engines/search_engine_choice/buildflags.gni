@@ -1,0 +1,13 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+declare_args() {
+  # Whether the search engine choice screen can be displayed within Chrome.
+  # On Android the choice screen is displayed by the OS rather than within
+  # Chrome.
+  choice_screen_in_chrome =
+      !(is_android || is_fuchsia || is_chrome_for_testing)
+}

@@ -36,6 +36,7 @@
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/search_engine_choice/buildflags.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service_test_base.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -1103,8 +1104,7 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
             GetParam().expect_invalidation_timestamp);
 
   SearchEngineChoiceScreenConditions expected_eligibility_condition =
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(CHROME_FOR_TESTING)
+#if !BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
       SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
 #else
       GetParam().expect_invalidation_timestamp
