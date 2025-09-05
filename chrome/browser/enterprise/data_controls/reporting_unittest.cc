@@ -22,6 +22,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#endif
+
 namespace data_controls {
 
 namespace {
@@ -43,11 +48,21 @@ class DataControlsReportingTest : public testing::Test {
     helper_ = std::make_unique<
         enterprise_connectors::test::EventReportValidatorHelper>(
         managed_profile_);
+
+#if BUILDFLAG(IS_CHROMEOS)
+    network_config_helper_ =
+        std::make_unique<ash::network_config::CrosNetworkConfigTestHelper>();
+    ash::NetworkHandler::Initialize();
+#endif
   }
 
   void TearDown() override {
     managed_profile_->GetPrefs()->ClearPref(kDataControlsRulesScopePref);
     helper_.reset();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    ash::NetworkHandler::Shutdown();
+#endif
   }
 
   Profile* incognito_managed_profile() {
@@ -153,6 +168,10 @@ class DataControlsReportingTest : public testing::Test {
   std::unique_ptr<content::WebContents> guest_contents_;
   std::unique_ptr<enterprise_connectors::test::EventReportValidatorHelper>
       helper_;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
+      network_config_helper_;
+#endif
 };
 
 }  // namespace
