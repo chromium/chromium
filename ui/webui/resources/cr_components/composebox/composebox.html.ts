@@ -48,6 +48,7 @@ export function getHtml(this: ComposeboxElement) {
             .disabled="${this.inputsDisabled_}"
             @click="${this.openImageUpload_}">
         </cr-icon-button>
+        ${this.composeboxShowPdfUpload_ ? html`
         <cr-icon-button
             class="upload-icon no-overlap"
             id="fileUploadButton"
@@ -56,6 +57,7 @@ export function getHtml(this: ComposeboxElement) {
             .disabled="${this.inputsDisabled_}"
             @click="${this.openFileUpload_}">
         </cr-icon-button>
+        `: ''}
       </div>
     </div>
     <!-- A seperate container is needed for the submit button so the

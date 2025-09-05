@@ -62,7 +62,7 @@ static constexpr webui::LocalizedString kStrings[] = {
     {"composeboxFileUploadFailed", IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED},
     {"composeboxFileUploadExpired", IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED},
 };
-}
+}  // namespace
 
 namespace lens {
 
@@ -235,6 +235,7 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddString(
       "searchboxComposePlaceholder",
       l10n_util::GetStringUTF8(IDS_LENS_COMPOSEBOX_HINT_TEXT));
+  html_source->AddBoolean("composeboxShowPdfUpload", false);
 }
 
 void LensSidePanelUntrustedUI::BindInterface(
