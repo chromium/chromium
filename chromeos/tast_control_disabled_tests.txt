@@ -96,4 +96,7 @@ tast.apps.Sharesheet
 # https://crbug.com/437961311
 tast.bruschetta.CopyFilesToGuest@betty
 
+# https://crbug.com/432304431
+tast.featured.FieldTrialEarlyBoot.active_trial
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
