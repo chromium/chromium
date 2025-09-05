@@ -132,8 +132,8 @@ CGFloat const kHalfSheetCornerRadius = 20;
 // Presents the YoutubeIncognitoCoordinator's view controller.
 - (void)presentViewController {
   _viewController = [[YoutubeIncognitoSheet alloc] init];
-  _viewController.delegate = self;
   _viewController.URLLoaderDelegate = self;
+  _viewController.delegate = self;
   _viewController.sheetPresentationController.detents = @[
     [UISheetPresentationControllerDetent mediumDetent],
     [UISheetPresentationControllerDetent largeDetent]
