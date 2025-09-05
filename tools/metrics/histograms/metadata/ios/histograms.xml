@@ -1342,6 +1342,8 @@ chromium-metrics-reviews@google.com.
         summary="Opened from external action (URL passed to Chrome with
                  &quot;ChromeExternalAction&quot; as host)"/>
     <variant name=".ExternalIntent" summary="Opened from external intent"/>
+    <variant name=".MagicStackCard"
+        summary="Opened from the ephemeral Magic Stack card"/>
     <variant name=".Omnibox" summary="Opened from Omnibox"/>
     <variant name=".Settings" summary="Opened from Chrome settings"/>
     <variant name=".SetUpList" summary="Opened from setup list"/>
