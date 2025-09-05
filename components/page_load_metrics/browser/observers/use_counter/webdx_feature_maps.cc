@@ -447,7 +447,9 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kV8WasmCustomDescriptors,
            WebDXFeature::kDRAFT_WasmCustomDescriptors},
           {WebFeature::kFetchUploadStreaming,
-           WebDXFeature::kFetchRequestStreams}
+           WebDXFeature::kFetchRequestStreams},
+          {WebFeature::kReadableStreamWithByteSource,
+           WebDXFeature::kReadableByteStreams},
           // Add new features above this line.
       }};
 
