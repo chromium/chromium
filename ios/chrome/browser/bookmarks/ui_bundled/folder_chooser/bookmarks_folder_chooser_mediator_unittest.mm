@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_mediator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"

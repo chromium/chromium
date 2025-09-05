@@ -172,18 +172,6 @@ source_set("run_all_unittests") {
     "//ios/chrome/app/startup:startup_basic",
     "//mojo/core/embedder",
   ]
-
-  if (ios_chrome_links_with_material_components_framework) {
-    public_deps = [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  } else {
-    assert_no_deps = [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  }
 }
 
 test("ios_chrome_unittests") {

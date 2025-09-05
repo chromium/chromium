@@ -105,7 +105,6 @@ source_set("ui_bundled") {
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
-    "//ios/third_party/material_components_ios",
     "//ios/web",
     "//ios/web/common",
     "//ios/web/common:user_agent",

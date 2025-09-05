@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@class MDCSnackbarMessage;
 @class SnackbarMessageAction;
 
 // A message to be displayed in a snackbar.
@@ -48,11 +47,6 @@
 
 // Designated initializer.
 - (instancetype)initWithTitle:(NSString*)title;
-
-// TODO(crbug.com/438409021): Remove this once all call sites are migrated to
-// SnackbarMessage.
-// Convenience initializer to convert an MDCSnackbarMessage.
-- (instancetype)initWithMDCSnackbarMessage:(MDCSnackbarMessage*)message;
 
 @end
 

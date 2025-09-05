@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/apple/foundation_util.h"
 #import "base/location.h"
 #import "base/rand_util.h"
@@ -26,7 +24,10 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -280,8 +281,10 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 }
 
 + (void)dismissSnackBar {
-  [MDCSnackbarManager.defaultManager
-      dismissAndCallCompletionBlocksWithCategory:@"PasswordsSnackbarCategory"];
+  id<SnackbarCommands> handler = HandlerForProtocol(
+      chrome_test_util::GetCurrentBrowser()->GetCommandDispatcher(),
+      SnackbarCommands);
+  [handler dismissAllSnackbars];
 }
 
 + (void)saveExamplePasswordToProfileWithCount:(NSInteger)count {

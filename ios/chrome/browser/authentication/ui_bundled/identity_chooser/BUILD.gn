@@ -64,7 +64,6 @@ source_set("identity_chooser_ui") {
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
   public_deps = [ "//ios/chrome/browser/shared/ui/table_view" ]

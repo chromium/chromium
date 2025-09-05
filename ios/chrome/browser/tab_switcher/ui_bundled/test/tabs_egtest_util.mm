@@ -8,6 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -20,8 +21,8 @@ namespace {
 NSString* const kRegularTabTitlePrefix = @"RegularTab";
 NSString* const kPinnedTabTitlePrefix = @"PinnedTab";
 
-constexpr base::TimeDelta kSnackbarAppearanceTimeout = base::Seconds(5);
-constexpr base::TimeDelta kSnackbarDisappearanceTimeout = base::Seconds(11);
+constexpr base::TimeDelta kSnackbarDisappearanceTimeout =
+    kSnackbarMessageTestDuration + base::Seconds(1);
 
 }  // namespace
 
@@ -85,7 +86,7 @@ void WaitForSnackbarTriggeredByTappingItem(NSString* snackbarLabel,
   };
   if (!wait_for_appearance()) {
     GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                   kSnackbarAppearanceTimeout, wait_for_appearance),
+                   kSnackbarDisappearanceTimeout, wait_for_appearance),
                @"Snackbar did not appear.");
   }
 

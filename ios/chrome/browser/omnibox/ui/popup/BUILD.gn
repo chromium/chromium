@@ -21,7 +21,6 @@ source_set("popup") {
     "//ui/base",
     "//ui/gfx/ios:uikit_util",
   ]
-  public_deps = [ "//ios/third_party/material_components_ios" ]
 }
 
 source_set("popup_ui") {

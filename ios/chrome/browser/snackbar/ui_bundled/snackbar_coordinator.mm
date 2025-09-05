@@ -65,32 +65,6 @@
 
 #pragma mark - SnackbarCommands
 
-- (void)showSnackbarMessage:(MDCSnackbarMessage*)message {
-  SnackbarMessage* snackbarMessage =
-      [[SnackbarMessage alloc] initWithMDCSnackbarMessage:message];
-  [self showCustomSnackbarMessage:snackbarMessage];
-}
-
-- (void)showSnackbarMessageOverBrowserToolbar:(MDCSnackbarMessage*)message {
-  SnackbarMessage* snackbarMessage =
-      [[SnackbarMessage alloc] initWithMDCSnackbarMessage:message];
-  [self showCustomSnackbarMessageOverBrowserToolbar:snackbarMessage];
-}
-
-- (void)showSnackbarMessage:(MDCSnackbarMessage*)message
-             withHapticType:(UINotificationFeedbackType)type {
-  SnackbarMessage* snackbarMessage =
-      [[SnackbarMessage alloc] initWithMDCSnackbarMessage:message];
-  [self showCustomSnackbarMessage:snackbarMessage withHapticType:type];
-}
-
-- (void)showSnackbarMessage:(MDCSnackbarMessage*)message
-               bottomOffset:(CGFloat)offset {
-  SnackbarMessage* snackbarMessage =
-      [[SnackbarMessage alloc] initWithMDCSnackbarMessage:message];
-  [self showCustomSnackbarMessage:snackbarMessage bottomOffset:offset];
-}
-
 - (void)showCustomSnackbarMessage:(SnackbarMessage*)message {
   CGFloat offset =
       [_delegate snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:self

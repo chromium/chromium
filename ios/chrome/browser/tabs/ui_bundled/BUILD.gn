@@ -50,7 +50,6 @@ source_set("ui_bundled") {
     "//ios/chrome/common/ui/resources",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
-    "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//ui/base",
     "//ui/gfx",

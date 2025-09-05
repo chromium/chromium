@@ -30,7 +30,6 @@ source_set("bulk_upload") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/common/ui/reauthentication",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
 

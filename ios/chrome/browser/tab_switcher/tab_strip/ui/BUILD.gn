@@ -69,7 +69,6 @@ source_set("ui") {
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
 }

@@ -37,7 +37,6 @@ source_set("observer_bridge") {
   ]
   deps = [
     ":impression_limits",
-    "//ios/third_party/material_components_ios",
     "//url",
   ]
 }

@@ -31,7 +31,6 @@ source_set("signout_action_sheet") {
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/sync/model",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
   public_deps = [ "//ios/chrome/browser/shared/coordinator/alert" ]

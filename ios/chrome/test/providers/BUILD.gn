@@ -49,10 +49,5 @@ group("providers") {
     "//ios/chrome/test/providers/url_rewriters",
     "//ios/chrome/test/providers/user_feedback",
     "//ios/chrome/test/providers/voice_search",
-
-    # The provider API needs to provide MaterialDesignComponent API (as the
-    # internal provider provides an alternate implementation).
-    "//ios/third_party/material_components_ios:material_components_ios+bundle",
-    "//ios/third_party/material_components_ios:material_components_ios+link",
   ]
 }

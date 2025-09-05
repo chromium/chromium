@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
