@@ -998,12 +998,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceAddContextResult.{ModelExecutionFeature}"
-    enum="OptimizationGuideOnDeviceAddContextResult" expires_after="2025-08-15">
+    enum="OptimizationGuideOnDeviceAddContextResult" expires_after="2026-08-15">
   <owner>holte@chromium.org</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
     Captures the possible outcomes of Session::AddContext(). Recorded everytime
-    Session::AddContext() is called. context.
+    Session::AddContext() is called.
   </summary>
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
@@ -1041,7 +1041,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceContextTokensProcessed.{ModelExecutionFeature}"
-    units="tokens" expires_after="2025-10-12">
+    units="tokens" expires_after="2026-10-12">
   <owner>cduvall@chromium.org</owner>
   <owner>holte@chromium.org</owner>
   <summary>
@@ -1330,7 +1330,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.SettingsVisibilityResult.{ModelExecutionFeature}"
-    enum="FeaturesSettingsVisibilityResult" expires_after="2025-10-12">
+    enum="FeaturesSettingsVisibilityResult" expires_after="2026-10-12">
   <owner>rajendrant@chromium.org</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
