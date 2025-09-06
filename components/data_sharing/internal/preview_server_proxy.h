@@ -5,16 +5,17 @@
 #ifndef COMPONENTS_DATA_SHARING_INTERNAL_PREVIEW_SERVER_PROXY_H_
 #define COMPONENTS_DATA_SHARING_INTERNAL_PREVIEW_SERVER_PROXY_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "base/version_info/channel.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/sync/base/data_type.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -64,7 +65,7 @@ class PreviewServerProxy {
       base::OnceCallback<
           void(const DataSharingService::SharedDataPreviewOrFailureOutcome&)>
           callback,
-      data_decoder::DataDecoder::ValueOrError result);
+      std::optional<base::Value::Dict> result);
 
   std::string GetPreviewServerURLString() const;
 

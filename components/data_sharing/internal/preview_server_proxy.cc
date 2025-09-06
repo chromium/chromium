@@ -371,19 +371,18 @@ void PreviewServerProxy::HandleServerResponse(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      response->response,
-      base::BindOnce(&PreviewServerProxy::OnResponseJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  std::optional<base::Value::Dict> parsed_response =
+      base::JSONReader::ReadDict(response->response, base::JSON_PARSE_RFC);
+  OnResponseJsonParsed(std::move(callback), std::move(parsed_response));
 }
 
 void PreviewServerProxy::OnResponseJsonParsed(
     base::OnceCallback<void(
         const DataSharingService::SharedDataPreviewOrFailureOutcome&)> callback,
-    data_decoder::DataDecoder::ValueOrError result) {
+    std::optional<base::Value::Dict> result) {
   SharedDataPreview preview;
-  if (result.has_value() && result->is_dict()) {
-    if (auto* response_json = result->GetDict().FindList(kSharedEntitiesKey)) {
+  if (result.has_value()) {
+    if (auto* response_json = result->FindList(kSharedEntitiesKey)) {
       std::optional<SharedTabGroupPreview> group_preview;
       std::vector<TabData> tab_data;
       for (const auto& shared_entity_json : *response_json) {
