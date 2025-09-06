@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
+#include "third_party/blink/renderer/core/layout/masonry/masonry_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/paginated_root_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/pagination_utils.h"
@@ -907,8 +908,9 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
   bool is_hidden_for_paint =
       container_builder_->GetConstraintSpace().IsHiddenForPaint();
 
-  auto IsPlacedWithinGridArea = [&](const auto* containing_block) {
-    if (!containing_block->IsLayoutGrid()) {
+  auto IsPlacedWithinGridOrMasonryArea = [&](const auto* containing_block) {
+    if (!containing_block->IsLayoutGrid() &&
+        !containing_block->IsLayoutMasonry()) {
       return false;
     }
 
@@ -919,18 +921,30 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
   };
 
   auto GridAreaContainingBlockInfo =
-      [&](const LayoutGrid& containing_grid, const GridLayoutData& layout_data,
+      [&](const LayoutBox& containing_box, const GridLayoutData& layout_data,
           const BoxStrut& borders,
           const LogicalSize& size) -> OutOfFlowLayoutPart::ContainingBlockInfo {
-    const auto& grid_style = containing_grid.StyleRef();
-    GridItemData* grid_item =
-        MakeGarbageCollected<GridItemData>(candidate.Node(), grid_style);
+    DCHECK(containing_box.IsLayoutGrid() || containing_box.IsLayoutMasonry());
 
-    return {.writing_direction = grid_style.GetWritingDirection(),
+    const auto& style = containing_box.StyleRef();
+    GridItemData* item =
+        MakeGarbageCollected<GridItemData>(candidate.Node(), style);
+
+    LogicalRect rect;
+    if (containing_box.IsLayoutGrid()) {
+      rect = GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
+          To<LayoutGrid>(containing_box).CachedPlacementData(), layout_data,
+          style, borders, size, item);
+    } else {
+      rect = MasonryLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
+          To<LayoutMasonry>(containing_box).CachedPlacementData(), layout_data,
+          style, borders, size, container_builder_->BorderScrollbarPadding(),
+          item);
+    }
+
+    return {.writing_direction = style.GetWritingDirection(),
             .is_hidden_for_paint = is_hidden_for_paint,
-            .rect = GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
-                containing_grid.CachedPlacementData(), layout_data, grid_style,
-                borders, size, grid_item)};
+            .rect = rect};
   };
 
   if (candidate.inline_container.container) {
@@ -953,7 +967,8 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
       DCHECK(containing_block);
 
       bool is_placed_within_grid_area =
-          IsPlacedWithinGridArea(containing_block);
+          containing_block->IsLayoutGrid() &&
+          IsPlacedWithinGridOrMasonryArea(containing_block);
       auto it = containing_blocks_map_.find(containing_block);
       if (it != containing_blocks_map_.end() && !is_placed_within_grid_area)
         return it->value;
@@ -969,6 +984,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
                             ->Borders()
                             .ConvertToLogical(writing_direction);
 
+      // TODO(yanlingwang): Add support for masonry fragmentation.
       if (is_placed_within_grid_area) {
         return GridAreaContainingBlockInfo(
             *To<LayoutGrid>(containing_block),
@@ -995,9 +1011,9 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
     }
   }
 
-  if (IsPlacedWithinGridArea(container_object)) {
+  if (IsPlacedWithinGridOrMasonryArea(container_object)) {
     return GridAreaContainingBlockInfo(
-        *To<LayoutGrid>(container_object),
+        *To<LayoutBox>(container_object),
         container_builder_->GetGridLayoutData(), container_builder_->Borders(),
         {container_builder_->InlineSize(),
          container_builder_->FragmentBlockSize()});

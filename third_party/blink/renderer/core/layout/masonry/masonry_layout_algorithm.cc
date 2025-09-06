@@ -170,7 +170,7 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   // Place out-of-flow items after setting the intrinsic block size, since
   // out-of-flow items don't contribute to the intrinsic size of the container.
   if (!oof_children.empty()) {
-    PlaceOutOfFlowItems(oof_children);
+    PlaceOutOfFlowItems(*layout_data, block_size, oof_children);
   }
 
   container_builder_.TransferGridLayoutData(std::move(layout_data));
@@ -480,26 +480,50 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
 }
 
 void MasonryLayoutAlgorithm::PlaceOutOfFlowItems(
+    const GridLayoutData& layout_data,
+    LayoutUnit block_size,
     HeapVector<Member<LayoutBox>>& oof_children) {
   const auto& container_style = Style();
-
-  // TODO(kschmi): This doesn't match grid, which passes in the block size.
+  const auto& node = Node();
+  const auto& placement_data = node.CachedPlacementData();
   const LogicalSize total_fragment_size = {container_builder_.InlineSize(),
-                                           LayoutUnit()};
+                                           block_size};
+  const auto default_containing_block_size =
+      ShrinkLogicalSize(total_fragment_size, BorderScrollbarPadding());
 
   for (LayoutBox* oof_child : oof_children) {
     GridItemData* out_of_flow_item = MakeGarbageCollected<GridItemData>(
         BlockNode(oof_child), container_style);
     DCHECK(out_of_flow_item->IsOutOfFlow());
 
-    // TODO(kschmi): Apply grid-area containing rect.
-    auto child_offset = BorderScrollbarPadding().StartOffset();
+    std::optional<LogicalRect> containing_block_rect;
+    const auto position = out_of_flow_item->node.Style().GetPosition();
 
-    // TODO(kschmi): Apply actual alignment.
-    LogicalStaticPosition::InlineEdge inline_edge =
-        LogicalStaticPosition::kInlineStart;
-    LogicalStaticPosition::BlockEdge block_edge =
-        LogicalStaticPosition::kBlockStart;
+    // If the masonry container is also the containing-block for the
+    // OOF-positioned item, pick up the static-position from the grid-area
+    // in the grid axis.
+    if ((node.IsAbsoluteContainer() && position == EPosition::kAbsolute) ||
+        (node.IsFixedContainer() && position == EPosition::kFixed)) {
+      containing_block_rect.emplace(ComputeOutOfFlowItemContainingRect(
+          placement_data, layout_data, container_style,
+          container_builder_.Borders(), total_fragment_size,
+          BorderScrollbarPadding(), out_of_flow_item));
+    }
+
+    auto child_offset = containing_block_rect
+                            ? containing_block_rect->offset
+                            : BorderScrollbarPadding().StartOffset();
+    const auto containing_block_size = containing_block_rect
+                                           ? containing_block_rect->size
+                                           : default_containing_block_size;
+
+    LogicalStaticPosition::InlineEdge inline_edge;
+    LogicalStaticPosition::BlockEdge block_edge;
+
+    AlignmentOffsetForOutOfFlow(out_of_flow_item->Alignment(kForColumns),
+                                out_of_flow_item->Alignment(kForRows),
+                                containing_block_size, &inline_edge,
+                                &block_edge, &child_offset);
 
     // TODO(kschmi): Handle fragmentation.
     container_builder_.AddOutOfFlowChildCandidate(
@@ -1039,6 +1063,55 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
   return CreateConstraintSpace(
       masonry_item, containing_size, fixed_available_size,
       LayoutResultCacheSlot::kMeasure, percentage_resolution_size);
+}
+
+// static
+LogicalRect MasonryLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
+    const GridPlacementData& placement_data,
+    const GridLayoutData& layout_data,
+    const ComputedStyle& masonry_style,
+    const BoxStrut& borders,
+    const LogicalSize& border_box_size,
+    const BoxStrut& border_scrollbar_padding,
+    GridItemData* out_of_flow_item) {
+  DCHECK(out_of_flow_item && out_of_flow_item->IsOutOfFlow());
+
+  // Compute the containing rect for out-of-flow items in masonry:
+  // - Grid axis: Use the item's grid-area placement (similar to CSS Grid)
+  // - Stacking axis: Use the full container size minus
+  // border/scrollbar/padding, since items flow and stack naturally in this
+  // direction and out-of-flow items should have access to the entire available
+  // space.
+
+  const bool is_for_columns =
+      masonry_style.MasonryTrackSizingDirection() == kForColumns;
+
+  out_of_flow_item->ComputeOutOfFlowItemPlacement(
+      is_for_columns ? layout_data.Columns() : layout_data.Rows(),
+      placement_data, masonry_style);
+  LogicalRect containing_rect;
+
+  if (is_for_columns) {
+    ComputeOutOfFlowOffsetAndSize(*out_of_flow_item, layout_data.Columns(),
+                                  borders, border_box_size,
+                                  &containing_rect.offset.inline_offset,
+                                  &containing_rect.size.inline_size);
+
+    containing_rect.offset.block_offset = border_scrollbar_padding.block_start;
+    containing_rect.size.block_size =
+        border_box_size.block_size - border_scrollbar_padding.BlockSum();
+  } else {
+    ComputeOutOfFlowOffsetAndSize(
+        *out_of_flow_item, layout_data.Rows(), borders, border_box_size,
+        &containing_rect.offset.block_offset, &containing_rect.size.block_size);
+
+    containing_rect.offset.inline_offset =
+        border_scrollbar_padding.inline_start;
+    containing_rect.size.inline_size =
+        border_box_size.inline_size - border_scrollbar_padding.InlineSum();
+  }
+
+  return containing_rect;
 }
 
 }  // namespace blink

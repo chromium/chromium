@@ -12,12 +12,16 @@
 
 namespace blink {
 
+class ComputedStyle;
 class GridItems;
+class GridLayoutData;
 class GridLineResolver;
 class GridSizingTrackCollection;
 class MasonryRunningPositions;
 enum class SizingConstraint;
+struct BoxStrut;
 struct GridItemData;
+struct GridPlacementData;
 
 class CORE_EXPORT MasonryLayoutAlgorithm
     : public LayoutAlgorithm<MasonryNode, BoxFragmentBuilder, BlockBreakToken> {
@@ -26,6 +30,17 @@ class CORE_EXPORT MasonryLayoutAlgorithm
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
   const LayoutResult* Layout();
+
+  // Computes the containing block rect for out-of-flow items placed
+  // within the masonry.
+  static LogicalRect ComputeOutOfFlowItemContainingRect(
+      const GridPlacementData& placement_data,
+      const GridLayoutData& layout_data,
+      const ComputedStyle& masonry_style,
+      const BoxStrut& borders,
+      const LogicalSize& border_box_size,
+      const BoxStrut& border_scrollbar_padding,
+      GridItemData* out_of_flow_item);
 
  private:
   friend class MasonryLayoutAlgorithmTest;
@@ -43,10 +58,15 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       MasonryRunningPositions& running_positions,
       std::optional<SizingConstraint> sizing_constraint = std::nullopt);
 
-  // Places all out-of-flow (OOF) masonry items via
+  // Places all out-of-flow (OOF) masonry items. For each item, this method
+  // computes the size and location of the containing block rectangle within the
+  // masonry container, calculates alignment offsets using item alignment
+  // properties, and adds the item as an out-of-flow candidate via
   // `AddOutOfFlowChildCandidate`. `oof_children` is a required input vector
   // containing the layout boxes of OOF masonry items.
-  void PlaceOutOfFlowItems(HeapVector<Member<LayoutBox>>& oof_children);
+  void PlaceOutOfFlowItems(const GridLayoutData& layout_data,
+                           LayoutUnit block_size,
+                           HeapVector<Member<LayoutBox>>& oof_children);
 
   // Returns the track collection given the provided `sizing_constraint`.
   // If `intrinsic_repeat_track_sizes` is non-null, this contains the track
