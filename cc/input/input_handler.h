@@ -551,6 +551,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   void DidUnregisterScrollbar(ElementId scroll_element_id,
                               ScrollbarOrientation orientation) override;
   void ScrollOffsetAnimationFinished(ElementId element_id) override;
+  void ElasticOverscrollAnimationFinished() override;
   void SetPrefersReducedMotion(bool prefers_reduced_motion) override;
   bool IsCurrentlyScrolling() const override;
   ActivelyScrollingType GetActivelyScrollingType() const override;

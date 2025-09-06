@@ -2486,6 +2486,144 @@ class LayerTreeHostScrollTestElasticOverscroll
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestElasticOverscroll);
 #endif
 
+// This test makes sure that the snap animation runs after the overscroll
+// animation has finished.
+class LayerTreeHostScrollTestSnapAfterElasticOverscroll
+    : public LayerTreeHostScrollTest {
+ public:
+  LayerTreeHostScrollTestSnapAfterElasticOverscroll()
+      : scroll_elasticity_helper_(nullptr),
+        initial_scroll_(0, 100),
+        impl_thread_scroll_(0, -200),
+        snap_area_id_(ElementId(10)),
+        num_begin_impl_frames_(0),
+        snap_animation_finished_(false) {}
+
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    LayerTreeHostScrollTest::InitializeSettings(settings);
+    settings->enable_elastic_overscroll = true;
+  }
+
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(1000, 1000));
+    LayerTreeHostScrollTest::SetupTree();
+    scroller_ = layer_tree_host()->OuterViewportScrollLayerForTesting();
+    scroller_->SetBounds(gfx::Size(1000, 1000));
+    scroller_element_id_ = scroller_->element_id();
+
+    SnapAreaData snap_area_data(ScrollSnapAlign(SnapAlignment::kStart),
+                                gfx::RectF(0, 100, 1000, 1000), false, false,
+                                snap_area_id_);
+    SnapContainerData snap_container_data(
+        ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
+        gfx::RectF(0, 0, 1000, 1000), gfx::PointF(0, 100));
+    snap_container_data.AddSnapAreaData(snap_area_data);
+    const ScrollNode* scroller_node =
+        layer_tree_host()->property_trees()->scroll_tree().Node(
+            scroller_->scroll_tree_index());
+    const_cast<ScrollNode*>(scroller_node)->snap_container_data =
+        snap_container_data;
+  }
+
+  void BeginTest() override {
+    DCHECK(HasImplThread());
+    ImplThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LayerTreeHostScrollTestSnapAfterElasticOverscroll::
+                           BindInputHandler,
+                       base::Unretained(this),
+                       layer_tree_host()->GetDelegateForInput()));
+    SetScrollOffset(scroller_.get(), initial_scroll_);
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void BindInputHandler(base::WeakPtr<CompositorDelegateForInput> delegate) {
+    DCHECK(task_runner_provider()->IsImplThread());
+    base::WeakPtr<InputHandler> input_handler = InputHandler::Create(*delegate);
+    input_handler->BindToClient(&input_handler_client_);
+    scroll_elasticity_helper_ = input_handler->CreateScrollElasticityHelper();
+    DCHECK(scroll_elasticity_helper_);
+  }
+
+  void WillPrepareToDrawOnThread(LayerTreeHostImpl* host_impl) override {
+    // The InputHandlerClient must receive a call to reconcile the overscroll
+    // before each draw.
+    EXPECT_CALL(input_handler_client_,
+                ReconcileElasticOverscrollAndRootScroll())
+        .Times(1);
+  }
+
+  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
+    LayerImpl* scroll_layer =
+        host_impl->active_tree()->OuterViewportScrollLayerForTesting();
+    if (!scroll_layer) {
+      return;
+    }
+
+    ++num_begin_impl_frames_;
+    switch (num_begin_impl_frames_) {
+      case 1:
+        EXPECT_POINTF_EQ(initial_scroll_, CurrentScrollOffset(scroll_layer));
+        scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF(0, -30));
+        DoGestureScroll(host_impl, scroller_, impl_thread_scroll_,
+                        scroller_element_id_);
+        EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
+        break;
+      case 2:
+        scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF(0, -20));
+        EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
+        break;
+      case 3:
+        scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF(0, -10));
+        EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
+        break;
+      case 4:
+        scroll_elasticity_helper_->SetStretchAmount(gfx::Vector2dF(0, 0));
+        EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
+        scroll_elasticity_helper_->AnimationFinished();
+        break;
+      default:
+        break;
+    }
+
+    if (num_begin_impl_frames_ >= 4) {
+      snap_animation_finished_ =
+          !host_impl->GetInputHandler().animating_for_snap_for_testing(
+              scroller_element_id_);
+    }
+
+    if (snap_animation_finished_) {
+      EXPECT_POINTF_EQ(gfx::PointF(0, 100), CurrentScrollOffset(scroll_layer));
+      EndTest();
+    } else {
+      host_impl->SetNeedsRedraw(/*animation_only=*/false,
+                                /*skip_if_inside_draw=*/false);
+    }
+  }
+
+  void AfterTest() override {
+    scroll_elasticity_helper_ = nullptr;
+    LayerTreeHostScrollTest::AfterTest();
+  }
+
+ private:
+  MockInputHandlerClient input_handler_client_;
+  raw_ptr<ScrollElasticityHelper> scroll_elasticity_helper_;
+
+  scoped_refptr<Layer> scroller_;
+  gfx::PointF initial_scroll_;
+  gfx::Vector2dF impl_thread_scroll_;
+  ElementId scroller_element_id_;
+  ElementId snap_area_id_;
+
+  int num_begin_impl_frames_;
+  bool snap_animation_finished_;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostScrollTestSnapAfterElasticOverscroll);
+
 class LayerTreeHostScrollTestPropertyTreeUpdate
     : public LayerTreeHostScrollTest {
  public:

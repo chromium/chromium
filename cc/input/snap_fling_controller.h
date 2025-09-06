@@ -48,6 +48,7 @@ class CC_EXPORT SnapFlingController {
   struct GestureScrollUpdateInfo {
     gfx::Vector2dF delta;
     bool is_in_inertial_phase;
+    bool is_overscroll;
     base::TimeTicks event_time;
   };
 

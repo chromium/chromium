@@ -151,12 +151,14 @@ cc::SnapFlingController::GestureScrollType GestureScrollEventType(
 }
 
 cc::SnapFlingController::GestureScrollUpdateInfo GetGestureScrollUpdateInfo(
-    const WebGestureEvent& event) {
+    const WebGestureEvent& event,
+    bool is_overscroll) {
   cc::SnapFlingController::GestureScrollUpdateInfo info;
   info.delta = gfx::Vector2dF(-event.data.scroll_update.delta_x,
                               -event.data.scroll_update.delta_y);
   info.is_in_inertial_phase = event.data.scroll_update.inertial_phase ==
                               WebGestureEvent::InertialPhaseState::kMomentum;
+  info.is_overscroll = is_overscroll;
   info.event_time = event.TimeStamp();
   return info;
 }
@@ -1201,8 +1203,11 @@ InputHandlerProxy::HandleGestureScrollUpdate(
       "input", "DeltaUnits", TRACE_EVENT_SCOPE_THREAD, "unit",
       static_cast<int>(gesture_event.data.scroll_update.delta_units));
 
+  bool is_overscroll =
+      (elastic_overscroll_controller_ &&
+       !elastic_overscroll_controller_->StretchAmount().IsZero());
   if (snap_fling_controller_->HandleGestureScrollUpdate(
-          GetGestureScrollUpdateInfo(gesture_event))) {
+          GetGestureScrollUpdateInfo(gesture_event, is_overscroll))) {
     handling_gesture_on_impl_thread_ = false;
     return DROP_EVENT;
   }

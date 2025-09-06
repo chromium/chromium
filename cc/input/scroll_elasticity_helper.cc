@@ -26,6 +26,7 @@ class ScrollElasticityHelperImpl : public ScrollElasticityHelper {
   gfx::PointF MaxScrollOffset() const override;
   void ScrollBy(const gfx::Vector2dF& delta) override;
   void RequestOneBeginFrame() override;
+  void AnimationFinished() override;
 
  private:
   raw_ptr<LayerTreeHostImpl> host_impl_;
@@ -106,6 +107,10 @@ void ScrollElasticityHelperImpl::ScrollBy(const gfx::Vector2dF& delta) {
 
 void ScrollElasticityHelperImpl::RequestOneBeginFrame() {
   host_impl_->SetNeedsOneBeginImplFrame();
+}
+
+void ScrollElasticityHelperImpl::AnimationFinished() {
+  host_impl_->ElasticOverscrollAnimationFinished();
 }
 
 // static

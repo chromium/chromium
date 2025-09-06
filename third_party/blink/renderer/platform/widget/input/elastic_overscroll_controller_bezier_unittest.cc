@@ -34,6 +34,7 @@ class MockScrollElasticityHelper : public cc::ScrollElasticityHelper {
   }
   void ScrollBy(const Vector2dF& delta) override { scroll_offset_ += delta; }
   void RequestOneBeginFrame() override {}
+  void AnimationFinished() override {}
   gfx::PointF ScrollOffset() const override { return scroll_offset_; }
   gfx::PointF MaxScrollOffset() const override { return max_scroll_offset_; }
 

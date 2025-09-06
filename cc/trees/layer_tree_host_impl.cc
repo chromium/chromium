@@ -6020,6 +6020,12 @@ void LayerTreeHostImpl::ScrollOffsetAnimationFinished(ElementId element_id) {
     input_delegate_->ScrollOffsetAnimationFinished(element_id);
 }
 
+void LayerTreeHostImpl::ElasticOverscrollAnimationFinished() {
+  if (input_delegate_) {
+    input_delegate_->ElasticOverscrollAnimationFinished();
+  }
+}
+
 void LayerTreeHostImpl::NotifyAnimationWorkletStateChange(
     AnimationWorkletMutationState state,
     ElementListType tree_type) {

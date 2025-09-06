@@ -78,6 +78,8 @@ class PLATFORM_EXPORT ElasticOverscrollController {
   static std::unique_ptr<ElasticOverscrollController> Create(
       cc::ScrollElasticityHelper* helper);
 
+  gfx::Vector2dF StretchAmount() const;
+
  protected:
   virtual void DidEnterMomentumAnimatedState() = 0;
 

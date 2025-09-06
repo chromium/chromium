@@ -60,10 +60,12 @@ class MockScrollElasticityHelper : public cc::ScrollElasticityHelper {
   gfx::PointF MaxScrollOffset() const override { return max_scroll_offset_; }
   void ScrollBy(const Vector2dF& delta) override { scroll_offset_ += delta; }
   void RequestOneBeginFrame() override { request_begin_frame_count_ += 1; }
+  void AnimationFinished() override { animation_finished_count_ += 1; }
 
   // Counters for number of times functions were called.
   int request_begin_frame_count() const { return request_begin_frame_count_; }
   int set_stretch_amount_count() const { return set_stretch_amount_count_; }
+  int animation_finished_count() const { return animation_finished_count_; }
 
   void SetScrollOffsetAndMaxScrollOffset(const gfx::PointF& scroll_offset,
                                          const gfx::PointF& max_scroll_offset) {
@@ -81,6 +83,7 @@ class MockScrollElasticityHelper : public cc::ScrollElasticityHelper {
   Vector2dF stretch_amount_;
   int set_stretch_amount_count_ = 0;
   int request_begin_frame_count_ = 0;
+  int animation_finished_count_ = 0;
 
   gfx::PointF scroll_offset_;
   gfx::PointF max_scroll_offset_;
@@ -262,6 +265,7 @@ TEST_F(ElasticOverscrollControllerExponentialTest, MomentumAnimate) {
   SendGestureScrollUpdate(MomentumPhase, Vector2dF(0, -80), Vector2dF(0, -8));
   EXPECT_EQ(0, helper_.set_stretch_amount_count());
   EXPECT_EQ(0, helper_.request_begin_frame_count());
+  EXPECT_EQ(0, helper_.animation_finished_count());
 
   // Take another step, this time going over the threshold. This should update
   // the stretch amount, and then switch to the animating mode.
@@ -320,6 +324,7 @@ TEST_F(ElasticOverscrollControllerExponentialTest, MomentumAnimate) {
   TickCurrentTimeAndAnimate();
   EXPECT_EQ(stretch_count, helper_.set_stretch_amount_count());
   EXPECT_EQ(begin_frame_count, helper_.request_begin_frame_count());
+  EXPECT_EQ(1, helper_.animation_finished_count());
 }
 
 // Verify that a stretch opposing a scroll is correctly resolved.

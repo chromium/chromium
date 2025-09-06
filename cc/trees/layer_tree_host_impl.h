@@ -934,6 +934,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void NotifyNewLocalSurfaceIdExpectedWhilePaused();
 
+  void ElasticOverscrollAnimationFinished();
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,

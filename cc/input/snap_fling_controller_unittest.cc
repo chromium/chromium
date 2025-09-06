@@ -75,6 +75,7 @@ TEST_F(SnapFlingControllerTest, CreatesAndAnimatesCurveOnFirstInertialGSU) {
   SnapFlingController::GestureScrollUpdateInfo gsu;
   gsu.delta = gfx::Vector2dF(0, -10);
   gsu.is_in_inertial_phase = true;
+  gsu.is_overscroll = false;
 
   EXPECT_CALL(mock_client_, GetSnapFlingInfoAndSetAnimatingSnapTarget(
                                 testing::_, testing::_, testing::_, testing::_))
@@ -91,6 +92,7 @@ TEST_F(SnapFlingControllerTest, ScrollEndWhenHasEqualOffsetsOnInertialGSU) {
   SnapFlingController::GestureScrollUpdateInfo gsu;
   gsu.delta = gfx::Vector2dF(0, -10);
   gsu.is_in_inertial_phase = true;
+  gsu.is_overscroll = false;
 
   EXPECT_CALL(mock_client_, GetSnapFlingInfoAndSetAnimatingSnapTarget(
                                 testing::_, testing::_, testing::_, testing::_))
@@ -108,6 +110,22 @@ TEST_F(SnapFlingControllerTest, DoesNotHandleNonInertialGSU) {
   SnapFlingController::GestureScrollUpdateInfo gsu;
   gsu.delta = gfx::Vector2dF(0, -10);
   gsu.is_in_inertial_phase = false;
+  gsu.is_overscroll = false;
+
+  EXPECT_CALL(mock_client_, GetSnapFlingInfoAndSetAnimatingSnapTarget(
+                                testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(mock_client_, RequestAnimationForSnapFling()).Times(0);
+  EXPECT_CALL(mock_client_, ScrollByForSnapFling(testing::_)).Times(0);
+  EXPECT_FALSE(controller_->HandleGestureScrollUpdate(gsu));
+  testing::Mock::VerifyAndClearExpectations(&mock_client_);
+}
+
+TEST_F(SnapFlingControllerTest, DoesNotHandleOverscrollGSU) {
+  SnapFlingController::GestureScrollUpdateInfo gsu;
+  gsu.delta = gfx::Vector2dF(0, -10);
+  gsu.is_in_inertial_phase = true;
+  gsu.is_overscroll = true;
 
   EXPECT_CALL(mock_client_, GetSnapFlingInfoAndSetAnimatingSnapTarget(
                                 testing::_, testing::_, testing::_, testing::_))

@@ -560,9 +560,15 @@ void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
   } else if (latched_node) {
     scrollbar_controller_->ResetState();
 
+    // Scroll end will be deferred if there is an overscroll animation and the
+    // scrolling node need be snapped.
+    bool overscroll_snapped_node =
+        scroll_elasticity_helper_ &&
+        !scroll_elasticity_helper_->StretchAmount().IsZero() &&
+        latched_node->snap_container_data.has_value();
     // Note that if we deferred the scroll end then we should not snap. We will
     // snap once we deliver the deferred scroll end.
-    if (GetAnimatingNodeForCurrentScrollingNode()) {
+    if (GetAnimatingNodeForCurrentScrollingNode() || overscroll_snapped_node) {
       DCHECK(!deferred_scroll_end_);
       deferred_scroll_end_ = true;
       return;
@@ -1318,6 +1324,13 @@ void InputHandler::ScrollOffsetAnimationFinished(ElementId element_id) {
   if (deferred_scroll_end_) {
     ScrollEnd(/*should_snap=*/false);
     return;
+  }
+}
+
+void InputHandler::ElasticOverscrollAnimationFinished() {
+  if (CurrentlyScrollingNode() &&
+      !IsAnimatingForSnap(CurrentlyScrollingNode()->element_id)) {
+    ScrollEnd(true /* should_snap */);
   }
 }
 

@@ -70,6 +70,8 @@ class CC_EXPORT ScrollElasticityHelper {
   // Requests that another frame happens for the controller to continue ticking
   // animations.
   virtual void RequestOneBeginFrame() = 0;
+
+  virtual void AnimationFinished() = 0;
 };
 
 }  // namespace cc

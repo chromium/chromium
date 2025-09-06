@@ -308,6 +308,7 @@ void ElasticOverscrollController::Animate(base::TimeTicks time) {
       std::max(time - momentum_animation_start_time_, base::TimeDelta()));
   if (fabs(new_stretch_amount.x()) < 1 && fabs(new_stretch_amount.y()) < 1) {
     helper_->SetStretchAmount(gfx::Vector2dF());
+    helper_->AnimationFinished();
     EnterStateInactive();
     return;
   }
@@ -390,6 +391,10 @@ void ElasticOverscrollController::ReconcileStretchAndScroll() {
     stretch_scroll_force_ =
         AccumulatedOverscrollForStretchAmount(new_stretch_amount);
   }
+}
+
+gfx::Vector2dF ElasticOverscrollController::StretchAmount() const {
+  return helper_->StretchAmount();
 }
 
 }  // namespace blink
