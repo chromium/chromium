@@ -371,3 +371,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
   RunSidePanelTest("side_panel/read_anything/node_store_test.js",
                    "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
+                       ReadAloudNodeStore) {
+  RunSidePanelTest("side_panel/read_anything/read_aloud_node_store_test.js",
+                   "mocha.run()");
+}

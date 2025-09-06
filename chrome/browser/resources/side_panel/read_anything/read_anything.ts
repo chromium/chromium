@@ -27,6 +27,7 @@ export {ESTIMATED_WORDS_PER_MS, MIN_MS_TO_READ, NodeStore} from './node_store.js
 export {ReadAloudHighlighter} from './read_aloud/highlighter.js';
 export {currentReadHighlightClass, Highlight, MovementGranularity, PhraseHighlight, previousReadHighlightClass, SentenceHighlight, WordHighlight} from './read_aloud/movement.js';
 export {getReadAloudModel, ReadAloudModelBrowserProxy, setInstance} from './read_aloud/read_aloud_model_browser_proxy.js';
+export {ReadAloudNodeStore} from './read_aloud/read_aloud_node_store.js';
 export {AxReadAloudNode, ReadAloudNode, Segment} from './read_aloud/read_aloud_types.js';
 export {MAX_SPEECH_LENGTH, SpeechController, SpeechListener} from './read_aloud/speech_controller.js';
 export {PauseActionSource, SpeechEngineState, SpeechModel} from './read_aloud/speech_model.js';

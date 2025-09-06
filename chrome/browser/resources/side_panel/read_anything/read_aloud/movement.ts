@@ -5,6 +5,7 @@
 import {isRectVisible} from '../common.js';
 import {NodeStore} from '../node_store.js';
 
+import {ReadAloudNodeStore} from './read_aloud_node_store.js';
 import type {ReadAloudNode, Segment} from './read_aloud_types.js';
 import {isInvalidHighlightForWordHighlighting} from './speech_presentation_rules.js';
 
@@ -164,6 +165,11 @@ export abstract class Highlight {
         this.highlightCurrentText_(start, end, element, previousHighlightOnly);
     if (highlighted) {
       this.nodeStore_.replaceDomNode(element, highlighted);
+
+      // This could be grouped into NodeStore but is being handled as a
+      // separate call to avoid moving more logic outside of the read_aloud/
+      // directory.
+      ReadAloudNodeStore.getInstance().update(element, highlighted);
     }
   }
 

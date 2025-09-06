@@ -4,6 +4,8 @@
 
 import {NodeStore} from '../node_store.js';
 
+import {ReadAloudNodeStore} from './read_aloud_node_store.js';
+
 // This file contains type definitions for the data structures
 // used in the read aloud feature. It provides an abstraction layer for
 // representing text nodes and segments, allowing the core logic to work
@@ -89,8 +91,9 @@ class AxReadAloudNodeImpl extends AxReadAloudNode {
 
 // Represents a node used by read aloud that's based entirely on the DOM.
 export class DomReadAloudNode extends ReadAloudNode {
-  protected constructor(public readonly node: Node) {
+  protected constructor(protected node: Node) {
     super();
+    ReadAloudNodeStore.getInstance().register(this);
   }
 
   equals(other: ReadAloudNode|undefined|null): boolean {
@@ -106,6 +109,12 @@ export class DomReadAloudNode extends ReadAloudNode {
 
   domNode(): Node|undefined {
     return this.node;
+  }
+
+  // Refresh the DOM node associated with this read aloud node if the original
+  // node has been changed, such as from highlighting.
+  refresh(newNode: Node) {
+    this.node = newNode;
   }
 }
 

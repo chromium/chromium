@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import {currentReadHighlightClass, MovementGranularity, NodeStore, PhraseHighlight, previousReadHighlightClass, ReadAloudNode, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertLT, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 
@@ -650,5 +650,27 @@ suite('Movement', () => {
     assertEquals(0, values[0]);
     assertEquals(sentence2, nodes[1]!.textContent);
     assertEquals(sentence1.length, values[1]);
+  });
+
+
+  test('new highlight updates ReadAloudNode.domNode()', () => {
+    const id = 1;
+    const p = document.createElement('p');
+    const text = 'A summer\'s disregard.';
+    p.innerText = text;
+    nodeStore.setDomNode(p, id);
+    const readAloudNode = ReadAloudNode.create(p)!;
+    const segments = [{node: readAloudNode, start: 0, length: text.length}];
+    const originalDomNode = readAloudNode.domNode();
+
+    new SentenceHighlight(segments);
+
+    const newDomNode = readAloudNode.domNode();
+    assertNotEquals(originalDomNode, newDomNode);
+    assertTrue(!!newDomNode);
+    assertTrue(newDomNode instanceof HTMLSpanElement);
+    assertTrue(
+        newDomNode.classList.contains('parent-of-highlight'),
+        'newDomNode does not have parent-of-highlight class');
   });
 });
