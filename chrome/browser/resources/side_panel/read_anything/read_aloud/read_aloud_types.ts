@@ -24,6 +24,14 @@ export abstract class ReadAloudNode {
       axNodeId: number, nodeStore = NodeStore.getInstance()): ReadAloudNode
       |undefined {
     const domNode: Node|undefined = nodeStore.getDomNode(axNodeId);
+    if (!domNode && !chrome.readingMode.isTsTextSegmentationEnabled) {
+      // If there's no DOM node yet, it might not have gotten added to the
+      // node store yet, so create an AxReadAloudNode instead.
+      // TODO: crbug.com/440400392- This shouldn't be necessary but is a
+      // fallback to help ensure that the text segmentation refactor does not
+      // impact the V8 segmentation implementation.
+      return new AxReadAloudNodeImpl(axNodeId, nodeStore);
+    }
     if (!domNode) {
       return undefined;
     }
