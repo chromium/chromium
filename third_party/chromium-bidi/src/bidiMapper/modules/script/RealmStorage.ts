@@ -31,7 +31,8 @@ interface RealmFilter {
   executionContextId?: Protocol.Runtime.ExecutionContextId;
   origin?: string;
   type?: Script.RealmType;
-  sandbox?: string;
+  // null indicates no sandbox.
+  sandbox?: string | null;
   cdpSessionId?: Protocol.Target.SessionID;
   isHidden?: boolean;
 }
@@ -59,6 +60,8 @@ export class RealmStorage {
 
   /** Finds all realms that match the given filter. */
   findRealms(filter: RealmFilter): Realm[] {
+    const sandboxFilterValue =
+      filter.sandbox === null ? undefined : filter.sandbox;
     return Array.from(this.#realmMap.values()).filter((realm) => {
       if (filter.realmId !== undefined && filter.realmId !== realm.realmId) {
         return false;
@@ -73,7 +76,8 @@ export class RealmStorage {
       }
       if (
         filter.sandbox !== undefined &&
-        (!(realm instanceof WindowRealm) || filter.sandbox !== realm.sandbox)
+        (!(realm instanceof WindowRealm) ||
+          sandboxFilterValue !== realm.sandbox)
       ) {
         return false;
       }
@@ -106,11 +110,7 @@ export class RealmStorage {
   }
 
   findRealm(filter: RealmFilter): Realm | undefined {
-    const maybeRealms = this.findRealms(filter);
-    if (maybeRealms.length !== 1) {
-      return undefined;
-    }
-    return maybeRealms[0];
+    return this.findRealms(filter)[0];
   }
 
   /** Gets the only realm that matches the given filter, if any, otherwise throws. */

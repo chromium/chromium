@@ -263,6 +263,7 @@ export class CdpTargetManager {
       case 'worker': {
         const realm = this.#realmStorage.findRealm({
           cdpSessionId: parentSessionCdpClient.sessionId,
+          sandbox: null, // Non-sandboxed realms.
         });
         // If there is no browsing context, this worker is already terminated.
         if (!realm) {
