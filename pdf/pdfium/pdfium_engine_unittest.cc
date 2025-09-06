@@ -1088,9 +1088,9 @@ TEST_P(PDFiumEngineTest, SelectTextAcrossEmptyPage) {
   EXPECT_TRUE(engine->HandleInputEvent(
       CreateMoveWebMouseEventToPosition(kEndPosition)));
 #if BUILDFLAG(IS_WIN)
-  static constexpr char kExpectedForwardSelection[] = "world!\r\nGoodbye";
+  static constexpr char kExpectedForwardSelection[] = "world!\r\nGoodbye,";
 #else
-  static constexpr char kExpectedForwardSelection[] = "world!\nGoodbye";
+  static constexpr char kExpectedForwardSelection[] = "world!\nGoodbye,";
 #endif
   EXPECT_EQ(kExpectedForwardSelection, engine->GetSelectedText());
 
@@ -2403,18 +2403,18 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPointMultiPage) {
   EXPECT_TRUE(engine->ExtendSelectionByPoint((kEndPosition)));
 
 #if BUILDFLAG(IS_WIN)
-  constexpr char kExpectedText[] = "Goodbye, world!\r\nHello,";
+  constexpr char kExpectedText[] = "Goodbye, world!\r\nHello, ";
 #else
-  constexpr char kExpectedText[] = "Goodbye, world!\nHello,";
+  constexpr char kExpectedText[] = "Goodbye, world!\nHello, ";
 #endif  // BUILDFLAG(IS_WIN)
   EXPECT_EQ(kExpectedText, engine->GetSelectedText());
 
 #if BUILDFLAG(IS_WIN)
-  constexpr PdfRect kExpectedRectPage1{20.0f, 46.328f, 49.664f, 62.48f};
+  constexpr PdfRect kExpectedRectPage1{20.0f, 46.328f, 52.664f, 62.48f};
 #elif BUILDFLAG(IS_MAC)
-  constexpr PdfRect kExpectedRectPage1{20.0f, 46.328f, 49.664f, 62.084f};
+  constexpr PdfRect kExpectedRectPage1{20.0f, 46.328f, 52.664f, 62.084f};
 #else
-  constexpr PdfRect kExpectedRectPage1{20.0f, 47.012f, 49.664f, 60.536f};
+  constexpr PdfRect kExpectedRectPage1{20.0f, 47.012f, 52.664f, 60.536f};
 #endif  // BUILDFLAG(IS_WIN)
   EXPECT_THAT(engine->GetSelectionRectMap(),
               ElementsAre(Pair(0, ElementsAre(kGoodbyeWorldExpectedRectPage0)),

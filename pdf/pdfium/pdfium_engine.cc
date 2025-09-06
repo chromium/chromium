@@ -1936,7 +1936,8 @@ bool PDFiumEngine::ExtendSelection(int page_index, int char_index) {
 
     int count = pages_[last_page_index]->GetCharCount();
     selection_[last_selection_index].SetCharCount(count - last_char_index);
-    selection_.push_back(PDFiumRange(pages_[page_index].get(), 0, char_index));
+    selection_.push_back(PDFiumRange(pages_[page_index].get(), /*char_index=*/0,
+                                     /*char_count=*/char_index + 1));
   } else {
     // Selecting into the previous page.
     // The selection's char_index is 0-based, so the character count is one
