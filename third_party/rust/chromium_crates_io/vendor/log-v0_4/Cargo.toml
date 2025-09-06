@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.60.0"
+rust-version = "1.61.0"
 name = "log"
-version = "0.4.27"
+version = "0.4.28"
 authors = ["The Rust Project Developers"]
 build = false
 exclude = ["rfcs/**/*"]
@@ -93,6 +93,14 @@ std = []
 name = "log"
 path = "src/lib.rs"
 
+[[test]]
+name = "integration"
+path = "tests/integration.rs"
+
+[[test]]
+name = "macros"
+path = "tests/macros.rs"
+
 [[bench]]
 name = "value"
 path = "benches/value.rs"
@@ -103,7 +111,7 @@ optional = true
 default-features = false
 
 [dependencies.sval]
-version = "2.1"
+version = "2.14.1"
 optional = true
 default-features = false
 

@@ -344,7 +344,7 @@
 #![doc(
     html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
     html_favicon_url = "https://www.rust-lang.org/favicon.ico",
-    html_root_url = "https://docs.rs/log/0.4.27"
+    html_root_url = "https://docs.rs/log/0.4.28"
 )]
 #![warn(missing_docs)]
 #![deny(missing_debug_implementations, unconditional_recursion)]
@@ -430,21 +430,6 @@ impl AtomicUsize {
 
     fn store(&self, val: usize, _order: Ordering) {
         self.v.set(val)
-    }
-
-    #[cfg(target_has_atomic = "ptr")]
-    fn compare_exchange(
-        &self,
-        current: usize,
-        new: usize,
-        _success: Ordering,
-        _failure: Ordering,
-    ) -> Result<usize, usize> {
-        let prev = self.v.get();
-        if current == prev {
-            self.v.set(new);
-        }
-        Ok(prev)
     }
 }
 
@@ -591,6 +576,48 @@ impl Level {
     pub fn iter() -> impl Iterator<Item = Self> {
         (1..6).map(|i| Self::from_usize(i).unwrap())
     }
+
+    /// Get the next-highest `Level` from this one.
+    ///
+    /// If the current `Level` is at the highest level, the returned `Level` will be the same as the
+    /// current one.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use log::Level;
+    ///
+    /// let level = Level::Info;
+    ///
+    /// assert_eq!(Level::Debug, level.increment_severity());
+    /// assert_eq!(Level::Trace, level.increment_severity().increment_severity());
+    /// assert_eq!(Level::Trace, level.increment_severity().increment_severity().increment_severity()); // max level
+    /// ```
+    pub fn increment_severity(&self) -> Self {
+        let current = *self as usize;
+        Self::from_usize(current + 1).unwrap_or(*self)
+    }
+
+    /// Get the next-lowest `Level` from this one.
+    ///
+    /// If the current `Level` is at the lowest level, the returned `Level` will be the same as the
+    /// current one.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use log::Level;
+    ///
+    /// let level = Level::Info;
+    ///
+    /// assert_eq!(Level::Warn, level.decrement_severity());
+    /// assert_eq!(Level::Error, level.decrement_severity().decrement_severity());
+    /// assert_eq!(Level::Error, level.decrement_severity().decrement_severity().decrement_severity()); // min level
+    /// ```
+    pub fn decrement_severity(&self) -> Self {
+        let current = *self as usize;
+        Self::from_usize(current.saturating_sub(1)).unwrap_or(*self)
+    }
 }
 
 /// An enum representing the available verbosity level filters of the logger.
@@ -699,6 +726,49 @@ impl LevelFilter {
     /// ```
     pub fn iter() -> impl Iterator<Item = Self> {
         (0..6).map(|i| Self::from_usize(i).unwrap())
+    }
+
+    /// Get the next-highest `LevelFilter` from this one.
+    ///
+    /// If the current `LevelFilter` is at the highest level, the returned `LevelFilter` will be the
+    /// same as the current one.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use log::LevelFilter;
+    ///
+    /// let level_filter = LevelFilter::Info;
+    ///
+    /// assert_eq!(LevelFilter::Debug, level_filter.increment_severity());
+    /// assert_eq!(LevelFilter::Trace, level_filter.increment_severity().increment_severity());
+    /// assert_eq!(LevelFilter::Trace, level_filter.increment_severity().increment_severity().increment_severity()); // max level
+    /// ```
+    pub fn increment_severity(&self) -> Self {
+        let current = *self as usize;
+        Self::from_usize(current + 1).unwrap_or(*self)
+    }
+
+    /// Get the next-lowest `LevelFilter` from this one.
+    ///
+    /// If the current `LevelFilter` is at the lowest level, the returned `LevelFilter` will be the
+    /// same as the current one.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use log::LevelFilter;
+    ///
+    /// let level_filter = LevelFilter::Info;
+    ///
+    /// assert_eq!(LevelFilter::Warn, level_filter.decrement_severity());
+    /// assert_eq!(LevelFilter::Error, level_filter.decrement_severity().decrement_severity());
+    /// assert_eq!(LevelFilter::Off, level_filter.decrement_severity().decrement_severity().decrement_severity());
+    /// assert_eq!(LevelFilter::Off, level_filter.decrement_severity().decrement_severity().decrement_severity().decrement_severity()); // min level
+    /// ```
+    pub fn decrement_severity(&self) -> Self {
+        let current = *self as usize;
+        Self::from_usize(current.saturating_sub(1)).unwrap_or(*self)
     }
 }
 
@@ -1661,6 +1731,55 @@ mod tests {
         for (input, expected) in tests {
             assert_eq!(*expected, input.as_str());
         }
+    }
+
+    #[test]
+    fn test_level_up() {
+        let info = Level::Info;
+        let up = info.increment_severity();
+        assert_eq!(up, Level::Debug);
+
+        let trace = Level::Trace;
+        let up = trace.increment_severity();
+        // trace is already highest level
+        assert_eq!(up, trace);
+    }
+
+    #[test]
+    fn test_level_filter_up() {
+        let info = LevelFilter::Info;
+        let up = info.increment_severity();
+        assert_eq!(up, LevelFilter::Debug);
+
+        let trace = LevelFilter::Trace;
+        let up = trace.increment_severity();
+        // trace is already highest level
+        assert_eq!(up, trace);
+    }
+
+    #[test]
+    fn test_level_down() {
+        let info = Level::Info;
+        let down = info.decrement_severity();
+        assert_eq!(down, Level::Warn);
+
+        let error = Level::Error;
+        let down = error.decrement_severity();
+        // error is already lowest level
+        assert_eq!(down, error);
+    }
+
+    #[test]
+    fn test_level_filter_down() {
+        let info = LevelFilter::Info;
+        let down = info.decrement_severity();
+        assert_eq!(down, LevelFilter::Warn);
+
+        let error = LevelFilter::Error;
+        let down = error.decrement_severity();
+        assert_eq!(down, LevelFilter::Off);
+        // Off is already the lowest
+        assert_eq!(down.decrement_severity(), down);
     }
 
     #[test]

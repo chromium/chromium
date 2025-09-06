@@ -1,8 +1,9 @@
 name: CI
 on: [push, pull_request]
 
+# Ensure only read permission is granted
 permissions:
-  contents: read #  to fetch code (actions/checkout)
+  contents: read
 
 jobs:
   test:
@@ -10,7 +11,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build: [stable, beta, nightly, macos, win32, win64, mingw]
         include:
           - build: stable
             os: ubuntu-latest
@@ -34,65 +34,52 @@ jobs:
             os: windows-latest
             rust: stable-x86_64-pc-windows-gnu
     steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
+    - uses: actions/checkout@v4
+    - name: Install toolchain
       run: |
         rustup update ${{ matrix.rust }} --no-self-update
         rustup default ${{ matrix.rust }}
-        cargo install cargo-hack
-    - run: cargo hack test --feature-powerset --lib --exclude-features max_level_off,max_level_error,max_level_warn,max_level_info,max_level_debug,max_level_trace,release_max_level_off,release_max_level_error,release_max_level_warn,release_max_level_info,release_max_level_debug,release_max_level_trace
+        cargo +stable install cargo-hack --locked
+    - run: cargo hack test --feature-powerset --exclude-features max_level_off,max_level_error,max_level_warn,max_level_info,max_level_debug,max_level_trace,release_max_level_off,release_max_level_error,release_max_level_warn,release_max_level_info,release_max_level_debug,release_max_level_trace
     - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml
     - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml --release
 
-  rustfmt:
-    name: Rustfmt
+  check:
+    name: Check Format and Clippy
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
+    - uses: actions/checkout@v4
+    - name: Install toolchain
       run: |
         rustup update stable --no-self-update
         rustup default stable
-        rustup component add rustfmt
-      # log repo does not use Cargo workspaces, so `cargo fmt` will not check all the code
-      # perhaps this should be changed in the future
+        rustup component add clippy rustfmt
     - run: cargo fmt -- --check
     - run: cargo fmt --manifest-path test_max_level_features/Cargo.toml -- --check
-    - run: cargo fmt --manifest-path tests/Cargo.toml -- --check
-
-  clippy:
-    name: Clippy
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
-      run: |
-        rustup update stable --no-self-update
-        rustup default stable
-        rustup component add clippy
     - run: cargo clippy --verbose
     - run: cargo clippy --verbose --manifest-path test_max_level_features/Cargo.toml
-    - run: cargo clippy --verbose --manifest-path tests/Cargo.toml
 
   doc:
     name: Check Documentation
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: Install Rust
+    - uses: actions/checkout@v4
+    - name: Install toolchain
       run: |
         rustup update stable --no-self-update
         rustup default stable
         rustup component add rust-docs
     - name: Run rustdoc
-      run: RUSTDOCFLAGS="-D warnings" cargo doc --verbose --features std,serde,sval,sval_ref,value-bag,kv,kv_std,kv_sval,kv_serde
+      env:
+        RUSTDOCFLAGS: "-D warnings"
+      run: cargo doc --verbose --features std,serde,sval,sval_ref,value-bag,kv,kv_std,kv_sval,kv_serde
 
   features:
     name: Feature check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Install Rust
+      - uses: actions/checkout@v4
+      - name: Install toolchain
         run: |
           rustup update nightly --no-self-update
           rustup default nightly
@@ -107,8 +94,8 @@ jobs:
     name: Minimal versions
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Install Rust
+      - uses: actions/checkout@v4
+      - name: Install toolchain
         run: |
           rustup update nightly --no-self-update
           rustup default nightly
@@ -123,21 +110,22 @@ jobs:
     name: MSRV
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Install Rust
+      - uses: actions/checkout@v4
+      - name: Install toolchain
         run: |
-          rustup update 1.60.0 --no-self-update
-          rustup default 1.60.0
-      - run: |
-          cargo test --verbose --manifest-path tests/Cargo.toml
-          cargo test --verbose --manifest-path tests/Cargo.toml --features kv
+          rustup update 1.61.0 --no-self-update
+          rustup default 1.61.0
+          cargo +stable install cargo-hack --locked
+      - run: cargo hack test --feature-powerset --exclude-features max_level_off,max_level_error,max_level_warn,max_level_info,max_level_debug,max_level_trace,release_max_level_off,release_max_level_error,release_max_level_warn,release_max_level_info,release_max_level_debug,release_max_level_trace
+      - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml
+      - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml --release
 
   embedded:
     name: Embedded
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Install Rust
+      - uses: actions/checkout@v4
+      - name: Install toolchain
         run: |
           rustup update stable --no-self-update
           rustup default stable

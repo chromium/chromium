@@ -225,7 +225,7 @@
 //!
 //! ```
 //! # use log::kv::Key;
-//! # #[derive(Debug)]
+//! #[derive(Debug)]
 //! struct Data {
 //!     a: i32,
 //!     b: bool,

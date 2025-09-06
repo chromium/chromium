@@ -449,7 +449,7 @@ mod std_support {
 
 /// A visitor for a [`Value`].
 ///
-/// Also see [`Value`'s documentation on seralization]. Value visitors are a simple alternative
+/// Also see [`Value`'s documentation on serialization]. Value visitors are a simple alternative
 /// to a more fully-featured serialization framework like `serde` or `sval`. A value visitor
 /// can differentiate primitive types through methods like [`VisitValue::visit_bool`] and
 /// [`VisitValue::visit_str`], but more complex types like maps and sequences
@@ -458,7 +458,7 @@ mod std_support {
 /// If you're trying to serialize a value to a format like JSON, you can use either `serde`
 /// or `sval` directly with the value. You don't need a visitor.
 ///
-/// [`Value`'s documentation on seralization]: Value#serialization
+/// [`Value`'s documentation on serialization]: Value#serialization
 pub trait VisitValue<'v> {
     /// Visit a `Value`.
     ///
