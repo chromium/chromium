@@ -201,67 +201,59 @@ export class CdpTarget {
    * Enables all the required CDP domains and unblocks the target.
    */
   async #unblock() {
-    try {
-      await Promise.all([
-        this.#cdpClient.sendCommand('Page.enable', {
-          enableFileChooserOpenedEvent: true,
-        }),
-        ...(this.#ignoreFileDialog()
-          ? []
-          : [
-              this.#cdpClient.sendCommand(
-                'Page.setInterceptFileChooserDialog',
-                {
-                  enabled: true,
-                  // The intercepted dialog should be canceled.
-                  cancel: true,
-                },
-              ),
-            ]),
-        // There can be some existing frames in the target, if reconnecting to an
-        // existing browser instance, e.g. via Puppeteer. Need to restore the browsing
-        // contexts for the frames to correctly handle further events, like
-        // `Runtime.executionContextCreated`.
-        // It's important to schedule this task together with enabling domains commands to
-        // prepare the tree before the events (e.g. Runtime.executionContextCreated) start
-        // coming.
-        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2282
-        this.#cdpClient
-          .sendCommand('Page.getFrameTree')
-          .then((frameTree) =>
-            this.#restoreFrameTreeState(frameTree.frameTree),
-          ),
-        this.#cdpClient.sendCommand('Runtime.enable'),
-        this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
-          enabled: true,
-        }),
-        // Enabling CDP Network domain is required for navigation detection:
-        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
-        this.#cdpClient
-          .sendCommand('Network.enable')
-          .then(() => this.toggleNetworkIfNeeded()),
-        this.#cdpClient.sendCommand('Target.setAutoAttach', {
-          autoAttach: true,
-          waitForDebuggerOnStart: true,
-          flatten: true,
-        }),
-        this.#updateWindowId(),
-        this.#setUserContextConfig(),
-        this.#initAndEvaluatePreloadScripts(),
-        this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
-        // Resume tab execution as well if it was paused by the debugger.
-        this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
-        this.toggleDeviceAccessIfNeeded(),
-      ]);
-    } catch (error: any) {
-      this.#logger?.(LogType.debugError, 'Failed to unblock target', error);
-      // The target might have been closed before the initialization finished.
-      if (!this.#cdpClient.isCloseError(error)) {
-        this.#unblocked.resolve({
-          kind: 'error',
-          error,
-        });
-        return;
+    const results = await Promise.allSettled([
+      this.#cdpClient.sendCommand('Page.enable', {
+        enableFileChooserOpenedEvent: true,
+      }),
+      ...(this.#ignoreFileDialog()
+        ? []
+        : [
+            this.#cdpClient.sendCommand('Page.setInterceptFileChooserDialog', {
+              enabled: true,
+              // The intercepted dialog should be canceled.
+              cancel: true,
+            }),
+          ]),
+      // There can be some existing frames in the target, if reconnecting to an
+      // existing browser instance, e.g. via Puppeteer. Need to restore the browsing
+      // contexts for the frames to correctly handle further events, like
+      // `Runtime.executionContextCreated`.
+      // It's important to schedule this task together with enabling domains commands to
+      // prepare the tree before the events (e.g. Runtime.executionContextCreated) start
+      // coming.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2282
+      this.#cdpClient
+        .sendCommand('Page.getFrameTree')
+        .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
+      this.#cdpClient.sendCommand('Runtime.enable'),
+      this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+        enabled: true,
+      }),
+      // Enabling CDP Network domain is required for navigation detection:
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2856.
+      this.#cdpClient
+        .sendCommand('Network.enable')
+        .then(() => this.toggleNetworkIfNeeded()),
+      this.#cdpClient.sendCommand('Target.setAutoAttach', {
+        autoAttach: true,
+        waitForDebuggerOnStart: true,
+        flatten: true,
+      }),
+      this.#updateWindowId(),
+      this.#setUserContextConfig(),
+      this.#initAndEvaluatePreloadScripts(),
+      this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+      // Resume tab execution as well if it was paused by the debugger.
+      this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+      this.toggleDeviceAccessIfNeeded(),
+    ]);
+    for (const result of results) {
+      if (result instanceof Error) {
+        this.#logger?.(
+          LogType.debugError,
+          'Error happened when configuring a new target',
+          result,
+        );
       }
     }
 
