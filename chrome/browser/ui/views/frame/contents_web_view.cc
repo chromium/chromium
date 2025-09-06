@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "components/search/ntp_features.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -105,6 +106,14 @@ void ContentsWebView::SetWebContents(content::WebContents* web_contents) {
   if (status_bubble_ == nullptr) {
     status_bubble_ = std::make_unique<StatusBubbleViews>(this);
     status_bubble_->Reposition();
+  }
+
+  // Ensure any dialogs already showing for the webcontents gets
+  // re-centered when the active tab changes or a split tab is created.
+  web_modal::WebContentsModalDialogManager* const dialog_manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  if (dialog_manager) {
+    dialog_manager->UpdateDialogHost();
   }
 }
 
