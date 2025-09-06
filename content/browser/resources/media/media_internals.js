@@ -41,8 +41,27 @@ toolbar.addEventListener('click', (event) => {
   }
 });
 
-// Default to the players tab
-document.getElementById('players-tab-button').click();
+// Default to the players tab.
+let tabButton = document.getElementById('players-tab-button');
+
+const hash = window.location.hash.substring(1);
+if (hash) {
+  const button = document.getElementById(hash + '-tab-button');
+  if (button) {
+    tabButton = button;
+  }
+}
+tabButton.click();
+
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.substring(1);
+  if (hash) {
+    const button = document.getElementById(hash + '-tab-button');
+    if (button) {
+      button.click();
+    }
+  }
+});
 
 const contentContainer = document.getElementById('content-container');
 const leftPane = document.getElementById('left-pane');
