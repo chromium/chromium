@@ -776,6 +776,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/widget/AnchoredPopupWindowTest.java",
     "junit/src/org/chromium/ui/widget/LoadingViewTest.java",
     "junit/src/org/chromium/ui/widget/OutlineOverlayHelperTest.java",
+    "junit/src/org/chromium/ui/widget/PopupSpecCalculatorTest.java",
     "junit/src/org/chromium/ui/widget/SpanBackgroundHelperTest.java",
     "junit/src/org/chromium/ui/widget/TextViewWithClickableSpansTest.java",
     "junit/src/org/chromium/ui/widget/ToastManagerTest.java",
