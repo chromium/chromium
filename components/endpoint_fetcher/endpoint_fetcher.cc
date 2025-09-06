@@ -4,6 +4,9 @@
 
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -163,7 +166,6 @@ EndpointFetcher::EndpointFetcher(
                           .SetHeaders(headers)
                           .SetCorsExemptHeaders(cors_exempt_headers)
                           .SetChannel(channel)
-                          .SetSanitizeResponse(true)
                           .Build()) {}
 
 EndpointFetcher::EndpointFetcher(
@@ -175,7 +177,6 @@ EndpointFetcher::EndpointFetcher(
       request_params_(EndpointFetcher::RequestParams::Builder(HttpMethod::kGet,
                                                               annotation_tag)
                           .SetAuthType(NO_AUTH)
-                          .SetSanitizeResponse(false)
                           .SetTimeout(base::Milliseconds(0))
                           .SetUrl(url)
                           .Build()) {}
@@ -204,7 +205,6 @@ EndpointFetcher::EndpointFetcher(
               .SetOauthConsumerName(oauth_consumer_name)
               .SetOauthScopes(scopes)
               .SetConsentLevel(consent_level)
-              .SetSanitizeResponse(true)
               .SetUrl(url)
               .Build()) {}
 
@@ -217,7 +217,6 @@ EndpointFetcher::EndpointFetcher(
           EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
                                                   annotation_tag)
               .SetTimeout(kDefaultTimeOut)
-              .SetSanitizeResponse(true)
               .Build()) {}
 
 EndpointFetcher::~EndpointFetcher() = default;
@@ -416,42 +415,14 @@ void EndpointFetcher::OnResponseFetched(
   }
 
   if (response_body) {
-    // Sanitize response if enabled and content type is JSON.
-    // Use value_or(true) to default to sanitization if not explicitly set.
-    if (request_params_.sanitize_response.value_or(true) &&
-        mime_type == "application/json") {
-      data_decoder::JsonSanitizer::Sanitize(
-          std::move(*response_body),
-          base::BindOnce(&EndpointFetcher::OnSanitizationResult,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(response),
-                         std::move(endpoint_fetcher_callback)));
-    } else {
-      response->response = *response_body;
-      std::move(endpoint_fetcher_callback).Run(std::move(response));
-    }
+    response->response = *response_body;
+    std::move(endpoint_fetcher_callback).Run(std::move(response));
   } else {
     std::string net_error = net::ErrorToString(net_error_code);
     VLOG(1) << __func__ << " with response error: " << net_error;
     response->response = "There was a response error";
     std::move(endpoint_fetcher_callback).Run(std::move(response));
   }
-}
-
-void EndpointFetcher::OnSanitizationResult(
-    std::unique_ptr<EndpointResponse> response,
-    EndpointFetcherCallback endpoint_fetcher_callback,
-    data_decoder::JsonSanitizer::Result result) {
-  if (result.has_value()) {
-    response->response = result.value();
-  } else {
-    response->error_type =
-        std::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
-    response->response = "There was a sanitization error: " + result.error();
-  }
-  // The EndpointFetcher and its members will be destroyed after
-  // any the below callback. Do not access The EndpointFetcher
-  // or its members after the callback.
-  std::move(endpoint_fetcher_callback).Run(std::move(response));
 }
 
 network::mojom::CredentialsMode EndpointFetcher::GetCredentialsMode() const {

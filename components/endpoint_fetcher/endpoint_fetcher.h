@@ -16,7 +16,6 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/json_sanitizer.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -152,9 +151,6 @@ class EndpointFetcher {
     std::optional<signin::ConsentLevel> consent_level;
     std::optional<version_info::Channel> channel;
 
-    // Response behavior parameters
-    std::optional<bool> sanitize_response{true};
-
     class Builder final {
      public:
       Builder(const HttpMethod& method,
@@ -280,12 +276,6 @@ class EndpointFetcher {
 
       Builder& SetChannel(version_info::Channel channel_val) {
         request_params_->channel = channel_val;
-        return *this;
-      }
-
-      // Response behavior builder methods
-      Builder& SetSanitizeResponse(bool sanitize) {
-        request_params_->sanitize_response = sanitize;
         return *this;
       }
 
@@ -422,9 +412,6 @@ class EndpointFetcher {
 
   void OnResponseFetched(EndpointFetcherCallback callback,
                          std::unique_ptr<std::string> response_body);
-  void OnSanitizationResult(std::unique_ptr<EndpointResponse> response,
-                            EndpointFetcherCallback endpoint_fetcher_callback,
-                            data_decoder::JsonSanitizer::Result result);
 
   network::mojom::CredentialsMode GetCredentialsMode() const;
   int GetMaxRetries() const;

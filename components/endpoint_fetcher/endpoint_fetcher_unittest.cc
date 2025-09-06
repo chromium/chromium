@@ -38,7 +38,6 @@ const char kExpectedResponse[] = "{}";
 const char kExpectedAuthError[] = "There was an authentication error";
 const char kExpectedResponseError[] = "There was a response error";
 const char kExpectedPrimaryAccountError[] = "No primary accounts found";
-const char kExpectedSanitizationError[] = "There was a sanitization error";
 const char kHttpPostMethod[] = "POST";
 const char kMalformedResponse[] = "asdf";
 const char kJsonMimeType[] = "application/json";
@@ -165,26 +164,6 @@ TEST_F(EndpointFetcherTest, FetchResponse) {
                   Field(&EndpointResponse::response, kExpectedResponse),
                   Field(&EndpointResponse::http_status_code, net::HTTP_OK),
                   Field(&EndpointResponse::error_type, std::nullopt)))))
-      .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
-        run_loop.Quit();
-      });
-  endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
-  run_loop.Run();
-}
-
-TEST_F(EndpointFetcherTest, FetchMalformedResponse) {
-  SignIn();
-  SetMockResponse(GURL(kEndpoint), kMalformedResponse, kJsonMimeType,
-                  net::HTTP_OK, net::OK);
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(endpoint_fetcher_callback(),
-              Run(Pointee(AllOf(
-                  Field(&EndpointResponse::response,
-                        testing::StartsWith(kExpectedSanitizationError)),
-                  Field(&EndpointResponse::http_status_code, net::HTTP_OK),
-                  Field(&EndpointResponse::error_type,
-                        FetchErrorType::kResultParseError)))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });
