@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -412,55 +411,6 @@ TEST_F(ComponentLoaderTest, FollowSymlinks) {
       extension->GetResource(rel_path_in_extension_root).GetFilePath();
   EXPECT_EQ(base::MakeAbsoluteFilePath(resource_path),
             base::MakeAbsoluteFilePath(shared_data));
-}
-
-// Tests that extensions added via file task runner are tracked during loading.
-TEST_F(ComponentLoaderTest, PendingAdd) {
-  const ExtensionId kExtensionId = "behllobkkfkfnphdnhnkndlbkcpglgmj";
-  base::RunLoop run_loop;
-
-  EXPECT_FALSE(component_loader_->ExistsOrPendingAdd(kExtensionId));
-
-  // Pass `kManifestFilename` for both regular and guest manifest name. This
-  // works around `IsNormalSession` that requires `UserManager` instance to be
-  // considered as regular session.
-  component_loader_->AddComponentFromDirWithManifestFilename(
-      extension_path_, kExtensionId, kManifestFilename, kManifestFilename,
-      /*done_cb=*/run_loop.QuitClosure(), /*error_cb=*/run_loop.QuitClosure());
-  EXPECT_FALSE(component_loader_->Exists(kExtensionId));
-  EXPECT_TRUE(component_loader_->IsPendingAdd(kExtensionId));
-  EXPECT_TRUE(component_loader_->ExistsOrPendingAdd(kExtensionId));
-
-  run_loop.Run();
-  EXPECT_TRUE(component_loader_->Exists(kExtensionId));
-  EXPECT_FALSE(component_loader_->IsPendingAdd(kExtensionId));
-  EXPECT_TRUE(component_loader_->ExistsOrPendingAdd(kExtensionId));
-}
-
-// Tests that removing a pending add extension cancels the loading.
-TEST_F(ComponentLoaderTest, RemovePendingAdd) {
-  const ExtensionId kExtensionId = "behllobkkfkfnphdnhnkndlbkcpglgmj";
-  base::RunLoop run_loop;
-
-  EXPECT_FALSE(component_loader_->ExistsOrPendingAdd(kExtensionId));
-
-  // Pass `kManifestFilename` for both regular and guest manifest name. This
-  // works around `IsNormalSession` that requires `UserManager` instance to be
-  // considered as regular session.
-  component_loader_->AddComponentFromDirWithManifestFilename(
-      extension_path_, kExtensionId, kManifestFilename, kManifestFilename,
-      /*done_cb=*/run_loop.QuitClosure(), /*error_cb=*/run_loop.QuitClosure());
-
-  // Remove when the extension is loading.
-  EXPECT_TRUE(component_loader_->IsPendingAdd(kExtensionId));
-  component_loader_->Remove(kExtensionId);
-
-  run_loop.Run();
-
-  // After loading, the extension is no longer pending and stays unloaded.
-  EXPECT_FALSE(component_loader_->Exists(kExtensionId));
-  EXPECT_FALSE(component_loader_->IsPendingAdd(kExtensionId));
-  EXPECT_FALSE(component_loader_->ExistsOrPendingAdd(kExtensionId));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

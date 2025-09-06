@@ -149,7 +149,7 @@ void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
       data_dir.Append("chromeos/file_manager/quickoffice"),
       extension_misc::kQuickOfficeComponentExtensionId,
       extensions::kManifestFilename, extensions::kManifestFilename,
-      run_loop.QuitClosure(), {});
+      run_loop.QuitClosure());
   run_loop.Run();
 #endif
   // AddDefaultComponentExtensions() is normally invoked during

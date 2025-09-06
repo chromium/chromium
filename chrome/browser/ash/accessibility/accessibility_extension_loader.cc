@@ -49,7 +49,7 @@ void AccessibilityExtensionLoader::SetBrowserContext(
   // If the extension was already enabled, but not for this profile, add it
   // to this profile.
   auto* component_loader = extensions::ComponentLoader::Get(browser_context_);
-  if (!component_loader->ExistsOrPendingAdd(extension_id_)) {
+  if (!component_loader->Exists(extension_id_)) {
     LoadExtension(browser_context_, std::move(done_callback));
   }
 }
@@ -109,7 +109,7 @@ void AccessibilityExtensionLoader::LoadExtension(
   extensions::ComponentLoader::Get(browser_context)
       ->AddComponentFromDirWithManifestFilename(
           extension_path_, extension_id_.c_str(), manifest_filename_,
-          guest_manifest_filename_, std::move(done_cb), {});
+          guest_manifest_filename_, std::move(done_cb));
 }
 
 void AccessibilityExtensionLoader::ReinstallExtensionForKiosk(
