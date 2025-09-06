@@ -171,8 +171,7 @@ void VideoCaptureDeviceFuchsia::AllocateAndStart(
   // that we are interested in buffer collection negotiation. The collection
   // token will be returned back from WatchBufferCollection(). After that it
   // will be initialized in InitializeBufferCollection().
-  stream_->SetBufferCollection(fuchsia::sysmem::BufferCollectionTokenHandle(
-      sysmem_allocator_.CreateNewToken().Unbind().TakeChannel()));
+  stream_->SetBufferCollection2(sysmem_allocator_.CreateNewToken());
   WatchBufferCollection();
 }
 
@@ -247,12 +246,10 @@ void VideoCaptureDeviceFuchsia::OnWatchOrientationResult(
 void VideoCaptureDeviceFuchsia::WatchBufferCollection() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  stream_->WatchBufferCollection(
-      [this](fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+  stream_->WatchBufferCollection2(
+      [this](fidl::InterfaceHandle<fuchsia::sysmem2::BufferCollectionToken>
                  token_handle) {
-        InitializeBufferCollection(
-            fuchsia::sysmem2::BufferCollectionTokenHandle(
-                token_handle.TakeChannel()));
+        InitializeBufferCollection(std::move(token_handle));
         WatchBufferCollection();
       });
 }
