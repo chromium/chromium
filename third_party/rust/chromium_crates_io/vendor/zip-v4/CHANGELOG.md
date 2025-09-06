@@ -1,5 +1,43 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [4.6.1](https://github.com/zip-rs/zip2/compare/v4.6.0...v4.6.1) - 2025-09-03
+
+### <!-- 1 -->🐛 Bug Fixes
+
+- Fixes an issue introduced by the swap from `lzma-rs` to `liblzma` ([#407](https://github.com/zip-rs/zip2/pull/407))
+
+## [4.6.0](https://github.com/zip-rs/zip2/compare/v4.5.0...v4.6.0) - 2025-08-30
+
+### <!-- 0 -->🚀 Features
+
+- Allow to read zip files with unsupported extended timestamps ([#400](https://github.com/zip-rs/zip2/pull/400))
+
+### <!-- 1 -->🐛 Bug Fixes
+
+- enable clamp_opt for ppmd and xz ([#401](https://github.com/zip-rs/zip2/pull/401))
+
+## [4.5.0](https://github.com/zip-rs/zip2/compare/v4.4.0...v4.5.0) - 2025-08-21
+
+### <!-- 0 -->🚀 Features
+
+- Allow reading ZIP files where the central directory comes *before* the files ([#384](https://github.com/zip-rs/zip2/pull/384)) ([#396](https://github.com/zip-rs/zip2/pull/396))
+
+## [4.4.0](https://github.com/zip-rs/zip2/compare/v4.3.0...v4.4.0) - 2025-08-21
+
+### <!-- 0 -->🚀 Features
+
+- Add `lzma-static` and `xz-static` features that enable `liblzma/static` ([#393](https://github.com/zip-rs/zip2/pull/393))
+
+### <!-- 7 -->⚙️ Miscellaneous Tasks
+
+- Move deprecated annotations to fix a Clippy warning ([#391](https://github.com/zip-rs/zip2/pull/391))
 ## [4.3.0](https://github.com/zip-rs/zip2/compare/v4.2.0...v4.3.0) - 2025-07-09
 
 ### <!-- 0 -->🚀 Features

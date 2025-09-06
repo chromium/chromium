@@ -1,7 +1,7 @@
 Name: zip
 URL: https://crates.io/crates/zip
-Version: 4.3.0
-Revision: 6c78fe381da074610d99e2d59546b0530bcb6e54
+Version: 4.6.1
+Revision: 56fa5f6e1f3e29d747e5875867e7a647aa612b8c
 Update Mechanism: Manual
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/zip-v4/LICENSE

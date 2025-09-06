@@ -21,7 +21,9 @@ impl ExtendedTimestamp {
         R: Read,
     {
         let mut flags = [0u8];
+        let mut bytes_to_read = len as usize;
         reader.read_exact(&mut flags)?;
+        bytes_to_read -= flags.len();
         let flags = flags[0];
 
         // the `flags` field refers to the local headers and might not correspond
@@ -40,29 +42,34 @@ impl ExtendedTimestamp {
             ));
         }
 
-        if flags & 0b11111000 != 0 {
-            return Err(ZipError::UnsupportedArchive(
-                "found unsupported timestamps in the extended timestamp header",
-            ));
-        }
+        // allow unsupported/undocumented flags
 
         let mod_time = if (flags & 0b00000001u8 == 0b00000001u8) || len == 5 {
+            bytes_to_read -= size_of::<u32>();
             Some(reader.read_u32_le()?)
         } else {
             None
         };
 
         let ac_time = if flags & 0b00000010u8 == 0b00000010u8 && len > 5 {
+            bytes_to_read -= size_of::<u32>();
             Some(reader.read_u32_le()?)
         } else {
             None
         };
 
         let cr_time = if flags & 0b00000100u8 == 0b00000100u8 && len > 5 {
+            bytes_to_read -= size_of::<u32>();
             Some(reader.read_u32_le()?)
         } else {
             None
         };
+
+        if bytes_to_read > 0 {
+            // ignore undocumented bytes
+            reader.read_exact(&mut vec![0; bytes_to_read])?
+        }
+
         Ok(Self {
             mod_time,
             ac_time,

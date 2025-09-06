@@ -1955,7 +1955,13 @@ fn bzip2_compression_level_range() -> std::ops::RangeInclusive<i64> {
     min..=max
 }
 
-#[cfg(any(feature = "_deflate-any", feature = "bzip2", feature = "zstd"))]
+#[cfg(any(
+    feature = "_deflate-any",
+    feature = "bzip2",
+    feature = "ppmd",
+    feature = "xz",
+    feature = "zstd",
+))]
 fn clamp_opt<T: Ord + Copy, U: Ord + Copy + TryFrom<T>>(
     value: T,
     range: std::ops::RangeInclusive<U>,

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.82.0"
 name = "zip"
-version = "4.3.0"
+version = "4.6.1"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -70,7 +70,7 @@ default = [
     "bzip2",
     "deflate64",
     "deflate",
-    "lzma",
+    "lzma-static",
     "ppmd",
     "time",
     "zstd",
@@ -98,10 +98,18 @@ deflate-zopfli = [
 ]
 jiff-02 = ["dep:jiff"]
 lzma = ["dep:liblzma"]
+lzma-static = [
+    "lzma",
+    "liblzma/static",
+]
 nt-time = ["dep:nt-time"]
 ppmd = ["dep:ppmd-rust"]
 unreserved = []
 xz = ["dep:liblzma"]
+xz-static = [
+    "xz",
+    "liblzma/static",
+]
 
 [lib]
 name = "zip"

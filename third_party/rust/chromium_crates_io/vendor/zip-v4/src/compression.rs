@@ -309,7 +309,10 @@ impl<R: io::BufRead> Decompressor<R> {
             #[cfg(feature = "lzma")]
             CompressionMethod::Lzma => Decompressor::Lzma(liblzma::bufread::XzDecoder::new_stream(
                 reader,
-                liblzma::stream::Stream::new_lzma_decoder(0).unwrap(),
+                // Use u64::MAX for unlimited memory usage, matching the previous behavior
+                // from lzma-rs. Using 0 would set the smallest memory limit, which is
+                // problematic in ancient liblzma versions (5.2.3 and earlier).
+                liblzma::stream::Stream::new_lzma_decoder(u64::MAX).unwrap(),
             )),
             #[cfg(feature = "xz")]
             CompressionMethod::Xz => Decompressor::Xz(liblzma::bufread::XzDecoder::new(reader)),
