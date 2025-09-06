@@ -80,7 +80,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."calendrical_calculations:0.2.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cc:1.2.33"]
+[policy."cc:1.2.35"]
 criteria = []
 
 [policy."cfg-if:1.0.3"]
@@ -151,6 +151,9 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."fend-core:1.5.7"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."find-msvc-tools:0.1.0"]
+criteria = []
 
 [policy."fixed_decimal:0.7.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]

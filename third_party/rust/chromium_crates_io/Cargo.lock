@@ -84,9 +84,10 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.33"
+version = "1.2.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
+ "find-msvc-tools",
  "shlex",
 ]
 
@@ -331,6 +332,11 @@ dependencies = [
 [[package]]
 name = "fend-core"
 version = "1.5.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "find-msvc-tools"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
