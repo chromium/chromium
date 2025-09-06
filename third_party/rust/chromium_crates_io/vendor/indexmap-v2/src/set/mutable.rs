@@ -8,7 +8,7 @@ use crate::map::MutableKeys;
 /// These methods expose `&mut T`, mutable references to the value as it is stored
 /// in the set.
 /// You are allowed to modify the values in the set **if the modification
-/// does not change the value’s hash and equality**.
+/// does not change the value's hash and equality**.
 ///
 /// If values are modified erroneously, you can no longer look them up.
 /// This is sound (memory safe) but a logical error hazard (just like

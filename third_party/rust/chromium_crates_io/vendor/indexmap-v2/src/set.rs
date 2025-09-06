@@ -422,6 +422,50 @@ where
         (index, existing.is_none())
     }
 
+    /// Insert the value into the set at its ordered position among values
+    /// sorted by `cmp`.
+    ///
+    /// This is equivalent to finding the position with
+    /// [`binary_search_by`][Self::binary_search_by], then calling
+    /// [`insert_before`][Self::insert_before].
+    ///
+    /// If the existing items are **not** already sorted, then the insertion
+    /// index is unspecified (like [`slice::binary_search`]), but the value
+    /// is moved to or inserted at that position regardless.
+    ///
+    /// Computes in **O(n)** time (average).
+    pub fn insert_sorted_by<F>(&mut self, value: T, mut cmp: F) -> (usize, bool)
+    where
+        T: Ord,
+        F: FnMut(&T, &T) -> Ordering,
+    {
+        let (index, existing) = self
+            .map
+            .insert_sorted_by(value, (), |a, (), b, ()| cmp(a, b));
+        (index, existing.is_none())
+    }
+
+    /// Insert the value into the set at its ordered position among values
+    /// using a sort-key extraction function.
+    ///
+    /// This is equivalent to finding the position with
+    /// [`binary_search_by_key`][Self::binary_search_by_key] with `sort_key(key)`,
+    /// then calling [`insert_before`][Self::insert_before].
+    ///
+    /// If the existing items are **not** already sorted, then the insertion
+    /// index is unspecified (like [`slice::binary_search`]), but the value
+    /// is moved to or inserted at that position regardless.
+    ///
+    /// Computes in **O(n)** time (average).
+    pub fn insert_sorted_by_key<B, F>(&mut self, value: T, mut sort_key: F) -> (usize, bool)
+    where
+        B: Ord,
+        F: FnMut(&T) -> B,
+    {
+        let (index, existing) = self.map.insert_sorted_by_key(value, (), |k, _| sort_key(k));
+        (index, existing.is_none())
+    }
+
     /// Insert the value into the set before the value at the given index, or at the end.
     ///
     /// If an equivalent item already exists in the set, it returns `false` leaving the
@@ -548,6 +592,22 @@ where
             (i, Some((replaced, ()))) => (i, Some(replaced)),
             (i, None) => (i, None),
         }
+    }
+
+    /// Replaces the value at the given index. The new value does not need to be
+    /// equivalent to the one it is replacing, but it must be unique to the rest
+    /// of the set.
+    ///
+    /// Returns `Ok(old_value)` if successful, or `Err((other_index, value))` if
+    /// an equivalent value already exists at a different index. The set will be
+    /// unchanged in the error case.
+    ///
+    /// ***Panics*** if `index` is out of bounds.
+    ///
+    /// Computes in **O(1)** time (average).
+    #[track_caller]
+    pub fn replace_index(&mut self, index: usize, value: T) -> Result<T, (usize, T)> {
+        self.map.replace_index(index, value)
     }
 
     /// Return an iterator over the values that are in `self` but not `other`.
@@ -859,7 +919,7 @@ impl<T, S> IndexSet<T, S> {
         self.map.retain(move |x, &mut ()| keep(x))
     }
 
-    /// Sort the set’s values by their default ordering.
+    /// Sort the set's values by their default ordering.
     ///
     /// This is a stable sort -- but equivalent values should not normally coexist in
     /// a set at all, so [`sort_unstable`][Self::sort_unstable] is preferred
@@ -873,14 +933,14 @@ impl<T, S> IndexSet<T, S> {
         self.map.sort_keys()
     }
 
-    /// Sort the set’s values in place using the comparison function `cmp`.
+    /// Sort the set's values in place using the comparison function `cmp`.
     ///
     /// Computes in **O(n log n)** time and **O(n)** space. The sort is stable.
     pub fn sort_by<F>(&mut self, mut cmp: F)
     where
         F: FnMut(&T, &T) -> Ordering,
     {
-        self.map.sort_by(move |a, _, b, _| cmp(a, b));
+        self.map.sort_by(move |a, (), b, ()| cmp(a, b));
     }
 
     /// Sort the values of the set and return a by-value iterator of
@@ -894,6 +954,19 @@ impl<T, S> IndexSet<T, S> {
         let mut entries = self.into_entries();
         entries.sort_by(move |a, b| cmp(&a.key, &b.key));
         IntoIter::new(entries)
+    }
+
+    /// Sort the set's values in place using a key extraction function.
+    ///
+    /// Computes in **O(n log n)** time and **O(n)** space. The sort is stable.
+    pub fn sort_by_key<K, F>(&mut self, mut sort_key: F)
+    where
+        K: Ord,
+        F: FnMut(&T) -> K,
+    {
+        self.with_entries(move |entries| {
+            entries.sort_by_key(move |a| sort_key(&a.key));
+        });
     }
 
     /// Sort the set's values by their default ordering.
@@ -927,7 +1000,20 @@ impl<T, S> IndexSet<T, S> {
         IntoIter::new(entries)
     }
 
-    /// Sort the set’s values in place using a key extraction function.
+    /// Sort the set's values in place using a key extraction function.
+    ///
+    /// Computes in **O(n log n)** time. The sort is unstable.
+    pub fn sort_unstable_by_key<K, F>(&mut self, mut sort_key: F)
+    where
+        K: Ord,
+        F: FnMut(&T) -> K,
+    {
+        self.with_entries(move |entries| {
+            entries.sort_unstable_by_key(move |a| sort_key(&a.key));
+        });
+    }
+
+    /// Sort the set's values in place using a key extraction function.
     ///
     /// During sorting, the function is called at most once per entry, by using temporary storage
     /// to remember the results of its evaluation. The order of calls to the function is
@@ -988,6 +1074,34 @@ impl<T, S> IndexSet<T, S> {
         self.as_slice().binary_search_by_key(b, f)
     }
 
+    /// Checks if the values of this set are sorted.
+    #[inline]
+    pub fn is_sorted(&self) -> bool
+    where
+        T: PartialOrd,
+    {
+        self.as_slice().is_sorted()
+    }
+
+    /// Checks if this set is sorted using the given comparator function.
+    #[inline]
+    pub fn is_sorted_by<'a, F>(&'a self, cmp: F) -> bool
+    where
+        F: FnMut(&'a T, &'a T) -> bool,
+    {
+        self.as_slice().is_sorted_by(cmp)
+    }
+
+    /// Checks if this set is sorted using the given sort-key function.
+    #[inline]
+    pub fn is_sorted_by_key<'a, F, K>(&'a self, sort_key: F) -> bool
+    where
+        F: FnMut(&'a T) -> K,
+        K: PartialOrd,
+    {
+        self.as_slice().is_sorted_by_key(sort_key)
+    }
+
     /// Returns the index of the partition point of a sorted set according to the given predicate
     /// (the index of the first element of the second partition).
     ///
@@ -1002,7 +1116,7 @@ impl<T, S> IndexSet<T, S> {
         self.as_slice().partition_point(pred)
     }
 
-    /// Reverses the order of the set’s values in place.
+    /// Reverses the order of the set's values in place.
     ///
     /// Computes in **O(n)** time and **O(1)** space.
     pub fn reverse(&mut self) {

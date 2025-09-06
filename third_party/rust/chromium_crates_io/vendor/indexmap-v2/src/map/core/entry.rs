@@ -1,5 +1,6 @@
 use super::{equivalent, Entries, IndexMapCore, RefMut};
 use crate::HashValue;
+use core::cmp::Ordering;
 use core::{fmt, mem};
 use hashbrown::hash_table;
 
@@ -402,6 +403,45 @@ impl<'a, K, V> VacantEntry<'a, K, V> {
         (i, self.shift_insert(i, value))
     }
 
+    /// Inserts the entry's key and the given value into the map at its ordered
+    /// position among keys sorted by `cmp`, and returns the new index and a
+    /// mutable reference to the value.
+    ///
+    /// If the existing keys are **not** already sorted, then the insertion
+    /// index is unspecified (like [`slice::binary_search`]), but the key-value
+    /// pair is inserted at that position regardless.
+    ///
+    /// Computes in **O(n)** time (average).
+    pub fn insert_sorted_by<F>(self, value: V, mut cmp: F) -> (usize, &'a mut V)
+    where
+        K: Ord,
+        F: FnMut(&K, &V, &K, &V) -> Ordering,
+    {
+        let slice = crate::map::Slice::from_slice(self.map.entries);
+        let (Ok(i) | Err(i)) = slice.binary_search_by(|k, v| cmp(k, v, &self.key, &value));
+        (i, self.shift_insert(i, value))
+    }
+
+    /// Inserts the entry's key and the given value into the map at its ordered
+    /// position using a sort-key extraction function, and returns the new index
+    /// and a mutable reference to the value.
+    ///
+    /// If the existing keys are **not** already sorted, then the insertion
+    /// index is unspecified (like [`slice::binary_search`]), but the key-value
+    /// pair is inserted at that position regardless.
+    ///
+    /// Computes in **O(n)** time (average).
+    pub fn insert_sorted_by_key<B, F>(self, value: V, mut sort_key: F) -> (usize, &'a mut V)
+    where
+        B: Ord,
+        F: FnMut(&K, &V) -> B,
+    {
+        let search_key = sort_key(&self.key, &value);
+        let slice = crate::map::Slice::from_slice(self.map.entries);
+        let (Ok(i) | Err(i)) = slice.binary_search_by_key(&search_key, sort_key);
+        (i, self.shift_insert(i, value))
+    }
+
     /// Inserts the entry's key and the given value into the map at the given index,
     /// shifting others to the right, and returns a mutable reference to the value.
     ///
@@ -413,6 +453,17 @@ impl<'a, K, V> VacantEntry<'a, K, V> {
         self.map
             .shift_insert_unique(index, self.hash, self.key, value);
         &mut self.map.entries[index].value
+    }
+
+    /// Replaces the key at the given index with this entry's key, returning the
+    /// old key and an `OccupiedEntry` for that index.
+    ///
+    /// ***Panics*** if `index` is out of bounds.
+    ///
+    /// Computes in **O(1)** time (average).
+    #[track_caller]
+    pub fn replace_index(self, index: usize) -> (K, OccupiedEntry<'a, K, V>) {
+        self.map.replace_index_unique(index, self.hash, self.key)
     }
 }
 

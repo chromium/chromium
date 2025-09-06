@@ -1226,3 +1226,87 @@ fn disjoint_indices_mut_fail_duplicate() {
         Err(crate::GetDisjointMutError::OverlappingIndices)
     );
 }
+
+#[test]
+fn insert_sorted_by_key() {
+    let mut values = [(-1, 8), (3, 18), (-27, 2), (-2, 5)];
+    let mut map: IndexMap<i32, i32> = IndexMap::new();
+    for (key, value) in values {
+        let (_, old) = map.insert_sorted_by_key(key, value, |k, _| k.abs());
+        assert_eq!(old, None);
+    }
+    values.sort_by_key(|(key, _)| key.abs());
+    assert_eq!(values, *map.as_slice());
+
+    for (key, value) in &mut values {
+        let (_, old) = map.insert_sorted_by_key(*key, -*value, |k, _| k.abs());
+        assert_eq!(old, Some(*value));
+        *value = -*value;
+    }
+    assert_eq!(values, *map.as_slice());
+}
+
+#[test]
+fn insert_sorted_by() {
+    let mut values = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)];
+    let mut map: IndexMap<i32, i32> = IndexMap::new();
+    for (key, value) in values {
+        let (_, old) = map.insert_sorted_by(key, value, |key1, _, key2, _| key2.cmp(key1));
+        assert_eq!(old, None);
+    }
+    values.reverse();
+    assert_eq!(values, *map.as_slice());
+
+    for (key, value) in &mut values {
+        let (_, old) = map.insert_sorted_by(*key, -*value, |key1, _, key2, _| key2.cmp(key1));
+        assert_eq!(old, Some(*value));
+        *value = -*value;
+    }
+    assert_eq!(values, *map.as_slice());
+}
+
+#[test]
+fn is_sorted() {
+    fn expect(map: &IndexMap<i32, i32>, e: [bool; 7]) {
+        assert_eq!(e[0], map.is_sorted());
+        assert_eq!(e[1], map.is_sorted_by(|k1, _, k2, _| k1 < k2));
+        assert_eq!(e[2], map.is_sorted_by(|k1, _, k2, _| k1 > k2));
+        assert_eq!(e[3], map.is_sorted_by(|_, v1, _, v2| v1 < v2));
+        assert_eq!(e[4], map.is_sorted_by(|_, v1, _, v2| v1 > v2));
+        assert_eq!(e[5], map.is_sorted_by_key(|k, _| k));
+        assert_eq!(e[6], map.is_sorted_by_key(|_, v| v));
+    }
+
+    let mut map = IndexMap::from_iter((0..10).map(|i| (i, i * i)));
+    expect(&map, [true, true, false, true, false, true, true]);
+
+    map[5] = -1;
+    expect(&map, [true, true, false, false, false, true, false]);
+
+    map[5] = 25;
+    map.replace_index(5, -1).unwrap();
+    expect(&map, [false, false, false, true, false, false, true]);
+}
+
+#[test]
+fn is_sorted_trivial() {
+    fn expect(map: &IndexMap<i32, i32>, e: [bool; 5]) {
+        assert_eq!(e[0], map.is_sorted());
+        assert_eq!(e[1], map.is_sorted_by(|_, _, _, _| true));
+        assert_eq!(e[2], map.is_sorted_by(|_, _, _, _| false));
+        assert_eq!(e[3], map.is_sorted_by_key(|_, _| 0f64));
+        assert_eq!(e[4], map.is_sorted_by_key(|_, _| f64::NAN));
+    }
+
+    let mut map = IndexMap::new();
+    expect(&map, [true, true, true, true, true]);
+
+    map.insert(0, 0);
+    expect(&map, [true, true, true, true, true]);
+
+    map.insert(1, 1);
+    expect(&map, [true, true, false, true, false]);
+
+    map.reverse();
+    expect(&map, [false, true, false, true, false]);
+}

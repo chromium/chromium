@@ -1,5 +1,17 @@
 # Releases
 
+## 2.11.0 (2025-08-22)
+
+- Added `insert_sorted_by` and `insert_sorted_by_key` methods to `IndexMap`,
+  `IndexSet`, and `VacantEntry`, like customizable versions of `insert_sorted`.
+- Added `is_sorted`, `is_sorted_by`, and `is_sorted_by_key` methods to
+  `IndexMap` and `IndexSet`, as well as their `Slice` counterparts.
+- Added `sort_by_key` and `sort_unstable_by_key` methods to `IndexMap` and
+  `IndexSet`, as well as parallel counterparts.
+- Added `replace_index` methods to `IndexMap`, `IndexSet`, and `VacantEntry`
+  to replace the key (or set value) at a given index.
+- Added optional `sval` serialization support.
+
 ## 2.10.0 (2025-06-26)
 
 - Added `extract_if` methods to `IndexMap` and `IndexSet`, similar to the

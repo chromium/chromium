@@ -385,6 +385,13 @@ impl<K, V> IndexMapCore<K, V> {
         }
     }
 
+    /// Replaces the key at the given index,
+    /// *without* checking whether it already exists.
+    #[track_caller]
+    pub(crate) fn replace_index_unique(&mut self, index: usize, hash: HashValue, key: K) -> K {
+        self.borrow_mut().replace_index_unique(index, hash, key).0
+    }
+
     /// Remove an entry by shifting all entries that follow it
     pub(crate) fn shift_remove_full<Q>(&mut self, hash: HashValue, key: &Q) -> Option<(usize, K, V)>
     where
@@ -559,6 +566,28 @@ impl<'a, K, V> RefMut<'a, K, V> {
         }
         self.entries.push(Bucket { hash, key, value });
         OccupiedEntry::new(self.entries, entry)
+    }
+
+    /// Replaces the key at the given index,
+    /// *without* checking whether it already exists.
+    #[track_caller]
+    fn replace_index_unique(
+        self,
+        index: usize,
+        hash: HashValue,
+        key: K,
+    ) -> (K, OccupiedEntry<'a, K, V>) {
+        // NB: This removal and insertion isn't "no grow" (with unreachable hasher)
+        // because hashbrown's tombstones might force a resize anyway.
+        erase_index(self.indices, self.entries[index].hash, index);
+        let table_entry = self
+            .indices
+            .insert_unique(hash.get(), index, get_hash(&self.entries));
+
+        let entry = &mut self.entries[index];
+        entry.hash = hash;
+        let old_key = mem::replace(&mut entry.key, key);
+        (old_key, OccupiedEntry::new(self.entries, table_entry))
     }
 
     /// Insert a key-value pair in `entries` at a particular index,

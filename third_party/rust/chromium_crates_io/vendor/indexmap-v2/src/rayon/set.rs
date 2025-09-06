@@ -485,7 +485,7 @@ impl<T, S> IndexSet<T, S>
 where
     T: Send,
 {
-    /// Sort the set’s values in parallel by their default ordering.
+    /// Sort the set's values in parallel by their default ordering.
     pub fn par_sort(&mut self)
     where
         T: Ord,
@@ -495,7 +495,7 @@ where
         });
     }
 
-    /// Sort the set’s values in place and in parallel, using the comparison function `cmp`.
+    /// Sort the set's values in place and in parallel, using the comparison function `cmp`.
     pub fn par_sort_by<F>(&mut self, cmp: F)
     where
         F: Fn(&T, &T) -> Ordering + Sync,
@@ -516,6 +516,17 @@ where
         IntoParIter { entries }
     }
 
+    /// Sort the set's values in place and in parallel, using a key extraction function.
+    pub fn par_sort_by_key<K, F>(&mut self, sort_key: F)
+    where
+        K: Ord,
+        F: Fn(&T) -> K + Sync,
+    {
+        self.with_entries(move |entries| {
+            entries.par_sort_by_key(move |a| sort_key(&a.key));
+        });
+    }
+
     /// Sort the set's values in parallel by their default ordering.
     pub fn par_sort_unstable(&mut self)
     where
@@ -526,7 +537,7 @@ where
         });
     }
 
-    /// Sort the set’s values in place and in parallel, using the comparison function `cmp`.
+    /// Sort the set's values in place and in parallel, using the comparison function `cmp`.
     pub fn par_sort_unstable_by<F>(&mut self, cmp: F)
     where
         F: Fn(&T, &T) -> Ordering + Sync,
@@ -547,7 +558,18 @@ where
         IntoParIter { entries }
     }
 
-    /// Sort the set’s values in place and in parallel, using a key extraction function.
+    /// Sort the set's values in place and in parallel, using a key extraction function.
+    pub fn par_sort_unstable_by_key<K, F>(&mut self, sort_key: F)
+    where
+        K: Ord,
+        F: Fn(&T) -> K + Sync,
+    {
+        self.with_entries(move |entries| {
+            entries.par_sort_unstable_by_key(move |a| sort_key(&a.key));
+        });
+    }
+
+    /// Sort the set's values in place and in parallel, using a key extraction function.
     pub fn par_sort_by_cached_key<K, F>(&mut self, sort_key: F)
     where
         K: Ord + Send,

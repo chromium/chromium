@@ -410,7 +410,7 @@ where
     K: Send,
     V: Send,
 {
-    /// Sort the map’s key-value pairs in parallel, by the default ordering of the keys.
+    /// Sort the map's key-value pairs in parallel, by the default ordering of the keys.
     pub fn par_sort_keys(&mut self)
     where
         K: Ord,
@@ -420,7 +420,7 @@ where
         });
     }
 
-    /// Sort the map’s key-value pairs in place and in parallel, using the comparison
+    /// Sort the map's key-value pairs in place and in parallel, using the comparison
     /// function `cmp`.
     ///
     /// The comparison function receives two key and value pairs to compare (you
@@ -443,6 +443,18 @@ where
         let mut entries = self.into_entries();
         entries.par_sort_by(move |a, b| cmp(&a.key, &a.value, &b.key, &b.value));
         IntoParIter { entries }
+    }
+
+    /// Sort the map's key-value pairs in place and in parallel, using a sort-key extraction
+    /// function.
+    pub fn par_sort_by_key<T, F>(&mut self, sort_key: F)
+    where
+        T: Ord,
+        F: Fn(&K, &V) -> T + Sync,
+    {
+        self.with_entries(move |entries| {
+            entries.par_sort_by_key(move |a| sort_key(&a.key, &a.value));
+        });
     }
 
     /// Sort the map's key-value pairs in parallel, by the default ordering of the keys.
@@ -480,7 +492,19 @@ where
         IntoParIter { entries }
     }
 
-    /// Sort the map’s key-value pairs in place and in parallel, using a sort-key extraction
+    /// Sort the map's key-value pairs in place and in parallel, using a sort-key extraction
+    /// function.
+    pub fn par_sort_unstable_by_key<T, F>(&mut self, sort_key: F)
+    where
+        T: Ord,
+        F: Fn(&K, &V) -> T + Sync,
+    {
+        self.with_entries(move |entries| {
+            entries.par_sort_unstable_by_key(move |a| sort_key(&a.key, &a.value));
+        });
+    }
+
+    /// Sort the map's key-value pairs in place and in parallel, using a sort-key extraction
     /// function.
     pub fn par_sort_by_cached_key<T, F>(&mut self, sort_key: F)
     where

@@ -28,6 +28,8 @@ jobs:
           - rust: stable
             features: serde
           - rust: stable
+            features: sval
+          - rust: stable
             features: borsh
           - rust: stable
             features: std
@@ -62,6 +64,10 @@ jobs:
         if: matrix.features == 'serde'
         run: |
           cargo test --verbose -p test-serde
+      - name: Tests (sval)
+        if: matrix.features == 'sval'
+        run: |
+          cargo test --verbose -p test-sval
       - name: Test run benchmarks
         if: matrix.bench != ''
         run: cargo test -v --benches
@@ -141,7 +147,7 @@ jobs:
       - name: Build (nightly)
         run: cargo +nightly build --verbose --all-features
       - name: Build (MSRV)
-        run: cargo build --verbose --features arbitrary,quickcheck,serde,rayon
+        run: cargo build --verbose --features arbitrary,quickcheck,serde,sval,rayon
 
   # One job that "summarizes" the success state of this pipeline. This can then be added to branch
   # protection, rather than having to add each job separately.
