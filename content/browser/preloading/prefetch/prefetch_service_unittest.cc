@@ -470,8 +470,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         /*attempt=*/nullptr);
-    return prefetch_service().AddPrefetchContainerWithHandle(
-        PrefetchContainer::CreateForTesting(std::move(prefetch_request)));
+    return prefetch_service().AddPrefetchRequestWithHandle(
+        std::move(prefetch_request));
   }
 
   [[nodiscard]] std::unique_ptr<content::PrefetchHandle>
@@ -7235,8 +7235,8 @@ class PrefetchServiceAddPrefetchContainerTest
         PreloadPipelineInfo::Create(planned_max_preloading_type),
         attempt->GetWeakPtr());
     return prefetch_service()
-        .AddPrefetchContainerWithoutStartingPrefetchForTesting(
-            PrefetchContainer::CreateForTesting(std::move(prefetch_request)));
+        .AddPrefetchRequestWithoutStartingPrefetchForTesting(
+            std::move(prefetch_request));
   }
 
  private:

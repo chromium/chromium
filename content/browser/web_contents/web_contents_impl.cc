@@ -12009,8 +12009,7 @@ std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
       std::move(preload_pipeline_info), std::move(attempt),
       holdback_status_override, std::move(ttl));
 
-  return prefetch_service->AddPrefetchContainerWithHandle(
-      PrefetchContainer::Create(std::move(request)));
+  return prefetch_service->AddPrefetchRequestWithHandle(std::move(request));
 }
 
 std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(

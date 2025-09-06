@@ -226,8 +226,7 @@ BrowserContext::StartBrowserPrefetchRequest(
       /*attempt=*/nullptr, additional_headers,
       std::move(request_status_listener), ttl, should_append_variations_header,
       should_disable_block_until_head_timeout);
-  return prefetch_service->AddPrefetchContainerWithHandle(
-      PrefetchContainer::Create(std::move(request)));
+  return prefetch_service->AddPrefetchRequestWithHandle(std::move(request));
 }
 
 void BrowserContext::UpdatePrefetchServiceDelegateAcceptLanguageHeader(

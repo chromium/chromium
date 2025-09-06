@@ -271,8 +271,7 @@ void PrefetchDocumentManager::PrefetchUrl(
   referring_page_metrics_.prefetch_attempted_count++;
 
   all_prefetches_[all_prefetches_key] =
-      prefetch_service->AddPrefetchContainerWithHandle(
-          PrefetchContainer::Create(std::move(request)));
+      prefetch_service->AddPrefetchRequestWithHandle(std::move(request));
 }
 
 bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(

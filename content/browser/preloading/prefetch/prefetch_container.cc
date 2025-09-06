@@ -233,6 +233,7 @@ GetPrefetchResponseCompletedCallbackForTesting() {
 
 // static
 std::unique_ptr<PrefetchContainer> PrefetchContainer::Create(
+    base::PassKey<PrefetchService>,
     std::unique_ptr<const PrefetchRequest> request) {
   return std::make_unique<PrefetchContainer>(base::PassKey<PrefetchContainer>(),
                                              std::move(request));
@@ -1555,13 +1556,9 @@ void PrefetchContainer::OnUnregisterCandidate(
   }
 }
 
-void PrefetchContainer::MigrateNewlyAdded(
-    std::unique_ptr<PrefetchContainer> added) {
-  // `inherited_preload_pipeline_infos_` increases only if it is managed under
-  // `PrefetchService`.
-  CHECK(added->inherited_preload_pipeline_infos_.empty());
-
-  // Propagate eligibility (and status) to `added`.
+void PrefetchContainer::MergeNewPrefetchRequest(
+    std::unique_ptr<const PrefetchRequest> prefetch_request) {
+  // Propagate eligibility (and status) to `prefetch_request`.
   //
   // Assume we don't. (*) case is problematic.
   //
@@ -1569,7 +1566,7 @@ void PrefetchContainer::MigrateNewlyAdded(
   //   the following `OnEligibilityCheckComplete()` and
   //   `SetPrefetchStatusWithoutUpdatingTriggeringOutcome()`.
   // - If eligibility is got and ineligible, this `PrefetchContainer` is
-  //   `kNotServed` and `MigrateNewlyAdded()` is not called.
+  //   `kNotServed` and `MergeNewPrefetchRequest()` is not called.
   // - If eligibility is got and `kEligible`:
   //   - If status is not got, status will be propagated by the following
   //     `SetPrefetchStatusWithoutUpdatingTriggeringOutcome()`.
@@ -1582,7 +1579,7 @@ void PrefetchContainer::MigrateNewlyAdded(
   //     `kPrefetchResponseUsed` will be propagated at the prefetch matching
   //     end.
   //   - If status is got and failure, this `PrefetchContainer` is `kNotServed`
-  //     and `MigrateNewlyAdded()` is not called.
+  //     and `MergeNewPrefetchRequest()` is not called.
   //
   // In (*), `PrerenderHost` have to cancel prerender with eligibility
   // `kUnspecified` and status failure. It's relatively complicated condition.
@@ -1591,7 +1588,7 @@ void PrefetchContainer::MigrateNewlyAdded(
   //
   // To make things simple, we propagate both eligibility and status.
   scoped_refptr<PreloadPipelineInfoImpl> added_preload_pipeline_info =
-      base::WrapRefCounted(&added->request().preload_pipeline_info());
+      base::WrapRefCounted(&prefetch_request->preload_pipeline_info());
 
   added_preload_pipeline_info->SetPrefetchEligibility(
       request().preload_pipeline_info().prefetch_eligibility());
@@ -1603,7 +1600,8 @@ void PrefetchContainer::MigrateNewlyAdded(
   inherited_preload_pipeline_infos_.push_back(
       std::move(added_preload_pipeline_info));
 
-  is_likely_ahead_of_prerender_ |= added->is_likely_ahead_of_prerender_;
+  is_likely_ahead_of_prerender_ |= CalculateIsLikelyAheadOfPrerender(
+      prefetch_request->preload_pipeline_info());
 }
 
 void PrefetchContainer::NotifyPrefetchRequestWillBeSent(

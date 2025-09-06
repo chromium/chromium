@@ -395,8 +395,8 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         attempt->GetWeakPtr());
     return GetPrefetchService()
-        ->AddPrefetchContainerWithoutStartingPrefetchForTesting(
-            PrefetchContainer::CreateForTesting(std::move(prefetch_request)));
+        ->AddPrefetchRequestWithoutStartingPrefetchForTesting(
+            std::move(prefetch_request));
   }
 
   base::WeakPtr<PrefetchContainer> CreateSpeculationRulesPrefetchContainer(
@@ -420,8 +420,8 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         /*attempt=*/nullptr);
     return GetPrefetchService()
-        ->AddPrefetchContainerWithoutStartingPrefetchForTesting(
-            PrefetchContainer::CreateForTesting(std::move(prefetch_request)));
+        ->AddPrefetchRequestWithoutStartingPrefetchForTesting(
+            std::move(prefetch_request));
   }
 
   void SimulateCookieCopyProcess(PrefetchContainer& prefetch_container) {

@@ -108,18 +108,22 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // |prefetch_container| to the default network context.
   virtual void CopyIsolatedCookies(const PrefetchServingHandle& serving_handle);
 
-  // Adds `PrefetchContainer` under control of `PrefetchService` and returns
-  // PrefetchHandle so that the caller can control prefetch resources associated
-  // with this.
+  // Adds a `PrefetchContainer` created from the `PrefetchRequest` under control
+  // of `PrefetchService` and returns `PrefetchHandle` so that the caller can
+  // control prefetch resources associated with this.
   //
-  // `AddPrefetchContainer*()` synchronously destruct `prefetch_container` if
-  // the key conflicted to the one already added with migration of some
-  // attributes. See also `MigrateNewlyaAdded()`.
-  [[nodiscard]] std::unique_ptr<PrefetchHandle> AddPrefetchContainerWithHandle(
-      std::unique_ptr<PrefetchContainer> prefetch_container);
+  // If the request is merged into an existing `PrefetchContainer`, some of
+  // `prefetch_request` attributes are migrated to the `PrefetchContainer` and
+  // this returns a `PrefetchHandle` with null `PrefetchContainer`.
+  // TODO(https://crbug.com/390329781): In the merging case, we should ideally
+  // return a `PrefetchHandle` that points to the existing `PrefetchContainer`
+  // to which `prefetch_request` is merged into.
+  [[nodiscard]] std::unique_ptr<PrefetchHandle> AddPrefetchRequestWithHandle(
+      std::unique_ptr<const PrefetchRequest> prefetch_request);
+
   [[nodiscard]] base::WeakPtr<PrefetchContainer>
-  AddPrefetchContainerWithoutStartingPrefetchForTesting(
-      std::unique_ptr<PrefetchContainer> prefetch_container);
+  AddPrefetchRequestWithoutStartingPrefetchForTesting(
+      std::unique_ptr<const PrefetchRequest> prefetch_request);
 
   // Returns `true` if a new prefetch request with `url` and
   // `no_vary_search_hint` has a duplicate in the prefetch cache and thus the
@@ -285,14 +289,21 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
       CheckEligibilityParams params,
       PreloadingEligibility eligibility);
 
-  // Adds `prefetch_container` to the cache but doesn't initiate prefetching.
-  // Use `AddPrefetchContainerWithHandle()` for non-test cases.
-  void AddPrefetchContainerWithoutStartingPrefetch(
-      std::unique_ptr<PrefetchContainer> prefetch_container);
+  // The core method to add a prefetch request.
+  //
+  // Returns non-null `PrefetchContainer`, if the `prefetch_request` creates a
+  // new `PrefetchContainer`.
+  //
+  // This doesn't initiate prefetching, so the caller should call
+  // `PrefetchUrl()` if needed.
+  //
+  // Use `AddPrefetchRequestWithHandle()` for non-test cases.
+  base::WeakPtr<PrefetchContainer> AddPrefetchRequestInternal(
+      std::unique_ptr<const PrefetchRequest> prefetch_request);
 
-  // Adds to `owned_prefetches_`.
-  void AddPrefetchContainerToOwnedPrefetches(
-      std::unique_ptr<PrefetchContainer> prefetch_container);
+  // Creates a new `PrefetchContainer` and adds it to `owned_prefetches_`.
+  base::WeakPtr<PrefetchContainer> CreatePrefetchContainer(
+      std::unique_ptr<const PrefetchRequest> prefetch_request);
 
   // Starts the network requests for as many prefetches in |prefetch_queue_| as
   // possible.
@@ -493,11 +504,10 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   // TODO(crbug.com/406754449): Remove it.
   std::optional<PrefetchKey> active_prefetch_;
 
-  // Prefetches owned by `this`. All `PrefetchContainer`s added by
-  // `AddPrefetchContainer*` will be stored here.
+  // Prefetches owned by `this`. All `PrefetchContainer`s will be stored here.
   //
   // `PrefetchContainer`s in `owned_prefetches_` must be always:
-  // - Added by `AddPrefetchContainerToOwnedPrefetches()`.
+  // - Added by `CreatePrefetchContainer()`.
   // - Destructed either by:
   //   - `ResetPrefetchContainer()` or
   //   - `~PrefetchService()` dtor.

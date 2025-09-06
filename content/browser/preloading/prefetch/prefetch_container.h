@@ -41,6 +41,7 @@ class PrefetchKey;
 class PrefetchNetworkContext;
 class PrefetchRequest;
 class PrefetchResponseReader;
+class PrefetchService;
 class PrefetchServingHandle;
 class PrefetchServingPageMetricsContainer;
 class PrefetchSingleRedirectHop;
@@ -99,9 +100,10 @@ struct PrefetchResponseSizes {
 // `PrefetchService::MakePrefetchRequest()`.
 class CONTENT_EXPORT PrefetchContainer {
  public:
-  // TODO(https://crbug.com/437631382): add `base::PassKey<PrefetchService>` for
-  // the `Create()` for non-tests.
+  // In non-test, `PrefetchContainer` should be only created and owned by
+  // `PrefetchService`.
   static std::unique_ptr<PrefetchContainer> Create(
+      base::PassKey<PrefetchService>,
       std::unique_ptr<const PrefetchRequest> request);
   static std::unique_ptr<PrefetchContainer> CreateForTesting(
       std::unique_ptr<const PrefetchRequest> request);
@@ -509,12 +511,12 @@ class CONTENT_EXPORT PrefetchContainer {
   bool IsLikelyAheadOfPrerender() const {
     return is_likely_ahead_of_prerender_;
   }
-  // TODO(crbug.com/372186548): Revisit for right naming.
+
+  // Merge a new `prefetch_request` into this `PrefetchContainer`.
   //
-  // Migrate newly added `PrefetchContainer` into this as keys are conflicted.
-  //
-  // See also `PrefetchService::AddPrefetchContainerWithoutStartingPrefetch()`.
-  void MigrateNewlyAdded(std::unique_ptr<PrefetchContainer> added);
+  // See also `PrefetchService::AddPrefetchContainerInternal()`.
+  void MergeNewPrefetchRequest(
+      std::unique_ptr<const PrefetchRequest> prefetch_request);
 
   // Handles loader related events. Currently used for DevTools and metrics.
   void NotifyPrefetchRequestWillBeSent(
