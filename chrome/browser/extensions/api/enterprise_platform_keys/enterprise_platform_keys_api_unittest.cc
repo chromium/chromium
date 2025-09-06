@@ -34,7 +34,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::NiceMock;
 
 namespace extensions {
@@ -255,7 +254,7 @@ TEST_F(EPKChallengeMachineKeyTest, KeyNotRegisteredByDefault) {
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
   EXPECT_CALL(*mock_tpm_challenge_key_, BuildResponse)
-      .WillOnce(Invoke(FakeRunCheckNotRegister));
+      .WillOnce(FakeRunCheckNotRegister);
 
   EXPECT_TRUE(api_test_utils::RunFunction(
       func_.get(), CreateArgs(), profile(),

@@ -117,7 +117,6 @@ using content::BrowserThread;
 using extensions::mojom::ManifestLocation;
 using testing::_;
 using testing::DoAll;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::Mock;
 using testing::NiceMock;
@@ -1621,10 +1620,10 @@ class ExtensionUpdaterTest : public testing::Test {
         });
     // Just let the real CrxInstaller implementation have the callback.
     EXPECT_CALL(*mock_installer, AddInstallerCallback(_))
-        .WillOnce(Invoke([&](CrxInstaller::InstallerResultCallback callback) {
+        .WillOnce([&](CrxInstaller::InstallerResultCallback callback) {
           mock_installer->CrxInstaller::AddInstallerCallback(
               std::move(callback));
-        }));
+        });
 
     mock_installer->set_expected_id(kTestExtensionId);
     mock_installer->set_expected_hash(hash);

@@ -81,7 +81,6 @@ namespace enterprise_reporting_private =
 using SettingValue = device_signals::SettingValue;
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
 using ::testing::StrEq;
@@ -1233,15 +1232,14 @@ class UserContextGatedTest : public ExtensionApiUnittest {
   void SetFakeResponse(
       const device_signals::SignalsAggregationResponse& response) {
     EXPECT_CALL(*mock_aggregator_, GetSignalsForUser(_, _, _))
-        .WillOnce(
-            Invoke([&](const device_signals::UserContext& user_context,
-                       const device_signals::SignalsAggregationRequest& request,
-                       device_signals::SignalsAggregator::GetSignalsCallback
-                           callback) {
-              EXPECT_EQ(user_context.user_id, kFakeUserId);
-              EXPECT_EQ(request.signal_names.size(), 1U);
-              std::move(callback).Run(response);
-            }));
+        .WillOnce([&](const device_signals::UserContext& user_context,
+                      const device_signals::SignalsAggregationRequest& request,
+                      device_signals::SignalsAggregator::GetSignalsCallback
+                          callback) {
+          EXPECT_EQ(user_context.user_id, kFakeUserId);
+          EXPECT_EQ(request.signal_names.size(), 1U);
+          std::move(callback).Run(response);
+        });
   }
 
 
