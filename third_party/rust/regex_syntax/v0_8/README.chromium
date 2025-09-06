@@ -1,7 +1,7 @@
 Name: regex-syntax
 URL: https://crates.io/crates/regex-syntax
-Version: 0.8.5
-Revision: cba0fbc0194456f644040d7558ae6ed261d57cc2
+Version: 0.8.6
+Revision: ea834f8e1fd7b72a3c1b2319b1a47f0c50d43082
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/regex-syntax-v0_8/LICENSE-APACHE

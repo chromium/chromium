@@ -56,9 +56,8 @@ cargo_crate("lib") {
       "The Rust Project Developers, Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "regex-syntax"
   cargo_pkg_description = "A regular expression parser."
-  cargo_pkg_repository =
-      "https://github.com/rust-lang/regex/tree/master/regex-syntax"
-  cargo_pkg_version = "0.8.5"
+  cargo_pkg_repository = "https://github.com/rust-lang/regex"
+  cargo_pkg_version = "0.8.6"
 
   allow_unsafe = false
 

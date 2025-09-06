@@ -192,7 +192,7 @@ impl<'p> Spans<'p> {
         }
     }
 
-    /// Notate the pattern string with carents (`^`) pointing at each span
+    /// Notate the pattern string with carets (`^`) pointing at each span
     /// location. This only applies to spans that occur within a single line.
     fn notate(&self) -> String {
         let mut notated = String::new();

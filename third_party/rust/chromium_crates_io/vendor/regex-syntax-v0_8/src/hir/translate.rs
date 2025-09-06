@@ -30,7 +30,7 @@ impl Default for TranslatorBuilder {
 }
 
 impl TranslatorBuilder {
-    /// Create a new translator builder with a default c onfiguration.
+    /// Create a new translator builder with a default configuration.
     pub fn new() -> TranslatorBuilder {
         TranslatorBuilder {
             utf8: true,
