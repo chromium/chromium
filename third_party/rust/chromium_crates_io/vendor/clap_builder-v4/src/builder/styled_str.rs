@@ -41,7 +41,8 @@ impl StyledStr {
         self.0.push_str(&msg);
     }
 
-    pub(crate) fn push_str(&mut self, msg: &str) {
+    /// Appends a given string slice onto the end of this `StyledStr`.
+    pub fn push_str(&mut self, msg: &str) {
         self.0.push_str(msg);
     }
 

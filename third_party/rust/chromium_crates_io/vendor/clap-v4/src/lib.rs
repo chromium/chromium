@@ -11,7 +11,7 @@
 //! - [Cookbook][_cookbook]
 //! - [FAQ][_faq]
 //! - [Discussions](https://github.com/clap-rs/clap/discussions)
-//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.45/CHANGELOG.md) (includes major version migration
+//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.47/CHANGELOG.md) (includes major version migration
 //!   guides)
 //!
 //! ## Aspirations
@@ -62,6 +62,7 @@
 //! - [shadow-rs](https://crates.io/crates/shadow-rs) for generating `Command::long_version`
 //! - [clap_mangen](https://crates.io/crates/clap_mangen) for generating man page source (roff)
 //! - [clap_complete](https://crates.io/crates/clap_complete) for shell completion support
+//! - [clap-i18n-richformatter](https://crates.io/crates/clap-i18n-richformatter) for i18n support with `clap::error::RichFormatter`
 //!
 //! CLI Helpers
 //! - [clio](https://crates.io/crates/clio) for reading/writing to files specified as arguments
