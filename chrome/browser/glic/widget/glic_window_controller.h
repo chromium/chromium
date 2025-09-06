@@ -192,11 +192,14 @@ class GlicWindowController {
   //   * Open (aka showing, visible)
   //   * Detaching - the panel should not be considered open since the view
   //     might not exist.
+  //   * Waiting for side panel - in the process of setting up side panel to
+  //   show.
   enum class State {
     kClosed,
     kWaitingForGlicToLoad,
     kOpen,
     kDetaching,
+    kWaitingForSidePanelToShow,
   };
   virtual State state() const = 0;
 
@@ -209,8 +212,9 @@ class GlicWindowController {
   virtual void ShowDetachedForTesting() = 0;
   virtual void SetPreviousPositionForTesting(gfx::Point position) = 0;
   virtual std::unique_ptr<GlicView> CreateGlicViewForSidePanel(
-      BrowserWindowInterface& bwi) = 0;
+      Browser* browser) = 0;
 
+  virtual void SidePanelShown(Browser* browser) = 0;
   // Helper function to get the always detached flag.
   static bool AlwaysDetached() {
     return base::FeatureList::IsEnabled(features::kGlicDetached);

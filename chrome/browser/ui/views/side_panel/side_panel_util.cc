@@ -81,7 +81,7 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
       browser->is_type_normal()) {
     browser->browser_window_features()
         ->glic_side_panel_coordinator()
-        ->CreateAndRegisterEntry(window_registry);
+        ->CreateAndRegisterEntry(browser, window_registry);
   }
 #endif
 }

@@ -55,8 +55,7 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     coordinator_ = std::make_unique<TestGlicSidePanelCoordinator>(
-        profile(), browser()->browser_actions()->root_action_item(),
-        side_panel_coordinator());
+        browser(), side_panel_coordinator());
     InProcessBrowserTest::SetUpOnMainThread();
   }
 

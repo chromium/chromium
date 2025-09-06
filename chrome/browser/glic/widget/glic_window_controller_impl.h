@@ -115,7 +115,8 @@ class GlicWindowControllerImpl
   void ShowDetachedForTesting() override;
   void SetPreviousPositionForTesting(gfx::Point position) override;
   std::unique_ptr<GlicView> CreateGlicViewForSidePanel(
-      BrowserWindowInterface& bwi) override;
+      Browser* browser) override;
+  void SidePanelShown(Browser* browser) override;
   base::CallbackListSubscription RegisterFloatyStateChange(
       FloatyStateChangeCallback callback) override;
 
@@ -179,7 +180,12 @@ class GlicWindowControllerImpl
   // shows the glic window. If `browser` is non-nullptr then glic will be
   // attached to the browser. Otherwise glic will be detached.
   void Show(Browser* browser, mojom::InvocationSource source);
-
+  // Performs necessary set up and initialization before creating GlicWidget or
+  // GlicView. Must be called before it's shown.
+  // Returns true if successful and view creation can continue.
+  bool BeforeViewCreated(Browser* browser, mojom::InvocationSource source);
+  // Additional set up and initialization that runs after Glic is shown.
+  void AfterViewShown();
   void SetupAndShowGlicWidget(Browser* browser);
   void SetupGlicWidgetAccessibilityText();
 
@@ -209,9 +215,10 @@ class GlicWindowControllerImpl
   // display when shown.
   void MaybeResetPreviousPosition(const gfx::Size& target_size);
 
-  // Runs an animation to move glic to its target position.
-  // TODO(crbug.com/410629338): Reimplement attachment.
+  // Perform set up attaching panel to this browser.
   void AttachToBrowser(Browser& browser, AttachChangeReason reason);
+  // Like `AttachToBrowser` but also explicitly requests to open the side panel.
+  void AttachToBrowserAndShow(Browser& browser, AttachChangeReason reason);
 
   // Keep part of glic window within the visible region.
   void AdjustPositionIfNeeded();

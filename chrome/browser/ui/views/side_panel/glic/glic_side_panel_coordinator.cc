@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -35,12 +36,14 @@ actions::ActionItem* GetGlicActionItem(actions::ActionItem* root_action_item) {
 }  // namespace
 
 GlicSidePanelCoordinator::GlicSidePanelCoordinator(
-    Profile* profile,
-    actions::ActionItem* root_action_item,
+    Browser* browser,
     SidePanelCoordinator* side_panel_coordinator)
-    : glic_service_(GlicKeyedServiceFactory::GetGlicKeyedService(profile)),
-      profile_(profile),
-      glic_action_(GetGlicActionItem(root_action_item)),
+    : browser_(browser),
+      glic_service_(
+          GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile())),
+      profile_(browser->GetProfile()),
+      glic_action_(
+          GetGlicActionItem(browser->GetActions()->root_action_item())),
       side_panel_coordinator_(side_panel_coordinator) {
   auto* glic_service = glic::GlicKeyedService::Get(profile_);
   if (glic_service) {
@@ -52,11 +55,17 @@ GlicSidePanelCoordinator::GlicSidePanelCoordinator(
 }
 
 void GlicSidePanelCoordinator::CreateAndRegisterEntry(
+    Browser* browser,
     SidePanelRegistry* global_registry) {
+  if (global_registry->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntry::Id::kGlic))) {
+    return;
+  }
+
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic),
       base::BindRepeating(&GlicSidePanelCoordinator::CreateGlicWebView,
-                          base::Unretained(this)),
+                          base::Unretained(this), browser),
       /*default_content_width_callback=*/base::NullCallback());
   entry->AddObserver(this);
   global_registry->Register(std::move(entry));
@@ -68,6 +77,13 @@ void GlicSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
   }
 }
 
+void GlicSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
+  SidePanelEntry::Key glic_key = SidePanelEntry::Key(SidePanelEntry::Id::kGlic);
+  if (side_panel_coordinator_->IsSidePanelEntryShowing(glic_key)) {
+    glic_service_->window_controller().SidePanelShown(browser_);
+  }
+}
+
 void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
   bool isAllowed = glic::GlicEnabling::IsEnabledForProfile(profile_);
   // Show / hide browser action.
@@ -76,7 +92,7 @@ void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
   SidePanelRegistry* global_registry =
       side_panel_coordinator_->GetWindowRegistry();
   if (isAllowed) {
-    CreateAndRegisterEntry(global_registry);
+    CreateAndRegisterEntry(browser_, global_registry);
   } else {
     SidePanelEntry::Key glic_key =
         SidePanelEntry::Key(SidePanelEntry::Id::kGlic);
@@ -92,12 +108,12 @@ void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
 }
 
 std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateGlicWebView(
+    Browser* browser,
     SidePanelEntryScope& scope) {
   if (!glic_service_) {
     return nullptr;
   }
-  return glic_service_->window_controller().CreateGlicViewForSidePanel(
-      scope.GetBrowserWindowInterface());
+  return glic_service_->window_controller().CreateGlicViewForSidePanel(browser);
 }
 
 }  // namespace glic

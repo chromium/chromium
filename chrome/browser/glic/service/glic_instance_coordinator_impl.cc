@@ -320,15 +320,19 @@ void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
 }
 
 std::unique_ptr<GlicView>
-GlicInstanceCoordinatorImpl::CreateGlicViewForSidePanel(
-    BrowserWindowInterface& bwi) {
-  auto* tab = bwi.GetActiveTabInterface();
+GlicInstanceCoordinatorImpl::CreateGlicViewForSidePanel(Browser* browser) {
+  auto* tab = browser->GetActiveTabInterface();
   if (!tab) {
     return nullptr;
   }
   auto* instance = GetOrCreateGlicInstanceForTab(tab);
   CHECK(instance);
   return instance->embedder().CreateGlicView();
+}
+
+void GlicInstanceCoordinatorImpl::SidePanelShown(Browser* browser) {
+  // Method should only be called on individual panels not the coordinator.
+  NOTREACHED();
 }
 
 base::CallbackListSubscription

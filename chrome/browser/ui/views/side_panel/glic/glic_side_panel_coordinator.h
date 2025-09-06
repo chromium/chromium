@@ -31,13 +31,13 @@ class GlicKeyedService;
 // glic SidePanelEntry.
 class GlicSidePanelCoordinator : public SidePanelEntryObserver {
  public:
-  GlicSidePanelCoordinator(Profile* profile,
-                           actions::ActionItem* root_action_item,
+  GlicSidePanelCoordinator(Browser* browser,
                            SidePanelCoordinator* side_panel_coordinator);
   ~GlicSidePanelCoordinator() override = default;
 
   // Create and register the Glic side panel entry.
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
+  void CreateAndRegisterEntry(Browser* browser,
+                              SidePanelRegistry* global_registry);
 
  protected:
   // Called when the Glic enabled status changes for `profile_`.
@@ -45,10 +45,13 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
 
   // `SidePanelEntryObserver`:
   void OnEntryHidden(SidePanelEntry* entry) override;
+  void OnEntryShown(SidePanelEntry* entry) override;
 
  private:
   // Gets the Glic WebView from the Glic service.
-  std::unique_ptr<views::View> CreateGlicWebView(SidePanelEntryScope& scope);
+  std::unique_ptr<views::View> CreateGlicWebView(Browser* browser,
+                                                 SidePanelEntryScope& scope);
+  raw_ptr<Browser> browser_;
   raw_ptr<GlicKeyedService> glic_service_;
   raw_ptr<Profile> profile_;
   raw_ptr<actions::ActionItem> glic_action_;

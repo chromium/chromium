@@ -118,6 +118,7 @@ void GlicActorTaskIconController::OnStateUpdate(
           ->SetFloatyClosedTooltipText();
       break;
     case glic::GlicWindowController::State::kWaitingForGlicToLoad:
+    case glic::GlicWindowController::State::kWaitingForSidePanelToShow:
     case glic::GlicWindowController::State::kDetaching:
       break;
   }
