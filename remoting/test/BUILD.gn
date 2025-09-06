@@ -203,7 +203,7 @@ if (enable_me2me_host && is_linux) {
     ]
   }
 
-  # A binary for testing the  service.
+  # A binary for testing the Corp messaging service.
   executable("corp_messaging_playground") {
     testonly = true
     sources = [
@@ -213,8 +213,11 @@ if (enable_me2me_host && is_linux) {
     ]
     deps = [
       "//mojo/core/embedder",
+      "//net",
       "//remoting/base",
+      "//remoting/signaling",
       "//services/network:network_service",
+      "//services/network/public/cpp",
     ]
   }
 }

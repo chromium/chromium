@@ -7,11 +7,17 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
+#include "remoting/base/internal_headers.h"
+
 namespace network {
 class TransitionalURLLoaderFactoryOwner;
 }
 
 namespace remoting {
+
+class CorpMessagingClient;
+class HttpStatus;
 
 class CorpMessagingPlayground {
  public:
@@ -24,8 +30,13 @@ class CorpMessagingPlayground {
   void Start();
 
  private:
+  void OnStreamOpened();
+  void OnStreamClosed(base::OnceClosure on_closed, const HttpStatus& status);
+  void OnSimpleMessageReceived(const internal::SimpleMessageStruct& message);
+
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
+  std::unique_ptr<CorpMessagingClient> client_;
 };
 
 }  // namespace remoting

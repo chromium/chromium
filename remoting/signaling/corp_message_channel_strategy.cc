@@ -34,22 +34,29 @@ void CorpMessageChannelStrategy::Initialize(
   DCHECK(on_incoming_msg);
   stream_opener_ = stream_opener;
   on_incoming_msg_ = on_incoming_msg;
+  // TODO: joedow - The current message channel impl expects to have an
+  // inactivity timeout available as soon as the channel is created because that
+  // is how FTL messaging works. Since the Corp inactivity timeout is provided
+  // by the server, we'll need to update the MessageChannel class to handle that
+  // case. For now, set a generous initial timeout which will be overwritten
+  // when the channel open message is received.
+  inactivity_timeout_ = base::Seconds(60);
 }
 
 void CorpMessageChannelStrategy::OnReceiveMessagesResponse(
     std::unique_ptr<ReceiveClientMessagesResponseStruct> response) {
   std::visit(absl::Overload(
                  [this](const ChannelOpenStruct& channel_open_message) {
-                   VLOG(1) << "Received channel open";
+                   VLOG(0) << "Received channel open";
                    inactivity_timeout_ =
                        channel_open_message.inactivity_timeout;
                  },
                  [this](const ChannelActiveStruct& channel_active_message) {
-                   VLOG(1) << "Received channel active";
+                   VLOG(0) << "Received channel active";
                    on_channel_active_.Run();
                  },
                  [this](const SimpleMessageStruct& simple_message) {
-                   VLOG(1) << "Received simple message";
+                   VLOG(0) << "Received simple message";
                    on_incoming_msg_.Run(simple_message);
                  }),
              response->message);
