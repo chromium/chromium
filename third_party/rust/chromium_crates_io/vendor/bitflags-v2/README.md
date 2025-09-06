@@ -28,7 +28,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-bitflags = "2.9.2"
+bitflags = "2.9.4"
 ```
 
 and this to your source code:
@@ -70,6 +70,17 @@ fn main() {
     assert_eq!(!e2, Flags::A);           // set complement
 }
 ```
+
+## Cargo features
+
+The `bitflags` library defines a few Cargo features that you can opt-in to:
+
+- `std`: Implement the `Error` trait on error types used by `bitflags`.
+- `serde`: Support deriving `serde` traits on generated flags types.
+- `arbitrary`: Support deriving `arbitrary` traits on generated flags types.
+- `bytemuck`: Support deriving `bytemuck` traits on generated flags types.
+
+Also see [`bitflags_derive`](https://github.com/bitflags/bitflags-derive) for other flags-aware traits.
 
 ## Rust Version Support
 
