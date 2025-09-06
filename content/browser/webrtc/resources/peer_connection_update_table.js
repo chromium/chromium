@@ -96,17 +96,20 @@ export class PeerConnectionUpdateTable {
     }
 
     if (update.type === 'icecandidate' || update.type === 'addIceCandidate') {
-      const parts = update.value.split(', ');
-      type += '(' + parts[0] + ', ' + parts[1]; // show sdpMid/sdpMLineIndex.
-      const candidateParts = parts[2].substring(11).split(' ');
-      if (candidateParts && candidateParts[7]) { // show candidate type.
-        type += ', type: ' + candidateParts[7];
-      }
-      if (parts[3]) { // url, if present.
-        type += ', ' + parts[3];
-      }
-      if (parts[4]) { // relayProtocol, if present.
-        type += ', ' + parts[4];
+      const parts = JSON.parse(update.value);
+      type += '(sdpMid="' + parts.sdpMid +'", ' +
+          'sdpMLineIndex=' + parts.sdpMLineIndex;
+      if (parts.candidate) {
+        const candidateParts = parts.candidate.split(' ');
+        if (candidateParts && candidateParts[7]) { // show candidate type.
+          type += ', type: ' + candidateParts[7];
+        }
+        if (parts[3]) { // url, if present.
+          type += ', ' + parts[3];
+        }
+        if (parts[4]) { // relayProtocol, if present.
+          type += ', ' + parts[4];
+        }
       }
       type += ')';
     } else if (
@@ -239,10 +242,8 @@ export class PeerConnectionUpdateTable {
       }
     } else if (update.type === 'icecandidate' ||
         update.type === 'addIceCandidate') {
-      const parts = update.value.split(', ');
-      valueContainer.textContent = parts.slice(0, 2).join(', ') + '\n' +
-        parts[2] + '\n' +
-        parts.slice(3).join(', ');
+      const parts = JSON.parse(update.value);
+      valueContainer.textContent = JSON.stringify(parts, null, ' ');
     } else {
       valueContainer.textContent = update.value;
     }

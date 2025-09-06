@@ -867,24 +867,31 @@ void PeerConnectionTracker::TrackAddIceCandidate(
     return;
   String relay_protocol = candidate->RelayProtocol();
   String url = candidate->Url();
-  String value = StrCat(
-      {"sdpMid: ", String(candidate->SdpMid()), ", ", "sdpMLineIndex: ",
-       (candidate->SdpMLineIndex() ? String::Number(*candidate->SdpMLineIndex())
-                                   : "null"),
-       ", candidate: ", String(candidate->Candidate()),
-       (!url.empty() ? ", url: " : ""), (!url.empty() ? url : String()),
-       (!relay_protocol.empty() ? ", relayProtocol: " : ""),
-       (!relay_protocol.empty() ? relay_protocol : String())});
+
+  auto json = std::make_unique<JSONObject>();
+  json->SetString("sdpMid", candidate->SdpMid());
+  if (candidate->SdpMLineIndex()) {
+    json->SetInteger("sdpMLineIndex", *candidate->SdpMLineIndex());
+  }
+  json->SetString("candidate", candidate->Candidate());
+  if (!url.empty()) {
+    json->SetString("url", url);
+  }
+  if (!relay_protocol.empty()) {
+    json->SetString("relayProtocol", relay_protocol);
+  }
 
   // OnIceCandidate always succeeds as it's a callback from the browser.
   DCHECK(source != kSourceLocal || succeeded);
 
+  StringBuilder value;
+  json->WriteJSON(&value);
   const char* event =
       (source == kSourceLocal)
           ? "icecandidate"
           : (succeeded ? "addIceCandidate" : "addIceCandidateFailed");
 
-  SendPeerConnectionUpdate(id, event, value);
+  SendPeerConnectionUpdate(id, event, value.ToString());
 }
 
 void PeerConnectionTracker::TrackIceCandidateError(
