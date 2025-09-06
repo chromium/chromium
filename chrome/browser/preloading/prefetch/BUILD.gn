@@ -64,3 +64,30 @@ source_set("platform_browser_tests") {
 
   data = [ "//chrome/test/data/" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "no_state_prefetch/no_state_prefetch_unit_test_utils.cc",
+    "no_state_prefetch/no_state_prefetch_unit_test_utils.h",
+    "no_state_prefetch/no_state_prefetch_unittest.cc",
+    "prefetch_service/chrome_prefetch_service_delegate_unittest.cc",
+    "prefetch_service/prefetch_origin_decider_unittest.cc",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/no_state_prefetch/browser",
+    "//components/no_state_prefetch/common",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+}
