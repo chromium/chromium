@@ -345,12 +345,7 @@ import java.util.function.Consumer;
             float ydpi,
             Display display) {
         if (hasForcedDIPScale()) density = sForcedDIPScale.floatValue();
-        boolean isWideColorGamut = false;
-        // Although this API was added in Android O, it was buggy.
-        // Restrict to Android Q, where it was fixed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            isWideColorGamut = display.isWideColorGamut();
-        }
+        boolean isWideColorGamut = display.isWideColorGamut();
 
         int pixelFormatId = PixelFormat.RGBA_8888;
 
