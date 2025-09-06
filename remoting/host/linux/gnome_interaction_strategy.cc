@@ -126,7 +126,7 @@ std::unique_ptr<webrtc::MouseCursorMonitor>
 GnomeInteractionStrategy::CreateMouseCursorMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<PipewireMouseCursorMonitor>(
-      remote_desktop_session_->capture_stream_manager());
+      remote_desktop_session_->mouse_cursor_capturer());
 }
 
 std::unique_ptr<KeyboardLayoutMonitor>

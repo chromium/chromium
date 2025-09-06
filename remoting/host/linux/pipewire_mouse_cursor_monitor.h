@@ -5,9 +5,8 @@
 #ifndef REMOTING_HOST_LINUX_PIPEWIRE_MOUSE_CURSOR_MONITOR_H_
 #define REMOTING_HOST_LINUX_PIPEWIRE_MOUSE_CURSOR_MONITOR_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "remoting/host/linux/pipewire_capture_stream_manager.h"
+#include "remoting/host/linux/pipewire_mouse_cursor_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace remoting {
@@ -15,16 +14,14 @@ namespace remoting {
 class PipewireMouseCursorMonitor : public webrtc::MouseCursorMonitor {
  public:
   explicit PipewireMouseCursorMonitor(
-      base::WeakPtr<const PipewireCaptureStreamManager> stream_manager);
+      base::WeakPtr<PipewireMouseCursorCapturer> capturer);
   ~PipewireMouseCursorMonitor() override;
   // MouseCursorMonitor implementation.
   void Init(Callback* callback, Mode mode) override;
   void Capture() override;
 
  private:
-  raw_ptr<Callback> callback_;
-  bool report_position_;
-  base::WeakPtr<const PipewireCaptureStreamManager> stream_manager_;
+  base::WeakPtr<PipewireMouseCursorCapturer> capturer_;
 };
 
 }  // namespace remoting

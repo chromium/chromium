@@ -185,6 +185,8 @@ source_set("platform_impls") {
     "pipewire_capture_stream_manager.h",
     "pipewire_desktop_capturer.cc",
     "pipewire_desktop_capturer.h",
+    "pipewire_mouse_cursor_capturer.cc",
+    "pipewire_mouse_cursor_capturer.h",
     "pipewire_mouse_cursor_monitor.cc",
     "pipewire_mouse_cursor_monitor.h",
   ]
