@@ -37,12 +37,16 @@ void InfoBarInternalsHandler::TriggerInfoBar(InfoBarType type,
 
 void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
   static const base::NoDestructor<std::array<InfoBarEntry, 1>> kInfobars(
-      {InfoBarEntry{InfoBarType::kInstallerDownloader,
-                    "Installer Downloader"}});
+      {InfoBarEntry{
+          /*type=*/InfoBarType::kInstallerDownloader, "Installer Downloader",
+          "The Installer Downloader can only be triggered on Windows. The "
+          "manual trigger consist to reset any browser state that can prevent "
+          "it to shown and then trigger a show request."}});
 
   std::vector<infobar_internals::mojom::InfoBarEntryPtr> infobar_list;
   for (const auto& infobar : *kInfobars) {
-    infobar_list.emplace_back(InfoBarEntry::New(infobar.type, infobar.name));
+    infobar_list.emplace_back(
+        InfoBarEntry::New(infobar.type, infobar.name, infobar.description));
   }
 
   std::move(callback).Run(std::move(infobar_list));

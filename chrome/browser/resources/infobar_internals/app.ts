@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
 import type {InfoBarType} from './infobar_internals.mojom-webui.js';
@@ -13,6 +14,10 @@ import type {InfoBarType} from './infobar_internals.mojom-webui.js';
 export class InfobarInternalsAppElement extends CrLitElement {
   static get is() {
     return 'infobar-internals-app';
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   override render() {
@@ -25,7 +30,8 @@ export class InfobarInternalsAppElement extends CrLitElement {
     };
   }
 
-  protected accessor infobars: Array<{type: InfoBarType, name: string}> = [];
+  protected accessor infobars:
+      Array<{type: InfoBarType, name: string, description: string}> = [];
 
   override connectedCallback() {
     super.connectedCallback();

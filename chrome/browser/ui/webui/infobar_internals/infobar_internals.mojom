@@ -16,6 +16,10 @@ struct InfoBarEntry {
 
   // Human-readable label shown in the WebUI.
   string name;
+
+  // Human-readable description shown in the WebUI explaining how this infobar
+  // works or is triggered.
+  string description;
 };
 
 // Interface for browser-to-page events

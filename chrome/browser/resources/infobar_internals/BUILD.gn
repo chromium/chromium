@@ -18,6 +18,8 @@ build_webui("build") {
     "browser_proxy.ts",
   ]
 
+  css_files = [ "app.css" ]
+
   mojo_files_deps = [
     "//chrome/browser/ui/webui/infobar_internals:mojo_bindings_ts__generator",
   ]
