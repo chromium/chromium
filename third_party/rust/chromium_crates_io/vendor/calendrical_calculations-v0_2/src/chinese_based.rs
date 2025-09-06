@@ -33,11 +33,23 @@ pub trait ChineseBased {
 
 /// Given an ISO year, return the extended year
 pub fn extended_from_iso<C: ChineseBased>(iso_year: i32) -> i32 {
-    iso_year - const { crate::iso::iso_year_from_fixed(C::EPOCH) as i32 - 1 }
+    iso_year
+        - const {
+            let Ok(y) = crate::iso::iso_year_from_fixed(C::EPOCH) else {
+                panic!()
+            };
+            y - 1
+        }
 }
 /// Given an extended year, return the ISO year
 pub fn iso_from_extended<C: ChineseBased>(extended_year: i32) -> i32 {
-    extended_year + const { crate::iso::iso_year_from_fixed(C::EPOCH) as i32 - 1 }
+    extended_year
+        + const {
+            let Ok(y) = crate::iso::iso_year_from_fixed(C::EPOCH) else {
+                panic!()
+            };
+            y - 1
+        }
 }
 
 /// A type implementing [`ChineseBased`] for the Chinese calendar
@@ -502,7 +514,7 @@ pub fn month_structure_for_year<C: ChineseBased>(
 
         let diff = next_month_start - current_month_start;
         debug_assert!(diff == 29 || diff == 30);
-        #[allow(clippy::indexing_slicing)] // array is of length 13, we iterate till i=11
+        #[expect(clippy::indexing_slicing)] // array is of length 13, we iterate till i=11
         if diff == 30 {
             ret[usize::from(i)] = true;
         }

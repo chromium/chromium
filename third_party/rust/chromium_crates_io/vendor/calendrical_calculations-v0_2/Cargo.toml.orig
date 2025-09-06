@@ -10,7 +10,7 @@
 [package]
 name = "calendrical_calculations"
 description = "Calendrical calculations in Rust"
-version = "0.2.0"
+version = "0.2.2"
 categories = ["rust-patterns", "memory-management", "caching", "no-std", "data-structures"]
 keywords = ["zerocopy", "serialization", "zero-copy", "serde"]
 

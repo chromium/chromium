@@ -855,7 +855,7 @@ fn keviyah_for(year_type: MetonicCycleType, halakim: i32) -> Keviyah {
         "The table above should produce matching-indexed keviyot for the leap/non-leap year"
     );
     #[cfg(debug_assertions)]
-    #[allow(clippy::indexing_slicing)] // debug_assertion code
+    #[expect(clippy::indexing_slicing)] // debug_assertion code
     if keviyot.0 as u8 == 0 {
         // The first entry in the gates table straddles the ends of the week
         debug_assert!(

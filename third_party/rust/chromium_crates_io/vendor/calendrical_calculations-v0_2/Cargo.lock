@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "calendrical_calculations"
-version = "0.2.0"
+version = "0.2.2"
 dependencies = [
  "core_maths",
  "displaydoc",

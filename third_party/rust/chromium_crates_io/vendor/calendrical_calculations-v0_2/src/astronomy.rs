@@ -2375,11 +2375,10 @@ mod tests {
             let moment: Moment = Moment::new(*rd);
             let moonset_val = Astronomical::moonset(moment, crate::islamic::MECCA);
             let expected_moonset_val = *expected_val;
-            #[allow(clippy::unnecessary_unwrap)]
-            if moonset_val.is_none() {
-                assert_eq!(expected_moonset_val, 0.0);
+            if let Some(moonset_val) = moonset_val {
+                assert_eq_f64!(expected_moonset_val, moonset_val.inner(), moment);
             } else {
-                assert_eq_f64!(expected_moonset_val, moonset_val.unwrap().inner(), moment);
+                assert_eq!(expected_moonset_val, 0.0);
             }
         }
     }

@@ -336,3 +336,11 @@ fn test_i64_to_saturated_i32() {
     assert_eq!(i64_to_saturated_i32(2147483649), 2147483647);
     assert_eq!(i64_to_saturated_i32(i64::MAX), i32::MAX);
 }
+
+/// returns the weekday (0-6) after (strictly) the fixed date
+pub(crate) const fn k_day_after(weekday: i64, fixed: RataDie) -> RataDie {
+    let day_of_week = fixed.to_i64_date().rem_euclid(7);
+    let beginning_of_week = fixed.to_i64_date() - day_of_week;
+    let day = beginning_of_week + weekday;
+    RataDie::new(day + if weekday <= day_of_week { 7 } else { 0 })
+}

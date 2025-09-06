@@ -84,7 +84,6 @@ pub fn fixed_from_fast_persian(year: i32, month: u8, day: u8) -> RataDie {
 pub fn arithmetic_persian_from_fixed(date: RataDie) -> Result<(i32, u8, u8), I32CastError> {
     let year = arithmetic_persian_year_from_fixed(date);
     let year = i64_to_i32(year)?;
-    #[allow(clippy::unwrap_used)] // valid month,day
     let day_of_year = 1_i64 + (date - fixed_from_arithmetic_persian(year, 1, 1));
     #[allow(unstable_name_collisions)] // div_ceil is unstable and polyfilled
     let month = if day_of_year <= 186 {
@@ -179,7 +178,7 @@ mod tests {
     fn test_persian_epoch() {
         let epoch = FIXED_PERSIAN_EPOCH.to_i64_date();
         // Iso year of Persian Epoch
-        let epoch_year_from_fixed = crate::iso::iso_year_from_fixed(RataDie::new(epoch));
+        let epoch_year_from_fixed = crate::iso::iso_year_from_fixed(RataDie::new(epoch)).unwrap();
         // 622 is the correct ISO year for the Persian Epoch
         assert_eq!(epoch_year_from_fixed, 622);
     }
