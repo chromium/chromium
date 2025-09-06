@@ -153,6 +153,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     private final Handler mHandler;
     private final View mRootView;
     private final RectProvider mViewportRectProvider;
+    private final SpecCalculator mSpecCalculator;
 
     /** The actual {@link PopupWindow}. Internalized to prevent API leakage. */
     private final PopupWindow mPopupWindow;
@@ -255,6 +256,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         private @Nullable OnDismissListener mOnDismissListener;
         private @Nullable OnTouchListener mTouchListener;
         private @Nullable LayoutObserver mLayoutObserver;
+        private @Nullable SpecCalculator mSpecCalculator;
+
         private int mMarginPx;
         private int mMaxWidthPx;
         private int mDesiredContentWidthPx;
@@ -336,6 +339,14 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
          */
         public Builder setLayoutObserver(LayoutObserver layoutObserver) {
             mLayoutObserver = layoutObserver;
+            return this;
+        }
+
+        /**
+         * @param calculator The calculator that can customize the positioning behavior.
+         */
+        public Builder setSpecCalculator(SpecCalculator calculator) {
+            mSpecCalculator = calculator;
             return this;
         }
 
@@ -494,7 +505,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                 builder.mBackground,
                 builder.mContentViewCreator,
                 builder.mAnchorRectProvider,
-                builder.mViewportRectProvider);
+                builder.mViewportRectProvider,
+                builder.mSpecCalculator);
 
         if (builder.mOnDismissListener != null) {
             addOnDismissListener(builder.mOnDismissListener);
@@ -546,7 +558,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             Drawable background,
             View contentView,
             RectProvider anchorRectProvider) {
-        this(context, rootView, background, () -> contentView, anchorRectProvider, null);
+        this(context, rootView, background, () -> contentView, anchorRectProvider, null, null);
     }
 
     /**
@@ -572,6 +584,41 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             Supplier<View> contentViewCreator,
             RectProvider anchorRectProvider,
             @Nullable RectProvider viewportRectProvider) {
+        this(
+                context,
+                rootView,
+                background,
+                contentViewCreator,
+                anchorRectProvider,
+                viewportRectProvider,
+                null);
+    }
+
+    /**
+     * Constructs an {@link AnchoredPopupWindow} instance.
+     *
+     * @param context Context to draw resources from.
+     * @param rootView The {@link View} to use for size calculations and for display.
+     * @param background The background {@link Drawable} to use for the popup.
+     * @param contentViewCreator The supplier for the content view to set on the popup. The view is
+     *     expected to be a {@link ViewGroup}.
+     * @param anchorRectProvider The {@link RectProvider} that will provide the {@link Rect} this
+     *     popup attaches and orients to. The coordinates in the {@link Rect} are expected to be
+     *     screen coordinates.
+     * @param viewportRectProvider The {@link RectProvider} that provides the {@link Rect} for the
+     *     visible viewpoint. If null, the window coordinates of the root view will be used.
+     * @param calculator The {@link SpecCalculator} that can customize the positioning behavior.
+     * @deprecated Use the {@link Builder} to create the popup instead.
+     */
+    @Deprecated
+    public AnchoredPopupWindow(
+            Context context,
+            View rootView,
+            @Nullable Drawable background,
+            Supplier<View> contentViewCreator,
+            RectProvider anchorRectProvider,
+            @Nullable RectProvider viewportRectProvider,
+            @Nullable SpecCalculator calculator) {
         mContext = context;
         mRootView = rootView.getRootView();
         mContentViewCreator = contentViewCreator;
@@ -579,6 +626,10 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                 viewportRectProvider != null
                         ? viewportRectProvider
                         : new RootViewRectProvider(mRootView);
+        if (calculator == null) {
+            calculator = new PopupSpecCalculator();
+        }
+        mSpecCalculator = calculator;
         mPopupWindow = UiWidgetFactory.getInstance().createPopupWindow(mContext);
         mHandler = new Handler();
         mRectProvider = anchorRectProvider;
@@ -980,7 +1031,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         boolean preferCurrentOrientation = mPopupWindow.isShowing() && !mUpdateOrientationOnChange;
 
         mPopupSpec =
-                PopupSpecCalculator.calculatePopupWindowSpec(
+                mSpecCalculator.getPopupWindowSpec(
                         mViewportRectProvider.getRect(),
                         anchorRect,
                         getOrCreateContentView(),
@@ -1080,6 +1131,59 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             // Intentionally ignore BadTokenException. This can happen in a real edge case where
             // parent.getWindowToken is not valid. See http://crbug.com/826052.
         }
+    }
+
+    /** An interface for customizing the positioning behavior. */
+    public interface SpecCalculator {
+        /**
+         * Calculate the Rect where the popup window will displayed on the current application
+         * window.
+         *
+         * @param freeSpaceRect The rect representing the window size. Always starts from (0,0) as
+         *     top left.
+         * @param anchorRect The rect that popup anchored to in the window.
+         * @param contentView The content view of popup window. Expected to be a {@link ViewGroup}.
+         * @param rootViewWidth The width of root view.
+         * @param paddingX The padding on the X axis of popup window.
+         * @param paddingY The padding on the Y axis of popup window.
+         * @param marginPx Value set by {@link #setMargin(int)}.
+         * @param maxWidthPx Value set by {@link #setMaxWidth(int)}.
+         * @param desiredContentWidth Value set by {@link #setDesiredContentWidth(int)}.
+         * @param preferredHorizontalOrientation Value set by {@link
+         *     #setPreferredHorizontalOrientation(int)}.
+         * @param preferredVerticalOrientation Value set by {@link
+         *     #setPreferredVerticalOrientation(int)}.
+         * @param currentPositionBelow Whether the currently shown popup window is presented below
+         *     anchored rect.
+         * @param currentPositionToLeft Whether the currently shown popup window is presented to the
+         *     left of anchored rect.
+         * @param preferCurrentOrientation Whether prefer to reserve the popup orientation. If this
+         *     set to true, popup window will prefer to show below / to left of anchored window the
+         *     same way as |currentPositionBelow| and |currentPositionToLeft|.
+         * @param horizontalOverlapAnchor Value set by {@link #setHorizontalOverlapAnchor(boolean)}.
+         * @param verticalOverlapAnchor Value set by {@link #setVerticalOverlapAnchor(boolean)}.
+         * @param smartAnchorWithMaxWidth Value set by {@link #setSmartAnchorWithMaxWidth(boolean)}.
+         * @return {@link PopupSpec} that includes the popup specs (e.g. location in window)
+         */
+        PopupSpec getPopupWindowSpec(
+                Rect freeSpaceRect,
+                Rect anchorRect,
+                View contentView,
+                int rootViewWidth,
+                int paddingX,
+                int paddingY,
+                int marginPx,
+                int maxWidthPx,
+                int desiredContentWidth,
+                int desiredContentHeight,
+                @HorizontalOrientation int preferredHorizontalOrientation,
+                @VerticalOrientation int preferredVerticalOrientation,
+                boolean currentPositionBelow,
+                boolean currentPositionToLeft,
+                boolean preferCurrentOrientation,
+                boolean horizontalOverlapAnchor,
+                boolean verticalOverlapAnchor,
+                boolean smartAnchorWithMaxWidth);
     }
 
     /**

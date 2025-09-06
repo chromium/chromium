@@ -20,41 +20,54 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.AnchoredPopupWindow.PopupPositionParams;
 import org.chromium.ui.widget.AnchoredPopupWindow.PopupSpec;
+import org.chromium.ui.widget.AnchoredPopupWindow.SpecCalculator;
 import org.chromium.ui.widget.AnchoredPopupWindow.VerticalOrientation;
 
 /** Helper class that holds information and calculations for {@link AnchoredPopupWindow}. */
 @NullMarked
-public class PopupSpecCalculator {
+public class PopupSpecCalculator implements SpecCalculator {
 
-    /**
-     * Calculate the Rect where the popup window will displayed on the current application window.
-     *
-     * @param freeSpaceRect The rect representing the window size. Always starts from (0,0) as top
-     *     left.
-     * @param anchorRect The rect that popup anchored to in the window.
-     * @param contentView The content view of popup window. Expected to be a {@link ViewGroup}.
-     * @param rootViewWidth The width of root view.
-     * @param paddingX The padding on the X axis of popup window.
-     * @param paddingY The padding on the Y axis of popup window.
-     * @param marginPx Value set by {@link #setMargin(int)}.
-     * @param maxWidthPx Value set by {@link #setMaxWidth(int)}.
-     * @param desiredContentWidth Value set by {@link #setDesiredContentWidth(int)}.
-     * @param preferredHorizontalOrientation Value set by {@link
-     *     #setPreferredHorizontalOrientation(int)}.
-     * @param preferredVerticalOrientation Value set by {@link
-     *     #setPreferredVerticalOrientation(int)}.
-     * @param currentPositionBelow Whether the currently shown popup window is presented below
-     *     anchored rect.
-     * @param currentPositionToLeft Whether the currently shown popup window is presented to the
-     *     left of anchored rect.
-     * @param preferCurrentOrientation Whether prefer to reserve the popup orientation. If this set
-     *     to true, popup window will prefer to show below / to left of anchored window the same way
-     *     as |currentPositionBelow| and |currentPositionToLeft|.
-     * @param horizontalOverlapAnchor Value set by {@link #setHorizontalOverlapAnchor(boolean)}.
-     * @param verticalOverlapAnchor Value set by {@link #setVerticalOverlapAnchor(boolean)}.
-     * @param smartAnchorWithMaxWidth Value set by {@link #setSmartAnchorWithMaxWidth(boolean)}.
-     * @return {@link PopupSpec} that includes the popup specs (e.g. location in window)
-     */
+    @Override
+    public PopupSpec getPopupWindowSpec(
+            final Rect freeSpaceRect,
+            final Rect anchorRect,
+            final View contentView,
+            final int rootViewWidth,
+            int paddingX,
+            int paddingY,
+            int marginPx,
+            int maxWidthPx,
+            int desiredContentWidth,
+            int desiredContentHeight,
+            @HorizontalOrientation int preferredHorizontalOrientation,
+            @VerticalOrientation int preferredVerticalOrientation,
+            boolean currentPositionBelow,
+            boolean currentPositionToLeft,
+            boolean preferCurrentOrientation,
+            boolean horizontalOverlapAnchor,
+            boolean verticalOverlapAnchor,
+            boolean smartAnchorWithMaxWidth) {
+        return calculatePopupWindowSpec(
+                freeSpaceRect,
+                anchorRect,
+                contentView,
+                rootViewWidth,
+                paddingX,
+                paddingY,
+                marginPx,
+                maxWidthPx,
+                desiredContentWidth,
+                desiredContentHeight,
+                preferredHorizontalOrientation,
+                preferredVerticalOrientation,
+                currentPositionBelow,
+                currentPositionToLeft,
+                preferCurrentOrientation,
+                horizontalOverlapAnchor,
+                verticalOverlapAnchor,
+                smartAnchorWithMaxWidth);
+    }
+
     @VisibleForTesting
     static PopupSpec calculatePopupWindowSpec(
             final Rect freeSpaceRect,
