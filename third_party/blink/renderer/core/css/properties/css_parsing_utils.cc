@@ -4398,6 +4398,61 @@ CSSValue* ConsumeAnimationDuration(CSSParserTokenStream& stream,
                      CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
+CSSValue* ConsumeSingleAnimationTriggerAttachment(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context) {
+  if (stream.Peek().FunctionId() != CSSValueID::kTrigger) {
+    return nullptr;
+  }
+
+  CSSCustomIdentValue* trigger_name = nullptr;
+  HeapVector<std::pair<Member<const CSSCustomIdentValue>,
+                       Member<const CSSCustomIdentValue>>>
+      action_behavior_pairs;
+
+  {
+    CSSParserTokenStream::BlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    // First get the trigger name.
+    trigger_name = ConsumeDashedIdent(stream, context);
+    if (!trigger_name) {
+      return nullptr;
+    }
+
+    stream.ConsumeWhitespace();
+
+    // Now get the action-behavior pairs.
+    while (!stream.AtEnd()) {
+      if (!ConsumeCommaIncludingWhitespace(stream)) {
+        return nullptr;
+      }
+
+      // TODO: separate this out into a ConsumeTriggerAction method, which can
+      // consume actions which are functions, e.g. keypress("Enter"). For now,
+      // we only support simple ident actions.
+      CSSCustomIdentValue* action = ConsumeCustomIdent(stream, context);
+      if (!action) {
+        return nullptr;
+      }
+
+      CSSCustomIdentValue* behavior = ConsumeCustomIdent(stream, context);
+      if (!behavior) {
+        return nullptr;
+      }
+
+      action_behavior_pairs.push_back(std::make_pair(action, behavior));
+    }
+  }
+  stream.ConsumeWhitespace();
+
+  if (!action_behavior_pairs.empty()) {
+    return MakeGarbageCollected<cssvalue::CSSTriggerAttachmentValue>(
+        trigger_name, action_behavior_pairs);
+  }
+
+  return nullptr;
+}
+
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenStream& stream) {
   return RuntimeEnabledFeatures::ScrollTimelineNamedRangeScrollEnabled()
              ? ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover,

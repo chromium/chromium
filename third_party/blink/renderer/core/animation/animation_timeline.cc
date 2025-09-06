@@ -255,9 +255,9 @@ void AnimationTimeline::UpdateAnimationTriggerAttachments() {
       continue;
     }
 
-    const std::optional<Vector<AtomicString>>& animation_trigger_names =
-        css_animation->GetTriggerNames();
-    if (!animation_trigger_names.has_value()) {
+    const Member<const StyleTriggerAttachmentVector>&
+        animation_trigger_attachments = css_animation->GetTriggerAttachments();
+    if (!animation_trigger_attachments) {
       continue;
     }
 
@@ -280,11 +280,15 @@ void AnimationTimeline::UpdateAnimationTriggerAttachments() {
         for (auto& entry : *named_triggers) {
           AnimationTrigger* trigger = entry.value.Get();
 
-          for (auto name : *animation_trigger_names) {
-            if (name == entry.key->GetName()) {
+          for (auto attachment : *animation_trigger_attachments) {
+            if (attachment->TriggerName()->GetName() == entry.key->GetName()) {
               // TODO(crbug.com/c/429392773): This attaches all triggers of
               // matching names. When a resolution for resolving triggers with
               // the same name has been reached, we should update this.
+              // TODO(crbug.com/441408561): Update this when the
+              // AnimationTrigger interface supports the explicit
+              // action/behavior params contained in
+              // attachment.ActionBehaviorPairs().
               trigger->addAnimation(animation, ASSERT_NO_EXCEPTION);
             }
           }

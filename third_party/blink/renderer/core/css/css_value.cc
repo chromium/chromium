@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_superellipse_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
+#include "third_party/blink/renderer/core/css/css_trigger_attachment_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unresolved_color_value.h"
@@ -350,6 +351,9 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<CSSLightDarkValuePair>(*this, other);
       case kScrollClass:
         return CompareCSSValues<cssvalue::CSSScrollValue>(*this, other);
+      case kTriggerAttachmentClass:
+        return CompareCSSValues<cssvalue::CSSTriggerAttachmentValue>(*this,
+                                                                     other);
       case kViewClass:
         return CompareCSSValues<cssvalue::CSSViewValue>(*this, other);
       case kRatioClass:
@@ -531,6 +535,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSRelativeColorValue>(this)->CustomCSSText();
     case kRepeatClass:
       return To<cssvalue::CSSRepeatValue>(this)->CustomCSSText();
+    case kTriggerAttachmentClass:
+      return To<cssvalue::CSSTriggerAttachmentValue>(this)->CustomCSSText();
   }
   NOTREACHED();
 }
@@ -639,6 +645,7 @@ unsigned CSSValue::Hash() const {
     case kAxisClass:
     case kRepeatClass:
     case kUnresolvedColorClass:
+    case kTriggerAttachmentClass:
       // For rare or complicated CSSValue types, we simply use the pointer value
       // as hash; it will definitely give false negatives, but those are fine.
       // The lower 32 bits should be fine, as we live inside a 4G Oilpan cage
@@ -920,6 +927,10 @@ void CSSValue::Trace(Visitor* visitor) const {
     case kRepeatClass:
       To<cssvalue::CSSRepeatValue>(this)->TraceAfterDispatch(visitor);
       return;
+    case kTriggerAttachmentClass:
+      To<cssvalue::CSSTriggerAttachmentValue>(this)->TraceAfterDispatch(
+          visitor);
+      return;
   }
   NOTREACHED();
 }
@@ -1087,6 +1098,8 @@ String CSSValue::ClassTypeToString() const {
       return "kPaletteMixClass";
     case kRepeatStyleClass:
       return "kRepeatStyleClass";
+    case kTriggerAttachmentClass:
+      return "kTriggerAttachmentClass";
   }
   NOTREACHED();
 }

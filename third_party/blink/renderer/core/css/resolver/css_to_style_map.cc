@@ -882,4 +882,44 @@ std::optional<Vector<AtomicString>> CSSToStyleMap::MapAnimationTriggerNames(
   return std::nullopt;
 }
 
+const StyleTriggerAttachment* MapSingleAnimationTriggerAttachment(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  const auto& attachment_value = To<cssvalue::CSSTriggerAttachmentValue>(value);
+  const CSSCustomIdentValue* name_value =
+      To<CSSCustomIdentValue>(attachment_value.TriggerName());
+  const ScopedCSSName* name = MakeGarbageCollected<ScopedCSSName>(
+      name_value->Value(), name_value->GetTreeScope());
+
+  HeapVector<std::pair<AtomicString, AtomicString>> action_behavior_pairs;
+  for (const auto& pair : attachment_value.ActionBehaviorPairs()) {
+    AtomicString action =
+        pair.first->ComputeIdent(state.CssToLengthConversionData());
+    AtomicString behavior =
+        pair.second->ComputeIdent(state.CssToLengthConversionData());
+    action_behavior_pairs.push_back(std::make_pair(action, behavior));
+  }
+
+  return MakeGarbageCollected<StyleTriggerAttachment>(name,
+                                                      action_behavior_pairs);
+}
+
+Member<StyleTriggerAttachmentVector>
+CSSToStyleMap::MapAnimationTriggerAttachments(StyleResolverState& state,
+                                              const CSSValue& value) {
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
+      ident && ident->GetValueID() == CSSValueID::kNone) {
+    return nullptr;
+  }
+
+  auto& attachment_valuelist = To<CSSValueList>(value);
+  Member<StyleTriggerAttachmentVector> attachments =
+      MakeGarbageCollected<StyleTriggerAttachmentVector>();
+  for (const CSSValue* single_attachment_value : attachment_valuelist) {
+    attachments->push_back(
+        MapSingleAnimationTriggerAttachment(state, *single_attachment_value));
+  }
+  return attachments;
+}
+
 }  // namespace blink

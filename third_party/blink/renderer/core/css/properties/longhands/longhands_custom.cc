@@ -117,7 +117,8 @@ CSSValue* ConsumeSingleAnimationTrigger(CSSParserTokenStream& stream,
     return value;
   }
   return css_parsing_utils::ConsumeSpaceSeparatedList(
-      css_parsing_utils::ConsumeDashedIdent, stream, context);
+      css_parsing_utils::ConsumeSingleAnimationTriggerAttachment, stream,
+      context);
 }
 
 }  // namespace
@@ -657,23 +658,46 @@ const CSSValue* AnimationTrigger::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   if (const CSSAnimationData* data = style.Animations()) {
-    CSSValueList* names_list = CSSValueList::CreateCommaSeparated();
+    CSSValueList* attachments_valuelist_for_all_animations =
+        CSSValueList::CreateCommaSeparated();
 
-    for (const std::optional<Vector<AtomicString>>& trigger_names_list :
-         data->TriggerNamesList()) {
-      CSSValueList* names = CSSValueList::CreateSpaceSeparated();
-      if (trigger_names_list.has_value()) {
-        for (const AtomicString& name : *trigger_names_list) {
-          names->Append(*MakeGarbageCollected<CSSCustomIdentValue>(name));
+    for (const Member<const StyleTriggerAttachmentVector>&
+             single_animation_attachments : data->TriggerAttachmentsList()) {
+      CSSValueList* attachment_valuelist_for_single_animation =
+          CSSValueList::CreateSpaceSeparated();
+
+      if (single_animation_attachments) {
+        for (const Member<const StyleTriggerAttachment>& attachment :
+             *single_animation_attachments) {
+          // Get the name.
+          Member<const CSSCustomIdentValue> trigger_name =
+              MakeGarbageCollected<CSSCustomIdentValue>(
+                  *attachment->TriggerName());
+
+          // Get the action-behavior settings.
+          HeapVector<std::pair<Member<const CSSCustomIdentValue>,
+                               Member<const CSSCustomIdentValue>>>
+              action_behavior_pairs;
+          for (const auto& pair : attachment->ActionBehaviorPairs()) {
+            action_behavior_pairs.push_back(std::make_pair(
+                MakeGarbageCollected<const CSSCustomIdentValue>(pair.first),
+                MakeGarbageCollected<const CSSCustomIdentValue>(pair.second)));
+          }
+
+          attachment_valuelist_for_single_animation->Append(
+              *MakeGarbageCollected<cssvalue::CSSTriggerAttachmentValue>(
+                  trigger_name.Get(), action_behavior_pairs));
         }
       } else {
-        names->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+        attachment_valuelist_for_single_animation->Append(
+            *CSSIdentifierValue::Create(CSSValueID::kNone));
       }
 
-      names_list->Append(*names);
+      attachments_valuelist_for_all_animations->Append(
+          *attachment_valuelist_for_single_animation);
     }
 
-    return names_list;
+    return attachments_valuelist_for_all_animations;
   }
 
   return InitialValue();

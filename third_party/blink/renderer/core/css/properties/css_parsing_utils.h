@@ -693,6 +693,11 @@ bool IsRepeatedPositionAreaValue(CSSValueID value_id);
 CSSValue* ConsumeSingleTimelineTriggerName(CSSParserTokenStream& stream,
                                            const CSSParserContext& context);
 
+// https://drafts.csswg.org/css-animations-2/#animation-trigger
+CSSValue* ConsumeSingleAnimationTriggerAttachment(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context);
+
 // Template implementations are at the bottom of the file for readability.
 
 template <typename... emptyBaseCase>

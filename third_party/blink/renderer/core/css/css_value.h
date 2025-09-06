@@ -247,6 +247,10 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   }
   bool IsScopedValue() const { return !needs_tree_scope_population_; }
 
+  bool IsTriggerAttachmentValue() const {
+    return class_type_ == kTriggerAttachmentClass;
+  }
+
 #if DCHECK_IS_ON()
   String ClassTypeToString() const;
 #endif
@@ -350,6 +354,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kRepeatStyleClass,
 
     kSuperellipseClass,
+
+    kTriggerAttachmentClass,
 
     // List class types must appear after ValueListClass.
     kValueListClass,

@@ -1225,13 +1225,17 @@ TEST_P(CSSAnimationsTest, AnimationTriggerNames) {
           animation-duration: 3s, 4s;
       }
       .single {
-        animation-trigger: --trigger;
+        animation-trigger: trigger(--trigger, enter play);
       }
       .double {
-        animation-trigger: --trigger1 --trigger2;
+        animation-trigger: trigger(--trigger1, click play)
+                           trigger(--trigger2, dblclick pause);
       }
       .multiple_double {
-        animation-trigger: --trigger1 --trigger2, --trigger3 --trigger4;
+        animation-trigger: trigger(--trigger3, click play)
+                           trigger(--trigger4, dblclick pause),
+                           trigger(--trigger1, dblclick play)
+                           trigger(--trigger2, dblclick pause);
       }
     </style>
     <div id="target"></div>
@@ -1255,33 +1259,49 @@ TEST_P(CSSAnimationsTest, AnimationTriggerNames) {
     animation2 = tmp;
   }
 
-  const std::optional<Vector<AtomicString>>& trigger_names =
-      animation->GetTriggerNames();
-  const std::optional<Vector<AtomicString>>& trigger_names2 =
-      animation2->GetTriggerNames();
-  EXPECT_EQ(trigger_names, std::nullopt);
+  const Member<const StyleTriggerAttachmentVector>& trigger_attachments =
+      animation->GetTriggerAttachments();
+  const Member<const StyleTriggerAttachmentVector>& trigger_attachments2 =
+      animation2->GetTriggerAttachments();
+  EXPECT_EQ(trigger_attachments, nullptr);
+  EXPECT_EQ(trigger_attachments2, nullptr);
 
   target->setAttribute(html_names::kClassAttr, AtomicString("single"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(trigger_names.value().size(), 1);
-  EXPECT_TRUE(trigger_names.value().Contains(AtomicString("--trigger")));
+  EXPECT_EQ(trigger_attachments->size(), 1);
+  EXPECT_EQ(trigger_attachments->at(0)->TriggerName()->GetName(),
+            AtomicString("--trigger"));
+  EXPECT_EQ(trigger_attachments2->size(), 1);
+  EXPECT_EQ(trigger_attachments2->at(0)->TriggerName()->GetName(),
+            AtomicString("--trigger"));
 
   target->setAttribute(html_names::kClassAttr, AtomicString("double"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(trigger_names.value().size(), 2);
-  EXPECT_TRUE(trigger_names.value().Contains(AtomicString("--trigger1")));
-  EXPECT_TRUE(trigger_names.value().Contains(AtomicString("--trigger2")));
+  EXPECT_EQ(trigger_attachments->size(), 2);
+  EXPECT_EQ(trigger_attachments->at(0)->TriggerName()->GetName(),
+            AtomicString("--trigger1"));
+  EXPECT_EQ(trigger_attachments->at(1)->TriggerName()->GetName(),
+            AtomicString("--trigger2"));
+  EXPECT_EQ(trigger_attachments2->size(), 2);
+  EXPECT_EQ(trigger_attachments2->at(0)->TriggerName()->GetName(),
+            AtomicString("--trigger1"));
+  EXPECT_EQ(trigger_attachments2->at(1)->TriggerName()->GetName(),
+            AtomicString("--trigger2"));
 
   target->setAttribute(html_names::kClassAttr, AtomicString("multiple_double"));
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(trigger_names.value().size(), 2);
-  EXPECT_EQ(trigger_names2.value().size(), 2);
+  EXPECT_EQ(trigger_attachments->size(), 2);
+  EXPECT_EQ(trigger_attachments2->size(), 2);
 
-  EXPECT_TRUE(trigger_names.value().Contains(AtomicString("--trigger1")));
-  EXPECT_TRUE(trigger_names.value().Contains(AtomicString("--trigger2")));
-  EXPECT_TRUE(trigger_names2.value().Contains(AtomicString("--trigger3")));
-  EXPECT_TRUE(trigger_names2.value().Contains(AtomicString("--trigger4")));
+  EXPECT_EQ(trigger_attachments->at(0)->TriggerName()->GetName(),
+            AtomicString("--trigger3"));
+  EXPECT_EQ(trigger_attachments->at(1)->TriggerName()->GetName(),
+            AtomicString("--trigger4"));
+  EXPECT_EQ(trigger_attachments2->at(0)->TriggerName()->GetName(),
+            AtomicString("--trigger1"));
+  EXPECT_EQ(trigger_attachments2->at(1)->TriggerName()->GetName(),
+            AtomicString("--trigger2"));
 }
 
 void VerifyTriggerRangeBoundary(
@@ -2109,11 +2129,11 @@ TEST_P(CSSAnimationsTriggerTest, ChangeTriggerName) {
         animation: stretch 1s;
       }
       .trigger1 {
-        animation-trigger: --trigger1;
+        animation-trigger: trigger(--trigger1, enter play);
         timeline-trigger: --trigger1 view() once contain 10% contain 90%;
       }
       .trigger2 {
-        animation-trigger: --trigger2;
+        animation-trigger: trigger(--trigger2, exit pause);
         timeline-trigger: --trigger2 view() once contain 10% contain 90%;
       }
      .scroller {

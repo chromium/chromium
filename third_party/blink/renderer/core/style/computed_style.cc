@@ -3007,10 +3007,10 @@ bool ComputedStyle::HasAnimationTrigger() const {
     return false;
   }
 
-  return std::any_of(data->TriggerNamesList().begin(),
-                     data->TriggerNamesList().end(),
-                     [](std::optional<Vector<AtomicString>> name_list) {
-                       return name_list.has_value();
+  return std::any_of(data->TriggerAttachmentsList().begin(),
+                     data->TriggerAttachmentsList().end(),
+                     [](Member<StyleTriggerAttachmentVector> attachments_list) {
+                       return attachments_list.Get();
                      });
 }
 

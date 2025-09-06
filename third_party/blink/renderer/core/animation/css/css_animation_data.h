@@ -14,17 +14,22 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_name_or_keyword.h"
 #include "third_party/blink/renderer/core/style/style_timeline.h"
+#include "third_party/blink/renderer/core/style/style_trigger_attachment.h"
 
 namespace blink {
 
 class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
  public:
   using TriggerNamesListType = Vector<std::optional<Vector<AtomicString>>>;
+  using TriggerAttachmentsListType =
+      HeapVector<Member<const StyleTriggerAttachmentVector>>;
+
   CSSAnimationData();
   explicit CSSAnimationData(const CSSAnimationData&);
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(timeline_trigger_name_list_);
+    visitor->Trace(trigger_attachments_list_);
     CSSTimingData::Trace(visitor);
   }
 
@@ -87,9 +92,15 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return timeline_trigger_timeline_list_;
   }
   const StyleTimeline& GetTimelineTriggerTimeline(size_t index) const;
+
   const TriggerNamesListType& TriggerNamesList() const {
     return trigger_names_list_;
   }
+  const TriggerAttachmentsListType& TriggerAttachmentsList() const {
+    return trigger_attachments_list_;
+  }
+  const Member<const StyleTriggerAttachmentVector>& GetTriggerAttachments(
+      size_t index) const;
 
   EffectModel::CompositeOperation GetComposition(size_t animation_index) const {
     if (!composition_list_.size()) {
@@ -136,6 +147,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
     return timeline_trigger_timeline_list_;
   }
   TriggerNamesListType& TriggerNamesList() { return trigger_names_list_; }
+  TriggerAttachmentsListType& TriggerAttachmentsList() {
+    return trigger_attachments_list_;
+  }
 
   bool HasSingleInitialTimeline() const {
     return timeline_list_.size() == 1u &&
@@ -188,6 +202,9 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static std::optional<Vector<AtomicString>> InitialTriggerNames() {
     return std::nullopt;
   }
+  static Member<StyleTriggerAttachmentVector> InitialTriggerAttachments() {
+    return nullptr;
+  }
 
  private:
   Vector<AtomicString> name_list_;
@@ -210,7 +227,10 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
 
   // Note that this is a list of a list of names as animation-trigger specifies
   // a comma-separated list of space-separated lists of dashed idents.
+  // TODO: Delete this deprecated member and associated methods.
   TriggerNamesListType trigger_names_list_;
+
+  TriggerAttachmentsListType trigger_attachments_list_;
 };
 
 }  // namespace blink

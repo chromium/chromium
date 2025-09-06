@@ -2038,5 +2038,8 @@
 
     // block-ellipsis
     "no-ellipsis",
+
+    // animation-trigger
+    "trigger",
   ],
 }

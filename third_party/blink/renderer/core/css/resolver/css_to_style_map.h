@@ -143,6 +143,9 @@ class CSSToStyleMap {
   static std::optional<Vector<AtomicString>> MapAnimationTriggerNames(
       StyleResolverState&,
       const CSSValue&);
+  static Member<StyleTriggerAttachmentVector> MapAnimationTriggerAttachments(
+      StyleResolverState&,
+      const CSSValue&);
 };
 
 }  // namespace blink
