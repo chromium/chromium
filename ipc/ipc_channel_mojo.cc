@@ -301,64 +301,6 @@ void ChannelMojo::OnBrokenDataReceived() {
   listener_->OnBadMessageReceived(Message());
 }
 
-// static
-MojoResult ChannelMojo::ReadFromMessageAttachmentSet(
-    Message* message,
-    std::optional<std::vector<mojo::native::SerializedHandlePtr>>* handles) {
-  DCHECK(!*handles);
-
-  MojoResult result = MOJO_RESULT_OK;
-  if (!message->HasAttachments())
-    return result;
-
-  std::vector<mojo::native::SerializedHandlePtr> output_handles;
-  MessageAttachmentSet* set = message->attachment_set();
-
-  for (unsigned i = 0; result == MOJO_RESULT_OK && i < set->size(); ++i) {
-    auto attachment = set->GetAttachmentAt(i);
-    auto serialized_handle = mojo::native::SerializedHandle::New();
-    serialized_handle->the_handle = attachment->TakeMojoHandle();
-    serialized_handle->type =
-        mojo::ConvertTo<mojo::native::SerializedHandleType>(
-            attachment->GetType());
-    output_handles.emplace_back(std::move(serialized_handle));
-  }
-  set->CommitAllDescriptors();
-
-  if (!output_handles.empty())
-    *handles = std::move(output_handles);
-
-  return result;
-}
-
-// static
-MojoResult ChannelMojo::WriteToMessageAttachmentSet(
-    std::optional<std::vector<mojo::native::SerializedHandlePtr>> handles,
-    Message* message) {
-  if (!handles)
-    return MOJO_RESULT_OK;
-  for (size_t i = 0; i < handles->size(); ++i) {
-    auto& handle = handles->at(i);
-    scoped_refptr<MessageAttachment> unwrapped_attachment =
-        MessageAttachment::CreateFromMojoHandle(
-            std::move(handle->the_handle),
-            mojo::ConvertTo<MessageAttachment::Type>(handle->type));
-    if (!unwrapped_attachment) {
-      DLOG(WARNING) << "Pipe failed to unwrap handles.";
-      return MOJO_RESULT_UNKNOWN;
-    }
-
-    bool ok = message->attachment_set()->AddAttachment(
-        std::move(unwrapped_attachment));
-    DCHECK(ok);
-    if (!ok) {
-      LOG(ERROR) << "Failed to add new Mojo handle.";
-      return MOJO_RESULT_UNKNOWN;
-    }
-  }
-  return MOJO_RESULT_OK;
-}
-
 void ChannelMojo::AddGenericAssociatedInterface(
     const std::string& name,
     const GenericAssociatedInterfaceFactory& factory) {
