@@ -562,8 +562,7 @@ static bool NeedsPaintOffsetTranslation(
   // TODO(crbug.com/349835587): Should Element or LayoutObject have a public
   // IsCanvasDrawHTMLElement() function?
   if (object.Parent() && object.Parent()->IsCanvas()) {
-    // The object may be drawn with drawHTMLElement and should ignore the paint
-    // offset.
+    // The object may be drawn with drawHTML and should ignore the paint offset.
     return true;
   }
 
@@ -4113,9 +4112,8 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
   }
 
   if (max_change > PaintPropertyChangeType::kChangedOnlyCompositedValues) {
-    // Elements under canvas can only be rendered with `drawElement` and need
-    // to use regular paint invalidation to ensure js is notified of
-    // invalidations.
+    // Elements under canvas can only be rendered with `drawHTML` and need to
+    // use regular paint invalidation to ensure js is notified of invalidations.
     if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
         IsA<Element>(object_.GetNode()) &&
         To<Element>(object_.GetNode())->IsInCanvasSubtree()) {
@@ -4167,8 +4165,8 @@ bool PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(
     }
   }
 
-  // Elements under canvas can only be rendered with `drawElement` and need to
-  // use regular paint invalidation to ensure js is notified of invalidations.
+  // Elements under canvas can only be rendered with `drawHTML` and need to use
+  // regular paint invalidation to ensure js is notified of invalidations.
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
       IsA<Element>(object.GetNode()) &&
       To<Element>(object.GetNode())->IsInCanvasSubtree()) {
@@ -4209,8 +4207,8 @@ bool PaintPropertyTreeBuilder::CanDoDeferredOpacityNodeUpdate(
     return false;
   }
 
-  // Elements under canvas can only be rendered with `drawElement` and need to
-  // use regular paint invalidation to ensure js is notified of invalidations.
+  // Elements under canvas can only be rendered with `drawHTML` and need to use
+  // regular paint invalidation to ensure js is notified of invalidations.
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
       IsA<Element>(object.GetNode()) &&
       To<Element>(object.GetNode())->IsInCanvasSubtree()) {

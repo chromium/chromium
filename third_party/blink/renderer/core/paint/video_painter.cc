@@ -25,13 +25,13 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
 
   WebMediaPlayer* media_player =
       layout_video_.MediaElement()->GetWebMediaPlayer();
-  // TODO(crbug.com/419834322): Canvas drawHTMLElement does not yet draw video,
-  // so force the poster until it does.
+  // TODO(crbug.com/419834322): Canvas drawHTML does not yet draw video, so
+  // force the poster until it does.
   bool force_video_poster =
       layout_video_.GetDocument().GetPaintPreviewState() ==
           Document::kPaintingPreviewSkipAcceleratedContent ||
       (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
-       (paint_info.GetPaintFlags() & PaintFlag::kPaintingCanvasDrawElement));
+       (paint_info.GetPaintFlags() & PaintFlag::kPaintingCanvasDrawHTML));
   bool should_display_poster =
       layout_video_.GetDisplayMode() == LayoutVideo::kPoster ||
       force_video_poster;

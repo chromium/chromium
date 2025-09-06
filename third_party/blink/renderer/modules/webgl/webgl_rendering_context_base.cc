@@ -6898,18 +6898,17 @@ void WebGLRenderingContextBase::texElement2D(GLenum target,
                                              GLenum type,
                                              Element* element,
                                              ExceptionState& exception_state) {
-  texHTMLElement2D(target, level, internalformat, format, type, element,
-                   exception_state);
+  texHTML2D(target, level, internalformat, format, type, element,
+            exception_state);
 }
 
-void WebGLRenderingContextBase::texHTMLElement2D(
-    GLenum target,
-    GLint level,
-    GLint internalformat,
-    GLenum format,
-    GLenum type,
-    Element* element,
-    ExceptionState& exception_state) {
+void WebGLRenderingContextBase::texHTML2D(GLenum target,
+                                          GLint level,
+                                          GLint internalformat,
+                                          GLenum format,
+                                          GLenum type,
+                                          Element* element,
+                                          ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
   if (isContextLost()) {
     return;
@@ -6919,12 +6918,12 @@ void WebGLRenderingContextBase::texHTMLElement2D(
     return;
   }
 
-  if (!IsDrawElementEligible(element, "texHTMLElement2D()", exception_state)) {
+  if (!IsDrawHTMLEligible(element, "texHTML2D()", exception_state)) {
     return;
   }
 
   canvas()->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElement);
+      DocumentUpdateReason::kCanvasDrawHTML);
 
   // Canvas could have been removed after the layout update.
   if (!canvas()) {
@@ -6943,7 +6942,7 @@ void WebGLRenderingContextBase::texHTMLElement2D(
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
   paint_layer_painter.Paint(
       builder.Context(),
-      PaintFlag::kPaintingCanvasDrawElement | PaintFlag::kPrivacyPreserving);
+      PaintFlag::kPaintingCanvasDrawHTML | PaintFlag::kPrivacyPreserving);
 
   PropertyTreeState tree_state = layer->GetLayoutObject()
                                      .FirstFragment()
@@ -6988,7 +6987,7 @@ void WebGLRenderingContextBase::setHitTestRegions(
   HTMLCanvasElement* canvas_element = canvas();
   DCHECK(canvas_element);
   canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElement);
+      DocumentUpdateReason::kCanvasDrawHTML);
 
   VectorOf<HTMLCanvasElement::ElementHitTestRegion> result;
   if (!ConvertHitTestRegionsToHTMLCanvasRegions(

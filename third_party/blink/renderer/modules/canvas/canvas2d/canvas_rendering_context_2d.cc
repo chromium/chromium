@@ -763,22 +763,20 @@ void CanvasRenderingContext2D::drawElement(Element* element,
   DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
 }
 
-void CanvasRenderingContext2D::drawHTMLElement(
-    Element* element,
-    double x,
-    double y,
-    ExceptionState& exception_state) {
+void CanvasRenderingContext2D::drawHTML(Element* element,
+                                        double x,
+                                        double y,
+                                        ExceptionState& exception_state) {
   DrawElementInternal(element, x, y, std::nullopt, std::nullopt,
                       exception_state);
 }
 
-void CanvasRenderingContext2D::drawHTMLElement(
-    Element* element,
-    double x,
-    double y,
-    double dwidth,
-    double dheight,
-    ExceptionState& exception_state) {
+void CanvasRenderingContext2D::drawHTML(Element* element,
+                                        double x,
+                                        double y,
+                                        double dwidth,
+                                        double dheight,
+                                        ExceptionState& exception_state) {
   DrawElementInternal(element, x, y, dwidth, dheight, exception_state);
 }
 
@@ -788,7 +786,7 @@ void CanvasRenderingContext2D::setHitTestRegions(
   HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
   DCHECK(canvas_element);
   canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElement);
+      DocumentUpdateReason::kCanvasDrawHTML);
 
   VectorOf<HTMLCanvasElement::ElementHitTestRegion> result;
   if (!ConvertHitTestRegionsToHTMLCanvasRegions(
@@ -815,13 +813,13 @@ void CanvasRenderingContext2D::DrawElementInternal(
   HTMLCanvasElement* canvas_element = HostAsHTMLCanvasElement();
   DCHECK(canvas_element);
   canvas_element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElement);
+      DocumentUpdateReason::kCanvasDrawHTML);
 
   if (!GetOrCreatePaintCanvas()) {
     return;
   }
 
-  if (!IsDrawElementEligible(element, "drawHTMLElement()", exception_state)) {
+  if (!IsDrawHTMLEligible(element, "drawHTML()", exception_state)) {
     return;
   }
 
@@ -841,7 +839,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
                                           /*disable_expansion*/ true);
 
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
-  PaintFlags paint_flags = PaintFlag::kPaintingCanvasDrawElement;
+  PaintFlags paint_flags = PaintFlag::kPaintingCanvasDrawHTML;
   paint_flags |= PaintFlag::kPrivacyPreserving;
   paint_layer_painter.Paint(builder.Context(), paint_flags);
 

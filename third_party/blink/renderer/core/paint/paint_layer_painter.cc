@@ -473,7 +473,7 @@ PaintResult PaintLayerPainter::PaintChildren(
     return result;
 
   // Prevent canvas fallback content from being rendered.
-  if (((paint_flags & PaintFlag::kPaintingCanvasDrawElement) == 0) &&
+  if (((paint_flags & PaintFlag::kPaintingCanvasDrawHTML) == 0) &&
       IsA<HTMLCanvasElement>(paint_layer_.GetLayoutObject().GetNode())) {
     return result;
   }

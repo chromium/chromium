@@ -3259,7 +3259,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method stencilOp
 [Worker]     method stencilOpSeparate
 [Worker]     method texElement2D
-[Worker]     method texHTMLElement2D
+[Worker]     method texHTML2D
 [Worker]     method texImage2D
 [Worker]     method texImage3D
 [Worker]     method texParameterf
@@ -3764,7 +3764,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method stencilOp
 [Worker]     method stencilOpSeparate
 [Worker]     method texElement2D
-[Worker]     method texHTMLElement2D
+[Worker]     method texHTML2D
 [Worker]     method texImage2D
 [Worker]     method texParameterf
 [Worker]     method texParameteri

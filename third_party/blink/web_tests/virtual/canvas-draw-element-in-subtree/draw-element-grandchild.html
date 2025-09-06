@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>Canvas.drawElement: elements from the subtree are supported</title>
+<title>Canvas.drawHTML: elements from the subtree are supported</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <style>
   #child {
@@ -29,7 +29,7 @@
 <script>
   function runTest() {
     var context = canvas.getContext('2d');
-    context.drawElement(grandchild, 0, 0);
+    context.drawHTML(grandchild, 0, 0);
   }
   onload = () => runTest();
 </script>

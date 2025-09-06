@@ -311,7 +311,7 @@ void CaretDisplayItemClient::SetNeedsNonCompositedPaintInvalidation() {
   if (!layout_block_) {
     return;
   }
-  // Elements under canvas can only be rendered with `drawElement` and do not
+  // Elements under canvas can only be rendered with `drawHTML` and do not
   // support compositing.
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
       IsA<Element>(layout_block_->GetNode()) &&

@@ -2231,7 +2231,7 @@ void WebGLRenderingContextWebGPUBase::texImage2D(
   NOTIMPLEMENTED();
 }
 
-void WebGLRenderingContextWebGPUBase::texHTMLElement2D(
+void WebGLRenderingContextWebGPUBase::texHTML2D(
     GLenum target,
     GLint level,
     GLint internalformat,

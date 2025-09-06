@@ -333,7 +333,7 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   if (object.GetDocument().Printing())
     return CompositingReason::kNone;
 
-  // Elements under canvas can only be rendered with `drawElement` and do not
+  // Elements under canvas can only be rendered with `drawHTML` and do not
   // support compositing.
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
       IsA<Element>(object.GetNode()) &&

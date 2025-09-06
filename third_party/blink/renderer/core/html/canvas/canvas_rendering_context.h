@@ -356,9 +356,9 @@ class CORE_EXPORT CanvasRenderingContext
 
   virtual void Dispose();
 
-  bool IsDrawElementEligible(Element* element,
-                             const String& func_name,
-                             ExceptionState& exception_state);
+  bool IsDrawHTMLEligible(Element* element,
+                          const String& func_name,
+                          ExceptionState& exception_state);
 
   bool ConvertHitTestRegionsToHTMLCanvasRegions(
       const HeapVector<Member<CanvasElementHitTestRegion>>& hit_test_regions,
