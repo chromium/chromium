@@ -16,6 +16,7 @@
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/preloading.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -33,7 +34,6 @@ class PreloadingAttempt;
 class RenderFrameHostImpl;
 class WebContents;
 enum class PrefetchPriority;
-enum class PreloadingHoldbackStatus;
 
 // `PrefetchRendererInitiatorInfo` or `PrefetchBrowserInitiatorInfo` is created
 // and attached to `PrefetchRequest` for a renderer-initiated or
@@ -152,8 +152,8 @@ class CONTENT_EXPORT PrefetchRequest final {
       std::optional<PrefetchPriority> priority,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
-      std::optional<PreloadingHoldbackStatus> holdback_status_override =
-          std::nullopt,
+      PreloadingHoldbackStatus holdback_status_override =
+          PreloadingHoldbackStatus::kUnspecified,
       std::optional<base::TimeDelta> ttl = std::nullopt);
 
   // For browser-initiated prefetch that doesn't depend on web
@@ -194,7 +194,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       std::optional<SpeculationRulesTags> speculation_rules_tags,
       const net::HttpRequestHeaders& additional_headers,
       base::TimeDelta ttl,
-      std::optional<PreloadingHoldbackStatus> holdback_status_override,
+      PreloadingHoldbackStatus holdback_status_override,
       bool should_append_variations_header,
       bool should_disable_block_until_head_timeout,
       std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
@@ -229,8 +229,7 @@ class CONTENT_EXPORT PrefetchRequest final {
     return additional_headers_;
   }
   const base::TimeDelta& ttl() const { return ttl_; }
-  const std::optional<PreloadingHoldbackStatus>& holdback_status_override()
-      const {
+  PreloadingHoldbackStatus holdback_status_override() const {
     return holdback_status_override_;
   }
   bool should_append_variations_header() const {
@@ -325,10 +324,11 @@ class CONTENT_EXPORT PrefetchRequest final {
   // Default value is `PrefetchContainerDefaultTtlInPrefetchService()`.
   const base::TimeDelta ttl_;
 
-  // If set, this value is used to override holdback status derived by the
-  // normal process. It is set to `attempt_` on
-  // PrefetchService::CheckAndSetPrefetchHoldbackStatus().
-  const std::optional<PreloadingHoldbackStatus> holdback_status_override_;
+  // If not `PreloadingHoldbackStatus::kUnspecified`, this value is used to
+  // override holdback status derived by the normal process. It is set to
+  // `attempt_` on PrefetchService::CheckAndSetPrefetchHoldbackStatus(). Default
+  // value is `PreloadingHoldbackStatus::kUnspecified`.
+  const PreloadingHoldbackStatus holdback_status_override_;
 
   // Whether to add the X-Client-Data header with experiment IDs from field
   // trials. This will not be applied to redirects. Currently, this is

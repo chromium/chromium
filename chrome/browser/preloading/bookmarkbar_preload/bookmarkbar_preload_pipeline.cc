@@ -74,7 +74,8 @@ void BookmarkBarPreloadPipeline::StartPrefetch(
       blink::mojom::Referrer(), /*referring_origin=*/std::nullopt,
       /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
       pipeline_info_, attempt->GetWeakPtr(),
-      /*holdback_status_override=*/std::nullopt, /*ttl=*/std::nullopt);
+      /*holdback_status_override=*/
+      content::PreloadingHoldbackStatus::kUnspecified, /*ttl=*/std::nullopt);
 }
 
 void BookmarkBarPreloadPipeline::StartPrerender(

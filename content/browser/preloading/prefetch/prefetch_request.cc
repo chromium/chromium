@@ -71,7 +71,7 @@ PrefetchRequest::PrefetchRequest(
     std::optional<SpeculationRulesTags> speculation_rules_tags,
     const net::HttpRequestHeaders& additional_headers,
     base::TimeDelta ttl,
-    std::optional<PreloadingHoldbackStatus> holdback_status_override,
+    PreloadingHoldbackStatus holdback_status_override,
     bool should_append_variations_header,
     bool should_disable_block_until_head_timeout,
     std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
@@ -101,7 +101,7 @@ PrefetchRequest::PrefetchRequest(
     CHECK(!GetBrowserInitiatorInfo());
     CHECK(additional_headers_.IsEmpty());
     CHECK_EQ(ttl_, PrefetchContainerDefaultTtlInPrefetchService());
-    CHECK(!holdback_status_override_);
+    CHECK_EQ(holdback_status_override_, PreloadingHoldbackStatus::kUnspecified);
     CHECK(should_append_variations_header_);
     CHECK(!should_disable_block_until_head_timeout_);
   } else {
@@ -139,7 +139,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateRendererInitiated(
       std::move(speculation_rules_tags),
       /*Must be empty: additional_headers=*/net::HttpRequestHeaders(),
       PrefetchContainerDefaultTtlInPrefetchService(),
-      /*holdback_status_override=*/std::nullopt,
+      /*holdback_status_override=*/PreloadingHoldbackStatus::kUnspecified,
       /*should_append_variations_header=*/true,
       /*should_disable_block_until_head_timeout=*/false,
       PrefetchRendererInitiatorInfo(referring_render_frame_host,
@@ -158,7 +158,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateBrowserInitiated(
     std::optional<PrefetchPriority> priority,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
-    std::optional<PreloadingHoldbackStatus> holdback_status_override,
+    PreloadingHoldbackStatus holdback_status_override,
     std::optional<base::TimeDelta> ttl) {
   return std::make_unique<PrefetchRequest>(
       base::PassKey<PrefetchRequest>(), prefetch_type,
@@ -206,7 +206,7 @@ PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
       std::move(attempt), javascript_enabled, referrer, referring_origin,
       browser_context->GetWeakPtr(),
       /*speculation_rules_tags=*/std::nullopt, additional_headers, ttl,
-      /*holdback_status_override=*/std::nullopt,
+      /*holdback_status_override=*/PreloadingHoldbackStatus::kUnspecified,
       should_append_variations_header, should_disable_block_until_head_timeout,
       PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
                                    std::move(request_status_listener)));

@@ -218,16 +218,18 @@ bool CheckAndSetPrefetchHoldbackStatus(
     // 2. If PrefetchContainer is likely ahead of prerender, always set status
     // to kAllowed as it is likely used for prerender.
     //
-    // Note that we don't use `PrefetchContainer::overridden_holdback_status_`
-    // for this purpose because it can't handle a prefetch that was not ahead of
+    // Note that we don't use
+    // `PrefetchContainer::request().holdback_status_override()` for this
+    // purpose because it can't handle a prefetch that was not ahead of
     // prerender but another ahead of prerender one is migrated into it. We need
     // to update migration if we'd like to do it.
     prefetch_container->request().attempt()->SetHoldbackStatus(
         PreloadingHoldbackStatus::kAllowed);
-  } else if (prefetch_container->request().holdback_status_override()) {
+  } else if (prefetch_container->request().holdback_status_override() !=
+             PreloadingHoldbackStatus::kUnspecified) {
     // 3. If PrefetchContainer has custom overridden status, set that value.
     prefetch_container->request().attempt()->SetHoldbackStatus(
-        *prefetch_container->request().holdback_status_override());
+        prefetch_container->request().holdback_status_override());
   }
 
   if (prefetch_container->request().attempt()->ShouldHoldback()) {

@@ -45,7 +45,8 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
           content::PreloadingType::kPrefetch, std::move(matcher),
           /*triggering_primary_page_source_id=*/ukm::kInvalidSourceId);
 
-  std::optional<content::PreloadingHoldbackStatus> holdback_status_override;
+  content::PreloadingHoldbackStatus holdback_status_override =
+      content::PreloadingHoldbackStatus::kUnspecified;
   if (chrome::android::kCCTNavigationalPrefetchHoldback.Get()) {
     holdback_status_override = content::PreloadingHoldbackStatus::kHoldback;
   }

@@ -11993,7 +11993,7 @@ std::unique_ptr<PrefetchHandle> WebContentsImpl::StartPrefetch(
     std::optional<PrefetchPriority> priority,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
-    std::optional<PreloadingHoldbackStatus> holdback_status_override,
+    PreloadingHoldbackStatus holdback_status_override,
     std::optional<base::TimeDelta> ttl) {
   PrefetchService* prefetch_service =
       BrowserContextImpl::From(GetBrowserContext())->GetPrefetchService();

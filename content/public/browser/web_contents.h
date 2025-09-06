@@ -1660,7 +1660,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // - `attempt` is used to record some metrics associated with this prefetch
   //   request.
   // - `holdback_status_override` is used to override holdback status, if
-  //   specified.
+  //   not `PreloadingHoldbackStatus::kUnspecified`.
   // - `ttl`: TTL; `PrefetchService` holds prefetch in `ttl`. Uses default value
   // if `std::nullopt`.
   // - Returns `PrefetchHandle` to control prefetch resources. This can be
@@ -1676,7 +1676,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       std::optional<PrefetchPriority> priority,
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
-      std::optional<PreloadingHoldbackStatus> holdback_status_override,
+      PreloadingHoldbackStatus holdback_status_override,
       std::optional<base::TimeDelta> ttl) = 0;
 
   // Starts an embedder triggered (browser-initiated) prerendering page and
