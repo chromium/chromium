@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_key.h"
+#include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/common/content_export.h"
@@ -30,6 +31,7 @@ class PreloadPipelineInfo;
 class PreloadPipelineInfoImpl;
 class PreloadingAttempt;
 class RenderFrameHostImpl;
+class WebContents;
 enum class PrefetchPriority;
 enum class PreloadingHoldbackStatus;
 
@@ -122,7 +124,63 @@ class CONTENT_EXPORT PrefetchBrowserInitiatorInfo final {
 // callers to construct `PrefetchRequest` instead of `PrefetchContainer`.
 class CONTENT_EXPORT PrefetchRequest final {
  public:
+  // For renderer-initiated prefetch.
+  static std::unique_ptr<const PrefetchRequest> CreateRendererInitiated(
+      RenderFrameHostImpl& referring_render_frame_host,
+      const blink::DocumentToken& referring_document_token,
+      const GURL& url,
+      const PrefetchType& prefetch_type,
+      const blink::mojom::Referrer& referrer,
+      std::optional<SpeculationRulesTags> speculation_rules_tags,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      std::optional<PrefetchPriority> priority,
+      base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
+      base::WeakPtr<PreloadingAttempt> attempt = nullptr);
+
+  // For browser-initiated prefetch.
+  // We can pass the referring origin of prefetches via `referring_origin` if
+  // necessary.
+  static std::unique_ptr<const PrefetchRequest> CreateBrowserInitiated(
+      WebContents& referring_web_contents,
+      const GURL& url,
+      const PrefetchType& prefetch_type,
+      const std::string& embedder_histogram_suffix,
+      const blink::mojom::Referrer& referrer,
+      const std::optional<url::Origin>& referring_origin,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      std::optional<PrefetchPriority> priority,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
+      base::WeakPtr<PreloadingAttempt> attempt = nullptr,
+      std::optional<PreloadingHoldbackStatus> holdback_status_override =
+          std::nullopt,
+      std::optional<base::TimeDelta> ttl = std::nullopt);
+
+  // For browser-initiated prefetch that doesn't depend on web
+  // contents. We can pass the referring origin of prefetches via
+  // `referring_origin` if necessary.
+  static std::unique_ptr<const PrefetchRequest>
+  CreateBrowserInitiatedWithoutWebContents(
+      BrowserContext* browser_context,
+      const GURL& url,
+      const PrefetchType& prefetch_type,
+      const std::string& embedder_histogram_suffix,
+      const blink::mojom::Referrer& referrer,
+      bool javascript_enabled,
+      const std::optional<url::Origin>& referring_origin,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      std::optional<PrefetchPriority> priority,
+      base::WeakPtr<PreloadingAttempt> attempt = nullptr,
+      const net::HttpRequestHeaders& additional_headers = {},
+      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener =
+          nullptr,
+      base::TimeDelta ttl = PrefetchContainerDefaultTtlInPrefetchService(),
+      bool should_append_variations_header = true,
+      bool should_disable_block_until_head_timeout = false);
+
+  // Use `Create*()` above instead.
   PrefetchRequest(
+      base::PassKey<PrefetchRequest>,
       const PrefetchType& prefetch_type,
       const PrefetchKey& key,
       const std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
@@ -141,6 +199,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       bool should_disable_block_until_head_timeout,
       std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
           info);
+
   ~PrefetchRequest();
 
   const PrefetchType& prefetch_type() const { return prefetch_type_; }

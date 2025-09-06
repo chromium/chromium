@@ -32,6 +32,7 @@ class NetworkContext;
 namespace content {
 
 class BrowserContext;
+class PrefetchDocumentManager;
 class PrefetchMatchResolver;
 class PrefetchOriginProber;
 class PrefetchProxyConfigurator;

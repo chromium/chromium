@@ -39,12 +39,10 @@
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/client_hints.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preloading.h"
-#include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_util.h"
@@ -233,113 +231,23 @@ GetPrefetchResponseCompletedCallbackForTesting() {
 
 }  // namespace
 
-PrefetchContainer::PrefetchContainer(
-    RenderFrameHostImpl& referring_render_frame_host,
-    const blink::DocumentToken& referring_document_token,
-    const GURL& url,
-    const PrefetchType& prefetch_type,
-    const blink::mojom::Referrer& referrer,
-    std::optional<SpeculationRulesTags> speculation_rules_tags,
-    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
-    std::optional<PrefetchPriority> priority,
-    base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
-    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
-    base::WeakPtr<PreloadingAttempt> attempt)
-    : PrefetchContainer(std::make_unique<PrefetchRequest>(
-          prefetch_type,
-          PrefetchKey(referring_document_token, url),
-          std::move(no_vary_search_hint),
-          std::move(priority),
-          std::move(preload_pipeline_info),
-          std::move(attempt),
-          WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
-              ->GetOrCreateWebPreferences()
-              .javascript_enabled,
-          referrer,
-          referring_render_frame_host.GetLastCommittedOrigin(),
-          referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
-          std::move(speculation_rules_tags),
-          /*Must be empty: additional_headers=*/net::HttpRequestHeaders(),
-          PrefetchContainerDefaultTtlInPrefetchService(),
-          /*holdback_status_override=*/std::nullopt,
-          /*should_append_variations_header=*/true,
-          /*should_disable_block_until_head_timeout=*/false,
-          PrefetchRendererInitiatorInfo(
-              referring_render_frame_host,
-              std::move(prefetch_document_manager)))) {}
+// static
+std::unique_ptr<PrefetchContainer> PrefetchContainer::Create(
+    std::unique_ptr<const PrefetchRequest> request) {
+  return std::make_unique<PrefetchContainer>(base::PassKey<PrefetchContainer>(),
+                                             std::move(request));
+}
+
+// static
+std::unique_ptr<PrefetchContainer> PrefetchContainer::CreateForTesting(
+    std::unique_ptr<const PrefetchRequest> request) {
+  return std::make_unique<PrefetchContainer>(base::PassKey<PrefetchContainer>(),
+                                             std::move(request));
+}
 
 PrefetchContainer::PrefetchContainer(
-    WebContents& referring_web_contents,
-    const GURL& url,
-    const PrefetchType& prefetch_type,
-    const std::string& embedder_histogram_suffix,
-    const blink::mojom::Referrer& referrer,
-    const std::optional<url::Origin>& referring_origin,
-    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
-    std::optional<PrefetchPriority> priority,
-    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
-    base::WeakPtr<PreloadingAttempt> attempt,
-    std::optional<PreloadingHoldbackStatus> holdback_status_override,
-    std::optional<base::TimeDelta> ttl)
-    : PrefetchContainer(std::make_unique<PrefetchRequest>(
-          prefetch_type,
-          PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
-          std::move(no_vary_search_hint),
-          std::move(priority),
-          std::move(preload_pipeline_info),
-          std::move(attempt),
-          referring_web_contents.GetOrCreateWebPreferences().javascript_enabled,
-          referrer,
-          referring_origin,
-          referring_web_contents.GetBrowserContext()->GetWeakPtr(),
-          /*speculation_rules_tags=*/std::nullopt,
-          /*Must be empty: additional_headers=*/net::HttpRequestHeaders(),
-          ttl.has_value() ? ttl.value()
-                          : PrefetchContainerDefaultTtlInPrefetchService(),
-          std::move(holdback_status_override),
-          /*should_append_variations_header=*/true,
-          /*should_disable_block_until_head_timeout=*/false,
-          PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
-                                       /*request_status_listener=*/nullptr))) {}
-
-PrefetchContainer::PrefetchContainer(
-    BrowserContext* browser_context,
-    const GURL& url,
-    const PrefetchType& prefetch_type,
-    const std::string& embedder_histogram_suffix,
-    const blink::mojom::Referrer& referrer,
-    bool javascript_enabled,
-    const std::optional<url::Origin>& referring_origin,
-    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
-    std::optional<PrefetchPriority> priority,
-    base::WeakPtr<PreloadingAttempt> attempt,
-    const net::HttpRequestHeaders& additional_headers,
-    std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
-    base::TimeDelta ttl,
-    bool should_append_variations_header,
-    bool should_disable_block_until_head_timeout)
-    : PrefetchContainer(std::make_unique<PrefetchRequest>(
-          prefetch_type,
-          PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
-          std::move(no_vary_search_hint),
-          std::move(priority),
-          PreloadPipelineInfo::Create(
-              /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
-          std::move(attempt),
-          javascript_enabled,
-          referrer,
-          referring_origin,
-          browser_context->GetWeakPtr(),
-          /*speculation_rules_tags=*/std::nullopt,
-          additional_headers,
-          ttl,
-          /*holdback_status_override=*/std::nullopt,
-          should_append_variations_header,
-          should_disable_block_until_head_timeout,
-          PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
-                                       std::move(request_status_listener)))) {}
-
-PrefetchContainer::PrefetchContainer(std::unique_ptr<PrefetchRequest> request)
+    base::PassKey<PrefetchContainer>,
+    std::unique_ptr<const PrefetchRequest> request)
     : request_(std::move(request)),
       referrer_(request_->initial_referrer()),
       request_id_(base::UnguessableToken::Create().ToString()) {

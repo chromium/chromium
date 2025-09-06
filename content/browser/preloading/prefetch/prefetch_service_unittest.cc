@@ -461,7 +461,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       const std::optional<url::Origin> referring_origin = std::nullopt) {
     CHECK(!prefetch_type.IsRendererInitiated());
 
-    auto prefetch_container = std::make_unique<PrefetchContainer>(
+    auto prefetch_request = PrefetchRequest::CreateBrowserInitiated(
         *web_contents(), prefetch_url, prefetch_type,
         test::kPreloadingEmbedderHistgramSuffixForTesting, referrer,
         std::move(referring_origin),
@@ -471,7 +471,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         /*attempt=*/nullptr);
     return prefetch_service().AddPrefetchContainerWithHandle(
-        std::move(prefetch_container));
+        PrefetchContainer::CreateForTesting(std::move(prefetch_request)));
   }
 
   [[nodiscard]] std::unique_ptr<content::PrefetchHandle>
@@ -7225,7 +7225,7 @@ class PrefetchServiceAddPrefetchContainerTest
 
     attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
 
-    auto prefetch_container = std::make_unique<PrefetchContainer>(
+    auto prefetch_request = PrefetchRequest::CreateRendererInitiated(
         static_cast<content::RenderFrameHostImpl&>(*main_rfh()), document_token,
         prefetch_url, std::move(prefetch_type), blink::mojom::Referrer(),
         std::make_optional(SpeculationRulesTags()),
@@ -7236,7 +7236,7 @@ class PrefetchServiceAddPrefetchContainerTest
         attempt->GetWeakPtr());
     return prefetch_service()
         .AddPrefetchContainerWithoutStartingPrefetchForTesting(
-            std::move(prefetch_container));
+            PrefetchContainer::CreateForTesting(std::move(prefetch_request)));
   }
 
  private:

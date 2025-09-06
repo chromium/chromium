@@ -261,18 +261,18 @@ void PrefetchDocumentManager::PrefetchUrl(
 
   // `PreloadingPrediction` is added in `PreloadingDecider`.
 
-  auto container = std::make_unique<PrefetchContainer>(
+  auto request = PrefetchRequest::CreateRendererInitiated(
       static_cast<RenderFrameHostImpl&>(render_frame_host()), document_token_,
       url, prefetch_type, referrer, std::move(speculation_rules_tags),
       std::move(no_vary_search_hint), /*priority=*/std::nullopt,
       weak_method_factory_.GetWeakPtr(), std::move(preload_pipeline_info),
       attempt->GetWeakPtr());
-  DVLOG(1) << *container << ": created";
 
   referring_page_metrics_.prefetch_attempted_count++;
 
   all_prefetches_[all_prefetches_key] =
-      prefetch_service->AddPrefetchContainerWithHandle(std::move(container));
+      prefetch_service->AddPrefetchContainerWithHandle(
+          PrefetchContainer::Create(std::move(request)));
 }
 
 bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(

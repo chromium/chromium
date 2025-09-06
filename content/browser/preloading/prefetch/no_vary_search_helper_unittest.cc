@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
@@ -102,18 +103,19 @@ class NoVarySearchHelperTester final {
       const GURL& url,
       network::mojom::URLResponseHeadPtr head) {
     std::unique_ptr<PrefetchContainer> prefetch_container =
-        std::make_unique<PrefetchContainer>(
-            referring_render_frame_host, document_token, url,
-            PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                         /*use_prefetch_proxy=*/true,
-                         blink::mojom::SpeculationEagerness::kImmediate),
-            blink::mojom::Referrer(),
-            std::make_optional(SpeculationRulesTags()),
-            /*no_vary_search_hint=*/std::nullopt,
-            /*priority=*/std::nullopt,
-            /*prefetch_document_manager=*/nullptr,
-            PreloadPipelineInfo::Create(/*planned_max_preloading_type=*/
-                                        PreloadingType::kPrefetch));
+        PrefetchContainer::CreateForTesting(
+            PrefetchRequest::CreateRendererInitiated(
+                referring_render_frame_host, document_token, url,
+                PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                             /*use_prefetch_proxy=*/true,
+                             blink::mojom::SpeculationEagerness::kImmediate),
+                blink::mojom::Referrer(),
+                std::make_optional(SpeculationRulesTags()),
+                /*no_vary_search_hint=*/std::nullopt,
+                /*priority=*/std::nullopt,
+                /*prefetch_document_manager=*/nullptr,
+                PreloadPipelineInfo::Create(/*planned_max_preloading_type=*/
+                                            PreloadingType::kPrefetch)));
 
     prefetch_container->SimulatePrefetchEligibleForTest();
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),

@@ -22,6 +22,7 @@
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
@@ -383,7 +384,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
 
     attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
 
-    auto prefetch_container = std::make_unique<PrefetchContainer>(
+    auto prefetch_request = PrefetchRequest::CreateRendererInitiated(
         *main_rfhi(), referring_document_token, prefetch_url,
         std::move(prefetch_type), blink::mojom::Referrer(),
         std::make_optional(SpeculationRulesTags()),
@@ -395,7 +396,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
         attempt->GetWeakPtr());
     return GetPrefetchService()
         ->AddPrefetchContainerWithoutStartingPrefetchForTesting(
-            std::move(prefetch_container));
+            PrefetchContainer::CreateForTesting(std::move(prefetch_request)));
   }
 
   base::WeakPtr<PrefetchContainer> CreateSpeculationRulesPrefetchContainer(
@@ -409,7 +410,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
       const GURL& prefetch_url,
       PrefetchType prefetch_type,
       const std::optional<url::Origin> referring_origin = std::nullopt) {
-    auto prefetch_container = std::make_unique<PrefetchContainer>(
+    auto prefetch_request = PrefetchRequest::CreateBrowserInitiated(
         *web_contents(), prefetch_url, std::move(prefetch_type),
         test::kPreloadingEmbedderHistgramSuffixForTesting,
         blink::mojom::Referrer(), std::move(referring_origin),
@@ -420,7 +421,7 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
         /*attempt=*/nullptr);
     return GetPrefetchService()
         ->AddPrefetchContainerWithoutStartingPrefetchForTesting(
-            std::move(prefetch_container));
+            PrefetchContainer::CreateForTesting(std::move(prefetch_request)));
   }
 
   void SimulateCookieCopyProcess(PrefetchContainer& prefetch_container) {

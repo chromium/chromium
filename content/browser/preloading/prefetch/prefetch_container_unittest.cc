@@ -84,50 +84,53 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness,
   std::unique_ptr<PrefetchContainer> CreateSpeculationRulesPrefetchContainer(
       const GURL& prefetch_url,
       SpeculationRulesPrefetchContainerOptions options = {}) {
-    return std::make_unique<PrefetchContainer>(
-        *main_rfhi(), options.document_token, prefetch_url,
-        PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                     /*use_prefetch_proxy=*/true, options.eagerness),
-        blink::mojom::Referrer(),
-        std::make_optional(std::move(options.speculation_rules_tags)),
-        /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
-        options.prefetch_document_manager,
-        PreloadPipelineInfo::Create(
-            /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
+    return PrefetchContainer::CreateForTesting(
+        PrefetchRequest::CreateRendererInitiated(
+            *main_rfhi(), options.document_token, prefetch_url,
+            PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                         /*use_prefetch_proxy=*/true, options.eagerness),
+            blink::mojom::Referrer(),
+            std::make_optional(std::move(options.speculation_rules_tags)),
+            /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
+            options.prefetch_document_manager,
+            PreloadPipelineInfo::Create(
+                /*planned_max_preloading_type=*/PreloadingType::kPrefetch)));
   }
 
   std::unique_ptr<PrefetchContainer> CreateEmbedderPrefetchContainer(
       const GURL& prefetch_url,
       const std::optional<url::Origin> referring_origin = std::nullopt,
       bool use_prefetch_proxy = true) {
-    return std::make_unique<PrefetchContainer>(
-        *web_contents(), prefetch_url,
-        PrefetchType(PreloadingTriggerType::kEmbedder, use_prefetch_proxy),
-        test::kPreloadingEmbedderHistgramSuffixForTesting,
-        blink::mojom::Referrer(), std::move(referring_origin),
-        /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
-        PreloadPipelineInfo::Create(
-            /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
-        /*attempt=*/nullptr);
+    return PrefetchContainer::CreateForTesting(
+        PrefetchRequest::CreateBrowserInitiated(
+            *web_contents(), prefetch_url,
+            PrefetchType(PreloadingTriggerType::kEmbedder, use_prefetch_proxy),
+            test::kPreloadingEmbedderHistgramSuffixForTesting,
+            blink::mojom::Referrer(), std::move(referring_origin),
+            /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
+            PreloadPipelineInfo::Create(
+                /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
+            /*attempt=*/nullptr));
   }
 
   std::unique_ptr<PrefetchContainer> CreateBrowserContextPrefetchContainer(
       const GURL& prefetch_url,
       const net::HttpRequestHeaders& additional_headers = {},
       bool should_append_additional_headers = true) {
-    return std::make_unique<PrefetchContainer>(
-        browser_context(), prefetch_url,
-        PrefetchType(PreloadingTriggerType::kEmbedder,
-                     /*use_prefetch_proxy=*/true),
-        test::kPreloadingEmbedderHistgramSuffixForTesting,
-        blink::mojom::Referrer(),
-        /*javascript_enabled=*/true,
-        /*referring_origin=*/std::nullopt,
-        /*no_vary_search_hint=*/std::nullopt,
-        /*priority=*/PrefetchPriority::kHighest,
-        /*attempt=*/nullptr, additional_headers,
-        /*request_status_listener=*/nullptr, base::Minutes(10),
-        should_append_additional_headers);
+    return PrefetchContainer::CreateForTesting(
+        PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
+            browser_context(), prefetch_url,
+            PrefetchType(PreloadingTriggerType::kEmbedder,
+                         /*use_prefetch_proxy=*/true),
+            test::kPreloadingEmbedderHistgramSuffixForTesting,
+            blink::mojom::Referrer(),
+            /*javascript_enabled=*/true,
+            /*referring_origin=*/std::nullopt,
+            /*no_vary_search_hint=*/std::nullopt,
+            /*priority=*/PrefetchPriority::kHighest,
+            /*attempt=*/nullptr, additional_headers,
+            /*request_status_listener=*/nullptr, base::Minutes(10),
+            should_append_additional_headers));
   }
   bool SetCookie(const GURL& url, const std::string& value) {
     std::unique_ptr<net::CanonicalCookie> cookie(
