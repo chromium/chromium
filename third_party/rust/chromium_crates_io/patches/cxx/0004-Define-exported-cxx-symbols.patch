@@ -1,20 +1,21 @@
-From 73844b580d37a74ce57f32eee3087b251e1505ad Mon Sep 17 00:00:00 2001
-From: "Dustin J. Mitchell" <djmitche@chromium.org>
-Date: Mon, 10 Feb 2025 19:54:42 +0000
-Subject: [PATCH] patch 4
+From 0840fb817026498bb2c5d6dccc0a92f3b0491411 Mon Sep 17 00:00:00 2001
+From: Daniel Cheng <dcheng@chromium.org>
+Date: Fri, 5 Sep 2025 12:37:49 -0700
+Subject: [PATCH] Define exported cxx symbols
 
+Change-Id: I05c0cd24c607c543856ed0b021fe037fd8186b1f
 ---
- .../vendor/cxx-1.0.140/src/cxx.cc             | 327 ++++++++++--------
- 1 file changed, 176 insertions(+), 151 deletions(-)
+ .../vendor/cxx-v1/src/cxx.cc                  | 177 ++++++++++--------
+ 1 file changed, 99 insertions(+), 78 deletions(-)
 
-diff --git a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.140/src/cxx.cc b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.140/src/cxx.cc
-index 5741afa229129..1d75716d2cba6 100644
---- a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.140/src/cxx.cc
-+++ b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.140/src/cxx.cc
-@@ -22,76 +22,95 @@
- #define RUST_CXX_NO_EXCEPTIONS
+diff --git a/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc b/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc
+index f93d46b89da4e..f79cf34adf827 100644
+--- a/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc
++++ b/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc
+@@ -29,71 +29,90 @@
+ #pragma clang diagnostic ignored "-Wdollar-in-identifier-extension"
  #endif
-
+ 
 +#ifndef CXX_RS_EXPORT
 +#define CXX_RS_EXPORT
 +#endif
@@ -141,18 +142,7 @@ index 5741afa229129..1d75716d2cba6 100644
  } // extern "C"
  
  namespace rust {
- inline namespace cxxbridge1 {
- 
- template <typename Exception>
- void panic [[noreturn]] (const char *msg) {
- #if defined(RUST_CXX_NO_EXCEPTIONS)
-@@ -495,18 +512,19 @@
- 
- static const char *errorCopy(const char *ptr, std::size_t len) {
-   char *copy = new char[len + 1];
-   std::memcpy(copy, ptr, len);
-   copy[len] = '\0';
-   return copy;
+@@ -509,7 +528,8 @@ static const char *errorCopy(const char *ptr, std::size_t len) {
  }
  
  extern "C" {
@@ -162,17 +152,7 @@ index 5741afa229129..1d75716d2cba6 100644
    return errorCopy(ptr, len);
  }
  } // extern "C"
- 
- Error::Error(const Error &other)
-     : std::exception(other),
-       msg(other.msg ? errorCopy(other.msg, other.len) : nullptr),
-       len(other.len) {}
-@@ -518,17 +538,17 @@ union MaybeUninit {
- namespace repr {
- struct PtrLen final {
-   void *ptr;
-   std::size_t len;
- };
+@@ -569,7 +589,7 @@ struct PtrLen final {
  } // namespace repr
  
  extern "C" {
@@ -181,17 +161,7 @@ index 5741afa229129..1d75716d2cba6 100644
  }
  
  namespace detail {
- // On some platforms size_t is the same C++ type as one of the sized integer
- // types; on others it is a distinct type. Only in the latter case do we need to
- // define a specialized impl of rust::Vec<size_t>, because in the former case it
- // would collide with one of the other specializations.
- using usize_if_unique =
-@@ -607,118 +627,119 @@ class Fail final {
- namespace {
- template <typename T>
- void destroy(T *ptr) {
-   ptr->~T();
- }
+@@ -620,23 +640,24 @@ void destroy(T *ptr) {
  } // namespace
  
  extern "C" {
@@ -222,14 +192,7 @@ index 5741afa229129..1d75716d2cba6 100644
      std::unique_ptr<std::string> *ptr) noexcept {
    ptr->~unique_ptr();
  }
- } // extern "C"
- 
- namespace {
- const std::size_t kMaxExpectedWordsInString = 8;
- static_assert(alignof(std::string) <= alignof(void *),
-               "unexpectedly large std::string alignment");
- static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
-               "unexpectedly large std::string size");
+@@ -651,77 +672,77 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
  } // namespace
  
  #define STD_VECTOR_OPS(RUST_TYPE, CXX_TYPE)                                    \
@@ -327,17 +290,7 @@ index 5741afa229129..1d75716d2cba6 100644
                                                    std::size_t len) noexcept;
  
  #define RUST_VEC_OPS(RUST_TYPE, CXX_TYPE)                                      \
-   template <>                                                                  \
-   Vec<CXX_TYPE>::Vec() noexcept {                                              \
-     cxxbridge1$rust_vec$##RUST_TYPE##$new(this);                               \
-   }                                                                            \
-   template <>                                                                  \
-@@ -702,66 +723,66 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
-   template <>                                                                  \
-   void Vec<CXX_TYPE>::truncate(std::size_t len) {                              \
-     cxxbridge1$rust_vec$##RUST_TYPE##$truncate(this, len);                     \
-   }
- 
+@@ -761,56 +782,56 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
  #define SHARED_PTR_OPS(RUST_TYPE, CXX_TYPE)                                    \
    static_assert(sizeof(std::shared_ptr<CXX_TYPE>) == 2 * sizeof(void *), "");  \
    static_assert(alignof(std::shared_ptr<CXX_TYPE>) == alignof(void *), "");    \
@@ -405,11 +358,6 @@ index 5741afa229129..1d75716d2cba6 100644
        const std::weak_ptr<CXX_TYPE> *self) noexcept {                          \
      self->~weak_ptr();                                                         \
    }
- 
- // Usize and isize are the same type as one of the below.
- #define FOR_EACH_NUMERIC(MACRO)                                                \
-   MACRO(u8, std::uint8_t)                                                      \
-   MACRO(u16, std::uint16_t)                                                    \
 -- 
-2.48.1.502.g6dc24dfdaf-goog
+2.51.0.355.g5224444f11-goog
 
