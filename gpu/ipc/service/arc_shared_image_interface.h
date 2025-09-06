@@ -5,16 +5,9 @@
 #ifndef GPU_IPC_SERVICE_ARC_SHARED_IMAGE_INTERFACE_H_
 #define GPU_IPC_SERVICE_ARC_SHARED_IMAGE_INTERFACE_H_
 
-#include <atomic>
-
-#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
-
-namespace base {
-class WaitableEvent;
-}
 
 namespace gpu {
 
@@ -26,12 +19,10 @@ class GPU_IPC_SERVICE_EXPORT ArcSharedImageInterface
     : public SharedImageInterface {
  public:
   static scoped_refptr<ArcSharedImageInterface> Create(
-      GpuChannelManager* gpu_channel_manager,
-      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
+      GpuChannelManager* gpu_channel_manager);
 
-  ArcSharedImageInterface(
-      std::unique_ptr<SharedImageFactory> shared_image_factory,
-      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
+  explicit ArcSharedImageInterface(
+      std::unique_ptr<SharedImageFactory> shared_image_factory);
 
   ArcSharedImageInterface(const ArcSharedImageInterface&) = delete;
   ArcSharedImageInterface& operator=(const ArcSharedImageInterface&) = delete;
@@ -95,22 +86,9 @@ class GPU_IPC_SERVICE_EXPORT ArcSharedImageInterface
  private:
   ~ArcSharedImageInterface() override;
 
-  static void CreateOnGpuThread(
-      scoped_refptr<ArcSharedImageInterface>* arc_sii,
-      GpuChannelManager* gpu_channel_manager,
-      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-      base::WaitableEvent* completion);
-  void DestroyOnGpuThread(base::WaitableEvent* completion);
-  void CreateSharedImageOnGpuThread(const Mailbox& mailbox,
-                                    const SharedImageInfo& si_info,
-                                    gfx::BufferUsage buffer_usage,
-                                    gfx::GpuMemoryBufferHandle buffer_handle);
-  void DestroySharedImageOnGpuThread(const Mailbox& mailbox);
-  bool MakeContextCurrentOnGpuThread(bool needs_gl = false);
+  bool MakeContextCurrent(bool needs_gl = false);
 
   std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;
-  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
-  std::atomic_bool encountered_error_{false};
 };
 
 }  // namespace gpu
