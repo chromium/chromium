@@ -283,6 +283,9 @@ GnomeDisplayConfig::LayoutDirection GnomeDisplayConfig::GetLayoutDirection()
 
 GnomeDisplayConfig::LayoutAlignment GnomeDisplayConfig::GetLayoutAlignment(
     LayoutDirection direction) const {
+  if (monitors.empty()) {
+    return LayoutAlignment::kUnknown;
+  }
   if (direction == LayoutDirection::kHorizontal) {
     const_cast<GnomeDisplayConfig*>(this)->Transpose();
   }

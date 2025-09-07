@@ -18,12 +18,12 @@
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_resizer.h"
+#include "remoting/host/desktop_resizer_proxy.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/linux/curtain_mode_wayland.h"
 #include "remoting/host/linux/gnome_action_executor.h"
 #include "remoting/host/linux/gnome_desktop_display_info_monitor.h"
-#include "remoting/host/linux/gnome_desktop_resizer.h"
 #include "remoting/host/linux/gnome_input_injector.h"
 #include "remoting/host/linux/gnome_keyboard_layout_monitor.h"
 #include "remoting/host/linux/gnome_local_input_monitor.h"
@@ -97,10 +97,8 @@ std::unique_ptr<DesktopResizer>
 GnomeInteractionStrategy::CreateDesktopResizer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return std::make_unique<GnomeDesktopResizer>(
-      remote_desktop_session_->capture_stream_manager(),
-      remote_desktop_session_->display_config_client(),
-      remote_desktop_session_->display_config_monitor());
+  return std::make_unique<DesktopResizerProxy>(
+      remote_desktop_session_->desktop_resizer());
 }
 
 std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(

@@ -48,6 +48,8 @@ class GnomeDesktopResizer : public DesktopResizer {
                          webrtc::ScreenId screen_id) override;
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
+  base::WeakPtr<GnomeDesktopResizer> GetWeakPtr();
+
  private:
   // TODO: yuweih - There is an open feature request in mutter for changing
   // virtual monitor scales and offsets via PipeWire, which will significantly

@@ -38,6 +38,8 @@ source_set("http_status") {
 
 source_set("base") {
   sources = [
+    "async_file_util.cc",
+    "async_file_util.h",
     "authentication_method.cc",
     "authentication_method.h",
     "auto_thread.cc",

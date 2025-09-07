@@ -235,6 +235,10 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
   }
 }
 
+base::WeakPtr<GnomeDesktopResizer> GnomeDesktopResizer::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void GnomeDesktopResizer::SetResolutionAndPosition(
     const ScreenResolution& resolution,
     std::optional<webrtc::DesktopVector> position,

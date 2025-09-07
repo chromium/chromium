@@ -51,7 +51,6 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy,
       base::WeakPtr<ClientSessionControl> client_session_control) override;
 
  private:
-  friend class GnomeDesktopResizer;
   friend class GnomeDisplayInfoLoader;
   friend class GnomeInteractionStrategyFactory;
   friend class GnomeDesktopDisplayInfoMonitor;
