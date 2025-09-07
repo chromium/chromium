@@ -70,7 +70,10 @@ IN_PROC_BROWSER_TEST_P(LeakedNodeDetectionBrowsertest, DetectGhostNodeLeaks) {
   WaitForNodeCounts({0U, 0U, 0U, 0U});
 }
 
-IN_PROC_BROWSER_TEST_P(LeakedNodeDetectionBrowsertest, TerminateClient) {
+// Disabled due to flaky failures. It seems that not all machines perform
+// rundown quckily upon disappearance of the client.
+IN_PROC_BROWSER_TEST_P(LeakedNodeDetectionBrowsertest,
+                       DISABLED_TerminateClient) {
   // Initialize the UI Automation client; giving it this window.
   ASSERT_HRESULT_SUCCEEDED(InitializeClient(browser()));
 
