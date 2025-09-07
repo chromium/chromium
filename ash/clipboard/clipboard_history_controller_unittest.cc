@@ -168,7 +168,11 @@ GetClipboardHistoryShowSources() {
            static_cast<int>(ClipboardHistoryControllerShowSource::kMinValue);
        i <= static_cast<int>(ClipboardHistoryControllerShowSource::kMaxValue);
        ++i) {
-    sources.push_back(static_cast<ClipboardHistoryControllerShowSource>(i));
+    // kControlVLongpress is deprecated.
+    if (static_cast<ClipboardHistoryControllerShowSource>(i) !=
+        ClipboardHistoryControllerShowSource::kControlVLongpress) {
+      sources.push_back(static_cast<ClipboardHistoryControllerShowSource>(i));
+    }
   }
   return sources;
 }
@@ -801,10 +805,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Tests that `ShowMenu()` returns whether the menu was shown successfully.
 TEST_P(ClipboardHistoryControllerShowSourceTest, ShowMenuReturnsSuccess) {
-  if (GetSource() == ClipboardHistoryControllerShowSource::kControlVLongpress) {
-    GTEST_SKIP();
-  }
-
   base::HistogramTester histogram_tester;
 
   // Try to show the menu without populating the clipboard. The menu should not

@@ -66,7 +66,11 @@ GetClipboardHistoryShowSources() {
            static_cast<int>(ClipboardHistoryControllerShowSource::kMinValue);
        i <= static_cast<int>(ClipboardHistoryControllerShowSource::kMaxValue);
        ++i) {
-    sources.push_back(static_cast<ClipboardHistoryControllerShowSource>(i));
+    // kControlVLongpress is deprecated.
+    if (static_cast<ClipboardHistoryControllerShowSource>(i) !=
+        ClipboardHistoryControllerShowSource::kControlVLongpress) {
+      sources.push_back(static_cast<ClipboardHistoryControllerShowSource>(i));
+    }
   }
   return sources;
 }
@@ -291,10 +295,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
        HeaderAndFooterConditionallyPresent) {
-  if (GetSource() == ClipboardHistoryControllerShowSource::kControlVLongpress) {
-    GTEST_SKIP();
-  }
-
   // Write items to clipboard history so that the menu can show.
   WriteTextToClipboardAndFlushMessageLoop(u"A");
   WriteTextToClipboardAndFlushMessageLoop(u"B");
