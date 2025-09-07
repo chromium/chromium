@@ -41,24 +41,6 @@ namespace signin {
 class IdentityManagerDependenciesOwner;
 class TestIdentityManagerObserver;
 
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/421058020): This is needed for managing lifetime of
-// AccountManagerFactoryFacadeImpl. Remove this once we've integrated the facade
-// factory into AccountManagerFactory.
-class ScopedIdentityTestEnvironmentTracker {
- public:
-  ScopedIdentityTestEnvironmentTracker();
-  ScopedIdentityTestEnvironmentTracker(
-      const ScopedIdentityTestEnvironmentTracker&) = delete;
-  ScopedIdentityTestEnvironmentTracker& operator=(
-      const ScopedIdentityTestEnvironmentTracker&) = delete;
-  ~ScopedIdentityTestEnvironmentTracker();
-
- private:
-  static int count_;
-};
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Arguments for `IdentityTestEnvironment::MakeAccountAvailable()`. Keeps
 // references, so do not rely on it for storage.
 //
@@ -494,11 +476,6 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
 
   base::OnceClosure on_access_token_requested_callback_;
   std::vector<AccessTokenRequestState> requesters_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  ScopedIdentityTestEnvironmentTracker
-      scoped_identity_test_environment_tracker_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<IdentityTestEnvironment> weak_ptr_factory_{this};
 };

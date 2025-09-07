@@ -26,7 +26,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "components/account_manager_core/mock_account_manager_facade.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -81,7 +81,7 @@ class IdentityManagerBuilderTest : public testing::Test {
 TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath dest_path = temp_dir.GetPath();
+  base::FilePath profile_path = temp_dir.GetPath();
 
 #if BUILDFLAG(IS_ANDROID)
   SetUpFakeAccountManagerFacade();
@@ -94,7 +94,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   params.network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();
   params.pref_service = GetPrefService();
-  params.profile_path = dest_path;
+  params.profile_path = profile_path;
   params.signin_client = GetSigninClient();
 
 #if BUILDFLAG(IS_IOS)
@@ -105,9 +105,13 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  auto account_manager_facade =
-      std::make_unique<account_manager::MockAccountManagerFacade>();
-  params.account_manager_facade = account_manager_facade.get();
+  // This enables `AccountManagerFactory::Get()`, which is needed for
+  // `ProfileOAuth2TokenServiceDelegateChromeOS`.
+  ash::AccountManagerFactory account_manager_factory;
+
+  params.account_manager_facade =
+      ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
+          profile_path.value());
   params.is_regular_profile = true;
 #endif
 

@@ -112,6 +112,7 @@ source_set("identity_manager") {
     ]
     deps += [
       "//ash/constants",
+      "//chromeos/ash/components/account_manager",
       "//components/account_manager_core",
     ]
   }
@@ -203,6 +204,7 @@ source_set("unit_tests") {
 
     deps += [
       "//ash/constants",
+      "//chromeos/ash/components/account_manager",
       "//components/account_manager_core:test_support",
     ]
   }

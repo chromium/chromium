@@ -8,10 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/public/base/signin_client.h"
@@ -138,6 +140,23 @@ ProfileOAuth2TokenServiceDelegateChromeOS::
       is_regular_profile_(is_regular_profile),
       weak_factory_(this) {
   network_connection_tracker_->AddNetworkConnectionObserver(this);
+
+  // In production, AccountManagerFactory should always outlive `this`, but in
+  // tests, it may be destroyed before `this` and `account_manager_facade_` may
+  // dangle. So, observe AccountManagerFactory and reset the raw_ptr on its
+  // destruction.
+  // TODO(crbug.com/421058020): Fix tests to properly mimic the production
+  // construction/destruction order, and remove the observer.
+  account_manager_factory_cb_subscription_ =
+      CHECK_DEREF(ash::AccountManagerFactory::Get())
+          .AddOnDestructionCallback(base::BindOnce(
+              [](base::WeakPtr<ProfileOAuth2TokenServiceDelegateChromeOS>
+                     self) {
+                if (self) {
+                  self->account_manager_facade_ = nullptr;
+                }
+              },
+              weak_factory_.GetWeakPtr()));
 }
 
 ProfileOAuth2TokenServiceDelegateChromeOS::

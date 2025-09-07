@@ -20,6 +20,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
@@ -168,6 +169,36 @@ class TestOAuth2TokenServiceObserver
       token_service_observation_{this};
 };
 
+AccountManager::DelayNetworkCallRunner ImmediateCallbackRunner() {
+  return base::BindRepeating(
+      [](base::OnceClosure closure) { std::move(closure).Run(); });
+}
+
+AccountInfo CreateAccountInfoTestFixture(
+    const AccountTrackerService& account_tracker_service,
+    const GaiaId& gaia_id,
+    const std::string& email) {
+  AccountInfo account_info;
+
+  account_info.gaia = gaia_id;
+  account_info.email = email;
+  account_info.full_name = "name";
+  account_info.given_name = "name";
+  account_info.hosted_domain = "example.com";
+  account_info.locale = "en";
+  account_info.picture_url = "https://example.com";
+  account_info.account_id = account_tracker_service.PickAccountIdForAccount(
+      account_info.gaia, account_info.email);
+  AccountCapabilitiesTestMutator(&account_info.capabilities)
+      .set_is_subject_to_enterprise_features(true);
+
+  // Cannot use |ASSERT_TRUE| due to a |void| return type in an |ASSERT_TRUE|
+  // branch.
+  EXPECT_TRUE(account_info.IsValid());
+
+  return account_info;
+}
+
 }  // namespace
 
 class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
@@ -183,26 +214,29 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     AccountManager::RegisterPrefs(pref_service_.registry());
 
     client_ = std::make_unique<TestSigninClient>(&pref_service_);
 
-    account_manager_.Initialize(tmp_dir_.GetPath(),
-                                client_->GetURLLoaderFactory(),
-                                immediate_callback_runner_);
-    account_manager_.SetPrefService(&pref_service_);
-    task_environment_.RunUntilIdle();
+    account_manager_ = ash::AccountManagerFactory::Get()->GetAccountManager(
+        profile_dir_.GetPath().value());
+    account_manager_->Initialize(profile_dir_.GetPath(),
+                                 client_->GetURLLoaderFactory(),
+                                 ImmediateCallbackRunner());
+    account_manager_->SetPrefService(&pref_service_);
 
-    account_manager_mojo_service_ =
-        std::make_unique<crosapi::AccountManagerMojoService>(&account_manager_);
     account_manager_facade_ =
-        CreateAccountManagerFacade(account_manager_mojo_service_.get());
+        ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
+            profile_dir_.GetPath().value());
+
+    task_environment_.RunUntilIdle();
 
     account_tracker_service_.Initialize(&pref_service_, base::FilePath());
 
-    account_info_ = CreateAccountInfoTestFixture(kGaiaId, kUserEmail);
+    account_info_ = CreateAccountInfoTestFixture(account_tracker_service_,
+                                                 kGaiaId, kUserEmail);
     account_tracker_service_.SeedAccountInfo(account_info_);
     ResetProfileOAuth2TokenServiceDelegateChromeOS();
   }
@@ -223,29 +257,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
 
   account_manager::AccountKey gaia_account_key() const {
     return account_manager::AccountKey::FromGaiaId(account_info_.gaia);
-  }
-
-  AccountInfo CreateAccountInfoTestFixture(const GaiaId& gaia_id,
-                                           const std::string& email) {
-    AccountInfo account_info;
-
-    account_info.gaia = gaia_id;
-    account_info.email = email;
-    account_info.full_name = "name";
-    account_info.given_name = "name";
-    account_info.hosted_domain = "example.com";
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
-    account_info.account_id = account_tracker_service_.PickAccountIdForAccount(
-        account_info.gaia, account_info.email);
-    AccountCapabilitiesTestMutator(&account_info.capabilities)
-        .set_is_subject_to_enterprise_features(true);
-
-    // Cannot use |ASSERT_TRUE| due to a |void| return type in an |ASSERT_TRUE|
-    // branch.
-    EXPECT_TRUE(account_info.IsValid());
-
-    return account_info;
   }
 
   void AddSuccessfulOAuthTokenResponse() {
@@ -277,7 +288,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnRefreshTokenAvailable(testing::_))
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-    account_manager_.UpsertAccount(account_key, raw_email, token);
+    account_manager_->UpsertAccount(account_key, raw_email, token);
     run_loop.Run();
   }
 
@@ -288,36 +299,21 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnRefreshTokenRevoked(testing::_))
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-    account_manager_.RemoveAccount(account_key);
+    account_manager_->RemoveAccount(account_key);
     run_loop.Run();
   }
 
-  std::unique_ptr<AccountManagerFacade> CreateAccountManagerFacade(
-      crosapi::AccountManagerMojoService* account_manager_mojo_service) {
-    DCHECK(account_manager_mojo_service);
-    mojo::Remote<crosapi::mojom::AccountManager> remote;
-    account_manager_mojo_service->BindReceiver(
-        remote.BindNewPipeAndPassReceiver());
-    return std::make_unique<account_manager::AccountManagerFacadeImpl>(
-        std::move(remote),
-        /*remote_version=*/std::numeric_limits<uint32_t>::max(),
-        /*account_manager_for_tests=*/nullptr);
-  }
-
   base::test::TaskEnvironment task_environment_;
+  ash::AccountManagerFactory account_manager_factory_;
 
-  base::ScopedTempDir tmp_dir_;
+  base::ScopedTempDir profile_dir_;
   AccountInfo account_info_;
   AccountTrackerService account_tracker_service_;
-  AccountManager account_manager_;
-  std::unique_ptr<crosapi::AccountManagerMojoService>
-      account_manager_mojo_service_;
-  std::unique_ptr<account_manager::AccountManagerFacade>
-      account_manager_facade_;
+
+  raw_ptr<AccountManager> account_manager_ = nullptr;
+  raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_ =
+      nullptr;
   std::unique_ptr<signin::ProfileOAuth2TokenServiceDelegateChromeOS> delegate_;
-  AccountManager::DelayNetworkCallRunner immediate_callback_runner_ =
-      base::BindRepeating(
-          [](base::OnceClosure closure) -> void { std::move(closure).Run(); });
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<TestSigninClient> client_;
 };
@@ -410,7 +406,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
     // after adding a new account on ChromeOS.
     EXPECT_CALL(observer, OnAuthErrorChanged);
     EXPECT_CALL(observer, OnEndBatchChanges);
-    account_manager_.UpsertAccount(gaia_account_key(), kUserEmail, kGaiaToken);
+    account_manager_->UpsertAccount(gaia_account_key(), kUserEmail, kGaiaToken);
     upsert_run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&observer);
   }
@@ -424,7 +420,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
     // changing its error state.
     EXPECT_CALL(observer, OnAuthErrorChanged);
     EXPECT_CALL(observer, OnEndBatchChanges);
-    account_manager_.UpdateToken(gaia_account_key(), "new-gaia-token");
+    account_manager_->UpdateToken(gaia_account_key(), "new-gaia-token");
     update_run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&observer);
   }
@@ -543,8 +539,8 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   // UpsertAccountAndWaitForCompletion can't be used here, as it uses an
   // observer to wait for completion. Observers aren't called in this flow, so
   // UpsertAccountAndWaitForCompletion would hang here.
-  account_manager_.UpsertAccount(gaia_account_key(), account_info_.email,
-                                 kGaiaToken);
+  account_manager_->UpsertAccount(gaia_account_key(), account_info_.email,
+                                  kGaiaToken);
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(observer.account_ids_.empty());
@@ -560,64 +556,6 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   EXPECT_EQ(1UL, observer.batch_change_records_.size());
   EXPECT_EQ(1UL, observer.batch_change_records_[0].size());
   EXPECT_EQ(account_info_.account_id, observer.batch_change_records_[0][0]);
-}
-
-// If observers register themselves with |ProfileOAuth2TokenServiceDelegate|
-// before |AccountManager| has been initialized, they should receive all the
-// accounts stored in |AccountManager| in a single batch.
-TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
-       BatchChangeObserversAreNotifiedOncePerBatch) {
-  // Setup
-  AccountInfo account1 = CreateAccountInfoTestFixture(
-      GaiaId("1"), "user1@example.com" /* email */);
-  AccountInfo account2 = CreateAccountInfoTestFixture(
-      GaiaId("2"), "user2@example.com" /* email */);
-
-  account_tracker_service_.SeedAccountInfo(account1);
-  account_tracker_service_.SeedAccountInfo(account2);
-  account_manager_.UpsertAccount(
-      account_manager::AccountKey::FromGaiaId(account1.gaia),
-      "user1@example.com", "token1");
-  account_manager_.UpsertAccount(
-      account_manager::AccountKey::FromGaiaId(account2.gaia),
-      "user2@example.com", "token2");
-  task_environment_.RunUntilIdle();
-
-  AccountManager account_manager;
-  // AccountManager will not be fully initialized until
-  // |task_environment_.RunUntilIdle()| is called.
-  account_manager.Initialize(tmp_dir_.GetPath(), client_->GetURLLoaderFactory(),
-                             immediate_callback_runner_);
-  account_manager.SetPrefService(&pref_service_);
-
-  auto account_manager_mojo_service =
-      std::make_unique<crosapi::AccountManagerMojoService>(&account_manager);
-  auto account_manager_facade =
-      CreateAccountManagerFacade(account_manager_mojo_service.get());
-
-  // Register callbacks before AccountManager has been fully initialized.
-  auto delegate =
-      std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
-          client_.get(), &account_tracker_service_,
-          network::TestNetworkConnectionTracker::GetInstance(),
-          account_manager_facade.get(),
-          /*is_regular_profile=*/true);
-  delegate->LoadCredentials(account1.account_id /* primary_account_id */);
-  TestOAuth2TokenServiceObserver observer(delegate.get());
-  // Wait until AccountManager is fully initialized.
-  task_environment_.RunUntilIdle();
-
-  // Tests
-
-  // The observer should receive at least one batch change callback: batch of
-  // all accounts stored in AccountManager: because of the delegate's
-  // invocation of |AccountManagerFacade::GetAccounts| in |LoadCredentials|.
-  EXPECT_FALSE(observer.batch_change_records_.empty());
-  const std::vector<CoreAccountId>& first_batch =
-      observer.batch_change_records_[0];
-  EXPECT_EQ(2UL, first_batch.size());
-  EXPECT_TRUE(base::Contains(first_batch, account1.account_id));
-  EXPECT_TRUE(base::Contains(first_batch, account2.account_id));
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
@@ -660,7 +598,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   account_manager::AccountKey gaia_account_key2 =
       account_manager::AccountKey::FromGaiaId(GaiaId("random-gaia-id"));
   account_tracker_service_.SeedAccountInfo(CreateAccountInfoTestFixture(
-      GaiaId(gaia_account_key2.id()), kUserEmail2));
+      account_tracker_service_, GaiaId(gaia_account_key2.id()), kUserEmail2));
   UpsertAccountAndWaitForCompletion(gaia_account_key2, kUserEmail2,
                                     AccountManager::kInvalidToken);
 
@@ -709,9 +647,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   // `UpsertAccount` will asynchronously send a notification through
   // `AccountManagerFacade`, so `RemoveAccount` should remove the account before
   // `ProfileOAuth2TokenServiceDelegateChromeOS` can add this account.
-  account_manager_.UpsertAccount(gaia_account_key(), account_info_.email,
-                                 kGaiaToken);
-  account_manager_.RemoveAccount(gaia_account_key());
+  account_manager_->UpsertAccount(gaia_account_key(), account_info_.email,
+                                  kGaiaToken);
+  account_manager_->RemoveAccount(gaia_account_key());
 
   task_environment_.RunUntilIdle();
 
@@ -733,9 +671,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   EXPECT_CALL(observer, OnRefreshTokenRevoked(account_info_.account_id))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  account_manager_.UpsertAccount(gaia_account_key(), account_info_.email,
-                                 AccountManager::kInvalidToken);
-  account_manager_.RemoveAccount(gaia_account_key());
+  account_manager_->UpsertAccount(gaia_account_key(), account_info_.email,
+                                  AccountManager::kInvalidToken);
+  account_manager_->RemoveAccount(gaia_account_key());
 
   run_loop.Run();
 
@@ -884,4 +822,102 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   EXPECT_EQ(error, delegate_->GetAuthError(account_info_.account_id));
   EXPECT_EQ(account_info_.account_id, observer.last_err_account_id_);
   EXPECT_EQ(error, observer.last_err_);
+}
+
+class ProfileOAuth2TokenServiceDelegateChromeOSObserverTest
+    : public testing::Test {
+ public:
+  void SetUp() override {
+    account_manager_factory_ = std::make_unique<ash::AccountManagerFactory>();
+
+    ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
+
+    AccountTrackerService::RegisterPrefs(pref_service_.registry());
+    AccountManager::RegisterPrefs(pref_service_.registry());
+
+    client_ = std::make_unique<TestSigninClient>(ProfilePrefs());
+    account_tracker_service_.Initialize(ProfilePrefs(), base::FilePath());
+  }
+
+ protected:
+  PrefService* ProfilePrefs() { return &pref_service_; }
+  base::FilePath ProfilePath() { return profile_dir_.GetPath(); }
+
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<ash::AccountManagerFactory> account_manager_factory_;
+
+  base::ScopedTempDir profile_dir_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  std::unique_ptr<TestSigninClient> client_;
+  AccountTrackerService account_tracker_service_;
+};
+
+// If observers register themselves with |ProfileOAuth2TokenServiceDelegate|
+// before |AccountManager| has been initialized, they should receive all the
+// accounts stored in |AccountManager| in a single batch.
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSObserverTest,
+       BatchChangeObserversAreNotifiedOncePerBatch) {
+  // Setup
+  AccountInfo account1 = CreateAccountInfoTestFixture(
+      account_tracker_service_, GaiaId("1"), "user1@example.com");
+  AccountInfo account2 = CreateAccountInfoTestFixture(
+      account_tracker_service_, GaiaId("2"), "user2@example.com");
+
+  account_tracker_service_.SeedAccountInfo(account1);
+  account_tracker_service_.SeedAccountInfo(account2);
+
+  {
+    auto* account_manager =
+        ash::AccountManagerFactory::Get()->GetAccountManager(
+            ProfilePath().value());
+    account_manager->Initialize(ProfilePath(), client_->GetURLLoaderFactory(),
+                                ImmediateCallbackRunner());
+
+    account_manager->SetPrefService(ProfilePrefs());
+    task_environment_.RunUntilIdle();
+
+    account_manager->UpsertAccount(
+        account_manager::AccountKey::FromGaiaId(account1.gaia),
+        "user1@example.com", "token1");
+    account_manager->UpsertAccount(
+        account_manager::AccountKey::FromGaiaId(account2.gaia),
+        "user2@example.com", "token2");
+    task_environment_.RunUntilIdle();
+  }
+
+  // Re-create AccountManager.
+  account_manager_factory_.reset();
+  account_manager_factory_ = std::make_unique<ash::AccountManagerFactory>();
+  auto* account_manager = ash::AccountManagerFactory::Get()->GetAccountManager(
+      ProfilePath().value());
+  // AccountManager will not be fully initialized until `RunUntilIdle`.
+  account_manager->Initialize(ProfilePath(), client_->GetURLLoaderFactory(),
+                              ImmediateCallbackRunner());
+  account_manager->SetPrefService(ProfilePrefs());
+
+  // Register callbacks before AccountManager has been fully initialized.
+  auto delegate =
+      std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
+          client_.get(), &account_tracker_service_,
+          network::TestNetworkConnectionTracker::GetInstance(),
+          ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
+              ProfilePath().value()),
+          /*is_regular_profile=*/true);
+  delegate->LoadCredentials(account1.account_id /* primary_account_id */);
+  TestOAuth2TokenServiceObserver observer(delegate.get());
+
+  // Wait until AccountManager is fully initialized.
+  task_environment_.RunUntilIdle();
+
+  // Tests
+
+  // The observer should receive at least one batch change callback: batch of
+  // all accounts stored in AccountManager: because of the delegate's
+  // invocation of |AccountManagerFacade::GetAccounts| in |LoadCredentials|.
+  EXPECT_FALSE(observer.batch_change_records_.empty());
+  const std::vector<CoreAccountId>& first_batch =
+      observer.batch_change_records_[0];
+  EXPECT_EQ(2UL, first_batch.size());
+  EXPECT_TRUE(base::Contains(first_batch, account1.account_id));
+  EXPECT_TRUE(base::Contains(first_batch, account2.account_id));
 }

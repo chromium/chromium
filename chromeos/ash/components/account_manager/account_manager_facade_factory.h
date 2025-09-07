@@ -26,13 +26,6 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ACCOUNT_MANAGER)
 account_manager::AccountManagerFacade* GetAccountManagerFacade(
     const std::string& profile_path);
 
-// Deletes existing instances of AccountManagerFacade.
-// TODO(crbug.com/421058020): Integrate `GetAccountManagerFacade` into
-// `AccountManagerFactory` and remove this.
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ACCOUNT_MANAGER)
-void DeleteAccountManagerFacadeInstanceForTesting(
-    const std::string& profile_path);
-
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_FACADE_FACTORY_H_
