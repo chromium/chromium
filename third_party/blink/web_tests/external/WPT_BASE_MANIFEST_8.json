@@ -332509,6 +332509,10 @@
      ]
     },
     "sandbox": {
+     "autoplay-disabled-by-csp-expected.txt": [
+      "2d040081d02082ef1e6ad2e27ec67d2b5cba8cee",
+      []
+     ],
      "service-worker-sandbox.https-expected.txt": [
       "e6a2b864198427d716bd6ef32c826dc1d0717a24",
       []
@@ -332518,6 +332522,14 @@
       []
      ],
      "support": {
+      "autoplay.html": [
+       "62d0adc3d204f2df9337bf30343591bfb1958e67",
+       []
+      ],
+      "autoplay.html.headers": [
+       "09e65834224c8b917d0a6a2fae17f79ff251fcb6",
+       []
+      ],
       "empty.html": [
        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
        []
@@ -332540,6 +332552,18 @@
       ],
       "sandboxed-eval.sub.html.sub.headers": [
        "c7e4e7cc5bd3fa25851c1e26c3c04eb95050d94b",
+       []
+      ],
+      "sandboxed-last-directive-csp.headers": [
+       "371abe3b936e686c901cc9f6f366b8c68e6f3f8b",
+       []
+      ],
+      "sandboxed-last-directive-csp.html": [
+       "9480e521de21ef930674721de943f96e1fd1219a",
+       []
+      ],
+      "sandboxed-post-message-to-parent.headers": [
+       "0368ae01896a2cadb6019ab2c1eb5346d9c3b764",
        []
       ],
       "sandboxed-post-message-to-parent.html": [
@@ -497894,6 +497918,13 @@
      ]
     },
     "sandbox": {
+     "autoplay-disabled-by-csp.html": [
+      "1d1ed0e50b7182ed0d1f8ab7d1b7c7b98e709030",
+      [
+       null,
+       {}
+      ]
+     ],
      "iframe-inside-csp.sub.html": [
       "cd402bdba0198bf763e1733004c2005614b9a542",
       [
@@ -497930,7 +497961,14 @@
       ]
      ],
      "sandbox-empty.sub.html": [
-      "47034710203a1fb8a3326cd7c8d8367166837628",
+      "47c3aa1e3657cf2eb5acfeb06bd1936b6e117d0f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "sandbox-last-directive-csp.html": [
+      "b4b2cdbe3296dff091594f73dafb4f4791e5ca72",
       [
        null,
        {}
