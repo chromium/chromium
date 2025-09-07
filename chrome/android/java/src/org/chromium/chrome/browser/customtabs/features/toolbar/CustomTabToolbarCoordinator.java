@@ -342,6 +342,15 @@ public class CustomTabToolbarCoordinator {
             assert false;
             return false;
         }
+
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            if (mToolbarButtonsCoordinator == null) return false;
+
+            mToolbarButtonsCoordinator.updateCustomActionButton(
+                    index, params.getIcon(mActivity), params.getDescription());
+            return true;
+        }
+
         if (mToolbarManager == null) {
             return false;
         }

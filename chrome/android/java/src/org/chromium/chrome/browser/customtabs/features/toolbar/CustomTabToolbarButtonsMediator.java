@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CUSTOM_ACTION_BUTTONS;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CUSTOM_ACTION_BUTTONS_VISIBLE;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.DESCRIPTION;
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.ICON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MINIMIZE_BUTTON;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.OMNIBOX_ENABLED;
@@ -17,6 +19,7 @@ import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabT
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,6 +123,12 @@ class CustomTabToolbarButtonsMediator
     void setMinimizeButtonEnabled(boolean enabled) {
         mMinimizeButtonEnabled = enabled;
         mModel.set(MINIMIZE_BUTTON, getMinimizeButtonData());
+    }
+
+    void updateCustomActionButton(int index, Drawable drawable, String description) {
+        var model = mModel.get(CUSTOM_ACTION_BUTTONS).get(index);
+        model.set(ICON, drawable);
+        model.set(DESCRIPTION, description);
     }
 
     void setOptionalButtonData(@Nullable ButtonData buttonData) {

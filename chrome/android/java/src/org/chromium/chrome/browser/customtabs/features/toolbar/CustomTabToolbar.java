@@ -724,18 +724,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void updateCustomActionButton(int index, Drawable drawable, String description) {
-        ImageButton button;
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            button =
-                    (ImageButton)
-                            mCustomButtonsParent.getChildAt(
-                                    mCustomButtonsParent.getChildCount() - 1 - index);
-        } else {
-            // |index| -> childIndex should ignore the optional button always present at the end.
-            int childIndex = mCustomActionButtons.getChildCount() - 2 - index;
-            assert 0 <= childIndex && childIndex <= mCustomActionButtons.getChildCount() - 2;
-            button = (ImageButton) mCustomActionButtons.getChildAt(childIndex);
-        }
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) return;
+
+        // |index| -> childIndex should ignore the optional button always present at the end.
+        int childIndex = mCustomActionButtons.getChildCount() - 2 - index;
+        assert 0 <= childIndex && childIndex <= mCustomActionButtons.getChildCount() - 2;
+        ImageButton button = (ImageButton) mCustomActionButtons.getChildAt(childIndex);
         assert button != null;
         updateCustomActionButtonVisuals(button, drawable, description);
         adjustCustomActionButtonPadding(index, button);

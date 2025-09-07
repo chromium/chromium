@@ -23,6 +23,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
@@ -105,6 +106,7 @@ public class CustomTabToolbarButtonsCoordinator
                         omniboxEnabled,
                         titleVisible,
                         isIncognito);
+        view.setTag(R.id.view_model, mModel);
         CustomTabToolbarButtonsViewBinder viewBinder = new CustomTabToolbarButtonsViewBinder();
         PropertyModelChangeProcessor.create(mModel, view, viewBinder);
         mCustomActionButtonsMcp =
@@ -193,6 +195,17 @@ public class CustomTabToolbarButtonsCoordinator
 
     public void setCustomActionButtonsVisible(boolean visible) {
         mModel.set(CUSTOM_ACTION_BUTTONS_VISIBLE, visible);
+    }
+
+    /**
+     * Updates the visual appearance of a custom action button.
+     *
+     * @param index The index of the button.
+     * @param drawable The icon for the button.
+     * @param description The content description for the button.
+     */
+    public void updateCustomActionButton(int index, Drawable drawable, String description) {
+        mMediator.updateCustomActionButton(index, drawable, description);
     }
 
     static PropertyListModel<PropertyModel, PropertyKey> getCustomActionButtonsModel(

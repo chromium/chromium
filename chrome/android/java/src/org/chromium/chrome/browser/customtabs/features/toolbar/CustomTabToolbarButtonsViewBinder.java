@@ -150,11 +150,8 @@ public class CustomTabToolbarButtonsViewBinder
             int index,
             int count,
             @Nullable PropertyKey payload) {
-        for (int i = index; i < index + count; i++) {
-            PropertyModel customButtonModel = model.get(i);
-            view.updateCustomActionButton(
-                    index, customButtonModel.get(ICON), customButtonModel.get(DESCRIPTION));
-        }
+        inflateAndPositionToolbarElements(
+                view, (PropertyModel) view.getTag(R.id.view_model), mVisFlipper);
     }
 
     /**
