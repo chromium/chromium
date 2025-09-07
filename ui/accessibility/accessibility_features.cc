@@ -196,6 +196,15 @@ bool IsAccessibilityOnScreenAXModeEnabled() {
 }
 
 #if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kFixNarratorWebContentContainment,
+             "FixNarratorWebContentContainment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsFixNarratorWebContentContainmentEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kFixNarratorWebContentContainment);
+}
+
 BASE_FEATURE(kIChromeAccessible,
              "IChromeAccessible",
              base::FEATURE_DISABLED_BY_DEFAULT);
