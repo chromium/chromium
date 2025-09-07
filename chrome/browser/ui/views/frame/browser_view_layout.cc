@@ -617,11 +617,13 @@ void BrowserViewLayout::LayoutBookmarkAndInfoBars(gfx::Rect& available_bounds,
         top_container_separator_->SetBounds(
             available_bounds.x(), available_bounds.y(),
             available_bounds.width(), separator_height);
+        multi_contents_view_->SetShouldShowTopSeparator(false);
+      } else {
+        // If the loading bar will be shown, it's supposed to replace the
+        // separator.
+        multi_contents_view_->SetShouldShowTopSeparator(!loading_bar_);
+        SetViewVisibility(top_container_separator_, false);
       }
-      // If the loading bar will be shown, it's supposed to replace the
-      // separator.
-      multi_contents_view_->SetShouldShowTopSeparator(
-          !show_overlay_contents_separator && !loading_bar_);
     } else {
       separator_height = top_container_separator_->GetPreferredSize().height();
       SetViewVisibility(top_container_separator_, true);
