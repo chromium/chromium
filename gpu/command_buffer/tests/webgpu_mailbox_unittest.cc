@@ -1287,23 +1287,22 @@ TEST_P(WebGPUMailboxTextureTest, AssociateOnTwoDevicesAtTheSameTime) {
   wgpu::Device device_b = GetNewDevice();
 
   // Associate both mailboxes
-  gpu::webgpu::ReservedTexture reservation_a =
-      webgpu()->ReserveTexture(device_a.Get());
-  webgpu()->AssociateMailbox(
-      reservation_a.deviceId, reservation_a.deviceGeneration, reservation_a.id,
-      reservation_a.generation, WGPUTextureUsage_RenderAttachment,
-      webgpu::WEBGPU_MAILBOX_NONE, shared_image_a->mailbox());
+  wgpu::TextureDescriptor desc = {.usage =
+                                      wgpu::TextureUsage::RenderAttachment};
 
-  gpu::webgpu::ReservedTexture reservation_b =
-      webgpu()->ReserveTexture(device_b.Get());
-  webgpu()->AssociateMailbox(
-      reservation_b.deviceId, reservation_b.deviceGeneration, reservation_b.id,
-      reservation_b.generation, WGPUTextureUsage_RenderAttachment,
-      webgpu::WEBGPU_MAILBOX_NONE, shared_image_b->mailbox());
+  std::unique_ptr<WebGPUTextureScopedAccess> webgpu_scoped_access_a =
+      shared_image_a->BeginWebGPUTextureAccess(
+          webgpu(), sii->GenVerifiedSyncToken(), device_a, desc, /*usage=*/0,
+          webgpu::WEBGPU_MAILBOX_NONE);
+
+  std::unique_ptr<WebGPUTextureScopedAccess> webgpu_scoped_access_b =
+      shared_image_b->BeginWebGPUTextureAccess(
+          webgpu(), sii->GenVerifiedSyncToken(), device_b, desc, /*usage=*/0,
+          webgpu::WEBGPU_MAILBOX_NONE);
 
   // Dissociate both mailboxes in the same order.
-  webgpu()->DissociateMailbox(reservation_a.id, reservation_a.generation);
-  webgpu()->DissociateMailbox(reservation_b.id, reservation_b.generation);
+  WebGPUTextureScopedAccess::EndAccess(std::move(webgpu_scoped_access_a));
+  WebGPUTextureScopedAccess::EndAccess(std::move(webgpu_scoped_access_b));
 
   // Send all the previous commands to the WebGPU decoder.
   webgpu()->FlushCommands();
@@ -1312,51 +1311,6 @@ TEST_P(WebGPUMailboxTextureTest, AssociateOnTwoDevicesAtTheSameTime) {
 // Test that passing a descriptor to ReserveTexture produces a client-side
 // WGPUTexture that correctly reflects said descriptor.
 TEST_P(WebGPUMailboxTextureTest, ReflectionOfDescriptor) {
-  // Check that reserving a texture with a full descriptor give the same data
-  // back through reflection.
-  wgpu::TextureDescriptor desc1 = {};
-  desc1.size = {1, 2, 3};
-  desc1.format = wgpu::TextureFormat::R32Float;
-  desc1.usage = wgpu::TextureUsage::CopyDst;
-  desc1.dimension = wgpu::TextureDimension::e2D;
-  desc1.sampleCount = 1;
-  desc1.mipLevelCount = 1;
-  gpu::webgpu::ReservedTexture reservation1 = webgpu()->ReserveTexture(
-      device_.Get(), reinterpret_cast<const WGPUTextureDescriptor*>(&desc1));
-  wgpu::Texture texture1 = wgpu::Texture::Acquire(reservation1.texture);
-
-  ASSERT_EQ(desc1.size.width, texture1.GetWidth());
-  ASSERT_EQ(desc1.size.height, texture1.GetHeight());
-  ASSERT_EQ(desc1.size.depthOrArrayLayers, texture1.GetDepthOrArrayLayers());
-  ASSERT_EQ(desc1.format, texture1.GetFormat());
-  ASSERT_EQ(desc1.usage, texture1.GetUsage());
-  ASSERT_EQ(desc1.dimension, texture1.GetDimension());
-  ASSERT_EQ(desc1.sampleCount, texture1.GetSampleCount());
-  ASSERT_EQ(desc1.mipLevelCount, texture1.GetMipLevelCount());
-
-  // Test with a different descriptor to check data is not hardcoded. Not that
-  // this is actually not a valid descriptor (diimension == 1D with height !=
-  // 1), but that it should still be reflected exactly.
-  wgpu::TextureDescriptor desc2 = {};
-  desc2.size = {4, 5, 6};
-  desc2.format = wgpu::TextureFormat::RGBA8Unorm;
-  desc2.usage = wgpu::TextureUsage::CopySrc;
-  desc2.dimension = wgpu::TextureDimension::e1D;
-  desc2.sampleCount = 4;
-  desc2.mipLevelCount = 3;
-  gpu::webgpu::ReservedTexture reservation2 = webgpu()->ReserveTexture(
-      device_.Get(), reinterpret_cast<const WGPUTextureDescriptor*>(&desc2));
-  wgpu::Texture texture2 = wgpu::Texture::Acquire(reservation2.texture);
-
-  ASSERT_EQ(desc2.size.width, texture2.GetWidth());
-  ASSERT_EQ(desc2.size.height, texture2.GetHeight());
-  ASSERT_EQ(desc2.size.depthOrArrayLayers, texture2.GetDepthOrArrayLayers());
-  ASSERT_EQ(desc2.format, texture2.GetFormat());
-  ASSERT_EQ(desc2.usage, texture2.GetUsage());
-  ASSERT_EQ(desc2.dimension, texture2.GetDimension());
-  ASSERT_EQ(desc2.sampleCount, texture2.GetSampleCount());
-  ASSERT_EQ(desc2.mipLevelCount, texture2.GetMipLevelCount());
-
   // Associate mailboxes so that releasing the reserved wgpu::Textures does not
   // fail. Note that these texture parameters do not match. It doesn't matter
   // since the textures are not used in this test except for frontend
@@ -1376,14 +1330,60 @@ TEST_P(WebGPUMailboxTextureTest, ReflectionOfDescriptor) {
                               GetSharedImageUsage(AccessType::Read),
                               "TestLabel"},
                              kNullSurfaceHandle);
-  webgpu()->AssociateMailbox(
-      reservation1.deviceId, reservation1.deviceGeneration, reservation1.id,
-      reservation1.generation, static_cast<WGPUTextureUsage>(desc1.usage),
-      webgpu::WEBGPU_MAILBOX_NONE, shared_image1->mailbox());
-  webgpu()->AssociateMailbox(
-      reservation2.deviceId, reservation2.deviceGeneration, reservation2.id,
-      reservation2.generation, static_cast<WGPUTextureUsage>(desc2.usage),
-      webgpu::WEBGPU_MAILBOX_NONE, shared_image2->mailbox());
+
+  // Check that reserving a texture with a full descriptor give the same data
+  // back through reflection.
+  wgpu::TextureDescriptor desc1 = {};
+  desc1.size = {1, 2, 3};
+  desc1.format = wgpu::TextureFormat::R32Float;
+  desc1.usage = wgpu::TextureUsage::CopyDst;
+  desc1.dimension = wgpu::TextureDimension::e2D;
+  desc1.sampleCount = 1;
+  desc1.mipLevelCount = 1;
+
+  // Test with a different descriptor to check data is not hardcoded. Not that
+  // this is actually not a valid descriptor (diimension == 1D with height !=
+  // 1), but that it should still be reflected exactly.
+  wgpu::TextureDescriptor desc2 = {};
+  desc2.size = {4, 5, 6};
+  desc2.format = wgpu::TextureFormat::RGBA8Unorm;
+  desc2.usage = wgpu::TextureUsage::CopySrc;
+  desc2.dimension = wgpu::TextureDimension::e1D;
+  desc2.sampleCount = 4;
+  desc2.mipLevelCount = 3;
+
+  std::unique_ptr<WebGPUTextureScopedAccess> webgpu_scoped_access1 =
+      shared_image1->BeginWebGPUTextureAccess(
+          webgpu(), sii->GenVerifiedSyncToken(), device_, desc1, /*usage=*/0,
+          webgpu::WEBGPU_MAILBOX_NONE);
+  std::unique_ptr<WebGPUTextureScopedAccess> webgpu_scoped_access2 =
+      shared_image2->BeginWebGPUTextureAccess(
+          webgpu(), sii->GenVerifiedSyncToken(), device_, desc2, /*usage=*/0,
+          webgpu::WEBGPU_MAILBOX_NONE);
+
+  wgpu::Texture texture1 = webgpu_scoped_access1->texture();
+  wgpu::Texture texture2 = webgpu_scoped_access2->texture();
+
+  ASSERT_EQ(desc1.size.width, texture1.GetWidth());
+  ASSERT_EQ(desc1.size.height, texture1.GetHeight());
+  ASSERT_EQ(desc1.size.depthOrArrayLayers, texture1.GetDepthOrArrayLayers());
+  ASSERT_EQ(desc1.format, texture1.GetFormat());
+  ASSERT_EQ(desc1.usage, texture1.GetUsage());
+  ASSERT_EQ(desc1.dimension, texture1.GetDimension());
+  ASSERT_EQ(desc1.sampleCount, texture1.GetSampleCount());
+  ASSERT_EQ(desc1.mipLevelCount, texture1.GetMipLevelCount());
+
+  ASSERT_EQ(desc2.size.width, texture2.GetWidth());
+  ASSERT_EQ(desc2.size.height, texture2.GetHeight());
+  ASSERT_EQ(desc2.size.depthOrArrayLayers, texture2.GetDepthOrArrayLayers());
+  ASSERT_EQ(desc2.format, texture2.GetFormat());
+  ASSERT_EQ(desc2.usage, texture2.GetUsage());
+  ASSERT_EQ(desc2.dimension, texture2.GetDimension());
+  ASSERT_EQ(desc2.sampleCount, texture2.GetSampleCount());
+  ASSERT_EQ(desc2.mipLevelCount, texture2.GetMipLevelCount());
+
+  WebGPUTextureScopedAccess::EndAccess(std::move(webgpu_scoped_access1));
+  WebGPUTextureScopedAccess::EndAccess(std::move(webgpu_scoped_access2));
 }
 
 // Test that passing a texture with invalid view formats to AssociateMailbox
@@ -1396,9 +1396,6 @@ TEST_P(WebGPUMailboxTextureTest, AssociateInvalidViewFormats) {
   desc.dimension = wgpu::TextureDimension::e2D;
   desc.sampleCount = 1;
   desc.mipLevelCount = 1;
-  gpu::webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(
-      device_.Get(), reinterpret_cast<const WGPUTextureDescriptor*>(&desc));
-  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
 
   SharedImageInterface* sii = GetSharedImageInterface();
   scoped_refptr<gpu::ClientSharedImage> shared_image =
@@ -1408,23 +1405,25 @@ TEST_P(WebGPUMailboxTextureTest, AssociateInvalidViewFormats) {
                               GetSharedImageUsage(AccessType::ReadWrite),
                               "TestLabel"},
                              kNullSurfaceHandle);
-  WGPUTextureFormat view_formats = {
-      WGPUTextureFormat_R8Unorm,
-  };
+  wgpu::TextureFormat view_formats = wgpu::TextureFormat::R8Unorm;
+  desc.viewFormats = &view_formats;
+  desc.viewFormatCount = 1;
 
   // AssociateMailbox may cause validation errors, given the invalid
   // viewFormats, so wrap it in an error scope.
   device_.PushErrorScope(wgpu::ErrorFilter::Validation);
-  webgpu()->AssociateMailbox(
-      reservation.deviceId, reservation.deviceGeneration, reservation.id,
-      reservation.generation, static_cast<WGPUTextureUsage>(desc.usage),
-      &view_formats, 1, webgpu::WEBGPU_MAILBOX_NONE, shared_image->mailbox());
+
+  std::unique_ptr<WebGPUTextureScopedAccess> webgpu_scoped_access =
+      shared_image->BeginWebGPUTextureAccess(
+          webgpu(), sii->GenVerifiedSyncToken(), device_, desc, /*usage=*/0,
+          webgpu::WEBGPU_MAILBOX_NONE);
+
   device_.PopErrorScope(
       wgpu::CallbackMode::AllowSpontaneous,
       [](wgpu::PopErrorScopeStatus, wgpu::ErrorType, wgpu::StringView) {});
 
   // DissociateMailbox should NOT cause validation errors.
-  webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+  WebGPUTextureScopedAccess::EndAccess(std::move(webgpu_scoped_access));
 }
 
 // Test that if some other GL context is current when
