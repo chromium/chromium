@@ -21,7 +21,6 @@
 #include "ui/color/color_transform.h"
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 
 namespace ui {
 

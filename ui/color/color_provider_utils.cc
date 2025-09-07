@@ -143,66 +143,6 @@ ColorProviderUtilsCallbacks* g_color_provider_utils_callbacks = nullptr;
 
 ColorProviderUtilsCallbacks::~ColorProviderUtilsCallbacks() = default;
 
-std::string_view ColorModeName(ColorProviderKey::ColorMode color_mode) {
-  switch (color_mode) {
-    case ColorProviderKey::ColorMode::kLight:
-      return "kLight";
-    case ColorProviderKey::ColorMode::kDark:
-      return "kDark";
-    default:
-      return "<invalid>";
-  }
-}
-
-std::string_view ContrastModeName(
-    ColorProviderKey::ContrastMode contrast_mode) {
-  switch (contrast_mode) {
-    case ColorProviderKey::ContrastMode::kNormal:
-      return "kNormal";
-    case ColorProviderKey::ContrastMode::kHigh:
-      return "kHigh";
-    default:
-      return "<invalid>";
-  }
-}
-
-std::string_view ForcedColorsName(
-    ColorProviderKey::ForcedColors forced_colors) {
-  switch (forced_colors) {
-    case ColorProviderKey::ForcedColors::kNone:
-      return "kNone";
-    case ColorProviderKey::ForcedColors::kSystem:
-      return "kSystem";
-    case ColorProviderKey::ForcedColors::kDusk:
-      return "kDusk";
-    case ColorProviderKey::ForcedColors::kDesert:
-      return "kDesert";
-    case ColorProviderKey::ForcedColors::kNightSky:
-      return "kNightSky";
-    case ColorProviderKey::ForcedColors::kWhite:
-      return "kWhite";
-    case ColorProviderKey::ForcedColors::kAquatic:
-      return "kAquatic";
-    default:
-      return "<invalid>";
-  }
-}
-
-std::string_view SystemThemeName(ui::SystemTheme system_theme) {
-  switch (system_theme) {
-    case ui::SystemTheme::kDefault:
-      return "kDefault";
-#if BUILDFLAG(IS_LINUX)
-    case ui::SystemTheme::kGtk:
-      return "kGtk";
-    case ui::SystemTheme::kQt:
-      return "kQt";
-#endif
-    default:
-      return "<invalid>";
-  }
-}
-
 #include "ui/color/color_id_map_macros.inc"
 
 std::string ColorIdName(ColorId color_id) {

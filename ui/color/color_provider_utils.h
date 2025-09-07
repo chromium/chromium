@@ -32,22 +32,6 @@ class COMPONENT_EXPORT(COLOR) ColorProviderUtilsCallbacks {
 // logging. Do not retain the results for longer than the scope in which these
 // functions are called.
 
-// Converts the ColorMode.
-std::string_view COMPONENT_EXPORT(COLOR)
-    ColorModeName(ColorProviderKey::ColorMode color_mode);
-
-// Converts the ContrastMode.
-std::string_view COMPONENT_EXPORT(COLOR)
-    ContrastModeName(ColorProviderKey::ContrastMode contrast_mode);
-
-// Converts the ForcedColors.
-std::string_view COMPONENT_EXPORT(COLOR)
-    ForcedColorsName(ColorProviderKey::ForcedColors forced_colors);
-
-// Converts SystemTheme.
-std::string_view COMPONENT_EXPORT(COLOR)
-    SystemThemeName(ui::SystemTheme system_theme);
-
 // Converts ColorId.
 std::string COMPONENT_EXPORT(COLOR) ColorIdName(ColorId color_id);
 
