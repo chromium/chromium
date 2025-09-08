@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
 import org.chromium.chrome.browser.tab.TabAttributes;
@@ -54,7 +53,6 @@ import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -702,16 +700,11 @@ public abstract class FullscreenHtmlApiHandlerBase
         resetExitFullscreenLayoutChangeListener(contentView);
         if (webContents != null && !webContents.isDestroyed()) webContents.exitFullscreen();
 
-        // Ensure that the layout change listener to bring back browser controls is called on
-        // automotive devices that never hide system bars.
-        // TODO(peilinwang/clhager) When edge to edge is enabled, or when we are in multi window
-        //  mode, onLayoutChange doesn't trigger, which results in not showing the browser controls
+        // Often - when edge to edge is enabled, or when we are in multi window
+        //  mode, or on automotive devices that never hide system bars - onLayoutChange doesn't
+        // trigger, which results in not showing the browser controls
         //  when we're supposed to, and also messes up the viewport and toolbar.
-        if (DeviceInfo.isAutomotive()
-                || EdgeToEdgeUtils.isChromeEdgeToEdgeFeatureEnabled()
-                || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
-            ViewUtils.requestLayout(contentView, "FullscreenHtmlApiHandler.exitFullScreen");
-        }
+        ViewUtils.requestLayout(contentView, "FullscreenHtmlApiHandler.exitFullScreen");
     }
 
     private void resetExitFullscreenLayoutChangeListener(View contentView) {

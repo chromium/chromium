@@ -32,7 +32,6 @@ import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.display.DisplayUtil;
-import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -94,19 +93,6 @@ public class EdgeToEdgeUtils {
         int SYSTEM_BAR_INSETS_EMPTY = 5;
 
         int NUM_ENTRIES = 5;
-    }
-
-    /**
-     * Whether the draw edge to edge infrastructure is on. When this is enabled, Chrome will start
-     * drawing edge to edge on start up.
-     *
-     * <p>To check if Chrome is aware of edge-to-edge, use {@link EdgeToEdgeStateProvider#get()}
-     *
-     * @deprecated Avoid new usage. Check corresponding feature flags inline.
-     */
-    @Deprecated
-    public static boolean isChromeEdgeToEdgeFeatureEnabled() {
-        return isBottomChinFeatureEnabled() || isEdgeToEdgeEverywhereEnabled();
     }
 
     /**

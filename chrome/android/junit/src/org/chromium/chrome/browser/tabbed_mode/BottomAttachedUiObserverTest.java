@@ -396,23 +396,6 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
-    public void testAdaptsColorToOverlayPanel_doesNotCoverFullWidth() {
-        when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(false, false);
-        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
-        mColorChangeObserver.assertState(null, false, false);
-
-        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
-        mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, true, false);
-
-        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
-                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
-        mColorChangeObserver.assertState(null, false, false);
-    }
-
-    @Test
     @Features.EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     public void testAdaptsColorToOverlayPanel_doesNotCoverFullWidth_drawingEdgeToEdge() {
         when(mOverlayPanelStateProvider.isFullWidthSizePanel()).thenReturn(false, false);

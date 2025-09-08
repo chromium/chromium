@@ -2918,11 +2918,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     new TabbedSystemBarColorHelper(
                             ensureEdgeToEdgeLayoutCoordinator(), mBottomChinSupplier));
             return mSystemBarColorHelperSupplier;
-        } else if (EdgeToEdgeUtils.isBottomChinFeatureEnabled()) {
-            // If isEdgeToEdgeBottomChinEnabled() && !isEdgeToEdgeEverywhereEnabled()
-            return mBottomChinSupplier;
         }
-        return super.createSystemBarColorHelperSupplier();
+        return mBottomChinSupplier;
     }
 
     @Override

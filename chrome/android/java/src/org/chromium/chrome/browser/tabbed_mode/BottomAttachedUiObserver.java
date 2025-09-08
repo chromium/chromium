@@ -330,8 +330,7 @@ public class BottomAttachedUiObserver
             return mBottomSheetColor;
         }
         if (mOverlayPanelVisible
-                && (assumeNonNull(mOverlayPanelStateProvider).isFullWidthSizePanel()
-                        || !EdgeToEdgeUtils.isChromeEdgeToEdgeFeatureEnabled())) {
+                && assumeNonNull(mOverlayPanelStateProvider).isFullWidthSizePanel()) {
             // Return null if the overlay panel is visible but not peeked - the overlay panel's
             // content will be "bottom attached".
             return mOverlayPanelState == PanelState.PEEKED ? mOverlayPanelColor : null;
@@ -352,9 +351,6 @@ public class BottomAttachedUiObserver
     private boolean shouldShowDivider() {
         if (shouldMatchBottomSheetColor()) {
             return !mBottomSheetController.isFullWidth();
-        }
-        if (mOverlayPanelVisible && !EdgeToEdgeUtils.isChromeEdgeToEdgeFeatureEnabled()) {
-            return !assumeNonNull(mOverlayPanelStateProvider).isFullWidthSizePanel();
         }
         if (mSnackbarVisible) {
             return !mSnackbarStateProvider.isFullWidth();

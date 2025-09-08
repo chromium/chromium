@@ -144,7 +144,6 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
@@ -2088,7 +2087,10 @@ public class TabGridDialogTest {
             return;
         }
 
-        if (!EdgeToEdgeUtils.isChromeEdgeToEdgeFeatureEnabled()) {
+        if (cta.getEdgeToEdgeSupplier().get() != null
+                && cta.getEdgeToEdgeSupplier().get().isDrawingToEdge()) {
+            assertEquals(Color.TRANSPARENT, cta.getWindow().getNavigationBarColor());
+        } else {
             @ColorInt int scrimDefaultColor = cta.getColor(R.color.default_scrim_color);
             @ColorInt int navigationBarColor = SemanticColorUtils.getBottomSystemNavColor(cta);
             @ColorInt
@@ -2097,9 +2099,6 @@ public class TabGridDialogTest {
             assertEquals(
                     navigationBarColorWithScrimOverlay, cta.getWindow().getNavigationBarColor());
             assertNotEquals(navigationBarColor, navigationBarColorWithScrimOverlay);
-        } else if (cta.getEdgeToEdgeSupplier().get() != null
-                && cta.getEdgeToEdgeSupplier().get().isDrawingToEdge()) {
-            assertEquals(Color.TRANSPARENT, cta.getWindow().getNavigationBarColor());
         }
     }
 
