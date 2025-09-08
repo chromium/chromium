@@ -2453,6 +2453,13 @@ be describing additional metrics about the same event.
     <summary>
       Only ever set to true, thus serving as a counter.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -2466,6 +2473,13 @@ be describing additional metrics about the same event.
     <summary>
       Only ever set to true, thus serving as a counter.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
