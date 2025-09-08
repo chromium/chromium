@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
@@ -51,11 +52,14 @@ namespace autofill {
 namespace {
 
 using ::base::UTF8ToUTF16;
+using ::base::test::RunClosure;
 using ::testing::_;
 using ::testing::AssertionResult;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::SaveArg;
 
 const char kDefaultAutocompleteInputId[] = "n300";
 const char kSimpleFormFileName[] = "autocomplete_simple_form.html";
@@ -193,10 +197,13 @@ class AutocompleteTest : public InProcessBrowserTest {
   std::vector<Suggestion> GetAutocompleteSuggestions(
       const std::string& input_name,
       const std::string& prefix) {
+    base::RunLoop run_loop;
     base::MockCallback<SingleFieldFillRouter::OnSuggestionsReturnedCallback>
         mock_callback;
     std::vector<Suggestion> suggestions;
-    EXPECT_CALL(mock_callback, Run).WillOnce(testing::SaveArg<1>(&suggestions));
+    EXPECT_CALL(mock_callback, Run)
+        .WillOnce(DoAll(SaveArg<1>(&suggestions),
+                        RunClosure(run_loop.QuitClosure())));
     FormFieldData field = test::CreateTestFormField(
         /*label=*/"", input_name, prefix, FormControlType::kInputText);
     FormData form;
@@ -207,6 +214,9 @@ class AutocompleteTest : public InProcessBrowserTest {
 
     // Make sure the DB task gets executed.
     WaitForPendingDBTasks(*GetWebDataService());
+    // This is a speculative fix for crbug.com/443678288. It's not clear why
+    // waiting for pending DB tasks does not suffice.
+    std::move(run_loop).Run();
 
     return suggestions;
   }

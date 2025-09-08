@@ -57,8 +57,6 @@ std::u16string AutocompleteResultAsString(const AutocompleteResult& result) {
   return base::UTF8ToUTF16(output);
 }
 
-}  // namespace
-
 class AutocompleteBrowserTest : public extensions::ExtensionBrowserTest {
  protected:
   void WaitForTemplateURLServiceToLoad() {
@@ -387,3 +385,5 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, MemoryTracing) {
       base::BindOnce(OnMemoryDumpDone, expected_names, run_loop.QuitClosure()));
   run_loop.Run();
 }
+
+}  // namespace
