@@ -126,7 +126,7 @@ class ScopedTestWebStateListObserver final : public WebStateListObserver {
 
 // Creates a FakeTabGroupSyncService.
 std::unique_ptr<KeyedService> CreateFakeTabGroupSyncService(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   return std::make_unique<tab_groups::FakeTabGroupSyncService>();
 }
 
