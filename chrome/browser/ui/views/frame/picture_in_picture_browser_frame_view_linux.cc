@@ -9,8 +9,8 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -39,8 +39,8 @@ PictureInPictureBrowserFrameViewLinux::PictureInPictureBrowserFrameViewLinux(
   auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
   if (linux_ui_theme && theme_service_factory->UsingSystemTheme()) {
-    bool solid_frame = !static_cast<DesktopBrowserFrameAuraLinux*>(
-                            frame->native_browser_frame())
+    bool solid_frame = !static_cast<BrowserNativeWidgetAuraLinux*>(
+                            frame->browser_native_widget())
                             ->ShouldDrawRestoredFrameShadow();
 
     // This may return null, but that's handled below.
@@ -147,8 +147,8 @@ void PictureInPictureBrowserFrameViewLinux::OnPaint(gfx::Canvas* canvas) {
 }
 
 bool PictureInPictureBrowserFrameViewLinux::ShouldDrawFrameShadow() const {
-  return static_cast<DesktopBrowserFrameAuraLinux*>(
-             frame()->native_browser_frame())
+  return static_cast<BrowserNativeWidgetAuraLinux*>(
+             frame()->browser_native_widget())
       ->ShouldDrawRestoredFrameShadow();
 }
 

@@ -3,7 +3,7 @@ specific_include_rules = {
   "browser_non_client_frame_view_chromeos\.*": [
     "+ash",
   ],
-  "browser_frame_ash\.*": [
+  "browser_native_widget_ash\.*": [
     "+ash",
     "+components/app_restore",
   ],

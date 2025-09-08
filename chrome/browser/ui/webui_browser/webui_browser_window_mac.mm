@@ -67,7 +67,7 @@ bool WebUIBrowserWindow::HandleKeyboardEvent(
       ->RedispatchKeyEvent(event.os_event.Get());
 }
 
-// Note that the logic here is often derived from BrowserFrameMac.
+// Note that the logic here is often derived from BrowserNativeWidgetMac.
 class WebUIBrowserNativeWidgetMac : public views::NativeWidgetMac {
  public:
   WebUIBrowserNativeWidgetMac(Browser* browser, views::Widget* widget)

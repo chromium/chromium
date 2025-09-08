@@ -123,6 +123,7 @@
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
@@ -132,7 +133,6 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
-#include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/tab_modal_dialog_host.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -1112,7 +1112,7 @@ BrowserView::~BrowserView() {
   top_controls_slide_controller_.reset();
 
   // All the tabs should have been destroyed already. If we were closed by the
-  // OS with some tabs than the NativeBrowserFrame should have destroyed them.
+  // OS with some tabs than the BrowserNativeWidget should have destroyed them.
   DCHECK_EQ(0, browser_->tab_strip_model()->count());
 
   // Stop the animation timer explicitly here to avoid running it in a nested
@@ -2597,7 +2597,7 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
                 IDS_WEB_APP_WINDOW_CONTROLS_OVERLAY_DISABLED_ALERT);
 #if BUILDFLAG(IS_MAC)
   if (frame_) {
-    frame_->native_browser_frame()->AnnounceTextInInProcessWindow(
+    frame_->browser_native_widget()->AnnounceTextInInProcessWindow(
         state_change_text);
   }
 #else
@@ -5665,10 +5665,9 @@ void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
 
 #if !BUILDFLAG(IS_MAC)
   // On Mac platforms, FullscreenStateChanged() is invoked from
-  // BrowserFrameMac::OnWindowFullscreenTransitionComplete when the asynchronous
-  // fullscreen transition is complete.
-  // On other platforms, there is no asynchronous transition so we synchronously
-  // invoke the function.
+  // BrowserNativeWidgetMac::OnWindowFullscreenTransitionComplete when the
+  // asynchronous fullscreen transition is complete. On other platforms, there
+  // is no asynchronous transition so we synchronously invoke the function.
   FullscreenStateChanged();
 #endif
 

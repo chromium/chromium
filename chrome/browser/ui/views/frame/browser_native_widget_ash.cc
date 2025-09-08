@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_frame_ash.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_ash.h"
 
 #include <memory>
 
@@ -74,13 +74,13 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameAsh, public:
+// BrowserNativeWidgetAsh, public:
 
-BrowserFrameAsh::BrowserFrameAsh(BrowserFrame* browser_frame,
-                                 BrowserView* browser_view)
+BrowserNativeWidgetAsh::BrowserNativeWidgetAsh(BrowserFrame* browser_frame,
+                                               BrowserView* browser_view)
     : views::NativeWidgetAura(browser_frame), browser_view_(browser_view) {
   widget_observation_.Observe(browser_frame);
-  GetNativeWindow()->SetName("BrowserFrameAsh");
+  GetNativeWindow()->SetName("BrowserNativeWidgetAsh");
   Browser* browser = browser_view->browser();
 
   created_from_drag_ = browser_frame->tab_drag_kind() != TabDragKind::kNone;
@@ -92,12 +92,12 @@ BrowserFrameAsh::BrowserFrameAsh(BrowserFrame* browser_frame,
   }
 }
 
-BrowserFrameAsh::~BrowserFrameAsh() = default;
+BrowserNativeWidgetAsh::~BrowserNativeWidgetAsh() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameAsh, views::NativeWidgetAura overrides:
+// BrowserNativeWidgetAsh, views::NativeWidgetAura overrides:
 
-void BrowserFrameAsh::OnWidgetInitDone() {
+void BrowserNativeWidgetAsh::OnWidgetInitDone() {
   Browser* browser = browser_view_->browser();
   ash::WindowState* window_state = ash::WindowState::Get(GetNativeWindow());
   window_state->SetDelegate(
@@ -111,7 +111,7 @@ void BrowserFrameAsh::OnWidgetInitDone() {
   app_restore::AppRestoreInfo::GetInstance()->OnWidgetInitialized(GetWidget());
 }
 
-void BrowserFrameAsh::OnWindowTargetVisibilityChanged(bool visible) {
+void BrowserNativeWidgetAsh::OnWindowTargetVisibilityChanged(bool visible) {
   if (visible) {
     // Once the window has been shown we know the requested bounds
     // (if provided) have been honored and we can switch on window management.
@@ -121,14 +121,14 @@ void BrowserFrameAsh::OnWindowTargetVisibilityChanged(bool visible) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// BrowserFrameAsh, NativeBrowserFrame implementation:
+// BrowserNativeWidgetAsh, BrowserNativeWidget implementation:
 
-bool BrowserFrameAsh::ShouldSaveWindowPlacement() const {
+bool BrowserNativeWidgetAsh::ShouldSaveWindowPlacement() const {
   return nullptr == GetWidget()->GetNativeWindow()->GetProperty(
                         ash::kRestoreBoundsOverrideKey);
 }
 
-void BrowserFrameAsh::GetWindowPlacement(
+void BrowserNativeWidgetAsh::GetWindowPlacement(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) const {
   aura::Window* window = GetWidget()->GetNativeWindow();
@@ -171,17 +171,18 @@ void BrowserFrameAsh::GetWindowPlacement(
   }
 }
 
-content::KeyboardEventProcessingResult BrowserFrameAsh::PreHandleKeyboardEvent(
+content::KeyboardEventProcessingResult
+BrowserNativeWidgetAsh::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
-bool BrowserFrameAsh::HandleKeyboardEvent(
+bool BrowserNativeWidgetAsh::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   return false;
 }
 
-views::Widget::InitParams BrowserFrameAsh::GetWidgetParams(
+views::Widget::InitParams BrowserNativeWidgetAsh::GetWidgetParams(
     views::Widget::InitParams::Ownership ownership) {
   views::Widget::InitParams params(ownership);
   params.native_widget = this;
@@ -227,19 +228,19 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams(
   return params;
 }
 
-bool BrowserFrameAsh::UseCustomFrame() const {
+bool BrowserNativeWidgetAsh::UseCustomFrame() const {
   return true;
 }
 
-bool BrowserFrameAsh::UsesNativeSystemMenu() const {
+bool BrowserNativeWidgetAsh::UsesNativeSystemMenu() const {
   return false;
 }
 
-int BrowserFrameAsh::GetMinimizeButtonOffset() const {
+int BrowserNativeWidgetAsh::GetMinimizeButtonOffset() const {
   return 0;
 }
 
-bool BrowserFrameAsh::ShouldRestorePreviousBrowserWidgetState() const {
+bool BrowserNativeWidgetAsh::ShouldRestorePreviousBrowserWidgetState() const {
   CHECK(browser_view_);
   // If there is no window info from full restore, maybe use the session
   // restore.
@@ -253,13 +254,13 @@ bool BrowserFrameAsh::ShouldRestorePreviousBrowserWidgetState() const {
          !browser_view_->browser()->create_params().in_tab_dragging;
 }
 
-bool BrowserFrameAsh::ShouldUseInitialVisibleOnAllWorkspaces() const {
+bool BrowserNativeWidgetAsh::ShouldUseInitialVisibleOnAllWorkspaces() const {
   return !created_from_drag_;
 }
 
-void BrowserFrameAsh::OnWidgetDestroyed(views::Widget* widget) {
-  // If BrowserFrameAsh's NativeWindow has not been destroyed by the time the
-  // Browser's Widget has been destroyed, clear any Browser refs to mitigate
+void BrowserNativeWidgetAsh::OnWidgetDestroyed(views::Widget* widget) {
+  // If BrowserNativeWidgetAsh's NativeWindow has not been destroyed by the time
+  // the Browser's Widget has been destroyed, clear any Browser refs to mitigate
   // risks from dangling pointers.
   if (GetNativeWindow()) {
     ash::WindowState* window_state = ash::WindowState::Get(GetNativeWindow());
@@ -270,9 +271,9 @@ void BrowserFrameAsh::OnWidgetDestroyed(views::Widget* widget) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameAsh, private:
+// BrowserNativeWidgetAsh, private:
 
-void BrowserFrameAsh::SetWindowAutoManaged() {
+void BrowserNativeWidgetAsh::SetWindowAutoManaged() {
   if (!browser_view_) {
     return;
   }

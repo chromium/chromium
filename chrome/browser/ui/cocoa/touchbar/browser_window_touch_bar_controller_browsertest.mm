@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_default_touch_bar.h"
-#include "chrome/browser/ui/views/frame/browser_frame_mac.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_mac.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -182,9 +182,10 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
       return nil;
     }
 
-    BrowserFrameMac* browser_frame = static_cast<BrowserFrameMac*>(
-        browser_view->frame()->native_browser_frame());
-    return browser_frame->GetTouchBarController();
+    BrowserNativeWidgetMac* native_widget =
+        static_cast<BrowserNativeWidgetMac*>(
+            browser_view->frame()->browser_native_widget());
+    return native_widget->GetTouchBarController();
   }
 };
 

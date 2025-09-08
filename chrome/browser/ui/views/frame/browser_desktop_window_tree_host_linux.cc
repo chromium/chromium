@@ -15,8 +15,8 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -81,9 +81,9 @@ BrowserDesktopWindowTreeHostLinux::BrowserDesktopWindowTreeHostLinux(
                                  desktop_native_widget_aura),
       browser_view_(browser_view),
       browser_frame_(browser_frame) {
-  native_frame_ = static_cast<DesktopBrowserFrameAuraLinux*>(
-      browser_frame->native_browser_frame());
-  native_frame_->set_host(this);
+  native_widget_ = static_cast<BrowserNativeWidgetAuraLinux*>(
+      browser_frame->browser_native_widget());
+  native_widget_->set_host(this);
 
   browser_frame->set_frame_type(browser_frame->UseCustomFrame()
                                     ? views::Widget::FrameType::kForceCustom
@@ -96,7 +96,7 @@ BrowserDesktopWindowTreeHostLinux::BrowserDesktopWindowTreeHostLinux(
 }
 
 BrowserDesktopWindowTreeHostLinux::~BrowserDesktopWindowTreeHostLinux() {
-  native_frame_->set_host(nullptr);
+  native_widget_->set_host(nullptr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -229,8 +229,9 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   if (ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported()) {
     // Set the opaque region.
     std::vector<gfx::Rect> opaque_region;
-    if (IsShowingFrame(browser_frame_->native_browser_frame()->UseCustomFrame(),
-                       window_state)) {
+    if (IsShowingFrame(
+            browser_frame_->browser_native_widget()->UseCustomFrame(),
+            window_state)) {
       // The opaque region is a list of rectangles that contain only fully
       // opaque pixels of the window.  We need to convert the clipping
       // rounded-rect into this format.
@@ -356,7 +357,7 @@ gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(
     ui::PlatformWindowState window_state) const {
   // If we are not showing frame, the insets should be zero.
   if (!browser_frame_ ||
-      !IsShowingFrame(browser_frame_->native_browser_frame()->UseCustomFrame(),
+      !IsShowingFrame(browser_frame_->browser_native_widget()->UseCustomFrame(),
                       window_state)) {
     return gfx::Insets();
   }

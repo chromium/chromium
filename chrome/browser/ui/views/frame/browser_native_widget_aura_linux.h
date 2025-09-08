@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_LINUX_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_LINUX_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_AURA_LINUX_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_AURA_LINUX_H_
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_aura.h"
 #include "components/prefs/pref_member.h"
 
 class BrowserDesktopWindowTreeHostLinux;
 
 // Provides the window frame for the Chrome browser window on Desktop Linux/X11.
-class DesktopBrowserFrameAuraLinux : public DesktopBrowserFrameAura {
+class BrowserNativeWidgetAuraLinux : public BrowserNativeWidgetAura {
  public:
-  DesktopBrowserFrameAuraLinux(BrowserFrame* browser_frame,
+  BrowserNativeWidgetAuraLinux(BrowserFrame* browser_frame,
                                BrowserView* browser_view);
 
-  DesktopBrowserFrameAuraLinux(const DesktopBrowserFrameAuraLinux&) = delete;
-  DesktopBrowserFrameAuraLinux& operator=(const DesktopBrowserFrameAuraLinux&) =
+  BrowserNativeWidgetAuraLinux(const BrowserNativeWidgetAuraLinux&) = delete;
+  BrowserNativeWidgetAuraLinux& operator=(const BrowserNativeWidgetAuraLinux&) =
       delete;
 
-  // DesktopBrowserFrameAura:
+  // BrowserNativeWidgetAura:
   void OnHostClosed() override;
 
   bool ShouldDrawRestoredFrameShadow() const;
@@ -30,9 +30,9 @@ class DesktopBrowserFrameAuraLinux : public DesktopBrowserFrameAura {
   void set_host(BrowserDesktopWindowTreeHostLinux* host) { host_ = host; }
 
  protected:
-  ~DesktopBrowserFrameAuraLinux() override;
+  ~BrowserNativeWidgetAuraLinux() override;
 
-  // NativeBrowserFrame:
+  // BrowserNativeWidget:
   views::Widget::InitParams GetWidgetParams(
       views::Widget::InitParams::Ownership ownership) override;
   bool UseCustomFrame() const override;
@@ -40,7 +40,7 @@ class DesktopBrowserFrameAuraLinux : public DesktopBrowserFrameAura {
   void ClientDestroyedWidget() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame);
+  FRIEND_TEST_ALL_PREFIXES(BrowserNativeWidgetAuraLinuxTest, UseCustomFrame);
 
   // Called when the preference changes.
   void OnUseCustomChromeFrameChanged();
@@ -51,4 +51,4 @@ class DesktopBrowserFrameAuraLinux : public DesktopBrowserFrameAura {
   raw_ptr<BrowserDesktopWindowTreeHostLinux> host_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_LINUX_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_AURA_LINUX_H_

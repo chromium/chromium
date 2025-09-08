@@ -19,7 +19,7 @@
 
 class BrowserFrame;
 class BrowserView;
-class DesktopBrowserFrameAuraLinux;
+class BrowserNativeWidgetAuraLinux;
 enum class TabDragKind;
 
 namespace views {
@@ -104,7 +104,7 @@ class BrowserDesktopWindowTreeHostLinux
 
   raw_ptr<BrowserView> browser_view_ = nullptr;
   raw_ptr<BrowserFrame> browser_frame_ = nullptr;
-  raw_ptr<DesktopBrowserFrameAuraLinux> native_frame_ = nullptr;
+  raw_ptr<BrowserNativeWidgetAuraLinux> native_widget_ = nullptr;
 
 #if BUILDFLAG(USE_DBUS)
   // Each browser frame maintains its own menu bar object because the lower

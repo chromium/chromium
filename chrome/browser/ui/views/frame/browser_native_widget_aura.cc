@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_aura.h"
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -23,9 +23,9 @@
 using aura::Window;
 
 ///////////////////////////////////////////////////////////////////////////////
-// DesktopBrowserFrameAura, public:
+// BrowserNativeWidgetAura, public:
 
-DesktopBrowserFrameAura::DesktopBrowserFrameAura(BrowserFrame* browser_frame,
+BrowserNativeWidgetAura::BrowserNativeWidgetAura(BrowserFrame* browser_frame,
                                                  BrowserView* browser_view)
     : views::DesktopNativeWidgetAura(browser_frame),
       browser_view_(browser_view),
@@ -35,21 +35,21 @@ DesktopBrowserFrameAura::DesktopBrowserFrameAura(BrowserFrame* browser_frame,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// DesktopBrowserFrameAura, protected:
+// BrowserNativeWidgetAura, protected:
 
-DesktopBrowserFrameAura::~DesktopBrowserFrameAura() = default;
+BrowserNativeWidgetAura::~BrowserNativeWidgetAura() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
-// DesktopBrowserFrameAura, views::DesktopNativeWidgetAura overrides:
+// BrowserNativeWidgetAura, views::DesktopNativeWidgetAura overrides:
 
-void DesktopBrowserFrameAura::OnHostClosed() {
+void BrowserNativeWidgetAura::OnHostClosed() {
   browser_frame_ = nullptr;
   browser_view_ = nullptr;
   aura::client::SetVisibilityClient(GetNativeView()->GetRootWindow(), nullptr);
   DesktopNativeWidgetAura::OnHostClosed();
 }
 
-void DesktopBrowserFrameAura::InitNativeWidget(
+void BrowserNativeWidgetAura::InitNativeWidget(
     views::Widget::InitParams params) {
   browser_desktop_window_tree_host_ =
       BrowserDesktopWindowTreeHost::CreateBrowserDesktopWindowTreeHost(
@@ -64,7 +64,7 @@ void DesktopBrowserFrameAura::InitNativeWidget(
   wm::SetChildWindowVisibilityChangesAnimated(GetNativeView()->GetRootWindow());
 }
 
-void DesktopBrowserFrameAura::OnOcclusionStateChanged(
+void BrowserNativeWidgetAura::OnOcclusionStateChanged(
     aura::WindowTreeHost* host,
     aura::Window::OcclusionState new_state,
     const SkRegion& occluded_region) {
@@ -75,33 +75,33 @@ void DesktopBrowserFrameAura::OnOcclusionStateChanged(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// DesktopBrowserFrameAura, NativeBrowserFrame implementation:
+// BrowserNativeWidgetAura, BrowserNativeWidget implementation:
 
-views::Widget::InitParams DesktopBrowserFrameAura::GetWidgetParams(
+views::Widget::InitParams BrowserNativeWidgetAura::GetWidgetParams(
     views::Widget::InitParams::Ownership ownership) {
   views::Widget::InitParams params(ownership);
   params.native_widget = this;
   return params;
 }
 
-bool DesktopBrowserFrameAura::UseCustomFrame() const {
+bool BrowserNativeWidgetAura::UseCustomFrame() const {
   return true;
 }
 
-bool DesktopBrowserFrameAura::UsesNativeSystemMenu() const {
+bool BrowserNativeWidgetAura::UsesNativeSystemMenu() const {
   return browser_desktop_window_tree_host_->UsesNativeSystemMenu();
 }
 
-int DesktopBrowserFrameAura::GetMinimizeButtonOffset() const {
+int BrowserNativeWidgetAura::GetMinimizeButtonOffset() const {
   return browser_desktop_window_tree_host_->GetMinimizeButtonOffset();
 }
 
-bool DesktopBrowserFrameAura::ShouldSaveWindowPlacement() const {
+bool BrowserNativeWidgetAura::ShouldSaveWindowPlacement() const {
   // The placement can always be stored.
   return true;
 }
 
-void DesktopBrowserFrameAura::GetWindowPlacement(
+void BrowserNativeWidgetAura::GetWindowPlacement(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) const {
   *bounds = GetWidget()->GetRestoredBounds();
@@ -115,25 +115,25 @@ void DesktopBrowserFrameAura::GetWindowPlacement(
 }
 
 content::KeyboardEventProcessingResult
-DesktopBrowserFrameAura::PreHandleKeyboardEvent(
+BrowserNativeWidgetAura::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
-bool DesktopBrowserFrameAura::HandleKeyboardEvent(
+bool BrowserNativeWidgetAura::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   return false;
 }
 
-bool DesktopBrowserFrameAura::ShouldRestorePreviousBrowserWidgetState() const {
+bool BrowserNativeWidgetAura::ShouldRestorePreviousBrowserWidgetState() const {
   return true;
 }
 
-bool DesktopBrowserFrameAura::ShouldUseInitialVisibleOnAllWorkspaces() const {
+bool BrowserNativeWidgetAura::ShouldUseInitialVisibleOnAllWorkspaces() const {
   return true;
 }
 
-void DesktopBrowserFrameAura::ClientDestroyedWidget() {
+void BrowserNativeWidgetAura::ClientDestroyedWidget() {
   browser_frame_ = nullptr;
   browser_view_ = nullptr;
   DesktopNativeWidgetAura::ClientDestroyedWidget();

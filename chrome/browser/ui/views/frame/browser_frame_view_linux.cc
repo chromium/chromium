@@ -6,8 +6,8 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -90,8 +90,8 @@ void BrowserFrameViewLinux::GetWindowMask(const gfx::Size& size,
 }
 
 bool BrowserFrameViewLinux::ShouldDrawRestoredFrameShadow() const {
-  return static_cast<DesktopBrowserFrameAuraLinux*>(
-             frame()->native_browser_frame())
+  return static_cast<BrowserNativeWidgetAuraLinux*>(
+             frame()->browser_native_widget())
       ->ShouldDrawRestoredFrameShadow();
 }
 

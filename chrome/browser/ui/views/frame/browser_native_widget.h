@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_NATIVE_BROWSER_FRAME_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_NATIVE_BROWSER_FRAME_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_H_
 
 #include "build/build_config.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -19,9 +19,11 @@ namespace input {
 struct NativeWebKeyboardEvent;
 }
 
-class NativeBrowserFrame {
+// Interface implemented by native widgets used by browsers; provides platform-
+// and use-case-specific parameters and metrics.
+class BrowserNativeWidget {
  public:
-  virtual ~NativeBrowserFrame() = default;
+  virtual ~BrowserNativeWidget() = default;
 
   // Returns the platform specific InitParams for initializing our widget.
   virtual views::Widget::InitParams GetWidgetParams(
@@ -86,4 +88,4 @@ class NativeBrowserFrame {
   virtual int GetMinimizeButtonOffset() const = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_NATIVE_BROWSER_FRAME_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/ui/views/frame/browser_frame_mac.h"
+#import "chrome/browser/ui/views/frame/browser_native_widget_mac.h"
 
 #import "base/apple/foundation_util.h"
 #include "base/memory/raw_ptr.h"
@@ -121,8 +121,8 @@ bool ShouldHandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) {
 
 @end
 
-BrowserFrameMac::BrowserFrameMac(BrowserFrame* browser_frame,
-                                 BrowserView* browser_view)
+BrowserNativeWidgetMac::BrowserNativeWidgetMac(BrowserFrame* browser_frame,
+                                               BrowserView* browser_view)
     : views::NativeWidgetMac(browser_frame), browser_view_(browser_view) {
   if (GetRemoteCocoaApplicationHost()) {
     // Only add observer on PWA.
@@ -131,17 +131,17 @@ BrowserFrameMac::BrowserFrameMac(BrowserFrame* browser_frame,
   }
 }
 
-BrowserFrameMac::~BrowserFrameMac() = default;
+BrowserNativeWidgetMac::~BrowserNativeWidgetMac() = default;
 
-BrowserWindowTouchBarController* BrowserFrameMac::GetTouchBarController()
+BrowserWindowTouchBarController* BrowserNativeWidgetMac::GetTouchBarController()
     const {
   return [touch_bar_delegate_ touchBarController];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// BrowserFrameMac, views::NativeWidgetMac implementation:
+// BrowserNativeWidgetMac, views::NativeWidgetMac implementation:
 
-int32_t BrowserFrameMac::SheetOffsetY() {
+int32_t BrowserNativeWidgetMac::SheetOffsetY() {
   // ModalDialogHost::GetDialogPosition() is relative to the host view. In
   // practice, this ends up being the widget's content view.
   web_modal::WebContentsModalDialogHost* dialog_host =
@@ -149,7 +149,7 @@ int32_t BrowserFrameMac::SheetOffsetY() {
   return dialog_host->GetDialogPosition(gfx::Size()).y();
 }
 
-void BrowserFrameMac::GetWindowFrameTitlebarHeight(
+void BrowserNativeWidgetMac::GetWindowFrameTitlebarHeight(
     bool* override_titlebar_height,
     float* titlebar_height) {
   if (browser_view_ && browser_view_->frame() &&
@@ -169,19 +169,19 @@ void BrowserFrameMac::GetWindowFrameTitlebarHeight(
   }
 }
 
-void BrowserFrameMac::OnFocusWindowToolbar() {
+void BrowserNativeWidgetMac::OnFocusWindowToolbar() {
   chrome::ExecuteCommand(browser_view_->browser(), IDC_FOCUS_TOOLBAR);
 }
 
-void BrowserFrameMac::OnWindowFullscreenTransitionStart() {
+void BrowserNativeWidgetMac::OnWindowFullscreenTransitionStart() {
   browser_view_->FullscreenStateChanging();
 }
 
-void BrowserFrameMac::OnWindowFullscreenTransitionComplete() {
+void BrowserNativeWidgetMac::OnWindowFullscreenTransitionComplete() {
   browser_view_->FullscreenStateChanged();
 }
 
-void BrowserFrameMac::OnWidgetDestroyed(views::Widget* widget) {
+void BrowserNativeWidgetMac::OnWidgetDestroyed(views::Widget* widget) {
   if (UsesRemoteCocoaApplicationHost(browser_view_->browser())) {
     chrome::RemoveCommandObserver(browser_view_->browser(), IDC_BACK, this);
     chrome::RemoveCommandObserver(browser_view_->browser(), IDC_FORWARD, this);
@@ -191,7 +191,7 @@ void BrowserFrameMac::OnWidgetDestroyed(views::Widget* widget) {
   NativeWidgetMac::OnWidgetDestroyed(widget);
 }
 
-void BrowserFrameMac::ValidateUserInterfaceItem(
+void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
     int32_t tag,
     remote_cocoa::mojom::ValidateUserInterfaceItemResult* result) {
   Browser* browser = browser_view_->browser();
@@ -326,7 +326,7 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
   }
 }
 
-bool BrowserFrameMac::WillExecuteCommand(
+bool BrowserNativeWidgetMac::WillExecuteCommand(
     int32_t command,
     WindowOpenDisposition window_open_disposition,
     bool is_before_first_responder) {
@@ -359,7 +359,7 @@ bool BrowserFrameMac::WillExecuteCommand(
   return true;
 }
 
-bool BrowserFrameMac::ExecuteCommand(
+bool BrowserNativeWidgetMac::ExecuteCommand(
     int32_t command,
     WindowOpenDisposition window_open_disposition,
     bool is_before_first_responder) {
@@ -375,7 +375,7 @@ bool BrowserFrameMac::ExecuteCommand(
   return true;
 }
 
-void BrowserFrameMac::PopulateCreateWindowParams(
+void BrowserNativeWidgetMac::PopulateCreateWindowParams(
     const views::Widget::InitParams& widget_params,
     remote_cocoa::mojom::CreateWindowParams* params) {
   params->style_mask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
@@ -407,7 +407,7 @@ void BrowserFrameMac::PopulateCreateWindowParams(
   params->animation_enabled = true;
 }
 
-NativeWidgetMacNSWindow* BrowserFrameMac::CreateNSWindow(
+NativeWidgetMacNSWindow* BrowserNativeWidgetMac::CreateNSWindow(
     const remote_cocoa::mojom::CreateWindowParams* params) {
   NativeWidgetMacNSWindow* ns_window = NativeWidgetMac::CreateNSWindow(params);
   touch_bar_delegate_ = [[BrowserWindowTouchBarViewsDelegate alloc]
@@ -419,14 +419,14 @@ NativeWidgetMacNSWindow* BrowserFrameMac::CreateNSWindow(
 }
 
 remote_cocoa::ApplicationHost*
-BrowserFrameMac::GetRemoteCocoaApplicationHost() {
+BrowserNativeWidgetMac::GetRemoteCocoaApplicationHost() {
   if (auto* host = GetHostForBrowser(browser_view_->browser())) {
     return host->GetRemoteCocoaApplicationHost();
   }
   return nullptr;
 }
 
-void BrowserFrameMac::OnWindowInitialized() {
+void BrowserNativeWidgetMac::OnWindowInitialized() {
   if (auto* bridge = GetInProcessNSWindowBridge()) {
     bridge->SetCommandDispatcher([[ChromeCommandDispatcherDelegate alloc] init],
                                  [[BrowserWindowCommandHandler alloc] init]);
@@ -438,7 +438,8 @@ void BrowserFrameMac::OnWindowInitialized() {
   }
 }
 
-void BrowserFrameMac::OnWindowDestroying(gfx::NativeWindow native_window) {
+void BrowserNativeWidgetMac::OnWindowDestroying(
+    gfx::NativeWindow native_window) {
   // Clear delegates set in CreateNSWindow() to prevent objects with a reference
   // to |window| attempting to validate commands by looking for a Browser*.
   NativeWidgetMacNSWindow* ns_window =
@@ -447,12 +448,13 @@ void BrowserFrameMac::OnWindowDestroying(gfx::NativeWindow native_window) {
   [ns_window setWindowTouchBarDelegate:nil];
 }
 
-int BrowserFrameMac::GetMinimizeButtonOffset() const {
+int BrowserNativeWidgetMac::GetMinimizeButtonOffset() const {
   NOTIMPLEMENTED();
   return 0;
 }
 
-void BrowserFrameMac::EnabledStateChangedForCommand(int id, bool enabled) {
+void BrowserNativeWidgetMac::EnabledStateChangedForCommand(int id,
+                                                           bool enabled) {
   switch (id) {
     case IDC_BACK:
       GetNSWindowHost()->CanGoBack(enabled);
@@ -466,34 +468,35 @@ void BrowserFrameMac::EnabledStateChangedForCommand(int id, bool enabled) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// BrowserFrameMac, NativeBrowserFrame implementation:
+// BrowserNativeWidgetMac, BrowserNativeWidget implementation:
 
-views::Widget::InitParams BrowserFrameMac::GetWidgetParams(
+views::Widget::InitParams BrowserNativeWidgetMac::GetWidgetParams(
     views::Widget::InitParams::Ownership ownership) {
   views::Widget::InitParams params(ownership);
   params.native_widget = this;
   return params;
 }
 
-bool BrowserFrameMac::UseCustomFrame() const {
+bool BrowserNativeWidgetMac::UseCustomFrame() const {
   return browser_view_->GetIsPictureInPictureType();
 }
 
-bool BrowserFrameMac::UsesNativeSystemMenu() const {
+bool BrowserNativeWidgetMac::UsesNativeSystemMenu() const {
   return false;
 }
 
-bool BrowserFrameMac::ShouldSaveWindowPlacement() const {
+bool BrowserNativeWidgetMac::ShouldSaveWindowPlacement() const {
   return true;
 }
 
-void BrowserFrameMac::GetWindowPlacement(
+void BrowserNativeWidgetMac::GetWindowPlacement(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) const {
   return NativeWidgetMac::GetWindowPlacement(bounds, show_state);
 }
 
-content::KeyboardEventProcessingResult BrowserFrameMac::PreHandleKeyboardEvent(
+content::KeyboardEventProcessingResult
+BrowserNativeWidgetMac::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   // On macOS, all keyEquivalents that use modifier keys are handled by
   // -[CommandDispatcher performKeyEquivalent:]. If this logic is being hit,
@@ -513,7 +516,7 @@ content::KeyboardEventProcessingResult BrowserFrameMac::PreHandleKeyboardEvent(
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
-bool BrowserFrameMac::HandleKeyboardEvent(
+bool BrowserNativeWidgetMac::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   if (!ShouldHandleKeyboardEvent(event)) {
     return false;
@@ -524,15 +527,15 @@ bool BrowserFrameMac::HandleKeyboardEvent(
   return GetNSWindowHost()->RedispatchKeyEvent(event.os_event.Get());
 }
 
-bool BrowserFrameMac::ShouldRestorePreviousBrowserWidgetState() const {
+bool BrowserNativeWidgetMac::ShouldRestorePreviousBrowserWidgetState() const {
   return true;
 }
 
-bool BrowserFrameMac::ShouldUseInitialVisibleOnAllWorkspaces() const {
+bool BrowserNativeWidgetMac::ShouldUseInitialVisibleOnAllWorkspaces() const {
   return true;
 }
 
-void BrowserFrameMac::AnnounceTextInInProcessWindow(
+void BrowserNativeWidgetMac::AnnounceTextInInProcessWindow(
     const std::u16string& text) {
   NSAccessibilityPriorityLevel priority = NSAccessibilityPriorityHigh;
   NSDictionary* notification_info = @{

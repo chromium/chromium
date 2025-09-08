@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux_native.h"
-#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view_linux.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/linux/linux_ui.h"
@@ -54,19 +54,19 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
       !app_uses_wco_or_borderless) {
     auto nav_button_provider = linux_ui_theme->CreateNavButtonProvider();
     if (nav_button_provider) {
-      auto* native_frame = static_cast<DesktopBrowserFrameAuraLinux*>(
-          frame->native_browser_frame());
+      auto* native_widget = static_cast<BrowserNativeWidgetAuraLinux*>(
+          frame->browser_native_widget());
       auto* layout = new BrowserFrameViewLayoutLinuxNative(
           nav_button_provider.get(),
           base::BindRepeating(
-              [](DesktopBrowserFrameAuraLinux* native_frame,
+              [](BrowserNativeWidgetAuraLinux* native_widget,
                  ui::LinuxUiTheme* linux_ui_theme, bool tiled, bool maximized) {
                 const bool solid_frame =
-                    !native_frame->ShouldDrawRestoredFrameShadow();
+                    !native_widget->ShouldDrawRestoredFrameShadow();
                 return linux_ui_theme->GetWindowFrameProvider(solid_frame,
                                                               tiled, maximized);
               },
-              native_frame, linux_ui_theme));
+              native_widget, linux_ui_theme));
       return std::make_unique<BrowserFrameViewLinuxNative>(
           frame, browser_view, layout, std::move(nav_button_provider));
     }

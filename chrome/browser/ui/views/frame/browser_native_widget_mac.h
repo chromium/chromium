@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_MAC_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_MAC_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_MAC_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_MAC_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/command_observer.h"
-#include "chrome/browser/ui/views/frame/native_browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/widget/native_widget_mac.h"
 
@@ -17,17 +17,18 @@ class BrowserView;
 @class BrowserWindowTouchBarViewsDelegate;
 
 ////////////////////////////////////////////////////////////////////////////////
-//  BrowserFrameMac is a NativeWidgetMac subclass that provides
+//  BrowserNativeWidgetMac is a NativeWidgetMac subclass that provides
 //  the window frame for the Chrome browser window.
 //
-class BrowserFrameMac : public views::NativeWidgetMac,
-                        public NativeBrowserFrame,
-                        public CommandObserver {
+class BrowserNativeWidgetMac : public views::NativeWidgetMac,
+                               public BrowserNativeWidget,
+                               public CommandObserver {
  public:
-  BrowserFrameMac(BrowserFrame* browser_frame, BrowserView* browser_view);
+  BrowserNativeWidgetMac(BrowserFrame* browser_frame,
+                         BrowserView* browser_view);
 
-  BrowserFrameMac(const BrowserFrameMac&) = delete;
-  BrowserFrameMac& operator=(const BrowserFrameMac&) = delete;
+  BrowserNativeWidgetMac(const BrowserNativeWidgetMac&) = delete;
+  BrowserNativeWidgetMac& operator=(const BrowserNativeWidgetMac&) = delete;
 
   BrowserWindowTouchBarController* GetTouchBarController() const;
 
@@ -40,7 +41,7 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   void OnWindowFullscreenTransitionComplete() override;
   void OnWidgetDestroyed(views::Widget* widget) override;
 
-  // Overridden from NativeBrowserFrame:
+  // Overridden from BrowserNativeWidget:
   views::Widget::InitParams GetWidgetParams(
       views::Widget::InitParams::Ownership ownership) override;
   bool UseCustomFrame() const override;
@@ -57,7 +58,7 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   void AnnounceTextInInProcessWindow(const std::u16string& text) override;
 
  protected:
-  ~BrowserFrameMac() override;
+  ~BrowserNativeWidgetMac() override;
 
   // Overridden from views::NativeWidgetMac:
   void ValidateUserInterfaceItem(
@@ -78,7 +79,7 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   void OnWindowInitialized() override;
   void OnWindowDestroying(gfx::NativeWindow window) override;
 
-  // Overridden from NativeBrowserFrame:
+  // Overridden from BrowserNativeWidget:
   int GetMinimizeButtonOffset() const override;
 
   // Overridden from CommandObserver:
@@ -89,4 +90,4 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   BrowserWindowTouchBarViewsDelegate* __strong touch_bar_delegate_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_MAC_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_MAC_H_

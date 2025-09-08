@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_ASH_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_ASH_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_ASH_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_ASH_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/views/frame/native_browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget_observer.h"
@@ -15,25 +15,26 @@
 class BrowserFrame;
 class BrowserView;
 
-// BrowserFrameAsh provides the frame for Chrome browser windows on Chrome OS
-// under classic ash.
-class BrowserFrameAsh : public views::NativeWidgetAura,
-                        public NativeBrowserFrame,
-                        public views::WidgetObserver {
+// BrowserNativeWidgetAsh provides the frame for Chrome browser windows on
+// Chrome OS under classic ash.
+class BrowserNativeWidgetAsh : public views::NativeWidgetAura,
+                               public BrowserNativeWidget,
+                               public views::WidgetObserver {
  public:
-  BrowserFrameAsh(BrowserFrame* browser_frame, BrowserView* browser_view);
+  BrowserNativeWidgetAsh(BrowserFrame* browser_frame,
+                         BrowserView* browser_view);
 
-  BrowserFrameAsh(const BrowserFrameAsh&) = delete;
-  BrowserFrameAsh& operator=(const BrowserFrameAsh&) = delete;
+  BrowserNativeWidgetAsh(const BrowserNativeWidgetAsh&) = delete;
+  BrowserNativeWidgetAsh& operator=(const BrowserNativeWidgetAsh&) = delete;
 
  protected:
-  ~BrowserFrameAsh() override;
+  ~BrowserNativeWidgetAsh() override;
 
   // Overridden from views::NativeWidgetAura:
   void OnWidgetInitDone() override;
   void OnWindowTargetVisibilityChanged(bool visible) override;
 
-  // Overridden from NativeBrowserFrame:
+  // Overridden from BrowserNativeWidget:
   views::Widget::InitParams GetWidgetParams(
       views::Widget::InitParams::Ownership ownership) override;
   bool UseCustomFrame() const override;
@@ -66,4 +67,4 @@ class BrowserFrameAsh : public views::NativeWidgetAura,
       widget_observation_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_ASH_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_ASH_H_

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_AURA_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_AURA_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/frame/native_browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
@@ -23,25 +23,25 @@ class VisibilityController;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// DesktopBrowserFrameAura
+// BrowserNativeWidgetAura
 //
-//  DesktopBrowserFrameAura is a DesktopNativeWidgetAura subclass that provides
+//  BrowserNativeWidgetAura is a DesktopNativeWidgetAura subclass that provides
 //  the window frame for the Chrome browser window.
 //
-class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
-                                public NativeBrowserFrame {
+class BrowserNativeWidgetAura : public views::DesktopNativeWidgetAura,
+                                public BrowserNativeWidget {
  public:
-  DesktopBrowserFrameAura(BrowserFrame* browser_frame,
+  BrowserNativeWidgetAura(BrowserFrame* browser_frame,
                           BrowserView* browser_view);
 
-  DesktopBrowserFrameAura(const DesktopBrowserFrameAura&) = delete;
-  DesktopBrowserFrameAura& operator=(const DesktopBrowserFrameAura&) = delete;
+  BrowserNativeWidgetAura(const BrowserNativeWidgetAura&) = delete;
+  BrowserNativeWidgetAura& operator=(const BrowserNativeWidgetAura&) = delete;
 
   BrowserView* browser_view() const { return browser_view_; }
   BrowserFrame* browser_frame() const { return browser_frame_; }
 
  protected:
-  ~DesktopBrowserFrameAura() override;
+  ~BrowserNativeWidgetAura() override;
 
   // Overridden from views::DesktopNativeWidgetAura:
   void OnHostClosed() override;
@@ -50,7 +50,7 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
                                aura::Window::OcclusionState new_state,
                                const SkRegion& occluded_region) override;
 
-  // Overridden from NativeBrowserFrame:
+  // Overridden from BrowserNativeWidget:
   views::Widget::InitParams GetWidgetParams(
       views::Widget::InitParams::Ownership ownership) override;
   bool UseCustomFrame() const override;
@@ -79,4 +79,4 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
   std::unique_ptr<wm::VisibilityController> visibility_controller_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_AURA_H_

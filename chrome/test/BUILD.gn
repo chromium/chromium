@@ -4204,10 +4204,7 @@ if (!is_android) {
     }
 
     if (is_linux) {
-      sources += [
-        "../browser/ozone_platform_browsertest.cc",
-        "../browser/ui/views/frame/desktop_browser_frame_aura_linux_browsertest.cc",
-      ]
+      sources += [ "../browser/ozone_platform_browsertest.cc" ]
       deps += [
         "//ui/linux:linux_ui",
         "//ui/linux:linux_ui_factory",
@@ -12084,6 +12081,8 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (is_linux) {
+      sources += [ "../browser/ui/views/frame/browser_native_widget_aura_linux_interactive_uitest.cc" ]
+
       deps += [ "//ui/linux:linux_ui" ]
 
       if (ozone_platform_x11 && enable_remoting) {

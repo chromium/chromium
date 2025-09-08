@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -10,33 +10,33 @@
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/widget/widget.h"
 
-DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
+BrowserNativeWidgetAuraLinux::BrowserNativeWidgetAuraLinux(
     BrowserFrame* browser_frame,
     BrowserView* browser_view)
-    : DesktopBrowserFrameAura(browser_frame, browser_view) {
+    : BrowserNativeWidgetAura(browser_frame, browser_view) {
   use_custom_frame_pref_.Init(
       prefs::kUseCustomChromeFrame,
       browser_view->browser()->profile()->GetPrefs(),
       base::BindRepeating(
-          &DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged,
+          &BrowserNativeWidgetAuraLinux::OnUseCustomChromeFrameChanged,
           base::Unretained(this)));
 }
 
-DesktopBrowserFrameAuraLinux::~DesktopBrowserFrameAuraLinux() = default;
+BrowserNativeWidgetAuraLinux::~BrowserNativeWidgetAuraLinux() = default;
 
-void DesktopBrowserFrameAuraLinux::OnHostClosed() {
+void BrowserNativeWidgetAuraLinux::OnHostClosed() {
   host_ = nullptr;
-  DesktopBrowserFrameAura::OnHostClosed();
+  BrowserNativeWidgetAura::OnHostClosed();
 }
 
-views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams(
+views::Widget::InitParams BrowserNativeWidgetAuraLinux::GetWidgetParams(
     views::Widget::InitParams::Ownership ownership) {
   views::Widget::InitParams params(ownership);
   params.native_widget = this;
@@ -72,7 +72,7 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams(
   return params;
 }
 
-bool DesktopBrowserFrameAuraLinux::UseCustomFrame() const {
+bool BrowserNativeWidgetAuraLinux::UseCustomFrame() const {
   if (!browser_view()) {
     return false;
   }
@@ -96,21 +96,21 @@ bool DesktopBrowserFrameAuraLinux::UseCustomFrame() const {
          browser_view()->GetIsPictureInPictureType();
 }
 
-void DesktopBrowserFrameAuraLinux::TabDraggingKindChanged(
+void BrowserNativeWidgetAuraLinux::TabDraggingKindChanged(
     TabDragKind tab_drag_kind) {
   host_->TabDraggingKindChanged(tab_drag_kind);
 }
 
-void DesktopBrowserFrameAuraLinux::ClientDestroyedWidget() {
+void BrowserNativeWidgetAuraLinux::ClientDestroyedWidget() {
   use_custom_frame_pref_.Destroy();
-  DesktopBrowserFrameAura::ClientDestroyedWidget();
+  BrowserNativeWidgetAura::ClientDestroyedWidget();
 }
 
-bool DesktopBrowserFrameAuraLinux::ShouldDrawRestoredFrameShadow() const {
+bool BrowserNativeWidgetAuraLinux::ShouldDrawRestoredFrameShadow() const {
   return host_->SupportsClientFrameShadow() && UseCustomFrame();
 }
 
-void DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged() {
+void BrowserNativeWidgetAuraLinux::OnUseCustomChromeFrameChanged() {
   if (!browser_frame()) {
     return;
   }
@@ -123,8 +123,8 @@ void DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged() {
   host_->UpdateFrameHints();
 }
 
-NativeBrowserFrame* NativeBrowserFrameFactory::Create(
+BrowserNativeWidget* BrowserNativeWidgetFactory::Create(
     BrowserFrame* browser_frame,
     BrowserView* browser_view) {
-  return new DesktopBrowserFrameAuraLinux(browser_frame, browser_view);
+  return new BrowserNativeWidgetAuraLinux(browser_frame, browser_view);
 }
