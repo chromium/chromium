@@ -3531,29 +3531,6 @@
             ]
         }
     ],
-    "BackForwardCachePrioritizedEntry": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PrioritizeUnlessShouldClearAllAndNoEviction_20250520",
-                    "params": {
-                        "level": "prioritize-unless-should-clear-all-and-no-eviction"
-                    },
-                    "enable_features": [
-                        "BackForwardCachePrioritizedEntry"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardCacheWithSharedWorker": [
         {
             "platforms": [

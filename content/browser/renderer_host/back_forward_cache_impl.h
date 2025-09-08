@@ -73,7 +73,7 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 // will be handled in this way.
 BASE_FEATURE(kBackForwardCachePrioritizedEntry,
              "BackForwardCachePrioritizedEntry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the interaction between back/forward cache and
 // unload. When enabled, pages with unload handlers may enter the
