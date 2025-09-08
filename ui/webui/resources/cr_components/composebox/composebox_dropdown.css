@@ -12,8 +12,7 @@
 :host{
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-inline-end: 24px;
+  padding-inline-end: 16px;
 }
 
 :host([hidden]) {

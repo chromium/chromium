@@ -40,7 +40,8 @@
 :host([show-composebox_]) ntp-middle-slot-promo,
 :host([show-composebox_]) ntp-modules,
 :host([show-composebox_]) #backgroundImageAttribution,
-:host([show-composebox_]) ntp-customize-buttons {
+:host([show-composebox_]) ntp-customize-buttons,
+:host([show-composebox_]) setup-list-module-wrapper{
   display: none;
 }
 

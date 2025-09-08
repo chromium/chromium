@@ -34,10 +34,16 @@ export function getHtml(this: ComposeboxElement) {
           .files=${Array.from(this.files_.values())}
           @delete-file=${this.onDeleteFile_}>
       </ntp-composebox-file-carousel>
-      <textarea autocomplete="off" id="input"
+      <div id="textContainer" part="text-container">
+        <div id="iconContainer" part="icon-container">
+          <cr-icon id="aimIcon" icon="composebox:searchSpark"></cr-icon>
+        </div>
+        <textarea autocomplete="off" id="input"
           type="search" spellcheck="false"
           placeholder="${this.inputPlaceholder_}"
+          part="input"
           @input=${this.handleInput_}></textarea>
+      </div>
       <ntp-composebox-dropdown
           id="matches"
           role="listbox"
@@ -75,24 +81,29 @@ export function getHtml(this: ComposeboxElement) {
       </div>
     `}
     </div>
-    <!-- A seperate container is needed for the submit button so the
+      <cr-icon-button
+          class="action-icon icon-fade icon-clear"
+          id="cancelIcon"
+          part="action-icon cancel-icon"
+          title="${this.computeCancelButtonTitle_()}"
+          @click="${this.onCancelClick_}">
+      </cr-icon-button>
+      <!-- A seperate container is needed for the submit button so the
          expand/collapse animation can be applied without affecting the submit
          button enabled/disabled state. -->
-      <div id="submitContainer" class="icon-fade">
+      <div id="submitContainer" class="icon-fade" part="submit">
         <cr-icon-button
           class="action-icon icon-arrow-upward"
           id="submitIcon"
+          part="action-icon"
           title="$i18n{composeboxSubmitButtonTitle}"
           @click="${this.submitQuery_}"
           ?disabled="${!this.submitEnabled_}">
         </cr-icon-button>
       </div>
-      <cr-icon-button
-          class="action-icon icon-fade icon-clear"
-          id="cancelIcon"
-          title="${this.computeCancelButtonTitle_()}"
-          @click="${this.onCancelClick_}">
-      </cr-icon-button>
+      <div id="label" class="icon-fade" part="label">
+        $i18n{searchboxComposeButtonText}
+      </div>
     </div>
   </div>
   <input type="file"

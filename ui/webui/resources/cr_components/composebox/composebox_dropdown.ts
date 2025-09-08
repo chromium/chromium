@@ -79,20 +79,16 @@ export class ComposeboxDropdownElement extends CrLitElement {
    * Selects the last match if the first one or no match is currently selected.
    */
   selectPrevious() {
-    const selectableMatchElements =
-        this.shadowRoot.querySelectorAll('ntp-composebox-match');
     // The value of -1 for |this.selectedMatchIndex| indicates no selection.
     // Therefore subtract one from the maximum of its value and 0.
     const previous = Math.max(this.selectedMatchIndex, 0) - 1;
     this.selectedMatchIndex =
-        remainder(previous, selectableMatchElements.length);
+        remainder(previous, this.result?.matches?.length!);
   }
 
   /** Selects the last match. */
   selectLast() {
-    const selectableMatchElements =
-        this.shadowRoot.querySelectorAll('ntp-composebox-match');
-    this.selectedMatchIndex = selectableMatchElements.length - 1;
+    this.selectedMatchIndex = this.result?.matches?.length! - 1;
   }
 
   /**
@@ -100,10 +96,8 @@ export class ComposeboxDropdownElement extends CrLitElement {
    * Selects the first match if the last one or no match is currently selected.
    */
   selectNext() {
-    const selectableMatchElements =
-        this.shadowRoot.querySelectorAll('ntp-composebox-match');
     const next = this.selectedMatchIndex + 1;
-    this.selectedMatchIndex = remainder(next, selectableMatchElements.length);
+    this.selectedMatchIndex = remainder(next, this.result?.matches?.length!);
   }
 
   /**
@@ -116,6 +110,13 @@ export class ComposeboxDropdownElement extends CrLitElement {
 
   protected isSelected_(match: AutocompleteMatch): boolean {
     return this.matchIndex_(match) === this.selectedMatchIndex;
+  }
+
+  /**
+   * Returns whether the given index corresponds to the last match.
+   */
+  protected isLastMatch_(index: number): boolean {
+    return index === this.result?.matches?.length! - 1;
   }
 }
 

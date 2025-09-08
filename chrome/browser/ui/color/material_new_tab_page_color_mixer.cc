@@ -39,15 +39,16 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       ui::kColorSysStateHoverOnSubtle};
   mixer[kColorNewTabPageButtonForeground] = {ui::kColorSysOnTonalContainer};
 
-  mixer[kColorNewTabPageComposeboxBackground] = {
-      dark_mode ? SkColorSetRGB(0x1D, 0x1E, 0x26)
-                : SkColorSetRGB(0xF0, 0xF2, 0xF5)};
+  mixer[kColorNewTabPageComposeboxBackground] = {SK_ColorWHITE};
   mixer[kColorNewTabPageComposeboxFont] = {
       dark_mode ? SkColorSetRGB(0xE6, 0xE8, 0xF0)
                 : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+  mixer[kColorNewTabPageComposeboxFontLight] = {
+      SkColorSetRGB(0x1F, 0x1F, 0x1F)};
   mixer[kColorNewTabPageComposeboxCancelButton] = {
       dark_mode ? SkColorSetRGB(0xAD, 0xAF, 0xB8)
                 : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+  mixer[kColorNewTabPageComposeboxCancelButtonLight] = {ui::kColorRefNeutral30};
   mixer[kColorNewTabPageComposeboxErrorScrimBackground] = {
       ui::kColorSysStateScrim};
   mixer[kColorNewTabPageComposeboxErrorScrimButtonBackground] = {
@@ -64,17 +65,19 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageComposeboxHover] = {
       dark_mode ? SkColorSetRGB(0x25, 0x26, 0x2E)
                 : SkColorSetRGB(0xE9, 0xEB, 0xF0)};
+  mixer[kColorNewTabPageComposeboxInputIcon] = {ui::kColorRefNeutral30};
+  mixer[kColorNewTabPageComposeboxLabel] = {
+      ui::SetAlpha({ui::kColorRefNeutral10}, 0x60)};
   mixer[kColorNewTabPageComposeboxOutlineHcm] = {
       dark_mode ? SkColorSetRGB(0xFF, 0xFF, 0xFF)
                 : SkColorSetRGB(0x00, 0x00, 0x00)};
+  mixer[kColorNewTabPageComposeboxResultsIcon] = {ui::kColorRefNeutral10};
   mixer[kColorNewTabPageComposeboxScrimBackground] = {
       dark_mode ? SkColorSetRGB(0x10, 0x12, 0x18)
                 : SkColorSetRGB(0xFF, 0xFF, 0xFF)};
   mixer[kColorNewTabPageComposeboxSubmitButton] = {
       SkColorSetRGB(0x0B, 0x50, 0xD0)};
-  mixer[kColorNewTabPageComposeboxUploadButton] = {
-      dark_mode ? SkColorSetRGB(0xE6, 0xE8, 0xF0)
-                : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+  mixer[kColorNewTabPageComposeboxUploadButton] = {ui::kColorRefNeutral10};
   mixer[kColorNewTabPageComposeboxUploadButtonDisabled] = {
       dark_mode ? SkColorSetRGB(0x56, 0x59, 0x5E)
                 : SkColorSetRGB(0xAD, 0xAF, 0xB8)};

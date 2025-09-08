@@ -10,10 +10,11 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --input-bottom-spacing: 16px;
-  --text-input-top-spacing: 16px;
+  --input-bottom-spacing: 10px;
+  --text-input-top-spacing: 10px;
   --text-input-right-spacing: 80px;
-  --text-input-left-spacing: 24px;
+  --text-input-left-spacing: 16px;
+  --expanded-border-radius: 26px;
   --brand-gradient: conic-gradient(
     rgba(52, 168, 82, 0) 0deg,
     rgba(52, 168, 82, 1) 38.9738deg,
@@ -104,13 +105,14 @@
     var(--emphasized-curve);
 
   border-radius: 30px;
+  box-shadow: var(--cr-searchbox-shadow);
   font-size: var(--cr-composebox-font-size, 18px);
   transition: var(--border-radius-transition);
   width: var(--ntp-composebox-width, 337px);
 }
 
 :host([expanded_]) {
-  border-radius: 24px;
+  border-radius: var(--expanded-border-radius);
 }
 
 #errorScrim {
@@ -170,25 +172,22 @@
   /* If the composebox is not expandable, meaning expanded_ is always true,
    * then the above transition will never be triggered. Instead, manually
    * start the animation so it expands as soon as it is rendered */
-  animation: var(--height-expand-duration) slide-down var(--standard-curve);
+  height: 60px;
 }
 
 :host([expanded_]) #composebox {
-  min-height: 136px;
+  height: calc-size(auto, size);
   max-height: 254px;
   transition-duration: var(--expand-duration);
 }
 
-@keyframes slide-down {
-  from {
-    min-height: 60px;
-    max-height: 60px;
-  }
+:host([is-collapsible][expanded_]) #composebox {
+  min-height: 136px;
+  max-height: 254px;
+}
 
-  to {
-    min-height: 136px;
-    max-height: 136px;
-  }
+:host([expanded_][show-dropdown_]) #composebox {
+  max-height: 350px;
 }
 
 #inputContainer {
@@ -208,13 +207,32 @@
   padding-inline-start: var(--text-input-left-spacing);
 }
 
+#textContainer {
+  display: flex;
+  flex-direction: row;
+  padding: 8px 0 0 var(--text-input-left-spacing);
+}
+
+#iconContainer {
+  --text-input-top-spacing: 8px;
+  align-items: center;
+  display: flex;
+  height: 48px;
+  justify-content: center;
+}
+
+#aimIcon {
+  height: 24px;
+  width: 24px;
+}
+
 #input {
   animation: color-change 5s infinite;
   background-color: inherit;
   border: none;
   box-sizing: border-box;
   caret-color: var(--google-blue-500);
-  color: var(--color-new-tab-page-composebox-font);
+  color: var(--color-new-tab-page-composebox-font-light);
   display: block;
   field-sizing: content;
   font-family: inherit;
@@ -224,7 +242,7 @@
   max-height: calc-size(fit-content, min(size - 24px, 190px));
   min-height: 72px;
   outline: none;
-  padding: var(--text-input-top-spacing) var(--text-input-right-spacing) 0 var(--text-input-left-spacing);
+  padding: var(--text-input-top-spacing) var(--text-input-right-spacing) 0 12px;
   position: relative;
   resize: none;
   scrollbar-width: none;
@@ -233,6 +251,11 @@
 }
 
 :host([expanded_]) #input {
+  --text-input-top-spacing: 12px;
+  min-height: 48px;
+}
+
+:host([expanded_][is-collapsible]) #input {
   --text-input-top-spacing: 24px;
 }
 
@@ -255,10 +278,12 @@ ntp-composebox-dropdown {
   transition: var(--icon-exit-transition);
 }
 
-:host([expanded_]) ntp-composebox-dropdown {
+:host([expanded_][show-dropdown_]) ntp-composebox-dropdown {
   opacity: 1;
   transition: var(--icon-entry-transition);
+  padding-bottom: 8px;
 }
+
 
 #contextEntrypoint {
   margin-inline-start: -18px;
@@ -279,7 +304,7 @@ ntp-composebox-dropdown {
       var(--color-searchbox-results-icon-focused-outline);
   --cr-icon-button-icon-size: 24px;
   --cr-icon-button-hover-background-color:
-      var(--color-new-tab-page-composebox-hover);
+      var(--color-searchbox-results-background-hovered);
   --cr-icon-button-size: 48px;
   color: var(--color-new-tab-page-composebox-upload-button);
 }
@@ -296,7 +321,7 @@ ntp-composebox-dropdown {
   --cr-icon-button-focus-outline-color:
       var(--color-searchbox-results-icon-focused-outline);
   --cr-icon-button-hover-background-color:
-      var(--color-new-tab-page-composebox-hover);
+      var(--color-searchbox-results-background-hovered);
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-size: 40px;
   position: absolute;
@@ -310,11 +335,19 @@ ntp-composebox-dropdown {
 
 #cancelIcon {
   --cr-icon-button-fill-color:
-      var(--color-new-tab-page-composebox-cancel-button);
-  /* SVG is size 24 with 5px of padding so actual size is 14px */
-  --cr-icon-button-icon-size: 24px;
+      var(--color-new-tab-page-composebox-cancel-button-light);
+  /* SVG is size 20 with 5px of padding so actual size is 10px */
+  --cr-icon-button-icon-size: 20px;
   position: absolute;
+  top: 8px;
+}
+
+:host([expanded_][is-collapsible]) #cancelIcon {
   top: 16px;
+}
+
+#submitContainer {
+  display: none;
 }
 
 #submitIcon {
@@ -336,6 +369,18 @@ ntp-composebox-dropdown {
 :host([submit-enabled_]) #submitIcon {
   cursor: pointer;
   opacity: 100%;
+}
+
+#label {
+  align-content: center;
+  bottom: var(--input-bottom-spacing);
+  color: var(--color-new-tab-page-composebox-label);
+  font-size: 14px;
+  font-weight: 500;
+  height: 40px;
+  line-height: 20px;
+  position: absolute;
+  right: 16px;
 }
 
 /* Controls the opacity of the icons when the composebox is expanded/collapsed. */
@@ -476,10 +521,13 @@ ntp-composebox-dropdown {
   filter: blur(0);
 }
 
-:host([expanded_]) .background:before{
-animation: plate-background-blur-on-expand var(--glif-rotation-duration)
-      var(--standard-curve),
-    color-pulse-on-expand var(--expand-duration) var(--standard-curve);
+:host([expanded_]) .background:before {
+  animation: plate-background-blur-on-expand var(--glif-rotation-duration)
+      var(--standard-curve);
+}
+
+:host([expanded_][is-collapsible]) .background:before {
+  animation: color-pulse-on-expand var(--expand-duration) var(--standard-curve);
 }
 
 @keyframes plate-background-blur-on-expand {
