@@ -205,6 +205,7 @@ BASE_DECLARE_FEATURE(kSidePanelResizing);
 BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
+BASE_DECLARE_FEATURE(kTabGroupHoverCards);
 
 #if !BUILDFLAG(IS_ANDROID)
 // General improvements to tab group menus

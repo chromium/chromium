@@ -303,6 +303,10 @@ BASE_FEATURE(kTabHoverCardImages,
 #endif
 );
 
+BASE_FEATURE(kTabGroupHoverCards,
+             "TabGroupHoverCards",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabModalUsesDesktopWidget,
              "TabModalUsesDesktopWidget",
              base::FEATURE_DISABLED_BY_DEFAULT);
