@@ -1557,6 +1557,45 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testTabDataUpdateOnUrlChangeForPinnedTab) {
+  const int tab_id =
+      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
+  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
+
+  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+                     "tabId", base::NumberToString(tab_id)))});
+
+  // Navigate to another page in the first tab.
+  GURL new_url = embedded_test_server()->GetURL(
+      "/glic/browser_tests/test.html?changed=true");
+  RunTestSequence(NavigateWebContents(kFirstTab, new_url));
+
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testTabDataUpdateOnFaviconChangeForPinnedTab) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  const int tab_id = GetTabId(web_contents);
+  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
+
+  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+                     "tabId", base::NumberToString(tab_id)))});
+
+  // Add favicon to the webcontents.
+  const char* script =
+      "var link = document.createElement('link');"
+      "link.rel = 'icon';"
+      "link.href= '../../../glic/youtube_favicon_16x16.png';"
+      "document.head.appendChild(link);";
+  ASSERT_TRUE(content::ExecJs(web_contents, script));
+
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testGetContextFromTabIgnorePermissionnWhenPinned) {
   ExecuteJsTest();
 }

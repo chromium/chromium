@@ -1140,6 +1140,54 @@ class ApiTests extends ApiTestFixtureBase {
             '?changedOne');
   }
 
+  async testTabDataUpdateOnUrlChangeForPinnedTab() {
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.pinTabs);
+
+    const tabId = this.testParams.tabId;
+    assertNotEquals(tabId, this.getFocusedTabId());
+
+    await this.host.pinTabs([tabId]);
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    await pinnedTabsUpdates.waitFor(
+        (tabs) => tabs.some(t => t.tabId === tabId));
+
+    // Navigate to a different URL.
+    await this.advanceToNextStep();
+
+    // Make sure that the pinned tab is not focused.
+    assertNotEquals(tabId, this.getFocusedTabId());
+    await pinnedTabsUpdates.waitFor(
+        (tabs) =>
+            tabs.some(t => t.tabId === tabId && t.url.includes('changed')));
+  }
+
+  async testTabDataUpdateOnFaviconChangeForPinnedTab() {
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.pinTabs);
+
+    const tabId = this.testParams.tabId;
+    assertNotEquals(tabId, this.getFocusedTabId());
+
+    await this.host.pinTabs([tabId]);
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+
+    await pinnedTabsUpdates.waitFor(
+        (tabs) => tabs.length === 1 &&
+            tabs.some(t => t.tabId === tabId && t.favicon === undefined));
+
+    // Update the favicon.
+    await this.advanceToNextStep();
+
+    const [tabData] = await pinnedTabsUpdates.waitFor(
+        (tabs) => tabs.length === 1 &&
+            tabs.some(t => t.tabId === tabId && t.favicon !== undefined));
+
+    const blob = await tabData?.favicon?.();
+    assertEquals(blob?.type, 'image/png');
+  }
+
+
   // Helper to get focused tabId.
   getFocusedTabId(): string {
     assertDefined(this.host.getFocusedTabStateV2);
