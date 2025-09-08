@@ -49,8 +49,8 @@ class MockGLES2Decoder : public GLES2Decoder {
                gpu::ContextResult(const scoped_refptr<gl::GLSurface>& surface,
                                   const scoped_refptr<gl::GLContext>& context,
                                   bool offscreen,
-                                  const DisallowedFeatures& disallowed_features,
-                                  const ContextCreationAttribs& attrib_helper));
+                                  ContextType context_type,
+                                  bool lose_context_when_out_of_memory));
   MOCK_METHOD1(Destroy, void(bool have_context));
   MOCK_METHOD1(SetSurface, void(const scoped_refptr<gl::GLSurface>& surface));
   MOCK_METHOD0(ReleaseSurface, void());

@@ -235,9 +235,9 @@ void GLManager::InitializeWithWorkaroundsImpl(
   //   api->glRequestExtensionANGLEFn("GL_EXT_texture_format_BGRA8888");
   // }
 
-  auto result =
-      decoder_->Initialize(context_->default_surface(), context_.get(), true,
-                           ::gpu::gles2::DisallowedFeatures(), attribs);
+  auto result = decoder_->Initialize(
+      context_->default_surface(), context_.get(), /*offscreen=*/true,
+      options.context_type, /*lose_context_when_out_of_memory=*/false);
   if (result != gpu::ContextResult::kSuccess)
     return;
   // Client side Capabilities queries return reference, service side return

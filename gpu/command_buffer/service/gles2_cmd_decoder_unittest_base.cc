@@ -446,11 +446,6 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   shared_memory_base_ = buffer->memory();
   ClearSharedMemory();
 
-  ContextCreationAttribs attribs;
-  attribs.lose_context_when_out_of_memory =
-      normalized_init.lose_context_when_out_of_memory;
-  attribs.context_type = init.context_type;
-
   decoder_ = GLES2Decoder::Create(this, command_buffer_service_.get(),
                                   &outputter_, group_.get());
   decoder_->SetIgnoreCachedStateForTest(ignore_cached_state_for_test_);
@@ -464,7 +459,8 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
     decoder_->SetCopyTexImageBlitterForTest(copy_tex_image_blitter_);
   }
   gpu::ContextResult result = decoder_->Initialize(
-      surface_, context_, false, DisallowedFeatures(), attribs);
+      surface_, context_, /*offscreen=*/false, init.context_type,
+      normalized_init.lose_context_when_out_of_memory);
   if (result != gpu::ContextResult::kSuccess) {
     // GLES2CmdDecoder::Destroy should be handled by Initialize in all failure
     // cases.
@@ -2387,8 +2383,9 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   // surfaceless.
   const bool offscreen = surface_->IsSurfaceless();
   ASSERT_EQ(
-      decoder_->Initialize(surface_, context_, offscreen, DisallowedFeatures(),
-                           context_creation_attribs_),
+      decoder_->Initialize(
+          surface_, context_, offscreen, context_creation_attribs_.context_type,
+          context_creation_attribs_.lose_context_when_out_of_memory),
       gpu::ContextResult::kSuccess);
 
   scoped_refptr<gpu::Buffer> buffer =

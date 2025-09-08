@@ -195,12 +195,9 @@ class RecordReplayContext : public GpuControl {
 
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
-    ContextCreationAttribs attrib_helper;
-    attrib_helper.context_type = CONTEXT_TYPE_OPENGLES3;
-
-    ContextResult result =
-        decoder_->Initialize(surface_.get(), context_.get(), true,
-                             gles2::DisallowedFeatures(), attrib_helper);
+    ContextResult result = decoder_->Initialize(
+        surface_.get(), context_.get(), /*offscreen=*/true,
+        CONTEXT_TYPE_OPENGLES3, /*lose_context_when_out_of_memory=*/false);
     DCHECK_EQ(result, ContextResult::kSuccess);
     capabilities_ = decoder_->GetCapabilities();
     gl_capabilities_ = decoder_->GetGLCapabilities();

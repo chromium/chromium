@@ -470,9 +470,10 @@ class CommandBufferSetup {
                                            &outputter_, context_group.get());
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
-    auto result = decoder_->Initialize(context->default_surface(), context,
-                                       true, gles2::DisallowedFeatures(),
-                                       config_.attrib_helper);
+    auto result = decoder_->Initialize(
+        context->default_surface(), context, /*offscreen=*/true,
+        config_.attrib_helper.context_type,
+        config_.attrib_helper.lose_context_when_out_of_memory);
     if (result != gpu::ContextResult::kSuccess) {
       return false;
     }

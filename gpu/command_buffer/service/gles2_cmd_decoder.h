@@ -27,6 +27,7 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
+#include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -38,7 +39,6 @@ class GLSurface;
 
 namespace gpu {
 
-struct ContextCreationAttribs;
 class DecoderClient;
 
 namespace gles2 {
@@ -170,8 +170,8 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
       const scoped_refptr<gl::GLSurface>& surface,
       const scoped_refptr<gl::GLContext>& context,
       bool offscreen,
-      const gles2::DisallowedFeatures& disallowed_features,
-      const ContextCreationAttribs& attrib_helper) = 0;
+      ContextType context_type,
+      bool lose_context_when_out_of_memory) = 0;
 
   // Set the surface associated with the default FBO.
   virtual void SetSurface(const scoped_refptr<gl::GLSurface>& surface) = 0;

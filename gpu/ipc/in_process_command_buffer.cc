@@ -439,8 +439,8 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
         DCHECK(context_->IsCurrent(surface.get()));
       }
       auto result = gles2_decoder->Initialize(
-          surface, context_, /*offscreen=*/true, gles2::DisallowedFeatures(),
-          *params.attribs);
+          surface, context_, /*offscreen=*/true, params.attribs->context_type,
+          params.attribs->lose_context_when_out_of_memory);
       if (result != gpu::ContextResult::kSuccess) {
         DestroyOnGpuThread();
         DLOG(ERROR) << "Failed to initialize decoder.";
