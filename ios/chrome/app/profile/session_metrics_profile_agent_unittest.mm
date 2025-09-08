@@ -49,7 +49,7 @@ class FakeProfileSessionDurationsService
 
 // Create a fake IOSProfileSessionDurationsService.
 std::unique_ptr<KeyedService> CreateFakeProfileSessionDurationsService(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   return std::make_unique<FakeProfileSessionDurationsService>();
 }
 

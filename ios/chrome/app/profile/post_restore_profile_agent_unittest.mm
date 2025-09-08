@@ -35,8 +35,7 @@ namespace {
 const char kFakePreRestoreAccountEmail[] = "person@example.org";
 
 // Creates a mock PromosManager.
-std::unique_ptr<KeyedService> CreateMockPromosManager(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> CreateMockPromosManager(ProfileIOS* profile) {
   return std::make_unique<NiceMock<MockPromosManager>>();
 }
 
