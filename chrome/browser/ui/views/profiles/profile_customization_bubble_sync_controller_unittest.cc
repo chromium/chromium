@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -110,10 +111,11 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
   void ApplyColorAndShowBubbleWhenNoValueSynced(
       ProfileCustomizationBubbleSyncController::ShowBubbleCallback
           show_bubble_callback) {
-    ProfileCustomizationBubbleSyncController::
-        ApplyColorAndShowBubbleWhenNoValueSyncedForTesting(
-            browser_.get(), &test_sync_service_, &fake_theme_service_,
-            std::move(show_bubble_callback), kNewProfileColor);
+    browser_->GetFeatures()
+        .profile_customization_bubble_sync_controller()
+        ->ShowOnSyncFailedOrDefaultThemeForTesting(
+            kNewProfileColor, std::move(show_bubble_callback),
+            &test_sync_service_, &fake_theme_service_);
   }
 
   void SetSyncedProfileColor() {

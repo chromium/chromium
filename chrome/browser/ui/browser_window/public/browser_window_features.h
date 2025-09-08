@@ -93,6 +93,10 @@ class PinInfoBarController;
 }  // namespace default_browser
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class ProfileCustomizationBubbleSyncController;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 class DownloadToolbarUIController;
 #endif
@@ -416,6 +420,13 @@ class BrowserWindowFeatures {
     return browser_select_file_dialog_controller_.get();
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  ProfileCustomizationBubbleSyncController*
+  profile_customization_bubble_sync_controller() {
+    return profile_customization_bubble_sync_controller_.get();
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();
@@ -572,6 +583,11 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<BrowserSelectFileDialogController>
       browser_select_file_dialog_controller_;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  std::unique_ptr<ProfileCustomizationBubbleSyncController>
+      profile_customization_bubble_sync_controller_;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 

@@ -83,6 +83,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
@@ -345,6 +346,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   browser_select_file_dialog_controller_ =
       std::make_unique<BrowserSelectFileDialogController>(profile);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  profile_customization_bubble_sync_controller_ =
+      std::make_unique<ProfileCustomizationBubbleSyncController>(browser,
+                                                                 profile);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
