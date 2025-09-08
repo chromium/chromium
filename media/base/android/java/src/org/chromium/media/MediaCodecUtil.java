@@ -56,11 +56,10 @@ class MediaCodecUtil {
     }
 
     /**
-     * Class to abstract platform version API differences for interacting with
-     * the MediaCodecList.
+     * Class to abstract platform version API differences for interacting with the MediaCodecList.
      */
     private static class MediaCodecListHelper implements Iterable<MediaCodecInfo> {
-        public MediaCodecListHelper() {
+        MediaCodecListHelper() {
             try {
                 mCodecList = new MediaCodecList(MediaCodecList.ALL_CODECS).getCodecInfos();
             } catch (Throwable e) {
@@ -119,9 +118,7 @@ class MediaCodecUtil {
 
     /** Return true if and only if info is a software codec. */
     public static boolean isSoftwareCodec(MediaCodecInfo info) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (!info.isHardwareAccelerated() || info.isSoftwareOnly()) return true;
-        }
+        if (!info.isHardwareAccelerated() || info.isSoftwareOnly()) return true;
 
         String name = info.getName().toLowerCase(Locale.ROOT);
 
