@@ -922,11 +922,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        // create(): Client device hint should jump to the platform
        // authenticator.
        {L, mc, {usb, internal, cable}, {rk, hint_plat}, {add, t(internal)},
-#if BUILDFLAG(IS_MAC)
-         create_pk,
-#else
-         plat_ui,
-#endif
+        kIsMac ? create_pk : plat_ui,
        },
        // But not if there isn't a platform authenticator.
        {L, mc, {usb, cable}, {rk, hint_plat}, {add}, qr},
@@ -934,8 +930,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {L, mc, {cable}, {has_winapi, rk, hint_plat}, {winapi, add},
         plat_ui},
        // Or if there's iCloud Keychain.
+#if BUILDFLAG(IS_MAC)
        {L, mc, {cable}, {has_ickc, create_ickc, rk, hint_plat}, {ickc, add},
         plat_ui},
+#endif // BUILDFLAG(IS_MAC)
 
        // get(): Security key hint should show security key UI.
        {L, ga, {usb, internal, cable}, {rk, hint_sk}, {add, t(usb)},
@@ -2712,6 +2710,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   EXPECT_FALSE(icloud_mechanism_found);
 }
 
+#if BUILDFLAG(IS_MAC)
+
 // Test that when iCloud Keychain is dispatched to automatically because of
 // client hints, cancelling brings the user back to the mechanism selection
 // screen.
@@ -2729,6 +2729,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       kICloudKeychainId, AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kICloudKeychain));
   controller.set_allow_icloud_keychain(true);
+  controller.set_should_create_in_icloud_keychain(true);
   content::AuthenticatorRequestClientDelegate::Hints hints;
   hints.transport = device::FidoTransportProtocol::kInternal;
   controller.SetHints(std::move(hints));
@@ -2762,3 +2763,5 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   controller.OnUserConsentDenied();
   EXPECT_EQ(model->step(), Step::kNotStarted);
 }
+
+#endif  // BUILDFLAG(IS_MAC)

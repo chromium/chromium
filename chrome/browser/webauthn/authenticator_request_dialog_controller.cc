@@ -384,6 +384,52 @@ const gfx::VectorIcon& GetMechanismIcon(
       type);
 }
 
+// Returns `true` if `mech` satisfies the given `hint`, `false` otherwise.
+bool MechanismMatchesHint(const Mechanism::Type& mech,
+                          AuthenticatorTransport hint) {
+  return std::visit(
+      absl::Overload{
+          [hint](const Mechanism::Transport& transport) {
+            return transport.value() == hint;
+          },
+          [hint](const Mechanism::AddPhone&) {
+            return hint == AuthenticatorTransport::kHybrid;
+          },
+          [hint](const Mechanism::Enclave&) {
+            return hint == AuthenticatorTransport::kInternal;
+          },
+          [hint](const Mechanism::ICloudKeychain&) {
+            return hint == AuthenticatorTransport::kInternal;
+          },
+          [hint](const Mechanism::WindowsAPI&) {
+            return hint == AuthenticatorTransport::kInternal ||
+                   hint == AuthenticatorTransport::kUsbHumanInterfaceDevice ||
+                   (hint == AuthenticatorTransport::kHybrid &&
+                    WebAuthnApiSupportsHybrid());
+          },
+          [](const Mechanism::Credential&) {
+            // Credentials are always given priority over hints.
+            return false;
+          },
+          [](const Mechanism::Password&) { return false; },
+          [](const Mechanism::SignInAgain&) { return false; },
+      },
+      mech);
+}
+
+// Returns the index of the first mechanism that matches `type`, or std::nullopt
+// if none is found.
+std::optional<int> FindIndexOfFirstMechanismOfType(
+    base::span<const Mechanism> mechanisms,
+    const Mechanism::Type& type) {
+  for (size_t i = 0; i < mechanisms.size(); i++) {
+    if (type == mechanisms[i].type) {
+      return i;
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 AuthenticatorRequestDialogController::EphemeralState::EphemeralState() =
@@ -727,9 +773,6 @@ void AuthenticatorRequestDialogController::
     } else {
       SetCurrentStep(Step::kErrorNoAvailableTransports);
     }
-  } else if (transport_availability_.request_type ==
-                 FidoRequestType::kMakeCredential &&
-             hints_.transport && StartGuidedFlowForHint(*hints_.transport)) {
   } else if (model_->priority_mechanism_index) {
     Mechanism& mechanism =
         model_->mechanisms[*model_->priority_mechanism_index];
@@ -768,10 +811,7 @@ void AuthenticatorRequestDialogController::
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else if (std::holds_alternative<Mechanism::Password>(mechanism.type)) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
-    } else if (cred != nullptr || !hints_.transport.has_value() ||
-               transport_availability_.request_type !=
-                   FidoRequestType::kGetAssertion ||
-               !StartGuidedFlowForHint(*hints_.transport)) {
+    } else {
       if (std::holds_alternative<Mechanism::Enclave>(mechanism.type)) {
         device::enclave::RecordEvent(
             device::enclave::Event::kMakeCredentialPriorityShown);
@@ -879,42 +919,29 @@ void AuthenticatorRequestDialogController::
 
 bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
     AuthenticatorTransport transport) {
+  // The RP has given a hint about the expected transport for a create() or
+  // get() call.
+  // See https://w3c.github.io/webauthn/#enum-hints
+  if (transport == AuthenticatorTransport::kInternal &&
+      enclave_enabled_status_ ==
+          EnclaveEnabledStatus::kEnabledAndReauthNeeded) {
+    // Go to the mechanism selection screen to give the user a chance to use
+    // GPM.
+    return false;
+  }
   Profile* const profile =
       Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
           ->GetOriginalProfile();
-  const auto mechanism_is_transport = [](const Mechanism& mech,
-                                         AuthenticatorTransport transport) {
-    const auto* mech_transport = std::get_if<Mechanism::Transport>(&mech.type);
-    return mech_transport && mech_transport->value() == transport;
-  };
+  bool can_default_to_enclave = CanDefaultToEnclave(profile);
 
-  // The RP has given a hint about the expected transport for a create() call.
-  // See https://w3c.github.io/webauthn/#enum-hints
   const auto mech_it = std::ranges::find_if(
       model_->mechanisms,
-      [this, mechanism_is_transport, transport, profile](const auto& mech) {
-        switch (transport) {
-          case AuthenticatorTransport::kUsbHumanInterfaceDevice:
-            return std::get_if<Mechanism::WindowsAPI>(&mech.type) ||
-                   mechanism_is_transport(
-                       mech, AuthenticatorTransport::kUsbHumanInterfaceDevice);
-          case AuthenticatorTransport::kHybrid:
-            return (WebAuthnApiSupportsHybrid() &&
-                    std::get_if<Mechanism::WindowsAPI>(&mech.type)) ||
-                   std::get_if<Mechanism::AddPhone>(&mech.type);
-          case AuthenticatorTransport::kInternal:
-            return enclave_enabled_status_ !=
-                       EnclaveEnabledStatus::kEnabledAndReauthNeeded &&
-                   (std::get_if<Mechanism::WindowsAPI>(&mech.type) ||
-                    std::get_if<Mechanism::ICloudKeychain>(&mech.type) ||
-                    (std::get_if<Mechanism::Enclave>(&mech.type) &&
-                     CanDefaultToEnclave(profile)) ||
-                    mechanism_is_transport(mech,
-                                           AuthenticatorTransport::kInternal));
-          default:
-            NOTREACHED();
-            return false;
+      [transport, can_default_to_enclave](const auto& mech) {
+        if (std::holds_alternative<Mechanism::Enclave>(mech.type) &&
+            !can_default_to_enclave) {
+          return false;
         }
+        return MechanismMatchesHint(mech.type, transport);
       });
 
   if (mech_it != model_->mechanisms.end()) {
@@ -2382,11 +2409,30 @@ AuthenticatorRequestDialogController::IndexOfMakeCredentialPriorityMechanism() {
     priority_list.emplace_back(Mechanism::WindowsAPI());
   }
 
-  for (const auto& priority_mechanism : priority_list) {
-    for (size_t i = 0; i < model_->mechanisms.size(); i++) {
-      if (priority_mechanism == model_->mechanisms[i].type) {
-        return i;
+  if (hints_.transport) {
+    // Hints were specified, make sure to consider USB and hybrid.
+    priority_list.emplace_back(Mechanism::Transport(*hints_.transport));
+
+    // Find the highest priority mechanism that matches the hint.
+    for (const auto& priority_mechanism : priority_list) {
+      if (!MechanismMatchesHint(priority_mechanism, *hints_.transport)) {
+        continue;
       }
+      std::optional<int> index = FindIndexOfFirstMechanismOfType(
+          model_->mechanisms, priority_mechanism);
+      if (index.has_value()) {
+        return *index;
+      }
+    }
+    // No mechanism matching `hints_` was found. Continue to return the highest
+    // priority mechanism ignoring `hints_` instead.
+  }
+
+  for (const auto& priority_mechanism : priority_list) {
+    std::optional<int> index =
+        FindIndexOfFirstMechanismOfType(model_->mechanisms, priority_mechanism);
+    if (index.has_value()) {
+      return *index;
     }
   }
 

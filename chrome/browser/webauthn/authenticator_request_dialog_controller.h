@@ -123,6 +123,9 @@ class AuthenticatorRequestDialogController
   // Valid action when at step: kNotStarted.
   void StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
 
+  // Starts a flow for `transport`. Returns `true` if it started a flow, `false`
+  // if it didn't and the mechanism selection screen should be shown instead.
+  // This should only be called if `priority_mechanism_index_` is unset.
   bool StartGuidedFlowForHint(AuthenticatorTransport transport);
 
   // Proceeds straight to the platform authenticator prompt. If `type` is
