@@ -54,12 +54,7 @@ interface PageHandler {
   // handler instance.
   // What the WebUI can do with the UnguessableToken:
   //   1. Delete a file from browser-process cache.
-  //   2. Listen for status changes from browser-process. (Not implemented)
-  //   3. Send list of tokens to browser-process when a query is submitted. The
-  //      browser-side cross-references this list with what it has and only
-  //      puts server IDs (separate IDs stored in browser-process) in the final
-  //      query for files that the WebUI and browser-process have the same
-  //      token for. (Not implemented)
+  //   2. Listen for status changes from browser-process.
   AddFile(SelectedFileInfo file_info, mojo_base.mojom.BigBuffer file_bytes) =>
       (mojo_base.mojom.UnguessableToken token);
   // Notify handler of file deletion. This removes the file from the
@@ -71,8 +66,9 @@ interface PageHandler {
 
 // NewTabPage WebUI-side handler for requests from the browser.
 interface Page {
-  // Updates the status of a file upload operation. Used to update the user on
-  // the status of a file upload operation.
+  // Used to update the user on the status of a file upload operation. Each file
+  // upload operation is associated with a unique token, and the browser
+  // process uses these tokens to provide file upload updates to the WebUI.
   OnFileUploadStatusChanged(mojo_base.mojom.UnguessableToken token,
                            composebox_query.mojom.FileUploadStatus status,
                            composebox_query.mojom.FileUploadErrorType? error_type);
