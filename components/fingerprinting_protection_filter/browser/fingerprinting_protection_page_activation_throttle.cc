@@ -279,27 +279,6 @@ void FingerprintingProtectionPageActivationThrottle::LogMetricsOnChecksComplete(
                             ActivationDecision::ACTIVATION_DECISION_MAX);
 }
 
-namespace {
-
-bool ShouldMeasurePerformance(double performance_measurement_rate) {
-  return base::ThreadTicks::IsSupported() &&
-         (performance_measurement_rate == 1 ||
-          base::RandDouble() < performance_measurement_rate);
-}
-
-}  // namespace
-
-bool FingerprintingProtectionPageActivationThrottle::
-    GetEnablePerformanceMeasurements(bool is_incognito) const {
-  // Performance measurement rate may differ between incognito and
-  // non-incognito modes.
-  double performance_measurement_rate = GetFieldTrialParamByFeatureAsDouble(
-      is_incognito ? features::kEnableFingerprintingProtectionFilterInIncognito
-                   : features::kEnableFingerprintingProtectionFilter,
-      features::kPerformanceMeasurementRateParam, 0.0);
-  return ShouldMeasurePerformance(performance_measurement_rate);
-}
-
 bool FingerprintingProtectionPageActivationThrottle::
     HasContentSettingsCookieException() const {
   if (content_settings_ == nullptr) {

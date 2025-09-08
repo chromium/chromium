@@ -78,8 +78,6 @@ class FingerprintingProtectionPageActivationThrottle
       override;
   const char* GetNameForLogging() override;
 
-  bool GetEnablePerformanceMeasurements(bool is_incognito) const;
-
   bool HasContentSettingsCookieException() const;
 
   bool HasTrackingProtectionException() const;
