@@ -239,10 +239,6 @@ crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineIn
 # Win11/RTX 4070 Super failures after upgrading to driver 580.88
 crbug.com/438512194 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Underlay [ RetryOnFailure ]
 
-# Win10 with no-damage rAFs detached from VSync, slow swap tests can risk
-# timeout.
-crbug.com/337094888 [ win10 nvidia-0x2184 angle-d3d11 ] SwapChainTraceTest_IsOpaque [ Slow ]
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
