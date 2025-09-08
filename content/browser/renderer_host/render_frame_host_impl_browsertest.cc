@@ -2353,14 +2353,13 @@ class ExecuteScriptBeforeRenderFrameDeletedHelper
 // events, the UI message loop is not pumped, and no sync IPC messages are
 // processed on the UI thread.
 //
-// Formerly, if the second WebContents scheduled a call to window.close() to
+// Note that if the second WebContents scheduled a call to window.close() to
 // close itself after it calls window.open(), the CreateNewWindow sync IPC could
 // be dispatched *before* WidgetHostMsg_Close in the browser process, provided
 // that the browser happened to be in IPC::SyncChannel::WaitForReply on the UI
 // thread (most likely after sending GpuCommandBufferMsg_* messages), in which
 // case incoming sync IPCs to this thread are dispatched, but the message loop
-// is not pumped, so proxied non-sync IPCs are not delivered. Fortunately, such
-// IPCs are no longer present.
+// is not pumped, so proxied non-sync IPCs are not delivered.
 //
 // Furthermore, on Android, exercising window.open() must be delayed until after
 // content::RemoveShellView returns, as that method calls into JNI to close the

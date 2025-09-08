@@ -610,10 +610,11 @@ void ChildThreadImpl::Init(const Options& options) {
   main_thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   if (options.with_legacy_ipc_channel) {
-    channel_ = std::make_unique<IPC::ChannelProxy>(
+    channel_ = IPC::SyncChannel::Create(
         this, ChildProcess::current()->io_task_runner(),
         ipc_task_runner_ ? ipc_task_runner_
-                         : base::SingleThreadTaskRunner::GetCurrentDefault());
+                         : base::SingleThreadTaskRunner::GetCurrentDefault(),
+        ChildProcess::current()->GetShutDownEvent());
     if (options.urgent_message_observer) {
       channel_->SetUrgentMessageObserver(options.urgent_message_observer);
     }

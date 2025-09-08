@@ -38,7 +38,7 @@ class RenderProcessHost;
 }
 
 namespace IPC {
-class ChannelProxy;
+class SyncChannel;
 }  // namespace IPC
 
 namespace content {
@@ -56,7 +56,7 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   RenderThread();
   ~RenderThread() override;
 
-  virtual IPC::ChannelProxy* GetChannel() = 0;
+  virtual IPC::SyncChannel* GetChannel() = 0;
   virtual std::string GetLocale() = 0;
 
   virtual bool GenerateFrameRoutingID(

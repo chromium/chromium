@@ -126,7 +126,7 @@ class CONTENT_EXPORT ChildProcess {
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_runner_;
 
   // NOTE: make sure that main_thread_ is listed after shutdown_event_, since
-  // it depends on it (indirectly through IPC::ChannelProxy).  Same for
+  // it depends on it (indirectly through IPC::SyncChannel).  Same for
   // io_thread_.
   std::unique_ptr<ChildThreadImpl> main_thread_;
 

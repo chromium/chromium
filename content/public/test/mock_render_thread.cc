@@ -42,7 +42,7 @@ MockRenderThread::MockRenderThread()
 
 MockRenderThread::~MockRenderThread() = default;
 
-IPC::ChannelProxy* MockRenderThread::GetChannel() {
+IPC::SyncChannel* MockRenderThread::GetChannel() {
   return nullptr;
 }
 
