@@ -2048,14 +2048,12 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
       Host()->LowLatencyEnabled()) {
     // If LowLatency is enabled, we need a resource that is able to perform
     // well in such mode. Try a SharedImage with the appropriate flags.
-    if (!provider) {
-      gpu::SharedImageUsageSet shared_image_usage_flags =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-      provider = CanvasResourceProvider::CreateSharedImageProvider(
-          Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
-          SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          shared_image_usage_flags, Host());
-    }
+    gpu::SharedImageUsageSet shared_image_usage_flags =
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    provider = CanvasResourceProvider::CreateSharedImageProvider(
+        Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
+        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+        shared_image_usage_flags, Host());
   } else if (SharedGpuContext::IsGpuCompositingEnabled()) {
     // If there is no LowLatency mode, and GPU is enabled, will try a GPU
     // SharedImage that should support Usage Display and probably Usage Scanout
