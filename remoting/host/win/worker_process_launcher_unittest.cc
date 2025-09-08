@@ -21,7 +21,6 @@
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
@@ -155,9 +154,6 @@ class WorkerProcessLauncherTest : public testing::Test, public IPC::Listener {
 
   // Disconnects the server end of the channel (the launcher's end).
   void DisconnectServer();
-
-  // Sends a message to the worker process.
-  void SendToProcess(IPC::Message* message);
 
   // Sends a fake message to the launcher.
   void SendFakeMessageToLauncher();
