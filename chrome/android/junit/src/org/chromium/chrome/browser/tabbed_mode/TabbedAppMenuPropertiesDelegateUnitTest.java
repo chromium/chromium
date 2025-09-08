@@ -1162,10 +1162,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         assertMenuItemsAreEqual(modelList, expectedItems);
     }
 
-    @Test
-    @Config(qualifiers = "sw600dp")
-    public void testOverviewMenuItems_Tablet_NoTabs() {
+    private void checkOverviewMenuItems(boolean newIncognitoWindowEnabled) {
         setUpIncognitoMocks();
+        when(mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()).thenReturn(true);
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);
         when(mTabModel.getCount()).thenReturn(0);
 
@@ -1175,13 +1174,33 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
-        Integer[] expectedItems = {
-            R.id.new_tab_menu_id,
-            R.id.new_incognito_tab_menu_id,
-            R.id.preferences_id,
-            R.id.quick_delete_menu_id
-        };
-        assertMenuItemsAreEqual(modelList, expectedItems);
+        List<Integer> expectedItems = new ArrayList<>(List.of(R.id.new_tab_menu_id));
+
+        if (newIncognitoWindowEnabled) {
+            expectedItems.add(R.id.new_window_menu_id);
+            expectedItems.add(R.id.new_incognito_window_menu_id);
+        } else {
+            expectedItems.add(R.id.new_incognito_tab_menu_id);
+        }
+
+        expectedItems.add(R.id.preferences_id);
+        expectedItems.add(R.id.quick_delete_menu_id);
+
+        assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testOverviewMenuItems_Tablet_NoTabs() {
+        checkOverviewMenuItems(/* newIncognitoWindowEnabled= */ false);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testOverviewMenuItems_Tablet_NoTabs_withNewIncognitoWindow() {
+        checkOverviewMenuItems(/* newIncognitoWindowEnabled= */ true);
     }
 
     @Test

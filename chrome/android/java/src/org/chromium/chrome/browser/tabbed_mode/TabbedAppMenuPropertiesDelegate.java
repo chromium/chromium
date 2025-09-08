@@ -225,7 +225,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildNewTabItem());
         }
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || isIncognitoShowing()) {
-            modelList.add(buildNewIncognitoTabItem(/* considerNewTabIcon= */ true));
+            modelList.add(buildNewIncognitoTabItem());
         }
 
         // Add to Group
@@ -423,7 +423,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildNewTabItem());
         }
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || isIncognitoShowing()) {
-            modelList.add(buildNewIncognitoTabItem(/* considerNewTabIcon= */ true));
+            modelList.add(buildNewIncognitoTabItem());
         }
         if (shouldShowNewIncognitoWindow()) {
             modelList.add(buildNewWindowItem());
@@ -441,7 +441,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private void populateTabletEmptyModeMenu(MVCListAdapter.ModelList modelList) {
         modelList.add(buildNewTabItem());
-        modelList.add(buildNewIncognitoTabItem());
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            modelList.add(buildNewWindowItem());
+            modelList.add(buildNewIncognitoWindowItem());
+        } else {
+            modelList.add(buildNewIncognitoTabItem());
+        }
         modelList.add(buildSettingsItem());
         if (shouldShowQuickDeleteItem()) modelList.add(buildQuickDeleteItem());
     }
@@ -503,19 +508,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private MVCListAdapter.ListItem buildNewIncognitoTabItem() {
-        return buildNewIncognitoTabItem(false);
-    }
-
-    private MVCListAdapter.ListItem buildNewIncognitoTabItem(boolean considerNewTabIcon) {
-        int iconRes = R.drawable.ic_incognito;
-        if (considerNewTabIcon && IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            iconRes = R.drawable.ic_add_box_rounded_corner;
+        int iconRes = 0;
+        if (shouldShowIconBeforeItem()) {
+            iconRes =
+                    IncognitoUtils.shouldOpenIncognitoAsWindow()
+                            ? R.drawable.ic_add_box_rounded_corner
+                            : R.drawable.ic_incognito;
         }
         PropertyModel model =
                 buildModelForStandardMenuItem(
-                        R.id.new_incognito_tab_menu_id,
-                        R.string.menu_new_incognito_tab,
-                        shouldShowIconBeforeItem() ? iconRes : 0);
+                        R.id.new_incognito_tab_menu_id, R.string.menu_new_incognito_tab, iconRes);
         model.set(
                 AppMenuItemProperties.ENABLED, isIncognitoEnabled() && !isIncognitoReauthShowing());
         return new MVCListAdapter.ListItem(TabbedAppMenuItemType.NEW_INCOGNITO_TAB, model);
