@@ -33,6 +33,7 @@
 
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property.h"
+#include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -42,7 +43,6 @@ namespace blink {
 // are implemented in WebAnimations.
 class SVGColorProperty final : public SVGPropertyBase {
  public:
-  explicit SVGColorProperty(const String&);
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(style_color_);
@@ -50,6 +50,7 @@ class SVGColorProperty final : public SVGPropertyBase {
   }
 
   String ValueAsString() const override;
+  SVGParsingError SetValueAsString(const String&);
 
   void Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(

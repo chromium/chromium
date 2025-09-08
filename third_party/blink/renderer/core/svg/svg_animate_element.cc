@@ -497,11 +497,11 @@ SVGAnimateElement::CreatePropertyForCSSAnimation(const String& value) const {
   // Create a basic instance of the corresponding SVG property.
   // The instance will not have full context info. (e.g. SVGLengthMode)
   switch (type_) {
-    case kAnimatedColor:
-      // TODO: Implement proper logic to detect any parsing errors and handle
-      // them appropriately for SVGAnimatedColor.
-      return {MakeGarbageCollected<SVGColorProperty>(value),
-              SVGParseStatus::kNoError};
+    case kAnimatedColor: {
+      auto* property = MakeGarbageCollected<SVGColorProperty>();
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
+    }
     case kAnimatedNumber: {
       auto* property = MakeGarbageCollected<SVGNumber>();
       SVGParseStatus status = property->SetValueAsString(value).Status();
