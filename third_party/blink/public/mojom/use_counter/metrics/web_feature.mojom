@@ -3804,7 +3804,7 @@ enum WebFeature {
   kOBSOLETE_WindowOpenFullscreenRequested = 4525,
   kOBSOLETE_FullscreenAllowedByWindowOpen = 4526,
   // The items above roughly this point are available in the M113 branch.
-  kAttributeValueContainsLtOrGt = 4527,
+  kOBSOLETE_AttributeValueContainsLtOrGt = 4527,
   kOBSOLETE_V8ImportAssertionDeprecatedSyntax = 4528,
   kImageCaptureBackgroundBlur = 4529,
   kPrivateNetworkAccessPreflightError = 4530,

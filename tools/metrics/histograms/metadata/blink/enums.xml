@@ -4997,7 +4997,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4524" label="AsyncClipboardAPIUnsanitizedRead"/>
   <int value="4525" label="OBSOLETE_WindowOpenFullscreenRequested"/>
   <int value="4526" label="OBSOLETE_FullscreenAllowedByWindowOpen"/>
-  <int value="4527" label="AttributeValueContainsLtOrGt"/>
+  <int value="4527" label="OBSOLETE_AttributeValueContainsLtOrGt"/>
   <int value="4528" label="OBSOLETE_V8ImportAssertionDeprecatedSyntax"/>
   <int value="4529" label="ImageCaptureBackgroundBlur"/>
   <int value="4530" label="PrivateNetworkAccessPreflightError"/>

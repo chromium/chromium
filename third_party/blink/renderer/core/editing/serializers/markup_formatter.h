@@ -58,11 +58,11 @@ enum EntityMask {
   kEntityMaskInAttributeValue = kEntityAmp | kEntityQuot | kEntityLt |
                                 kEntityGt | kEntityTab | kEntityLineFeed |
                                 kEntityCarriageReturn,
-  kEntityMaskInHTMLAttributeValue = kEntityAmp | kEntityQuot | kEntityNbsp,
-  // Entity mask for an experiment with escaping "<" and ">" in attributes.
-  // See: crbug.com/1175016
-  kEntityExperimentalMaskInHTMLAttributeValue =
-      kEntityMaskInHTMLAttributeValue | kEntityLt | kEntityGt,
+  // Note: historically, "<" and ">" were not escaped in HTML attribute values.
+  // This was changed in the HTML spec on May 20, 2025, see:
+  // https://github.com/whatwg/html/pull/6362.
+  kEntityMaskInHTMLAttributeValue =
+      kEntityAmp | kEntityQuot | kEntityLt | kEntityGt | kEntityNbsp,
 };
 
 enum class SerializationType { kHTML, kXML };
@@ -71,24 +71,18 @@ class MarkupFormatter final {
   STACK_ALLOCATED();
 
  public:
-  static void AppendAttributeValue(StringBuilder&,
-                                   const String&,
-                                   bool,
-                                   const Document&);
+  static void AppendAttributeValue(StringBuilder&, const String&, bool);
   static void AppendAttributeAsHTML(StringBuilder& result,
                                     const Attribute& attribute,
-                                    const String& value,
-                                    const Document& node);
+                                    const String& value);
   static void AppendAttributeAsXMLWithoutNamespace(StringBuilder& result,
                                                    const Attribute& attribute,
-                                                   const String& value,
-                                                   const Document& document);
+                                                   const String& value);
   static void AppendAttribute(StringBuilder& result,
                               const AtomicString& prefix,
                               const AtomicString& local_name,
                               const String& value,
-                              bool document_is_html,
-                              const Document& document);
+                              bool document_is_html);
   static void AppendCDATASection(StringBuilder&, const String&);
   static void AppendCharactersReplacingEntities(StringBuilder& result,
                                                 const StringView& source,

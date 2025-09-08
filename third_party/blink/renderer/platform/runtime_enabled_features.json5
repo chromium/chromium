@@ -2032,13 +2032,6 @@
       status: "stable",
     },
     {
-      // Escapes "<" and ">" in attribute values. This was launched
-      // in M139, and this flag can be removed in M141.
-      // See: crbug.com/1175016
-      name: "EscapeLtGtInAttributes",
-      status: "stable",
-    },
-    {
       name: "EventTimingInteractionCount",
       status: "experimental",
     },

@@ -911,9 +911,6 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.IGNORE_DUPLICATE_NAVS,
                 "Ignore duplicate navigations, keeping the older navigations instead."),
         Flag.baseFeature("OverrideAPIKey"),
-        Flag.baseFeature(
-                BlinkFeatures.ESCAPE_LT_GT_IN_ATTRIBUTES,
-                "When enabled, less-than and greater-than characters in attributes are escaped."),
         Flag.baseFeature("CacheStylusSettings", "Cache stylus related settings."),
         Flag.baseFeature(
                 "AsyncFastCheckout", "When enabled, run FastCheckoutTabHelper asynchronously."),
