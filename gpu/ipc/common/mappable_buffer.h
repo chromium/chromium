@@ -17,8 +17,8 @@
 
 namespace gpu {
 
-// Provides common implementation of a GPU memory buffer.
-//
+// Abstraction for a CPU-mappable buffer that is used internally by
+// ClientSharedImage to implement mappable SharedImages.
 class GPU_IPC_COMMON_EXPORT MappableBuffer {
  public:
   using CopyNativeBufferToShMemCallback =
