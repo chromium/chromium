@@ -170,24 +170,27 @@ IN_PROC_BROWSER_TEST_F(AttemptLoginToolInteractiveUiTest, SmokeTest) {
                 }
               });
 
-              // Convert the Map<string, Blob> to Object<string, string>.
-              const iconPromises = Array.from(request.icons.entries()).map(
-                async ([site, getBlob]) => {
-                  const blob = await getBlob();
-                  const base64 = await blobToBase64(blob);
-                  return [site, base64];
-                }
+              const credentialsWithIcons = await Promise.all(
+                request.credentials.map(async (cred) => {
+                  const {getIcon, ...rest} = cred;
+                  if (!getIcon) {
+                    return rest;
+                  }
+                  const blob = await getIcon();
+                  if (!blob) {
+                    return rest;
+                  }
+                  const icon = await blobToBase64(blob);
+                  return {...rest, icon};
+                })
               );
-              const base64Icons =
-                Object.fromEntries(await Promise.all(iconPromises));
 
               // Resolve the promise with the request data to be verified in
               // C++.
               resolve({
                 taskId: request.taskId,
                 showDialog: request.showDialog,
-                credentials: request.credentials,
-                icons: base64Icons,
+                credentials: credentialsWithIcons,
               });
             }
           );
@@ -213,6 +216,8 @@ IN_PROC_BROWSER_TEST_F(AttemptLoginToolInteractiveUiTest, SmokeTest) {
       "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+"
       "9AAAAI0lEQVR4AeyQMQ0AAAyDSP177hwsCCgJHxcp1BgkC99Res8BAAD//"
       "+wxhQIAAAAGSURBVAMAZIwUAbOgDh0AAAAASUVORK5CYII=";
+  const std::string kExpectedIconDataUrl =
+      base::StrCat({"data:image/png;base64,", kExpectedIconBase64Url});
   auto expected_request =
       base::Value::Dict()
           .Set("taskId", actor_task().id().value())
@@ -223,16 +228,14 @@ IN_PROC_BROWSER_TEST_F(AttemptLoginToolInteractiveUiTest, SmokeTest) {
                                .Set("id", GenerateCredentialId().value())
                                .Set("username", "username1")
                                .Set("sourceSiteOrApp",
-                                    url.GetWithEmptyPath().spec()))
+                                    url.GetWithEmptyPath().spec())
+                               .Set("icon", kExpectedIconDataUrl))
                    .Append(base::Value::Dict()
                                .Set("id", GenerateCredentialId().value())
                                .Set("username", "username2")
                                .Set("sourceSiteOrApp",
-                                    url.GetWithEmptyPath().spec())))
-          .Set("icons",
-               base::Value::Dict().Set(url.GetWithEmptyPath().spec(),
-                                       base::StrCat({"data:image/png;base64,",
-                                                     kExpectedIconBase64Url})));
+                                    url.GetWithEmptyPath().spec())
+                               .Set("icon", kExpectedIconDataUrl)));
 
   // Verify the dialog request content.
   RunTestSequence(InAnyContext(WithElement(

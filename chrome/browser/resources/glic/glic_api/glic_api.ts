@@ -1797,6 +1797,8 @@ export declare interface Credential {
   // The original website or application for which this credential was saved
   // for.
   sourceSiteOrApp: string;
+  // The optional icon for the credential, encoded as a PNG image.
+  getIcon?(): Promise<Blob>;
 }
 
 export declare interface SelectCredentialDialogRequest {
@@ -1809,10 +1811,6 @@ export declare interface SelectCredentialDialogRequest {
   // The order of `credentials` is based on what the browser believes to be the
   // best match to use.
   credentials: Credential[];
-  // The optional icons for each credential, encoded as PNG images. The key is
-  // Credential.sourceSiteOrApp. The icons are separated from the credentials
-  // as an optimisation to avoid serializing the same icon multiple times.
-  icons?: Map<string, () => Promise<Blob>>;
 
   // The WebClient must call this function to respond back to the browser when
   // the dialog is closed.

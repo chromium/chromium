@@ -9,7 +9,7 @@ import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js'
 import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {ResponseExtras} from './post_message_transport.js';
-import type {AnnotatedPageDataPrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientRequestTypes} from './request_types.js';
+import type {AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientRequestTypes} from './request_types.js';
 import {ImageAlphaType, ImageColorType, newTransferableException, SelectCredentialDialogErrorReason} from './request_types.js';
 
 
@@ -227,6 +227,7 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   async glicWebClientRequestToShowDialog(payload: {
     request: SelectCredentialDialogRequestPrivate,
   }): Promise<{response: SelectCredentialDialogResponsePrivate}> {
+    const request = payload.request;
     return new Promise(resolve => {
       if (!this.host.selectCredentialDialogRequestSubject
                .hasActiveSubscription()) {
@@ -236,26 +237,37 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
             'GlicWebClient: no subscriber for selectCredentialDialogRequest()!');
         resolve({
           response: {
-            taskId: payload.request.taskId,
+            taskId: request.taskId,
             errorReason:
                 SelectCredentialDialogErrorReason.DIALOG_PROMISE_NO_SUBSCRIBER,
           },
         });
         return;
       }
-      const icons = new Map<string, () => Promise<Blob>>();
+      const iconsGetter = new Map<string, () => Promise<Blob>>();
       for (const [id, image] of payload.request.icons.entries()) {
         let promise: Promise<Blob>|undefined;
-        icons.set(id, () => {
+        iconsGetter.set(id, () => {
           if (!promise) {
             promise = rgbaImageToBlob(image);
           }
           return promise;
         });
       }
+      const credentials =
+          request.credentials.map((credential: CredentialPrivate) => {
+            const getIcon = iconsGetter.get(credential.sourceSiteOrApp);
+            if (getIcon) {
+              return {
+                ...credential,
+                getIcon,
+              };
+            }
+            return credential;
+          });
       const requestWithCallback: SelectCredentialDialogRequest = {
-        ...payload.request,
-        icons,
+        ...request,
+        credentials,
         onDialogClosed: resolve,
       };
       this.host.selectCredentialDialogRequestSubject.next(requestWithCallback);
