@@ -772,7 +772,8 @@ void AutofillManager::ParseFormsAsyncCommon(
   RunMlModels(AsyncContext(*this, std::move(form_structures)),
               std::move(run_heuristics_and_update_cache));
 #else
-  std::move(run_heuristics_and_update_cache).Run(std::move(form_structures));
+  std::move(run_heuristics_and_update_cache)
+      .Run(AsyncContext(*this, std::move(form_structures)));
 #endif
 }
 
