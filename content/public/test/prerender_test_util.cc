@@ -465,20 +465,12 @@ FrameTreeNodeId PrerenderHostCreationWaiter::Wait() {
 }
 
 ScopedPrerenderFeatureList::ScopedPrerenderFeatureList()
-    : ScopedPrerenderFeatureList(/*force_disable_prerender2_fallback=*/true,
-                                 /*force_enable_prerender2_in_new_tab=*/true) {}
+    : ScopedPrerenderFeatureList(/*force_disable_prerender2_fallback=*/true) {}
 
 ScopedPrerenderFeatureList::ScopedPrerenderFeatureList(
-    bool force_disable_prerender2_fallback,
-    bool force_enable_prerender2_in_new_tab) {
+    bool force_disable_prerender2_fallback) {
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
-
-  // Explicitly enables blink::features::kPrerender2InNewTab to override
-  // SpeculationRulesTargetHint.
-  if (force_enable_prerender2_in_new_tab) {
-    enabled_features.push_back(blink::features::kPrerender2InNewTab);
-  }
 
   // Disable the memory requirement of Prerender2
   // so the test can run on any bot.
@@ -497,17 +489,13 @@ ScopedPrerenderFeatureList::ScopedPrerenderFeatureList(
 
 PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
     : feature_list_(ScopedPrerenderFeatureList(
-          /*force_disable_prerender2_fallback=*/true,
-          /*force_enable_prerender2_in_new_tab=*/true)),
+          /*force_disable_prerender2_fallback=*/true)),
       get_web_contents_fn_(fn) {}
 
-PrerenderTestHelper::PrerenderTestHelper(
-    const WebContents::Getter& fn,
-    bool force_disable_prerender2_fallback,
-    bool force_enable_prerender2_in_new_tab)
+PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn,
+                                         bool force_disable_prerender2_fallback)
     : feature_list_(
-          ScopedPrerenderFeatureList(force_disable_prerender2_fallback,
-                                     force_enable_prerender2_in_new_tab)),
+          ScopedPrerenderFeatureList(force_disable_prerender2_fallback)),
       get_web_contents_fn_(fn) {}
 
 PrerenderTestHelper::~PrerenderTestHelper() = default;

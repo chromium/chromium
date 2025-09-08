@@ -351,8 +351,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     prerender_helper_ = std::make_unique<test::PrerenderTestHelper>(
         base::BindRepeating(&PrerenderBrowserTest::web_contents,
                             base::Unretained(this)),
-        /*force_disable_prerender2_fallback*/ true,
-        /*force_enable_prerender2innewtab*/ false);
+        /*force_disable_prerender2_fallback=*/true);
 
     // Input suppression during paintholding interferes with the input event
     // dispatches to top frames.  Disabling kDropInputEventsWhilePaintHolding
