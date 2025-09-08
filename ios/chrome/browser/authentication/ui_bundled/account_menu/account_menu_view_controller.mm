@@ -122,6 +122,11 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  if (!self.dataSource) {
+    // The account menu has been stopped before the view loaded.
+    // The content of this view can not actually be computed.
+    return;
+  }
   _resizeReady = NO;
   self.tableView =
       [[UITableView alloc] initWithFrame:CGRectZero
