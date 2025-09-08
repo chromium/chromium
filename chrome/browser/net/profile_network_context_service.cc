@@ -413,7 +413,7 @@ bool NeedsIpProtection(const IpProtectionCoreHost* ipp_core_host,
 constexpr std::string_view kDiskCacheExperimentNameSeparator = " ";
 constexpr std::string_view kDiskCacheExperimentNameNone = "None";
 // The date and prefix for the disk cache backend experiment.
-#define DISK_CACHE_EXPERIMENT_DATE_PREFIX "20250725-DiskCache-"
+#define DISK_CACHE_EXPERIMENT_DATE_PREFIX "20250905-DiskCache-"
 constexpr std::string_view kDiskCacheExperimentNameDefault =
     DISK_CACHE_EXPERIMENT_DATE_PREFIX "Default";
 constexpr std::string_view kDiskCacheExperimentNameSimple =

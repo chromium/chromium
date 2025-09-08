@@ -5,11 +5,13 @@
 #include "net/disk_cache/sql/cache_entry_key.h"
 
 #include "base/check.h"
+#include "net/disk_cache/simple/simple_util.h"
 
 namespace disk_cache {
 
 CacheEntryKey::CacheEntryKey(std::string str)
-    : data_(base::MakeRefCounted<base::RefCountedString>(std::move(str))) {}
+    : data_(base::MakeRefCounted<base::RefCountedString>(std::move(str))),
+      hash_(static_cast<int64_t>(simple_util::GetEntryHashKey(string()))) {}
 
 CacheEntryKey::~CacheEntryKey() = default;
 

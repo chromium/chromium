@@ -38,7 +38,7 @@ constexpr auto kSchemaAndIndexQueries = base::MakeFixedFlatSet<Query>({
     Query::kInitSchema_CreateTableResources,
     Query::kInitSchema_CreateTableBlobs,
     Query::kIndex_ResourcesToken,
-    Query::kIndex_ResourcesCacheKeyDoomed,
+    Query::kIndex_ResourcesCacheKeyHashDoomed,
     Query::kIndex_ResourcesDoomedLastUsed,
     Query::kIndex_ResourcesDoomedResId,
     Query::kIndex_BlobsTokenStart,
@@ -129,8 +129,8 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
       base::MakeFixedFlatMap<Query, std::string_view>(
           {{Query::kOpenEntry_SelectLiveResources,
             "`--SEARCH resources USING "
-            "INDEX index_resources_cache_key_doomed "
-            "(cache_key=? AND doomed=?)"},
+            "INDEX index_resources_cache_key_hash_doomed "
+            "(cache_key_hash=? AND doomed=?)"},
            {Query::kCreateEntry_InsertIntoResources, ""},
            {Query::kDoomEntry_MarkDoomedResources,
             "`--SEARCH resources USING "
@@ -146,8 +146,8 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "(doomed=?)"},
            {Query::kDeleteLiveEntry_DeleteFromResources,
             "`--SEARCH resources USING "
-            "COVERING INDEX index_resources_cache_key_doomed "
-            "(cache_key=? AND doomed=?)"},
+            "INDEX index_resources_cache_key_hash_doomed "
+            "(cache_key_hash=? AND doomed=?)"},
            {Query::kDeleteAllEntries_DeleteFromResources, ""},
            {Query::kDeleteAllEntries_DeleteFromBlobs, ""},
            {Query::kDeleteLiveEntriesBetween_SelectLiveResources,
@@ -159,8 +159,8 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kUpdateEntryLastUsed_UpdateResourceLastUsed,
             "`--SEARCH resources USING "
-            "INDEX index_resources_cache_key_doomed "
-            "(cache_key=? AND doomed=?)"},
+            "INDEX index_resources_cache_key_hash_doomed "
+            "(cache_key_hash=? AND doomed=?)"},
            {Query::kUpdateEntryHeaderAndLastUsed_UpdateResource,
             "`--SEARCH resources USING INDEX "
             "index_resources_token "

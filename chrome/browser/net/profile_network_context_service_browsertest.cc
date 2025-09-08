@@ -433,7 +433,7 @@ class ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest
 
   const char* GetExperimentString() {
 // The date and prefix for the disk cache backend experiment.
-#define DISK_CACHE_EXPERIMENT_DATE_PREFIX "20250725-DiskCache-"
+#define DISK_CACHE_EXPERIMENT_DATE_PREFIX "20250905-DiskCache-"
     switch (GetParam()) {
       case net::features::DiskCacheBackend::kDefault:
         return DISK_CACHE_EXPERIMENT_DATE_PREFIX "Default";

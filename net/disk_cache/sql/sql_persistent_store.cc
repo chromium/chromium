@@ -221,7 +221,7 @@ void RecordTimeAndErrorResultHistogram(std::string_view method_name,
   if (!db.Execute(GetQuery(Query::kInitSchema_CreateTableResources)) ||
       !db.Execute(GetQuery(Query::kInitSchema_CreateTableBlobs)) ||
       !db.Execute(GetQuery(Query::kIndex_ResourcesToken)) ||
-      !db.Execute(GetQuery(Query::kIndex_ResourcesCacheKeyDoomed)) ||
+      !db.Execute(GetQuery(Query::kIndex_ResourcesCacheKeyHashDoomed)) ||
       !db.Execute(GetQuery(Query::kIndex_ResourcesDoomedLastUsed)) ||
       !db.Execute(GetQuery(Query::kIndex_ResourcesDoomedResId)) ||
       !db.Execute(GetQuery(Query::kIndex_BlobsTokenStart))) {
@@ -687,7 +687,8 @@ OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key,
 
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, GetQuery(Query::kOpenEntry_SelectLiveResources)));
-  statement.BindString(0, key.string());
+  statement.BindInt64(0, key.hash());
+  statement.BindString(1, key.string());
   if (!statement.Step()) {
     // `Step()` returned false, which means either the query completed with no
     // results, or an error occurred.
@@ -785,7 +786,8 @@ EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
     statement.BindTime(2, entry_info.last_used);
     statement.BindInt64(3, entry_info.body_end);
     statement.BindInt64(4, bytes_usage);
-    statement.BindString(5, key.string());
+    statement.BindInt64(5, key.hash());
+    statement.BindString(6, key.string());
     if (!statement.Run()) {
       return base::unexpected(Error::kFailedToExecute);
     }
@@ -1074,7 +1076,8 @@ Error Backend::DeleteLiveEntryInternal(const CacheEntryKey& key,
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kDeleteLiveEntry_DeleteFromResources)));
-    statement.BindString(0, key.string());
+    statement.BindInt64(0, key.hash());
+    statement.BindString(1, key.string());
     while (statement.Step()) {
       ++deleted_count;
       auto maybe_token = ToUnguessableToken(statement.ColumnInt64(0),
@@ -1298,7 +1301,8 @@ Error Backend::UpdateEntryLastUsedInternal(const CacheEntryKey& key,
         SQL_FROM_HERE,
         GetQuery(Query::kUpdateEntryLastUsed_UpdateResourceLastUsed)));
     statement.BindTime(0, last_used);
-    statement.BindString(1, key.string());
+    statement.BindInt64(1, key.hash());
+    statement.BindString(2, key.string());
     if (!statement.Run()) {
       return Error::kFailedToExecute;
     }

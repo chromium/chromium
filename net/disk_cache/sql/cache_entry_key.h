@@ -48,9 +48,11 @@ class NET_EXPORT_PRIVATE CacheEntryKey {
   bool operator==(const CacheEntryKey& other) const;
 
   const std::string& string() const;
+  int64_t hash() const { return hash_; }
 
  private:
   scoped_refptr<const base::RefCountedString> data_;
+  int64_t hash_;
 };
 
 }  // namespace disk_cache
@@ -62,7 +64,8 @@ namespace std {
 template <>
 struct hash<disk_cache::CacheEntryKey> {
   std::size_t operator()(const disk_cache::CacheEntryKey& k) const {
-    return std::hash<std::string>{}(k.string());
+    // Narrowing conversion happens when sizeof(std::size_t) is less than 64.
+    return k.hash();
   }
 };
 

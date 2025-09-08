@@ -35,6 +35,8 @@ inline constexpr const char kInitSchema_CreateTableResources[] =
         "bytes_usage INTEGER NOT NULL,"
         // Flag for entries pending deletion
         "doomed INTEGER NOT NULL,"
+        // The hash of `cache_key` created by simple_util::GetEntryHashKey()
+        "cache_key_hash INTEGER NOT NULL,"
         // The cache key created by HttpCache::GenerateCacheKeyForRequest()
         "cache_key TEXT NOT NULL,"
         // Serialized response headers
@@ -68,12 +70,12 @@ inline constexpr const char kIndex_ResourcesToken[] =
     "CREATE UNIQUE INDEX index_resources_token ON "
     "resources(token_high, token_low)";
 
-// An index on `(cache_key, doomed)` to speed up lookups for live entries. This
-// is frequently used in operations like `OpenEntry` to quickly find a
+// An index on `(cache_key_hash, doomed)` to speed up lookups for live entries.
+// This is frequently used in operations like `OpenEntry` to quickly find a
 // non-doomed entry for a given cache key.
-inline constexpr const char kIndex_ResourcesCacheKeyDoomed[] =
-    "CREATE INDEX index_resources_cache_key_doomed ON "
-    "resources(cache_key, doomed)";
+inline constexpr const char kIndex_ResourcesCacheKeyHashDoomed[] =
+    "CREATE INDEX index_resources_cache_key_hash_doomed ON "
+    "resources(cache_key_hash, doomed)";
 
 // An index on `(doomed, last_used)` to optimize eviction logic. Eviction
 // typically targets the least recently used (`last_used`) live (`doomed=false`)
@@ -110,7 +112,8 @@ inline constexpr const char kOpenEntry_SelectLiveResources[] =
         "head "        // 4
     "FROM resources "
     "WHERE "
-        "cache_key=? AND "  // 0
+        "cache_key_hash=? AND " // 0
+        "cache_key=? AND "      // 1
         "doomed=0 "
     "ORDER BY res_id DESC";
 // clang-format on
@@ -118,14 +121,15 @@ inline constexpr const char kOpenEntry_SelectLiveResources[] =
 inline constexpr const char kCreateEntry_InsertIntoResources[] =
     // clang-format off
     "INSERT INTO resources("
-        "token_high,"   // 0
-        "token_low,"    // 1
-        "last_used,"    // 2
-        "body_end,"     // 3
-        "bytes_usage,"  // 4
+        "token_high,"     // 0
+        "token_low,"      // 1
+        "last_used,"      // 2
+        "body_end,"       // 3
+        "bytes_usage,"    // 4
         "doomed,"
-        "cache_key) "   // 5
-    "VALUES(?,?,?,?,?,0,?)";
+        "cache_key_hash," // 5
+        "cache_key) "     // 6
+    "VALUES(?,?,?,?,?,0,?,?)";
 // clang-format on
 
 inline constexpr const char kDoomEntry_MarkDoomedResources[] =
@@ -166,7 +170,8 @@ inline constexpr const char kDeleteLiveEntry_DeleteFromResources[] =
     // clang-format off
     "DELETE FROM resources "
     "WHERE "
-        "cache_key=? AND "  // 0
+        "cache_key_hash=? AND " // 0
+        "cache_key=? AND "      // 1
         "doomed=0 "
     "RETURNING "
         "token_high,"       // 0
@@ -202,9 +207,10 @@ inline constexpr const char kUpdateEntryLastUsed_UpdateResourceLastUsed[] =
     // clang-format off
     "UPDATE resources "
     "SET "
-        "last_used=? "      // 0
+        "last_used=? "          // 0
     "WHERE "
-        "cache_key=? AND "  // 1
+        "cache_key_hash=? AND " // 1
+        "cache_key=? AND "      // 2
         "doomed=0";
 // clang-format on
 
@@ -402,7 +408,7 @@ enum class Query {
   kInitSchema_CreateTableResources,
   kInitSchema_CreateTableBlobs,
   kIndex_ResourcesToken,
-  kIndex_ResourcesCacheKeyDoomed,
+  kIndex_ResourcesCacheKeyHashDoomed,
   kIndex_ResourcesDoomedLastUsed,
   kIndex_ResourcesDoomedResId,
   kIndex_BlobsTokenStart,
@@ -445,8 +451,8 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kInitSchema_CreateTableBlobs;
     case Query::kIndex_ResourcesToken:
       return internal::kIndex_ResourcesToken;
-    case Query::kIndex_ResourcesCacheKeyDoomed:
-      return internal::kIndex_ResourcesCacheKeyDoomed;
+    case Query::kIndex_ResourcesCacheKeyHashDoomed:
+      return internal::kIndex_ResourcesCacheKeyHashDoomed;
     case Query::kIndex_ResourcesDoomedLastUsed:
       return internal::kIndex_ResourcesDoomedLastUsed;
     case Query::kIndex_ResourcesDoomedResId:
