@@ -72,8 +72,7 @@ class MockReportingEventRouter : public ReportingEventRouter {
 };
 
 std::unique_ptr<KeyedService> BuildTestingReportingEventRouter(
-    web::BrowserState* browser_state) {
-  auto* profile = ProfileIOS::FromBrowserState(browser_state);
+    ProfileIOS* profile) {
   return std::make_unique<MockReportingEventRouter>(
       IOSRealtimeReportingClientFactory::GetForProfile(profile));
 }
