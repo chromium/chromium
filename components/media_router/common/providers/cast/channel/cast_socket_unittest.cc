@@ -62,7 +62,6 @@ const int64_t kDistantTimeoutMillis = 100000;  // 100 seconds (never hit).
 using ::testing::_;
 using ::testing::A;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::InvokeArgument;
 using ::testing::NotNull;
 using ::testing::Return;

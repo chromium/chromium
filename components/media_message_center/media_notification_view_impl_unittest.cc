@@ -40,7 +40,6 @@ namespace media_message_center {
 using media_session::mojom::MediaSessionAction;
 using testing::_;
 using testing::Expectation;
-using testing::Invoke;
 
 namespace {
 
@@ -842,8 +841,9 @@ TEST_F(MediaNotificationViewImplTest, ActionButtonRowSizeAndAlignment) {
 TEST_F(MediaNotificationViewImplTest, NotifysContainerOfExpandedState) {
   // Track the expanded state given to |container_|.
   bool expanded = false;
-  EXPECT_CALL(container(), OnExpanded(_))
-      .WillRepeatedly(Invoke([&expanded](bool exp) { expanded = exp; }));
+  EXPECT_CALL(container(), OnExpanded(_)).WillRepeatedly([&expanded](bool exp) {
+    expanded = exp;
+  });
 
   // Expand the view implicitly via |EnableAllActions()|.
   view()->SetExpanded(true);

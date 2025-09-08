@@ -177,12 +177,11 @@ TEST_F(MediaSessionNotificationItemTest, Freezing_DisableInteraction) {
 
 TEST_F(MediaSessionNotificationItemTest, UpdatesViewWithActions) {
   EXPECT_CALL(view(), UpdateWithMediaActions(_))
-      .WillOnce(testing::Invoke(
-          [](const base::flat_set<MediaSessionAction>& actions) {
-            EXPECT_EQ(2u, actions.size());
-            EXPECT_TRUE(actions.contains(MediaSessionAction::kPlay));
-            EXPECT_TRUE(actions.contains(MediaSessionAction::kPause));
-          }));
+      .WillOnce([](const base::flat_set<MediaSessionAction>& actions) {
+        EXPECT_EQ(2u, actions.size());
+        EXPECT_TRUE(actions.contains(MediaSessionAction::kPlay));
+        EXPECT_TRUE(actions.contains(MediaSessionAction::kPause));
+      });
   item().MediaSessionActionsChanged(
       {MediaSessionAction::kPlay, MediaSessionAction::kPause});
 }
@@ -308,8 +307,8 @@ TEST_F(MediaSessionNotificationItemTest, SemiUnfreezesWithoutArtwork_Timeout) {
   // Once the freeze timer fires, the artwork should unfreeze even if there's no
   // artwork. Since we've received no artwork, the artwork should be null.
   EXPECT_CALL(view(), UpdateWithMediaArtwork(_))
-      .WillOnce(testing::Invoke(
-          [](const gfx::ImageSkia& image) { EXPECT_TRUE(image.isNull()); }));
+      .WillOnce(
+          [](const gfx::ImageSkia& image) { EXPECT_TRUE(image.isNull()); });
   AdvanceClockMilliseconds(2600);
   testing::Mock::VerifyAndClearExpectations(&view());
 }

@@ -15,7 +15,6 @@
 
 using testing::_;
 using testing::DoAll;
-using testing::Invoke;
 using testing::Return;
 using testing::ReturnRef;
 using testing::SaveArg;

@@ -55,13 +55,11 @@ class MediaSessionItemProducerTest : public testing::Test {
     testing::Mock::AllowLeak(audio_focus_manager_.get());
 
     EXPECT_CALL(*audio_focus_manager_, GetFocusRequests(_))
-        .WillOnce(
-            testing::Invoke([](media_session::test::MockAudioFocusManager::
-                                   GetFocusRequestsCallback callback) {
-              std::move(callback).Run(
-                  std::vector<
-                      media_session::mojom::AudioFocusRequestStatePtr>());
-            }));
+        .WillOnce([](media_session::test::MockAudioFocusManager::
+                         GetFocusRequestsCallback callback) {
+          std::move(callback).Run(
+              std::vector<media_session::mojom::AudioFocusRequestStatePtr>());
+        });
 
     mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote(
         audio_focus_manager_->GetPendingRemote());
