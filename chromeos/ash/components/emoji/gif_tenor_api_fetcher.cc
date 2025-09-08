@@ -105,13 +105,13 @@ std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
   return std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/std::move(url_loader_factory),
-      /*url=*/url,
-      /*content_type=*/kHttpContentType,
-      /*timeout=*/kTimeout,
-      /*post_data=*/"",
-      /*headers=*/std::vector<std::string>(),
-      /*cors_exempt_headers=*/std::vector<std::string>(), ash::GetChannel(),
+      /*identity_manager=*/nullptr,
       EndpointFetcher::RequestParams::Builder(kHttpMethod, annotation_tag)
+          .SetAuthType(endpoint_fetcher::CHROME_API_KEY)
+          .SetChannel(ash::GetChannel())
+          .SetContentType(kHttpContentType)
+          .SetTimeout(kTimeout)
+          .SetUrl(url)
           .Build());
 }
 
