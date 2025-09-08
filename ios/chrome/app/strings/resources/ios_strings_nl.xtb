@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Je pincode is niet gewijzigd. Check de internetverbinding en probeer het opnieuw.</translation>
 <translation id="1063070031224282617">Kies waar je <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />) wilt opslaan</translation>
 <translation id="1072476005125066234">Reviews op basis van je interesses</translation>
+<translation id="1072679792409426431">Uitgezet door je beheerder</translation>
 <translation id="1074827084851510304">Je staat op het punt om {password_count} wachtwoorden en de lijst met sites en apps waarvoor je hebt gekozen om nooit inloggegevens op te slaan, te verwijderen. Accounts die je voor sites en apps hebt gemaakt, worden niet verwijderd.</translation>
 <translation id="1076421457278169141">Code gescand</translation>
 <translation id="1081114897601629648">De volgende wachtwoorden zijn niet geïmporteerd in Google Wachtwoordmanager omdat ze niet voldoen aan de vereisten.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Dit adres wordt verwijderd van dit apparaat.}other{Deze adressen worden verwijderd van dit apparaat.}}</translation>
 <translation id="2297989278479054870">Nadat je bent uitgelogd, worden onder andere de bookmarks en wachtwoorden in je Google-account van dit apparaat verwijderd.</translation>
 <translation id="2299218006564889602">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
+<translation id="2306265833370324042">Details voor <ph name="SEARCH_ENGINE_NAME" /> tonen</translation>
 <translation id="2309265394777270359">Tabblad sluiten</translation>
 <translation id="2311077293164383652">Vastgezet tabblad sluiten</translation>
 <translation id="2316129865977710310">Nee, bedankt</translation>
@@ -1201,6 +1203,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5709005673595820640">{count,plural, =1{Je hebt {count} hergebruikt wachtwoord dat een beveiligingsrisico kan vormen. Pas dit nu aan om beveiligd te blijven.}other{Je hebt {count} hergebruikte wachtwoorden die een beveiligingsrisico kunnen vormen. Pas ze nu aan om beveiligd te blijven.}}</translation>
 <translation id="57094364128775171">Sterk wachtwoord voorstellen…</translation>
 <translation id="5718049162805123412">Je moet deze nu wijzigen</translation>
+<translation id="5721040778297053709">Plaats de creditcard in dit kader</translation>
 <translation id="572328651809341494">Recente tabbladen</translation>
 <translation id="5724941645893276623">Voeg een nieuw tabblad toe als je privé wilt browsen</translation>
 <translation id="5728072125198221967">Gekoppelde Google-services</translation>
@@ -1780,6 +1783,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7889910613639381518">Makkelijke en beveiligde toegang met de widget Google Wachtwoordmanager.</translation>
 <translation id="7899199123054742721">Alles als ongelezen markeren</translation>
 <translation id="7911190106180361398">Je organisatie staat niet toe dat je alles synchroniseert.</translation>
+<translation id="7918999344502274923">Details voor <ph name="SEARCH_ENGINE_NAME" /> verbergen</translation>
 <translation id="792357691529995513">Geen problemen gevonden</translation>
 <translation id="7925108652071887026">Gegevens van Automatisch invullen</translation>
 <translation id="7926975587469166629">Bijnaam kaart</translation>

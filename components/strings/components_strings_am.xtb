@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">የቀጥታ መግለጫ ጽሁፍ አሁን ላይ አይገኝም</translation>
 <translation id="112840717907525620">የመምሪያ መሸጎጫ እሺ</translation>
 <translation id="1131264053432022307">እርስዎ የቀዱት ምስል</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – ከሙሉ ገጽ ዕይታ ለመውጣት የላይኛውን ይጎትቱ እና የተመለስ አዝራሩን ይንኩ</translation>
 <translation id="1138458427267715730">በመላ ድሩ በማንኛውም ጣቢያ ላይ ዋጋው ሲቀንስ ማንቂያዎችን ያግኙ</translation>
 <translation id="1142713751288681188">የወረቀት ዓይነት</translation>
 <translation id="1144136880160289237">እስካሁን ምንም ንቁ ርዕሶች የሉዎትም</translation>
@@ -454,6 +455,7 @@
 <translation id="1734878702283171397">የሥርዓት አስተዳዳሪውን ለማነጋገር ይሞክሩ።</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />፣ <ph name="CARD_NETWORK_NAME" />፣ <ph name="CARD_LAST_FOUR_DIGITS" />፣ <ph name="CARD_EXPIRATION" /> ላይ ጊዜው ያበቃል</translation>
 <translation id="1736420071277903564">ኮምፒውተር</translation>
+<translation id="1740404923954980840">ከሙሉ ገጽ ዕይታ ለመውጣት የላይኛውን ይጎትቱ እና የተመለስ አዝራሩን ይንኩ</translation>
 <translation id="1741474054575634405">የታማኝነት ካርዶችን ያስተዳድሩ...</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> ሲሆን መገለጽ እና የሚሰራ ሕብረቁምፊ መሆን አለበት።</translation>
 <translation id="1743393865165844832">የአልጋ ልብሶች እና አንሶላዎች</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2933624813161016821">ፎይልን መቅረጽ</translation>
 <translation id="293796669683825859">አስተያየቶች</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> አገናኞችን ክፈት</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – ጠቋሚዎን ለማሳየት መተግበሪያዎችን ይቀያይሩ፣ ገፁን እንደገና ይጫኑ ወይም ይመለሱ</translation>
 <translation id="2940418897281183211">PNG ምስል</translation>
 <translation id="2941878205777356567">9 x 12 ኢንች ፖስታ</translation>
 <translation id="2941952326391522266">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በ<ph name="DOMAIN2" /> ነው የተሰጠው። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
@@ -1321,6 +1324,7 @@
 <translation id="3207960819495026254">ዕልባት ተደርጎበታል</translation>
 <translation id="3208701679386778924">ተጨማሪ የChromeOS ዝመናዎችን ማሻሻል እንድንችል እባክዎ ሪፖርት ይላኩ።</translation>
 <translation id="3209034400446768650">ገፅ ገንዘብ ሊያስከፍል ይችል ይሆናል</translation>
+<translation id="3212468046572043669">ማውረድ ተጀምሯል። ለመመልከት ከላይ ይጎትቱ እና የተመለስ አዝራርን ይንኩ</translation>
 <translation id="3212581601480735796">በ<ph name="HOSTNAME" /> ላይ የእርስዎ እንቅስቃሴ ቁጥጥር እየተደረገበት ነው</translation>
 <translation id="3215092763954878852">WebAuthn ን መጠቀም አልተቻለም</translation>
 <translation id="3215311088819828484">ውጤት ተዘምኗል</translation>
@@ -1858,6 +1862,7 @@
 <translation id="4085326869263783566">እንድጽፍ አግዘኝ። ትር እና ለመክፈት አስገባን ይጫኑ</translation>
 <translation id="4085769736382018559">ምርቶችን ያወዳድሩ</translation>
 <translation id="4085778582400064057">ሰማያዊ 2</translation>
+<translation id="4085859451613666999">ካርድዎ በGoogle መለያዎ ላይ ተቀምጧል፣ በዚህም ለወደፊት ግዢዎች በራስ መሙላት ይችላሉ</translation>
 <translation id="4088981014127559358">ጎን 1 ምስል Y ፈረቃ</translation>
 <translation id="4089152113577680600">መሳቢያ 14</translation>
 <translation id="4092349052316400070">አድራሻ ይሙሉ</translation>
@@ -2407,6 +2412,7 @@
 <translation id="4995474875135717171">የተቀየረው፦</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ከዚያ የጣቢያ ፍለጋን እና ነባሪ የፍለጋ ፕሮግራምዎን ለማቀናበር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="4998950033665438990">ነጠላ መልክ</translation>
+<translation id="5001338033791319371">ከሙሉ ገጽ ዕይታ ለመውጣት እና ውርድን ለመመልከት ከላይ ይጎትቱ እና የተመለስ አዝራርን ይንኩ</translation>
 <translation id="5001526427543320409">የሦስተኛ ወገን ኩኪዎች</translation>
 <translation id="5002932099480077015">የነቃ እንደሆነ Chrome ለበለጠ ፈጣን ቅጽ አሞላል ሲባል በዚህ መሣሪያ ላይ ያለው የካርድዎን ቅጂ ያከማቻል።</translation>
 <translation id="5007344584818503324">የተጋሩ የትር ቡድኖች እንቅስቃሴ</translation>
@@ -3969,6 +3975,7 @@
 <translation id="7582602800368606489">በGoogle ቀን መቁጠሪያ ውስጥ አዲስ ክስተት በፍጥነት ፍጠር</translation>
 <translation id="7586676035079382730">ማሳወቂያዎች አይፈቀዱም</translation>
 <translation id="7588707273764747927">አስተላልፍ</translation>
+<translation id="7589062909165841767">የእርስዎ Google መለያ የእርስዎ <ph name="BEGIN_LINK_GAA" />የGemini መተግበሪያዎች እንቅስቃሴ<ph name="END_LINK_GAA" /> ሊኖረው ይችላል</translation>
 <translation id="7591288787774558753">ሚስጥራዊ ይዘት ይጋራ?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> በ<ph name="TOP_LEVEL_URL" /> ላይ ኩኪዎችን እና የጣቢያ ውሂብን መጠቀም ይፈልጋል</translation>
 <translation id="7592362899630581445">የአገልጋዩ እውቅና ማረጋገጫ አንዳንድ ገደቦችን ይጥሳል።</translation>
@@ -4254,6 +4261,7 @@
 <translation id="8075736640322370409">አዲስ Google ሉህ በፍጥነት ፍጠር</translation>
 <translation id="8075898834294118863">የጣቢያ ቅንብሮችን ያቀናብሩ</translation>
 <translation id="8076492880354921740">ትሮች</translation>
+<translation id="8076880883123051368">የእርስዎ Google መለያ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ላይ እንደ እርስዎ <ph name="BEGIN_LINK_GAA" />የGemini መተግበሪያዎች እንቅስቃሴ<ph name="END_LINK_GAA" /> ያለ የአሰሳ ታሪክ ሌሎች ቅርጾች ሊኖረው ይችላል</translation>
 <translation id="8077669823243888800">#8 የቻይና ፖስታ</translation>
 <translation id="8078006011486731853">{0,plural, =1{ምስጢራዊ ፋይል ይሰቀል?}one{ምስጢራዊ ፋይል ይሰቀል?}other{ምስጢራዊ ፋይሎች ይሰቀሉ?}}</translation>
 <translation id="8079031581361219619">ጣቢያ ዳግም ይጫን?</translation>
@@ -4387,6 +4395,7 @@
 <translation id="8294431847097064396">ምንጭ</translation>
 <translation id="8297545700510100061">ኩኪዎች እና ሌላ የጣቢያ ውሂብ እርስዎን ለማስታወስ ሥራ ላይ ይውላሉ፣ ለምሳሌ እርስዎን በመለያ ለማስገባት ወይም ማስታወቂያዎችን ግላዊነት ለማላበስ። ለሁሉም ጣቢያዎች ኩኪዎችን ለማቀናበር <ph name="SETTINGS" />ን ይመልከቱ።</translation>
 <translation id="8298115750975731693">እየተጠቀሙበት ያለው Wi-Fi (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ን እንዲጎበኙ ሊጠይቅዎት ይችላል።</translation>
+<translation id="8298399736867690281">ካርድ መሣሪያ ላይ ብቻ ተቀምጧል</translation>
 <translation id="8301894345671534559">ኮድ ያስገቡ</translation>
 <translation id="8304912090860925649">አዲስ የንጽጽር ሰንጠረዥ</translation>
 <translation id="830498451218851433">ግማሽ እጠፍ</translation>
@@ -4908,6 +4917,7 @@
 <translation id="9192361865877479444">ብረት (ድብዳብ)</translation>
 <translation id="9192947025498305328">ንጹህ ውበት</translation>
 <translation id="9195969368671142407">ድርጅትዎ ወደ Google መለያ ማስቀመጥን ከገደበ የትር ቡድኖችን ማጋራት ወይም መቀላቀል አይችሉም</translation>
+<translation id="9198613052465150219">የእርስዎ Google መለያ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>
 <translation id="9199905725844810519">ማተም ታግዷል</translation>
 <translation id="9201904868909900493">የዳሰሳ ጥናት በመክፈት ላይ…</translation>
 <translation id="9204089334327209740">አንዴ ሰቀላ ከተጠናቀቀ በኋላ ፋይሎችዎን <ph name="CLOUD_PROVIDER" /> ውስጥ ማስተካከል ይችላሉ። መጣያ ውስጥ ያሉ ማናቸውም ፋይሎችን ጨምሮ አካባቢያዊ ማከማቻ በራስ-ሰር ይወገዳል።</translation>

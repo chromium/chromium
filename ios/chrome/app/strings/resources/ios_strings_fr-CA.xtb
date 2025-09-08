@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Votre NIP n'a pas été modifié. Vérifiez votre connexion Internet et réessayez</translation>
 <translation id="1063070031224282617">Choisissez l'endroit où enregistrer « <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> » (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Avis en fonction de vos centres d'intérêt</translation>
+<translation id="1072679792409426431">Désactivé par votre administrateur</translation>
 <translation id="1074827084851510304">Vous êtes sur le point de supprimer {password_count} mots de passe et la liste des sites et des applis pour lesquels vous avez choisi de ne jamais enregistrer les renseignements de connexion. Tout compte que vous avez créé pour des sites ou des applis ne sera pas supprimé.</translation>
 <translation id="1076421457278169141">Code numérisé</translation>
 <translation id="1081114897601629648">Les mots de passe suivants n'ont pas été importés dans le gestionnaire de mots de passe Google parce qu'ils ne répondent pas aux exigences.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Cette adresse sera supprimée de cet appareil.}one{Ces adresses seront supprimées de cet appareil.}other{Ces adresses seront supprimées de cet appareil.}}</translation>
 <translation id="2297989278479054870">Après la déconnexion, les favoris, les mots de passe et plus encore de votre compte Google seront retirés de cet appareil.</translation>
 <translation id="2299218006564889602">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le gestionnaire de mots de passe Google.</translation>
+<translation id="2306265833370324042">Afficher les détails de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Fermer l'onglet</translation>
 <translation id="2311077293164383652">Fermer l'onglet épinglé</translation>
 <translation id="2316129865977710310">Non merci</translation>
@@ -1201,6 +1203,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5709005673595820640">{count,plural, =1{Vous avez {count} mot de passe réutilisé, ce qui pourrait compromettre votre sécurité. Modifiez-le maintenant pour rester en sécurité.}one{Vous avez {count} mot de passe réutilisé, ce qui pourrait compromettre votre sécurité. Modifiez-le maintenant pour rester en sécurité.}other{Vous avez {count} mots de passe réutilisés, ce qui pourrait compromettre votre sécurité. Modifiez-les maintenant pour rester en sécurité.}}</translation>
 <translation id="57094364128775171">Suggérer un mot de passe fort…</translation>
 <translation id="5718049162805123412">Vous devriez les modifier maintenant</translation>
+<translation id="5721040778297053709">Positionnez la carte de crédit dans ce cadre</translation>
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5724941645893276623">Pour naviguer confidentiellement sur le Web, ouvrez un nouvel onglet</translation>
 <translation id="5728072125198221967">Services Google associés</translation>
@@ -1780,6 +1783,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7889910613639381518">Accès facile et sécurisé avec le widget Gestionnaire de mots de passe Google.</translation>
 <translation id="7899199123054742721">Tout marquer comme non lu</translation>
 <translation id="7911190106180361398">Votre organisation ne vous autorise pas à tout synchroniser.</translation>
+<translation id="7918999344502274923">Masquer les détails de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Aucun problème trouvé</translation>
 <translation id="7925108652071887026">Données de remplissage automatique</translation>
 <translation id="7926975587469166629">Pseudo de la carte</translation>

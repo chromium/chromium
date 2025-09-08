@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">PIN は変更されませんでした。インターネット接続を確認してもう一度お試しください</translation>
 <translation id="1063070031224282617">「<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />」（<ph name="FILE_SIZE" />）の保存先を選択してください</translation>
 <translation id="1072476005125066234">興味 / 関心に基づくレビュー</translation>
+<translation id="1072679792409426431">管理者によって無効にされています</translation>
 <translation id="1074827084851510304">{password_count} 件のパスワードと、ログイン情報を保存しない設定にしたサイトとアプリの一覧を削除しようとしています。サイトやアプリで作成したアカウントは削除されません。</translation>
 <translation id="1076421457278169141">コードをスキャンしました</translation>
 <translation id="1081114897601629648">次のパスワードは要件を満たしていないため、Google パスワード マネージャーにインポートされませんでした。</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{この住所はこのデバイスから削除されます。}other{これらの住所はこのデバイスから削除されます。}}</translation>
 <translation id="2297989278479054870">ログアウトすると、Google アカウントのブックマークやパスワードなどがこのデバイスから削除されます。</translation>
 <translation id="2299218006564889602">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
+<translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> の詳細を表示</translation>
 <translation id="2309265394777270359">タブを閉じる</translation>
 <translation id="2311077293164383652">固定タブを閉じる</translation>
 <translation id="2316129865977710310">今はしない</translation>
@@ -1201,6 +1203,7 @@
 <translation id="5709005673595820640">{count,plural, =1{使い回しのパスワード {count} 件: セキュリティが危険にさらされる可能性があります。安全を確保するため、今すぐ修正してください。}other{使い回しのパスワード {count} 件: セキュリティが危険にさらされる可能性があります。安全を確保するため、今すぐ修正してください。}}</translation>
 <translation id="57094364128775171">安全なパスワードを自動生成…</translation>
 <translation id="5718049162805123412">今すぐ変更してください</translation>
+<translation id="5721040778297053709">クレジット カードをこの枠に合わせます</translation>
 <translation id="572328651809341494">最近使ったタブ</translation>
 <translation id="5724941645893276623">ウェブをプライベートに閲覧するには、新しいタブを追加してください</translation>
 <translation id="5728072125198221967">リンクされている Google サービス</translation>
@@ -1780,6 +1783,7 @@
 <translation id="7889910613639381518">Google パスワード マネージャー ウィジェットを使えば簡単かつ安全にアクセスできます。</translation>
 <translation id="7899199123054742721">すべて未読にする</translation>
 <translation id="7911190106180361398">お客様の組織では、[すべてを同期する] の設定は許可されていません。</translation>
+<translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> の詳細を非表示</translation>
 <translation id="792357691529995513">問題は検出されませんでした</translation>
 <translation id="7925108652071887026">自動入力のデータ</translation>
 <translation id="7926975587469166629">カードのニックネーム</translation>

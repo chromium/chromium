@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">Hindi available sa ngayon ang Instant Caption</translation>
 <translation id="112840717907525620">OK ang cache ng patakaran</translation>
 <translation id="1131264053432022307">Larawang Kinopya Mo</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – Para lumabas sa full screen, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
 <translation id="1138458427267715730">Makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site sa buong web</translation>
 <translation id="1142713751288681188">Uri ng papel</translation>
 <translation id="1144136880160289237">Wala ka pang aktibong paksa</translation>
@@ -454,6 +455,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1734878702283171397">Subukang makipag-ugnayan sa admin ng system.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, mag-e-expire sa <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computer</translation>
+<translation id="1740404923954980840">Para lumabas sa full screen, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
 <translation id="1741474054575634405">Pamahalaan ang mga loyalty card...</translation>
 <translation id="1741613555002899862">Dapat ay tukuyin at isang valid na string kapag ang DnsOverHttpsMode ay <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Mga Bedding at Sapin sa Kama</translation>
@@ -1153,6 +1155,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="293796669683825859">Mga Komento</translation>
 <translation id="2938225289965773019">Buksan ang mga link ng <ph name="PROTOCOL" /></translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – Para ipakita ang iyong cursor, lumipat ng app, i-reload ang page, o bumalik</translation>
 <translation id="2940418897281183211">Larawang PNG</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
 <translation id="2941952326391522266">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; mula sa <ph name="DOMAIN2" /> ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
@@ -1322,6 +1325,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3207960819495026254">Naka-bookmark</translation>
 <translation id="3208701679386778924">Magpadala ng ulat para mapahusay pa namin ang mga update sa ChromeOS.</translation>
 <translation id="3209034400446768650">Puwedeng maningil ang page</translation>
+<translation id="3212468046572043669">Nagsimula na ang pag-download. Para makita ito, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
 <translation id="3212581601480735796">Sinusubaybayan ang iyong aktibidad sa <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">Hindi magamit ang WebAuthn</translation>
 <translation id="3215311088819828484">Na-update ang resulta</translation>
@@ -1859,6 +1863,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4085326869263783566">Tulungan akong magsulat. I-tap at pindutin ang enter para mabuksan</translation>
 <translation id="4085769736382018559">Paghambingin ang mga produkto</translation>
 <translation id="4085778582400064057">Asul 2</translation>
+<translation id="4085859451613666999">Naka-save ang iyong card sa Google Account mo para ma-autofill mo ito para sa mga pagbili sa hinaharap</translation>
 <translation id="4088981014127559358">Pag-shift ng gilid 1 larawan Y</translation>
 <translation id="4089152113577680600">Tray 14</translation>
 <translation id="4092349052316400070">Punan ang address</translation>
@@ -2408,6 +2413,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4995474875135717171">Binago noong:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para pamahalaan ang paghahanap sa site at ang iyong default na search engine</translation>
 <translation id="4998950033665438990">Single Face</translation>
+<translation id="5001338033791319371">Para lumabas sa full screen at makita ang pag-download, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
 <translation id="5001526427543320409">Mga third-party na cookie</translation>
 <translation id="5002932099480077015">Kung naka-enable, mag-iimbak ang Chrome ng kopya ng iyong card sa device na ito para sa mas mabilis na pagsagot sa form.</translation>
 <translation id="5007344584818503324">Aktibidad sa mga naka-share na grupo ng tab</translation>
@@ -3970,6 +3976,7 @@ Mga karagdagang detalye:
 <translation id="7582602800368606489">Gumawa ng bagong event sa Google Calendar nang mabilis</translation>
 <translation id="7586676035079382730">Hindi pinapayagan ang mga notification</translation>
 <translation id="7588707273764747927">Transfer</translation>
+<translation id="7589062909165841767">Posibleng nasa Google Account mo ang iyong <ph name="BEGIN_LINK_GAA" />Aktibidad sa Mga Gemini App<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Magbahagi ng kumpidensyal na content?</translation>
 <translation id="7591636454931265313">Gustong gamitin ng <ph name="EMBEDDED_URL" /> ang mga cookie at data ng site sa <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Lumabag ang certificate ng server sa limitasyon sa pangalan.</translation>
@@ -4255,6 +4262,7 @@ Mga karagdagang detalye:
 <translation id="8075736640322370409">Gumawa ng bagong Google Sheet nang mabilis</translation>
 <translation id="8075898834294118863">Pamahalaan ang mga setting ng site</translation>
 <translation id="8076492880354921740">Mga Tab</translation>
+<translation id="8076880883123051368">Posibleng may iba pang uri ng history ng pag-browse ang Google Account mo sa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, gaya ng iyong <ph name="BEGIN_LINK_GAA" />Aktibidad sa Mga Gemini App<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{I-upload ang kumpidensyal na file?}one{I-upload ang mga kumpidensyal na file?}other{I-upload ang mga kumpidensyal na file?}}</translation>
 <translation id="8079031581361219619">I-reload ang site?</translation>
@@ -4388,6 +4396,7 @@ Mga karagdagang detalye:
 <translation id="8294431847097064396">Pinagmulan</translation>
 <translation id="8297545700510100061">Ginagamit ang cookies at iba pang data ng site para tandaan ka, halimbawa para i-sign in ka o i-personalize ang mga ad. Para mapamahalaan ang cookies para sa lahat ng site, tingnan ang <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Maaaring hilingin ng Wi-Fi na ginagamit mo (<ph name="WIFI_NAME" />) na bisitahin mo ang <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">Naka-save ang card sa device lang</translation>
 <translation id="8301894345671534559">Ilagay ang code</translation>
 <translation id="8304912090860925649">Bagong Talahanayan ng Paghahambing</translation>
 <translation id="830498451218851433">Fold half</translation>
@@ -4908,6 +4917,7 @@ Mga karagdagang detalye:
 <translation id="9192361865877479444">Metal (Matte)</translation>
 <translation id="9192947025498305328">Mga Natural na Pampaganda</translation>
 <translation id="9195969368671142407">Kapag nilimitahan ng iyong organisasyon ang pag-save sa Google Account mo, hindi ka puwedeng mag-share ng o sumali sa mga grupo ng tab</translation>
+<translation id="9198613052465150219">Posibleng may iba pang uri ng history ng pag-browse ang Google Account mo sa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Naka-block ang pag-print</translation>
 <translation id="9201904868909900493">Binubuksan ang survey...</translation>
 <translation id="9204089334327209740">Kapag natapos na ang pag-upload, puwede mong baguhin ang iyong mga file sa <ph name="CLOUD_PROVIDER" />. Awtomatikong aalisin ang lokal na storage, kasama ang anumang file sa Trash.</translation>

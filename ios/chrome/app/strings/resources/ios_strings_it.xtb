@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Il PIN non è stato modificato. Controlla la connessione a internet e riprova</translation>
 <translation id="1063070031224282617">Scegli dove salvare "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Recensioni basate sui tuoi interessi</translation>
+<translation id="1072679792409426431">Disattivato dall'amministratore</translation>
 <translation id="1074827084851510304">Stai per eliminare {password_count} password e l'elenco di siti e app per cui hai scelto di non salvare mai i dati di accesso. Gli account creati per siti e app non verranno eliminati.</translation>
 <translation id="1076421457278169141">Scansione del codice eseguita</translation>
 <translation id="1081114897601629648">Le seguenti password non sono state importate in Gestore delle password di Google perché non soddisfano i requisiti.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Questo indirizzo verrà eliminato da questo dispositivo.}other{Questi indirizzi verranno eliminati da questo dispositivo.}}</translation>
 <translation id="2297989278479054870">Quando esci, i preferiti, le password e altri dati nel tuo Account Google verranno rimossi da questo dispositivo.</translation>
 <translation id="2299218006564889602">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google.</translation>
+<translation id="2306265833370324042">Mostra dettagli <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Chiudi scheda</translation>
 <translation id="2311077293164383652">Chiudi scheda bloccata</translation>
 <translation id="2316129865977710310">No, grazie</translation>
@@ -1201,6 +1203,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5709005673595820640">{count,plural, =1{Hai {count} password riutilizzata che potrebbe mettere a rischio la tua sicurezza. Sistemala subito per rimanere al sicuro.}other{Hai {count} password riutilizzate che potrebbero mettere a rischio la tua sicurezza. Sistemale subito per rimanere al sicuro.}}</translation>
 <translation id="57094364128775171">Suggerisci password efficace…</translation>
 <translation id="5718049162805123412">Dovresti cambiarle subito</translation>
+<translation id="5721040778297053709">Posiziona la carta di credito all'interno di quest'area</translation>
 <translation id="572328651809341494">Schede recenti</translation>
 <translation id="5724941645893276623">Per navigare sul Web in privato, aggiungi una nuova scheda</translation>
 <translation id="5728072125198221967">Servizi Google collegati</translation>
@@ -1780,6 +1783,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7889910613639381518">Accesso facile e sicuro con il widget Gestore delle password di Google.</translation>
 <translation id="7899199123054742721">Segna tutti come da leggere</translation>
 <translation id="7911190106180361398">La tua organizzazione non ti consente di sincronizzare tutti i dati.</translation>
+<translation id="7918999344502274923">Nascondi dettagli di <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Nessun problema rilevato</translation>
 <translation id="7925108652071887026">Dati della Compilazione automatica</translation>
 <translation id="7926975587469166629">Nickname carta</translation>

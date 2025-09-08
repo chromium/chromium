@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Ni chafodd eich PIN ei newid. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni</translation>
 <translation id="1063070031224282617">Dewiswch ble i gadw "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Adolygiadau yn seiliedig ar eich diddordebau</translation>
+<translation id="1072679792409426431">Wedi'i analluogi gan eich gweinyddwr</translation>
 <translation id="1074827084851510304">Rydych ar fin dileu {password_count} o gyfrineiriau a'r rhestr o wefannau ac apiau y gwnaethoch ddewis peidio byth â chadw mewngofnodi. Ni fydd unrhyw gyfrif a grëwyd gennych ar gyfer gwefannau ac apiau yn cael ei ddileu.</translation>
 <translation id="1076421457278169141">Mae'r cod wedi'i sganio</translation>
 <translation id="1081114897601629648">Ni chafodd y cyfrineiriau canlynol eu mewnforio i Reolwr Cyfrineiriau Google, oherwydd nad ydynt yn cyfateb i'r gofynion.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Bydd y cyfeiriad hwn yn cael ei ddileu o'r ddyfais hon.}zero{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}two{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}few{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}many{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}other{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon.}}</translation>
 <translation id="2297989278479054870">Ar ôl i chi allgofnodi, bydd y nodau tudalen, cyfrineiriau a rhagor yn eich Cyfrif Google yn cael eu tynnu o'r ddyfais hon.</translation>
 <translation id="2299218006564889602">Mae eich cyfrineiriau yn cael eu hamgryptio ar eich dyfais cyn iddynt gael eu cadw i Reolwr Cyfrineiriau Google.</translation>
+<translation id="2306265833370324042">Dangos manylion <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Cau'r Tab</translation>
 <translation id="2311077293164383652">Cau Tab wedi'i Binio</translation>
 <translation id="2316129865977710310">Dim diolch</translation>
@@ -1201,6 +1203,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5709005673595820640">{count,plural, =1{Mae gennych {count} cyfrinair sydd wedi cael ei ailddefnyddio a allai roi eich diogelwch mewn perygl. Trwsiwch ef nawr i aros yn ddiogel.}zero{Mae gennych {count} cyfrineiriau sydd wedi cael eu hailddefnyddio a allai roi eich diogelwch mewn perygl. Trwsiwch nhw nawr i aros yn ddiogel.}two{Mae gennych {count} gyfrinair sydd wedi cael eu hailddefnyddio a allai roi eich diogelwch mewn perygl. Trwsiwch nhw nawr i aros yn ddiogel.}few{Mae gennych {count} chyfrinair sydd wedi cael eu hailddefnyddio a allai roi eich diogelwch mewn perygl. Trwsiwch nhw nawr i aros yn ddiogel.}many{Mae gennych {count} chyfrinair sydd wedi cael eu hailddefnyddio a allai roi eich diogelwch mewn perygl. Trwsiwch nhw nawr i aros yn ddiogel.}other{Mae gennych {count} cyfrinair sydd wedi cael eu hailddefnyddio a allai roi eich diogelwch mewn perygl. Trwsiwch nhw nawr i aros yn ddiogel.}}</translation>
 <translation id="57094364128775171">Awgrymu cyfrinair cryf…</translation>
 <translation id="5718049162805123412">Dylech newid y rhain nawr</translation>
+<translation id="5721040778297053709">Rhowch y cerdyn credyd yn y ffrâm hon</translation>
 <translation id="572328651809341494">Tabiau diweddar</translation>
 <translation id="5724941645893276623">I bori'r we yn breifat, ychwanegwch dab newydd</translation>
 <translation id="5728072125198221967">Gwasanaethau Google cysylltiedig</translation>
@@ -1780,6 +1783,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7889910613639381518">Mynediad hawdd a diogel gyda chelfigyn Rheolwr Cyfrineiriau Google.</translation>
 <translation id="7899199123054742721">Marcio pob un fel heb ei ddarllen</translation>
 <translation id="7911190106180361398">Nid yw'ch sefydliad yn caniatáu i chi gysoni popeth.</translation>
+<translation id="7918999344502274923">Cuddio manylion <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Ni chanfuwyd unrhyw broblemau</translation>
 <translation id="7925108652071887026">Data awtolenwi</translation>
 <translation id="7926975587469166629">Llysenw cerdyn</translation>

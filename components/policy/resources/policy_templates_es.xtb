@@ -472,6 +472,7 @@ Esta función está disponible a partir de <ph name="MAC_OS_NAME" /> 10.15.</tra
       Si se habilita esta política, se activarán las combinaciones de teclas internacionales mejoradas.
       Si no se le asigna ningún valor, esta política estará habilitada en dispositivos gestionados y en dispositivos propiedad de consumidores.
       Ten en cuenta que esta política es temporal y su objetivo es permitir que los usuarios gestionados puedan usar combinaciones de teclas antiguas y obsoletas. Esta política quedará obsoleta cuando estén disponibles las combinaciones de teclas personalizadas.</translation>
+<translation id="1357214899305978790">Configurar accesos directos en la página Nueva pestaña (beta)</translation>
 <translation id="1361661842732478894">Mostrar el botón de inicio en la barra de herramientas</translation>
 <translation id="1363275621236827384">Habilitar consultas a Quirks Server para los perfiles de hardware</translation>
 <translation id="1363839375295535439">Si se habilita esta política o no se define, se habilitará el entorno aislado de LPAC para los servicios de impresión siempre que la configuración del sistema lo admita.
@@ -5259,6 +5260,17 @@ Se mantendrá la sesión iniciada del usuario en su cuenta de Google al eliminar
 Hasta Chrome 114, esta política requería que se asignara el valor true a la política <ph name="SYNC_DISABLED_POLICY_NAME" />. A partir de Chrome 115, si se define esta política, se inhabilitará la sincronización de los tipos de datos correspondientes si no se define la política <ph name="SYNC_DISABLED_POLICY_NAME" /> para inhabilitar <ph name="CHROME_SYNC_NAME" /> ni tampoco se inhabilita <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="4694138212536142867">Habilitar los informes sobre el estado del hardware del dispositivo</translation>
 <translation id="4697581738794063407">Controlar la función para filtrar parámetros de URL</translation>
+<translation id="4698488381632756664">En desarrollo: solo para la versión preliminar.
+
+Si se establece esta política, se preconfigurarán hasta 10 accesos directos personalizados en la página Nueva pestaña de <ph name="PRODUCT_NAME" />.
+
+Si se establece esta política, los usuarios verán estos accesos directos de forma predeterminada y podrán alternar entre "Mis accesos directos", "Sitios web más visitados" o "Accesos directos de mi organización" en el panel Personalizar Chrome. Si se deja vacía o no se establece, el usuario solo podrá alternar entre "Mis accesos directos" y "Sitios web más visitados" en el panel Personalizar Chrome.
+
+Las URLs de acceso directo deben ser únicas.
+
+Si se asigna el valor true a <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" />, los usuarios podrán cambiar el nombre del acceso directo. Si se asigna el valor false o no se establece, los usuarios no podrán cambiar el nombre.
+
+Si se asigna el valor true a <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />, los usuarios podrán quitar el acceso directo. Si se asigna el valor false o no se establece, los usuarios no podrán quitar el acceso directo.</translation>
 <translation id="4698895924806859508">No informar de eventos de red</translation>
 <translation id="4699172675775169585">Archivos e imágenes almacenados en caché</translation>
 <translation id="4699592681017489215">Esta política configura un interruptor local que puede usarse para inhabilitar las comprobaciones de interceptación de DNS. Con las comprobaciones, se intenta averiguar si el navegador está detrás de un proxy que redirige nombres de host desconocidos.

@@ -94,7 +94,7 @@
 <translation id="1398057416966591719"><ph name="BEGIN_LINK1" />မည်သည့် Chrome ဒေတာအား သိမ်းမည်ကို<ph name="END_LINK1" /> သင်၏ Google Account တွင် စီမံနိုင်သည်။
 
 သင်၏ Chrome အသုံးပြုမှု ပိုကောင်းစေရန် ဒေတာအသုံးပြုသော နောက်ထပ်ဆက်တင်များအတွက် <ph name="BEGIN_LINK2" />Google ဝန်ဆောင်မှုများ<ph name="END_LINK2" /> သို့သွားပါ။</translation>
-<translation id="1407069428457324124">အမှောင်နောက်ခံ</translation>
+<translation id="1407069428457324124">အမှောင်အပြင်အဆင်</translation>
 <translation id="1407135791313364759">အားလုံး ဖွင့်ရန်</translation>
 <translation id="1409879593029778104">ဖိုင် ရှိနှင့်နေသောကြောင့် <ph name="FILE_NAME" /> ဒေါင်းလုဒ်လုပ်မှု တားဆီးခံခဲ့ရပါသည်။</translation>
 <translation id="1413446866325418126">သင့် Google Account တွင် ဒေတာသိမ်းခြင်း</translation>
@@ -632,6 +632,7 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို ရှေ့ဆက်ပါ</translation>
 <translation id="4044708993631234325">အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
 <translation id="4045441967987592849">ပြန်ဖွင့်ရန်</translation>
+<translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> အတွက် နောက်ထပ်ရွေးစရာများ</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသည့် ပုံမှန်တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{မျှဝေထားသော တဘ်အုပ်စုများရှိ လုပ်ဆောင်ချက်အသစ်ပါသည့် ပုံမှန်တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="405365679581583349">Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="405399507749852140">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>

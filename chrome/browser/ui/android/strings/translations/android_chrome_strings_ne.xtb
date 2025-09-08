@@ -200,7 +200,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1957557050935255529">PDF लोड गरिँदै छ…</translation>
 <translation id="1959679933317802873">सामग्री लोड गरिँदै छ</translation>
 <translation id="1960290143419248813">Chrome का अपडेटहरू उपलब्ध गराउने सुविधा Android को यो संस्करणमा अब उप्रान्त समर्थित छैन</translation>
-<translation id="1963056249988316027">Identity Check अन भएकाले तपाईंको पहिचान पुष्टि गर्न सकिएन</translation>
+<translation id="1963056249988316027">पहिचान पुष्टि गर्ने सुविधा अन छ र तपाईंको पहिचान पुष्टि गर्न सकिएन</translation>
 <translation id="1963976881984600709">मानक सुरक्षा</translation>
 <translation id="1966710179511230534">कृपया तपाईंको साइन इन विवरण अपडेट गर्नुहोस्।</translation>
 <translation id="1969037871259811890">तपाईंले आफ्नो ब्राउजिङ डेटा मेटाउनुभयो भने तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन। त्यसो गर्न <ph name="BEGIN_LINK1" />Chrome बाट साइन आउट गर्नुहोस्<ph name="END_LINK1" />।</translation>
@@ -553,7 +553,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ १ साइट}other{+ # वटा साइटहरू}}</translation>
 <translation id="3625870480639975468">जुम रिसेट गर्नुहोस</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> सँग आदान प्रदान गर्दै</translation>
-<translation id="363484704507524488">तपाईं चोरी हुनबाट जोगाउने सेटिङमा गई Identity Check व्यवस्थापन गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />सेटिङमा जानुहोस्<ph name="END_LINK" /></translation>
+<translation id="363484704507524488">तपाईं चोरी हुनबाट जोगाउने सेटिङमा गई पहिचान पुष्टि गर्ने सुविधा व्यवस्थापन गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />सेटिङमा जानुहोस्<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">तपाईंले आफ्ना पासवर्डहरू सेभ गरेपछि मात्र Chrome ले तिनको जाँच गर्न सक्छ</translation>
 <translation id="3636940436873918441">रुचाइएका भाषाहरू</translation>
 <translation id="3637744895182738742">तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />आफ्नो खातामा भएको Chrome को डेटा मेटाउनुहोस्<ph name="END_LINK" />।</translation>
@@ -632,6 +632,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="4044708993631234325">पुछारको पाना</translation>
 <translation id="4045441967987592849">फेरि खोल्नुहोस्</translation>
+<translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> का थप विकल्पहरू</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_ONE" /> सामान्य ट्याब}other{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_MANY" /> वटा सामान्य ट्याब}}</translation>
 <translation id="405365679581583349">Google Play services अपडेट गर्नुहोस्</translation>
 <translation id="405399507749852140">कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>

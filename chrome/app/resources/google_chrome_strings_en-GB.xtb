@@ -455,6 +455,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6321592572353357376">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chrome</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6327105987658262776">No update is available.</translation>
+<translation id="6334815226785304306">Make Google Chrome the default browser and pin to the taskbar</translation>
 <translation id="6360449101159168105">While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.</translation>
 <translation id="6388799252195623474">help me with this</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>

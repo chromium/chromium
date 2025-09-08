@@ -451,6 +451,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6321592572353357376">Tiện ích "<ph name="EXTENSION_NAME" />" muốn bạn đăng nhập vào Chrome</translation>
 <translation id="6326175484149238433">Xóa khỏi Chrome</translation>
 <translation id="6327105987658262776">Hiện không có bản cập nhật nào.</translation>
+<translation id="6334815226785304306">Đặt Google Chrome làm trình duyệt mặc định và ghim vào thanh tác vụ</translation>
 <translation id="6360449101159168105">Mặc dù thẻ này không hoạt động nhưng bộ nhớ đã được giải phóng để giúp Chrome luôn hoạt động nhanh. Bạn có thể chọn luôn loại trừ trang web này khỏi trạng thái không hoạt động.</translation>
 <translation id="6388799252195623474">giúp tôi tra cứu về nội dung này</translation>
 <translation id="6412673304250309937">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, Chrome cũng có thể gửi các URL, bao gồm cả các đoạn nội dung trên trang, đến tính năng Duyệt web an toàn.</translation>
@@ -462,7 +463,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6489302989675808168">Bật • Chrome không thể xác minh nguồn gốc của tiện ích này</translation>
 <translation id="6493527311031785448">Google Chrome đang cố gắng <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome đã tự động đóng</translation>
-<translation id="6506909944137591434">Chrome cần quyền truy cập máy ảnh để tạo bản đồ 3D về các khu vực xung quanh bạn</translation>
+<translation id="6506909944137591434">Chrome cần quyền truy cập camera để tạo bản đồ 3D khu vực xung quanh bạn</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome dành cho nhà phát triển</translation>
 <translation id="6520670145826811516">Để cho phép Chrome dùng thông tin vị trí, hãy cấp quyền sử dụng trong phần <ph name="BEGIN_LINK" />cài đặt hệ thống<ph name="END_LINK" /></translation>
 <translation id="6532945796722480006">Mở Gemini trong Chrome Canary</translation>
@@ -639,7 +640,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8575047640889685742">Sử dụng <ph name="BEGIN_LINK" />cụm mật khẩu của riêng bạn<ph name="END_LINK" /> để mã hoá tất cả dữ liệu Chrome trong Tài khoản Google Các địa chỉ và phương thức thanh toán từ Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.</translation>
 <translation id="8601359445272098721">Mới! Bạn có thể dịch cả văn bản và hình ảnh trên màn hình bằng cách chọn nút "dịch màn hình"</translation>
 <translation id="8614913330719544658">Google Chrome không hồi đáp. Chạy lại ngay bây giờ?</translation>
-<translation id="861702415419836452">Chromium cần có quyền sử dụng máy ảnh của bạn để tạo bản đồ 3D về các khu vực xung quanh bạn</translation>
+<translation id="861702415419836452">Chromium cần có quyền truy cập camera để tạo bản đồ 3D khu vực xung quanh bạn</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome sẽ khởi động lại sau 1 phút}other{Chrome sẽ khởi động lại sau # phút}}</translation>
 <translation id="8637932705841171563">Để chia sẻ cửa sổ, hãy cho phép Chrome ghi màn hình trong phần Cài đặt hệ thống</translation>
 <translation id="8641606876632989680">Chrome sẽ thông báo khi mật khẩu bạn dùng để đăng nhập đã bị lộ</translation>

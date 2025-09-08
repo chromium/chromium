@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">Canlı Altyazı şu anda kullanılamıyor</translation>
 <translation id="112840717907525620">Politika önbelleği uygun</translation>
 <translation id="1131264053432022307">Kopyalanan Resim</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" />: Tam ekrandan çıkmak için yukarıdan sürükleyip geri düğmesine dokunun</translation>
 <translation id="1138458427267715730">Web'deki herhangi bir sitede fiyat düşüşü olduğunda uyarı alın</translation>
 <translation id="1142713751288681188">Kağıt türü</translation>
 <translation id="1144136880160289237">Henüz etkin konunuz yok</translation>
@@ -454,6 +455,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1734878702283171397">Sistem yöneticisiyle iletişime geçmeyi deneyin.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, geçerlilik sonu <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Bilgisayar</translation>
+<translation id="1740404923954980840">Tam ekrandan çıkmak için yukarıdan sürükleyip geri düğmesine dokunun</translation>
 <translation id="1741474054575634405">Bağlılık kartlarını yönet...</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> olduğunda, DnsOverHttpsTemplate belirtilmeli ve geçerli bir dize olmalıdır.</translation>
 <translation id="1743393865165844832">Yatak Takımı ve Nevresimler</translation>
@@ -1153,6 +1155,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2933624813161016821">Kabartma Folyosu</translation>
 <translation id="293796669683825859">Yorumlar</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> bağlantılarını açma</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – İmlecinizi göstermek için uygulamalar arasında geçiş yapın, sayfayı yeniden yükleyin veya geri gidin</translation>
 <translation id="2940418897281183211">PNG Resmi</translation>
 <translation id="2941878205777356567">Zarf 9 x 12 inç</translation>
 <translation id="2941952326391522266">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası <ph name="DOMAIN2" /> alan adından geliyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
@@ -1322,6 +1325,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3207960819495026254">Yer işareti koyuldu</translation>
 <translation id="3208701679386778924">ChromeOS güncellemelerini daha iyi hale getirebilmemiz için lütfen rapor gönderin.</translation>
 <translation id="3209034400446768650">Sayfa sizden ücret alabilir</translation>
+<translation id="3212468046572043669">İndirme başladı. Görmek için yukarıdan sürükleyip geri düğmesine dokunun</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> sitesinde etkinliğiniz izleniyor</translation>
 <translation id="3215092763954878852">WebAuthn kullanılamadı</translation>
 <translation id="3215311088819828484">Sonuç güncellendi</translation>
@@ -1859,6 +1863,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4085326869263783566">Yazmama yardım et. Açmak için Sekme ve ardından Enter tuşuna basın.</translation>
 <translation id="4085769736382018559">Ürünleri karşılaştırın</translation>
 <translation id="4085778582400064057">Mavi 2</translation>
+<translation id="4085859451613666999">Kartınız, gelecekteki satın alma işlemlerinde otomatik olarak doldurabilmeniz için Google Hesabınıza kaydedildi</translation>
 <translation id="4088981014127559358">Taraf 1 resim Y kayması</translation>
 <translation id="4089152113577680600">Tepsi 14</translation>
 <translation id="4092349052316400070">Adresi doldur</translation>
@@ -2408,6 +2413,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4995474875135717171">Değiştirilme tarihi:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Site aramayı ve varsayılan arama motorunuzu yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="4998950033665438990">Tek Yüz</translation>
+<translation id="5001338033791319371">Tam ekrandan çıkmak ve indirme işlemini görmek için yukarıdan sürükleyip geri düğmesine dokunun</translation>
 <translation id="5001526427543320409">Üçüncü taraf çerezleri</translation>
 <translation id="5002932099480077015">Bu seçenek etkinleştirildiğinde Chrome, formları daha hızlı doldurmak için kartınızın bir kopyasını bu cihazda saklar.</translation>
 <translation id="5007344584818503324">Paylaşılan sekme grupları etkinliği</translation>
@@ -3970,6 +3976,7 @@ Ek ayrıntılar:
 <translation id="7582602800368606489">Google Takvim'de hızlıca yeni bir etkinlik oluşturun</translation>
 <translation id="7586676035079382730">Bildirimlere izin verilmiyor</translation>
 <translation id="7588707273764747927">Aktar</translation>
+<translation id="7589062909165841767">Google Hesabınızda <ph name="BEGIN_LINK_GAA" />Gemini Uygulamaları Etkinliğiniz<ph name="END_LINK_GAA" /> olabilir</translation>
 <translation id="7591288787774558753">Gizli içerik paylaşılsın mı?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" />, <ph name="TOP_LEVEL_URL" /> üzerinde çerezleri ve site verilerini kullanmak istiyor</translation>
 <translation id="7592362899630581445">Sunucunun sertifikası ad sınırlamasını ihlal ediyor.</translation>
@@ -4255,6 +4262,7 @@ Ek ayrıntılar:
 <translation id="8075736640322370409">Hızlıca yeni bir Google E-Tablosu oluşturun</translation>
 <translation id="8075898834294118863">Site ayarlarını yönet</translation>
 <translation id="8076492880354921740">Sekmeler</translation>
+<translation id="8076880883123051368"><ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> adresinde Google Hesabınızın başka biçimlerde tarama geçmişi olabilir. Örneğin, <ph name="BEGIN_LINK_GAA" />Gemini Uygulamaları Etkinliğiniz<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Zarf Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Gizli dosya yüklensin mi?}other{Gizli dosyalar yüklensin mi?}}</translation>
 <translation id="8079031581361219619">Site yeniden yüklensin mi?</translation>
@@ -4388,6 +4396,7 @@ Ek ayrıntılar:
 <translation id="8294431847097064396">Kaynak</translation>
 <translation id="8297545700510100061">Çerezler ve diğer site verileri sizi hatırlamak için kullanılır, örneğin oturumunuzu açmak veya reklamları kişiselleştirmek için. Çerezlerin tüm siteler için nasıl yönetileceğini <ph name="SETTINGS" /> sayfasından öğrenebilirsiniz.</translation>
 <translation id="8298115750975731693">Kullandığınız kablosuz bağlantı ağı (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> adresini ziyaret etmenizi gerektiriyor olabilir.</translation>
+<translation id="8298399736867690281">Kart yalnızca cihaza kaydedildi</translation>
 <translation id="8301894345671534559">Kodu girin</translation>
 <translation id="8304912090860925649">Yeni Karşılaştırma Tablosu</translation>
 <translation id="830498451218851433">Ortadan katlama</translation>
@@ -4908,6 +4917,7 @@ Ek ayrıntılar:
 <translation id="9192361865877479444">Metal (Mat)</translation>
 <translation id="9192947025498305328">Temiz İçeriğe Sahip Güzellik Ürünleri</translation>
 <translation id="9195969368671142407">Kuruluşunuz, Google Hesabınıza kaydetme işlemini kısıtladığında sekme gruplarını paylaşamaz veya bunlara katılamazsınız</translation>
+<translation id="9198613052465150219">Google Hesabınızın <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> adresinde başka biçimlerde tarama geçmişi olabilir</translation>
 <translation id="9199905725844810519">Yazdırma engellendi</translation>
 <translation id="9201904868909900493">Anket açılıyor…</translation>
 <translation id="9204089334327209740">Yükleme işlemi tamamlandıktan sonra dosyalarınızı <ph name="CLOUD_PROVIDER" /> içinde düzenleyebilirsiniz. Çöp kutusundaki dosyalar da dahil olmak üzere yerel depolama alanı otomatik olarak kaldırılır.</translation>

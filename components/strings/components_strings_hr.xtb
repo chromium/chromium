@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">Automatski titlovi trenutačno nisu dostupni</translation>
 <translation id="112840717907525620">Predmemorija pravila ispravna je</translation>
 <translation id="1131264053432022307">Slika koju ste kopirali</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – da biste zatvorili prikaz na cijelom zaslonu, povucite od vrha zaslona i dodirnite gumb za povratak</translation>
 <translation id="1138458427267715730">Primajte upozorenja kad se cijena snizi na bilo kojoj web-lokaciji na webu</translation>
 <translation id="1142713751288681188">Vrsta papira</translation>
 <translation id="1144136880160289237">Još nemate aktivnih tema</translation>
@@ -454,6 +455,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1734878702283171397">Pokušajte kontaktirati administratora sustava.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, istječe <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Računalo</translation>
+<translation id="1740404923954980840">Da biste zatvorili prikaz na cijelom zaslonu, povucite od vrha zaslona i dodirnite gumb za povratak</translation>
 <translation id="1741474054575634405">Upravljajte karticama vjernosti...</translation>
 <translation id="1741613555002899862">Mora se navesti kao važeći niz kada je DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Krevetnina i posteljina</translation>
@@ -1153,6 +1155,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2933624813161016821">Reljefna folija</translation>
 <translation id="293796669683825859">Komentari</translation>
 <translation id="2938225289965773019">otvoriti veze za <ph name="PROTOCOL" /></translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – da bi se prikazao pokazivač, prebacite se na drugu aplikaciju, ponovno učitajte stranicu ili se vratite</translation>
 <translation id="2940418897281183211">PNG slika</translation>
 <translation id="2941878205777356567">Omotnica 9 x 12 in</translation>
 <translation id="2941952326391522266">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; njegov je sigurnosni certifikat s domene <ph name="DOMAIN2" />. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
@@ -1322,6 +1325,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3207960819495026254">Označeno</translation>
 <translation id="3208701679386778924">Pošaljite izvješće da bismo poboljšali daljnja ažuriranja ChromeOS-a.</translation>
 <translation id="3209034400446768650">Stranica se možda naplaćuje</translation>
+<translation id="3212468046572043669">Preuzimanje je započelo. Za prikaz preuzimanja povucite od vrha zaslona i dodirnite za povratak</translation>
 <translation id="3212581601480735796">Prati se vaša aktivnost na web-lokaciji <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">Nije moguće koristiti WebAuthn</translation>
 <translation id="3215311088819828484">Rezultat je ažuriran</translation>
@@ -1858,6 +1862,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4085326869263783566">Pomoć pri pisanju. Pritisnite Tab i Enter da biste otvorili</translation>
 <translation id="4085769736382018559">Usporedba proizvoda</translation>
 <translation id="4085778582400064057">plava 2</translation>
+<translation id="4085859451613666999">Kartica je spremljena na vaš Google račun da biste je mogli automatski popunjavati za buduće kupnje</translation>
 <translation id="4088981014127559358">Y-pomak 1. strane slike</translation>
 <translation id="4089152113577680600">Ladica 14</translation>
 <translation id="4092349052316400070">Upišite adresu</translation>
@@ -2407,6 +2412,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4995474875135717171">Izmijenjeno:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste upravljali pretraživanjem web-lokacije i svojom zadanom tražilicom</translation>
 <translation id="4998950033665438990">Jedno lice</translation>
+<translation id="5001338033791319371">Za zatvaranje prikaza na cijelom zaslonu i prikaz preuzimanja povucite prstom od vrha i dodirnite gumb za povratak</translation>
 <translation id="5001526427543320409">Kolačići trećih strana</translation>
 <translation id="5002932099480077015">Ako je to omogućeno, Chrome će pohraniti kopiju vaše kartice na ovom uređaju radi bržeg ispunjavanja obrazaca.</translation>
 <translation id="5007344584818503324">Aktivnost dijeljenih grupa kartica</translation>
@@ -3969,6 +3975,7 @@ Dodatne pojedinosti:
 <translation id="7582602800368606489">Brzo izradite novi događaj u Google kalendaru</translation>
 <translation id="7586676035079382730">Obavijesti nisu dopuštene</translation>
 <translation id="7588707273764747927">Presjedanje</translation>
+<translation id="7589062909165841767">Vaš Google račun možda sadrži vašu <ph name="BEGIN_LINK_GAA" />aktivnost u Gemini aplikacijama<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Želite li podijeliti povjerljiv sadržaj?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> želi koristiti kolačiće i podatke web-lokacije na <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Certifikat poslužitelja krši ograničenja naziva.</translation>
@@ -4254,6 +4261,7 @@ Dodatne pojedinosti:
 <translation id="8075736640322370409">Brzo izradite novu Google tablicu</translation>
 <translation id="8075898834294118863">Upravljajte postavkama web-lokacija</translation>
 <translation id="8076492880354921740">Kartice</translation>
+<translation id="8076880883123051368">Na vašem Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, kao što je vaša <ph name="BEGIN_LINK_GAA" />aktivnost u Gemini aplikacijama<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Kineska omotnica br. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Želite li prenijeti povjerljivu datoteku?}one{Želite li prenijeti povjerljive datoteke?}few{Želite li prenijeti povjerljive datoteke?}other{Želite li prenijeti povjerljive datoteke?}}</translation>
 <translation id="8079031581361219619">Želite li ponovo učitati web-lokaciju?</translation>
@@ -4387,6 +4395,7 @@ Dodatne pojedinosti:
 <translation id="8294431847097064396">Izvor</translation>
 <translation id="8297545700510100061">Kolačići i drugi podaci web-lokacije koriste se kako bi vas web-lokacija zapamtila, na primjer kako bi vas prijavila na račun ili vam prilagodila oglase. Da biste upravljali kolačićima za sve web-lokacije, idite na <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Za Wi-Fi koji upotrebljavate (<ph name="WIFI_NAME" />) možda ćete morati posjetiti stranicu <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">Kartica je spremljena samo na uređaj</translation>
 <translation id="8301894345671534559">Unos koda</translation>
 <translation id="8304912090860925649">Nova tablica za usporedbu</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>
@@ -4908,6 +4917,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Prirodna kozmetika</translation>
 <translation id="9195969368671142407">Kada vaša organizacija ograniči spremanje na vaš Google račun, ne možete dijeliti grupe kartica niti im se pridruživati</translation>
+<translation id="9198613052465150219">Na vašem Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Ispis je blokiran</translation>
 <translation id="9201904868909900493">Otvaranje ankete …</translation>
 <translation id="9204089334327209740">Nakon dovršetka prijenosa možete izmijeniti datoteke na usluzi <ph name="CLOUD_PROVIDER" />. Lokalna pohrana, uključujući sve datoteke u otpadu, automatski će se ukloniti.</translation>

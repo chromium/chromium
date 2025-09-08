@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">यस बखत लाइभ क्याप्सन उपलब्ध छैन</translation>
 <translation id="112840717907525620">नीति क्यास ठिक छ</translation>
 <translation id="1131264053432022307">तपाईंले प्रतिलिपि गर्नुभएको फोटो</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – फुल स्क्रिनबाट बाहिरिन सिरानबाट ड्र्याग गर्नुहोस् र "पछाडि जानुहोस्" बटनमा टच गर्नुहोस्</translation>
 <translation id="1138458427267715730">इन्टरनेटमा भएको कुनै पनि साइटमा उत्पादनको मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="1142713751288681188">पेपरको प्रकार</translation>
 <translation id="1144136880160289237">तपाईंको सूचीमा हालसम्म कुनै पनि सक्रिय विषय छैन</translation>
@@ -454,6 +455,7 @@
 <translation id="1734878702283171397">प्रणालीको प्रशासकलाई सम्पर्क गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> मा म्याद सकिन्छ</translation>
 <translation id="1736420071277903564">कम्प्युटर</translation>
+<translation id="1740404923954980840">फुल स्क्रिनबाट बाहिरिन सिरानबाट ड्र्याग गर्नुहोस् र 'पछाडि जानुहोस्" बटनमा टच गर्नुहोस्</translation>
 <translation id="1741474054575634405">लोयल्टी कार्डहरू व्यवस्थापन गर्नुहोस्...</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> हुँदा नीति अनिवार्य रूपमा तोकिएको हुनका साथै उक्त नीति एउटा मान्य स्ट्रिङ हुनु पर्छ।</translation>
 <translation id="1743393865165844832">ओछयान तथा बेड लिनन</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2933624813161016821">इम्बोसिङ फोइल</translation>
 <translation id="293796669683825859">टिप्पणीहरू</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंकहरू खोल्नुहोस्</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – कर्सर देखाउन एपहरू अदलबदल गर्नुहोस्, पेज रिलोड गर्नुहोस् वा पछाडि जानुहोस्</translation>
 <translation id="2940418897281183211">PNG फोटो</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
 <translation id="2941952326391522266">यो सर्भरले यो <ph name="DOMAIN" /> हो भनेर प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्र <ph name="DOMAIN2" /> बाट हो। यो एक गलत कन्फिगुरेसन वा तपाईंको जडान अवरोध गर्न खोज्ने आक्रमणकारीको हुनसक्छ।</translation>
@@ -1319,6 +1322,7 @@
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
 <translation id="3208701679386778924">हामी ChromeOS का अपडेटहरूको गुणस्तर अझ सुधार गर्न सकौँ भन्नाका लागि कृपया रिपोर्ट पेस गर्नुहोस्।</translation>
 <translation id="3209034400446768650">यो पृष्ठले शुल्क लिन सक्छ</translation>
+<translation id="3212468046572043669">डाउनलोड सुरु गरिएको छ। डाउनलोड गरिएको कुरा हेर्न सिरानबाट ड्र्याग गर्नुहोस् र "पछाडि जानुहोस्" बटनमा टच गर्नुहोस्</translation>
 <translation id="3212581601480735796">तपाईंले <ph name="HOSTNAME" /> मा गर्ने क्रियाकलापमाथि निगरानी गरिँदै छ</translation>
 <translation id="3215092763954878852">WebAuthn प्रयोग गर्न सकिएन</translation>
 <translation id="3215311088819828484">परिणाम परिवर्तन गरिएको छ</translation>
@@ -1857,6 +1861,7 @@
 <translation id="4085326869263783566">मलाई लेख्न मद्दत गर्नुहोस्। खोल्न ट्याब की थिचिराखेका बेला इन्टर की थिच्नुहोस्</translation>
 <translation id="4085769736382018559">उत्पादनहरूको तुलना गर्नुहोस्</translation>
 <translation id="4085778582400064057">निलो २</translation>
+<translation id="4085859451613666999">भविष्यमा गरिने खरिदहरूका हकमा तपाईंको कार्डसम्बन्धी जानकारी अटोफिल गर्न सकियोस् भन्नाका लागि तपाईंको कार्ड तपाईंको Google खातामा सेभ गरिएको छ</translation>
 <translation id="4088981014127559358">सतह १ मा रहेको छविको Y सिफ्ट</translation>
 <translation id="4089152113577680600">ट्रे १४</translation>
 <translation id="4092349052316400070">ठेगाना भर्नुहोस्</translation>
@@ -2406,6 +2411,7 @@
 <translation id="4995474875135717171">परिमार्जन गरिएको मिति:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, साइट खोज सुविधा तथा डिफल्ट सर्च इन्जिन व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4998950033665438990">सिङ्गल फेस</translation>
+<translation id="5001338033791319371">फुल स्क्रिनबाट बाहिरिन र डाउनलोड गरिएको कुरा हेर्न सिरानबाट ड्र्याग गर्नुहोस् र "पछाडि जानुहोस्" बटनमा टच गर्नुहोस्</translation>
 <translation id="5001526427543320409">तेस्रो पक्षीय कुकीहरू</translation>
 <translation id="5002932099480077015">यदि सक्रिय भएको छ भने Chrome ले चाँडो फारम भर्नका लागि यो डिभाइसमा तपाईँको कार्डको प्रतिलिपि स्टोर गर्ने छ।</translation>
 <translation id="5007344584818503324">साझा ट्याब समूहहरूमा गरिएका गतिविधि</translation>
@@ -3967,6 +3973,7 @@
 <translation id="7582602800368606489">Google पात्रो प्रयोग गरी तुरुन्तै नयाँ कार्यक्रम बनाउनुहोस्</translation>
 <translation id="7586676035079382730">सूचना पठाउने अनुमति दिइएको छैन</translation>
 <translation id="7588707273764747927">ट्रान्स्फर</translation>
+<translation id="7589062909165841767">तपाईंको Google खातामा तपाईंले <ph name="BEGIN_LINK_GAA" />Gemini एपहरूमा गरेका गतिविधि<ph name="END_LINK_GAA" /> सेभ गरिएका हुन सक्छन्</translation>
 <translation id="7591288787774558753">गोप्य सामग्री सेयर गर्ने हो?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> मा कुकी र साइटको डेटा प्रयोग गर्न चाहन्छ</translation>
 <translation id="7592362899630581445">सर्भरको प्रमाणपत्रले नाम प्रतिबन्धहरूलाई उल्लङ्घन गर्छ।</translation>
@@ -4252,6 +4259,7 @@
 <translation id="8075736640322370409">Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउनुहोस्</translation>
 <translation id="8075898834294118863">साइटसम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="8076492880354921740">ट्याबहरू</translation>
+<translation id="8076880883123051368">तपाईंको Google खाताका अन्य प्रकारका ब्राउजिङ हिस्ट्री <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> मा सेभ गरिएका हुन सक्छन्। जस्तै, तपाईंले <ph name="BEGIN_LINK_GAA" />Gemini एपहरूमा गरेका गतिविधि<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{गोप्य फाइल अपलोड गर्ने हो?}other{गोप्य फाइलहरू अपलोड गर्ने हो?}}</translation>
 <translation id="8079031581361219619">साइट पुनः लोड गर्ने हो?</translation>
@@ -4385,6 +4393,7 @@
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8297545700510100061">कुकी र साइटका अन्य डेटा तपाईंको जानकारी याद राख्न प्रयोग गरिन्छन्। जस्तै, कुकी र साइटका अन्य डेटा तपाईंलाई साइन इन गराउने वा विज्ञापन पर्सनलाइज गर्ने प्रयोजनका लागि प्रयोग गरिन्छन्। सबै साइटका कुकीहरू व्यवस्थापन गर्न <ph name="SETTINGS" /> मा जानुहोस्।</translation>
 <translation id="8298115750975731693">तपाईँले प्रयोग गरिरहनु भएको Wi-Fi (<ph name="WIFI_NAME" />) लाई <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> भ्रमण गर्ने आवश्यकता हुन सक्छ।</translation>
+<translation id="8298399736867690281">डिभाइसमा मात्र सेभ गरिएको कार्ड</translation>
 <translation id="8301894345671534559">कोड हाल्नुहोस्</translation>
 <translation id="8304912090860925649">तुलनात्मक जानकारी भएको नयाँ तालिका</translation>
 <translation id="830498451218851433">आधा फोल्ड</translation>
@@ -4905,6 +4914,7 @@
 <translation id="9192361865877479444">मेटल (म्याट)</translation>
 <translation id="9192947025498305328">स्वास्थ्य तथा वातावरणमैत्री सौन्दर्य प्रसाधन</translation>
 <translation id="9195969368671142407">तपाईंको सङ्गठनले तपाईंको Google खातामा सेभ गर्न पाइने कुराहरूको सीमा तोकेका अवस्थामा तपाईं ट्याब समूह सेयर गर्न वा तिनमा सामेल हुन पाउनुहुन्न</translation>
+<translation id="9198613052465150219">तपाईंको Google खाताका अन्य प्रकारका ब्राउजिङ हिस्ट्री <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> मा सेभ गरिएका हुन सक्छन्</translation>
 <translation id="9199905725844810519">प्रिन्ट गर्ने सुविधा ब्लक गरिएको छ</translation>
 <translation id="9201904868909900493">सर्वेक्षण खोलिँदै छ...</translation>
 <translation id="9204089334327209740">अपलोड गर्ने प्रक्रिया पूरा भएपछि तपाईं <ph name="CLOUD_PROVIDER" /> मा गई आफ्ना फाइल परिमार्जन गर्न सक्नुहुन्छ। ट्र्यासमा भएका सबै फाइलसहित डिभाइसको भण्डारण स्वतः मेटाइने छ।</translation>

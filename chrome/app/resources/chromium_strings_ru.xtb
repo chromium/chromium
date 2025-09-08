@@ -612,6 +612,7 @@
 <translation id="878572486461146056">Произошла ошибка. Администратор вашей сети применил групповую политику, которая не позволяет выполнить установку. <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Для этого сайта Chromium запрашивает доступ к камере и микрофону.</translation>
 <translation id="8818550178040858407">Войти в Chromium?</translation>
+<translation id="8823401858233292222">Сделать Chromium браузером по умолчанию и закрепить на панели задач</translation>
 <translation id="8826492472752484139">Нажмите "Менеджер паролей"</translation>
 <translation id="8833697763442816810">Chromium OS</translation>
 <translation id="8852026904190808918">На этом языке показываются меню, настройки, оповещения и другой текст в Chromium</translation>

@@ -477,6 +477,7 @@ Fitur ini tersedia mulai <ph name="MAC_OS_NAME" /> 10.15.</translation>
       Jika kebijakan ini diaktifkan, pintasan keyboard internasional yang ditingkatkan akan aktif.
       Jika tidak disetel, kebijakan ini akan diaktifkan untuk perangkat terkelola dan diaktifkan untuk perangkat yang dimiliki oleh konsumen.
       Perhatikan bahwa ini hanya kebijakan sementara untuk memungkinkan pengguna terkelola agar tetap dapat menggunakan pintasan lama yang tidak digunakan lagi. Kebijakan ini tidak akan digunakan lagi setelah pintasan keyboard khusus tersedia.</translation>
+<translation id="1357214899305978790">Menyetel pintasan di Halaman Tab Baru (Beta)</translation>
 <translation id="1361661842732478894">Tampilkan tombol Layar Utama di toolbar</translation>
 <translation id="1363275621236827384">Mengaktifkan kueri ke Quirks Server untuk profil hardware</translation>
 <translation id="1363839375295535439">Jika kebijakan ini disetel ke Aktif atau tidak disetel, LPAC Sandbox akan diaktifkan untuk layanan pencetakan setiap kali konfigurasi sistem mendukungnya.
@@ -5473,6 +5474,17 @@ Pengguna akan tetap login ke Akun Google mereka saat menghapus cookie.
 Hingga Chrome 114, kebijakan ini mewajibkan kebijakan <ph name="SYNC_DISABLED_POLICY_NAME" /> disetel ke benar (true). Mulai Chrome 115, menyetel kebijakan ini akan menonaktifkan sinkronisasi untuk setiap jenis data jika `<ph name="CHROME_SYNC_NAME" />` tidak dinonaktifkan dengan menyetel kebijakan <ph name="SYNC_DISABLED_POLICY_NAME" /> atau <ph name="BROWSER_SIGNIN_POLICY_NAME" /> dinonaktifkan.</translation>
 <translation id="4694138212536142867">Aktifkan pelaporan status hardware perangkat</translation>
 <translation id="4697581738794063407">Mengontrol fitur filter parameter URL</translation>
+<translation id="4698488381632756664">Dalam pengembangan: hanya untuk pratinjau awal.
+
+Menyetel kebijakan ini akan membuat prakonfigurasi hingga 10 pintasan khusus di halaman Tab Baru <ph name="PRODUCT_NAME" />.
+
+Jika kebijakan ini disetel, pengguna akan melihat pintasan ini secara default dan dapat beralih antara “Pintasan saya”, “Situs yang paling sering dikunjungi”, atau “Pintasan organisasi saya” di panel “Sesuaikan Chrome”. Jika kebijakan ini disetel ke nilai kosong atau tidak disetel, pengguna hanya dapat beralih antara “Pintasan saya” atau “Situs yang paling sering dikunjungi” di panel “Sesuaikan Chrome”.
+
+URL pintasan harus unik.
+
+Jika <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> disetel ke benar (true), pengguna dapat mengubah nama pintasan. Jika disetel ke salah (false) atau tidak disetel, pengguna tidak dapat mengubah nama pintasan.
+
+Jika <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> disetel ke benar (true), pengguna dapat menghapus pintasan. Jika disetel ke salah (false) atau tidak disetel, pengguna tidak dapat menghapus pintasan.</translation>
 <translation id="4698895924806859508">Jangan laporkan peristiwa jaringan</translation>
 <translation id="4699172675775169585">Gambar dan file dalam cache</translation>
 <translation id="4699592681017489215">Kebijakan ini mengonfigurasi tombol lokal yang dapat digunakan untuk menonaktifkan pemeriksaan intersepsi DNS. Pemeriksaan ini berupaya mencari tahu apakah browser berada di balik proxy yang mengalihkan nama host tidak dikenal.

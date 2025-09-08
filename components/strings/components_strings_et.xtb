@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">Reaalajas subtiitrid ei ole praegu saadaval</translation>
 <translation id="112840717907525620">Reegli vahemälu töötab probleemideta</translation>
 <translation id="1131264053432022307">Teie kopeeritud pilt</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – Täisekraanilt väljumiseks lohistage ülaosast alla ja puudutage nuppu Tagasi</translation>
 <translation id="1138458427267715730">Teile saadetakse teavitus, kui hinda alandatakse ükskõik millisel veebisaidil</translation>
 <translation id="1142713751288681188">Paberi tüüp</translation>
 <translation id="1144136880160289237">Teil pole veel ühtegi aktiivset teemat</translation>
@@ -454,6 +455,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1734878702283171397">Proovige ühendust võtta süsteemiadministraatoriga.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, aegub <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Arvuti</translation>
+<translation id="1740404923954980840">Täisekraanilt väljumiseks lohistage ülaosast alla ja puudutage nuppu Tagasi</translation>
 <translation id="1741474054575634405">Kliendikaartide haldamine …</translation>
 <translation id="1741613555002899862">Peab olema määratud ja kehtiv string, kui reegli DnsOverHttpsMode väärtus on <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Voodiriided ja -linad</translation>
@@ -1153,6 +1155,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2933624813161016821">Reljeefne trükk fooliumlehega</translation>
 <translation id="293796669683825859">Kommentaarid</translation>
 <translation id="2938225289965773019">Avada protokolli <ph name="PROTOCOL" /> lingid</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – Kursori kuvamiseks vahetage rakendusi, laadige leht uuesti või minge tagasi</translation>
 <translation id="2940418897281183211">PNG-kujutis</translation>
 <translation id="2941878205777356567">9 × 12-tolline ümbrik</translation>
 <translation id="2941952326391522266">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, selle turvasertifikaati pärineb domeenilt <ph name="DOMAIN2" />. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
@@ -1322,6 +1325,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3207960819495026254">Järjehoidjatesse lisatud</translation>
 <translation id="3208701679386778924">Saatke aruanne, et saaksime ChromeOS-i edasisi värskendusi täiustada.</translation>
 <translation id="3209034400446768650">Leht võib võtta tasu</translation>
+<translation id="3212468046572043669">Allalaadimine on alanud. Selle nägemiseks lohistage ülaosast alla ja puudutage nuppu Tagasi</translation>
 <translation id="3212581601480735796">Teie tegevust seadmes <ph name="HOSTNAME" /> jälgitakse</translation>
 <translation id="3215092763954878852">Üksust WebAuthn ei saanud kasutada</translation>
 <translation id="3215311088819828484">Tulemus värskendati</translation>
@@ -1859,6 +1863,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4085326869263783566">Aita mul kirjutada. Avamiseks vajutage tabulaatorit ja siis sisestusklahvi</translation>
 <translation id="4085769736382018559">Toodete võrdlus</translation>
 <translation id="4085778582400064057">Sinine 2</translation>
+<translation id="4085859451613666999">Teie kaart on salvestatud teie Google'i kontole, seega saate selle andmed tulevaste ostude puhul automaatselt täita</translation>
 <translation id="4088981014127559358">Pildi nihe Y-teljel 1. poolel</translation>
 <translation id="4089152113577680600">Salv 14</translation>
 <translation id="4092349052316400070">Täitke aadressiväli</translation>
@@ -2408,6 +2413,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4995474875135717171">Muudetud:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, saidiotsingu ja oma vaikeotsingumootori haldamiseks vajutage tabulaatorit ning seejärel sisestusklahvi.</translation>
 <translation id="4998950033665438990">Ühepoolne</translation>
+<translation id="5001338033791319371">Täisekraanilt väljumiseks ja allalaaditud failide kuvamiseks lohistage ülaosast alla ja puudutage nuppu Tagasi</translation>
 <translation id="5001526427543320409">Kolmanda osapoole küpsisefailid</translation>
 <translation id="5002932099480077015">Kui see on lubatud, salvestab Chrome teie kaardi koopia vormide kiiremini täitmiseks sellesse seadmesse.</translation>
 <translation id="5007344584818503324">Jagatud vahelehegruppide tegevus</translation>
@@ -3970,6 +3976,7 @@ Lisateave:
 <translation id="7582602800368606489">Rakenduses Google'i kalender kiirelt uue sündmuse loomine</translation>
 <translation id="7586676035079382730">Märguanded ei ole lubatud</translation>
 <translation id="7588707273764747927">Siirdamine</translation>
+<translation id="7589062909165841767">Teie Google'i kontol võib olla teie <ph name="BEGIN_LINK_GAA" />Gemini rakenduste tegevus<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Kas jagada konfidentsiaalset sisu?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> soovib ülataseme URL-il <ph name="TOP_LEVEL_URL" /> kasutada küpsisefaile ja saidi andmeid</translation>
 <translation id="7592362899630581445">Serveri sertifikaat rikub nime piiranguid.</translation>
@@ -4255,6 +4262,7 @@ Lisateave:
 <translation id="8075736640322370409">Kiirelt uue Google'i arvutustabeli loomine</translation>
 <translation id="8075898834294118863">Saidi seadete haldamine</translation>
 <translation id="8076492880354921740">Vahelehed</translation>
+<translation id="8076880883123051368">Teie Google'i kontol võib aadressil <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> olla muus vormis sirvimisajalugu, nt teie <ph name="BEGIN_LINK_GAA" />Gemini rakenduste tegevus<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Ümbrik Hiina nr 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Kas laadida üles konfidentsiaalne fail?}other{Kas laadida üles konfidentsiaalsed failid?}}</translation>
 <translation id="8079031581361219619">Kas laadida sait uuesti?</translation>
@@ -4388,6 +4396,7 @@ Lisateave:
 <translation id="8294431847097064396">Allikas</translation>
 <translation id="8297545700510100061">Küpsisefaile ja muid saidi andmeid kasutatakse teie meeldejätmiseks, näiteks selleks, et teid sisse logida või reklaame isikupärastada. Kõigi saitide küpsisefailide haldamiseks vaadake jaotist <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">WiFi-võrk, mida kasutate (<ph name="WIFI_NAME" />), võib nõuda veebilehe <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> külastamist.</translation>
+<translation id="8298399736867690281">Kaart on salvestatud ainult seadmesse</translation>
 <translation id="8301894345671534559">Sisesta kood</translation>
 <translation id="8304912090860925649">Uus võrdlustabel</translation>
 <translation id="830498451218851433">Pooleks volditud</translation>
@@ -4908,6 +4917,7 @@ Lisateave:
 <translation id="9192361865877479444">Metall (matt)</translation>
 <translation id="9192947025498305328">Puhas ilu</translation>
 <translation id="9195969368671142407">Kui teie organisatsiooni piirab Google'i kontole salvestamist, ei saa te vahelehegruppe jagada ega nendega liituda</translation>
+<translation id="9198613052465150219">Aadressil <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu</translation>
 <translation id="9199905725844810519">Printimine on blokeeritud</translation>
 <translation id="9201904868909900493">Küsitluse avamine…</translation>
 <translation id="9204089334327209740">Üleslaadimise järel saate faile muuta teenuses <ph name="CLOUD_PROVIDER" />. Kohalikud failid, sh prügikastis olevad failid eemaldatakse automaatselt.</translation>

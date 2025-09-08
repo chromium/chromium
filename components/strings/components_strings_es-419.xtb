@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">El Subtitulado instantáneo no está disponible en este momento</translation>
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1131264053432022307">Imagen que copiaste</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" />: Para salir de la pantalla completa, arrastra desde la parte superior y presiona el botón Atrás</translation>
 <translation id="1138458427267715730">Recibe alertas cuando haya reducciones de precio en cualquier sitio de la Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1144136880160289237">Aún no tienes temas activos</translation>
@@ -454,6 +455,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1734878702283171397">Intenta comunicarte con el administrador del sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, caduca el <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computadora</translation>
+<translation id="1740404923954980840">Para salir de la pantalla completa, arrastra desde la parte superior y presiona el botón Atrás</translation>
 <translation id="1741474054575634405">Administrar tarjetas de lealtad…</translation>
 <translation id="1741613555002899862">Esta política debe especificarse y tener una string válida, cuando DnsOverHttpsMode es <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Ropa de cama</translation>
@@ -1153,6 +1155,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2933624813161016821">Lámina con relieve</translation>
 <translation id="293796669683825859">Comentarios</translation>
 <translation id="2938225289965773019">Abrir vínculos de <ph name="PROTOCOL" /></translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" />: Para mostrar el cursor, cambia de app, vuelve a cargar la página o retrocede</translation>
 <translation id="2940418897281183211">Imagen PNG</translation>
 <translation id="2941878205777356567">Sobre de 22.8 × 30.4 cm</translation>
 <translation id="2941952326391522266">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad proviene de <ph name="DOMAIN2" />. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
@@ -1323,6 +1326,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3207960819495026254">Agregada a favoritos</translation>
 <translation id="3208701679386778924">Envía un informe para que podamos mejorar las actualizaciones de ChromeOS.</translation>
 <translation id="3209034400446768650">La página puede cobrar cargos</translation>
+<translation id="3212468046572043669">Comenzó la descarga. Para verla, arrastra desde la parte superior y presiona el botón Atrás</translation>
 <translation id="3212581601480735796">Se supervisa tu actividad en <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">No se pudo usar WebAuthn</translation>
 <translation id="3215311088819828484">Se actualizó el resultado</translation>
@@ -1860,6 +1864,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4085326869263783566">Ayúdame a escribir. Presionar Tab y presionar Intro para abrir</translation>
 <translation id="4085769736382018559">Comparar productos</translation>
 <translation id="4085778582400064057">Azul 2</translation>
+<translation id="4085859451613666999">La tarjeta se guarda en tu Cuenta de Google para que puedas autocompletarla en compras futuras</translation>
 <translation id="4088981014127559358">Cambio en el eje Y del lado 1 de la imagen</translation>
 <translation id="4089152113577680600">Bandeja 14</translation>
 <translation id="4092349052316400070">Elige una dirección</translation>
@@ -2409,6 +2414,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4995474875135717171">Modificado:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar la búsqueda de sitios y tu motor de búsqueda predeterminado</translation>
 <translation id="4998950033665438990">Simple faz</translation>
+<translation id="5001338033791319371">Para salir de la pantalla completa y ver la descarga, arrastra desde la parte superior y presiona el botón Atrás</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5002932099480077015">Si se habilita esta opción, Chrome almacenará una copia de la tarjeta en el dispositivo para llenar más rápidamente los formularios.</translation>
 <translation id="5007344584818503324">Actividad de los grupos de pestañas compartidos</translation>
@@ -2500,7 +2506,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5144613843429436866">Permitiste que este sitio use tu <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Código de error en la respuesta de la política</translation>
 <translation id="5146995429444047494">Se bloquearon las notificaciones de <ph name="ORIGIN" /></translation>
-<translation id="514704532284964975"><ph name="URL" /> quiere ver y cambiar la información de los dispositivos NFC que presionas con tu teléfono</translation>
+<translation id="514704532284964975"><ph name="URL" /> quiere ver y cambiar la información de los dispositivos NFC a los que acercas el teléfono</translation>
 <translation id="5147633291963801297">Consulta las reducciones de precio en el panel lateral</translation>
 <translation id="5148809049217731050">Hacia arriba</translation>
 <translation id="5148889558173091794">Tu organización bloqueó <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque incumple una política. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3971,6 +3977,7 @@ Detalles adicionales:
 <translation id="7582602800368606489">Crea un evento nuevo en el Calendario de Google rápidamente</translation>
 <translation id="7586676035079382730">No se permiten las notificaciones</translation>
 <translation id="7588707273764747927">Transferencia</translation>
+<translation id="7589062909165841767">Es posible que la Cuenta de Google tenga tu <ph name="BEGIN_LINK_GAA" />Actividad en las Apps con Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">¿Deseas compartir contenido confidencial?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> desea utilizar cookies y datos de los sitios en <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">El certificado del servidor no cumple con las restricciones de nombre.</translation>
@@ -4256,6 +4263,7 @@ Detalles adicionales:
 <translation id="8075736640322370409">Crea una hoja de cálculo de Google nueva rápidamente</translation>
 <translation id="8075898834294118863">Administrar la configuración de sitios</translation>
 <translation id="8076492880354921740">Pestañas</translation>
+<translation id="8076880883123051368">Es posible que tu Cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, como tu <ph name="BEGIN_LINK_GAA" />Actividad en las Apps con Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Sobre chino n.º 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{¿Quieres subir este archivo confidencial?}other{¿Quieres subir estos archivos confidenciales?}}</translation>
 <translation id="8079031581361219619">¿Deseas volver a cargar el sitio?</translation>
@@ -4389,6 +4397,7 @@ Detalles adicionales:
 <translation id="8294431847097064396">Fuente</translation>
 <translation id="8297545700510100061">Se utilizan las cookies y otros datos de sitios para recordar tu información y actividad. De esta manera, podrás acceder a tu cuenta y ver anuncios personalizados, entre otras cosas. Para administrar las cookies de todos los sitios, visita la <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Es posible que la red Wi-Fi que estás usando (<ph name="WIFI_NAME" />) requiera que accedas a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">La tarjeta solo se guardó en este dispositivo</translation>
 <translation id="8301894345671534559">Ingresar código</translation>
 <translation id="8304912090860925649">Nueva tabla de comparación</translation>
 <translation id="830498451218851433">Plegado a la mitad</translation>
@@ -4910,6 +4919,7 @@ Detalles adicionales:
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Productos de belleza ecológicos</translation>
 <translation id="9195969368671142407">Cuando tu organización limita el guardado en tu Cuenta de Google, no puedes compartir grupos de pestañas ni unirte a ellos</translation>
+<translation id="9198613052465150219">Es posible que tu cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">No se permite imprimir este contenido</translation>
 <translation id="9201904868909900493">Abriendo encuesta…</translation>
 <translation id="9204089334327209740">Una vez que se complete la carga, podrás modificar tus archivos en <ph name="CLOUD_PROVIDER" />. El almacenamiento local, que incluye los archivos de la papelera, se quitará automáticamente.</translation>

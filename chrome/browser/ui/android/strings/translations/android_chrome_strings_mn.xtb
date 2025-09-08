@@ -632,6 +632,7 @@
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> руу <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р үргэлжлүүлэх</translation>
 <translation id="4044708993631234325">Доод хүснэгт</translation>
 <translation id="4045441967987592849">Дахин нээх</translation>
+<translation id="4049920046559074950"><ph name="INSTANCE_TITLE" />-н бусад сонголт</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Хуваалцсан табын бүлгүүдэд шинэ үйл ажиллагаатай <ph name="TABS_COUNT_ONE" /> стандарт таб}other{Хуваалцсан табын бүлгүүдэд шинэ үйл ажиллагаатай <ph name="TABS_COUNT_MANY" /> стандарт таб}}</translation>
 <translation id="405365679581583349">Google Play үйлчилгээг шинэчлэх</translation>
 <translation id="405399507749852140">Аль нэг сайт дээр үнэ буурсан тохиолдолд сэрэмжлүүлэг аваарай</translation>

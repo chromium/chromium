@@ -99,7 +99,7 @@
 <translation id="4852605713297257667">{TABS_COUNT,plural, =1{افزودن <ph name="TABS_COUNT_ONE" /> زبانه انتخاب‌شده به گروه}one{افزودن <ph name="TABS_COUNT_MANY" /> زبانه انتخاب‌شده به گروه}other{افزودن <ph name="TABS_COUNT_MANY" /> زبانه انتخاب‌شده به گروه}}</translation>
 <translation id="4861611890274104875">بستن کارت.</translation>
 <translation id="4861953997778766866">همه می‌توانند در گروه‌های برگه هم‌رسانی‌شده شما تغییراتی ایجاد کنند</translation>
-<translation id="4870911314065352661">همه برگه‌ها بسته شود؟</translation>
+<translation id="4870911314065352661">همه زبانه‌ها بسته شود؟</translation>
 <translation id="4871719318659334896">بستن گروه</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{گروه زبانه‌های «<ph name="TITLE_OF_GROUP" />» متشکل از <ph name="TABS_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}one{گروه زبانه‌های «<ph name="TITLE_OF_GROUP" />» متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}other{گروه زبانه‌های «<ph name="TITLE_OF_GROUP" />» متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}}</translation>
 <translation id="4881695831933465202">باز کردن</translation>
@@ -157,7 +157,7 @@
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{هم‌رسانی برگه}one{هم‌رسانی برگه}other{هم‌رسانی برگه‌ها}}</translation>
 <translation id="7129458170538955174">اطلاعات مربوط به این فروشگاه به‌صورت نیمه باز شده است</translation>
 <translation id="7204204600596740190">حالت چندانتخابی</translation>
-<translation id="7211038039686180558">گروه‌های برگه در همه دستگاه‌های واردشده به حساب به‌طور خودکار ذخیره و به‌روز می‌شود</translation>
+<translation id="7211038039686180558">گروه‌های زبانه در همه دستگاه‌های واردشده به حساب به‌طور خودکار ذخیره و به‌روز می‌شود</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> انتخاب شده است</translation>
 <translation id="7326879924029668159">دیدن خط‌مشی برگرداندن و موارد دیگر</translation>
 <translation id="7352298686197644113">ببینید کدام مورد در برگه‌های باز قیمت کمتری دارد</translation>

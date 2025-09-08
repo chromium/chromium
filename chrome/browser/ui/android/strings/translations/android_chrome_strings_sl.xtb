@@ -632,6 +632,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4042941173059740150">Naprej na <ph name="SITE_ETLD_PLUS_ONE" /> z računom pri ponudniku <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">List na dnu zaslona</translation>
 <translation id="4045441967987592849">Znova odpri</translation>
+<translation id="4049920046559074950">Več možnosti za »<ph name="INSTANCE_TITLE" />«</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardni zavihek z novo dejavnostjo v deljenih skupinah zavihkov}one{<ph name="TABS_COUNT_MANY" /> standardni zavihek z novo dejavnostjo v deljenih skupinah zavihkov}two{<ph name="TABS_COUNT_MANY" /> standardna zavihka z novo dejavnostjo v deljenih skupinah zavihkov}few{<ph name="TABS_COUNT_MANY" /> standardni zavihki z novo dejavnostjo v deljenih skupinah zavihkov}other{<ph name="TABS_COUNT_MANY" /> standardnih zavihkov z novo dejavnostjo v deljenih skupinah zavihkov}}</translation>
 <translation id="405365679581583349">Posodobite storitve Google Play</translation>
 <translation id="405399507749852140">Prejmite opozorila, če se cena zniža na katerem koli spletnem mestu.</translation>

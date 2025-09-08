@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">Funcția Subtitrări live nu este disponibilă în acest moment</translation>
 <translation id="112840717907525620">Memoria cache pentru politică este OK</translation>
 <translation id="1131264053432022307">Imaginea copiată de tine</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – Pentru a ieși din ecranul complet, trage din partea de sus și atinge butonul Înapoi</translation>
 <translation id="1138458427267715730">Primește alerte când scade prețul pe orice site de pe web</translation>
 <translation id="1142713751288681188">Tip de hârtie</translation>
 <translation id="1144136880160289237">Încă nu ai niciun subiect activ</translation>
@@ -454,6 +455,7 @@
 <translation id="1734878702283171397">Încearcă să contactezi administratorul sistemului.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expiră pe <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computer</translation>
+<translation id="1740404923954980840">Pentru a ieși din ecranul complet, trage din partea de sus și atinge butonul Înapoi</translation>
 <translation id="1741474054575634405">Gestionează cardurile de fidelitate...</translation>
 <translation id="1741613555002899862">Trebuie specificată și trebuie să fie un șir valid când DnsOverHttpsMode este <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Lenjerii și accesorii pentru pat</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2933624813161016821">Folie pentru embosare</translation>
 <translation id="293796669683825859">Comentarii</translation>
 <translation id="2938225289965773019">Deschide linkurile <ph name="PROTOCOL" /></translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – Pentru a afișa cursorul, a schimba aplicații, a reîncărca pagina sau a reveni</translation>
 <translation id="2940418897281183211">Imagine PNG</translation>
 <translation id="2941878205777356567">Plic de 9 x 12 inchi</translation>
 <translation id="2941952326391522266">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; certificatul său de securitate provine de la <ph name="DOMAIN2" />. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
@@ -1322,6 +1325,7 @@
 <translation id="3207960819495026254">Marcată</translation>
 <translation id="3208701679386778924">Trimite un raport ca să putem îmbunătăți actualizările ChromeOS pe viitor.</translation>
 <translation id="3209034400446768650">Pagina poate percepe o taxă</translation>
+<translation id="3212468046572043669">A început descărcarea. Ca să o vezi, trage din partea de sus și atinge butonul Înapoi.</translation>
 <translation id="3212581601480735796">Activitatea ta de pe <ph name="HOSTNAME" /> este monitorizată</translation>
 <translation id="3215092763954878852">Nu s-a putut folosi WebAuthn</translation>
 <translation id="3215311088819828484">Rezultatul a fost actualizat</translation>
@@ -1859,6 +1863,7 @@
 <translation id="4085326869263783566">Ajută-mă să scriu. Atinge și apasă pe Enter pentru a deschide.</translation>
 <translation id="4085769736382018559">Compară produse</translation>
 <translation id="4085778582400064057">Albastru 2</translation>
+<translation id="4085859451613666999">Cardul este salvat în Contul Google, astfel încât să-l poți completa automat pentru achiziții viitoare</translation>
 <translation id="4088981014127559358">Deplasarea poziției Y a imaginii de pe fața 1</translation>
 <translation id="4089152113577680600">Tava 14</translation>
 <translation id="4092349052316400070">Completează adresa</translation>
@@ -2408,6 +2413,7 @@
 <translation id="4995474875135717171">Modificat la:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona căutarea pe site și motorul de căutare prestabilit</translation>
 <translation id="4998950033665438990">O față</translation>
+<translation id="5001338033791319371">Pentru a ieși din ecranul complet și a vedea descărcarea, trage din partea de sus și atinge butonul Înapoi</translation>
 <translation id="5001526427543320409">Cookie-uri terță parte</translation>
 <translation id="5002932099480077015">Dacă este activată, Chrome va stoca o copie a cardului pe acest dispozitiv, pentru completarea mai rapidă a formularelor.</translation>
 <translation id="5007344584818503324">Activitatea din grupurile de file comune</translation>
@@ -3970,6 +3976,7 @@ Detalii suplimentare:
 <translation id="7582602800368606489">Creează rapid un eveniment în Google Calendar</translation>
 <translation id="7586676035079382730">Notificările nu sunt permise</translation>
 <translation id="7588707273764747927">Transfer</translation>
+<translation id="7589062909165841767">Contul Google poate să includă <ph name="BEGIN_LINK_GAA" />activitatea din Aplicațiile Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Permiți accesul la conținut confidențial?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> dorește să utilizeze cookie-uri și date privind site-urile pe <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Certificatul serverului încalcă limitările privind numele.</translation>
@@ -4255,6 +4262,7 @@ Detalii suplimentare:
 <translation id="8075736640322370409">Creează rapid o Foaie de calcul Google</translation>
 <translation id="8075898834294118863">Butonul Gestionează setările pentru site-uri</translation>
 <translation id="8076492880354921740">File</translation>
+<translation id="8076880883123051368">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, cum ar fi <ph name="BEGIN_LINK_GAA" />activitatea din Aplicațiile Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Plic chinezesc 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Încarci un fișier confidențial?}few{Încarci fișiere confidențiale?}other{Încarci fișiere confidențiale?}}</translation>
 <translation id="8079031581361219619">Reîncarci site-ul?</translation>
@@ -4388,6 +4396,7 @@ Detalii suplimentare:
 <translation id="8294431847097064396">Sursă</translation>
 <translation id="8297545700510100061">Cookie-urile și alte date ale site-urilor sunt folosite pentru a te reține, de exemplu, pentru a te conecta sau pentru a personaliza anunțuri. Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Rețeaua Wi-Fi pe care o folosești (<ph name="WIFI_NAME" />) poate solicita accesarea adresei <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">Cardul a fost salvat numai pe dispozitiv</translation>
 <translation id="8301894345671534559">Introdu codul</translation>
 <translation id="8304912090860925649">Tabel de comparație nou</translation>
 <translation id="830498451218851433">Îndoire la jumătate</translation>
@@ -4909,6 +4918,7 @@ Detalii suplimentare:
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Frumusețe naturală</translation>
 <translation id="9195969368671142407">Când organizația limitează salvarea în Contul Google, nu poți să permiți accesul sau să te alături grupurilor de file</translation>
+<translation id="9198613052465150219">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Printarea este blocată</translation>
 <translation id="9201904868909900493">Se deschide sondajul…</translation>
 <translation id="9204089334327209740">După finalizarea încărcării, poți să modifici fișierele în <ph name="CLOUD_PROVIDER" />. Spațiul de stocare local se va elimina automat, inclusiv fișierele din coșul de gunoi.</translation>

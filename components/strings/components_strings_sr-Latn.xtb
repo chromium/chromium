@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">Titl uživo trenutno nije dostupan</translation>
 <translation id="112840717907525620">Keš smernica je u redu</translation>
 <translation id="1131264053432022307">Kopirana slika</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – Da biste izašli iz režima celog ekrana, prevucite od vrha i dodirnite dugme Nazad</translation>
 <translation id="1138458427267715730">Dobijajte obaveštenja kada padne cena na bilo kom sajtu širom veba</translation>
 <translation id="1142713751288681188">Tip papira</translation>
 <translation id="1144136880160289237">Još nemate nijednu aktivnu temu</translation>
@@ -454,6 +455,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1734878702283171397">Pokušajte da kontaktirate administratora sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ističe <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Računar</translation>
+<translation id="1740404923954980840">Da biste izašli iz režima celog ekrana, prevucite od vrha i dodirnite dugme Nazad</translation>
 <translation id="1741474054575634405">Upravljaj karticama lojalnosti…</translation>
 <translation id="1741613555002899862">Mora da se navede kao važeći niz kada je DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Posteljno rublje i posteljina</translation>
@@ -1153,6 +1155,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2933624813161016821">Reljefna folija</translation>
 <translation id="293796669683825859">Komentari</translation>
 <translation id="2938225289965773019">otvori linkove za <ph name="PROTOCOL" /></translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – Da bi se prikazao kursor, promenite aplikaciju, ponovo učitajte stranicu ili se vratite</translation>
 <translation id="2940418897281183211">PNG slika</translation>
 <translation id="2941878205777356567">Koverta 23×30 cm</translation>
 <translation id="2941952326391522266">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat je sa domena <ph name="DOMAIN2" />. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
@@ -1322,6 +1325,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3207960819495026254">Obeleženo</translation>
 <translation id="3208701679386778924">Pošaljite izveštaj da bismo poboljšali dalja ažuriranja ChromeOS-a.</translation>
 <translation id="3209034400446768650">Stranica može da naplaćuje</translation>
+<translation id="3212468046572043669">Preuzimanje je počelo. Da biste ga videli, prevucite sa vrha i dodirnite dugme Nazad</translation>
 <translation id="3212581601480735796">Vaše aktivnosti na <ph name="HOSTNAME" /> se prate</translation>
 <translation id="3215092763954878852">Korišćenje veb-standarda WebAuthn nije uspelo</translation>
 <translation id="3215311088819828484">Rezultat je ažuriran</translation>
@@ -1859,6 +1863,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4085326869263783566">Pomoć pri pisanju. Pritisnite Tab i Enter da biste otvorili</translation>
 <translation id="4085769736382018559">Uporedite proizvode</translation>
 <translation id="4085778582400064057">Plava 2</translation>
+<translation id="4085859451613666999">Kartica se čuva na Google nalogu da biste mogli automatski da popunjavate podatke sa nje za buduće kupovine</translation>
 <translation id="4088981014127559358">Pomeranje slike 1. strane po Y osi</translation>
 <translation id="4089152113577680600">14. fioka</translation>
 <translation id="4092349052316400070">Popunite polje za adresu</translation>
@@ -2408,6 +2413,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4995474875135717171">Izmenjeno:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali pretragom sajtova i podrazumevanim pretraživačem</translation>
 <translation id="4998950033665438990">Jedno lice</translation>
+<translation id="5001338033791319371">Da biste izašli iz režima celog ekrana i videli preuzimanje, prevucite od vrha i dodirnite dugme Nazad</translation>
 <translation id="5001526427543320409">Kolačići treće strane</translation>
 <translation id="5002932099480077015">Ako je ova opcija omogućena, Chrome će skladištiti kopiju kartice na ovom uređaju radi bržeg popunjavanja obrazaca.</translation>
 <translation id="5007344584818503324">Aktivnosti deljenih grupa kartica</translation>
@@ -3969,6 +3975,7 @@ Dodatni detalji:
 <translation id="7582602800368606489">Brzo napravite nov događaj u Google kalendaru</translation>
 <translation id="7586676035079382730">Obaveštenja nisu dozvoljena</translation>
 <translation id="7588707273764747927">Prenos</translation>
+<translation id="7589062909165841767">Na Google nalogu možda imate <ph name="BEGIN_LINK_GAA" />Aktivnosti u Gemini aplikacijama<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Želite da delite poverljivi sadržaj?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> želi da koristi kolačiće i podatke o sajtovima na <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Sertifikat servera krši ograničenja za ime.</translation>
@@ -4254,6 +4261,7 @@ Dodatni detalji:
 <translation id="8075736640322370409">Brzo napravite novu Google tabelu</translation>
 <translation id="8075898834294118863">Upravljajte podešavanjima sajtova</translation>
 <translation id="8076492880354921740">Kartice</translation>
+<translation id="8076880883123051368">Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, kao što su <ph name="BEGIN_LINK_GAA" />Aktivnosti u Gemini aplikacijama<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Kineska koverta br. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Želite da otpremite poverljivi fajl?}one{Želite da otpremite poverljive fajlove?}few{Želite da otpremite poverljive fajlove?}other{Želite da otpremite poverljive fajlove?}}</translation>
 <translation id="8079031581361219619">Želite li ponovo da učitate sajt?</translation>
@@ -4387,6 +4395,7 @@ Dodatni detalji:
 <translation id="8294431847097064396">Izvor</translation>
 <translation id="8297545700510100061">Kolačići i drugi podaci o sajtovima se koriste da biste bili zapamćeni, na primer, radi prijavljivanja ili personalizovanja oglasa. Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">WiFi mreža koju koristite (<ph name="WIFI_NAME" />) će možda zahtevati da posetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">Kartica je sačuvana samo na uređaju</translation>
 <translation id="8301894345671534559">Unesi kôd</translation>
 <translation id="8304912090860925649">Nova tabela za poređenje</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>
@@ -4908,6 +4917,7 @@ Dodatni detalji:
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Prirodni kozmetički proizvodi</translation>
 <translation id="9195969368671142407">Kada organizacija ograniči čuvanje na Google nalogu, ne možete da delite grupe kartica niti da im se pridružite</translation>
+<translation id="9198613052465150219">Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Štampanje je blokirano</translation>
 <translation id="9201904868909900493">Otvara se anketa…</translation>
 <translation id="9204089334327209740">Kada se otpremanje završi, možete da izmenite fajlove u usluzi <ph name="CLOUD_PROVIDER" />. Lokalno skladište, uključujući sve fajlove u otpadu, automatski će biti uklonjeno.</translation>

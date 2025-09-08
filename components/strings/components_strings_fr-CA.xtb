@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">Les sous-titres instantanés sont inaccessibles pour le moment</translation>
 <translation id="112840717907525620">Cache de la règle valide</translation>
 <translation id="1131264053432022307">L'image que vous avez copiée</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – Pour quitter le mode Plein écran, faites glisser le curseur à partir du haut de l'écran et touchez le bouton Précédent</translation>
 <translation id="1138458427267715730">Recevez des alertes lorsque le prix baisse sur n'importe quel site du Web</translation>
 <translation id="1142713751288681188">Type de papier</translation>
 <translation id="1144136880160289237">Vous n'avez pas encore de sujets actifs</translation>
@@ -454,6 +455,7 @@
 <translation id="1734878702283171397">Essayez de communiquer avec l'administrateur système.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expire le <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Ordinateur</translation>
+<translation id="1740404923954980840">Pour quitter le mode Plein écran, faites glisser le curseur à partir du haut de l'écran et touchez le bouton Précédent</translation>
 <translation id="1741474054575634405">Gérez les cartes de fidélité…</translation>
 <translation id="1741613555002899862">Doit être indiquée et être une chaîne valide lorsque la politique DnsOverHttpsMode est définie à <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Literie et linge de maison</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2933624813161016821">Feuille de gaufrage</translation>
 <translation id="293796669683825859">Commentaires</translation>
 <translation id="2938225289965773019">Ouvrir des liens <ph name="PROTOCOL" /></translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – Pour afficher votre curseur, changer d'appli, actualiser la page ou revenir en arrière</translation>
 <translation id="2940418897281183211">Image PNG</translation>
 <translation id="2941878205777356567">Enveloppe 9 x 12 po</translation>
 <translation id="2941952326391522266">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité provient du domaine <ph name="DOMAIN2" />. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
@@ -1322,6 +1325,7 @@
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208701679386778924">Veuillez envoyer un rapport afin que nous puissions améliorer d'autres mises à jour de ChromeOS.</translation>
 <translation id="3209034400446768650">Cette page peut exiger des frais</translation>
+<translation id="3212468046572043669">Le téléchargement a commencé. Pour le voir, faites glisser le curseur à partir du haut de l'écran et touchez le bouton Précédent</translation>
 <translation id="3212581601480735796">Votre activité sur <ph name="HOSTNAME" /> est surveillée</translation>
 <translation id="3215092763954878852">Impossible d'utiliser WebAuthn</translation>
 <translation id="3215311088819828484">Résultat mis à jour</translation>
@@ -1859,6 +1863,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4085326869263783566">Aide à la rédaction. Appuyez sur Tabulation et sur Entrée pour ouvrir</translation>
 <translation id="4085769736382018559">Comparer les produits</translation>
 <translation id="4085778582400064057">Bleu 2</translation>
+<translation id="4085859451613666999">Votre carte est enregistrée dans votre compte Google afin que vous puissiez remplir automatiquement les informations associées pour vos futurs achats</translation>
 <translation id="4088981014127559358">Décalage Y de l'image côté 1</translation>
 <translation id="4089152113577680600">Bac 14</translation>
 <translation id="4092349052316400070">Remplir l'adresse</translation>
@@ -2408,6 +2413,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4995474875135717171">Modifié :</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer la recherche de sites et votre moteur de recherche par défaut</translation>
 <translation id="4998950033665438990">Visage unique</translation>
+<translation id="5001338033791319371">Pour quitter le mode Plein écran et voir le téléchargement, faites glisser le curseur à partir du haut de l'écran et touchez le bouton Précédent</translation>
 <translation id="5001526427543320409">Témoins tiers</translation>
 <translation id="5002932099480077015">Si l’option est activée, Chrome gardera une copie de votre carte sur cet appareil pour remplir plus rapidement vos formulaires.</translation>
 <translation id="5007344584818503324">Activité des groupes d'onglets partagés</translation>
@@ -3969,6 +3975,7 @@ Détails supplémentaires :
 <translation id="7582602800368606489">Créer rapidement un événement dans Google Agenda</translation>
 <translation id="7586676035079382730">Accès aux notifications non autorisé</translation>
 <translation id="7588707273764747927">Transfert</translation>
+<translation id="7589062909165841767">Votre compte Google peut contenir votre <ph name="BEGIN_LINK_GAA" />activité dans les applis Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Partager le contenu confidentiel?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> souhaite utiliser les témoins et les données relatives aux sites sur <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Le certificat du serveur ne respecte pas les restrictions de noms.</translation>
@@ -4254,6 +4261,7 @@ Détails supplémentaires :
 <translation id="8075736640322370409">Créer rapidement une feuille Google</translation>
 <translation id="8075898834294118863">Gérer les paramètres de site</translation>
 <translation id="8076492880354921740">Onglets</translation>
+<translation id="8076880883123051368">Votre compte Google peut contenir d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, comme votre <ph name="BEGIN_LINK_GAA" />activité dans les applis Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Enveloppe chinoise nᵒ 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Téléverser un fichier confidentiel?}one{Téléverser un fichier confidentiel?}other{Téléverser des fichiers confidentiels?}}</translation>
 <translation id="8079031581361219619">Actualiser le site?</translation>
@@ -4387,6 +4395,7 @@ Détails supplémentaires :
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297545700510100061">Les témoins et d'autres données relatives aux sites sont utilisés pour se souvenir de vous, comme pour vous connecter à votre compte ou pour personnaliser les annonces. Pour gérer les témoins pour tous les sites, voir <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Le réseau Wi-Fi que vous utilisez (<ph name="WIFI_NAME" />) peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">Carte enregistrée sur l'appareil uniquement</translation>
 <translation id="8301894345671534559">Entrer le code</translation>
 <translation id="8304912090860925649">Nouveau tableau de comparaison</translation>
 <translation id="830498451218851433">Plier en deux</translation>
@@ -4906,6 +4915,7 @@ Détails supplémentaires :
 <translation id="9192361865877479444">Métal (mat)</translation>
 <translation id="9192947025498305328">Produits de beauté responsables</translation>
 <translation id="9195969368671142407">Lorsque votre organisation limite l'enregistrement sur votre compte Google, vous ne pouvez ni partager ni rejoindre des groupes d'onglets</translation>
+<translation id="9198613052465150219">D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">L'impression est bloquée</translation>
 <translation id="9201904868909900493">Ouverture du sondage en cours…</translation>
 <translation id="9204089334327209740">Quand le téléversement sera terminé, vous pourrez modifier vos fichiers dans <ph name="CLOUD_PROVIDER" />. Le stockage local, y compris tous les fichiers de la corbeille, sera automatiquement retiré.</translation>

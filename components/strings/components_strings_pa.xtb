@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">ਲਾਈਵ ਸੁਰਖੀਆਂ ਫ਼ਿਲਹਾਲ ਉਪਲਬਧ ਨਹੀਂ ਹਨ</translation>
 <translation id="112840717907525620">ਨੀਤੀ ਕੈਸ਼ੇ OK</translation>
 <translation id="1131264053432022307">ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਕੀਤਾ ਚਿੱਤਰ</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ, ਸਿਖਰ ਤੋਂ ਹੇਠਾਂ ਵੱਲ ਘਸੀਟੋ ਅਤੇ 'ਪਿੱਛੇ' ਬਟਨ 'ਤੇ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="1138458427267715730">ਵੈੱਬ 'ਤੇ ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤ ਘਟਣ 'ਤੇ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1142713751288681188">ਪੇਪਰ ਦੀ ਕਿਸਮ</translation>
 <translation id="1144136880160289237">ਤੁਹਾਡੇ ਕੋਲ ਹਾਲੇ ਕੋਈ ਕਿਰਿਆਸ਼ੀਲ ਵਿਸ਼ਾ ਨਹੀਂ ਹੈ</translation>
@@ -454,6 +455,7 @@
 <translation id="1734878702283171397">ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ਇਸਦੀ ਮਿਆਦ <ph name="CARD_EXPIRATION" /> ਨੂੰ ਸਮਾਪਤ ਹੋਵੇਗੀ</translation>
 <translation id="1736420071277903564">ਕੰਪਿਊਟਰ</translation>
+<translation id="1740404923954980840">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ, ਸਿਖਰ ਤੋਂ ਹੇਠਾਂ ਵੱਲ ਘਸੀਟੋ ਅਤੇ 'ਪਿੱਛੇ' ਬਟਨ 'ਤੇ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="1741474054575634405">ਵਫ਼ਾਦਾਰੀ ਕਾਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ...</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode ਦੇ <ph name="SECURE_DNS_MODE_SECURE" /> ਹੋਣ 'ਤੇ ਨਿਰਧਾਰਤ ਹੋਣਾ ਅਤੇ ਸਤਰ ਦਾ ਵੈਧ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="1743393865165844832">ਬਿਸਤਰ ਸੰਬੰਧੀ ਉਤਪਾਦ ਅਤੇ ਬਿਸਤਰ ਲਿਨਨ</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2933624813161016821">ਐਮਬੌਸਿੰਗ ਫ਼ੋਇਲ</translation>
 <translation id="293796669683825859">ਟਿੱਪਣੀਆਂ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – ਆਪਣਾ ਕਰਸਰ ਦਿਖਾਉਣ ਲਈ, ਐਪਾਂ ਨੂੰ ਸਵਿੱਚ ਕਰੋ, ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ ਜਾਂ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="2940418897281183211">PNG ਚਿੱਤਰ</translation>
 <translation id="2941878205777356567">9 x 12 ਇੰਚ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="2941952326391522266">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ <ph name="DOMAIN2" /> ਵੱਲੋਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
@@ -1320,6 +1323,7 @@
 <translation id="3207960819495026254">ਬੁੱਕਮਾਰਕ ਕੀਤੇ</translation>
 <translation id="3208701679386778924">ਕਿਰਪਾ ਕਰਕੇ ਰਿਪੋਰਟ ਭੇਜੋ ਤਾਂ ਜੋ ਅਸੀਂ ChromeOS 'ਤੇ ਹੋਰ ਅੱਪਡੇਟਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾ ਸਕੀਏ।</translation>
 <translation id="3209034400446768650">ਸ਼ਾਇਦ ਪੰਨੇ ਵੱਲੋਂ ਖਰਚੇ ਲਏ ਜਾਣ</translation>
+<translation id="3212468046572043669">ਡਾਊਨਲੋਡ ਸ਼ੁਰੂ ਹੋਇਆ। ਇਸਨੂੰ ਦੇਖਣ ਲਈ, ਸਿਖਰ ਤੋਂ ਹੇਠਾਂ ਵੱਲ ਘਸੀਟੋ ਅਤੇ 'ਪਿੱਛੇ' ਬਟਨ 'ਤੇ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> 'ਤੇ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3215092763954878852">WebAuthn ਨੂੰ ਨਹੀਂ ਵਰਤ ਸਕਦੇ</translation>
 <translation id="3215311088819828484">ਨਤੀਜੇ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
@@ -1856,6 +1860,7 @@
 <translation id="4085326869263783566">ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ। ਖੋਲ੍ਹਣ ਲਈ ਟੈਬ ਕਰੋ ਅਤੇ Enter ਦਬਾਓ</translation>
 <translation id="4085769736382018559">ਉਤਪਾਦਾਂ ਦੀ ਤੁਲਨਾ ਕਰੋ</translation>
 <translation id="4085778582400064057">ਨੀਲਾ 2</translation>
+<translation id="4085859451613666999">ਤੁਹਾਡਾ ਖਾਤਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਭਵਿੱਖੀ ਖਰੀਦਾਂ ਲਈ ਆਟੋਫਿਲ ਕਰ ਸਕੋ</translation>
 <translation id="4088981014127559358">ਸਾਈਡ 1 ਚਿੱਤਰ Y ਸ਼ਿਫਟ</translation>
 <translation id="4089152113577680600">ਟ੍ਰੇਅ 14</translation>
 <translation id="4092349052316400070">ਪਤਾ ਭਰੋ</translation>
@@ -2405,6 +2410,7 @@
 <translation id="4995474875135717171">ਸੋਧਣ ਦਾ ਸਮਾਂ:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ਸਾਈਟ ਖੋਜ ਅਤੇ ਆਪਣੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Tab ਅਤੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="4998950033665438990">ਸਿੰਗਲ ਫੇਸ</translation>
+<translation id="5001338033791319371">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਅਤੇ ਡਾਊਨਲੋਡ ਦੇਖਣ ਲਈ, ਸਿਖਰ ਤੋਂ ਹੇਠਾਂ ਵੱਲ ਘਸੀਟੋ ਅਤੇ 'ਪਿੱਛੇ' ਬਟਨ 'ਤੇ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="5001526427543320409">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼</translation>
 <translation id="5002932099480077015">ਜੇਕਰ ਚਾਲੂ ਹੈ, ਤਾਂ Chrome ਤੇਜ਼ੀ ਨਾਲ ਫ਼ਾਰਮ ਭਰਨ ਲਈ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਤੁੁਹਾਡੇ ਕਾਰਡ ਦੀ ਇੱਕ ਕਾਪੀ ਸਟੋਰ ਕਰੇਗਾ।</translation>
 <translation id="5007344584818503324">ਸਾਂਝੀ ਕੀਤੀ ਗਈ ਟੈਬ ਗਰੁੱਪ ਨਾਲ ਸੰਬੰਧਿਤ ਸਰਗਰਮੀ</translation>
@@ -3965,6 +3971,7 @@
 <translation id="7582602800368606489">Google Calendar ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ ਇਵੈਂਟ ਬਣਾਓ</translation>
 <translation id="7586676035079382730">ਸੂਚਨਾਵਾਂ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="7588707273764747927">ਟ੍ਰਾਂਸਫ਼ਰ ਕਰੋ</translation>
+<translation id="7589062909165841767">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਤੁਹਾਡੀ <ph name="BEGIN_LINK_GAA" />Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਸਰਗਰਮੀ<ph name="END_LINK_GAA" /> ਸ਼ਾਮਲ ਹੋ ਸਕਦੀ ਹੈ</translation>
 <translation id="7591288787774558753">ਕੀ ਗੁਪਤ ਸਮੱਗਰੀ ਨੂੰ ਸਾਂਝਾ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ਦੀ <ph name="TOP_LEVEL_URL" /> 'ਤੇ ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ ਵਰਤਣ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="7592362899630581445">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨਾਮ ਪਾਬੰਦੀਆਂ ਦੀ ਉਲੰਘਣਾ ਕਰਦਾ ਹੈ।</translation>
@@ -4250,6 +4257,7 @@
 <translation id="8075736640322370409">ਤੇਜ਼ੀ ਨਾਲ ਨਵੀਂ Google ਸ਼ੀਟ ਬਣਾਓ</translation>
 <translation id="8075898834294118863">ਸਾਈਟ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8076492880354921740">ਟੈਬਾਂ</translation>
+<translation id="8076880883123051368">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੀ <ph name="BEGIN_LINK_GAA" />Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਸਰਗਰਮੀ<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">ਚੀਨੀ #8 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="8078006011486731853">{0,plural, =1{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨਾ ਹੈ?}one{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨਾ ਹੈ?}other{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨਾ ਹੈ?}}</translation>
 <translation id="8079031581361219619">ਕੀ ਸਾਈਟ ਰੀਲੋਡ ਕਰਨੀ ਹੈ?</translation>
@@ -4383,6 +4391,7 @@
 <translation id="8294431847097064396">ਸ੍ਰੋਤ</translation>
 <translation id="8297545700510100061">ਕੁਕੀਜ਼ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਤੁਹਾਨੂੰ ਯਾਦ ਰੱਖਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ, ਉਦਾਹਰਨ ਦੇ ਤੌਰ 'ਤੇ ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਜਾਂ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ। ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਲਈ ਕੁਕੀਜ਼ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, <ph name="SETTINGS" /> ਦੇਖੋ।</translation>
 <translation id="8298115750975731693">ਜੋ Wi-Fi (<ph name="WIFI_NAME" />) ਤੁਸੀਂ ਵਰਤ ਰਹੇ ਹੋ, ਉਸ ਲਈ ਤੁਹਾਨੂੰ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ਤੇ ਵਿਜਿਟ ਕਰਨ ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ।</translation>
+<translation id="8298399736867690281">ਕਾਰਡ ਸਿਰਫ਼ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8301894345671534559">ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="8304912090860925649">ਨਵੀਂ ਤੁਲਨਾ ਸਾਰਨੀ</translation>
 <translation id="830498451218851433">ਅੱਧੀ ਤਹਿ</translation>
@@ -4903,6 +4912,7 @@
 <translation id="9192361865877479444">ਧਾਤ (ਮੈਟ)</translation>
 <translation id="9192947025498305328">ਨਿਰਮਲ ਸੁੰਦਰਤਾ</translation>
 <translation id="9195969368671142407">ਜਦੋਂ ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਸੀਮਤ ਕਰਦੀ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਸਾਂਝਾ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਾਂ ਉਨ੍ਹਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਦੇ</translation>
+<translation id="9198613052465150219">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="9199905725844810519">ਪ੍ਰਿੰਟ ਕਰਨਾ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="9201904868909900493">ਸਰਵੇਖਣ ਨੂੰ ਖੋਲ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="9204089334327209740">ਇੱਕ ਵਾਰ ਅੱਪਲੋਡ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋ ਜਾਣ 'ਤੇ, ਤੁਸੀਂ <ph name="CLOUD_PROVIDER" /> ਵਿੱਚ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਸੋਧ ਸਕਦੇ ਹੋ। ਰੱਦੀ ਵਿੱਚ ਮੌਜੂਦ ਕਿਸੇ ਵੀ ਫ਼ਾਈਲ ਸਮੇਤ ਸਥਾਨਕ ਸਟੋਰੇਜ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>

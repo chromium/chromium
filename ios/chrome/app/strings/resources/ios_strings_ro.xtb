@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">PIN-ul nu a fost schimbat. Verifică-ți conexiunea la internet și încearcă din nou.</translation>
 <translation id="1063070031224282617">Alege unde vrei să salvezi <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Recenzii bazate pe interesele tale</translation>
+<translation id="1072679792409426431">Opțiune dezactivată de administrator</translation>
 <translation id="1074827084851510304">Ești pe cale să ștergi {password_count} parole și lista de site-uri și aplicații pentru care ai ales să nu salvezi niciodată informațiile de conectare. Conturile pe care le-ai creat pentru site-uri și aplicații nu se vor șterge.</translation>
 <translation id="1076421457278169141">Codul a fost scanat</translation>
 <translation id="1081114897601629648">Următoarele parole nu au fost importate în Managerul de parole Google deoarece nu corespund cerințelor.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Adresa se va șterge de pe acest dispozitiv.}few{Adresele se vor șterge de pe dispozitiv.}other{Adresele se vor șterge de pe dispozitiv.}}</translation>
 <translation id="2297989278479054870">După ce te deconectezi, marcajele, parolele și altele din Contul Google vor fi eliminate de pe acest dispozitiv.</translation>
 <translation id="2299218006564889602">Parolele tale sunt criptate pe dispozitiv înainte să se salveze în Managerul de parole Google.</translation>
+<translation id="2306265833370324042">Afișează detaliile despre <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Închide fila</translation>
 <translation id="2311077293164383652">Închide fila fixată</translation>
 <translation id="2316129865977710310">Nu, mulțumesc</translation>
@@ -1201,6 +1203,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5709005673595820640">{count,plural, =1{Ai {count} parolă refolosită care îți poate periclita securitatea. Remediază problema acum pentru a rămâne în siguranță.}few{Ai {count} parole refolosite care îți pot periclita securitatea. Remediază problemele acum pentru a rămâne în siguranță.}other{Ai {count} de parole refolosite care îți pot periclita securitatea. Remediază problemele acum pentru a rămâne în siguranță.}}</translation>
 <translation id="57094364128775171">Sugerează o parolă puternică…</translation>
 <translation id="5718049162805123412">Ar trebui să le schimbi acum</translation>
+<translation id="5721040778297053709">Poziționează cardul de credit în acest cadru</translation>
 <translation id="572328651809341494">File recente</translation>
 <translation id="5724941645893276623">Pentru a răsfoi în privat pe web, adaugă o filă nouă</translation>
 <translation id="5728072125198221967">Servicii Google conectate</translation>
@@ -1780,6 +1783,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7889910613639381518">Acces ușor și securizat cu widgetul Manager de parole Google.</translation>
 <translation id="7899199123054742721">Marchează-le pe toate ca necitite</translation>
 <translation id="7911190106180361398">Organizația ta nu îți permite să sincronizezi tot.</translation>
+<translation id="7918999344502274923">Ascunde detaliile despre <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Nu s-au găsit probleme</translation>
 <translation id="7925108652071887026">Datele de completare automată</translation>
 <translation id="7926975587469166629">Pseudonimul cardului</translation>

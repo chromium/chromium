@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Pinkoden ändrades inte. Kontrollera internetanslutningen och försök igen</translation>
 <translation id="1063070031224282617">Välj var du vill spara <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Recensioner baserade på dina intressen</translation>
+<translation id="1072679792409426431">Inaktiverad av administratören</translation>
 <translation id="1074827084851510304">Du är på väg att radera {password_count} lösenord och listan över webbplatser och appar där du valt att aldrig spara inloggningsuppgifter. Konton som du har skapat för webbplatser och appar raderas inte.</translation>
 <translation id="1076421457278169141">Koden skannades</translation>
 <translation id="1081114897601629648">Följande lösenord importerades inte till Google Lösenordshantering eftersom de inte uppfyller kraven.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Adressen raderas från enheten.}other{Dessa adresser raderas från enheten.}}</translation>
 <translation id="2297989278479054870">När du har loggat ut tas bokmärken, lösenord med mera i Google-kontot bort från enheten.</translation>
 <translation id="2299218006564889602">Dina lösenord krypteras på enheten innan de sparas i Google Lösenordshantering.</translation>
+<translation id="2306265833370324042">Visa information om <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Stäng flik</translation>
 <translation id="2311077293164383652">Stäng fäst flik</translation>
 <translation id="2316129865977710310">Nej tack</translation>
@@ -1201,6 +1203,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5709005673595820640">{count,plural, =1{Du har {count} återanvänt lösenord som kan innebära en säkerhetsrisk. Åtgärda det nu för att hålla dig säker.}other{Du har {count} återanvända lösenord som kan innebära en säkerhetsrisk. Åtgärda dem nu för att hålla dig säker.}}</translation>
 <translation id="57094364128775171">Föreslå ett starkt lösenord …</translation>
 <translation id="5718049162805123412">Du bör ändra dessa nu</translation>
+<translation id="5721040778297053709">Passa in kreditkortet i den här rutan</translation>
 <translation id="572328651809341494">Senaste flikarna</translation>
 <translation id="5724941645893276623">Öppna en ny flik om du vill använda internet privat</translation>
 <translation id="5728072125198221967">Länkade Google-tjänster</translation>
@@ -1780,6 +1783,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7889910613639381518">Enkel och säker åtkomst med widgeten för Google Lösenordshantering.</translation>
 <translation id="7899199123054742721">Markera alla som olästa</translation>
 <translation id="7911190106180361398">Organisationen tillåter inte att du synkroniserar allt.</translation>
+<translation id="7918999344502274923">Dölj information om <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Inga problem hittades</translation>
 <translation id="7925108652071887026">Fyll i uppgifter automatiskt</translation>
 <translation id="7926975587469166629">Kortets namn</translation>

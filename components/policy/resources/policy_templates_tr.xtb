@@ -473,6 +473,7 @@ Bu özellik, <ph name="MAC_OS_NAME" /> 10.15 sürümünden itibaren kullanılabi
       Bu politika etkinleştirilirse iyileştirilmiş uluslararası klavye kısayolları etkinleştirilir.
       Bu politika ayarlanmadan bırakılırsa hem yönetilen cihazlar için hem de tüketiciye ait cihazlar için etkin olur.
       Bunun, yönetilen kullanıcıların kullanımdan kaldırılmış eski kısayolları kullanmaya devam edebilmelerini sağlamaya yönelik geçici bir politika olduğunu unutmayın. Bu politika, özelleştirilmiş klavye kısayolları kullanıma sunulduktan sonra kullanımdan kaldırılacaktır.</translation>
+<translation id="1357214899305978790">Yeni Sekme Sayfası'nda kısayollar ayarlama (Beta)</translation>
 <translation id="1361661842732478894">Araç çubuğunda home düğmesini göster</translation>
 <translation id="1363275621236827384">Quirks Server'dan donanım profillerini sorgulamayı etkinleştir</translation>
 <translation id="1363839375295535439">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa sistem yapılandırması desteklediğinde yazdırma hizmetleri için LPAC korumalı alanı etkinleştirilir.
@@ -5341,6 +5342,17 @@ Kullanıcı, çerezleri sildiğinde Google Hesabı oturumu açık kalır.
 Bu politika, Chrome 114 sürümüne kadar <ph name="SYNC_DISABLED_POLICY_NAME" /> politikasının doğru değerine ayarlanmasını gerektiriyordu. Chrome 115 sürümünden itibaren <ph name="SYNC_DISABLED_POLICY_NAME" /> politikası ayarlanarak "<ph name="CHROME_SYNC_NAME" />" devre dışı bırakılmadığı veya <ph name="BROWSER_SIGNIN_POLICY_NAME" /> devre dışı olmadığı sürece, bu politika ayarlandığında ilgili veri türleri için senkronizasyon devre dışı bırakılır.</translation>
 <translation id="4694138212536142867">Cihaz donanım durumu raporlamasını etkinleştir</translation>
 <translation id="4697581738794063407">URL parametre filtresi özelliğini kontrol et</translation>
+<translation id="4698488381632756664">Geliştirme aşamasında: Yalnızca erken erişim önizlemesi için.
+
+Politika ayarlandığında <ph name="PRODUCT_NAME" /> Yeni Sekme sayfasında 10 adede kadar özel kısayol önceden yapılandırılır.
+
+Bu politika ayarlanırsa kullanıcılar varsayılan olarak bu kısayolları görür ve "Chrome'u özelleştir" panelinde "Kısayollarım", "En çok ziyaret edilen siteler" veya "Kuruluşumun kısayolları" arasında geçiş yapabilir. Boş bırakılır veya ayarlanmazsa kullanıcı, "Chrome'u özelleştir" panelinde yalnızca "Kısayollarım" veya "En çok ziyaret edilen siteler" arasında geçiş yapabilir.
+
+Kısayol URL'leri benzersiz olmalıdır.
+
+<ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" />, doğru değerine ayarlanırsa kullanıcılar kısayolun adını değiştirebilir. Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar adı düzenleyemez.
+
+<ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />, doğru değerine ayarlanırsa kullanıcılar kısayolu kaldırabilir. Politika, yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar kısayolu kaldıramaz.</translation>
 <translation id="4698895924806859508">Ağ etkinliklerini raporlama</translation>
 <translation id="4699172675775169585">Önbelleğe alınan resimler ve dosyalar</translation>
 <translation id="4699592681017489215">Bu politika, DNS müdahale kontrollerin devre dışı bırakmak için kullanılabilen yerel bir anahtarı yapılandırır. Kontroller, tarayıcının bilinmeyen ana bilgisayar adlarına yönlendirme yapan bir proxy'nin arkasında olup olmadığını anlamaya çalışır.

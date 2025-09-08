@@ -422,7 +422,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="5749158352074143502">Continuar com esta guia</translation>
 <translation id="5750869797196646528">Rastreamento de mãos</translation>
 <translation id="5753570386948603678">Excluir do histórico</translation>
-<translation id="5771720122942595109">Bloqueada: <ph name="PERMISSION_1" /></translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloqueada</translation>
 <translation id="5801457289562671820">Recomendado pela sua organização</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5822675474983796325">A página inferior "Personalizar 'Nova guia'" está aberta no tamanho máximo</translation>
@@ -623,7 +623,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="8168435359814927499">Conteúdo</translation>
 <translation id="818487310457576362">Arraste da lateral da tela para sair do modo de tela cheia.</translation>
 <translation id="8186479265534291036">Site indisponível? Cookies de terceiros bloqueados</translation>
-<translation id="8197286292360124385">Permitida: <ph name="PERMISSION_1" /></translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> permitido</translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8211406090763984747">A conexão é segura</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>

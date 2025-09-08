@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">A PIN-kódja nem változott meg. Ellenőrizze az internetkapcsolatot, és próbálja újra.</translation>
 <translation id="1063070031224282617">Válassza ki, hogy hova szeretné menteni a következő fájlt: „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />” (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Az érdeklődési körei alapján megjelenő értékelések</translation>
+<translation id="1072679792409426431">A rendszergazda letiltotta</translation>
 <translation id="1074827084851510304">{password_count} jelszót, valamint azon webhelyek és alkalmazások listáját készül törölni, amelyeknél úgy döntött, hogy soha nem menti a bejelentkezési adatokat. A webhelyekhez és alkalmazásokhoz létrehozott fiókok nem törlődnek.</translation>
 <translation id="1076421457278169141">Kód beolvasva</translation>
 <translation id="1081114897601629648">A következő jelszavakat nem importálta a rendszer a Google Jelszókezelőbe, mert nem felelnek meg a követelményeknek.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Ez a cím törlődni fog erről az eszközről.}other{Ezek a címek törlődni fognak az eszközről.}}</translation>
 <translation id="2297989278479054870">Kijelentkezés után a Google-fiókjában lévő könyvjelzők, jelszavak és egyebek el lesznek távolítva erről az eszközről.</translation>
 <translation id="2299218006564889602">Jelszavai titkosításra kerülnek az eszközön, mielőtt elmenti őket a rendszer a Google Jelszókezelőbe.</translation>
+<translation id="2306265833370324042">A(z) <ph name="SEARCH_ENGINE_NAME" /> részleteinek megjelenítése</translation>
 <translation id="2309265394777270359">Lap bezárása</translation>
 <translation id="2311077293164383652">Rögzített lap bezárása</translation>
 <translation id="2316129865977710310">Köszönöm, nem</translation>
@@ -1201,6 +1203,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5709005673595820640">{count,plural, =1{{count} újrafelhasznált jelszava van, amely veszélyeztetheti az Ön biztonságát. A biztonság megőrzése érdekében javítsa ki most.}other{{count} újrafelhasznált jelszava van, amelyek veszélyeztethetik az Ön biztonságát. A biztonság megőrzése érdekében javítsa ki őket most.}}</translation>
 <translation id="57094364128775171">Erős jelszó ajánlása…</translation>
 <translation id="5718049162805123412">Azonnal módosítania kell őket</translation>
+<translation id="5721040778297053709">Igazítsa a hitelkártyát ehhez a kerethez</translation>
 <translation id="572328651809341494">Nemrég megnyitott lapok</translation>
 <translation id="5724941645893276623">Ha privát módon szeretne böngészni az interneten, nyisson meg egy új lapot.</translation>
 <translation id="5728072125198221967">Összekapcsolt Google-szolgáltatások</translation>
@@ -1780,6 +1783,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7889910613639381518">Egyszerű és biztonságos hozzáférés a Google Jelszókezelő modullal.</translation>
 <translation id="7899199123054742721">Az összes megjelölése olvasatlanként</translation>
 <translation id="7911190106180361398">Szervezete nem engedélyezi mindennek a szinkronizálását.</translation>
+<translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> részleteinek elrejtése</translation>
 <translation id="792357691529995513">Nem találtunk problémát</translation>
 <translation id="7925108652071887026">Automatikus kitöltés adatai</translation>
 <translation id="7926975587469166629">Egyéni kártyanév</translation>

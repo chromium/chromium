@@ -474,6 +474,7 @@ Questa funzionalità è disponibile a partire da <ph name="MAC_OS_NAME" /> 10.15
       Se viene attivata, le scorciatoie da tastiera internazionali migliorate vengono abilitate.
       Se non viene configurata, questa policy viene attivata per i dispositivi gestiti e per i dispositivi di proprietà del consumatore.
       Tieni presente che questa policy è temporanea per consentire agli utenti gestiti di poter ancora utilizzare le scorciatoie precedenti deprecate. Verrà ritirata quando le scorciatoie da tastiera personalizzate saranno disponibili.</translation>
+<translation id="1357214899305978790">Impostazione delle scorciatoie nella pagina Nuova scheda (beta)</translation>
 <translation id="1361661842732478894">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="1363275621236827384">Attiva le query in Quirks Server per i profili hardware</translation>
 <translation id="1363839375295535439">Se la policy viene attivata o se non viene configurata, la sandbox LPAC per i servizi di stampa viene attivata ogni volta che la configurazione del sistema supporta l'operazione.
@@ -5346,6 +5347,17 @@ L'utente manterrà l'accesso al proprio Account Google quando elimina i cookie.
 Fino a Chrome 114, questa policy richiedeva l'impostazione della policy <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questa policy disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivata impostando la policy <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivata <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="4694138212536142867">Attiva i report sullo stato dell'hardware del dispositivo</translation>
 <translation id="4697581738794063407">Controlla la funzionalità di filtro del parametro URL</translation>
+<translation id="4698488381632756664">In fase di sviluppo: solo per l'anteprima.
+
+Se la policy viene configurata, è possibile preconfigurare fino a 10 scorciatoie personalizzate nella pagina Nuova scheda di <ph name="PRODUCT_NAME" />.
+
+Se la policy viene configurata, gli utenti vedranno queste scorciatoie per impostazione predefinita e potranno attivare/disattivare "Le mie scorciatoie", "Siti più visitati" o "Scorciatoie della mia organizzazione" nel riquadro "Personalizza Chrome". Se la policy è vuota o se non viene configurata, l'utente potrà solo attivare/disattivare "Le mie scorciatoie" o "Siti più visitati" nel riquadro "Personalizza Chrome".
+
+Gli URL delle scorciatoie devono essere univoci.
+
+Se la policy <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> è impostata su True, gli utenti possono modificare il nome della scorciatoia. Se la policy è impostata su False o se non viene configurata, gli utenti non possono modificare il nome.
+
+Se la policy <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> è impostata su True, gli utenti possono rimuovere la scorciatoia. Se la policy è impostata su False o se non viene configurata, gli utenti non possono rimuovere la scorciatoia.</translation>
 <translation id="4698895924806859508">Non segnalare eventi di rete</translation>
 <translation id="4699172675775169585">Immagini e file memorizzati nella cache</translation>
 <translation id="4699592681017489215">Questa policy consente di configurare un'opzione locale che permette di disattivare i controlli dell'intercettazione DNS. Lo scopo dei controlli è cercare di scoprire se il browser è protetto da un proxy che reindirizza i nomi host sconosciuti.

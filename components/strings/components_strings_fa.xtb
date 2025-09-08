@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">درحال‌حاضر «زیرنویس زنده ناشنوایان» در دسترس نیست</translation>
 <translation id="112840717907525620">حافظه پنهان خط‌مشی مورد تأیید است</translation>
 <translation id="1131264053432022307">تصویری که کپی کرده‌اید</translation>
+<translation id="1132735979845538847">‫<ph name="ORIGIN" /> – برای خارج شدن از حالت تمام‌صفحه، از بالا بکشید و «دکمه برگشتن» را لمس کنید</translation>
 <translation id="1138458427267715730">وقتی قیمت در هر سایتی در وب کاهش پیدا کند، هشدار دریافت می‌کنید</translation>
 <translation id="1142713751288681188">نوع کاغذ</translation>
 <translation id="1144136880160289237">هنوز هیچ موضوع فعالی ندارید</translation>
@@ -454,6 +455,7 @@
 <translation id="1734878702283171397">با سرپرست سیستم تماس بگیرید.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />،‏ <ph name="CARD_NETWORK_NAME" />،‏ <ph name="CARD_LAST_FOUR_DIGITS" />، در تاریخ <ph name="CARD_EXPIRATION" /> منقضی می‌شود</translation>
 <translation id="1736420071277903564">رایانه</translation>
+<translation id="1740404923954980840">برای خارج شدن از حالت تمام‌صفحه، از بالا بکشید و «دکمه برگشتن» را لمس کنید</translation>
 <translation id="1741474054575634405">کارت‌های وفاداری را مدیریت کنید…</translation>
 <translation id="1741613555002899862">‏وقتی DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> است، باید مشخص شده باشد و رشته‌ای معتبر باشد</translation>
 <translation id="1743393865165844832">روتختی و ملحفه</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2933624813161016821">فویل حکاکی</translation>
 <translation id="293796669683825859">نظرها</translation>
 <translation id="2938225289965773019">باز کردن پیوندهای <ph name="PROTOCOL" /></translation>
+<translation id="2938370569652058706">‫<ph name="ORIGIN" /> – برای نمایش مکان‌نما، بین برنامه‌ها جابه‌جا شوید، صفحه را مجدد بار کنید، یا برگردید</translation>
 <translation id="2940418897281183211">‏تصویر PNG</translation>
 <translation id="2941878205777356567">پاکت ۱۲×۹ اینچی</translation>
 <translation id="2941952326391522266">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن از <ph name="DOMAIN2" /> است. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
@@ -1322,6 +1325,7 @@
 <translation id="3207960819495026254">نشانک‌گذاری شده</translation>
 <translation id="3208701679386778924">‏لطفاً گزارشی ارسال کنید تا بتوانیم به‌روزرسانی‌های بعدی ChromeOS را بهبود ببخشیم.</translation>
 <translation id="3209034400446768650">ممکن است این صفحه از شما هزینه کسر کند</translation>
+<translation id="3212468046572043669">بارگیری شروع شد. برای دیدن بارگیری، از بالا بکشید و «دکمه برگشتن» را لمس کنید</translation>
 <translation id="3212581601480735796">بر فعالیت شما در <ph name="HOSTNAME" /> نظارت می‌شود</translation>
 <translation id="3215092763954878852">‏استفاده از WebAuthn ممکن نشد</translation>
 <translation id="3215311088819828484">نتیجه به‌روز شد</translation>
@@ -1859,6 +1863,7 @@
 <translation id="4085326869263783566">‏کمک گرفتن در نوشتن. برای باز کردن، کلید جهش و Enter را فشار دهید</translation>
 <translation id="4085769736382018559">مقایسه کردن محصولات</translation>
 <translation id="4085778582400064057">آبی ۲</translation>
+<translation id="4085859451613666999">‏کارت شما در «حساب Google» ذخیره شده است، بنابراین می‌توانید اطلاعات کارت را به‌طور خودکار برای خریدهای آینده تکمیل کنید</translation>
 <translation id="4088981014127559358">‏روی ۱، تغییر جهت تصویر حول محور Y</translation>
 <translation id="4089152113577680600">سینی ۱۴</translation>
 <translation id="4092349052316400070">نشانی را تکمیل کنید</translation>
@@ -2408,6 +2413,7 @@
 <translation id="4995474875135717171">اصلاح‌شده در:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت جستجوی سایت و موتور جستجوی پیش‌فرض، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="4998950033665438990">یک‌رو</translation>
+<translation id="5001338033791319371">برای خارج شدن از حالت تمام‌صفحه و دیدن بارگیری، از بالا بکشید و «دکمه برگشتن» را لمس کنید</translation>
 <translation id="5001526427543320409">کوکی‌های طرف سوم</translation>
 <translation id="5002932099480077015">‏اگر فعال شود، Chrome یک کپی از کارت شما را برای پرکردن سریع‌تر فرم در این دستگاه ذخیره می‌کند.</translation>
 <translation id="5007344584818503324">فعالیت گروه‌های زبانه هم‌رسانی‌شده</translation>
@@ -3737,7 +3743,7 @@
 <translation id="7219179957768738017">اتصال از <ph name="SSL_VERSION" /> استفاده می‌کند.</translation>
 <translation id="7220786058474068424">درحال پردازش</translation>
 <translation id="7221855153210829124">نمایش اعلان‌ها</translation>
-<translation id="722454870747268814">برگه ناشناس جدید</translation>
+<translation id="722454870747268814">زبانه ناشناس جدید</translation>
 <translation id="7226892411756387078">متن ساده</translation>
 <translation id="7227293336683593977">سابقه قیمت</translation>
 <translation id="7228306718910595403">وضعیت صلاحیت برای گواهینامه اتحادیه اروپا</translation>
@@ -3970,6 +3976,7 @@
 <translation id="7582602800368606489">‏ایجاد سریع رویداد جدید در «تقویم Google»</translation>
 <translation id="7586676035079382730">اعلان‌ها مجاز نیست</translation>
 <translation id="7588707273764747927">انتقال</translation>
+<translation id="7589062909165841767">‏«حساب Google» شما ممکن است دربردارنده <ph name="BEGIN_LINK_GAA" />فعالیت برنامه‌های Gemini<ph name="END_LINK_GAA" /> شما باشد</translation>
 <translation id="7591288787774558753">محتوای محرمانه هم‌رسانی شود؟</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> می‌خواهد از کوکی‌ها و داده‌های سایت <ph name="TOP_LEVEL_URL" /> استفاده کند</translation>
 <translation id="7592362899630581445">گواهی سرور محدودیت‌های نام را نقض می‌کند.</translation>
@@ -4255,6 +4262,7 @@
 <translation id="8075736640322370409">‏ایجاد سریع «کاربرگ‌نگار Google» جدید</translation>
 <translation id="8075898834294118863">مدیریت تنظیمات سایت</translation>
 <translation id="8076492880354921740">برگه‌ها</translation>
+<translation id="8076880883123051368">‏«حساب Google» شما ممکن است دربردارنده شکل‌های دیگری از سابقه مرور در <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />باشد، مانند <ph name="BEGIN_LINK_GAA" />فعالیت برنامه‌های Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">پاکت چینی شماره ۸</translation>
 <translation id="8078006011486731853">{0,plural, =1{فایل محرمانه بارگذاری شود؟}one{فایل محرمانه بارگذاری شود؟}other{فایل‌های محرمانه بارگذاری شود؟}}</translation>
 <translation id="8079031581361219619">سایت بار کردن مجدد شود؟</translation>
@@ -4388,6 +4396,7 @@
 <translation id="8294431847097064396">منبع</translation>
 <translation id="8297545700510100061">از کوکی‌ها و دیگر داده‌های سایت برای به‌خاطر سپردن شما استفاده می‌شود؛ به‌عنوان مثال برای وارد کردن شما به سیستم یا شخصی کردن آگهی‌ها. برای مدیریت کوکی‌های همه سایت‌ها، به <ph name="SETTINGS" /> بروید.</translation>
 <translation id="8298115750975731693">‏شبکه Wi-Fi (<ph name="WIFI_NAME" />) مورد استفاده‌تان احتمالاً نیاز دارد که به صفحه <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> بروید.</translation>
+<translation id="8298399736867690281">کارت فقط در دستگاه ذخیره شد</translation>
 <translation id="8301894345671534559">کد را وارد کنید</translation>
 <translation id="8304912090860925649">جدول مقایسه جدید</translation>
 <translation id="830498451218851433">تاخوردگی از وسط</translation>
@@ -4908,6 +4917,7 @@
 <translation id="9192361865877479444">فلز (مات)</translation>
 <translation id="9192947025498305328">زیباییِ پاک</translation>
 <translation id="9195969368671142407">‏وقتی سازمانتان ذخیره‌سازی در «حساب Google» شما را محدود می‌کند، نمی‌توانید گروه‌های برگه را هم‌رسانی کنید یا به آن‌ها بپیوندید</translation>
+<translation id="9198613052465150219">‏«حساب Google» شما ممکن است دربردارنده شکل‌های دیگری از سابقه مرور در <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> باشد</translation>
 <translation id="9199905725844810519">چاپ کردن مسدود شده است</translation>
 <translation id="9201904868909900493">درحال باز کردن نظرسنجی…</translation>
 <translation id="9204089334327209740">بعداز کامل شدن بارگذاری، می‌توانید فایل‌هایتان را در <ph name="CLOUD_PROVIDER" /> اصلاح کنید. فضای ذخیره‌سازی محلی، شامل هر فایلی در «حذف‌شده‌ها»، به‌طور خودکار برداشته خواهد شد.</translation>

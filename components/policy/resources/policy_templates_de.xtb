@@ -472,6 +472,7 @@ Diese Funktion ist unter <ph name="MAC_OS_NAME" /> 10.15 und höher verfügbar.
       Wenn diese Richtlinie aktiviert ist, werden verbesserte internationale Tastenkürzel aktiviert.
       Ist die Richtlinie nicht konfiguriert, wird sie für verwaltete und nutzereigene Geräte aktiviert.
       Beachte, dass es sich hierbei um eine vorübergehende Richtlinie handelt, die dafür sorgt, dass alte Tastenkürzel weiterhin von verwalteten Nutzern verwendet werden können. Diese Richtlinie wird verworfen, sobald benutzerdefinierte Tastenkürzel verfügbar sind.</translation>
+<translation id="1357214899305978790">Verknüpfungen auf der Seite „Neuer Tab“ einrichten (Beta)</translation>
 <translation id="1361661842732478894">„Home“-Schaltfläche in der Symbolleiste anzeigen</translation>
 <translation id="1363275621236827384">Abfragen an Quirks-Server für Hardwareprofile aktivieren</translation>
 <translation id="1363839375295535439">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die LPAC-Sandbox für Druckdienste aktiviert, sofern dies von der Systemkonfiguration unterstützt wird.
@@ -5234,6 +5235,17 @@ Der Nutzer bleibt in seinem Google-Konto angemeldet, wenn Cookies gelöscht werd
 Bis Chrome 114 musste für diese Richtlinie die Richtlinie „<ph name="SYNC_DISABLED_POLICY_NAME" />“ auf „True“ gesetzt werden. Ab Chrome 115 wird mit dieser Richtlinie die Synchronisierung für die jeweiligen Datentypen deaktiviert, wenn weder „<ph name="CHROME_SYNC_NAME" />“ durch Festlegen der Richtlinie „<ph name="SYNC_DISABLED_POLICY_NAME" />“ noch „<ph name="BROWSER_SIGNIN_POLICY_NAME" />“ deaktiviert ist.</translation>
 <translation id="4694138212536142867">Melden des Hardwarestatus auf Geräten aktivieren</translation>
 <translation id="4697581738794063407">Funktion zum Filtern von URL-Parametern konfigurieren</translation>
+<translation id="4698488381632756664">In Entwicklung: frühe Vorabversion.
+
+Über diese Richtlinie werden auf der Seite „Neuer Tab“ von <ph name="PRODUCT_NAME" /> bis zu 10 benutzerdefinierte Verknüpfungen vorkonfiguriert.
+
+Wenn diese Richtlinie konfiguriert ist, sehen Nutzer diese Verknüpfungen standardmäßig. Sie können im Bereich „Chrome anpassen“ zwischen „Meine Verknüpfungen“, „Am häufigsten besuchte Websites“ und „Verknüpfungen meiner Organisation“ wechseln. Wenn diese Richtlinie leer oder nicht konfiguriert ist, können Nutzer im Bereich „Chrome anpassen“ nur zwischen „Meine Verknüpfungen“ und „Am häufigsten besuchte Websites“ wechseln.
+
+URLs von Verknüpfungen müssen eindeutig sein.
+
+Wenn „<ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" />“ auf „true“ festgelegt ist, können Nutzer den Namen der Verknüpfung ändern. Bei „false“ oder einer fehlenden Konfiguration können Nutzer den Namen nicht bearbeiten.
+
+Wenn „<ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />“ auf „true“ festgelegt ist, können Nutzer die Verknüpfung entfernen. Bei „false“ oder einer fehlenden Konfiguration können Nutzer die Verknüpfung nicht entfernen.</translation>
 <translation id="4698895924806859508">Keine Netzwerkereignisse melden</translation>
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
 <translation id="4699592681017489215">Mit dieser Richtlinie kann ein lokaler Parameter konfiguriert werden, der dazu dient, DNS-Abfangprüfungen zu deaktivieren. Durch die Prüfungen wird ermittelt, ob sich der Browser hinter einem Proxy befindet, der unbekannte Hostnamen weiterleitet.

@@ -148,7 +148,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1696555181932908973">Võite proovida teenuses <ph name="SITE_ETLD_PLUS_ONE" /> jätkamiseks teisi võimalusi.</translation>
 <translation id="1702543251015153180">Kas muuta tumeda teema seadeid?</translation>
 <translation id="1702907158640575240">Hallatud brauser</translation>
-<translation id="1718835860248848330">Viimase tunni jooksul</translation>
+<translation id="1718835860248848330">Viimane tund</translation>
 <translation id="1726477445370128854">Kui Chrome eellaadib lehed, mida võite arvatavasti külastada, võimaldab see teil kiiremini sirvida ja otsida</translation>
 <translation id="1728803206919861584">Kas salvestada pääsuvõti väljaspool inkognito režiimi?</translation>
 <translation id="1732514748744806741">Kui teie paroolid on ohus, anname teile sellest teada</translation>
@@ -632,6 +632,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4042941173059740150">Minge saidile <ph name="SITE_ETLD_PLUS_ONE" /> kontoga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Alumine leht</translation>
 <translation id="4045441967987592849">Ava uuesti</translation>
+<translation id="4049920046559074950">Rohkem valikuid: <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> uue tegevusega standardne vaheleht jagatud vahelehegruppides}other{<ph name="TABS_COUNT_MANY" /> uue tegevusega standardset vahelehte jagatud vahelehegruppides}}</translation>
 <translation id="405365679581583349">Google Play teenuste värskendamine</translation>
 <translation id="405399507749852140">Teile saadetakse märguanne, kui hind mõnel saidil langeb</translation>

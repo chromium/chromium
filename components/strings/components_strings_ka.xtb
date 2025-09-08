@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">ავტოსუბტიტრები ამჟამად მიუწვდომელია</translation>
 <translation id="112840717907525620">წესის ქეში OK</translation>
 <translation id="1131264053432022307">თქვენ მიერ კოპირებული სურათი</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> — სრული ეკრანიდან გასასვლელად ჩავლებით გადაიტანეთ ის ზემოდან და შეეხეთ უკან დაბრუნების ღილაკს</translation>
 <translation id="1138458427267715730">მიიღეთ გაფრთხილებები, როცა ფასი დაიკლებს ვებში არსებულ რომელიმე საიტზე.</translation>
 <translation id="1142713751288681188">ქაღალდის ტიპი</translation>
 <translation id="1144136880160289237">აქტიური თემები ჯერ არ გაქვთ</translation>
@@ -454,6 +455,7 @@
 <translation id="1734878702283171397">ცადეთ სისტემის ადმინისტრატორთან დაკავშირება.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ძალაშია <ph name="CARD_EXPIRATION" />-მდე</translation>
 <translation id="1736420071277903564">კომპიუტერი</translation>
+<translation id="1740404923954980840">სრული ეკრანიდან გასასვლელად ჩავლებით გადაიტანეთ ის ზემოდან და შეეხეთ უკან დაბრუნების ღილაკს</translation>
 <translation id="1741474054575634405">ერთგული კლიენტის ბარათების მართვა...</translation>
 <translation id="1741613555002899862">უნდა იყოს მითითებული და სწორი ფრაზა, როცა „DnsOverHttpsMode“ არის „<ph name="SECURE_DNS_MODE_SECURE" />“.</translation>
 <translation id="1743393865165844832">საწოლები და თეთრეული</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2933624813161016821">აფსკი ცხელი ტვიფვრისთვის</translation>
 <translation id="293796669683825859">კომენტარები</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" />-ის ბმულების გახსნა</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> — იმისთვის, რომ გამოაჩინოთ თქვენი კურსორი, გადართოთ აპები, გადატვირთოთ გვერდი ან დაბრუნდეთ უკან</translation>
 <translation id="2940418897281183211">PNG სურათი</translation>
 <translation id="2941878205777356567">კონვერტი 9 x 12 დუიმი</translation>
 <translation id="2941952326391522266">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატი არის <ph name="DOMAIN2" /> .-დან. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
@@ -1322,6 +1325,7 @@
 <translation id="3207960819495026254">ჩანიშნულია</translation>
 <translation id="3208701679386778924">გთხოვთ, გამოგვიგზავნოთ ანგარიში, ChromeOS-ის განახლების პროცესი კიდევ უფრო რომ გავაუმჯობესოთ.</translation>
 <translation id="3209034400446768650">გვერდმა შეიძლება დაგაკისროთ თანხის გადახდა</translation>
+<translation id="3212468046572043669">ჩამოტვირთვა დაიწყო. მის სანახავად ჩავლებით გადაიტანეთ ის ზემოდან და შეეხეთ უკან დაბრუნების ღილაკს</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />-ზე თქვენი აქტივობა მონიტორინგის ქვეშაა</translation>
 <translation id="3215092763954878852">WebAuthn-ის გამოყენება ვერ ხერხდება</translation>
 <translation id="3215311088819828484">შედეგი განახლდა</translation>
@@ -1859,6 +1863,7 @@
 <translation id="4085326869263783566">ტექსტის შემქმნელი გასახსნელად დააჭირეთ Tab-ს და შემდეგ კი შეყვანას</translation>
 <translation id="4085769736382018559">პროდუქტების შედარება</translation>
 <translation id="4085778582400064057">ლურჯი 2</translation>
+<translation id="4085859451613666999">თქვენი ბარათი შენახულია თქვენს Google ანგარიშში, რომ ავტომატურად შეავსოთ მისი მონაცემები მომავალი შესყიდვებისას</translation>
 <translation id="4088981014127559358">მხარე 1 — სურათის წანაცვლება Y ღერძზე</translation>
 <translation id="4089152113577680600">ლანგარი 14</translation>
 <translation id="4092349052316400070">მისამართის შევსება</translation>
@@ -2408,6 +2413,7 @@
 <translation id="4995474875135717171">შეცვლილია:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, საიტების ძიებისა და ნაგულისხმევი საძიებო სისტემის სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="4998950033665438990">ცალმხრივი გოფრირებული მუყაო</translation>
+<translation id="5001338033791319371">სრული ეკრანიდან გასასვლელად და ჩამოტვირთვის სანახავად ჩავლებით გადაიტანეთ ის ზემოდან და შეეხეთ უკან დაბრუნების ღილაკს</translation>
 <translation id="5001526427543320409">მესამე მხარის ქუქი-ჩანაწერები</translation>
 <translation id="5002932099480077015">თუ ჩართულია, Chrome თქვენი ბარათის ასლს ამ მოწყობილობაში ფორმათა უფრო სწრაფად შევსებისთვის შეინახავს.</translation>
 <translation id="5007344584818503324">ჩანართების ჯგუფების აქტივობა გაზიარებულია</translation>
@@ -3969,6 +3975,7 @@
 <translation id="7582602800368606489">Google Calendar-ში ახალი მოვლენის სწრაფად შექმნა</translation>
 <translation id="7586676035079382730">შეტყობინებები დაუშვებელია</translation>
 <translation id="7588707273764747927">გადასაყვანი</translation>
+<translation id="7589062909165841767">თქვენს Google ანგარიშში შეიძლება ინახებოდეს <ph name="BEGIN_LINK_GAA" />Gemini აპებში აქტივობა<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">გსურთ კონფიდენციალური კონტენტის გაზიარება?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ითხოვს <ph name="TOP_LEVEL_URL" />-ის ქუქი-ჩანაწერებისა და საიტის მონაცემების გამოყენების ნებართვას</translation>
 <translation id="7592362899630581445">სერვერის სერთიფიკატი არღვევს სახელის შეზღუდვებს.</translation>
@@ -4254,6 +4261,7 @@
 <translation id="8075736640322370409">ახალი Google Sheet-ის სწრაფად შექმნა</translation>
 <translation id="8075898834294118863">საიტების პარამეტრების მართვა</translation>
 <translation id="8076492880354921740">ჩანართები</translation>
+<translation id="8076880883123051368">თქვენს Google ანგარიშში შეიძლება ინახებოდეს ვების დათვალიერების სხვა ტიპის ისტორია, მაგალითად <ph name="BEGIN_LINK_GAA" />Gemini აპებში აქტივობა<ph name="END_LINK_GAA" />, რომელიც ხელმისაწვდომია მისამართზე <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="8077669823243888800">კონვერტი Chinese 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{გსურთ კონფიდენციალური ფაილის ატვირთვა?}other{გსურთ კონფიდენციალური ფაილების ატვირთვა?}}</translation>
 <translation id="8079031581361219619">გსურთ საიტის ხელახლა ჩატვირთვა?</translation>
@@ -4387,6 +4395,7 @@
 <translation id="8294431847097064396">წყარო</translation>
 <translation id="8297545700510100061">ქუქი-ჩანაწერები და საიტების სხვა მონაცემები გამოიყენება თქვენ დასამახსოვრებლად, რომ, მაგალითად, შეგიყვანოთ სისტემაში ან რეკლამა მოგარგოთ. ყველა საიტისთვის ქუქი-ჩანაწერების სამართავად მოინახულეთ <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi-მ, რომელსაც თქვენ იყენებთ (<ph name="WIFI_NAME" />) შეიძლება მოითხოვოს თქვენი სტუმრობა <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">ბარათი ინახება მხოლოდ მოწყობილობაში</translation>
 <translation id="8301894345671534559">შეიყვანეთ კოდი</translation>
 <translation id="8304912090860925649">შედარების ახალი ცხრილი</translation>
 <translation id="830498451218851433">დაკეცვა ნახევრად</translation>
@@ -4907,6 +4916,7 @@
 <translation id="9192361865877479444">ლითონი (მქრქალი)</translation>
 <translation id="9192947025498305328">სუფთა სილამაზე</translation>
 <translation id="9195969368671142407">თუ თქვენი ორგანიზაცია ზღუდავს თქვენს Google ანგარიშში შენახვას, ჩანართების ჯგუფების გაზიარებას ან მათში გაწევრიანებას ვერ შეძლებთ</translation>
+<translation id="9198613052465150219">თქვენს Google ანგარიშში შეიძლება ინახებოდეს სხვა ტიპის დათვალიერების ისტორიაც, რომელიც ხელმისაწვდომია მისამართზე: <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">ბეჭდვა დაბლოკილია</translation>
 <translation id="9201904868909900493">გამოკითხვა იხსნება…</translation>
 <translation id="9204089334327209740">ატვირთვის დასრულების შემდეგ თქვენი ფაილების შეცვლა შეგიძლიათ <ph name="CLOUD_PROVIDER" />-ში. ადგილობრივი მეხსიერება, მათ შორის, ნებისმიერი ფაილი წაშლილებში, ავტომატურად ამოიშლება.</translation>

@@ -3,7 +3,7 @@
 <translationbundle lang="iw">
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{נוצרה לפני שבוע (<ph name="NUM_WEEKS_ONE" />)}one{נוצרה לפני <ph name="NUM_WEEKS_MANY" /> שבועות}two{נוצרה לפני שבועיים (<ph name="NUM_WEEKS_MANY" />)}other{נוצרה לפני <ph name="NUM_WEEKS_MANY" /> שבועות}}</translation>
 <translation id="1063300264396686489">פתיחה אוטומטית של קבוצות כרטיסיות ממכשירים אחרים</translation>
-<translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
+<translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> מהכרטיסיות שלך לא היו בשימוש לאחרונה. לסגור אותן?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{נוצרה לפני שנה (<ph name="NUM_YEARS_ONE" />)}one{נוצרה לפני <ph name="NUM_YEARS_MANY" /> שנים}two{נוצרה לפני שנתיים (<ph name="NUM_YEARS_MANY" />)}other{נוצרה לפני <ph name="NUM_YEARS_MANY" /> שנים}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{כרטיסיות וקבוצות לא פעילות ייסגרו אחרי חודש}one{כרטיסיות וקבוצות לא פעילות ייסגרו אחרי <ph name="MONTH_COUNT_MANY" /> חודשים}two{כרטיסיות וקבוצות לא פעילות ייסגרו אחרי חודשיים (<ph name="MONTH_COUNT_MANY" />)}other{כרטיסיות וקבוצות לא פעילות ייסגרו אחרי <ph name="MONTH_COUNT_MANY" /> חודשים}}</translation>
 <translation id="1173894706177603556">שינוי שם</translation>
@@ -186,10 +186,10 @@
 <translation id="7961015016161918242">אף פעם</translation>
 <translation id="7966321538264951561">סגירת ההצעות.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{העברת הכרטיסייה לחלון חדש}one{העברת הכרטיסייה לחלון אחר}two{העברת הכרטיסייה לחלון אחר}other{העברת הכרטיסייה לחלון אחר}}</translation>
-<translation id="799469866974412355">קבוצה חדשה מהמכשיר השני</translation>
+<translation id="799469866974412355">קבוצת כרטיסיות חדשה מהמכשיר השני שלך</translation>
 <translation id="8029301326595421733">המידע על החנות הזו פתוח בגובה מלא</translation>
 <translation id="8053770993984522566">רשימת קבוצות הכרטיסיות, שנפתחה בחצי מגובה המסך</translation>
-<translation id="805809603610022708">{TABS_COUNT,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{הוספת הכרטיסייה לקבוצה}one{הוספת הכרטיסיות לקבוצה}two{הוספת הכרטיסיות לקבוצה}other{הוספת הכרטיסיות לקבוצה}}</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{הרחבה של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">העברת הכרטיסייה למעלה</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{עודכנה לפני דקה (<ph name="NUM_MINS_ONE" />)}one{עודכנה לפני <ph name="NUM_MINS_MANY" /> דקות}two{עודכנה לפני <ph name="NUM_MINS_MANY" /> דקות}other{עודכנה לפני <ph name="NUM_MINS_MANY" /> דקות}}</translation>

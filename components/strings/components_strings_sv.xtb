@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">Live Caption är inte tillgängligt just nu</translation>
 <translation id="112840717907525620">Cacheminnet för policyn är OK</translation>
 <translation id="1131264053432022307">Bilden som du kopierade</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – Dra från toppen och tryck på bakåtknappen för att avsluta helskärmsläget</translation>
 <translation id="1138458427267715730">Få aviseringar när priset sänks på någon webbplats på webben</translation>
 <translation id="1142713751288681188">Papperstyp</translation>
 <translation id="1144136880160289237">Du har inga aktiva ämnen än</translation>
@@ -454,6 +455,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1734878702283171397">Kontakta systemadministratören.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, löper ut <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Dator</translation>
+<translation id="1740404923954980840">Dra från toppen och tryck på bakåtknappen för att avsluta helskärmsläget</translation>
 <translation id="1741474054575634405">Hantera stamkundskort …</translation>
 <translation id="1741613555002899862">Måste anges och vara en giltig sträng när DnsOverHttpsMode är <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Sängutrustning och sängkläder</translation>
@@ -1153,6 +1155,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2933624813161016821">Präglingsfolie</translation>
 <translation id="293796669683825859">Kommentarer</translation>
 <translation id="2938225289965773019">Öppna <ph name="PROTOCOL" />-länkar</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – Visa markören genom att byta app, läsa in sidan igen eller gå tillbaka</translation>
 <translation id="2940418897281183211">PNG-bild</translation>
 <translation id="2941878205777356567">Kuvert, 9 x 12 tum</translation>
 <translation id="2941952326391522266">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kommer från <ph name="DOMAIN2" />. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
@@ -1322,6 +1325,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3208701679386778924">Skicka en rapport så att vi kan förbättra framtida ChromeOS-uppdateringar.</translation>
 <translation id="3209034400446768650">Sidan kan vara avgiftsbelagd</translation>
+<translation id="3212468046572043669">Nedladdningen har påbörjats. Dra från toppen och tryck på bakåtknappen för att se den</translation>
 <translation id="3212581601480735796">Din aktivitet på <ph name="HOSTNAME" /> övervakas</translation>
 <translation id="3215092763954878852">Det gick inte att använda WebAuthn</translation>
 <translation id="3215311088819828484">Resultatet har uppdaterats</translation>
@@ -1859,6 +1863,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4085326869263783566">Hjälp mig skriva. Tryck på Tabb och på Retur för att öppna</translation>
 <translation id="4085769736382018559">Jämför produkter</translation>
 <translation id="4085778582400064057">Blå 2</translation>
+<translation id="4085859451613666999">Kortet sparas i Google-kontot så att du kan autofylla det för framtida köp</translation>
 <translation id="4088981014127559358">Sida 1 bild Y – byte</translation>
 <translation id="4089152113577680600">Fack 14</translation>
 <translation id="4092349052316400070">Fyll i adress</translation>
@@ -2408,6 +2413,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4995474875135717171">Ändrades:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera webbplatssökning och standardsökmotor.</translation>
 <translation id="4998950033665438990">Ensidig</translation>
+<translation id="5001338033791319371">Om du vill lämna helskärmsläget och se nedladdningen drar du från toppen och trycker på bakåtknappen</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
 <translation id="5002932099480077015">Om alternativet är aktiverat sparar Chrome en kopia av kortet på enheten så att det går snabbare att fylla i formulär.</translation>
 <translation id="5007344584818503324">Aktivitet i delade flikgrupper</translation>
@@ -3970,6 +3976,7 @@ Mer information.
 <translation id="7582602800368606489">Skapa en ny händelse i Google Kalender snabbt</translation>
 <translation id="7586676035079382730">Aviseringar tillåts inte</translation>
 <translation id="7588707273764747927">Överföringspapper</translation>
+<translation id="7589062909165841767">Ditt Google-konto kan innehålla din <ph name="BEGIN_LINK_GAA" />Gemini-appaktivitet<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Vill du dela konfidentiellt innehåll?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vill använda cookies och webbplatsdata på <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Serverns certifikat strider mot namnrestriktionerna.</translation>
@@ -4255,6 +4262,7 @@ Mer information.
 <translation id="8075736640322370409">Skapa ett nytt Google-kalkylark snabbt</translation>
 <translation id="8075898834294118863">Hantera webbplatsinställningar</translation>
 <translation id="8076492880354921740">Flikar</translation>
+<translation id="8076880883123051368">Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, till exempel <ph name="BEGIN_LINK_GAA" />Gemini-appaktivitet<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Kinesiskt nr 8-kuvert</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vill du ladda upp en konfidentiell fil?}other{Vill du ladda upp konfidentiella filer?}}</translation>
 <translation id="8079031581361219619">Vill du läsa in webbplatsen igen?</translation>
@@ -4388,6 +4396,7 @@ Mer information.
 <translation id="8294431847097064396">Källa</translation>
 <translation id="8297545700510100061">Cookies och annan webbplatsdata används för att komma ihåg dig, till exempel vid inloggning och annonsanpassning. Du kan hantera cookies för alla webbplatser i <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">wifi-nätverket du använder (<ph name="WIFI_NAME" />) kanske kräver att du besöker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">Kortet har endast sparats på enheten</translation>
 <translation id="8301894345671534559">Ange koden</translation>
 <translation id="8304912090860925649">Ny jämförelsetabell</translation>
 <translation id="830498451218851433">Enkelfalsning</translation>
@@ -4909,6 +4918,7 @@ Mer information:
 <translation id="9192361865877479444">Metall (matt)</translation>
 <translation id="9192947025498305328">Naturlig skönhetsvård</translation>
 <translation id="9195969368671142407">När organisationen begränsar sparandet i Google-kontot kan du inte dela eller gå med i flikgrupper</translation>
+<translation id="9198613052465150219">Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Utskrift har blockerats</translation>
 <translation id="9201904868909900493">Öppnar enkäten …</translation>
 <translation id="9204089334327209740">När uppladdningen är klar kan du ändra filerna i <ph name="CLOUD_PROVIDER" />. Lokal lagring, inklusive filer i papperskorgen, tas bort automatiskt.</translation>

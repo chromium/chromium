@@ -474,6 +474,7 @@ Tính năng này có trên <ph name="MAC_OS_NAME" /> 10.15 trở lên.</translat
       Nếu bạn bật chính sách này, phím tắt quốc tế cải tiến sẽ được bật.
       Nếu bạn không đặt chính sách này, hệ thống sẽ không áp dụng chính sách cho các thiết bị được quản lý mà áp dụng cho các thiết bị thuộc sở hữu của người dùng thông thường.
       Xin lưu ý rằng đây chỉ là chính sách tạm thời để những người dùng được quản lý vẫn có thể sử dụng các phím tắt cũ không dùng nữa. Chính sách này sẽ ngừng hoạt động sau khi phím tắt tuỳ chỉnh ra mắt.</translation>
+<translation id="1357214899305978790">Thiết lập các lối tắt trên trang Thẻ mới (Phiên bản beta)</translation>
 <translation id="1361661842732478894">Hiện nút Màn hình chính trên thanh công cụ</translation>
 <translation id="1363275621236827384">Bật truy vấn cấu hình Máy chủ Quirks cho phần cứng</translation>
 <translation id="1363839375295535439">Nếu bạn đặt thành Enabled (Bật) hoặc không đặt chính sách này, thì Hộp cát LPAC sẽ được bật cho các dịch vụ in mỗi khi cấu hình hệ thống hỗ trợ.
@@ -5333,6 +5334,17 @@ Người dùng sẽ vẫn đăng nhập vào Tài khoản Google của mình khi
 Cho đến Chrome 114, chính sách này yêu cầu đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> thành true (đúng). Kể từ Chrome 115, việc bạn đặt chính sách này sẽ tắt tính năng đồng bộ hoá đối với các loại dữ liệu tương ứng nếu "<ph name="CHROME_SYNC_NAME" />" không bị tắt bằng cách đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> và <ph name="BROWSER_SIGNIN_POLICY_NAME" /> cũng không bị tắt.</translation>
 <translation id="4694138212536142867">Bật tính năng báo cáo trạng thái phần cứng của thiết bị</translation>
 <translation id="4697581738794063407">Kiểm soát tính năng lọc tham số URL</translation>
+<translation id="4698488381632756664">Đang phát triển: chỉ dành cho bản xem trước.
+
+Nếu bạn đặt chính sách này, hệ thống sẽ định cấu hình trước tối đa 10 lối tắt tuỳ chỉnh trên trang Thẻ mới của <ph name="PRODUCT_NAME" />.
+
+Nếu bạn đặt chính sách này, người dùng sẽ thấy các lối tắt này theo mặc định và có thể chuyển đổi giữa "Các lối tắt của tôi", "Các trang web truy cập nhiều nhất " hoặc "Các lối tắt của tổ chức của tôi" trên bảng điều khiển "Tuỳ chỉnh Chrome". Nếu bạn không đặt hoặc để trống chính sách này, người dùng sẽ chỉ có thể chuyển đổi giữa "Các lối tắt của tôi" hoặc "Các trang web truy cập nhiều nhất" trên bảng điều khiển "Tuỳ chỉnh Chrome".
+
+URL lối tắt phải không được trùng lặp.
+
+Nếu bạn đặt <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> thành true, thì người dùng có thể thay đổi tên của lối tắt. Nếu bạn đặt thành false hoặc không đặt, thì người dùng sẽ không thể chỉnh sửa tên.
+
+Nếu bạn đặt <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> thành true, thì người dùng có thể xoá lối tắt. Nếu bạn đặt thành false hoặc không đặt, thì người dùng không thể xoá lối tắt.</translation>
 <translation id="4698895924806859508">Không báo cáo sự kiện mạng</translation>
 <translation id="4699172675775169585">Tệp và hình ảnh được lưu trong bộ nhớ đệm</translation>
 <translation id="4699592681017489215">Chính sách này định cấu hình một công tắc cục bộ có thể dùng để tắt các tùy chọn kiểm tra chặn hệ thống tên miền (DNS). Các tùy chọn kiểm tra dùng để khám phá xem trình duyệt có ở sau một proxy chuyển hướng các tên máy chủ không xác định không.

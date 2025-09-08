@@ -632,6 +632,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4042941173059740150">Sigue usando <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Hoja inferior</translation>
 <translation id="4045441967987592849">Reabrir</translation>
+<translation id="4049920046559074950">Más opciones de <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña estándar con actividad nueva en grupos de pestañas compartidos}other{<ph name="TABS_COUNT_MANY" /> pestañas estándar con actividad nueva en grupos de pestañas compartidos}}</translation>
 <translation id="405365679581583349">Actualiza los Servicios de Google Play</translation>
 <translation id="405399507749852140">Recibe alertas si el precio baja en algún sitio</translation>
@@ -684,7 +685,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4285498937028063278">Desfijar</translation>
 <translation id="4285846616383034558">Cookies, caché y otros datos de sitios</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueo de pantalla en los ajustes de Android<ph name="END_LINK" /></translation>
-<translation id="4296252229500326964">Nueva pestaña de Incógnito</translation>
+<translation id="4296252229500326964">Nueva pestaña Incógnito</translation>
 <translation id="4298388696830689168">Sitios web enlazados</translation>
 <translation id="4300632303535881174">Ir a la página anterior</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1831,7 +1832,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introducir frase de contraseña</translation>
 <translation id="95817756606698420">Chrome puede utilizar <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para hacer búsquedas en China. Puedes cambiar esta opción en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
-<translation id="961856697154696964">Borrar datos de navegación</translation>
+<translation id="961856697154696964">Borrar datos navegación</translation>
 <translation id="963246339335003378">Abrir administrador de tareas</translation>
 <translation id="966131775676567255">Eliminando datos de la cuenta</translation>
 <translation id="970715775301869095">Quedan <ph name="MINUTES" /> minutos</translation>

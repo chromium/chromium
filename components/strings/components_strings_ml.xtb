@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">തത്സമയ ക്യാപ്ഷൻ ഇപ്പോൾ ലഭ്യമല്ല</translation>
 <translation id="112840717907525620">നയ കാഷെ ശരി</translation>
 <translation id="1131264053432022307">നിങ്ങൾ പകർത്തിയ ചിത്രം</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ, മുകളിൽ നിന്ന് വലിച്ചിട്ട ശേഷം 'മടങ്ങുക' ബട്ടൺ സ്പർശിക്കുക</translation>
 <translation id="1138458427267715730">വെബിലുടനീളമുള്ള ഏതെങ്കിലും സൈറ്റിൽ നിരക്ക് കുറയുമ്പോൾ അലേർട്ടുകൾ നേടുക</translation>
 <translation id="1142713751288681188">പേപ്പർ തരം</translation>
 <translation id="1144136880160289237">നിങ്ങൾക്ക് ഇതുവരെ സജീവമായ വിഷയങ്ങളൊന്നുമില്ല</translation>
@@ -454,6 +455,7 @@
 <translation id="1734878702283171397">സിസ്റ്റം അഡ്‌മിനെ ബന്ധപ്പെടാൻ ശ്രമിക്കുക.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />-ന് കാലഹരണപ്പെടുന്നു</translation>
 <translation id="1736420071277903564">കമ്പ്യൂട്ടർ</translation>
+<translation id="1740404923954980840">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ, മുകളിൽ നിന്ന് വലിച്ചിട്ട ശേഷം 'മടങ്ങുക' ബട്ടൺ സ്പർശിക്കുക</translation>
 <translation id="1741474054575634405">ലോയൽറ്റി കാർഡുകൾ മാനേജ് ചെയ്യുക...</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode, <ph name="SECURE_DNS_MODE_SECURE" /> ആയിരിക്കുമ്പോൾ അക്കാര്യം വ്യക്തമാക്കിയിരിക്കണം, കൂടാതെ സാധുവായ സ്ട്രിംഗ് ആയിരിക്കുകയും വേണം.</translation>
 <translation id="1743393865165844832">കിടക്കയും കിടക്ക വിരികളും</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2933624813161016821">എംബോയിസിംഗ് ഫോയിൽ</translation>
 <translation id="293796669683825859">കമന്റുകൾ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ലിങ്കുകൾ തുറക്കുക</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – നിങ്ങളുടെ കഴ്‌സർ കാണിക്കാൻ, ആപ്പുകൾ മാറുകയോ പേജ് റീലോഡ് ചെയ്യുകയോ മടങ്ങുകയോ ചെയ്യുക</translation>
 <translation id="2940418897281183211">PNG ചിത്രം</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 ഇഞ്ച്</translation>
 <translation id="2941952326391522266">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; <ph name="DOMAIN2" /> എന്നതിൽ നിന്നുള്ളതാണ് അതിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
@@ -1321,6 +1324,7 @@
 <translation id="3207960819495026254">ബുക്ക്‌മാർക്കുചെയ്‌തു</translation>
 <translation id="3208701679386778924">റിപ്പോർട്ട് അയയ്‌ക്കുക, അതുവഴി ഞങ്ങൾക്ക് ഭാവിയിലെ ChromeOS അപ്‌ഡേറ്റുകൾ മെച്ചപ്പെടുത്താനാകും.</translation>
 <translation id="3209034400446768650">പേജ് പണം ഈടാക്കിയേക്കാം</translation>
+<translation id="3212468046572043669">ഡൗൺലോഡ് ആരംഭിച്ചു. അത് കാണാൻ, മുകളിൽ നിന്ന് വലിച്ചിട്ട ശേഷം 'മടങ്ങുക' ബട്ടൺ സ്പർശിക്കുക</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> എന്നതിലുള്ള നിങ്ങളുടെ ആക്റ്റിവിറ്റി നിരീക്ഷണത്തിലാണ്</translation>
 <translation id="3215092763954878852">WebAuthn ഉപയോഗിക്കാനായില്ല</translation>
 <translation id="3215311088819828484">ഫലം അപ്ഡേറ്റ് ചെയ്തു</translation>
@@ -1858,6 +1862,7 @@
 <translation id="4085326869263783566">എന്നെ എഴുതാൻ സഹായിക്കൂ. തുറക്കാൻ, Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="4085769736382018559">ഉൽപ്പന്നങ്ങൾ താരതമ്യം ചെയ്യുക</translation>
 <translation id="4085778582400064057">നീല 2</translation>
+<translation id="4085859451613666999">നിങ്ങളുടെ Google Account-ൽ കാർഡ് സംരക്ഷിച്ചിരിക്കുന്നതിനാൽ, ഭാവിയിലെ വാങ്ങലുകൾക്കായി നിങ്ങളുടെ കാർഡ് സ്വയമേവ പൂരിപ്പിക്കാനാകും</translation>
 <translation id="4088981014127559358">സൈഡ് 1 ചിത്രം Y ഷിഫ്റ്റ്</translation>
 <translation id="4089152113577680600">ട്രേ 14</translation>
 <translation id="4092349052316400070">വിലാസം പൂരിപ്പിക്കുക</translation>
@@ -2407,6 +2412,7 @@
 <translation id="4995474875135717171">പരിഷ്‌ക്കരിച്ചത്:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, സൈറ്റ് തിരയലും നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രവും മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="4998950033665438990">സിംഗിൾ ഫേയ്‌സ്</translation>
+<translation id="5001338033791319371">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാനും ഡൗൺലോഡ് കാണാനും മുകളിൽ നിന്ന് വലിച്ചിട്ട ശേഷം 'മടങ്ങുക' ബട്ടൺ സ്പർശിക്കുക</translation>
 <translation id="5001526427543320409">മൂന്നാം-കക്ഷി കുക്കികൾ</translation>
 <translation id="5002932099480077015">പ്രവർത്തനക്ഷമമാക്കിയെങ്കിൽ, വേഗത്തിൽ ഫോം പൂരിപ്പിക്കാൻ Chrome ഈ ഉപകരണത്തിൽ നിങ്ങളുടെ കാർഡിന്റെ ഒരു പകർപ്പ് സൂക്ഷിക്കും.</translation>
 <translation id="5007344584818503324">പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളുടെ ആക്റ്റിവിറ്റി</translation>
@@ -3967,6 +3973,7 @@
 <translation id="7582602800368606489">Google Calendar-ൽ പുതിയൊരു ഇവന്റ് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="7586676035079382730">അറിയിപ്പുകൾ ആക്സസ് അനുവദിച്ചില്ല</translation>
 <translation id="7588707273764747927">ട്രാൻസ്‌ഫർ</translation>
+<translation id="7589062909165841767">നിങ്ങളുടെ Google Account-ൽ <ph name="BEGIN_LINK_GAA" />Gemini ആപ്പുകളിലെ ആക്റ്റിവിറ്റി<ph name="END_LINK_GAA" /> ഉണ്ടായിരിക്കാം</translation>
 <translation id="7591288787774558753">രഹസ്യാത്മക ഉള്ളടക്കം പങ്കിടണോ?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" /> എന്നതിൽ കുക്കികളും സൈറ്റ് ഡാറ്റയും ഉപയോഗിക്കാൻ <ph name="EMBEDDED_URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="7592362899630581445">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് പേരിന്റെ പരിധി ലംഘിക്കുന്നു.</translation>
@@ -4252,6 +4259,7 @@
 <translation id="8075736640322370409">പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="8075898834294118863">സൈറ്റ് ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
+<translation id="8076880883123051368">നിങ്ങളുടെ Google Account-ൽ <ph name="BEGIN_LINK_GAA" />Gemini ആപ്പുകളിലെ ആക്റ്റിവിറ്റി<ph name="END_LINK_GAA" /> പോലുള്ള മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം, അവ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> -ൽ കണ്ടെത്താനാകും</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{രഹസ്യാത്മക ഫയൽ അപ്‌ലോഡ് ചെയ്യണോ?}other{രഹസ്യാത്മക ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യണോ?}}</translation>
 <translation id="8079031581361219619">സൈറ്റ് റീലോഡ് ചെയ്യണോ?</translation>
@@ -4385,6 +4393,7 @@
 <translation id="8294431847097064396">ഉറവിടം</translation>
 <translation id="8297545700510100061">നിങ്ങളുടെ വിവരങ്ങൾ ഓർക്കാൻ കുക്കികളും മറ്റ് സൈറ്റ് ഡാറ്റയും ഉപയോഗിച്ചിരിക്കുന്നു, ഉദാഹരണത്തിന് നിങ്ങളെ സൈൻ ഇൻ ചെയ്യിക്കാൻ അല്ലെങ്കിൽ പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ. എല്ലാ സൈറ്റുകൾക്കുമുള്ള കുക്കികൾ മാനേജ് ചെയ്യാൻ <ph name="SETTINGS" /> കാണുക.</translation>
 <translation id="8298115750975731693">നിങ്ങൾ ഉപയോഗിക്കുന്ന Wi-Fi (<ph name="WIFI_NAME" />), <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
+<translation id="8298399736867690281">കാർഡ്, ഉപകരണത്തിൽ മാത്രമായി സംരക്ഷിച്ചു</translation>
 <translation id="8301894345671534559">കോഡ് നൽകുക</translation>
 <translation id="8304912090860925649">പുതിയ താരതമ്യ പട്ടിക</translation>
 <translation id="830498451218851433">പകുതിയായി മടക്കുക</translation>
@@ -4905,6 +4914,7 @@
 <translation id="9192361865877479444">മെറ്റൽ (തിളക്കമില്ലാത്തത്)</translation>
 <translation id="9192947025498305328">പ്രകൃതിദത്ത സൗന്ദര്യം</translation>
 <translation id="9195969368671142407">നിങ്ങളുടെ Google Account-ലേക്ക് സംരക്ഷിക്കുന്നത് നിങ്ങളുടെ സ്ഥാപനം പരിമിതപ്പെടുത്തുമ്പോൾ, നിങ്ങൾക്ക് ടാബ് ഗ്രൂപ്പുകൾ പങ്കിടാനോ അവയിൽ ചേരാനോ കഴിയില്ല</translation>
+<translation id="9198613052465150219">നിങ്ങളുടെ Google Account-ൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം, അവ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> -ൽ കണ്ടെത്താനാകും</translation>
 <translation id="9199905725844810519">പ്രിന്റ് ചെയ്യൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="9201904868909900493">സർവേ തുറക്കുന്നു...</translation>
 <translation id="9204089334327209740">അപ്‌ലോഡ് പൂർത്തിയായിക്കഴിഞ്ഞാൽ, നിങ്ങളുടെ ഫയലുകൾ <ph name="CLOUD_PROVIDER" /> എന്നതിൽ പരിഷ്ക്കരിക്കാനാകും. ട്രാഷിലുള്ള ഫയലുകൾ ഉൾപ്പെടെയുള്ള ലോക്കൽ സ്റ്റോറേജ് സ്വയമേവ നീക്കം ചെയ്യപ്പെടും.</translation>

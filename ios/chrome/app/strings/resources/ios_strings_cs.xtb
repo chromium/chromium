@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Kód PIN nebyl změněn. Zkontrolujte připojení k internetu a zkuste to znovu</translation>
 <translation id="1063070031224282617">Vyberte, kam chcete uložit soubor „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />“ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Recenze na základě vašich zájmů</translation>
+<translation id="1072679792409426431">Zakázáno administrátorem</translation>
 <translation id="1074827084851510304">Chystáte se smazat hesla ({password_count}) a seznam webů a aplikací, pro které jste ukládání přihlašovacích údajů zakázali. Účty vytvořené pro weby a aplikace se nesmažou.</translation>
 <translation id="1076421457278169141">Kód byl naskenován</translation>
 <translation id="1081114897601629648">Následující hesla se do Správce hesel Google neimportovala, protože neodpovídají požadavkům.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Tato adresa bude z tohoto zařízení smazána.}few{Tyto adresy budou z tohoto zařízení smazány.}many{Tyto adresy budou z tohoto zařízení smazány.}other{Tyto adresy budou z tohoto zařízení smazány.}}</translation>
 <translation id="2297989278479054870">Po odhlášení budou z tohoto zařízení odstraněny záložky, hesla a další položky ve vašem účtu Google.</translation>
 <translation id="2299218006564889602">Hesla jsou před uložením do Správce hesel Google v zařízení zašifrována.</translation>
+<translation id="2306265833370324042">Zobrazit podrobnosti vyhledávače <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Zavřít kartu</translation>
 <translation id="2311077293164383652">Zavřít připnutou kartu</translation>
 <translation id="2316129865977710310">Ne, děkuji</translation>
@@ -1201,6 +1203,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5709005673595820640">{count,plural, =1{Máte {count} opakovaně použité heslo, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}few{Máte {count} opakovaně použitá hesla, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}many{Máte {count} opakovaně použitého hesla, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}other{Máte {count} opakovaně použitých hesel, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}}</translation>
 <translation id="57094364128775171">Navrhnout silné heslo…</translation>
 <translation id="5718049162805123412">Měli byste je hned změnit</translation>
+<translation id="5721040778297053709">Umístěte kreditní kartu do tohoto rámečku</translation>
 <translation id="572328651809341494">Nedávno použité karty</translation>
 <translation id="5724941645893276623">Chcete-li procházet web v soukromí, přidejte novou kartu</translation>
 <translation id="5728072125198221967">Propojené služby Google</translation>
@@ -1780,6 +1783,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7889910613639381518">Snadný a bezpečný přístup pomocí widgetu Správce hesel Google.</translation>
 <translation id="7899199123054742721">Označit všechny nepřečtené</translation>
 <translation id="7911190106180361398">Vaše organizace nepovoluje synchronizaci všeho.</translation>
+<translation id="7918999344502274923">Skrýt podrobnosti vyhledávače <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Nebyly zjištěny žádné problémy</translation>
 <translation id="7925108652071887026">Data automatického vyplňování</translation>
 <translation id="7926975587469166629">Přezdívka karty</translation>

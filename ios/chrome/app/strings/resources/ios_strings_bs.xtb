@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">PIN nije promijenjen. Provjerite internetsku vezu i pokušajte ponovo</translation>
 <translation id="1063070031224282617">Odaberite gdje želite sačuvati fajl "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Recenzije koje se zasnivaju na vašim interesovanjima</translation>
+<translation id="1072679792409426431">Onemogućio administrator</translation>
 <translation id="1074827084851510304">Izbrisat ćete više lozinki ({password_count}) i listu web lokacija i aplikacija za koje ste odabrali da nikada ne pohranjuju podatke za prijavu. Račun kreiran za web lokacije i aplikacije se neće izbrisati.</translation>
 <translation id="1076421457278169141">Kôd je skeniran</translation>
 <translation id="1081114897601629648">Sljedeće lozinke nisu uvezene na Google upravitelj lozinki jer se ne podudaraju sa zahtjevima.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Adresa će se izbrisati s uređaja.}one{Adrese će se izbrisati s uređaja.}few{Adrese će se izbrisati s uređaja.}other{Adrese će se izbrisati s uređaja.}}</translation>
 <translation id="2297989278479054870">Nakon što se odjavite, oznake, lozinke i drugo s vašeg Google računa će se ukloniti s ovog uređaja.</translation>
 <translation id="2299218006564889602">Lozinke se šifriraju na uređaju prije nego što se pohrane u Googleov Upravitelj lozinki.</translation>
+<translation id="2306265833370324042">Prikaz detalja za <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Zatvori karticu</translation>
 <translation id="2311077293164383652">Zatvori zakačenu karticu</translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
@@ -1201,6 +1203,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5709005673595820640">{count,plural, =1{Imate {count} već korištenu lozinku koja može ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}one{Imate {count} već korištenu lozinku koja može ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}few{Imate {count} već korištene lozinke koje mogu ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}other{Imate {count} već korištenih lozinki koje mogu ugroziti vašu sigurnost. Riješite taj problem radi sigurnosti.}}</translation>
 <translation id="57094364128775171">Predloži jaku lozinku…</translation>
 <translation id="5718049162805123412">Trebate ih odmah promijeniti</translation>
+<translation id="5721040778297053709">Postavite kreditnu karticu u ovaj okvir</translation>
 <translation id="572328651809341494">Nedavne kartice</translation>
 <translation id="5724941645893276623">Da privatno pregledate web, dodajte novu karticu</translation>
 <translation id="5728072125198221967">Povezane Googleove usluge</translation>
@@ -1780,6 +1783,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7889910613639381518">Jednostavan i siguran pristup putem vidžeta Google upravitelja lozinki.</translation>
 <translation id="7899199123054742721">Označi sve kao nepročitano</translation>
 <translation id="7911190106180361398">Vaša organizacija vam ne dozvoljava da sve sinhronizirate.</translation>
+<translation id="7918999344502274923">Sakrivanje detalja za <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Nije pronađen nijedan problem</translation>
 <translation id="7925108652071887026">Podaci automatskog popunjavanja</translation>
 <translation id="7926975587469166629">Nadimak kartice</translation>

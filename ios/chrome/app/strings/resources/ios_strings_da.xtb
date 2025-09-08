@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Din pinkode blev ikke ændret. Tjek din internetforbindelse, og prøv igen</translation>
 <translation id="1063070031224282617">Vælg, hvor du vil gemme "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Anmeldelser baseret på dine interesser</translation>
+<translation id="1072679792409426431">Deaktiveret af din administrator</translation>
 <translation id="1074827084851510304">Du er ved at slette {password_count} adgangskoder og listen over websites og apps, hvor du har valgt aldrig at gemme loginoplysninger. Alle konti, du har oprettet til websites og apps, slettes ikke.</translation>
 <translation id="1076421457278169141">Koden er scannet</translation>
 <translation id="1081114897601629648">Følgende adgangskoder blev ikke importeret til Google Adgangskodeadministrator, fordi de ikke opfylder kravene.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Adressen slettes fra denne enhed.}one{Adressen slettes fra denne enhed.}other{Adresserne slettes fra denne enhed.}}</translation>
 <translation id="2297989278479054870">Når du er logget ud, fjernes bogmærkerne, adgangskoderne m.m. på din Google-konto fra denne enhed.</translation>
 <translation id="2299218006564889602">Dine adgangskoder krypteres på din enhed, inden de gemmes i Googles Adgangs­kode­admin­istrator.</translation>
+<translation id="2306265833370324042">Se oplysninger om <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Luk fane</translation>
 <translation id="2311077293164383652">Luk fastgjort fane</translation>
 <translation id="2316129865977710310">Nej tak</translation>
@@ -1201,6 +1203,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5709005673595820640">{count,plural, =1{Du har {count} genbrugt adgangskode, hvilket kan udgøre en sikkerhedsrisiko. Løs problemet nu for at forblive beskyttet.}one{Du har {count} genbrugt adgangskode, hvilket kan udgøre en sikkerhedsrisiko. Løs problemet nu for at forblive beskyttet.}other{Du har {count} genbrugte adgangskoder, hvilket kan udgøre en sikkerhedsrisiko. Løs problemet nu for at forblive beskyttet.}}</translation>
 <translation id="57094364128775171">Foreslå stærk adgangskode…</translation>
 <translation id="5718049162805123412">Du bør ændre disse med det samme</translation>
+<translation id="5721040778297053709">Placer kreditkortet i dette felt</translation>
 <translation id="572328651809341494">Seneste faner</translation>
 <translation id="5724941645893276623">Tilføj en ny fane for at surfe privat på nettet</translation>
 <translation id="5728072125198221967">Tilknyttede Google-tjenester</translation>
@@ -1780,6 +1783,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7889910613639381518">Nem og sikker adgang med widgetten Google Adgangs­kode­admin­istrator.</translation>
 <translation id="7899199123054742721">Markér alle som ulæste</translation>
 <translation id="7911190106180361398">Din organisation tillader ikke, at du synkroniserer alt.</translation>
+<translation id="7918999344502274923">Skjul oplysninger om <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Der blev ikke fundet nogen problemer</translation>
 <translation id="7925108652071887026">AutoFyld-data</translation>
 <translation id="7926975587469166629">Kortets kaldenavn</translation>

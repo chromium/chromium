@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Jou PIN is nie verander nie. Gaan jou internetverbinding na en probeer weer</translation>
 <translation id="1063070031224282617">Kies waar om “<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />” (<ph name="FILE_SIZE" />) te stoor</translation>
 <translation id="1072476005125066234">Resensies gegrond op jou belangstellings</translation>
+<translation id="1072679792409426431">Deur jou admin gedeaktiveer</translation>
 <translation id="1074827084851510304">Jy is op die punt om {password_count} wagwoorde en die lys werwe en apps uit te vee wat jy gekies het om nooit aanmeldinligting voor te stoor nie. Enige rekening wat jy vir werwe en apps geskep het, sal nie uitgevee word nie.</translation>
 <translation id="1076421457278169141">Kode is geskandeer</translation>
 <translation id="1081114897601629648">Die volgende wagwoorde is nie na Google Wagwoordbestuurder toe ingevoer nie, omdat hulle nie aan die vereistes voldoen nie.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Hierdie adres sal op hierdie toestel uitgevee word.}other{Hierdie adresse sal op hierdie toestel uitgevee word.}}</translation>
 <translation id="2297989278479054870">Nadat jy afgemeld het, sal die boekmerke, wagwoorde en meer in jou Google-rekening van hierdie toestel verwyder word.</translation>
 <translation id="2299218006564889602">Jou wagwoorde word op jou toestel geënkripteer voordat dit in Google Wagwoordbestuurder gestoor word.</translation>
+<translation id="2306265833370324042">Wys <ph name="SEARCH_ENGINE_NAME" />-besonderhede</translation>
 <translation id="2309265394777270359">Maak oortjie toe</translation>
 <translation id="2311077293164383652">Maak vasgespelde oortjie toe</translation>
 <translation id="2316129865977710310">Nee, dankie</translation>
@@ -1201,6 +1203,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5709005673595820640">{count,plural, =1{Jy het {count} hergebruikte wagwoord wat jou sekuriteit in gevaar kan stel. Stel dit nou reg om veilig te bly.}other{Jy het {count} hergebruikte wagwoorde wat jou sekuriteit in gevaar kan stel. Stel hulle nou reg om veilig te bly.}}</translation>
 <translation id="57094364128775171">Stel sterk wagwoord voor …</translation>
 <translation id="5718049162805123412">Jy moet hulle nou verander</translation>
+<translation id="5721040778297053709">Plaas kredietkaart in hierdie raam</translation>
 <translation id="572328651809341494">Onlangse oortjies</translation>
 <translation id="5724941645893276623">Voeg 'n nuwe oortjie by om privaat deur die web te blaai</translation>
 <translation id="5728072125198221967">Gekoppelde Google-dienste</translation>
@@ -1780,6 +1783,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7889910613639381518">Maklike en veilige toegang met die Google Wagwoordbestuurder-legstuk.</translation>
 <translation id="7899199123054742721">Merk alles as ongelees</translation>
 <translation id="7911190106180361398">Jou organisasie laat jou nie toe om alles te sinkroniseer nie.</translation>
+<translation id="7918999344502274923">Versteek <ph name="SEARCH_ENGINE_NAME" />-besonderhede</translation>
 <translation id="792357691529995513">Geen kwessies is gekry nie</translation>
 <translation id="7925108652071887026">Vul data outomaties in</translation>
 <translation id="7926975587469166629">Kaart se bynaam</translation>

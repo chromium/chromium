@@ -632,6 +632,7 @@
 <translation id="4042941173059740150">გადადით <ph name="SITE_ETLD_PLUS_ONE" />-ზე <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით</translation>
 <translation id="4044708993631234325">ქვედა ფურცელი</translation>
 <translation id="4045441967987592849">ხელახლა გახსნა</translation>
+<translation id="4049920046559074950">მეტი ვარიანტი <ph name="INSTANCE_TITLE" />-ისთვის</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ახალი აქტივობის მქონე <ph name="TABS_COUNT_ONE" /> სტანდარტული ჩანართი ჩანართების გაზიარებულ ჯგუფებში}other{ახალი აქტივობის მქონე <ph name="TABS_COUNT_MANY" /> სტანდარტული ჩანართი ჩანართების გაზიარებულ ჯგუფებში}}</translation>
 <translation id="405365679581583349">განაახლეთ Google Play Services</translation>
 <translation id="405399507749852140">მიიღეთ გაფრთხილებები, როცა ფასი დაიკლებს რომელიმე საიტზე</translation>

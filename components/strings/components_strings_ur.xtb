@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">لائیو کیپشن ابھی دستیاب نہیں ہے</translation>
 <translation id="112840717907525620">پالیسی کیش ٹھیک ہے</translation>
 <translation id="1131264053432022307">آپ کی کاپی کردہ تصویر</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – فُل اسکرین سے باہر نکلنے کیلئے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
 <translation id="1138458427267715730">ویب پر کسی بھی سائٹ پر قیمت کم ہونے پر الرٹس حاصل کریں</translation>
 <translation id="1142713751288681188">کاغذ کی قسم</translation>
 <translation id="1144136880160289237">آپ کے پاس ابھی تک کوئی فعال موضوع نہیں ہے</translation>
@@ -454,6 +455,7 @@
 <translation id="1734878702283171397">سسٹم کے منتظم سے رابطہ کرنے کی کوشش کریں۔</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />، <ph name="CARD_NETWORK_NAME" />، <ph name="CARD_LAST_FOUR_DIGITS" />، اختتامی تاریخ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">کمپیوٹر</translation>
+<translation id="1740404923954980840">فُل اسکرین سے باہر نکلنے کیلئے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
 <translation id="1741474054575634405">لائلٹی کارڈز کا نظم کریں...</translation>
 <translation id="1741613555002899862">‏جب DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> میں ہو، تو متعینہ اور درست اسٹرنگ ہونا چاہیے۔</translation>
 <translation id="1743393865165844832">گدا اور بستر کی چادریں</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2933624813161016821">ایمبوسنگ فوئل</translation>
 <translation id="293796669683825859">تبصرے</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> لنکس کھولیں</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – اپنا کرسر دکھانے کے لیے، ایپس کو سوئچ کریں، صفحہ کو دوبارہ لوڈ کریں یا واپس جائیں</translation>
 <translation id="2940418897281183211">‏‫PNG تصویر</translation>
 <translation id="2941878205777356567">‏‎9 x 12 انچ لفافہ</translation>
 <translation id="2941952326391522266">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفکیٹ <ph name="DOMAIN2" /> کی جانب سے ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
@@ -1323,6 +1326,7 @@
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3208701679386778924">‏براہ کرم ایک رپورٹ بھیجیں تاکہ ہم مزید ChromeOS اپ ڈیٹس کو بہتر بنا سکیں۔</translation>
 <translation id="3209034400446768650">صفحہ پیسے چارج کر سکتا ہے</translation>
+<translation id="3212468046572043669">ڈاؤن لوڈ شروع ہوگیا۔ اسے دیکھنے کیلئے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> پر آپ کی سرگرمی پر نظر رکھی جا رہی ہے</translation>
 <translation id="3215092763954878852">‏WebAuthn کا استعمال نہیں کیا جا سکا</translation>
 <translation id="3215311088819828484">نتیجہ اپ ڈیٹ ہو گیا</translation>
@@ -1860,6 +1864,7 @@
 <translation id="4085326869263783566">‏لکھنے میں میری مدد کریں۔ کھولنے کیلئے ٹیب اور Enter دبائیں</translation>
 <translation id="4085769736382018559">پروڈکٹس کا موازنہ کریں</translation>
 <translation id="4085778582400064057">نیلا 2</translation>
+<translation id="4085859451613666999">‏آپ کا کارڈ آپ کے Google اکاؤنٹ میں محفوظ ہے لہذا آپ آئندہ کی خریداریوں کے لیے اسے آٹو فل کر سکتے ہیں</translation>
 <translation id="4088981014127559358">‏سائڈ 1 تصویر Y شفٹ</translation>
 <translation id="4089152113577680600">ٹرے 14</translation>
 <translation id="4092349052316400070">پتہ درج کریں</translation>
@@ -2409,6 +2414,7 @@
 <translation id="4995474875135717171">ترمیم کردہ:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />، سائٹ کی تلاش اور اپنے ڈیفالٹ سرچ انجن کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="4998950033665438990">سنگل فیس</translation>
+<translation id="5001338033791319371">فُل اسکرین سے باہر نکلنے اور ڈاؤن لوڈ دیکھنے کے لیے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
 <translation id="5001526427543320409">فریق ثالث کوکیز</translation>
 <translation id="5002932099480077015">‏فعال ہونے پر، زیادہ تیزی سے فارم بھرنے کیلئے Chrome آپ کے کارڈ کی کاپی کو اس آلہ پر اسٹور کرے گا۔</translation>
 <translation id="5007344584818503324">اشتراک کردہ ٹیب گروپس کی سرگرمی</translation>
@@ -3971,6 +3977,7 @@
 <translation id="7582602800368606489">‏Google کیلنڈر میں تیزی سے ایک نیا ایونٹ تخلیق کریں</translation>
 <translation id="7586676035079382730">اطلاعات کی اجازت نہیں ہے</translation>
 <translation id="7588707273764747927">ٹرانسفر</translation>
+<translation id="7589062909165841767">‏آپ کے Google اکاؤنٹ میں آپ کی <ph name="BEGIN_LINK_GAA" />Gemini ایپس کی سرگرمی<ph name="END_LINK_GAA" /> موجود ہو سکتی ہے</translation>
 <translation id="7591288787774558753">رازدارانہ مواد کا اشتراک کریں؟</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> پر موجود کوکیز اور سائٹ کا ڈیٹا استعمال کرنا چاہتا ہے</translation>
 <translation id="7592362899630581445">سرور سرٹیفیکیٹ نام کی پابندیوں کی خلاف ورزی کرتا ہے۔</translation>
@@ -4256,6 +4263,7 @@
 <translation id="8075736640322370409">‏تیزی سے ایک نئی Google Sheet تخلیق کریں</translation>
 <translation id="8075898834294118863">سائٹ کی ترتیبات کا نظم کریں</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
+<translation id="8076880883123051368">‏ممکن ہے کہ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں، جیسے کہ آپ کی <ph name="BEGIN_LINK_GAA" />Gemini ایپس کی سرگرمی<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">‏Chinese #8 لفافہ</translation>
 <translation id="8078006011486731853">{0,plural, =1{رازدارانہ فائل اپ لوڈ کریں؟}other{رازدارانہ فائلز اپ لوڈ کریں؟}}</translation>
 <translation id="8079031581361219619">سائٹ دوبارہ لوڈ کریں؟</translation>
@@ -4389,6 +4397,7 @@
 <translation id="8294431847097064396">ماخذ</translation>
 <translation id="8297545700510100061">کوکیز اور سائٹ کا دیگر ڈیٹا آپ کو یاد رکھنے کے لئے استعمال ہوتا ہے، مثال کے طور پر آپ کو سائن ان کرنے یا اشتہارات کو ذاتی نوعیت کا بنانے کے لیے۔ سبھی سائٹس کی خاطر کوکیز کا نظم کرنے کے لیے <ph name="SETTINGS" /> دیکھیں۔</translation>
 <translation id="8298115750975731693">‏آپ جو Wi-Fi استعمال کر رہے ہیں (<ph name="WIFI_NAME" />) وہ آپ سے <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
+<translation id="8298399736867690281">کارڈ صرف آلے پر محفوظ ہے</translation>
 <translation id="8301894345671534559">کوڈ درج کریں</translation>
 <translation id="8304912090860925649">نیا موازنہ ٹیبل</translation>
 <translation id="830498451218851433">آدھا فولڈ کریں</translation>
@@ -4909,6 +4918,7 @@
 <translation id="9192361865877479444">میٹل (مَیٹ)</translation>
 <translation id="9192947025498305328">بے داغ حسن</translation>
 <translation id="9195969368671142407">‏جب آپ کی تنظیم آپ کے Google اکاؤنٹ میں محفوظ کرنے کے عمل کو محدود کرتی ہے تو آپ ٹیب گروپس کا اشتراک نہیں کر سکتے یا اس میں شامل نہیں ہو سکتے</translation>
+<translation id="9198613052465150219">‏ممکن ہے کہ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں</translation>
 <translation id="9199905725844810519">پرنٹنگ مسدود ہے</translation>
 <translation id="9201904868909900493">سروے کھل رہا ہے...</translation>
 <translation id="9204089334327209740">اپ لوڈ مکمل ہونے کے بعد، آپ <ph name="CLOUD_PROVIDER" /> میں اپنی فائلز میں ترمیم کر سکتے ہیں۔ مقامی اسٹوریج بشمول کوڑے دان میں موجود کسی بھی فائل کو خودکار طور پر ہٹا دیا جائے گا۔</translation>

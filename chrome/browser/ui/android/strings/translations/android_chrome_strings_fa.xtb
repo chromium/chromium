@@ -632,6 +632,7 @@
 <translation id="4042941173059740150">ادامه <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">برگ زیرین</translation>
 <translation id="4045441967987592849">باز کردن مجدد</translation>
+<translation id="4049920046559074950">گزینه‌های بیشتر برای <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{‫<ph name="TABS_COUNT_ONE" /> برگه استاندارد با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}one{‫<ph name="TABS_COUNT_MANY" /> برگه استاندارد با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}other{‫<ph name="TABS_COUNT_MANY" /> برگه استاندارد با فعالیت جدید در گروه‌های برگه هم‌رسانی‌شده}}</translation>
 <translation id="405365679581583349">‏به‌روزرسانی «خدمات Google Play»</translation>
 <translation id="405399507749852140">اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید</translation>
@@ -684,7 +685,7 @@
 <translation id="4285498937028063278">برداشتن سنجاق</translation>
 <translation id="4285846616383034558">کوکی‌ها، حافظه نهان، و دیگر داده‌های سایت</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />روشن کردن قفل صفحه در تنظیمات Android<ph name="END_LINK" /></translation>
-<translation id="4296252229500326964">برگه ناشناس جدید</translation>
+<translation id="4296252229500326964">زبانه ناشناس جدید</translation>
 <translation id="4298388696830689168">سایت‌های مرتبط</translation>
 <translation id="4300632303535881174">رفتن به صفحه قبلی</translation>
 <translation id="4303044213806199882"><ph name="CURRENT_TIMESTAMP_MS" />chrome_screenshot_‎</translation>
@@ -900,7 +901,7 @@
 <translation id="5204967432542742771">گذرواژه را وارد کنید</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{درحال بارگیری فایل…}one{درحال بارگیری # فایل…}other{درحال بارگیری # فایل…}}</translation>
 <translation id="5210286577605176222">رفتن به برگه قبلی</translation>
-<translation id="5210365745912300556">بستن برگه</translation>
+<translation id="5210365745912300556">بستن زبانه</translation>
 <translation id="5212800876504289412">‏برای تکمیل این تغییر، Chrome را بازراه‌اندازی کنید. پس‌از بازراه‌اندازی، زبانه‌ها به‌طور خودکار دوباره باز می‌شوند.</translation>
 <translation id="5215957675041756913">کنترل داده‌ها و حساب</translation>
 <translation id="5218324087477576825">شماره کارت الزامی است</translation>
@@ -1277,7 +1278,7 @@
 <translation id="6864459304226931083">بارگیری تصویر</translation>
 <translation id="686490460830618322">برگ فیلتر کردن برنامه</translation>
 <translation id="6865313869410766144">تکمیل خودکار داده‌های فرم</translation>
-<translation id="6867400383614725881">برگه ناشناس جدید</translation>
+<translation id="6867400383614725881">زبانه ناشناس جدید</translation>
 <translation id="686899695320434745">‏نشانی‌ها با گذرعبارت رمزگذاری نمی‌شود. بدین‌ترتیب می‌توانید از آن‌ها در دیگر سرویس‌های Google استفاده کنید.</translation>
 <translation id="687838958001010630">هر کسی پیوند را داشته باشد می‌تواند همه برگه‌ها را ویرایش کند</translation>
 <translation id="6880903702195291049">اجازه‌ها مشکلی ندارد</translation>
@@ -1836,7 +1837,7 @@
 <translation id="966131775676567255">درحال حذف داده‌های حساب</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> دقیقه باقی‌مانده است</translation>
 <translation id="981121421437150478">آفلاین</translation>
-<translation id="983192555821071799">بستن همه برگه‌ها</translation>
+<translation id="983192555821071799">بستن همه زبانه‌ها</translation>
 <translation id="984756705737569814">‏نمی‌توان گذرواژه‌های ذخیره‌شده در «حساب Google» شما را بررسی کرد</translation>
 <translation id="987264212798334818">موارد کلی</translation>
 <translation id="988091779042748639">برای حذف کردن سابقه مرور «حالت ناشناس» از دستگاه، همه برگه‌های «ناشناس» را ببندید</translation>

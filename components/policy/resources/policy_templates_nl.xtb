@@ -471,6 +471,7 @@ Deze functie is beschikbaar vanaf <ph name="MAC_OS_NAME" /> 10.15.</translation>
       Als je dit beleid toepast, staan verbeterde sneltoetsen voor internationale toetsenborden aan.
       Als je dit beleid niet instelt, wordt het niet toegepast op beheerde apparaten en wel toegepast op apparaten van consumenten.
       Houd er rekening mee dat dit een tijdelijk beleid is zodat beheerde gebruikers nog steeds beëindigde verouderde sneltoetsen kunnen gebruiken. Dit beleid wordt beëindigd nadat aangepaste sneltoetsen beschikbaar zijn gekomen.</translation>
+<translation id="1357214899305978790">Snelkoppelingen instellen op de pagina Nieuw tabblad (bèta)</translation>
 <translation id="1361661842732478894">Startknop op de werkbalk tonen</translation>
 <translation id="1363275621236827384">Query's naar Quirks Server sturen voor hardwareprofielen</translation>
 <translation id="1363839375295535439">Als je het beleid aanzet of niet instelt, wordt de LPAC-sandbox voor afdrukservices aangezet als de systeemconfiguratie dit ondersteunt.
@@ -5228,6 +5229,17 @@ De gebruiker blijft ingelogd op hun Google-account wanneer cookies worden verwij
 Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op Waar. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
 <translation id="4694138212536142867">Rapportage voor hardwarestatus van apparaat aanzetten</translation>
 <translation id="4697581738794063407">De filterfunctie voor URL-parameters beheren</translation>
+<translation id="4698488381632756664">In ontwikkeling: alleen voor vroege preview.
+
+Door het beleid in te stellen worden maximaal 10 aangepaste snelkoppelingen vooraf ingesteld op de pagina Nieuw tabblad van <ph name="PRODUCT_NAME" />.
+
+Als het beleid is ingesteld, zien gebruikers deze snelkoppelingen standaard. Gebruikers kunnen wisselen tussen Mijn snelkoppelingen, Meest bezochte sites en Snelkoppelingen van mijn organisatie in het deelvenster Chrome aanpassen. Als het beleid leeg is of niet is ingesteld, kan de gebruiker alleen wisselen tussen Mijn snelkoppelingen en Meest bezochte sites in het deelvenster Chrome aanpassen.
+
+Snelkoppelings-URL's moeten uniek zijn.
+
+Als <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> is ingesteld op waar, kunnen gebruikers de naam van de snelkoppeling wijzigen. Als je dit beleid instelt op onwaar of niet instelt, kunnen gebruikers de naam niet bewerken.
+
+Als <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> is ingesteld op waar, kunnen gebruikers de snelkoppeling verwijderen. Als je het beleid instelt op onwaar of niet instelt, kunnen gebruikers de snelkoppeling niet verwijderen.</translation>
 <translation id="4698895924806859508">Netwerkgebeurtenissen niet rapporteren</translation>
 <translation id="4699172675775169585">Gecachete afbeeldingen en bestanden</translation>
 <translation id="4699592681017489215">Met dit beleid wordt een lokale schakelaar ingesteld die kan worden gebruikt om controles voor DNS-onderschepping uit te zetten. Deze controles proberen te achterhalen of er een proxy achter de browser zit die als omleiding naar onbekende hostnamen dient.

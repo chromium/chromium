@@ -632,6 +632,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4042941173059740150">Endelea <ph name="SITE_ETLD_PLUS_ONE" /> ukitumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Safu ya chini</translation>
 <translation id="4045441967987592849">Fungua upya</translation>
+<translation id="4049920046559074950">Chaguo zaidi za <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Kichupo <ph name="TABS_COUNT_ONE" /> cha kawaida kilicho na shughuli mpya katika vikundi vya vichupo vya pamoja}other{Vichupo <ph name="TABS_COUNT_MANY" /> vya kawaida vilivyo na shughuli mpya katika vikundi vya vichupo vya pamoja}}</translation>
 <translation id="405365679581583349">Sasisha huduma za Google Play</translation>
 <translation id="405399507749852140">Pata arifa bei ikipunguzwa kwenye tovuti yoyote</translation>
@@ -640,7 +641,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4070897657850712662">{NUM_SITES,plural, =1{Takribani arifa 1 kwa siku}other{Takribani arifa # kwa siku}}</translation>
 <translation id="4072805772816336153">Jaribu tena baadaye</translation>
 <translation id="4084682180776658562">Alamisho</translation>
-<translation id="4084712963632273211">Kutoka <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />imesafirishwa na Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="4084712963632273211">Kutoka <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />imewasilishwa na Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Ili kusaidia Kidhibiti cha Manenosiri cha Google kuhifadhi maelezo yako ya kuingia katika akaunti, weka jina lako la mtumiaji la tovuti hii</translation>
 <translation id="4095146165863963773">Ungependa kufuta data ya programu?</translation>
 <translation id="4096227151372679484">Utaratibu wa kuhifadhi alamisho umefunguliwa kwenye nusu ya skrini</translation>

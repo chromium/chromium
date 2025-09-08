@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">Okamžité titulky teď nejsou k dispozici</translation>
 <translation id="112840717907525620">Mezipaměť zásady je v pořádku</translation>
 <translation id="1131264053432022307">Obrázek, který jste zkopírovali</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – Pokud chcete ukončit režim celé obrazovky, přejeďte shora dolů a klepněte na tlačítko Zpět</translation>
 <translation id="1138458427267715730">Nechte si zaslat upozornění, když na kterémkoli webu klesne cena</translation>
 <translation id="1142713751288681188">Typ papíru</translation>
 <translation id="1144136880160289237">Zatím žádná aktivní témata nemáte</translation>
@@ -454,6 +455,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1734878702283171397">Zkuste kontaktovat administrátora systému.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, platnost vyprší <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Počítač</translation>
+<translation id="1740404923954980840">Režim celé obrazovky ukončíte tak, že přejedete shora dolů a klepnete na tlačítko Zpět</translation>
 <translation id="1741474054575634405">Spravovat věrnostní karty…</translation>
 <translation id="1741613555002899862">Když je zásada DnsOverHttpsMode nastavená na hodnotu <ph name="SECURE_DNS_MODE_SECURE" />, musí být tato zásada nastavená a musí být platná.</translation>
 <translation id="1743393865165844832">Ložní prádlo</translation>
@@ -1153,6 +1155,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2933624813161016821">Razicí fólie</translation>
 <translation id="293796669683825859">Komentáře</translation>
 <translation id="2938225289965773019">Otevírat odkazy <ph name="PROTOCOL" /></translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – Pokud chcete zobrazit kurzor, přepněte aplikace, načtěte stránku znovu nebo se vraťte zpět</translation>
 <translation id="2940418897281183211">Obrázek PNG</translation>
 <translation id="2941878205777356567">Obálka 9 × 12 palců</translation>
 <translation id="2941952326391522266">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát pochází z domény <ph name="DOMAIN2" />. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
@@ -1319,6 +1322,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3207960819495026254">Přidáno do záložek</translation>
 <translation id="3208701679386778924">Pošlete nám hlášení, abychom mohli vylepšit další aktualizace systému ChromeOS.</translation>
 <translation id="3209034400446768650">Stránka může účtovat poplatky</translation>
+<translation id="3212468046572043669">Bylo zahájeno stahování. Zobrazíte ho tak, že přejedete shora dolů a klepnete na tlačítko Zpět</translation>
 <translation id="3212581601480735796">Vaše aktivita na webu <ph name="HOSTNAME" /> je sledována</translation>
 <translation id="3215092763954878852">Ověření WebAuthn nebylo možné použít</translation>
 <translation id="3215311088819828484">Výsledek aktualizován</translation>
@@ -1855,6 +1859,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4085326869263783566">Pomoz mi psát. Procházejte položky tabulátorem a stisknutím klávesy Enter je otevřete</translation>
 <translation id="4085769736382018559">Porovnání produktů</translation>
 <translation id="4085778582400064057">Modrá 2</translation>
+<translation id="4085859451613666999">Kartu teď máte uloženou v účtu Google, aby se mohla při budoucích nákupech vyplnit automaticky</translation>
 <translation id="4088981014127559358">Posun obrázku strany 1 na ose Y</translation>
 <translation id="4089152113577680600">Přihrádka 14</translation>
 <translation id="4092349052316400070">Vyplnit adresu</translation>
@@ -2404,6 +2409,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4995474875135717171">Změněno:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Enter můžete spravovat vyhledávání na webech a svůj výchozí vyhledávač</translation>
 <translation id="4998950033665438990">Jednostranné</translation>
+<translation id="5001338033791319371">Pokud chcete ukončit režim celé obrazovky a zobrazit stahování, přejeďte shora dolů a klepněte na tlačítko Zpět</translation>
 <translation id="5001526427543320409">Soubory cookie třetích stran</translation>
 <translation id="5002932099480077015">Pokud je tato možnost aktivována, Chrome do zařízení uloží kopii karty za účelem rychlejšího vyplňování formulářů.</translation>
 <translation id="5007344584818503324">Aktivita sdílených skupin karet</translation>
@@ -3964,6 +3970,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7582602800368606489">Rychle vytvořit novou událost v Kalendáři Google</translation>
 <translation id="7586676035079382730">Oznámení nejsou povolena</translation>
 <translation id="7588707273764747927">Převod</translation>
+<translation id="7589062909165841767">Váš účet Google může obsahovat vaši <ph name="BEGIN_LINK_GAA" />aktivitu v aplikacích s Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Sdílet důvěrný obsah?</translation>
 <translation id="7591636454931265313">Web <ph name="EMBEDDED_URL" /> chce používat soubory cookie a data webů v doméně <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Certifikát serveru porušuje omezení názvů domén.</translation>
@@ -4249,6 +4256,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8075736640322370409">Rychle vytvořit novou Tabulku Google</translation>
 <translation id="8075898834294118863">Spravovat nastavení webů</translation>
 <translation id="8076492880354921740">Karty</translation>
+<translation id="8076880883123051368">Váš účet Google může mít na adrese <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> další formy historie prohlížení, například vaši <ph name="BEGIN_LINK_GAA" />Aktivitu v aplikacích s Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Obálka čínská č. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Nahrát důvěrný soubor?}few{Nahrát důvěrné soubory?}many{Nahrát důvěrné soubory?}other{Nahrát důvěrné soubory?}}</translation>
 <translation id="8079031581361219619">Načíst web znovu?</translation>
@@ -4382,6 +4390,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8294431847097064396">Zdroj</translation>
 <translation id="8297545700510100061">Soubory cookie a další data webů slouží k tomu, aby si vás web zapamatoval, například pro účely přihlášení nebo personalizace reklam. Pokud chcete spravovat soubory cookie pro všechny weby, přejděte do <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Síť Wi-Fi, kterou používáte (<ph name="WIFI_NAME" />), může vyžadovat, abyste navštívili stránku <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">Karta je uložená jen v zařízení</translation>
 <translation id="8301894345671534559">Zadat kód</translation>
 <translation id="8304912090860925649">Nová srovnávací tabulka</translation>
 <translation id="830498451218851433">Přeložení napůl</translation>
@@ -4902,6 +4911,7 @@ Další podrobnosti:
 <translation id="9192361865877479444">Kov (matný)</translation>
 <translation id="9192947025498305328">Ekologická krása</translation>
 <translation id="9195969368671142407">Když vaše organizace omezuje ukládání do vašeho účtu Google, nemůžete sdílet skupiny karet ani se k nim připojovat</translation>
+<translation id="9198613052465150219">Na stránce <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="9199905725844810519">Tisk je blokován</translation>
 <translation id="9201904868909900493">Otevírání průzkumu…</translation>
 <translation id="9204089334327209740">Po dokončení nahrávání můžete své soubory upravit ve službě <ph name="CLOUD_PROVIDER" />. Místní úložiště, včetně všech souborů v koši, bude automaticky odstraněno.</translation>

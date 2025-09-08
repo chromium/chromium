@@ -933,6 +933,7 @@
 <translation id="1626581272720526544">તમે Play Store મારફતે Android ઍપ અને ગેમ ડાઉનલોડ કરી શકો છો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">ફાઇલ વર્ણનકર્તા</translation>
 <translation id="1627408615528139100">પહેલેથી જ ડાઉનલોડ કરેલ છે</translation>
+<translation id="1628661639775566602">તમારી શોધમાં ટૅબ કે ફાઇલ ઉમેરો</translation>
 <translation id="1628948239858170093">ખોલતા પહેલાં ફાઇલને સ્કૅન કરીએ?</translation>
 <translation id="1629314197035607094">પાસવર્ડની સમયસીમા સમાપ્ત થઈ</translation>
 <translation id="163072119192489970">ડેટા મોકલવાનું અને પ્રાપ્ત કરવાનું સમાપ્ત કરવાની મંજૂરી છે</translation>
@@ -1183,6 +1184,7 @@
 <translation id="1805967612549112634">પિન કન્ફર્મ કરો</translation>
 <translation id="1806335016774576568">અન્ય ખુલ્લી ઍપ પર સ્વિચ કરો</translation>
 <translation id="1807246157184219062">આછું</translation>
+<translation id="180759455458343539">છબી ઉમેરો</translation>
 <translation id="1808571181382454540">સેટિંગના પેજ પર જાઓ</translation>
 <translation id="1808805149659872686">નવી એન્ટ્રી</translation>
 <translation id="1809201888580326312">તમે આ સાઇટ અને ઍપ માટે પાસવર્ડ ન સાચવવાનું પસંદ કર્યું છે</translation>
@@ -2499,6 +2501,7 @@
 <translation id="2705736684557713153">જો સ્ક્રીનના તળિયે સ્ક્રૉલ કરીને ફટાફટ ઇન્ટરનેટ શેર કરવાની સુવિધા દેખાય, તો તે ચાલુ કરો. જો તે નહિ દેખાય, તો તમે સેટ છો.</translation>
 <translation id="2706304388244371417">Google Driveમાં બૅકઅપ લો. કોઈપણ સમયે ડેટા સરળતાથી રિસ્ટોર કરો અથવા ડિવાઇસ સ્વિચ કરો. આ બૅકઅપમાં ઍપનો ડેટા શામેલ હોય છે. બૅકઅપને Google પર અપલોડ કરવામાં આવે છે અને તમારા બાળકના Google એકાઉન્ટના પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે. <ph name="BEGIN_LINK1" />બૅકઅપ વિશે વધુ જાણો<ph name="BEGIN_LINK1_END" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Up</translation>
+<translation id="270903766506716172">LBS પૉલિસીઓની નિકાસ કરો</translation>
 <translation id="270921614578699633">સંપૂર્ણ સરેરાશ</translation>
 <translation id="2709516037105925701">સ્વતઃભરો</translation>
 <translation id="2710101514844343743">વપરાશ અને નિદાનનો ડેટા</translation>
@@ -3392,6 +3395,7 @@
 <translation id="334171495789408663">ટોકન કૉપિ કર્યું</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" આ એક્સ્ટેંશનને કાઢી નાખવા માગે છે.</translation>
 <translation id="334252345105450327">સ્ક્રીનશૉટ લો</translation>
+<translation id="3342676858348302881">શૉર્ટકટ તમારી સંસ્થા દ્વારા પસંદ કરવામાં આવે છે</translation>
 <translation id="3345886924813989455">સપોર્ટેડ બ્રાઉઝર મળ્યું નથી</translation>
 <translation id="3346306152660142597">AI વડે આ પેજને કસ્ટમાઇઝ કરો</translation>
 <translation id="3347086966102161372">છબી સરનામું કૉ&amp;પિ કરો</translation>
@@ -3887,6 +3891,7 @@
 <translation id="3681548574519135185">ફોકસ રિંગ</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> સ્ક્રીન શેરિંગ વિનંતી</translation>
 <translation id="3685598397738512288">Linuxના USBની પસંદગી માટેના સેટિંગ</translation>
+<translation id="3686108296937784939">મારી સંસ્થાના શૉર્ટકટ</translation>
 <translation id="3687598459967813435"><ph name="WEBSITE" />માંથી નોટિફિકેશનને હંમેશાં માટે મંજૂરી આપો</translation>
 <translation id="3688507211863392146">તમે ઍપ્લિકેશનમાં ખોલો છે તે ફાઇલો અને ફોલ્ડરોમાં લખો</translation>
 <translation id="3688526734140524629">ચેનલ બદલો</translation>
@@ -3895,6 +3900,7 @@
 <translation id="3690369331356918524">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
 <translation id="3691231116639905343">કીબોર્ડ ઍપ</translation>
 <translation id="369135240373237088">સ્કૂલ એકાઉન્ટ વડે ફરી સાઇન ઇન કરો</translation>
+<translation id="3692426273355727685">ટૅબ કે ફાઇલ ઉમેરો</translation>
 <translation id="3693415264595406141">પાસવર્ડ:</translation>
 <translation id="3694027410380121301">પાછલું ટૅબ પસંદ કરો</translation>
 <translation id="3694122362646626770">વેબસાઇટ્સ</translation>
@@ -4251,6 +4257,7 @@
 <translation id="3903187154317825986">બિલ્ટ-ઇન કીબોર્ડ</translation>
 <translation id="3903696968689283281">WiFi Directના માલિકોની માહિતી:</translation>
 <translation id="3904326018476041253">સ્થાન સેવાઓ</translation>
+<translation id="3904572359926093799">વિભાજિત વ્યૂનું કદ બદલવાનું હેન્ડલ (ખેંચી શકાય તેવું)</translation>
 <translation id="3905761538810670789">ઍપ્લિકેશન સુધારો</translation>
 <translation id="3906096710440765802">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ, બુકમાર્ક અને બીજુ ઘણું મેળવવા માટે Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="3908501907586732282">એક્સ્ટેંશન ચાલુ કરો</translation>
@@ -4611,6 +4618,7 @@
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ટેબ}one{# ટેબ્સ}other{# ટેબ્સ}}</translation>
 <translation id="4154658846204884961">ધૂમકેતુ</translation>
 <translation id="4154664944169082762">ફિંગરપ્રીંટ્સ</translation>
+<translation id="4156297721709710037"><ph name="WINDOW_TITLE" /> - ડાબી બાજુનો વ્યૂ</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158315983204257156">વેબસાઇટ પરની ટેક્સ્ટનું કદ અને ફૉન્ટ</translation>
 <translation id="4158364720893025815">પાસ</translation>
@@ -6259,6 +6267,7 @@
 <translation id="5338338064218053691">તમે છૂપી વિન્ડોનો ઉપયોગ કરીને ખાનગી રૂપે બ્રાઉઝ કરી શકો છો</translation>
 <translation id="5338503421962489998">સ્થાનિક સ્ટોરેજ</translation>
 <translation id="5340787663756381836">&amp;શોધો અને ફેરફાર કરો</translation>
+<translation id="5340900621595888432">ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા મોકલો</translation>
 <translation id="5341793073192892252">નીચેની કુકી બ્લૉક કરવામાં આવી હતી (તૃતીય પક્ષ કુકી, કોઈ પણ અપવાદ સિવાય, બ્લૉક કરવામાં આવી રહી છે)</translation>
 <translation id="5342091991439452114">PIN, ઓછામાં ઓછો <ph name="MINIMUM" /> અંકનો હોવો આવશ્યક છે</translation>
 <translation id="5344036115151554031">Linux રિસ્ટોર કરી રહ્યાં છીએ</translation>
@@ -6690,6 +6699,7 @@
 <translation id="5640159004008030285">આ પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, <ph name="BEGIN_LINK" />તેને તમારા Google એકાઉન્ટમાં સાચવો<ph name="END_LINK" />.</translation>
 <translation id="5641608986289282154"><ph name="DEVICE_OS" />નો ઉપયોગ કરવાનું શરૂ કરો</translation>
 <translation id="5641648607875312660">સ્ક્રીનશૉટ છબી એડિટર</translation>
+<translation id="5641715878999557094">જ્યારે તમે હોમ બટન પર ક્લિક કરો, ત્યારે દર્શાવવાનું પેજ "<ph name="EXTENSION_NAME" />" દ્વારા બદલવામાં આવ્યું છે.</translation>
 <translation id="5642508497713047">CRL હસ્તાક્ષરકર્તા</translation>
 <translation id="5643191124441701136">તમારો સિક્યુરિટી કોડ તમારા કાર્ડની આગળના ભાગ પર હોય છે</translation>
 <translation id="5643321261065707929">મીટર્ડ (ડેટા નિયંત્રણ) નેટવર્ક</translation>
@@ -7354,6 +7364,7 @@ USB ડિવાઇસ</translation>
 <translation id="6130807998512240230">ફોન હબ, નજીકના શેર</translation>
 <translation id="6130887916931372608">કીબોર્ડની કી</translation>
 <translation id="6131511889181741773">સ્પ્લૅટર</translation>
+<translation id="6132188132833716741">⇥ AI મોડને પૂછવા માટે Tab અને પછી Enter કી દબાવો</translation>
 <translation id="6132251717264923430">બટન પિન કર્યું</translation>
 <translation id="6132714462430777655">સ્કૂલમાં પ્રવેશની પ્રક્રિયા છોડી દઈએ?</translation>
 <translation id="6134418895482326458">નવા ટૅબ પેજ પરનું ફૂટર છુપાવો</translation>
@@ -7573,6 +7584,7 @@ USB ડિવાઇસ</translation>
 <translation id="6280215091796946657">એક અલગ એકાઉન્ટ સાથે સાઇન ઇન કરો</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6281218688313242284">તમારું &amp;Google એકાઉન્ટ મેનેજ કરો</translation>
+<translation id="6281553140495787606"><ph name="WINDOW_TITLE" /> - જમણી બાજુનો વ્યૂ</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{કાગળની 1 શીટની મર્યાદાથી વધુ છે}one{કાગળની {COUNT} શીટની મર્યાદાથી વધુ છે}other{કાગળની {COUNT} શીટની મર્યાદાથી વધુ છે}}</translation>
 <translation id="6282490239556659745"><ph name="SITE" />માંથી <ph name="EMBEDDED_SITE" /> કાઢી નાખો</translation>
 <translation id="6283438600881103103">હવે તમે ઑટોમૅટિક રીતે સાઇન આઉટ થશો.
@@ -8237,6 +8249,7 @@ USB ડિવાઇસ</translation>
 <translation id="6766488013065406604">Google Password Manager પર જાઓ</translation>
 <translation id="6767566652486411142">બીજી ભાષા પસંદ કરો...</translation>
 <translation id="6768034047581882264">અસુરક્ષિત કન્ટેન્ટ બતાવવાની મંજૂરી નથી</translation>
+<translation id="6769682056102864500">Googleને ક્રૅશ રિપોર્ટ અને ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને Chrome અને ChromeOS Flexની સુવિધાઓ અને પર્ફોર્મન્સને બહેતર બનાવવામાં મદદ કરો.</translation>
 <translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />શ્રેષ્ઠ અનુભવ પ્રદાન કરવા માટે, <ph name="DEVICE_OS" /> ડિવાઇસ વિશેનો હાર્ડવેર ડેટા એકત્રિત કરે છે અને કઈ અપડેટ ડિલિવર કરવી જોઈએ તે નક્કી કરવા માટે તેને Google સાથે શેર કરે છે. વૈકલ્પિક રીતે, તમે <ph name="DEVICE_OS" />માંનો અનુભવ અને સેવા સંબંધિત સપોર્ટ અને સુધારણાઓ જેવા વધારાના હેતુઓ માટે Googleને આ ડેટાનો ઉપયોગ કરવાની મંજૂરી આપી શકો છો.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />અપડેટ ફિલ્ટરિંગ માટે Googleને મોકલવામાં આવેલો ડેટા તેમજ તમે Google સાથે ડેટા શેર કરવાનું પસંદ કરો છો તે કોઈપણ અન્ય ઉદાહરણો જોવા માટે, તમે આ ડિવાઇસ પર લૉગ ઇન કરી શકો છો અને chrome://system વિભાગમાં chromeosflex_ તરીકે સૂચિબદ્ધ ફીલ્ડ જોઈ શકો છો.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" /><ph name="DEVICE_OS" />, Google સાથે કયો ડેટા શેર કરી શકે છે અને તેનો ઉપયોગ કેવી રીતે કરવામાં આવે છે, તેના વિશે વધુ વિગતો જાણવા g.co/flex/HWDataCollectionની મુલાકાત લો.<ph name="END_PARAGRAPH3" /></translation>
@@ -8650,6 +8663,7 @@ USB ડિવાઇસ</translation>
 <translation id="7034692021407794547">બિલિંગ મેનેજમેન્ટના વિશેષાધિકાર ધરાવતા વ્યવસ્થાપકે પહેલાં વ્યવસ્થાપક કન્સોલના Google Meet હાર્ડવેર વિભાગમાં, Google Meet હાર્ડવેરની સેવાની શરતો સ્વીકારવી આવશ્યક છે.</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> દ્વારા હમણાં જ તમારા એકાઉન્ટ માટે પાસકી બનાવવામાં આવી. પાસકી સાઇન ઇન કરવાની ઝડપી અને સુરક્ષિત રીત પ્રદાન કરે છે અને <ph name="USER" /> માટે Google Password Managerમાં સાચવવામાં આવે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Linux માટે <ph name="DISK_SIZE" /> સ્પેસનો સુઝાવ આપ્યો છે. ખાલી સ્પેસ વધારવા માટે, તમારા ડિવાઇસમાંથી ફાઇલો ડિલીટ કરો.</translation>
+<translation id="7036833812387983071">DevToolsમાં જુઓ</translation>
 <translation id="7037157058268992880">પિન યાદ નથી</translation>
 <translation id="7037509989619051237">ટેક્સ્ટ ટૂ સ્પીચના પ્રીવ્યૂ માટે</translation>
 <translation id="7037633074390821254">DNS અથવા CIDR સંબંધિત મર્યાદા</translation>
@@ -8664,6 +8678,7 @@ USB ડિવાઇસ</translation>
 <translation id="7044207729381622209">ખુલ્લી ટૅબ સહિત, આ બધી સાઇટમાંથી તમને સાઇન આઉટ કરવામાં આવશે</translation>
 <translation id="7044211973375150246"><ph name="APP_NAME" />ની જેમજ આ બધી લિંક ખોલવા માટે આ ઍપને સેટ કરવામાં આવી છે. આમ કરવાથી <ph name="APP_NAME_2" /> સપોર્ટેડ લિંક ખોલી શકશે નહીં.</translation>
 <translation id="7044606776288350625">ડેટા સિંક કરો</translation>
+<translation id="7049510655024521417">તમારા ઍડમિન દ્વારા કસ્ટમાઇઝેશનની સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="7050037487872780845">હૉટસ્પૉટનું અમાન્ય કન્ફિગ્યુરેશન</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{પાસવર્ડને તમારા Google એકાઉન્ટ, <ph name="USER_EMAIL" />માં સાચવ્યો}one{પાસવર્ડને તમારા Google એકાઉન્ટ, <ph name="USER_EMAIL" />માં સાચવ્યો}other{પાસવર્ડને તમારા Google એકાઉન્ટ, <ph name="USER_EMAIL" />માં સાચવ્યા}}</translation>
 <translation id="7052147783849658969">અત્યારે કોઈ નિષ્ક્રિય ટૅબ નથી</translation>
@@ -9253,6 +9268,7 @@ USB ડિવાઇસ</translation>
 <translation id="747114903913869239">ભૂલ: એક્સટેન્શનને ડિકોડ કરવામાં અક્ષમ</translation>
 <translation id="7471520329163184433">ઝડપ ધીમી કરો</translation>
 <translation id="747312361841682912">બતાવવામાં આવેલો ડેટા ડિલીટ કરો</translation>
+<translation id="7473555040328423550">ટૅબ ઉમેરો</translation>
 <translation id="7473891865547856676">ના, આભાર</translation>
 <translation id="7474043404939621342">તમારું ટૂલબાર કસ્ટમાઇઝ કરો</translation>
 <translation id="747459581954555080">બધુ પુનર્પ્રાપ્ત કરો</translation>
@@ -9313,6 +9329,7 @@ USB ડિવાઇસ</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}=1{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}one{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}other{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}}</translation>
 <translation id="7509097596023256288">મેનેજમેન્ટ સેટઅપ કરી રહ્યાં છીએ</translation>
 <translation id="7509539379068593709">ઍપ અનઇન્સ્ટૉલ કરો</translation>
+<translation id="7513438205469584978">તમારી <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google ઍક્ટિવિટી<ph name="END_LINK_GOOGLE_ACTIVITY" /> પર આધારિત સૂચનો</translation>
 <translation id="7514239104543605883">તમારા ડિવાઇસ પર કૉપિ કરો</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7514417110442087199">સોંપણી ઉમેરો</translation>
@@ -11812,6 +11829,7 @@ USB ડિવાઇસ</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ઉમેરાયું</translation>
 <translation id="9215742531438648683">Google Play Store અનઇન્સ્ટૉલ કરો</translation>
 <translation id="9218430445555521422">ડિફોલ્ટ તરીકે સેટ કરો</translation>
+<translation id="9218536722110863203">ફાઇલ અપલોડ કરો</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (સપોર્ટ ન કરવામાં આવતી ઍપ)</translation>
 <translation id="9219572436491982747">Chrome AIની ટેક્નોલોજીને બહેતર બનાવવા માટે Googleનો મોકલવામાં આવતો ડેટા કદાચ માનવ રિવ્યૂઅર દ્વારા જોવામાં આવી શકે છે</translation>
 <translation id="9219741625496141320">બ્રાઉઝિંગ ડેટા ઑટોમેટિક રીતે ડિલીટ કરી નાખવામાં આવ્યો હતો</translation>

@@ -632,6 +632,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="4042941173059740150">Przejdź do witryny <ph name="SITE_ETLD_PLUS_ONE" />, używając: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Plansza dolna</translation>
 <translation id="4045441967987592849">Otwórz ponownie</translation>
+<translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> – więcej opcji</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardowa karta z nową aktywnością w udostępnionych grupach kart}few{<ph name="TABS_COUNT_MANY" /> standardowe karty z nową aktywnością w udostępnionych grupach kart}many{<ph name="TABS_COUNT_MANY" /> standardowych kart z nową aktywnością w udostępnionych grupach kart}other{<ph name="TABS_COUNT_MANY" /> standardowej karty z nową aktywnością w udostępnionych grupach kart}}</translation>
 <translation id="405365679581583349">Zaktualizuj Usługi Google Play</translation>
 <translation id="405399507749852140">Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert</translation>
@@ -1682,7 +1683,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8559961053328923750">Chrome ogranicza łączną ilość danych, które witryny mogą udostępniać za pomocą przeglądarki, aby mierzyć skuteczność reklam</translation>
 <translation id="8559990750235505898">Proponuj tłumaczenie stron w innych językach</translation>
 <translation id="8560602726703398413">Swoją listę Do przeczytania znajdziesz w zakładkach</translation>
-<translation id="8565021320663436446">Usunąć konto <ph name="MEMBER_FULL_NAME" />?</translation>
+<translation id="8565021320663436446">Usunąć użytkownika <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8570677896027847510">Nie można pobrać pliku w bezpieczny sposób</translation>
 <translation id="8571213806525832805">Ostatnie 4 tygodnie</translation>
 <translation id="8580435650274205305">Data ważności, wymagana</translation>

@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">Az élő feliratozás jelenleg nem áll rendelkezésre</translation>
 <translation id="112840717907525620">Irányelv-gyorsítótár OK</translation>
 <translation id="1131264053432022307">Vágólapra másolt kép</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – A teljes képernyős nézetből való kilépéshez húzza lefelé az ujját a képernyő tetejétől, majd érintse meg a Vissza gombot</translation>
 <translation id="1138458427267715730">Értesítéseket kaphat, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="1142713751288681188">Papírtípus</translation>
 <translation id="1144136880160289237">Még nincsenek aktív témái.</translation>
@@ -454,6 +455,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1734878702283171397">Próbálja felvenni a kapcsolatot a rendszergazdával.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, lejárat dátuma: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Számítógép</translation>
+<translation id="1740404923954980840">A teljes képernyős nézetből való kilépéshez húzza lefelé az ujját a képernyő tetejétől, és érintse meg a Vissza gombot.</translation>
 <translation id="1741474054575634405">Hűségkártyák kezelése…</translation>
 <translation id="1741613555002899862">Meg kell adni, és érvényes karakterláncnak kell lennie, ha a DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Ágynemű és lepedők</translation>
@@ -1153,6 +1155,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2933624813161016821">Dombornyomó fólia</translation>
 <translation id="293796669683825859">Megjegyzések</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> linkek megnyitása</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – A kurzor megjelenítéséhez, az alkalmazások közötti váltáshoz, az oldal újratöltéséhez vagy a visszalépéshez</translation>
 <translation id="2940418897281183211">PNG-kép</translation>
 <translation id="2941878205777356567">9 × 12 hüvelykes boríték</translation>
 <translation id="2941952326391522266">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa a következőről származik: <ph name="DOMAIN2" />. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
@@ -1320,6 +1323,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
 <translation id="3208701679386778924">Küldjön jelentést, hogy segítse a ChromeOS további verzióinak fejlesztését.</translation>
 <translation id="3209034400446768650">Az oldal díjat számíthat fel</translation>
+<translation id="3212468046572043669">A letöltés megkezdődött. A megtekintéséhez húzza lefelé ujját a képernyő tetejéről, és érintse meg a Vissza gombot</translation>
 <translation id="3212581601480735796">Figyelik a(z) <ph name="HOSTNAME" /> webhelyen végzett tevékenységeit</translation>
 <translation id="3215092763954878852">Hiba történt a WebAuthn használata során</translation>
 <translation id="3215311088819828484">Eredmény frissítve</translation>
@@ -1856,6 +1860,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4085326869263783566">Segítség az íráshoz. A megnyitáshoz nyomja meg a Tab billentyűt, majd az Entert.</translation>
 <translation id="4085769736382018559">Termék-összehasonlítás</translation>
 <translation id="4085778582400064057">Kék 2</translation>
+<translation id="4085859451613666999">A kártyát a Google-fiókjába mentette a rendszer, így automatikusan feltöltheti a jövőbeli vásárlások során</translation>
 <translation id="4088981014127559358">1. oldali kép Y-eltolása</translation>
 <translation id="4089152113577680600">14. tálca</translation>
 <translation id="4092349052316400070">Cím kitöltése</translation>
@@ -2405,6 +2410,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4995474875135717171">Módosítva:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot a Site Search és az alapértelmezett keresőmotor kezeléséhez.</translation>
 <translation id="4998950033665438990">Egyoldalú</translation>
+<translation id="5001338033791319371">A teljes képernyős nézetből való kilépéshez és a letöltés megtekintéséhez húzza lefelé ujját a képernyő tetejéről, és érintse meg a Vissza gombot.</translation>
 <translation id="5001526427543320409">Harmadik felektől származó cookie-k</translation>
 <translation id="5002932099480077015">Ha engedélyezi, a Chrome megőrzi a kártya másolatát ezen az eszközön a gyorsabb űrlapkitöltés érdekében.</translation>
 <translation id="5007344584818503324">Megosztott lapcsoportok tevékenységei</translation>
@@ -3967,6 +3973,7 @@ További részletek:
 <translation id="7582602800368606489">Új esemény gyors létrehozása a Google Naptár szolgáltatással</translation>
 <translation id="7586676035079382730">Értesítések nem engedélyezettek</translation>
 <translation id="7588707273764747927">Transzfer</translation>
+<translation id="7589062909165841767">Előfordulhat, hogy Google-fiókjában megtalálhatók a <ph name="BEGIN_LINK_GAA" />Gemini-appokban végzett tevékenységek<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">Biztosan megosztja a bizalmas tartalmat?</translation>
 <translation id="7591636454931265313">A(z) <ph name="EMBEDDED_URL" /> cookie-kat és webhelyadatokat szeretne használni a következő webhelyen: <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">A szervertanúsítvány sérti a névre vonatkozó megkötéseket.</translation>
@@ -4252,6 +4259,7 @@ További részletek:
 <translation id="8075736640322370409">Új Google-táblázat létrehozása gyorsan</translation>
 <translation id="8075898834294118863">Webhelybeállítások kezelése</translation>
 <translation id="8076492880354921740">Lapok</translation>
+<translation id="8076880883123051368">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> webhelyen, például a <ph name="BEGIN_LINK_GAA" />Gemini-appokban végzett tevékenységek<ph name="END_LINK_GAA" />.</translation>
 <translation id="8077669823243888800">8. kínai boríték</translation>
 <translation id="8078006011486731853">{0,plural, =1{Feltölti a bizalmas fájlt?}other{Feltölti a bizalmas fájlokat?}}</translation>
 <translation id="8079031581361219619">Újratölti a webhelyet?</translation>
@@ -4386,6 +4394,7 @@ További részletek:
 <translation id="8294431847097064396">Forrás</translation>
 <translation id="8297545700510100061">A cookie-k és az egyéb webhelyadatok arra szolgálnak, hogy a webhelyek emlékezzenek Önre, és így például bejelentkeztessék, vagy személyre szabják a hirdetéseket. A <ph name="SETTINGS" /> szakaszban kezelheti a webhelyek cookie-jait.</translation>
 <translation id="8298115750975731693">Az Ön által használt Wi-Fi-hálózat (<ph name="WIFI_NAME" />) megkövetelheti a(z) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> felkeresését.</translation>
+<translation id="8298399736867690281">A kártya csak az eszközre lett mentve</translation>
 <translation id="8301894345671534559">Kód megadása</translation>
 <translation id="8304912090860925649">Új összehasonlító táblázat</translation>
 <translation id="830498451218851433">Félbehajtás</translation>
@@ -4907,6 +4916,7 @@ További részletek:
 <translation id="9192361865877479444">Fém (matt)</translation>
 <translation id="9192947025498305328">Etikus szépségápolás</translation>
 <translation id="9195969368671142407">Ha a szervezete korlátozza a Google-fiókba történő mentést, akkor nem oszthat meg lapcsoportokat, valamint nem csatlakozhat hozzájuk</translation>
+<translation id="9198613052465150219">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> webhelyen</translation>
 <translation id="9199905725844810519">A nyomtatás le van tiltva</translation>
 <translation id="9201904868909900493">Kérdőív megnyitása…</translation>
 <translation id="9204089334327209740">A feltöltés végeztével a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásban módosíthatja a fájlokat. A helyi tárhely, beleértve a kukában lévő fájlokat is, automatikusan eltávolításra kerül.</translation>

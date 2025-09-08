@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">No s'ha canviat el PIN. Comprova la connexió a Internet i torna-ho a provar.</translation>
 <translation id="1063070031224282617">Tria on vols desar <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Resenyes basades en els teus interessos</translation>
+<translation id="1072679792409426431">El teu administrador l'ha desactivat</translation>
 <translation id="1074827084851510304">Estàs a punt de suprimir {password_count} contrasenyes i la llista de llocs web i aplicacions per als quals has triat que no es desi mai la informació d'inici de sessió. No se suprimiran els comptes que hagis creat per a llocs web i aplicacions.</translation>
 <translation id="1076421457278169141">S'ha escanejat el codi</translation>
 <translation id="1081114897601629648">Les contrasenyes següents no s'han importat al gestor de contrasenyes de Google perquè no compleixen els requisits.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Aquesta adreça se suprimirà del dispositiu.}other{Aquestes adreces se suprimiran del dispositiu.}}</translation>
 <translation id="2297989278479054870">Quan tanquis la sessió, les adreces d'interès, les contrasenyes i altres elements del teu Compte de Google se suprimiran d'aquest dispositiu.</translation>
 <translation id="2299218006564889602">Les contrasenyes s'encripten al dispositiu abans de desar-les al gestor de contrasenyes de Google.</translation>
+<translation id="2306265833370324042">Mostra els detalls de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Tanca la pestanya</translation>
 <translation id="2311077293164383652">Tanca la pestanya fixada</translation>
 <translation id="2316129865977710310">No, gràcies</translation>
@@ -1201,6 +1203,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5709005673595820640">{count,plural, =1{Tens {count} contrasenya reutilitzada que podria posar en perill la teva seguretat. Corregeix el problema per protegir-te.}other{Tens {count} contrasenyes reutilitzades que podrien posar en perill la teva seguretat. Corregeix el problema per protegir-te.}}</translation>
 <translation id="57094364128775171">Suggereix una contrasenya segura…</translation>
 <translation id="5718049162805123412">Hauries de canviar-les ara</translation>
+<translation id="5721040778297053709">Situa la targeta de crèdit dins d'aquest marc</translation>
 <translation id="572328651809341494">Pestanyes recents</translation>
 <translation id="5724941645893276623">Per navegar pel web de manera privada, obre una pestanya nova</translation>
 <translation id="5728072125198221967">Serveis de Google enllaçats</translation>
@@ -1780,6 +1783,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7889910613639381518">Accés fàcil i segur amb el widget del gestor de contrasenyes de Google.</translation>
 <translation id="7899199123054742721">Marca-ho tot com a no llegit</translation>
 <translation id="7911190106180361398">La teva organització no et permet sincronitzar-ho tot.</translation>
+<translation id="7918999344502274923">Amaga els detalls de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">No s'ha trobat cap problema</translation>
 <translation id="7925108652071887026">Dades d'emplenament automàtic</translation>
 <translation id="7926975587469166629">Àlies de la targeta</translation>

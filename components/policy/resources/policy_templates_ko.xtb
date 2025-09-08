@@ -471,6 +471,7 @@
       정책을 사용 설정하면 개선된 국제 키보드 단축키가 사용됩니다.
       정책을 설정하지 않으면 정책이 관리 기기와 일반 사용자 소유의 기기 모두에서 사용 설정됩니다.
       이는 관리 대상 사용자가 지원 중단된 기존 단축키를 계속 사용할 수 있도록 허용하기 위한 임시 정책일 뿐입니다. 맞춤 키보드 단축키가 제공되면 이 정책은 지원 중단됩니다.</translation>
+<translation id="1357214899305978790">새 탭 페이지에서 바로가기 설정(베타)</translation>
 <translation id="1361661842732478894">툴바에 홈 버튼 표시</translation>
 <translation id="1363275621236827384">하드웨어 프로필 Quirks 서버에 검색어를 사용합니다.</translation>
 <translation id="1363839375295535439">이 정책을 사용 설정하거나 설정하지 않은 상태로 두면 시스템 구성에서 지원하는 경우 항상 인쇄 서비스에 LPAC 샌드박스를 사용 설정합니다.
@@ -5309,6 +5310,17 @@ SpeculationRules 미리 가져오기가 허용되지 않습니다. 이는 기존
 Chrome 114까지 이 정책을 적용하려면 <ph name="SYNC_DISABLED_POLICY_NAME" /> 정책을 true로 설정해야 합니다. Chrome 115부터 이 정책을 설정하면 `<ph name="CHROME_SYNC_NAME" />`가 <ph name="SYNC_DISABLED_POLICY_NAME" /> 정책으로 인해 사용 중지되지 않고 <ph name="BROWSER_SIGNIN_POLICY_NAME" /> 정책도 사용 중지되지 않은 경우 각 데이터 유형의 동기화가 사용 중지됩니다.</translation>
 <translation id="4694138212536142867">기기 하드웨어 상태 보고 사용 설정</translation>
 <translation id="4697581738794063407">URL 매개변수 필터링 기능 제어</translation>
+<translation id="4698488381632756664">개발 중: 초기 프리뷰 전용입니다.
+
+정책을 설정하면 <ph name="PRODUCT_NAME" /> 새 탭 페이지에 최대 10개의 맞춤 바로가기가 미리 구성됩니다.
+
+설정하면 기본적으로 사용자에게 이러한 바로가기가 표시되며, 'Chrome 맞춤설정' 패널에서 '내 바로가기', '가장 많이 방문한 사이트' 또는 '내 조직의 바로가기' 간에 전환할 수 있습니다. 비어 있거나 설정되지 않은 경우 사용자는 'Chrome 맞춤설정' 패널에서 '내 바로가기' 또는 '가장 많이 방문한 사이트' 간에만 전환할 수 있습니다.
+
+바로가기 URL은 고유해야 합니다.
+
+<ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> 정책이 true로 설정되면 사용자가 바로가기의 이름을 변경할 수 있습니다. false로 설정하거나 설정하지 않으면 사용자가 이름을 변경할 수 없습니다.
+
+<ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> 정책이 true로 설정되면 사용자가 바로가기를 삭제할 수 있습니다. false로 설정하거나 설정하지 않으면, 사용자가 바로가기를 삭제할 수 없습니다.</translation>
 <translation id="4698895924806859508">네트워크 이벤트 보고 안 함</translation>
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
 <translation id="4699592681017489215">이 정책은 DNS 가로채기 검사를 사용 중지하는 데 이용할 수 있는 로컬 스위치를 구성합니다. DNS 가로채기 검사는 브라우저에서 알 수 없는 호스트 이름을 리디렉션하는 프록시를 사용 중인지 확인합니다.

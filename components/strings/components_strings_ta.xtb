@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">'உடனடி வசனம்' அம்சம் இப்போது இல்லை</translation>
 <translation id="112840717907525620">கொள்கை தற்காலிக சேமிப்பு சரியாக உள்ளது</translation>
 <translation id="1131264053432022307">நீங்கள் நகலெடுத்த படம்</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – முழுத்திரையில் இருந்து வெளியேற மேலே இருந்து இழுத்து பின் செல்வதற்கான பட்டனைத் தொடவும்</translation>
 <translation id="1138458427267715730">இணையம் முழுவதிலும் எந்தவொரு தளத்தில் விலை குறைந்தாலும் அதுகுறித்த விழிப்பூட்டல்களைப் பெறுங்கள்</translation>
 <translation id="1142713751288681188">காகித வகை</translation>
 <translation id="1144136880160289237">செயலில் உள்ள தலைப்புகள் எதையும் இதுவரை நீங்கள் சேர்க்கவில்லை</translation>
@@ -454,6 +455,7 @@
 <translation id="1734878702283171397">கணினி நிர்வாகியைத் தொடர்புகொள்ளவும்</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, காலாவதித் தேதி: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">கம்ப்யூட்டர்</translation>
+<translation id="1740404923954980840">முழுத்திரையில் இருந்து வெளியேற மேலே இருந்து இழுத்து பின் செல்வதற்கான பட்டனைத் தொடவும்</translation>
 <translation id="1741474054575634405">லாயல்டி கார்டுகளை நிர்வகியுங்கள்...</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> ஆக இருக்கும்போது குறிப்பிடப்பட வேண்டும். அத்துடன் சரியான சரமாகவும் இருக்க வேண்டும்.</translation>
 <translation id="1743393865165844832">படுக்கைகள் &amp; படுக்கை விரிப்புகள்</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2933624813161016821">எம்போசிங் ஃபாயில்</translation>
 <translation id="293796669683825859">கருத்துகள்</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> இணைப்புகளைத் திறக்கும்</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – உங்கள் கர்சரைக் காட்ட ஆப்ஸிற்கிடையே மாறவும், பக்கத்தை ரெஃப்ரெஷ் செய்யவும் அல்லது பின் செல்லவும்</translation>
 <translation id="2940418897281183211">PNG படம்</translation>
 <translation id="2941878205777356567">என்வெலப் 9 x 12 இன்ச்</translation>
 <translation id="2941952326391522266">இது <ph name="DOMAIN" /> தான் என்பதை இந்தச் சேவையகம் உறுதிப்படுத்தவில்லை; இதன் பாதுகாப்புச் சான்றிதழ் <ph name="DOMAIN2" /> இலிருந்து பெறப்பட்டது. இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது தீங்கிழைப்பவர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.</translation>
@@ -1319,6 +1322,7 @@
 <translation id="3207960819495026254">புக்மார்க் செய்யப்பட்டது</translation>
 <translation id="3208701679386778924">புதுப்பிப்பு குறித்த புகாரை எங்களுக்கு அனுப்புங்கள். இதனால் அடுத்து வரும் ChromeOS புதுப்பிப்புகளை எங்களால் மேம்படுத்த முடியும்.</translation>
 <translation id="3209034400446768650">இந்தப் பக்கத்திற்குச் சென்றால் கட்டணம் விதிக்கக்கூடும்</translation>
+<translation id="3212468046572043669">பதிவிறக்கம் தொடங்கியது. அதைப் பார்க்க, மேலே இருந்து இழுத்து பின் செல்வதற்கான பட்டனைத் தொடவும்.</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> இல் உங்கள் செயல்பாடு கண்காணிக்கப்படுகிறது</translation>
 <translation id="3215092763954878852">WebAuthnனைப் பயன்படுத்த முடியவில்லை</translation>
 <translation id="3215311088819828484">முடிவு மாற்றப்பட்டது</translation>
@@ -1855,6 +1859,7 @@
 <translation id="4085326869263783566">எழுத எனக்கு உதவு. திறக்க, Tab பட்டனை அழுத்தி Enter பட்டனை அழுத்தவும்</translation>
 <translation id="4085769736382018559">தயாரிப்புகளை ஒப்பிடுக</translation>
 <translation id="4085778582400064057">நீலம் 2</translation>
+<translation id="4085859451613666999">உங்கள் கார்டு விவரங்கள் Google கணக்கில் சேமிக்கப்பட்டுள்ளதால் இனி நீங்கள் செய்யும் பர்ச்சேஸ்களுக்கு அதைத் தானாக நிரப்பிக்கொள்ளலாம்</translation>
 <translation id="4088981014127559358">சைடு 1 இமேஜ் Y ஷிஃப்ட்</translation>
 <translation id="4089152113577680600">டிரே 14</translation>
 <translation id="4092349052316400070">முகவரியை நிரப்பவும்</translation>
@@ -2404,6 +2409,7 @@
 <translation id="4995474875135717171">திருத்தப்பட்டது:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, தளத்தில் தேடியவற்றையும் இயல்புத் தேடல் இன்ஜினையும் நிர்வகிக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="4998950033665438990">சிங்கிள் ஃபேஸ்</translation>
+<translation id="5001338033791319371">முழுத்திரையில் இருந்து வெளியேறி பதிவிறக்கத்தைப் பார்க்க மேலே இருந்து இழுத்து பின் செல்வதற்கான பட்டனைத் தொடவும்</translation>
 <translation id="5001526427543320409">மூன்றாம் தரப்புக் குக்கீகள்</translation>
 <translation id="5002932099480077015">இயக்கப்பட்டால், விரைவாகப் படிவத்தை நிரப்ப உங்கள் கார்டின் நகலை இச்சாதனத்தில் Chrome சேமித்து வைக்கும்.</translation>
 <translation id="5007344584818503324">பகிர்ந்த பக்கக் குழுக்களின் செயல்பாடுகள்</translation>
@@ -3965,6 +3971,7 @@
 <translation id="7582602800368606489">Google Calendarரில் புதிய நிகழ்வை விரைவாக உருவாக்கும்</translation>
 <translation id="7586676035079382730">அறிவிப்புகளுக்கான அனுமதி வழங்கப்படவில்லை</translation>
 <translation id="7588707273764747927">டிரான்ஸ்ஃபர்</translation>
+<translation id="7589062909165841767">உங்கள் Google கணக்கில் <ph name="BEGIN_LINK_GAA" />Gemini ஆப்ஸ் செயல்பாடுகள்<ph name="END_LINK_GAA" /> சேமிக்கப்பட்டிருக்கலாம்</translation>
 <translation id="7591288787774558753">ரகசிய உள்ளடக்கத்தைப் பகிரவா?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" /> இல் குக்கீகளையும் தளத் தரவையும் <ph name="EMBEDDED_URL" /> பயன்படுத்த விரும்புகிறது</translation>
 <translation id="7592362899630581445">பெயர் கட்டுப்பாடுகளைச் சேவையகத்தின் சான்றிதழ் மீறுகிறது.</translation>
@@ -4250,6 +4257,7 @@
 <translation id="8075736640322370409">புதிய Google விரிதாளை விரைவாக உருவாக்கும்</translation>
 <translation id="8075898834294118863">தள அமைப்புகளை நிர்வகியுங்கள்</translation>
 <translation id="8076492880354921740">தாவல்கள்</translation>
+<translation id="8076880883123051368">உங்கள் <ph name="BEGIN_LINK_GAA" />Gemini ஆப்ஸ் செயல்பாடுகளைப்<ph name="END_LINK_GAA" /> போன்ற பிற வகை பிரவுசிங் பதிவுகள் உங்கள் Google கணக்கின் <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> பக்கத்தில் இருக்கலாம்</translation>
 <translation id="8077669823243888800">என்வெலப் சைனீஸ் #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{ரகசியமான ஃபைலைப் பதிவேற்றவா?}other{ரகசியமான ஃபைல்களைப் பதிவேற்றவா?}}</translation>
 <translation id="8079031581361219619">தளத்தை மீண்டும் ஏற்றவா?</translation>
@@ -4383,6 +4391,7 @@
 <translation id="8294431847097064396">மூலம்</translation>
 <translation id="8297545700510100061">குக்கீகளும் பிற தளத் தரவும் உங்கள் செயல்பாட்டை நினைவில் வைத்துக்கொள்ளப் பயன்படுத்தப்படுகின்றன. உதாரணமாக உங்களின் உள்நுழைவுச் செயல்பாடு அல்லது விளம்பரங்களைப் பிரத்தியேகமாக்குவது. அனைத்துத் தளங்களுக்கான குக்கீகளையும் நிர்வகிக்க <ph name="SETTINGS" /> ஐப் பார்க்கவும்.</translation>
 <translation id="8298115750975731693">நீங்கள் பயன்படுத்திக் கொண்டிருக்கும் (<ph name="WIFI_NAME" />) வைஃபை, அதன் <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ஐ நீங்கள் பார்க்கக் கோரலாம்.</translation>
+<translation id="8298399736867690281">சாதனத்தில் மட்டும் கார்டு சேமிக்கப்பட்டது</translation>
 <translation id="8301894345671534559">குறியீட்டை உள்ளிடுக</translation>
 <translation id="8304912090860925649">புதிய ஒப்பீட்டு அட்டவணை</translation>
 <translation id="830498451218851433">ஃபோல்டு ஹாஃப்</translation>
@@ -4904,6 +4913,7 @@
 <translation id="9192361865877479444">மேட் மெட்டல்</translation>
 <translation id="9192947025498305328">தீங்கற்ற அழகுப் பொருட்கள்</translation>
 <translation id="9195969368671142407">உங்கள் Google கணக்கில் சேமிப்பதை உங்கள் நிறுவனம் கட்டுப்படுத்தினால், பக்கக் குழுக்களை உங்களால் பகிரவோ அவற்றில் சேரவோ முடியாது</translation>
+<translation id="9198613052465150219">பிற வகை பிரவுசிங் பதிவுகள் உங்கள் Google கணக்கின் <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> பக்கத்தில் இருக்கலாம்</translation>
 <translation id="9199905725844810519">பிரிண்ட் செய்வது தடுக்கப்பட்டுள்ளது</translation>
 <translation id="9201904868909900493">கருத்துக்கணிப்பைத் திறக்கிறது...</translation>
 <translation id="9204089334327209740">பதிவேற்றியபின், <ph name="CLOUD_PROVIDER" /> இல் உங்கள் ஃபைல்களில் மாற்றங்களைச் செய்யலாம். நீக்கியவை ஃபோல்டரில் உள்ளவை உட்பட, சாதனத்தில் உள்ள எல்லா ஃபைல்களும் தானாக அகற்றப்படும்.</translation>

@@ -74,6 +74,7 @@
 <translation id="1123753900084781868">આ સમયે લાઇવ કૅપ્શનની સુવિધા ઉપલબ્ધ નથી</translation>
 <translation id="112840717907525620">પૉલિસી કૅશ મેમરી ઓકે</translation>
 <translation id="1131264053432022307">તમે કૉપિ કરેલી છબી</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – પૂર્ણ સ્ક્રીન મોડમાંથી બહાર નીકળવા માટે, સૌથી ઉપરથી ખેંચો અને પાછળ જવા માટેનું બટન ટચ કરો</translation>
 <translation id="1138458427267715730">સમગ્ર વેબ પર કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય ત્યારે અલર્ટ મેળવો</translation>
 <translation id="1142713751288681188">પેપરનો પ્રકાર</translation>
 <translation id="1144136880160289237">તમારી પાસે હજી સુધી કોઈ સક્રિય વિષય નથી</translation>
@@ -454,6 +455,7 @@
 <translation id="1734878702283171397">સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />ના સમયસીમા સમાપ્ત થાય છે</translation>
 <translation id="1736420071277903564">કમ્પ્યુટર</translation>
+<translation id="1740404923954980840">પૂર્ણ સ્ક્રીન મોડમાંથી બહાર નીકળવા માટે, સૌથી ઉપરથી ખેંચો અને પાછળ જવા માટેનું બટન ટચ કરો</translation>
 <translation id="1741474054575634405">લૉયલ્ટિ કાર્ડ મેનેજ કરો...</translation>
 <translation id="1741613555002899862">જ્યારે DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> હોય, ત્યારે DnsOverHttpsTemplate પૉલિસી અને માન્ય સ્ટ્રિંગનો ઉલ્લેખ કરવો આવશ્યક છે.</translation>
 <translation id="1743393865165844832">પથારી અને ચાદરો</translation>
@@ -1153,6 +1155,7 @@
 <translation id="2933624813161016821">એમ્બોસિંગ ફૉઇલ</translation>
 <translation id="293796669683825859">કૉમેન્ટ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> લિંક્સ ખોલો</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – તમારું કર્સર બતાવવા માટે ઍપ સ્વિચ કરો, પેજ ફરીથી લોડ કરો અથવા પાછા જાઓ</translation>
 <translation id="2940418897281183211">PNG છબી</translation>
 <translation id="2941878205777356567">એન્વલપ 9 x 12 ઇંચ</translation>
 <translation id="2941952326391522266">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર <ph name="DOMAIN2" /> નું છે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
@@ -1322,6 +1325,7 @@
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
 <translation id="3208701679386778924">કૃપા કરીને રિપોર્ટ મોકલો જેથી અમે ChromeOS અપડેટને વધુ બહેતર બનાવી શકીએ.</translation>
 <translation id="3209034400446768650">પેજ કદાચ નાણાં વસૂલી શકે છે</translation>
+<translation id="3212468046572043669">ડાઉનલોડ શરૂ થયું. તેને જોવા માટે, સૌથી ઉપરથી ખેંચો અને પાછળ જવા માટેનું બટન ટચ કરો</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> પરની તમારી પ્રવૃત્તિનું નિરીક્ષણ કરવામાં આવી રહ્યું છે</translation>
 <translation id="3215092763954878852">WebAuthnનો ઉપયોગ કરી શક્યાં નથી</translation>
 <translation id="3215311088819828484">પરિણામ અપડેટ કર્યું</translation>
@@ -1859,6 +1863,7 @@
 <translation id="4085326869263783566">લખવામાં મારી સહાય કરો. ખોલવા માટે ટૅપ કરો અને Enter કી દબાવો</translation>
 <translation id="4085769736382018559">પ્રોડક્ટની તુલના કરો</translation>
 <translation id="4085778582400064057">વાદળી 2</translation>
+<translation id="4085859451613666999">તમારું કાર્ડ તમારા Google એકાઉન્ટમાં સાચવેલું છે, જેથી તમે ભવિષ્યની ખરીદીઓ માટે તેને ઑટોમૅટિક રીતે ભરી શકો</translation>
 <translation id="4088981014127559358">બાજુ 1 છબીને Y અક્ષ પર ખસેડો</translation>
 <translation id="4089152113577680600">ટ્રે 14</translation>
 <translation id="4092349052316400070">સરનામું ભરો</translation>
@@ -2408,6 +2413,7 @@
 <translation id="4995474875135717171">ફેરફાર કર્યો:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, સાઇટ શોધ અને તમારું ડિફૉલ્ટ શોધ એન્જિન મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="4998950033665438990">સિંગલ ફેસ</translation>
+<translation id="5001338033791319371">પૂર્ણ સ્ક્રીન મોડમાંથી બહાર નીકળીને ડાઉનલોડ જોવા માટે, સૌથી ઉપરથી ખેંચો અને પાછળ જવા માટેનું બટન ટચ કરો</translation>
 <translation id="5001526427543320409">ત્રીજા પક્ષની કુકી</translation>
 <translation id="5002932099480077015">જો સક્ષમ કરેલું હોય, તો ઝડપથી ફોર્મ ભરવા માટે Chrome આ ઉપકરણ પર તમારા કાર્ડની એક કૉપિ સંગ્રહશે.</translation>
 <translation id="5007344584818503324">શેર કરેલા ટૅબના ગ્રૂપની ઍક્ટિવિટી</translation>
@@ -3970,6 +3976,7 @@
 <translation id="7582602800368606489">Google Calendarમાં ઝડપથી કોઈ નવી ઇવેન્ટ બનાવો</translation>
 <translation id="7586676035079382730">નોટિફિકેશનની મંજૂરી નથી</translation>
 <translation id="7588707273764747927">ટ્રાન્સફર કરો</translation>
+<translation id="7589062909165841767">તમારા Google એકાઉન્ટમાં તમારી <ph name="BEGIN_LINK_GAA" />Gemini ઍપ ઍક્ટિવિટી<ph name="END_LINK_GAA" />નો ડેટા હોઈ શકે છે</translation>
 <translation id="7591288787774558753">શું ગોપનીય કન્ટેન્ટ શેર કરીએ?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> પર કુકી અને સાઇટ ડેટાનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="7592362899630581445">સર્વરનું પ્રમાણપત્ર, નામ નિગ્રહોનું ઉલ્લંઘન કરે છે.</translation>
@@ -4255,6 +4262,7 @@
 <translation id="8075736640322370409">Google Sheetમાં ઝડપથી નવી શીટ બનાવો</translation>
 <translation id="8075898834294118863">સાઇટ સેટિંગ મેનેજ કરો</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
+<translation id="8076880883123051368">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> પર બ્રાઉઝિંગ ઇતિહાસના અન્ય સ્વરૂપો હોઈ શકે છે, જેમ કે તમારી <ph name="BEGIN_LINK_GAA" />Gemini ઍપ ઍક્ટિવિટી<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">એન્વલપ ચાઇનીઝ #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{શું ગોપનીય ફાઇલ અપલોડ કરીએ?}one{શું ગોપનીય ફાઇલ અપલોડ કરીએ?}other{શું ગોપનીય ફાઇલો અપલોડ કરીએ?}}</translation>
 <translation id="8079031581361219619">સાઇટ ફરીથી લોડ કરીએ?</translation>
@@ -4388,6 +4396,7 @@
 <translation id="8294431847097064396">સ્રોત</translation>
 <translation id="8297545700510100061">કુકી અને અન્ય સાઇટ ડેટાનો ઉપયોગ તમને યાદ રાખવા માટે કરવામાં આવે છે, ઉદાહરણ તરીકે, તમને સાઇન ઇન કરવા માટે અથવા જાહેરાતો મનગમતી બનાવવા માટે. બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="SETTINGS" /> જુઓ.</translation>
 <translation id="8298115750975731693">તમે વાપરી રહેલા વાઇ-ફાઇ (<ph name="WIFI_NAME" />)ના <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ની જવું પડી શકે.</translation>
+<translation id="8298399736867690281">કાર્ડ ફક્ત ડિવાઇસ પર સાચવ્યું</translation>
 <translation id="8301894345671534559">કોડ દાખલ કરો</translation>
 <translation id="8304912090860925649">નવું તુલનાત્મક ટેબલ</translation>
 <translation id="830498451218851433">અડધું વાળો</translation>
@@ -4908,6 +4917,7 @@
 <translation id="9192361865877479444">ધાતુ (મૅટ)</translation>
 <translation id="9192947025498305328">પ્રાકૃતિક સૌંદર્ય પ્રોડક્ટ</translation>
 <translation id="9195969368671142407">જ્યારે તમારી સંસ્થા તમારા Google એકાઉન્ટમાં સાચવવાનું મર્યાદિત કરે છે, ત્યારે તમે ટૅબના ગ્રૂપ શેર કરી શકતા નથી અથવા તેમાં જોડાઈ શકતા નથી</translation>
+<translation id="9198613052465150219">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> પર બ્રાઉઝિંગ ઇતિહાસના અન્ય સ્વરૂપો હોઈ શકે છે</translation>
 <translation id="9199905725844810519">પ્રિન્ટ કરવાની સુવિધા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="9201904868909900493">સર્વેક્ષણ ખોલી રહ્યાં છીએ…</translation>
 <translation id="9204089334327209740">અપલોડ કરવાની પ્રક્રિયા એકવાર પૂર્ણ થયા પછી તમે <ph name="CLOUD_PROVIDER" />માં જઈને તમારી ફાઇલોમાં ફેરફાર કરી શકો છો. ટ્રેશમાં રહેલી કોઈપણ ફાઇલ સહિત સ્થાનિક સ્ટોરેજને ઑટોમૅટિક રીતે કાઢી નાખવામાં આવશે.</translation>
