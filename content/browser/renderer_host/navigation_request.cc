@@ -9208,6 +9208,10 @@ bool NavigationRequest::WasResponseCached() {
   return response() && response()->was_fetched_via_cache;
 }
 
+bool NavigationRequest::NetworkAccessed() {
+  return response() && response()->network_accessed;
+}
+
 bool NavigationRequest::HasPrefetchedAlternativeSubresourceSignedExchange() {
   return !commit_params_->prefetched_signed_exchanges.empty();
 }

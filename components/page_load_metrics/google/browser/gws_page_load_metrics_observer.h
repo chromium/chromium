@@ -173,6 +173,7 @@ class GWSPageLoadMetricsObserver
 
   bool is_first_navigation_ = false;
   bool was_cached_ = false;
+  bool network_accessed_ = false;
   bool is_prerendered_ = false;
   bool is_header_from_synthetic_response_ = false;
 

@@ -519,6 +519,9 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns true if the navigation response was cached.
   virtual bool WasResponseCached() = 0;
 
+  // Returns true if the navigation accessed the network.
+  virtual bool NetworkAccessed() = 0;
+
   // Returns the value of the hrefTranslate attribute if this navigation was
   // initiated from a link that had that attribute set.
   virtual const std::string& GetHrefTranslate() = 0;

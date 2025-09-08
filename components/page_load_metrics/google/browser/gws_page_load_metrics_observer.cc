@@ -259,6 +259,7 @@ GWSPageLoadMetricsObserver::OnCommit(
   }
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
   was_cached_ = navigation_handle->WasResponseCached();
+  network_accessed_ = navigation_handle->NetworkAccessed();
   http_connection_info_ =
       net::HttpConnectionInfoToCoarse(navigation_handle->GetConnectionInfo());
   if (!is_prerendered_) {
@@ -668,12 +669,17 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSInitializeStreamDelay,
                             timing.initialize_stream_delay);
 
-  if (http_connection_info_ == net::HttpConnectionInfoCoarse::kHTTP2 ||
-      http_connection_info_ == net::HttpConnectionInfoCoarse::kQUIC) {
-    CHECK(timing.session_source.has_value());
-    base::UmaHistogramEnumeration(
-        base::StrCat({internal::kHistogramGWSSessionSource, protocol}),
-        *timing.session_source);
+  if (network_accessed_ &&
+      (http_connection_info_ == net::HttpConnectionInfoCoarse::kHTTP2 ||
+       http_connection_info_ == net::HttpConnectionInfoCoarse::kQUIC)) {
+    if (timing.session_source.has_value()) {
+      base::UmaHistogramEnumeration(
+          base::StrCat({internal::kHistogramGWSSessionSource, protocol}),
+          *timing.session_source);
+    } else {
+      // Collect a DumpWithoutCrashing report.
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   // Record latency trace events.

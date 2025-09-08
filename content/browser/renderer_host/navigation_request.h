@@ -445,6 +445,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsSignedExchangeInnerResponse() override;
   bool HasPrefetchedAlternativeSubresourceSignedExchange() override;
   bool WasResponseCached() override;
+  bool NetworkAccessed() override;
   const std::string& GetHrefTranslate() override;
   const std::optional<blink::Impression>& GetImpression() override;
   const std::optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
