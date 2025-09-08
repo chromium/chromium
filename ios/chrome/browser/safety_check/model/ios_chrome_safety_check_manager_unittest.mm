@@ -47,9 +47,8 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                web::BrowserState, password_manager::TestPasswordStore>));
+        base::BindOnce(&password_manager::BuildPasswordStore<
+                       ProfileIOS, password_manager::TestPasswordStore>));
 
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
