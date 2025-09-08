@@ -134,6 +134,8 @@ class OpenXrApiWrapper {
   void PollFuture(XrFutureEXT future,
                   base::OnceCallback<void(XrFutureEXT)> on_ready_callback);
 
+  uint32_t GetRecommendedSwapchainSampleCount() const;
+
   static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
 
  private:
@@ -172,10 +174,8 @@ class OpenXrApiWrapper {
   bool HasSystem() const;
   bool HasBlendMode() const;
   bool HasSession() const;
-  bool HasColorSwapChain() const;
   bool HasSpace(XrReferenceSpaceType type) const;
 
-  uint32_t GetRecommendedSwapchainSampleCount() const;
   void UpdateStageBounds();
   std::optional<gfx::Transform> GetLocalFromStage();
   std::optional<gfx::Transform> GetBaseSpaceFromSpace(
@@ -194,7 +194,6 @@ class OpenXrApiWrapper {
 
   bool ShouldCreateSharedImages() const;
   void CreateSharedMailboxes();
-  void ReleaseColorSwapchainImages();
 
   void SetXrSessionState(XrSessionState new_state);
 
@@ -240,10 +239,6 @@ class OpenXrApiWrapper {
 
   bool received_initial_valid_primary_views_ = false;
   uint64_t frames_before_initial_valid_primary_views_ = 0;
-
-  // The swapchain is initializd when a session begins and is re-created when
-  // the state of a secondary view configuration changes.
-  XrSwapchain color_swapchain_;
 
   // The rest of these objects store information about the current frame and are
   // updated each frame.

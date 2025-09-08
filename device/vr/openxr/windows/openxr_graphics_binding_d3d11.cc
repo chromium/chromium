@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/win/scoped_handle.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
+#include "device/vr/openxr/openxr_composition_layer.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
@@ -28,6 +29,14 @@
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace device {
+
+namespace {
+
+struct D3DLayerData : public OpenXrCompositionLayer::GraphicsBindingData {
+  D3DLayerData() { type = kD3D; }
+};
+
+}  // namespace
 
 // static
 void OpenXrGraphicsBinding::GetRequiredExtensions(
@@ -95,41 +104,29 @@ int64_t OpenXrGraphicsBindingD3D11::GetSwapchainFormat(
 }
 
 XrResult OpenXrGraphicsBindingD3D11::EnumerateSwapchainImages(
-    const XrSwapchain& color_swapchain) {
-  CHECK(color_swapchain != XR_NULL_HANDLE);
-  CHECK(color_swapchain_images_.empty());
+    OpenXrCompositionLayer& layer) {
+  CHECK(layer.HasColorSwapchain());
+  CHECK(layer.GetSwapchainImages().empty());
 
   uint32_t chain_length;
-  RETURN_IF_XR_FAILED(
-      xrEnumerateSwapchainImages(color_swapchain, 0, &chain_length, nullptr));
+  RETURN_IF_XR_FAILED(xrEnumerateSwapchainImages(layer.color_swapchain(), 0,
+                                                 &chain_length, nullptr));
   std::vector<XrSwapchainImageD3D11KHR> xr_color_swapchain_images(
       chain_length, {XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR});
 
   RETURN_IF_XR_FAILED(xrEnumerateSwapchainImages(
-      color_swapchain, xr_color_swapchain_images.size(), &chain_length,
+      layer.color_swapchain(), xr_color_swapchain_images.size(), &chain_length,
       reinterpret_cast<XrSwapchainImageBaseHeader*>(
           xr_color_swapchain_images.data())));
 
-  color_swapchain_images_.reserve(xr_color_swapchain_images.size());
+  std::vector<OpenXrSwapchainInfo> color_swapchain_images;
+  color_swapchain_images.reserve(xr_color_swapchain_images.size());
   for (const auto& swapchain_image : xr_color_swapchain_images) {
-    color_swapchain_images_.emplace_back(swapchain_image.texture);
+    color_swapchain_images.emplace_back(swapchain_image.texture);
   }
+  layer.SetSwapchainImages(std::move(color_swapchain_images));
 
   return XR_SUCCESS;
-}
-
-void OpenXrGraphicsBindingD3D11::ClearSwapchainImages() {
-  color_swapchain_images_.clear();
-}
-
-base::span<OpenXrSwapchainInfo>
-OpenXrGraphicsBindingD3D11::GetSwapChainImages() {
-  return color_swapchain_images_;
-}
-
-base::span<const OpenXrSwapchainInfo>
-OpenXrGraphicsBindingD3D11::GetSwapChainImages() const {
-  return color_swapchain_images_;
 }
 
 bool OpenXrGraphicsBindingD3D11::CanUseSharedImages() const {
@@ -140,10 +137,10 @@ bool OpenXrGraphicsBindingD3D11::CanUseSharedImages() const {
 }
 
 void OpenXrGraphicsBindingD3D11::CreateSharedImages(
+    OpenXrCompositionLayer& layer,
     gpu::SharedImageInterface* sii) {
   CHECK(sii);
-
-  for (auto& swap_chain_info : color_swapchain_images_) {
+  for (auto& swap_chain_info : layer.GetSwapchainImages()) {
     Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
     HRESULT hr = swap_chain_info.d3d11_texture->QueryInterface(
         IID_PPV_ARGS(&dxgi_resource));
@@ -258,27 +255,12 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
   }
 }
 
-const OpenXrSwapchainInfo&
-OpenXrGraphicsBindingD3D11::GetActiveSwapchainImage() {
-  CHECK(has_active_swapchain_image());
-  CHECK(active_swapchain_index() < color_swapchain_images_.size());
-
-  // We don't do any index translation on the images returned from the system;
-  // so whatever the system says is the active swapchain image, it is in the
-  // same spot in our vector.
-  return color_swapchain_images_[active_swapchain_index()];
-}
-
-bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
-  if (!has_active_swapchain_image() ||
-      active_swapchain_index() >= color_swapchain_images_.size()) {
+bool OpenXrGraphicsBindingD3D11::WaitOnFence(OpenXrCompositionLayer& layer,
+                                             gfx::GpuFence& gpu_fence) {
+  OpenXrSwapchainInfo* swapchain_info = layer.GetActiveSwapchainImage();
+  if (!swapchain_info) {
     return false;
   }
-
-  // We don't do any index translation on the images returned from the system;
-  // so whatever the system says is the active swapchain image, it is in the
-  // same spot in our vector.
-  auto& swap_chain_info = color_swapchain_images_[active_swapchain_index()];
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       texture_helper_->GetDevice();
@@ -317,17 +299,20 @@ bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
 
   // In order for the fence to be respected by the system, it needs to stick
   // around until the next time the texture comes up for use.
-  swap_chain_info.d3d11_fence = std::move(d3d11_fence);
+  swapchain_info->d3d11_fence = std::move(d3d11_fence);
 
   return true;
 }
 
-bool OpenXrGraphicsBindingD3D11::Render(
+bool OpenXrGraphicsBindingD3D11::RenderLayer(
+    OpenXrCompositionLayer& layer,
     const scoped_refptr<viz::ContextProvider>& context_provider) {
-  const OpenXrSwapchainInfo& swap_chain_image = GetActiveSwapchainImage();
-  if (swap_chain_image.d3d11_shared_texture) {
+  CHECK(texture_helper_);
+  const OpenXrSwapchainInfo* swapchain_info = layer.GetActiveSwapchainImage();
+  CHECK(swapchain_info);
+  if (swapchain_info->d3d11_shared_texture) {
     if (!texture_helper_->CopyToBackBuffer(
-            context_provider, swap_chain_image.d3d11_shared_texture)) {
+            context_provider, swapchain_info->d3d11_shared_texture)) {
       DLOG(ERROR) << "CopyToBackBuffer failed.";
       return false;
     }
@@ -343,22 +328,25 @@ void OpenXrGraphicsBindingD3D11::CleanupWithoutSubmit() {
   texture_helper_->CleanupNoSubmit();
 }
 
-bool OpenXrGraphicsBindingD3D11::ShouldFlipSubmittedImage() const {
-  return IsUsingSharedImages() && !IsWebGPUSession();
+bool OpenXrGraphicsBindingD3D11::ShouldFlipSubmittedImage(
+    OpenXrCompositionLayer& layer) const {
+  return layer.IsUsingSharedImages() && !IsWebGPUSession();
 }
 
-void OpenXrGraphicsBindingD3D11::OnSwapchainImageSizeChanged() {
-  texture_helper_->SetDefaultSize(GetSwapchainImageSize());
+void OpenXrGraphicsBindingD3D11::OnSwapchainImageSizeChanged(
+    OpenXrCompositionLayer& layer) {
+  texture_helper_->SetDefaultSize(layer.GetSwapchainImageSize());
 }
 
 void OpenXrGraphicsBindingD3D11::OnSwapchainImageActivated(
+    OpenXrCompositionLayer& layer,
     gpu::SharedImageInterface* sii) {
-  CHECK(has_active_swapchain_image());
-  CHECK(active_swapchain_index() < color_swapchain_images_.size());
+  const OpenXrSwapchainInfo* swapchain_info = layer.GetActiveSwapchainImage();
+  CHECK(swapchain_info);
 
-  texture_helper_->SetBackbuffer(
-      color_swapchain_images_[active_swapchain_index()].d3d11_texture.get(),
-      IsUsingSharedImages(), ShouldFlipSubmittedImage());
+  texture_helper_->SetBackbuffer(swapchain_info->d3d11_texture.get(),
+                                 layer.IsUsingSharedImages(),
+                                 ShouldFlipSubmittedImage(layer));
 }
 
 void OpenXrGraphicsBindingD3D11::SetOverlayAndWebXrVisibility(
@@ -400,9 +388,16 @@ gfx::Size OpenXrGraphicsBindingD3D11::GetMaxTextureSize() {
 }
 
 void OpenXrGraphicsBindingD3D11::ResizeSharedBuffer(
+    OpenXrCompositionLayer&,
     OpenXrSwapchainInfo& swap_chain_info,
     gpu::SharedImageInterface* sii) {
   // TODO(crbug.com/40918787): Current texture size needs to be updated.
+}
+
+std::unique_ptr<OpenXrCompositionLayer>
+OpenXrGraphicsBindingD3D11::CreateProjectionLayer(XrSpace local_space) {
+  return std::make_unique<OpenXrCompositionLayer>(
+      local_space, this, std::make_unique<D3DLayerData>());
 }
 
 }  // namespace device

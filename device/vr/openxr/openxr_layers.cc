@@ -15,6 +15,9 @@ OpenXrLayers::OpenXrLayers(XrSpace space,
     : space_(space), blend_mode_(blend_mode) {
   InitializeLayer(graphics_binding, primary_projection_views,
                   primary_projection_layer_);
+  primary_composition_layers_.push_back(
+      reinterpret_cast<XrCompositionLayerBaseHeader*>(
+          &primary_projection_layer_));
 }
 
 OpenXrLayers::~OpenXrLayers() = default;
@@ -23,12 +26,13 @@ void OpenXrLayers::AddSecondaryLayerForType(
     const OpenXrGraphicsBinding& graphics_binding,
     XrViewConfigurationType type,
     const std::vector<XrCompositionLayerProjectionView>& projection_views) {
-  secondary_projection_layers_.emplace_back();
+  secondary_projection_layers_.push_back(
+      std::make_unique<XrCompositionLayerProjection>());
   InitializeLayer(graphics_binding, projection_views,
-                  secondary_projection_layers_.back());
+                  *secondary_projection_layers_.back());
   secondary_composition_layers_.push_back(
       reinterpret_cast<XrCompositionLayerBaseHeader*>(
-          &secondary_projection_layers_.back()));
+          secondary_projection_layers_.back().get()));
 
   secondary_layer_info_.emplace_back();
   XrSecondaryViewConfigurationLayerInfoMSFT& layer_info =

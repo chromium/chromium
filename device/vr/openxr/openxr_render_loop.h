@@ -238,6 +238,7 @@ class OpenXrRenderLoop : public XRThread,
       mojom::XREnvironmentIntegrationProvider::
           SubscribeToHitTestForTransientInputCallback callback) override;
   void UnsubscribeFromHitTest(uint64_t subscription_id) override;
+
   void CreateAnchor(
       mojom::XRNativeOriginInformationPtr native_origin_information,
       const device::Pose& native_origin_from_anchor,
@@ -264,8 +265,6 @@ class OpenXrRenderLoop : public XRThread,
                             GLuint id,
                             std::unique_ptr<gfx::GpuFence> gpu_fence);
 
-  void PopulateSharedImageData(mojom::XRFrameData& frame_data);
-
   void MaybeRejectSessionCallback();
 
   gfx::Transform mojo_from_local() {
@@ -273,7 +272,6 @@ class OpenXrRenderLoop : public XRThread,
     return gfx::Transform();
   }
 
-  bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
   int16_t next_frame_id_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 

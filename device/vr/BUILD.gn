@@ -180,6 +180,8 @@ if (enable_vr) {
         "openxr/openxr_anchor_manager.h",
         "openxr/openxr_api_wrapper.cc",
         "openxr/openxr_api_wrapper.h",
+        "openxr/openxr_composition_layer.cc",
+        "openxr/openxr_composition_layer.h",
         "openxr/openxr_controller.cc",
         "openxr/openxr_controller.h",
         "openxr/openxr_debug_util.cc",

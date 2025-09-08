@@ -5,6 +5,7 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_LAYERS_H_
 #define DEVICE_VR_OPENXR_OPENXR_LAYERS_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr_exclusion.h"
@@ -31,10 +32,12 @@ class OpenXrLayers {
       XrViewConfigurationType type,
       const std::vector<XrCompositionLayerProjectionView>& projection_views);
 
-  uint32_t PrimaryLayerCount() const { return 1; }
+  uint32_t PrimaryLayerCount() const {
+    return primary_composition_layers_.size();
+  }
 
   const XrCompositionLayerBaseHeader* const* PrimaryLayerData() const {
-    return &primary_composition_layer_;
+    return primary_composition_layers_.data();
   }
 
   uint32_t SecondaryConfigCount() const { return secondary_layer_info_.size(); }
@@ -58,15 +61,18 @@ class OpenXrLayers {
   // because xrEndFrame expects an array containing pointers of all the layers.
   XrCompositionLayerProjection primary_projection_layer_;
 
-  // RAW_PTR_EXCLUSION: #addr-of (address returned from a function)
-  RAW_PTR_EXCLUSION XrCompositionLayerBaseHeader* primary_composition_layer_ =
-      reinterpret_cast<XrCompositionLayerBaseHeader*>(
-          &primary_projection_layer_);
-
   // The layers for secondary view configurations. We currently only support a
   // single layer per view configuration, so each element in this vector is the
   // layer for a specific view configuration.
-  std::vector<XrCompositionLayerProjection> secondary_projection_layers_;
+  std::vector<std::unique_ptr<XrCompositionLayerProjection>>
+      secondary_projection_layers_;
+
+  // Pointers to the corresponding layer in primary_projection_layer_,
+  // quad_layers cylinder_layers_, equirect_layers_ and cube_layers. This field
+  // is not vector<raw_ptr<...>> due to interaction with third_party api.
+  RAW_PTR_EXCLUSION std::vector<XrCompositionLayerBaseHeader*>
+      primary_composition_layers_;
+
   // Pointers to the corresponding layer in secondary_projection_layers_.
   // This field is not vector<raw_ptr<...>> due to interaction with third_party
   // api.

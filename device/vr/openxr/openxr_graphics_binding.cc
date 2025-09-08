@@ -5,10 +5,10 @@
 #include "device/vr/openxr/openxr_graphics_binding.h"
 
 #include "components/viz/common/gpu/context_provider.h"
+#include "device/vr/openxr/openxr_composition_layer.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
-#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -30,10 +30,28 @@ OpenXrGraphicsBinding::OpenXrGraphicsBinding(
   }
 }
 
+OpenXrGraphicsBinding::~OpenXrGraphicsBinding() {
+  DCHECK(!base_layer_);
+  OnSessionDestroyed(nullptr);
+}
+
+void OpenXrGraphicsBinding::OnSessionCreated(XrSpace local_space,
+                                             bool is_webgpu) {
+  webgpu_session_ = is_webgpu;
+  base_layer_ = CreateProjectionLayer(local_space);
+}
+
+void OpenXrGraphicsBinding::OnSessionDestroyed(gpu::SharedImageInterface* sii) {
+  if (base_layer_) {
+    base_layer_->DestroySwapchain(sii);
+    base_layer_.reset();
+  }
+}
+
 void OpenXrGraphicsBinding::PrepareViewConfigForRender(
-    const XrSwapchain& color_swapchain,
     OpenXrViewConfiguration& view_config) {
   DCHECK(view_config.Active());
+  CHECK(base_layer_);
 
   uint32_t x_offset = view_config.Viewport().x();
   for (uint32_t view_index = 0; view_index < view_config.Views().size();
@@ -48,7 +66,7 @@ void OpenXrGraphicsBinding::PrepareViewConfigForRender(
     projection_view.pose = view.pose;
     projection_view.fov.angleLeft = view.fov.angleLeft;
     projection_view.fov.angleRight = view.fov.angleRight;
-    projection_view.subImage.swapchain = color_swapchain;
+    projection_view.subImage.swapchain = base_layer_->color_swapchain();
     // Since we're in double wide mode, the texture array only has one texture
     // and is always index 0. If secondary views are enabled, those views are
     // also in this same texture array.
@@ -59,7 +77,7 @@ void OpenXrGraphicsBinding::PrepareViewConfigForRender(
     x_offset += properties.Width();
 
     projection_view.subImage.imageRect.offset.y =
-        GetSwapchainImageSize().height() - properties.Height();
+        base_layer_->GetSwapchainImageSize().height() - properties.Height();
     projection_view.fov.angleUp = view.fov.angleUp;
     projection_view.fov.angleDown = view.fov.angleDown;
 
@@ -68,7 +86,8 @@ void OpenXrGraphicsBinding::PrepareViewConfigForRender(
     // are able to efficiently do this as part of existing post processing
     // steps. However, if we have the composition layer extension enabled, we
     // will instruct the runtime to invert the image in a different manner.
-    if (ShouldFlipSubmittedImage() && !fb_composition_layer_ext_enabled_) {
+    if (ShouldFlipSubmittedImage(*base_layer_) &&
+        !fb_composition_layer_ext_enabled_) {
       projection_view.subImage.imageRect.offset.y = 0;
       projection_view.fov.angleUp = -view.fov.angleUp;
       projection_view.fov.angleDown = -view.fov.angleDown;
@@ -82,7 +101,8 @@ void OpenXrGraphicsBinding::MaybeFlipLayer(
   // If we do need to flip the image and `fb_composition_layer_ext_enabled_`
   // is false, we have already flipped the image during
   // `PrepareViewConfigForRender`.
-  if (!ShouldFlipSubmittedImage() || !fb_composition_layer_ext_enabled_) {
+  if (!ShouldFlipSubmittedImage(*base_layer_) ||
+      !fb_composition_layer_ext_enabled_) {
     return;
   }
 
@@ -92,92 +112,102 @@ void OpenXrGraphicsBinding::MaybeFlipLayer(
 }
 
 bool OpenXrGraphicsBinding::IsUsingSharedImages() const {
-  const auto swapchain_info = GetSwapChainImages();
-  return ((swapchain_info.size() > 1) && swapchain_info[0].shared_image);
+  return base_layer_ && base_layer_->IsUsingSharedImages();
 }
 
-gfx::Size OpenXrGraphicsBinding::GetSwapchainImageSize() {
-  return swapchain_image_size_;
-}
-
-void OpenXrGraphicsBinding::SetSwapchainImageSize(
-    const gfx::Size& swapchain_image_size) {
-  swapchain_image_size_ = swapchain_image_size;
-  OnSwapchainImageSizeChanged();
-
-  // By default assume that we're transfering something the same size as the
-  // swapchain image. However, if it's already been set, we don't want to
-  // override that.
-  if (transfer_size_.IsZero()) {
-    SetTransferSize(swapchain_image_size);
-  }
-}
-
-gfx::Size OpenXrGraphicsBinding::GetTransferSize() {
-  return transfer_size_;
-}
-
-void OpenXrGraphicsBinding::SetTransferSize(const gfx::Size& transfer_size) {
-  transfer_size_ = transfer_size;
-}
-
-void OpenXrGraphicsBinding::UpdateActiveSwapchainImageSize(
-    gpu::SharedImageInterface* sii) {
-  if (has_active_swapchain_image()) {
-    ResizeSharedBuffer(GetSwapChainImages()[active_swapchain_index()], sii);
-  }
-}
-
-void OpenXrGraphicsBinding::DestroySwapchainImages(
-    viz::ContextProvider* context_provider) {
-  // As long as we have a context provider we need to destroy any SharedImages
-  // that may exist.
-  if (context_provider) {
-    gpu::SharedImageInterface* shared_image_interface =
-        context_provider->SharedImageInterface();
-    for (OpenXrSwapchainInfo& info : GetSwapChainImages()) {
-      if (shared_image_interface && info.shared_image &&
-          info.sync_token.HasData()) {
-        shared_image_interface->DestroySharedImage(
-            info.sync_token, std::move(info.shared_image));
-      }
+void OpenXrGraphicsBinding::OnContextProviderLost() {
+  if (base_layer_) {
+    // Mark the shared mailboxes as invalid since the underlying GPU process
+    // associated with them has gone down.
+    for (OpenXrSwapchainInfo& info : base_layer_->GetSwapchainImages()) {
       info.Clear();
     }
   }
-
-  // Regardless of if we had a context provider or any shared images, we need to
-  // clear the list of SwapchainImages.
-  ClearSwapchainImages();
 }
 
-XrResult OpenXrGraphicsBinding::ActivateSwapchainImage(
-    XrSwapchain color_swapchain,
+std::unique_ptr<OpenXrLayers> OpenXrGraphicsBinding::GetLayersForViewConfig(
+    XrSpace local_space,
+    XrEnvironmentBlendMode blend_mode,
+    const std::vector<XrCompositionLayerProjectionView>& projection_views)
+    const {
+  auto layers = std::make_unique<OpenXrLayers>(base_layer_->space(), blend_mode,
+                                               *this, projection_views);
+  return layers;
+}
+
+XrResult OpenXrGraphicsBinding::CreateBaseLayerSwapchain(
+    XrSession session,
+    uint32_t sample_count) {
+  CHECK(base_layer_);
+  return base_layer_->CreateSwapchain(session, sample_count);
+}
+
+void OpenXrGraphicsBinding::DestroyBaseLayerSwapchain(
     gpu::SharedImageInterface* sii) {
-  CHECK(!has_active_swapchain_image_);
-  XrSwapchainImageAcquireInfo acquire_info = {
-      XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
-  RETURN_IF_XR_FAILED(xrAcquireSwapchainImage(color_swapchain, &acquire_info,
-                                              &active_swapchain_index_));
-
-  XrSwapchainImageWaitInfo wait_info = {XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
-  wait_info.timeout = XR_INFINITE_DURATION;
-  RETURN_IF_XR_FAILED(xrWaitSwapchainImage(color_swapchain, &wait_info));
-
-  has_active_swapchain_image_ = true;
-  OnSwapchainImageActivated(sii);
-  return XR_SUCCESS;
+  CHECK(base_layer_);
+  base_layer_->DestroySwapchain(sii);
 }
 
-XrResult OpenXrGraphicsBinding::ReleaseActiveSwapchainImage(
-    XrSwapchain color_swapchain) {
-  CHECK(has_active_swapchain_image_);
-  has_active_swapchain_image_ = false;
+void OpenXrGraphicsBinding::CreateBaseLayerSharedImages(
+    gpu::SharedImageInterface* sii) {
+  CHECK(base_layer_);
+  CreateSharedImages(*base_layer_, sii);
+}
 
-  // Since `active_swapchain_index_` is a unit32_t there's not a good "invalid"
-  // number to set; so just leave it alone after clearing it.
-  XrSwapchainImageReleaseInfo release_info = {
-      XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
-  return xrReleaseSwapchainImage(color_swapchain, &release_info);
+gfx::Size OpenXrGraphicsBinding::GetBaseLayerSwapchainImageSize() {
+  return base_layer_->GetSwapchainImageSize();
+}
+
+void OpenXrGraphicsBinding::SetBaseLayerSwapchainImageSize(
+    const gfx::Size& swapchain_image_size) {
+  base_layer_->SetSwapchainImageSize(swapchain_image_size);
+}
+
+bool OpenXrGraphicsBinding::HasBaseLayerColorSwapchain() const {
+  return base_layer_ && base_layer_->HasColorSwapchain() &&
+         base_layer_->GetSwapchainImages().size() > 0;
+}
+
+void OpenXrGraphicsBinding::SetBaseLayerTransferSize(
+    const gfx::Size& transfer_size) {
+  CHECK(base_layer_);
+  base_layer_->SetTransferSize(transfer_size);
+}
+
+bool OpenXrGraphicsBinding::WaitOnBaseLayerFence(gfx::GpuFence& gpu_fence) {
+  CHECK(base_layer_);
+  return WaitOnFence(*base_layer_, gpu_fence);
+}
+
+void OpenXrGraphicsBinding::UpdateBaseLayerActiveSwapchainImageSize(
+    gpu::SharedImageInterface* sii) {
+  CHECK(base_layer_);
+  base_layer_->UpdateActiveSwapchainImageSize(sii);
+}
+
+XrResult OpenXrGraphicsBinding::ActivateSwapchainImages(
+    gpu::SharedImageInterface* sii) {
+  return base_layer_->ActivateSwapchainImage(sii);
+}
+
+XrResult OpenXrGraphicsBinding::ReleaseActiveSwapchainImages() {
+  return base_layer_->ReleaseActiveSwapchainImage();
+}
+
+void OpenXrGraphicsBinding::PopulateSharedImageData(
+    mojom::XRFrameData& frame_data) {
+  DCHECK(base_layer_);
+  const auto* swapchain_info = base_layer_->GetActiveSwapchainImage();
+  if (swapchain_info && swapchain_info->shared_image) {
+    frame_data.buffer_shared_image = swapchain_info->shared_image->Export();
+    frame_data.buffer_sync_token = swapchain_info->sync_token;
+  }
+}
+
+bool OpenXrGraphicsBinding::Render(
+    const scoped_refptr<viz::ContextProvider>& context_provider) {
+  CHECK(base_layer_);
+  return RenderLayer(*base_layer_, context_provider);
 }
 
 }  // namespace device
