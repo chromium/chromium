@@ -6,7 +6,9 @@
 
 #include <array>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
@@ -33,7 +35,7 @@ SkRect GetSubsampledRect(const SkRect& rect,
 }  // namespace
 
 void BlitRGBAToYUVA(SkImage* src_image,
-                    SkSurface* dst_surfaces[SkYUVAInfo::kMaxPlanes],
+                    base::span<SkSurface* const> dst_surfaces,
                     const SkYUVAInfo& dst_yuva_info,
                     const SkRect& dst_region,
                     bool clear_destination) {
@@ -72,7 +74,7 @@ void BlitRGBAToYUVA(SkImage* src_image,
 
   // Blit each plane.
   for (int plane = 0; plane < dst_yuva_info.numPlanes(); ++plane) {
-    SkCanvas* plane_canvas = UNSAFE_TODO(dst_surfaces[plane])->getCanvas();
+    SkCanvas* plane_canvas = dst_surfaces[plane]->getCanvas();
 
     SkColorMatrix color_matrix = rgb_to_yuv_matrix;
     color_matrix.postConcat(permutation_matrices[plane]);
@@ -92,9 +94,9 @@ void BlitRGBAToYUVA(SkImage* src_image,
     // width & height to the dimensions of the passed in surfaces (which should
     // also span the entire logical image):
     std::array<float, 2> subsampling_factors = {
-        static_cast<float>(UNSAFE_TODO(dst_surfaces[plane])->width()) /
+        static_cast<float>(dst_surfaces[plane]->width()) /
             dst_yuva_info.dimensions().width(),
-        static_cast<float>(UNSAFE_TODO(dst_surfaces[plane])->height()) /
+        static_cast<float>(dst_surfaces[plane]->height()) /
             dst_yuva_info.dimensions().height(),
     };
 

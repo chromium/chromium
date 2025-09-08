@@ -1428,12 +1428,13 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     return;
   }
 
-  // `skia::BlitRGBAToYUVA()` requires a buffer with 4 SkSurface* elements,
-  // let's allocate it and populate its first 2 entries with the surfaces
-  // obtained from |mailbox_access_datas|.
+  // `skia::BlitRGBAToYUVA()` requires a buffer with SkYUVAInfo::kMaxPlanes
+  // SkSurface* elements, let's allocate an std::array of this size and and
+  // populate its first 2 entries with the surfaces obtained from
+  // |mailbox_access_datas|.
   std::array<SkSurface*, SkYUVAInfo::kMaxPlanes> plane_surfaces = {
       mailbox_access_data.scoped_write->surface(0),
-      mailbox_access_data.scoped_write->surface(1), nullptr, nullptr};
+      mailbox_access_data.scoped_write->surface(1)};
 
   // The region to be populated in caller's textures is derived from blit
   // request's |destination_region_offset()|, and from COR's
@@ -1459,8 +1460,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
       gfx::SizeToSkISize(mailbox_access_data.representation->size()),
       SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k420,
       kRec709_Limited_SkYUVColorSpace);
-  skia::BlitRGBAToYUVA(intermediate_image.get(), plane_surfaces.data(),
-                       yuva_info, dst_region, clear_destination);
+  skia::BlitRGBAToYUVA(intermediate_image.get(), plane_surfaces, yuva_info,
+                       dst_region, clear_destination);
 
   // If we are not the ones allocating the textures, they may come from a GMB,
   // in which case we need to delay sending the results until we receive a

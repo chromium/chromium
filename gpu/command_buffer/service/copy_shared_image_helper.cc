@@ -408,8 +408,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       // (non-multiplanar SI) behavior in RenderableGMBVideoFramePool, so it is
       // not a regression. Nonetheless, this behavior should
       // ideally be changed to that described above for correctness.
-      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces.data(),
-                           yuva_info);
+      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info);
       dest_shared_image->SetCleared();
     }
 
