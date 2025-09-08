@@ -5,19 +5,26 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_BASE_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_BASE_H_
 
+#include <optional>
+
 #include "base/component_export.h"
-#include "base/gtest_prod_util.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/native_theme/native_theme.h"
 
-namespace gfx {
-class Rect;
-class Size;
-}  // namespace gfx
+namespace cc {
+class PaintCanvas;
+}
 
 namespace ui {
 
-// Theme support for non-Windows toolkits.
+class ColorProvider;
+class NativeThemeBaseTest;
+
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
  public:
   NativeThemeBase(const NativeThemeBase&) = delete;

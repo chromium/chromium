@@ -10,9 +10,8 @@
 #include <variant>
 
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -21,23 +20,20 @@
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/color/system_theme.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/native_theme_observer.h"
 
 namespace cc {
 class PaintCanvas;
 }
 
-namespace gfx {
-class Insets;
-class Rect;
-class Size;
-}  // namespace gfx
-
 namespace ui {
+
+class ColorProvider;
 
 // This class supports drawing UI controls (like buttons, text fields, lists,
 // comboboxes, etc) that look like the native UI controls of the underlying

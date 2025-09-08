@@ -15,7 +15,6 @@
 
 namespace ui {
 
-// Mac implementation of native theme support.
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
  public:
   static const int kButtonCornerRadius = 3;

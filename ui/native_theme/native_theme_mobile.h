@@ -10,7 +10,6 @@
 
 namespace ui {
 
-// Android implementation of native theme support.
 class NativeThemeMobile : public NativeThemeBase {
  public:
   NativeThemeMobile(const NativeThemeMobile&) = delete;

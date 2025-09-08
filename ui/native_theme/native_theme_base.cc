@@ -5,12 +5,11 @@
 #include "ui/native_theme/native_theme_base.h"
 
 #include <algorithm>
-#include <limits>
-#include <memory>
+#include <optional>
+#include <utility>
 #include <variant>
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
@@ -18,26 +17,28 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
-#include "cc/paint/paint_shader.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/resource/resource_scale_factor.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/base/ui_base_switches.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
+
+namespace ui {
 
 namespace {
 
@@ -91,8 +92,8 @@ const double kAccentLuminanceAdjust = 0.11;
 // TODO(crbug.com/40242489): Move colors defined above to the color pipeline and
 // remove this function.
 SkColor GetColor(base::span<const SkColor, 2> colors,
-                 ui::NativeTheme::ColorScheme color_scheme) {
-  return colors[color_scheme == ui::NativeTheme::ColorScheme::kDark ? 1 : 0];
+                 NativeTheme::ColorScheme color_scheme) {
+  return colors[color_scheme == NativeTheme::ColorScheme::kDark ? 1 : 0];
 }
 
 SkColor AdjustLuminance(const SkColor& color, double luminance) {
@@ -104,15 +105,15 @@ SkColor AdjustLuminance(const SkColor& color, double luminance) {
 
 SkColor CustomAccentColorForState(
     const SkColor& accent_color,
-    ui::NativeTheme::State state,
-    const ui::NativeTheme::ColorScheme& color_scheme) {
+    NativeTheme::State state,
+    const NativeTheme::ColorScheme& color_scheme) {
   bool make_lighter = false;
-  bool is_dark_mode = color_scheme == ui::NativeTheme::ColorScheme::kDark;
+  bool is_dark_mode = color_scheme == NativeTheme::ColorScheme::kDark;
   switch (state) {
-    case ui::NativeTheme::kHovered:
+    case NativeTheme::kHovered:
       make_lighter = is_dark_mode;
       break;
-    case ui::NativeTheme::kPressed:
+    case NativeTheme::kPressed:
       make_lighter = !is_dark_mode;
       break;
     default:
@@ -123,8 +124,6 @@ SkColor CustomAccentColorForState(
 }
 
 }  // namespace
-
-namespace ui {
 
 gfx::Size NativeThemeBase::GetPartSize(Part part,
                                        State state,

@@ -6,7 +6,10 @@
 
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_base.h"
 
 namespace ui {
 

@@ -4,27 +4,37 @@
 
 #include "ui/native_theme/native_theme.h"
 
-#include <cstring>
+#include <stddef.h>
+
+#include <algorithm>
+#include <cmath>
 #include <optional>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_metrics.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
-#include "ui/color/color_provider_utils.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/color/system_theme.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/features/native_theme_features.h"
+#include "ui/native_theme/native_theme_observer.h"
 #include "ui/native_theme/native_theme_utils.h"
 
 namespace ui {

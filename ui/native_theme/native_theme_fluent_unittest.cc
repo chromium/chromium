@@ -4,9 +4,10 @@
 
 #include "ui/native_theme/native_theme_fluent.h"
 
+#include <algorithm>
+#include <cmath>
 #include <memory>
 
-#include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/record_paint_canvas.h"
@@ -17,6 +18,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/native_theme/native_theme.h"

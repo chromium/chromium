@@ -4,34 +4,34 @@
 
 #include "ui/native_theme/native_theme_aura.h"
 
-#include <limits>
 #include <optional>
-#include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "ui/base/ui_base_features.h"
+#include "third_party/skia/include/core/SkScalar.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/gfx/animation/tween.h"
-#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/features/native_theme_features.h"
+#include "ui/native_theme/native_theme_base.h"
 #include "ui/native_theme/native_theme_fluent.h"
-#include "ui/native_theme/native_theme_utils.h"
 #include "ui/native_theme/overlay_scrollbar_constants.h"
 
 namespace ui {

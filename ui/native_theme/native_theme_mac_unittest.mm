@@ -7,8 +7,10 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cocoa/defaults_utils.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ui {
+namespace {
 
 class TestNativeThemeMac : public NativeThemeMac {
  public:
@@ -60,4 +62,5 @@ TEST(NativeThemeMacTest, GetCaretBlinkIntervalIfUserPrefersNonBlinking) {
   EXPECT_EQ(new_interval, actual_interval);
 }
 
+}  // namespace
 }  // namespace ui

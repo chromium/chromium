@@ -4,10 +4,13 @@
 
 #include "ui/native_theme/native_theme_base.h"
 
-#include "base/test/scoped_feature_list.h"
+#include <array>
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/native_theme/features/native_theme_features.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace ui {
 

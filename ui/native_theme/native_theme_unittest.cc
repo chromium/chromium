@@ -4,9 +4,12 @@
 
 #include "ui/native_theme/native_theme.h"
 
+#include <optional>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_provider_key.h"
 
 namespace ui {
 

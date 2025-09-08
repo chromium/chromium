@@ -5,11 +5,6 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_WIN_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_WIN_H_
 
-// A wrapper class for working with custom XP/Vista themes provided in
-// uxtheme.dll.  This is a singleton class that can be grabbed using
-// NativeThemeWin::instance().
-// For more information on visual style parts and states, see:
-// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/shellcc/platform/commctls/userex/topics/partsandstates.asp
 #include <windows.h>
 
 #include <optional>
@@ -28,12 +23,6 @@ class SkCanvas;
 
 namespace ui {
 
-// Windows implementation of native theme class.
-//
-// At the moment, this class in in transition from an older API that consists
-// of several PaintXXX methods to an API, inherited from the NativeTheme base
-// class, that consists of a single Paint() method with a argument to indicate
-// what kind of part to paint.
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
  public:
   enum ThemeName {

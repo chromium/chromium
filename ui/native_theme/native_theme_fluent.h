@@ -8,18 +8,21 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_base.h"
 
 namespace gfx {
 class Rect;
-class RectF;
-}  // namespace gfx
+}
 
-template <typename T>
-class sk_sp;
 class SkTypeface;
 
 namespace ui {
+
+class ColorProvider;
+class NativeThemeFluentTest;
 
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
     : public NativeThemeBase {
