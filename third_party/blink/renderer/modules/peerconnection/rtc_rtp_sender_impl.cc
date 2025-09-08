@@ -186,8 +186,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
       webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
           native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
-      RtpSenderState state,
-      bool require_encoded_insertable_streams)
+      RtpSenderState state)
       : native_peer_connection_(std::move(native_peer_connection)),
         track_map_(std::move(track_map)),
         main_task_runner_(state.main_task_runner()),
@@ -449,13 +448,11 @@ RTCRtpSenderImpl::RTCRtpSenderImpl(
     webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
         native_peer_connection,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
-    RtpSenderState state,
-    bool require_encoded_insertable_streams)
+    RtpSenderState state)
     : internal_(base::MakeRefCounted<RTCRtpSenderInternal>(
           std::move(native_peer_connection),
           std::move(track_map),
-          std::move(state),
-          require_encoded_insertable_streams)) {}
+          std::move(state))) {}
 
 RTCRtpSenderImpl::RTCRtpSenderImpl(const RTCRtpSenderImpl& other)
     : internal_(other.internal_) {}

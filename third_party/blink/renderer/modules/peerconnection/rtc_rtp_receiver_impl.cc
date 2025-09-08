@@ -145,7 +145,6 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
   RTCRtpReceiverInternal(webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
                              native_peer_connection,
                          RtpReceiverState state,
-                         bool require_encoded_insertable_streams,
                          std::unique_ptr<webrtc::Metronome> decode_metronome)
       : native_peer_connection_(std::move(native_peer_connection)),
         main_task_runner_(state.main_task_runner()),
@@ -304,12 +303,10 @@ RTCRtpReceiverImpl::RTCRtpReceiverImpl(
     webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
         native_peer_connection,
     RtpReceiverState state,
-    bool require_encoded_insertable_streams,
     std::unique_ptr<webrtc::Metronome> decode_metronome)
     : internal_(base::MakeRefCounted<RTCRtpReceiverInternal>(
           std::move(native_peer_connection),
           std::move(state),
-          require_encoded_insertable_streams,
           std::move(decode_metronome))) {}
 
 RTCRtpReceiverImpl::RTCRtpReceiverImpl(const RTCRtpReceiverImpl& other)
