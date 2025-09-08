@@ -329,6 +329,7 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
     return;
   }
 
+  blocking_challenge_detected_ = true;
   if (!login_state_checker_->ReachedAttemptsLimit()) {
     if (current_state_ == State::kLoginFormDetectedUserCanContinue) {
       return;
@@ -384,7 +385,7 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
   password_change_hats_->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeCanceled,
       /*password_change_duration=*/base::Time::Now() - flow_start_time_,
-      originator_);
+      blocking_challenge_detected_, originator_);
 }
 
 void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
@@ -518,7 +519,7 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
   password_change_hats_->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeError,
       /*password_change_duration=*/base::Time::Now() - flow_start_time_,
-      web_contents);
+      blocking_challenge_detected_, web_contents);
 }
 
 void PasswordChangeDelegateImpl::OpenPasswordDetails() {
@@ -573,7 +574,8 @@ void PasswordChangeDelegateImpl::OnPasswordChangeDeclined() {
   }
   password_change_hats_->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeCanceled,
-      /*password_change_duration=*/base::TimeDelta(), originator_);
+      /*password_change_duration=*/base::TimeDelta(),
+      blocking_challenge_detected_, originator_);
   // Post task as otherwise ManagePasswordsUIController won't show a bubble
   // until password change has finished.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -633,7 +635,8 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
     UpdateState(State::kPasswordSuccessfullyChanged);
     password_change_hats_->MaybeLaunchSurvey(
         kHatsSurveyTriggerPasswordChangeSuccess,
-        password_change_duration_overall, originator_);
+        password_change_duration_overall, blocking_challenge_detected_,
+        originator_);
   }
   submission_verifier_.reset();
 }

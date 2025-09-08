@@ -24,6 +24,8 @@ namespace {
 
 using ::password_manager::PasswordForm;
 using ::password_manager::TestPasswordStore;
+using ::password_manager::features_util::
+    kPasswordChangeBlockingChallengeDetected;
 using ::password_manager::features_util::kPasswordChangeBreachedPasswordsCount;
 using ::password_manager::features_util::kPasswordChangeRuntime;
 using ::password_manager::features_util::kPasswordChangeSavedPasswordsCount;
@@ -90,7 +92,8 @@ TEST_F(PasswordChangeHatsTest, ReportsGeneratedPasswordsAdoption) {
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerPasswordChangeSuccess, web_contents(),
           /*timeout_ms=*/0, /*product_specific_bits_data=*/
-          ElementsAre(Pair(kPasswordChangeSuggestedPasswordsAdoption, true)),
+          ElementsAre(Pair(kPasswordChangeSuggestedPasswordsAdoption, true),
+                      Pair(kPasswordChangeBlockingChallengeDetected, false)),
           /*product_specific_string_data=*/
           ElementsAre(Pair(kPasswordChangeBreachedPasswordsCount, "0"),
                       Pair(kPasswordChangeSavedPasswordsCount, "1"),
@@ -103,7 +106,8 @@ TEST_F(PasswordChangeHatsTest, ReportsGeneratedPasswordsAdoption) {
   RunUntilIdle();
   password_change_hats->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeSuccess,
-      /*password_change_duration=*/base::TimeDelta(), web_contents());
+      /*password_change_duration=*/base::TimeDelta(),
+      /*blocking_challenge_detected=*/false, web_contents());
 }
 
 TEST_F(PasswordChangeHatsTest, ReportsLeakedPasswordsCount) {
@@ -121,7 +125,8 @@ TEST_F(PasswordChangeHatsTest, ReportsLeakedPasswordsCount) {
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerPasswordChangeCanceled, web_contents(),
           /*timeout_ms=*/0, /*product_specific_bits_data=*/
-          ElementsAre(Pair(kPasswordChangeSuggestedPasswordsAdoption, false)),
+          ElementsAre(Pair(kPasswordChangeSuggestedPasswordsAdoption, false),
+                      Pair(kPasswordChangeBlockingChallengeDetected, false)),
           /*product_specific_string_data=*/
           ElementsAre(Pair(kPasswordChangeBreachedPasswordsCount, "1"),
                       Pair(kPasswordChangeSavedPasswordsCount, "2"),
@@ -134,7 +139,8 @@ TEST_F(PasswordChangeHatsTest, ReportsLeakedPasswordsCount) {
   RunUntilIdle();
   password_change_hats->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeCanceled,
-      /*password_change_duration=*/base::TimeDelta(), web_contents());
+      /*password_change_duration=*/base::TimeDelta(),
+      /*blocking_challenge_detected=*/false, web_contents());
 }
 
 TEST_F(PasswordChangeHatsTest, ReportsPasswordChangeRuntime) {
@@ -143,7 +149,8 @@ TEST_F(PasswordChangeHatsTest, ReportsPasswordChangeRuntime) {
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerPasswordChangeError, web_contents(),
           /*timeout_ms=*/0, /*product_specific_bits_data=*/
-          ElementsAre(Pair(kPasswordChangeSuggestedPasswordsAdoption, false)),
+          ElementsAre(Pair(kPasswordChangeSuggestedPasswordsAdoption, false),
+                      Pair(kPasswordChangeBlockingChallengeDetected, false)),
           /*product_specific_string_data=*/
           ElementsAre(Pair(kPasswordChangeBreachedPasswordsCount, "0"),
                       Pair(kPasswordChangeSavedPasswordsCount, "0"),
@@ -156,7 +163,8 @@ TEST_F(PasswordChangeHatsTest, ReportsPasswordChangeRuntime) {
   RunUntilIdle();
   password_change_hats->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeError,
-      /*password_change_duration=*/base::Milliseconds(50), web_contents());
+      /*password_change_duration=*/base::Milliseconds(50),
+      /*blocking_challenge_detected=*/false, web_contents());
 }
 
 TEST_F(PasswordChangeHatsTest, ReportsMinusOneForCountsWithoutFetchedData) {
@@ -170,7 +178,8 @@ TEST_F(PasswordChangeHatsTest, ReportsMinusOneForCountsWithoutFetchedData) {
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerPasswordChangeError, web_contents(),
           /*timeout_ms=*/0, /*product_specific_bits_data=*/
-          ElementsAre(Pair(kPasswordChangeSuggestedPasswordsAdoption, false)),
+          ElementsAre(Pair(kPasswordChangeSuggestedPasswordsAdoption, false),
+                      Pair(kPasswordChangeBlockingChallengeDetected, false)),
           /*product_specific_string_data=*/
           ElementsAre(Pair(kPasswordChangeBreachedPasswordsCount, "-1"),
                       Pair(kPasswordChangeSavedPasswordsCount, "-1"),
@@ -179,10 +188,56 @@ TEST_F(PasswordChangeHatsTest, ReportsMinusOneForCountsWithoutFetchedData) {
       .Times(1);
   password_change_hats->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeError,
-      /*password_change_duration=*/base::Milliseconds(50), web_contents());
+      /*password_change_duration=*/base::Milliseconds(50),
+      /*blocking_challenge_detected=*/false, web_contents());
 }
 
 TEST_F(PasswordChangeHatsTest, DoesNotReportPasswordChangeRuntimeWhenNullopt) {
+  auto password_change_hats = std::make_unique<PasswordChangeHats>(
+      mock_hats_service(), &profile_store(), &account_store());
+
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerPasswordChangeDelayed, web_contents(),
+          /*timeout_ms=*/0, /*product_specific_bits_data=*/
+          ElementsAre(Pair(kPasswordChangeSuggestedPasswordsAdoption, false),
+                      Pair(kPasswordChangeBlockingChallengeDetected, false)),
+          /*product_specific_string_data=*/
+          ElementsAre(Pair(kPasswordChangeBreachedPasswordsCount, "-1"),
+                      Pair(kPasswordChangeSavedPasswordsCount, "-1")),
+          _, _, _, _, _))
+      .Times(1);
+  password_change_hats->MaybeLaunchSurvey(
+      kHatsSurveyTriggerPasswordChangeDelayed,
+      /*password_change_duration=*/std::nullopt,
+      /*blocking_challenge_detected=*/false, web_contents());
+}
+
+TEST_F(PasswordChangeHatsTest, ReportsBlockingChallengeDetected) {
+  auto password_change_hats = std::make_unique<PasswordChangeHats>(
+      mock_hats_service(), &profile_store(), &account_store());
+
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerPasswordChangeSuccess, web_contents(),
+          /*timeout_ms=*/0, /*product_specific_bits_data=*/
+          ElementsAre(Pair(kPasswordChangeSuggestedPasswordsAdoption, false),
+                      Pair(kPasswordChangeBlockingChallengeDetected, true)),
+          /*product_specific_string_data=*/
+          ElementsAre(Pair(kPasswordChangeBreachedPasswordsCount, "-1"),
+                      Pair(kPasswordChangeSavedPasswordsCount, "-1")),
+          _, _, _, _, _))
+      .Times(1);
+  password_change_hats->MaybeLaunchSurvey(
+      kHatsSurveyTriggerPasswordChangeSuccess,
+      /*password_change_duration=*/std::nullopt,
+      /*blocking_challenge_detected=*/true, web_contents());
+}
+
+TEST_F(PasswordChangeHatsTest,
+       DoesNotReportBlockingChallengeDetectedWhenNullopt) {
   auto password_change_hats = std::make_unique<PasswordChangeHats>(
       mock_hats_service(), &profile_store(), &account_store());
 
@@ -199,7 +254,8 @@ TEST_F(PasswordChangeHatsTest, DoesNotReportPasswordChangeRuntimeWhenNullopt) {
       .Times(1);
   password_change_hats->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeDelayed,
-      /*password_change_duration=*/std::nullopt, web_contents());
+      /*password_change_duration=*/std::nullopt,
+      /*blocking_challenge_detected=*/std::nullopt, web_contents());
 }
 
 }  // namespace

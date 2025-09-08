@@ -725,7 +725,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       password_manager::features::kPasswordChangeSuccessSurveyTriggerId.Get(),
       /*product_specific_bits_data_fields=*/
       std::vector<std::string>{password_manager::features_util::
-                                   kPasswordChangeSuggestedPasswordsAdoption},
+                                   kPasswordChangeSuggestedPasswordsAdoption,
+                               password_manager::features_util::
+                                   kPasswordChangeBlockingChallengeDetected},
       /*product_specific_string_data_fields=*/
       std::vector<std::string>{
           password_manager::features_util::
@@ -738,7 +740,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       password_manager::features::kPasswordChangeErrorSurveyTriggerId.Get(),
       /*product_specific_bits_data_fields=*/
       std::vector<std::string>{password_manager::features_util::
-                                   kPasswordChangeSuggestedPasswordsAdoption},
+                                   kPasswordChangeSuggestedPasswordsAdoption,
+                               password_manager::features_util::
+                                   kPasswordChangeBlockingChallengeDetected},
       /*product_specific_string_data_fields=*/
       std::vector<std::string>{
           password_manager::features_util::
@@ -751,7 +755,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       password_manager::features::kPasswordChangeCanceledSurveyTriggerId.Get(),
       /*product_specific_bits_data_fields=*/
       std::vector<std::string>{password_manager::features_util::
-                                   kPasswordChangeSuggestedPasswordsAdoption},
+                                   kPasswordChangeSuggestedPasswordsAdoption,
+                               password_manager::features_util::
+                                   kPasswordChangeBlockingChallengeDetected},
       /*product_specific_string_data_fields=*/
       std::vector<std::string>{
           password_manager::features_util::

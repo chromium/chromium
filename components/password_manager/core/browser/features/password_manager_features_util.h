@@ -96,6 +96,8 @@ inline constexpr char kPasswordChangeSavedPasswordsCount[] =
     "Number of saved passwords";
 inline constexpr char kPasswordChangeRuntime[] =
     "Password change feature runtime, in milliseconds";
+inline constexpr char kPasswordChangeBlockingChallengeDetected[] =
+    "Was there a blocking challenge (e.g. OTP) in the flow";
 
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
