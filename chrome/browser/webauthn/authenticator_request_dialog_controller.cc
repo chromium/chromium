@@ -945,11 +945,7 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
       });
 
   if (mech_it != model_->mechanisms.end()) {
-    if (transport == AuthenticatorTransport::kHybrid) {
-      // If the site sent a "hybrid" hint, focus the UI exclusively on the
-      // hybrid case and don't suggest security keys.
-      model_->show_security_key_on_qr_sheet = false;
-    } else if (transport == AuthenticatorTransport::kInternal) {
+    if (transport == AuthenticatorTransport::kInternal) {
       ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ =
           true;
     }
@@ -2162,12 +2158,12 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
        hints_.transport == AuthenticatorTransport::kHybrid);
 
   if (include_add_phone_option) {
-    bool merge_usb_and_hybrid =
+    model_->show_security_key_on_qr_sheet =
         base::Contains(transport_availability_.available_transports,
                        AuthenticatorTransport::kUsbHumanInterfaceDevice) &&
         !include_usb_option;
-    std::u16string label =
-        l10n_util::GetStringUTF16(GetHybridButtonLabel(merge_usb_and_hybrid));
+    std::u16string label = l10n_util::GetStringUTF16(
+        GetHybridButtonLabel(model_->show_security_key_on_qr_sheet));
     Mechanism::Type mechanism_type = Mechanism::AddPhone();
     model_->mechanisms.emplace_back(
         mechanism_type, label,

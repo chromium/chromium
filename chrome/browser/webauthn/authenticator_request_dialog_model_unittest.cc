@@ -1659,6 +1659,51 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   }
 }
 
+// Tests that if the bluetooth adapter needs action, the QR sheet and USB sheet
+// are split.
+TEST_F(AuthenticatorRequestDialogControllerTest,
+       BleAdapterNeedsActionSplitsUsbAndQrSheets) {
+  for (BleStatus ble_status :
+       {BleStatus::kPendingPermissionRequest, BleStatus::kPermissionDenied,
+        BleStatus::kOff, BleStatus::kOn}) {
+    SCOPED_TRACE(testing::Message() << static_cast<int>(ble_status));
+    TransportAvailabilityInfo transports_info;
+    transports_info.request_type = RequestType::kMakeCredential;
+    transports_info.attestation_conveyance_preference =
+        device::AttestationConveyancePreference::kNone;
+    transports_info.available_transports = {
+        AuthenticatorTransport::kUsbHumanInterfaceDevice,
+        AuthenticatorTransport::kHybrid};
+    transports_info.can_power_on_ble_adapter = false;
+    transports_info.ble_status = ble_status;
+    auto model =
+        base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+    controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
+                                        std::nullopt);
+    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    controller.StartFlow(std::move(transports_info), {});
+    EXPECT_EQ(model->show_security_key_on_qr_sheet,
+              ble_status == BleStatus::kOn);
+    EXPECT_TRUE(
+        std::ranges::any_of(model->mechanisms, [](const auto& m) -> bool {
+          return std::holds_alternative<
+              AuthenticatorRequestDialogModel::Mechanism::AddPhone>(m.type);
+        }));
+    EXPECT_EQ(std::ranges::any_of(
+                  model->mechanisms,
+                  [](const auto& m) -> bool {
+                    const auto* transport = std::get_if<
+                        AuthenticatorRequestDialogModel::Mechanism::Transport>(
+                        &m.type);
+                    return transport &&
+                           transport->value() ==
+                               AuthenticatorTransport::kUsbHumanInterfaceDevice;
+                  }),
+              ble_status != BleStatus::kOn);
+  }
+}
+
 TEST_F(AuthenticatorRequestDialogControllerTest,
        BleAdapterCanBeAutomaticallyPowered) {
   const struct {
