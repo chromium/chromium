@@ -19,8 +19,7 @@
 #include "base/unguessable_token.h"
 #include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "content/public/browser/browser_context.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/blink/public/common/features.h"
@@ -40,11 +39,11 @@ constexpr uint64_t kFnvOffset = 0xcbf29ce484222325;
 
 uint64_t DeriveInitialNoiseHash(uint64_t token, std::string_view domain) {
   uint64_t token_hash = kFnvOffset;
-  auto hasher = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  hasher->Update(base::U64ToLittleEndian(token));
-  hasher->Update(base::as_byte_span(domain));
-  std::array<uint8_t, crypto::kSHA256Length> digest;
-  hasher->Finish(digest);
+  crypto::hash::Hasher hasher(crypto::hash::kSha256);
+  hasher.Update(base::U64ToLittleEndian(token));
+  hasher.Update(base::as_byte_span(domain));
+  std::array<uint8_t, crypto::hash::kSha256Size> digest;
+  hasher.Finish(digest);
   token_hash ^= base::U64FromLittleEndian(base::span(digest).first<8>());
   token_hash *= kFnvPrime;
   return token_hash;
