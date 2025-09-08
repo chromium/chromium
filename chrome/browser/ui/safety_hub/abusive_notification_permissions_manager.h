@@ -30,6 +30,22 @@ struct ThreatMetadata;
 // automatic revocation and responding to user decisions in Safety Hub.
 class AbusiveNotificationPermissionsManager {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(AbusiveNotificationPermissionsInteractions)
+  enum class AbusiveNotificationPermissionsInteractions {
+    kOpenReviewUI = 0,
+    kAllowAgain = 1,
+    kAcknowledgeAll = 2,
+    kUndoAllowAgain = 3,
+    kUndoAcknowledgeAll = 4,
+    kMinimize = 5,
+    kGoToSettings = 6,
+    kMaxValue = kGoToSettings,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:SafetyCheckUnusedSitePermissionsModuleInteractions)
+
   explicit AbusiveNotificationPermissionsManager(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
@@ -104,6 +120,12 @@ class AbusiveNotificationPermissionsManager {
   // Returns true if settings are being changed due to auto revocation of
   // abusive notifications.
   bool IsRevocationRunning();
+
+  // Helper method for logging the
+  // `AbusiveNotificationPermissionRevocation.Interactions` UKM.
+  void LogAbusiveNotificationPermissionRevocationUKM(
+      const GURL& origin,
+      AbusiveNotificationPermissionsInteractions interaction);
 
   // Test support:
   // TODO(crbug/342210522): Use a unique_ptr here if possible.

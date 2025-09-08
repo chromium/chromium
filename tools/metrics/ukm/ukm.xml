@@ -21752,6 +21752,22 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SafetyHub.AbusiveNotificationPermissionRevocation.Interactions">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Recorded when the user takes a Safety Hub action after an abusive
+    notification is auto-revoked.
+  </summary>
+  <metric name="InteractionType"
+      enum="SafetyCheckUnusedSitePermissionsModuleInteractions">
+    <summary>
+      The type of action that the user has taken after being shown an abusive
+      notification auto-revocation in Safety Hub.
+    </summary>
+  </metric>
+</event>
+
 <event
     name="SafetyHub.DisruptiveNotificationRevocations.FalsePositiveInteraction">
   <owner>olesiamarukhnno@google.com</owner>
