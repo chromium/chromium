@@ -22,11 +22,6 @@ public interface ProfileProvider {
      */
     @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded);
 
-    /** Deprecated. */
-    default boolean hasOffTheRecordProfile() {
-        return getOffTheRecordProfile() != null;
-    }
-
     /**
      * Return the OffTheRecord profile associated with {@link #getOriginalProfile()}, or null if
      * there isn't one.
