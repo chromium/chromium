@@ -87,8 +87,7 @@ constexpr struct {
      PasswordReuseLookup::REQUEST_FAILURE}};
 
 // A test factory to create a FakeUserEventService.
-std::unique_ptr<KeyedService> CreateFakeUserEventService(
-    web::BrowserState* browser_state) {
+std::unique_ptr<KeyedService> CreateFakeUserEventService(ProfileIOS* profile) {
   return std::make_unique<syncer::FakeUserEventService>();
 }
 }  // namespace
@@ -149,9 +148,9 @@ class ChromePasswordProtectionServiceTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
-                            web::BrowserState,
-                            password_manager::MockPasswordStoreInterface>));
+        base::BindOnce(
+            &password_manager::BuildPasswordStoreInterface<
+                ProfileIOS, password_manager::MockPasswordStoreInterface>));
     builder.AddTestingFactory(IOSUserEventServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateFakeUserEventService));
     profile_ = std::move(builder).Build();
