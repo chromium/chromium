@@ -48,8 +48,7 @@ SearchEngineChoiceTriggeringServiceFactory::
 
 std::unique_ptr<KeyedService>
 SearchEngineChoiceTriggeringServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   CHECK_EQ(profile, profile->GetOriginalProfile());
 
   search_engines::SearchEngineChoiceService& search_engine_choice_service =
