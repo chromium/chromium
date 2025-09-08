@@ -7,6 +7,7 @@ import {colorIdToString, tabGroupsDescriptor, TabGroupsProxyImpl} from 'chrome:/
 import {Color} from 'chrome://new-tab-page/tab_group_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
 import type {TabGroup} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -414,15 +415,15 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     }]);
     assertTrue(!!module);
 
-    const createNewTabGroupLink =
-        module.shadowRoot.querySelector<HTMLAnchorElement>(
-            '#createNewTabGroupLink');
-    assertTrue(!!createNewTabGroupLink);
-    assertTrue(isVisible(createNewTabGroupLink));
+    const createNewTabGroupButton =
+        module.shadowRoot.querySelector<CrButtonElement>(
+            '#createNewTabGroupFooterButton');
+    assertTrue(!!createNewTabGroupButton);
+    assertTrue(isVisible(createNewTabGroupButton));
 
     // Act.
     handler.setResultFor('createNewTabGroup', Promise.resolve());
-    createNewTabGroupLink.click();
+    createNewTabGroupButton.click();
     await microtasksFinished();
 
     // Assert.
