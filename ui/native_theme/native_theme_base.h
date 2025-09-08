@@ -320,19 +320,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
 
   gfx::Rect BoundingRectForArrow(const gfx::Rect& rect) const;
 
-  void DrawVertLine(cc::PaintCanvas* canvas,
-                    int x,
-                    int y1,
-                    int y2,
-                    const cc::PaintFlags& flags) const;
-  void DrawHorizLine(cc::PaintCanvas* canvas,
-                     int x1,
-                     int x2,
-                     int y,
-                     const cc::PaintFlags& flags) const;
-  void DrawBox(cc::PaintCanvas* canvas,
-               const gfx::Rect& rect,
-               const cc::PaintFlags& flags) const;
   SkColor OutlineColor(SkScalar* hsv1, SkScalar* hsv2) const;
 
   // Paint the common parts of the checkboxes and radio buttons.
