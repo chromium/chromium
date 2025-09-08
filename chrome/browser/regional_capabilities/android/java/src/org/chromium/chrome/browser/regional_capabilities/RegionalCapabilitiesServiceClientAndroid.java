@@ -34,7 +34,7 @@ import org.chromium.components.search_engines.SearchEngineChoiceService;
 public class RegionalCapabilitiesServiceClientAndroid {
     private static @Nullable RegionalCapabilitiesServiceClientAndroid sInstance;
 
-    private RegionalCapabilitiesServiceClientDelegate mDelegate;
+    private final RegionalCapabilitiesServiceClientDelegate mDelegate;
 
     /** Returns the instance of the singleton. Creates the instance if needed. */
     @MainThread
@@ -63,8 +63,11 @@ public class RegionalCapabilitiesServiceClientAndroid {
     @MainThread
     public RegionalCapabilitiesServiceClientAndroid() {
         ThreadUtils.checkUiThread();
-        ServiceLoaderUtil.maybeCreate(RegionalCapabilitiesServiceClientDelegate.class);
-        if (mDelegate == null) {
+        @Nullable RegionalCapabilitiesServiceClientDelegate maybeDelegate =
+                ServiceLoaderUtil.maybeCreate(RegionalCapabilitiesServiceClientDelegate.class);
+        if (maybeDelegate != null) {
+            mDelegate = maybeDelegate;
+        } else {
             mDelegate = new NoOpRegionalCapabilitiesServiceClientDelegate();
         }
     }
@@ -108,7 +111,10 @@ public class RegionalCapabilitiesServiceClientAndroid {
                                                 ptrToNativeCallback, deviceCountry));
     }
 
-    private @RegionalProgram int getDeviceProgramInternal() {
+    // TODO(crbug.com/443716378): Expecting this method to need to be public in internal code
+    // refactorings.
+    @VisibleForTesting
+    public @RegionalProgram int getDeviceProgram() {
         return mDelegate.getDeviceProgram();
     }
 
@@ -116,9 +122,9 @@ public class RegionalCapabilitiesServiceClientAndroid {
      * Called by the native RegionalCapabilitiesService to synchronously read the device program.
      */
     @CalledByNative
-    private static @RegionalProgram int getDeviceProgram() {
+    private static @RegionalProgram int getDeviceProgramForNative() {
         ThreadUtils.checkUiThread();
-        return getInstance().getDeviceProgramInternal();
+        return getInstance().getDeviceProgram();
     }
 
     @NativeMethods

@@ -64,7 +64,7 @@ void JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
 
 Program RegionalCapabilitiesServiceClientAndroid::GetDeviceProgram() {
   return static_cast<Program>(
-      Java_RegionalCapabilitiesServiceClientAndroid_getDeviceProgram(
+      Java_RegionalCapabilitiesServiceClientAndroid_getDeviceProgramForNative(
           jni_zero::AttachCurrentThread()));
 }
 
