@@ -140,15 +140,13 @@ class CompoundImageBackingTest : public testing::Test {
   }
 
   SharedMemoryImageBacking* GetShmImageBacking(CompoundImageBacking* backing) {
-    auto* shm_backing =
-        backing->GetElement(SharedImageAccessStream::kMemory).backing.get();
+    auto* shm_backing = backing->GetShmElement().backing.get();
     CHECK_EQ(shm_backing->GetType(), SharedImageBackingType::kSharedMemory);
     return static_cast<SharedMemoryImageBacking*>(shm_backing);
   }
 
   bool GetShmHasLatestContent(CompoundImageBacking* backing) {
-    return backing->HasLatestContent(
-        backing->GetElement(SharedImageAccessStream::kMemory));
+    return backing->HasLatestContent(backing->GetShmElement());
   }
 
   bool GetGpuHasLatestContent(CompoundImageBacking* backing) {
