@@ -306,7 +306,8 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
       base::BindOnce(
           &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
           weak_ptr_factory_.GetWeakPtr()));
-  logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(executor_.get());
+  logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(
+      originator_.get(), change_password_url_);
   form_finder_ = std::make_unique<ChangePasswordFormFinder>(
       executor_.get(), client, logs_uploader_.get(),
       base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
