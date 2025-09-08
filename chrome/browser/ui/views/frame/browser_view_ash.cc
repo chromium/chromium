@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -110,9 +111,9 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
 
   const gfx::Rect contents_bounds =
       GetActiveContentsContainerView()->GetContentsViewBounds();
-  const views::View* container = contents_container();
-
-  const bool devtools_showing = contents_bounds != container->GetLocalBounds();
+  const gfx::Rect container_bounds =
+      GetActiveContentsContainerView()->GetLocalBounds();
+  const bool devtools_showing = contents_bounds != container_bounds;
 
   // With window controls overlay enabled, the web content extends over the
   // entire window height, overlapping the window's top-two rounded corners.
