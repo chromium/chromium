@@ -285,7 +285,7 @@ class WallpaperSearchOptimizationGuideInteractiveTest
           ExecuteModel(
               optimization_guide::ModelBasedCapabilityKey::kWallpaperSearch,
               testing::_, testing::_, testing::_))
-          .WillOnce(testing::Invoke(
+          .WillOnce(
               [](optimization_guide::ModelBasedCapabilityKey feature_arg,
                  const google::protobuf::MessageLite& request_arg,
                  const std::optional<base::TimeDelta>& execution_timeout,
@@ -315,7 +315,7 @@ class WallpaperSearchOptimizationGuideInteractiveTest
                              OptimizationGuideModelExecutionResult(
                                  base::ok(result), nullptr),
                          nullptr);
-              }));
+              });
     });
   }
 

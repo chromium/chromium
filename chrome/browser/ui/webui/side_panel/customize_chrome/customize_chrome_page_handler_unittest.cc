@@ -88,7 +88,6 @@ namespace {
 using testing::_;
 using testing::An;
 using testing::DoAll;
-using testing::Invoke;
 using testing::Mock;
 using testing::Return;
 using testing::ReturnRef;
@@ -1026,14 +1025,13 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesSettings) {
   bool managed;
   EXPECT_CALL(mock_page_, SetModulesSettings)
       .Times(1)
-      .WillRepeatedly(
-          Invoke([&modules_settings, &managed](
-                     std::vector<side_panel::mojom::ModuleSettingsPtr>
-                         modules_settings_arg,
-                     bool managed_arg, bool visible_arg) {
-            modules_settings = std::move(modules_settings_arg);
-            managed = managed_arg;
-          }));
+      .WillRepeatedly([&modules_settings, &managed](
+                          std::vector<side_panel::mojom::ModuleSettingsPtr>
+                              modules_settings_arg,
+                          bool managed_arg, bool visible_arg) {
+        modules_settings = std::move(modules_settings_arg);
+        managed = managed_arg;
+      });
 
   profile().GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, true);
   mock_page_.FlushForTesting();
@@ -1065,14 +1063,13 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesVisible_True) {
   bool visible;
   EXPECT_CALL(mock_page_, SetModulesSettings)
       .Times(1)
-      .WillRepeatedly(
-          Invoke([&modules_settings, &visible](
-                     std::vector<side_panel::mojom::ModuleSettingsPtr>
-                         modules_settings_arg,
-                     bool managed_arg, bool visible_arg) {
-            modules_settings = std::move(modules_settings_arg);
-            visible = visible_arg;
-          }));
+      .WillRepeatedly([&modules_settings, &visible](
+                          std::vector<side_panel::mojom::ModuleSettingsPtr>
+                              modules_settings_arg,
+                          bool managed_arg, bool visible_arg) {
+        modules_settings = std::move(modules_settings_arg);
+        visible = visible_arg;
+      });
 
   handler().SetModulesVisible(true);
   mock_page_.FlushForTesting();
@@ -1085,14 +1082,13 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesVisible_False) {
   bool visible;
   EXPECT_CALL(mock_page_, SetModulesSettings)
       .Times(1)
-      .WillRepeatedly(
-          Invoke([&modules_settings, &visible](
-                     std::vector<side_panel::mojom::ModuleSettingsPtr>
-                         modules_settings_arg,
-                     bool managed_arg, bool visible_arg) {
-            modules_settings = std::move(modules_settings_arg);
-            visible = visible_arg;
-          }));
+      .WillRepeatedly([&modules_settings, &visible](
+                          std::vector<side_panel::mojom::ModuleSettingsPtr>
+                              modules_settings_arg,
+                          bool managed_arg, bool visible_arg) {
+        modules_settings = std::move(modules_settings_arg);
+        visible = visible_arg;
+      });
 
   handler().SetModulesVisible(false);
   mock_page_.FlushForTesting();
@@ -1104,12 +1100,12 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModuleDisabled) {
   std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings;
   EXPECT_CALL(mock_page_, SetModulesSettings)
       .Times(1)
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [&modules_settings](std::vector<side_panel::mojom::ModuleSettingsPtr>
                                   modules_settings_arg,
                               bool managed_arg, bool visible_arg) {
             modules_settings = std::move(modules_settings_arg);
-          }));
+          });
 
   const std::string kTabResumptionId(
       ntp_modules::kMostRelevantTabResumptionModuleId);
@@ -1134,12 +1130,12 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest,
   std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings;
   EXPECT_CALL(mock_page_, SetModulesSettings)
       .Times(1)
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [&modules_settings](std::vector<side_panel::mojom::ModuleSettingsPtr>
                                   modules_settings_arg,
                               bool managed_arg, bool visible_arg) {
             modules_settings = std::move(modules_settings_arg);
-          }));
+          });
 
   base::Value::List hidden_modules_list;
   hidden_modules_list.Append(ntp_modules::kMostRelevantTabResumptionModuleId);
@@ -1167,14 +1163,13 @@ TEST_P(CustomizeChromePageHandlerWithModulesVisibilityTest, SetModulesVisible) {
   bool visible;
   EXPECT_CALL(mock_page_, SetModulesSettings)
       .Times(1)
-      .WillRepeatedly(
-          Invoke([&modules_settings, &visible](
-                     std::vector<side_panel::mojom::ModuleSettingsPtr>
-                         modules_settings_arg,
-                     bool managed_arg, bool visible_arg) {
-            modules_settings = std::move(modules_settings_arg);
-            visible = visible_arg;
-          }));
+      .WillRepeatedly([&modules_settings, &visible](
+                          std::vector<side_panel::mojom::ModuleSettingsPtr>
+                              modules_settings_arg,
+                          bool managed_arg, bool visible_arg) {
+        modules_settings = std::move(modules_settings_arg);
+        visible = visible_arg;
+      });
 
   handler().SetModulesVisible(ModulesVisible());
   mock_page_.FlushForTesting();

@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(
                          _, _, _, _, _, _, _, expected_speech_rate, _, _,
                          expected_highlight_granularity))
       .Times(1)
-      .WillOnce(testing::WithArgs<8, 9>(testing::Invoke(
+      .WillOnce(testing::WithArgs<8, 9>(
           [&](base::Value::Dict voices, base::Value::List langs) {
             EXPECT_THAT(voices, base::test::DictionaryHasValues(
                                     base::Value::Dict()
@@ -664,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(
             EXPECT_EQ(langs[0].GetString(), kLang1);
             EXPECT_EQ(langs[1].GetString(), kLang2);
             EXPECT_EQ(langs[2].GetString(), kLang3);
-          })));
+          }));
 
   handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
       page_.BindAndGetRemote(), test_web_ui_.get());
@@ -934,12 +934,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       GetProfile(), kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
 
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce(testing::WithArg<0>(
-          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+      .WillOnce(
+          testing::WithArg<0>([&](read_anything::mojom::VoicePackInfoPtr info) {
             EXPECT_EQ(read_anything::mojom::InstallationState::kNotInstalled,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
-          })));
+          }));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -954,12 +954,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       GetProfile(), kLang, content::LanguageInstallStatus::INSTALLING, "");
 
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce(testing::WithArg<0>(
-          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+      .WillOnce(
+          testing::WithArg<0>([&](read_anything::mojom::VoicePackInfoPtr info) {
             EXPECT_EQ(read_anything::mojom::InstallationState::kInstalling,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
-          })));
+          }));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -974,12 +974,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       GetProfile(), kLang, content::LanguageInstallStatus::INSTALLED, "");
 
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce(testing::WithArg<0>(
-          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+      .WillOnce(
+          testing::WithArg<0>([&](read_anything::mojom::VoicePackInfoPtr info) {
             EXPECT_EQ(read_anything::mojom::InstallationState::kInstalled,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
-          })));
+          }));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -994,12 +994,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       GetProfile(), kLang, content::LanguageInstallStatus::FAILED, "");
 
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce(testing::WithArg<0>(
-          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+      .WillOnce(
+          testing::WithArg<0>([&](read_anything::mojom::VoicePackInfoPtr info) {
             EXPECT_EQ(read_anything::mojom::InstallationState::kUnknown,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
-          })));
+          }));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -1014,12 +1014,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       GetProfile(), kLang, content::LanguageInstallStatus::UNKNOWN, "");
 
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce(testing::WithArg<0>(
-          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+      .WillOnce(
+          testing::WithArg<0>([&](read_anything::mojom::VoicePackInfoPtr info) {
             EXPECT_EQ(read_anything::mojom::InstallationState::kUnknown,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
-          })));
+          }));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -1043,12 +1043,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   // Only forward the language status received for this profile.
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce(testing::WithArg<0>(
-          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+      .WillOnce(
+          testing::WithArg<0>([&](read_anything::mojom::VoicePackInfoPtr info) {
             EXPECT_EQ(read_anything::mojom::InstallationState::kNotInstalled,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
-          })));
+          }));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -1080,18 +1080,18 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   // Forward both statuses since this handler is for an incognito profile.
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
       .Times(2)
-      .WillOnce(testing::WithArg<0>(
-          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+      .WillOnce(
+          testing::WithArg<0>([&](read_anything::mojom::VoicePackInfoPtr info) {
             EXPECT_EQ(read_anything::mojom::InstallationState::kNotInstalled,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
-          })))
-      .WillOnce(testing::WithArg<0>(
-          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+          }))
+      .WillOnce(
+          testing::WithArg<0>([&](read_anything::mojom::VoicePackInfoPtr info) {
             EXPECT_EQ(read_anything::mojom::InstallationState::kInstalled,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
-          })));
+          }));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -1121,12 +1121,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   // Only the status sent on the guest profile should be sent.
   EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce(testing::WithArg<0>(
-          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+      .WillOnce(
+          testing::WithArg<0>([&](read_anything::mojom::VoicePackInfoPtr info) {
             EXPECT_EQ(read_anything::mojom::InstallationState::kInstalled,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
-          })));
+          }));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
