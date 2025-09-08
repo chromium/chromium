@@ -62,7 +62,6 @@ config("skia_config") {
     "SK_UNTIL_CRBUG_1187654_IS_FIXED",
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",
-    "SK_DISABLE_LEGACY_INIT_DECODERS",
   ]
 
   include_dirs = [
@@ -173,12 +172,17 @@ config("skia_library_config") {
   # using `SK_CODEC_DECODES_PNG_WITH_RUST` and `SK_CODEC_ENCODES_PNG_WITH_RUST`
   # defines from Skia's `png_encode_rust` and `png_decode_rust` targets.
   defines += [
-    "SK_CODEC_DECODES_ICO",
     "SK_CODEC_DECODES_PNG",
     "SK_CODEC_DECODES_PNG_WITH_LIBPNG",
     "SK_CODEC_ENCODES_PNG",
     "SK_CODEC_ENCODES_PNG_WITH_LIBPNG",
+
+    # https://crbug.com/443057959
+    #"SK_DISABLE_LEGACY_INIT_DECODERS",
   ]
+  if (use_blink) {
+    defines += [ "SK_CODEC_DECODES_ICO" ]
+  }
 
   if (use_blink) {
     defines += [ "SK_TYPEFACE_FACTORY_FONTATIONS" ]
