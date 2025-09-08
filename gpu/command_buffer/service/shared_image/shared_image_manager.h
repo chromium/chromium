@@ -169,12 +169,6 @@ class GPU_GLES2_EXPORT SharedImageManager
   }
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-  bool CanCreateNativePixmap(gfx::BufferFormat buffer_format,
-                             gfx::BufferUsage buffer_usage,
-                             gpu::VulkanDeviceQueue* device_queue);
-#endif
-
  private:
   class AutoLock;
 
