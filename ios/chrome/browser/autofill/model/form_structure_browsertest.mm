@@ -185,15 +185,14 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       IOSChromeProfilePasswordStoreFactory::GetInstance(),
-      base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
-                          web::BrowserState,
-                          password_manager::MockPasswordStoreInterface>));
+      base::BindOnce(
+          &password_manager::BuildPasswordStoreInterface<
+              ProfileIOS, password_manager::MockPasswordStoreInterface>));
   builder.AddTestingFactory(
       IOSUserEventServiceFactory::GetInstance(),
-      base::BindRepeating(
-          [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-            return std::make_unique<syncer::FakeUserEventService>();
-          }));
+      base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+        return std::make_unique<syncer::FakeUserEventService>();
+      }));
   profile_ = std::move(builder).Build();
 
   web::WebState::CreateParams params(profile_.get());
