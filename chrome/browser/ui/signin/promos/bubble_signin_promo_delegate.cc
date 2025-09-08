@@ -130,6 +130,6 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   }
 
   SigninPromoTabHelper::GetForWebContents(*sign_in_tab_contents)
-      ->InitializeDataMoveAfterSignIn(std::move(maybe_move_data),
+      ->InitializeCallbackAfterSignIn(std::move(maybe_move_data),
                                       access_point_);
 }

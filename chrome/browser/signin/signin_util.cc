@@ -409,6 +409,17 @@ bool ShouldShowHistorySyncOptinScreen(Profile& profile) {
   return true;
 }
 
+void EnableHistorySync(syncer::SyncService* sync_service) {
+  CHECK(sync_service);
+
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, /*is_type_on=*/true);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, /*is_type_on=*/true);
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kSavedTabGroups, /*is_type_on=*/true);
+}
+
 bool ShouldShowAvatarSyncPromo(Profile* profile) {
   CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
 

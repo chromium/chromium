@@ -28,7 +28,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-
 using data_sharing::GroupData;
 using data_sharing::GroupId;
 using data_sharing::GroupMember;
@@ -69,6 +68,8 @@ class CollaborationServiceImplTest : public testing::Test {
         prefs::kSharedTabGroupsManagedAccountSetting, 0 /* enabled */);
     profile_pref_service_.registry()->RegisterBooleanPref(
         ::prefs::kSigninAllowed, true);
+    profile_pref_service_.registry()->RegisterBooleanPref(
+        ::prefs::kSigninAllowedOnNextStartup, true);
 #if BUILDFLAG(IS_IOS)
     local_pref_service_.registry()->RegisterIntegerPref(
         ::prefs::kBrowserSigninPolicy,
@@ -173,13 +174,14 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_CreateOverridesJoinOnly) {
             CollaborationStatus::kEnabledCreateAndJoin);
 }
 
-TEST_F(CollaborationServiceImplTest, GetServiceStatus_SigninDisabled) {
+TEST_F(CollaborationServiceImplTest, GetServiceStatus_SigninDisabledByUser) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       data_sharing::features::kDataSharingFeature);
 
   // Set signin preference to disable signin.
   profile_pref_service_.SetBoolean(::prefs::kSigninAllowed, false);
+  profile_pref_service_.SetBoolean(::prefs::kSigninAllowedOnNextStartup, false);
 
   InitService();
 
@@ -189,14 +191,29 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_SigninDisabled) {
             CollaborationStatus::kEnabledCreateAndJoin);
   EXPECT_EQ(service_->GetServiceStatus().IsAllowedToJoin(), true);
   EXPECT_EQ(service_->GetServiceStatus().IsAllowedToCreate(), false);
+}
 
 #if !BUILDFLAG(IS_IOS)
+TEST_F(CollaborationServiceImplTest, GetServiceStatus_SigninDisabledByPolicy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      data_sharing::features::kDataSharingFeature);
+
+#if BUILDFLAG(IS_ANDROID)
+  profile_pref_service_.SetBoolean(::prefs::kSigninAllowed, false);
   profile_pref_service_.SetManagedPref(::prefs::kSigninAllowed,
                                        base::Value(false));
+#else
+  profile_pref_service_.SetBoolean(::prefs::kSigninAllowedOnNextStartup, false);
+  profile_pref_service_.SetManagedPref(::prefs::kSigninAllowedOnNextStartup,
+                                       base::Value(false));
+#endif
+
+  InitService();
   EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
             CollaborationStatus::kDisabledForPolicy);
-#endif
 }
+#endif
 
 TEST_F(CollaborationServiceImplTest, GetServiceStatus_ManagedAccount) {
   base::test::ScopedFeatureList feature_list;

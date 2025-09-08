@@ -305,7 +305,6 @@ void SignInFromSingleAccountPromo(Profile* profile,
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
           account.account_id &&
       !needs_reauth_before_signin) {
-    DVLOG(1) << "There is already a primary account.";
     return;
   }
 

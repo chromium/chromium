@@ -12789,6 +12789,27 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
       <!-- /Sign in Sync Flow -->
 
+      <!-- History Sync Opt In Flows -->
+        <message name="IDS_SYNC_HISTORY_TITLE" desc="The title of the dialog that prompts users to sign in and opt in to history sync.">
+          Collaborate with others
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_SIGN_IN_AND_SYNC_HISTORY_BODY" desc="The body of dialog that prompts users to sign in and opt in to history sync.">
+          To share tabs and collaborate with others, sign in to Chrome and sync your history and tabs. You’ll also get your passwords and more on all your devices.
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_SYNC_HISTORY_BODY" desc="The body of dialog that prompts users to sign in and opt in to history sync.">
+          To share tabs and collaborate with others, sync your history and tabs
+        </message>
+        <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_SYNC_HISTORY_BODY" desc="The body of dialog that prompts users to verify account.">
+          To share tabs and collaborate with others, verify it’s you and sync your history and tabs
+        </message>
+        <message name="IDS_SYNC_HISTORY_BUTTON" desc="The continue button of dialog that prompts users to sign in and opt in to history sync.">
+          Sync history
+        </message>
+        <message name="IDS_SYNC_HISTORY_FOOTER" desc="The footer of dialog that prompts users to sign in and opt in to history sync.">
+          You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+      <!-- /History Sync Opt In Flows -->
+
       <!-- errors and warnings -->
         <message name="IDS_DATA_SHARING_SOMETHING_WRONG_BODY" desc="The body text of the generic failure dialog.">
           There was an error. Try again.

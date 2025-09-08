@@ -26,6 +26,10 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace syncer {
+class SyncService;
+}
+
 namespace signin_util {
 
 enum class ProfileSeparationPolicyState {
@@ -179,6 +183,11 @@ std::string SignedInStateToString(SignedInState state);
 // TODO(crbug.com/419741847): Consider using also on mobile and moving the
 // method as necessary.
 bool ShouldShowHistorySyncOptinScreen(Profile& profile);
+
+// Enables the types history, tabs, and saved tab groups for the account
+// currently signed into Chrome. If a type cannot be enabled (e.g. by policy),
+// this does not do anything for that type.
+void EnableHistorySync(syncer::SyncService* sync_service);
 
 // The avatar sync promo is only shown to users with specific sign in states.
 // Requires the feature enabling through

@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -92,20 +93,12 @@ void HistorySyncOptinHandler::FinishAndCloseDialog() {
 }
 
 void HistorySyncOptinHandler::AddHistorySyncConsent() {
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
-  CHECK(sync_service);
   CHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  // TODO(crbug.com/404806988): As we add the invocation points check if additional actions
-  // are needed to enable sync for history.
-  // The invocation below works for an already syncing user. It enables the syncing for history
+  // TODO(crbug.com/404806988): As we add the invocation points check if
+  // additional actions are needed to enable sync for history. The invocation
+  // below works for an already syncing user. It enables the syncing for history
   // if it's not already turned on.
-  sync_service->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kHistory, /*is_type_on=*/true);
-  sync_service->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kTabs, /*is_type_on=*/true);
-  sync_service->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kSavedTabGroups, /*is_type_on=*/true);
+  signin_util::EnableHistorySync(SyncServiceFactory::GetForProfile(profile_));
 }
 
 void HistorySyncOptinHandler::OnAvatarChanged(const AccountInfo& info) {

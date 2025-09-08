@@ -466,9 +466,15 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   if (policy_mode == BrowserSigninMode::kDisabled) {
     return CollaborationStatus::kDisabledForPolicy;
   }
-#else
+#elif BUILDFLAG(IS_ANDROID)
   if (!profile_prefs_->GetBoolean(::prefs::kSigninAllowed) &&
       profile_prefs_->IsManagedPreference(::prefs::kSigninAllowed)) {
+    return CollaborationStatus::kDisabledForPolicy;
+  }
+#else
+  if (!profile_prefs_->GetBoolean(::prefs::kSigninAllowedOnNextStartup) &&
+      profile_prefs_->IsManagedPreference(
+          ::prefs::kSigninAllowedOnNextStartup)) {
     return CollaborationStatus::kDisabledForPolicy;
   }
 #endif

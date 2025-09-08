@@ -531,6 +531,20 @@ TEST_F(SigninUtilHistorySyncOptinTest,
   EXPECT_TRUE(signin_util::ShouldShowHistorySyncOptinScreen(*profile()));
 }
 
+TEST_F(SigninUtilHistorySyncOptinTest, EnableHistorySync) {
+  SignInAndSetUpSyncService();
+  DisableAllSyncedDataTypes();
+
+  signin_util::EnableHistorySync(test_sync_service());
+
+  EXPECT_TRUE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+  EXPECT_TRUE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs));
+  EXPECT_TRUE(test_sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kSavedTabGroups));
+}
+
 TEST_F(SigninUtilHistorySyncOptinTest, ShouldShowAvatarSyncPromo) {
   SetupForAvatarSyncPromo();
   EXPECT_TRUE(signin_util::ShouldShowAvatarSyncPromo(profile()));

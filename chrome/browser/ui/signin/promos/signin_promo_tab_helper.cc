@@ -51,8 +51,8 @@ void SigninPromoTabHelper::Reset() {
   state_ = std::make_unique<ResetableState>(this);
 }
 
-void SigninPromoTabHelper::InitializeDataMoveAfterSignIn(
-    base::OnceClosure move_callback,
+void SigninPromoTabHelper::InitializeCallbackAfterSignIn(
+    base::OnceClosure completed_callback,
     signin_metrics::AccessPoint access_point,
     base::TimeDelta time_limit) {
   signin::IdentityManager* identity_manager =
@@ -66,7 +66,7 @@ void SigninPromoTabHelper::InitializeDataMoveAfterSignIn(
   // variable will help us determine whether we should reset the helper in
   // `OnErrorStateOfRefreshTokenUpdatedForAccount` or not.
   state_->needs_reauth_ = signin_util::IsSigninPending(identity_manager);
-  state_->move_callback_ = std::move(move_callback);
+  state_->completed_callback_ = std::move(completed_callback);
   state_->access_point_ = access_point;
   state_->time_limit_ = time_limit;
   state_->initialization_time_ = base::Time::Now();
@@ -87,11 +87,11 @@ void SigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
     return;
   }
 
-  // Do not move the data anymore if the time limit since the initialization of
-  // the move has been exceeded. This can happen for example if the user clicks
-  // "Sign in" in the promo which opens a sign in tab and initializes this
-  // helper, but the user does not complete the sign in. As they may forget that
-  // this sign in tab would move the data, we do nothing instead.
+  // Do not run the callback anymore if the time limit since the initialization
+  // has been exceeded. This can happen for example if the user clicks "Sign in"
+  // in the promo which opens a sign in tab and initializes this helper, but the
+  // user does not complete the sign in. As they may forget that this sign in
+  // tab would do something (e.g. move data), we do nothing instead.
   if (base::Time::Now() - state_->initialization_time_ > state_->time_limit_) {
     Reset();
     return;
@@ -113,7 +113,7 @@ void SigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
     return;
   }
 
-  // We only want to move the data if the sign in event has the correct
+  // We only want to run the callback if the sign in event has the correct
   // access point, so if it was performed from the tab that was opened after
   // clicking the sign in promo.
   if (identity_manager->FindExtendedAccountInfo(account_info).access_point !=
@@ -121,26 +121,27 @@ void SigninPromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
     Reset();
     return;
   }
-  // Initiate data move if requirements are met.
-  std::move(state_->move_callback_).Run();
+
+  // Run the callback if requirements are met.
+  std::move(state_->completed_callback_).Run();
   Reset();
 }
 
 void SigninPromoTabHelper::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   // The user changed their primary account while we were expecting them to
-  // reauthenticate. Abandon data move to avoid saving data to a wrong
-  // account.
+  // reauthenticate. Abandon the callback, e.g. a data move, to avoid saving
+  // data to a wrong account.
   if (state_->needs_reauth_) {
     Reset();
     return;
   }
 
-  // Do not move the data anymore if the time limit since the initialization of
-  // the move has been exceeded. This can happen for example if the user clicks
-  // "Sign in" in the promo which opens a sign in tab and initializes this
-  // helper, but the user does not complete the sign in. As they may forget that
-  // this sign in tab would move the data, we do nothing instead.
+  // Do not run the callback anymore if the time limit since the initialization
+  // has been exceeded. This can happen for example if the user clicks "Sign in"
+  // in the promo which opens a sign in tab and initializes this helper, but the
+  // user does not complete the sign in. As they may forget that this sign in
+  // tab would do something (e.g. move data), we do nothing instead.
   if (base::Time::Now() - state_->initialization_time_ > state_->time_limit_) {
     Reset();
     return;
@@ -153,17 +154,17 @@ void SigninPromoTabHelper::OnPrimaryAccountChanged(
     return;
   }
 
-  // We only want to move the data if the sign in event has the correct access
-  // point, so if it was performed from the tab that was opened after clicking
-  // the sign in promo.
+  // We only want to run the callback if the sign in event has the correct
+  // access point, so if it was performed from the tab that was opened after
+  // clicking the sign in promo.
   if (event_details.GetSetPrimaryAccountAccessPoint() !=
       state_->access_point_) {
     Reset();
     return;
   }
 
-  // Initiate data move if requirements are met.
-  std::move(state_->move_callback_).Run();
+  // Run the callback if requirements are met.
+  std::move(state_->completed_callback_).Run();
   Reset();
 }
 

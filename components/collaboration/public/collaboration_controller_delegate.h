@@ -9,6 +9,7 @@
 #include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -121,8 +122,15 @@ class CollaborationControllerDelegate {
         case Type::kSigninDisabledByPolicy:
           error_header = l10n_util::GetStringUTF8(
               IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_HEADER);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+          error_body = l10n_util::GetStringUTF8(
+              base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)
+                  ? IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_SYNC_HISTORY_BODY
+                  : IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_BODY);
+#else
           error_body = l10n_util::GetStringUTF8(
               IDS_COLLABORATION_ENTREPRISE_SIGNIN_DISABLED_BODY);
+#endif
           break;
         case Type::kGroupFull:
           error_header = l10n_util::GetStringUTF8(

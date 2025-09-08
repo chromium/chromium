@@ -9,6 +9,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
+#include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/account_card_view.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
@@ -28,8 +30,12 @@
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/collaboration/public/service_status.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -41,6 +47,7 @@ struct DialogText {
   const std::u16string title;
   const std::u16string body;
   const std::u16string ok_button_text;
+  const std::u16string footnote;
 };
 
 DialogText GetPromptDialogTextFromStatus(
@@ -49,6 +56,8 @@ DialogText GetPromptDialogTextFromStatus(
   int title_id = 0;
   int body_id = 0;
   int ok_button_text_id = 0;
+  int footnote_id = IDS_SYNC_HISTORY_FOOTER;
+
   switch (status.signin_status) {
     case collaboration::SigninStatus::kNotSignedIn:
       title_id = IDS_DATA_SHARING_NEED_SIGN_IN;
@@ -92,10 +101,33 @@ DialogText GetPromptDialogTextFromStatus(
       break;
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin) &&
+      status.signin_status != collaboration::SigninStatus::kSigninDisabled) {
+    title_id = IDS_SYNC_HISTORY_TITLE;
+    ok_button_text_id = IDS_SYNC_HISTORY_BUTTON;
+
+    switch (status.signin_status) {
+      case collaboration::SigninStatus::kNotSignedIn:
+        body_id = IDS_DATA_SHARING_NEED_SIGN_IN_AND_SYNC_HISTORY_BODY;
+        break;
+      case collaboration::SigninStatus::kSignedInPaused:
+        body_id = IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_SYNC_HISTORY_BODY;
+        break;
+      case collaboration::SigninStatus::kSignedIn:
+        body_id = IDS_DATA_SHARING_NEED_SYNC_HISTORY_BODY;
+        break;
+      default:
+        break;
+    }
+  }
+#endif
+
   if (valid) {
     return DialogText(valid, l10n_util::GetStringUTF16(title_id),
                       l10n_util::GetStringUTF16(body_id),
-                      l10n_util::GetStringUTF16(ok_button_text_id));
+                      l10n_util::GetStringUTF16(ok_button_text_id),
+                      l10n_util::GetStringUTF16(footnote_id));
   } else {
     return DialogText(valid);
   }
@@ -381,6 +413,86 @@ void CollaborationControllerDelegateDesktop::ShowErrorDialog(
       chrome::ShowBrowserModal(browser_, std::move(dialog_model));
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void CollaborationControllerDelegateDesktop::
+    MaybeShowSignInUiForHistorySyncOptin() {
+  collaboration::ServiceStatus status = GetServiceStatus();
+  if (!browser_) {
+    return;
+  }
+
+  if (status.IsAuthenticationValid()) {
+    return;
+  }
+
+  // If sign in is disabled by the user, a version of the dialog is shown that
+  // leads the user to the Google services settings page, where they can allow
+  // sign in again.
+  if (status.signin_status == collaboration::SigninStatus::kSigninDisabled) {
+    chrome::ShowSettingsSubPage(browser_, chrome::kGoogleServicesSubpage);
+    return;
+  }
+
+  Profile* profile = browser_->profile();
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+
+  // Try to sign in or open a sign in tab if user input is needed. If the user
+  // is already signed in, this is a no-op.
+  signin_ui_util::SignInFromSingleAccountPromo(
+      profile,
+      signin_ui_util::GetSingleAccountForPromos(
+          IdentityManagerFactory::GetForProfile(profile)),
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+
+  if (!sync_service) {
+    return;
+  }
+
+  // It is safe to pass a pointer to the sync service here because the callback
+  // is then owned by a tab helper, which is guaranteed to be destroyed before
+  // the sync service.
+  auto enable_history_sync = base::BindOnce(&signin_util::EnableHistorySync,
+                                            base::Unretained(sync_service));
+
+  // We cannot currently use `status.signin_status`, as it may not update in
+  // time after `SignInFromSingleAccountPromo` sets the primary account.
+  // TODO (crbug.com/443679624): Update and use `status.signin_status` instead
+  // for consistency.
+  switch (signin_util::GetSignedInState(
+      IdentityManagerFactory::GetForProfile(profile))) {
+    // If the sign in was already successful, enable history sync directly.
+    case signin_util::SignedInState::kSignedIn:
+      std::move(enable_history_sync).Run();
+      return;
+    // These states require a sign in tab to be displayed. A tab helper attached
+    // to the tab will take care of turning on history sync once signed in.
+    case signin_util::SignedInState::kSignedOut:
+    case signin_util::SignedInState::kSignInPending:
+    case signin_util::SignedInState::kSyncPaused:
+      break;
+    case signin_util::SignedInState::kSyncing:
+    case signin_util::SignedInState::kWebOnlySignedIn:
+      return;
+  }
+
+  content::WebContents* sign_in_tab_contents =
+      signin_ui_util::GetSignInTabWithAccessPoint(
+          browser_, signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+
+  // SignInFromSingleAccountPromo may fail to open a tab. Do not wait for a
+  // sign in event in that case.
+  if (!sign_in_tab_contents) {
+    return;
+  }
+
+  SigninPromoTabHelper::GetForWebContents(*sign_in_tab_contents)
+      ->InitializeCallbackAfterSignIn(
+          std::move(enable_history_sync),
+          signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 void CollaborationControllerDelegateDesktop::MaybeShowSignInAndSyncUi() {
   collaboration::ServiceStatus status = GetServiceStatus();
   if (!browser_) {
@@ -439,34 +551,46 @@ void CollaborationControllerDelegateDesktop::
 
   DialogText dialog_text = GetPromptDialogTextFromStatus(status);
   if (dialog_text.valid) {
-    std::unique_ptr<ui::DialogModel> dialog_model =
-        ui::DialogModel::Builder()
-            .SetTitle(dialog_text.title)
-            .AddParagraph(ui::DialogModelLabel(dialog_text.body))
+    ui::DialogModel::Builder dialog_builder = ui::DialogModel::Builder();
+    dialog_builder.SetTitle(dialog_text.title)
+        .AddParagraph(ui::DialogModelLabel(dialog_text.body))
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-            .SetBannerImage(
-                ui::ImageModel::FromResourceId(IDR_SHARED_TAB_GROUPS_LIGHT),
-                ui::ImageModel::FromResourceId(IDR_SHARED_TAB_GROUPS_DARK))
+        .SetBannerImage(
+            ui::ImageModel::FromResourceId(IDR_SHARED_TAB_GROUPS_LIGHT),
+            ui::ImageModel::FromResourceId(IDR_SHARED_TAB_GROUPS_DARK))
 #endif
-            .AddCancelButton(
-                base::BindOnce(&CollaborationControllerDelegateDesktop::
-                                   OnPromptDialogCancel,
-                               weak_ptr_factory_.GetWeakPtr()),
-                ui::DialogModel::Button::Params().SetEnabled(true).SetId(
-                    kDataSharingSigninPromptDialogCancelButtonElementId))
-            .AddOkButton(
-                base::BindOnce(
-                    &CollaborationControllerDelegateDesktop::OnPromptDialogOk,
-                    weak_ptr_factory_.GetWeakPtr()),
-                ui::DialogModel::Button::Params()
-                    .SetLabel(dialog_text.ok_button_text)
-                    .SetEnabled(true))
-            .AddCustomField(
-                std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                    std::make_unique<AccountCardView>(
-                        GetAccountInfoFromProfile(browser_->profile())),
-                    views::BubbleDialogModelHost::FieldType::kText))
-            .Build();
+        .AddCancelButton(
+            base::BindOnce(
+                &CollaborationControllerDelegateDesktop::OnPromptDialogCancel,
+                weak_ptr_factory_.GetWeakPtr()),
+            ui::DialogModel::Button::Params().SetEnabled(true).SetId(
+                kDataSharingSigninPromptDialogCancelButtonElementId))
+        .AddOkButton(
+            base::BindOnce(
+                &CollaborationControllerDelegateDesktop::OnPromptDialogOk,
+                weak_ptr_factory_.GetWeakPtr()),
+            ui::DialogModel::Button::Params()
+                .SetLabel(dialog_text.ok_button_text)
+                .SetEnabled(true));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
+      dialog_builder.SetFootnote(ui::DialogModelLabel(dialog_text.footnote));
+    }
+
+    AccountInfo account_for_promo = signin_ui_util::GetSingleAccountForPromos(
+        IdentityManagerFactory::GetForProfile(browser_->profile()));
+#else
+    AccountInfo account_for_promo =
+        GetAccountInfoFromProfile(browser_->profile());
+#endif
+
+    dialog_builder.AddCustomField(
+        std::make_unique<views::BubbleDialogModelHost::CustomView>(
+            std::make_unique<AccountCardView>(account_for_promo),
+            views::BubbleDialogModelHost::FieldType::kText));
+
+    std::unique_ptr<ui::DialogModel> dialog_model = dialog_builder.Build();
     prompt_dialog_widget_ =
         chrome::ShowBrowserModal(browser_, std::move(dialog_model));
   }
@@ -478,6 +602,14 @@ void CollaborationControllerDelegateDesktop::OnPromptDialogOk() {
     std::move(authentication_ui_callback_)
         .Run(CollaborationControllerDelegate::Outcome::kSuccess);
   }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
+    MaybeShowSignInUiForHistorySyncOptin();
+    return;
+  }
+#endif
+
   MaybeShowSignInAndSyncUi();
 }
 

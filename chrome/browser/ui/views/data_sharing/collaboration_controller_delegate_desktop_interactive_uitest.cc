@@ -3,9 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/test/mock_callback.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
@@ -14,15 +20,26 @@
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/collaboration/public/service_status.h"
 #include "components/data_sharing/public/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/collaboration_id.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/widget.h"
@@ -38,6 +55,12 @@ class TestCollaborationControllerDelegateDesktop
       : CollaborationControllerDelegateDesktop(browser, flow) {}
   MOCK_METHOD(collaboration::ServiceStatus, GetServiceStatus, (), (override));
 };
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
+  return std::make_unique<syncer::TestSyncService>();
+}
+#endif
 
 }  // namespace
 
@@ -385,3 +408,269 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
       GURL("chrome://settings/help"),
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class
+    CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn
+    : public InteractiveBrowserTest {
+ public:
+  CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn() =
+      default;
+
+  CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn(
+      const CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn&) =
+      delete;
+  CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn&
+  operator=(
+      const CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn&) =
+      delete;
+
+  ~CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn()
+      override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {data_sharing::features::kDataSharingFeature,
+         switches::kEnableHistorySyncOptin},
+        {});
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    SetHistorySyncStatus(false);
+  }
+
+  // InProcessBrowserTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    url_loader_factory_helper_.SetUp();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn::
+                    OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        context, base::BindRepeating(&CreateTestSyncService));
+  }
+
+  syncer::TestSyncService* sync_service() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
+  }
+
+  signin::IdentityManager* identity_manager() {
+    return IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  }
+
+  network::TestURLLoaderFactory* test_url_loader_factory() {
+    return url_loader_factory_helper_.test_url_loader_factory();
+  }
+
+  void SignIn() {
+    signin::MakeAccountAvailable(
+        identity_manager(),
+        signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+            .WithCookie()
+            .WithAccessPoint(
+                signin_metrics::AccessPoint::kCollaborationShareTabGroup)
+            .AsPrimary(signin::ConsentLevel::kSignin)
+            .Build("test@email.com"));
+  }
+
+  bool IsSignedIn() {
+    return signin_util::GetSignedInState(identity_manager()) ==
+           signin_util::SignedInState::kSignedIn;
+  }
+
+  void SetHistorySyncStatus(bool enabled) {
+    sync_service()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, enabled);
+    sync_service()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kTabs, enabled);
+    sync_service()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kSavedTabGroups, enabled);
+  }
+
+  void ShowAndAcceptDialog(
+      collaboration::ServiceStatus status = collaboration::ServiceStatus()) {
+    // Set up an account picture in case it is shown in the dialog.
+    signin::SimulateAccountImageFetch(
+        identity_manager(),
+        signin_ui_util::GetSingleAccountForPromos(identity_manager())
+            .account_id,
+        "https://avatar.com/avatar.png", gfx::test::CreateImage(/*size=*/32));
+
+    // Show prompt dialog and accept it.
+    TestCollaborationControllerDelegateDesktop delegate(browser());
+    EXPECT_CALL(delegate, GetServiceStatus())
+        .Times(2)
+        .WillRepeatedly(testing::Return(status));
+    EXPECT_EQ(nullptr, delegate.prompt_dialog_widget_for_testing());
+    base::MockCallback<
+        collaboration::CollaborationControllerDelegate::ResultCallback>
+        callback;
+
+    delegate.ShowAuthenticationUi(collaboration::FlowType::kJoin,
+                                  callback.Get());
+    views::Widget* dialog_widget = delegate.prompt_dialog_widget_for_testing();
+    EXPECT_NE(nullptr, dialog_widget);
+
+    // Accepting the dialog should trigger a sign-in flow. The callback should
+    // be invoked with kSuccess.
+    EXPECT_CALL(
+        callback,
+        Run(collaboration::CollaborationControllerDelegate::Outcome::kSuccess))
+        .Times(1);
+
+    views::test::AcceptDialog(dialog_widget);
+    EXPECT_EQ(nullptr, delegate.prompt_dialog_widget_for_testing());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn,
+    PromptDialogAccept_SignedOut) {
+  ShowAndAcceptDialog();
+
+  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
+                  *browser()->tab_strip_model()->GetActiveWebContents())
+                  ->IsInitializedForTesting());
+
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs));
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kSavedTabGroups));
+
+  // Signing in should also enable history sync.
+  SignIn();
+
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs));
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kSavedTabGroups));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn,
+    PromptDialogAccept_WebSignedIn) {
+  AccountInfo info = signin::MakeAccountAvailable(
+      identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie()
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build("test@email.com"));
+
+  // Accepting the dialog should sign the user in and also enable history sync.
+  ShowAndAcceptDialog();
+
+  EXPECT_TRUE(IsSignedIn());
+  EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
+                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   ->IsInitializedForTesting());
+
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs));
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kSavedTabGroups));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn,
+    PromptDialogAccept_SignInPending) {
+  AccountInfo info = signin::MakePrimaryAccountAvailable(
+      identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+
+  ShowAndAcceptDialog();
+
+  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
+                  *browser()->tab_strip_model()->GetActiveWebContents())
+                  ->IsInitializedForTesting());
+
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs));
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kSavedTabGroups));
+
+  // Resolving the error should also enable history sync.
+  identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
+      info.gaia, info.email, "dummy_refresh_token",
+      /*is_under_advanced_protection=*/false,
+      signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signin);
+
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs));
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kSavedTabGroups));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn,
+    PromptDialogAccept_SignedInWithoutHistorySync) {
+  SignIn();
+
+  // Accepting the dialog should enable history sync.
+  ShowAndAcceptDialog();
+
+  EXPECT_TRUE(IsSignedIn());
+  EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
+                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   ->IsInitializedForTesting());
+
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs));
+  EXPECT_TRUE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kSavedTabGroups));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CollaborationControllerDelegateDesktopInteractiveUITestWithHistorySyncOptIn,
+    PromptDialogAccept_SignInDisabled) {
+  // Show dialog and open the Google services settings page.
+  collaboration::ServiceStatus status;
+  status.signin_status = collaboration::SigninStatus::kSigninDisabled;
+  ShowAndAcceptDialog(status);
+
+  // Verify the settings page was opened.
+  EXPECT_EQ(
+      GURL("chrome://settings/googleServices"),
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+
+  // History sync was not enabled.
+  EXPECT_FALSE(IsSignedIn());
+  EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
+                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   ->IsInitializedForTesting());
+
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs));
+  EXPECT_FALSE(sync_service()->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kSavedTabGroups));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
