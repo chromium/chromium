@@ -53,7 +53,16 @@ gfx::Transform GetTransformSubpixelCorrection(const gfx::Transform& transform,
 }
 
 bool UsingPlatformHighContrastInkDrop(const View* view) {
-  return view->GetWidget() && view->GetNativeTheme()->forced_colors() &&
+  // When there's no widget (e.g. in various tests), calling `GetNativeTheme()`
+  // below would result in `DCHECK()` failure.
+  if (!view->GetWidget()) {
+    return false;
+  }
+  const ui::NativeTheme* const native_theme = view->GetNativeTheme();
+  CHECK(native_theme);
+  return native_theme->forced_colors() &&
+         native_theme->preferred_contrast() ==
+             ui::NativeTheme::PreferredContrast::kMore &&
          base::FeatureList::IsEnabled(
              features::kEnablePlatformHighContrastInkDrop);
 }

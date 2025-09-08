@@ -545,11 +545,14 @@ void AppBrowserController::PrimaryPageChanged(content::Page& page) {
 }
 
 std::optional<SkColor> AppBrowserController::GetThemeColor() const {
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  if (native_theme->forced_colors()) {
-    // use system [Window ThemeColor] when enable high contrast
-    return native_theme->GetSystemThemeColor(
-        ui::NativeTheme::SystemThemeColor::kWindow);
+  if (ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+      native_theme->preferred_contrast() ==
+      ui::NativeTheme::PreferredContrast::kMore) {
+    if (const std::optional<SkColor> window_color =
+            native_theme->GetSystemThemeColor(
+                ui::NativeTheme::SystemThemeColor::kWindow)) {
+      return window_color;
+    }
   }
 
   if (content::WebContents* const web_contents =

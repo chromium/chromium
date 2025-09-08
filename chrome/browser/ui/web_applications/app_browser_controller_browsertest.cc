@@ -4,19 +4,18 @@
 
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 
-#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace web_app {
 
 using AppBrowserControllerBrowserTest = WebAppBrowserTestBase;
 
-#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
                        HighContrastThemeColor) {
   const AppBrowserController* const controller =
@@ -25,12 +24,13 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
           ->app_controller();
 
   // Enable high contrast theme.
+  static constexpr SkColor kWindowColor = SK_ColorBLUE;
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_forced_colors(true);
-  EXPECT_EQ(controller->GetThemeColor(),
-            native_theme->GetSystemThemeColor(
-                ui::NativeTheme::SystemThemeColor::kWindow));
+  const std::map<ui::NativeTheme::SystemThemeColor, SkColor> kSystemColors(
+      {{ui::NativeTheme::SystemThemeColor::kWindow, kWindowColor}});
+  native_theme->set_system_colors(kSystemColors);
+  native_theme->SetPreferredContrast(ui::NativeTheme::PreferredContrast::kMore);
+  EXPECT_EQ(controller->GetThemeColor(), kWindowColor);
 }
-#endif
 
 }  // namespace web_app
