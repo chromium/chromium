@@ -22,7 +22,7 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="RegionalCapabilities.ActiveRegionalProgram"
+<histogram name="RegionalCapabilities.ActiveRegionalProgram2"
     enum="ActiveRegionalProgram" expires_after="2026-01-31">
   <owner>ljjlee@google.com</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>

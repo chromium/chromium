@@ -28,6 +28,7 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/unsent_log_store.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/ukm/ukm_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/test/browser_task_environment.h"
@@ -97,7 +98,7 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {features::kUmaStorageDimensions,
          features::kClassManagementEnabledMetricsProvider,
-         metrics::dwa::kDwaFeature},
+         metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry},
         {});
 
     // ChromeOs Metrics Provider require g_login_state and power manager client
@@ -105,7 +106,8 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     ash::LoginState::Initialize();
 #else
-    scoped_feature_list_.InitAndEnableFeature(metrics::dwa::kDwaFeature);
+    scoped_feature_list_.InitWithFeatures(
+        {metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry}, {});
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 

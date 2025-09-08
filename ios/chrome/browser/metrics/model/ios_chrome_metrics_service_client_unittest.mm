@@ -19,6 +19,7 @@
 #import "components/metrics/test/test_enabled_state_provider.h"
 #import "components/metrics/unsent_log_store.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/ukm/ukm_service.h"
 #import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -61,6 +62,8 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kDynamicProfileCountry};
 };
 
 namespace {

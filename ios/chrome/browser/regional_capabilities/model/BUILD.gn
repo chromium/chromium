@@ -37,6 +37,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/country_codes",
     "//components/regional_capabilities",
+    "//components/regional_capabilities:data",
     "//components/regional_capabilities:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",

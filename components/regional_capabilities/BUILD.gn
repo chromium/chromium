@@ -71,7 +71,11 @@ source_set("country_id") {
 }
 
 source_set("switches") {
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/metrics/model:unit_tests",
+  ]
 
   sources = [
     "regional_capabilities_switches.cc",
@@ -88,6 +92,7 @@ source_set("data") {
     "//components/search_engines",
     "//components/search_engines:unit_tests",
     "//ios/chrome/browser/regional_capabilities/model",
+    "//ios/chrome/browser/regional_capabilities/model:unit_tests",
   ]
 
   sources = [
