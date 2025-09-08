@@ -975,8 +975,6 @@ public abstract class ChromeFeatureList {
                     LOAD_NATIVE_EARLY, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
-    public static final CachedFlag sLockTopControlsOnLargeTablets =
-            newCachedFlag(LOCK_TOP_CONTROLS_ON_LARGE_TABLETS, false);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
     public static final CachedFlag sMaliciousApkDownloadCheck =
             newCachedFlag(
@@ -1226,7 +1224,6 @@ public abstract class ChromeFeatureList {
                     sLegacyTabStateDeprecation,
                     sLoadNativeEarly,
                     sLockBackPressHandlerAtStart,
-                    sLockTopControlsOnLargeTablets,
                     sMagicStackAndroid,
                     sMaliciousApkDownloadCheck,
                     sMiniOriginBar,
@@ -1349,6 +1346,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(HUB_SLIDE_ANIMATION, true);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
+    public static final MutableFlagWithSafeDefault sLockTopControlsOnLargeTablets =
+            newMutableFlagWithSafeDefault(LOCK_TOP_CONTROLS_ON_LARGE_TABLETS, false);
     public static final MutableFlagWithSafeDefault sMediaIndicatorsAndroid =
             newMutableFlagWithSafeDefault(MEDIA_INDICATORS_ANDROID, false);
     public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =
