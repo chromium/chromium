@@ -3140,12 +3140,6 @@ const char kOmniboxDynamicMaxAutocompleteDescription[] =
     "Configures the maximum number of autocomplete matches displayed in the "
     "Omnibox UI dynamically based on the number of URL matches.";
 
-const char kOmniboxRestoreInvisibleFocusOnlyName[] =
-    "Omnibox Restore Invisible Focus Only";
-const char kOmniboxRestoreInvisibleFocusOnlyDescription[] =
-    "Only restore omnibox focus if invisible focus is used. Implemented for "
-    "Split View (#side-by-side).";
-
 const char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
 const char kOptimizationGuideDebugLogsDescription[] =

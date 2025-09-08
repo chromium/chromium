@@ -7097,12 +7097,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxOnDeviceTailSuggestionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOnDeviceTailModel)},
 
-    {"omnibox-restore-invisible-focus-only",
-     flag_descriptions::kOmniboxRestoreInvisibleFocusOnlyName,
-     flag_descriptions::kOmniboxRestoreInvisibleFocusOnlyDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxRestoreInvisibleFocusOnly)},
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"scheduler-configuration", flag_descriptions::kSchedulerConfigurationName,
      flag_descriptions::kSchedulerConfigurationDescription, kOsCrOS,

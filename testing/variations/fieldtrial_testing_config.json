@@ -16950,24 +16950,6 @@
             ]
         }
     ],
-    "OmniboxRestoreInvisibleFocusOnly": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxRestoreInvisibleFocusOnly"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxSiteSearchAndroid": [
         {
             "platforms": [
