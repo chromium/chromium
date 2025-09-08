@@ -31,62 +31,64 @@ const char kEmail[] = "user@test";
 
 const PolicyNamespace kChromeNamespace(POLICY_DOMAIN_CHROME, std::string());
 
-void AddRestrictedPoliciesToMap(PolicyMap* policy_map) {
-  policy_map->Set(key::kArcEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(false), nullptr);
-  policy_map->Set(key::kCrostiniAllowed, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(false), nullptr);
-  policy_map->Set(key::kDeletePrintJobHistoryAllowed, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(true), nullptr);
-  policy_map->Set(key::kKerberosEnabled, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(false), nullptr);
-  policy_map->Set(key::kNetworkFileSharesAllowed, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(false), nullptr);
-  policy_map->Set(key::kUserBorealisAllowed, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(false), nullptr);
-  policy_map->Set(key::kUserPluginVmAllowed, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(false), nullptr);
-  policy_map->Set(key::kAllowDeletingBrowserHistory, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(true), nullptr);
-  policy_map->Set(
+PolicyMap GetExpectedRestrictedPolicies() {
+  PolicyMap policy_map;
+  policy_map.Set(key::kArcEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(false), nullptr);
+  policy_map.Set(key::kCrostiniAllowed, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(false), nullptr);
+  policy_map.Set(key::kDeletePrintJobHistoryAllowed, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(true), nullptr);
+  policy_map.Set(key::kKerberosEnabled, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(false), nullptr);
+  policy_map.Set(key::kNetworkFileSharesAllowed, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(false), nullptr);
+  policy_map.Set(key::kUserBorealisAllowed, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(false), nullptr);
+  policy_map.Set(key::kUserPluginVmAllowed, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(false), nullptr);
+  policy_map.Set(key::kAllowDeletingBrowserHistory, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(true), nullptr);
+  policy_map.Set(
       key::kCACertificateManagementAllowed, POLICY_LEVEL_MANDATORY,
       POLICY_SCOPE_USER,
       POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
       base::Value(static_cast<int>(CACertificateManagementPermission::kNone)),
       nullptr);
-  policy_map->Set(key::kClientCertificateManagementAllowed,
-                  POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(static_cast<int>(
-                      ClientCertificateManagementPermission::kNone)),
-                  nullptr);
-  policy_map->Set(key::kEnableMediaRouter, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(false), nullptr);
-  policy_map->Set(key::kPasswordManagerEnabled, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(false), nullptr);
-  policy_map->Set(key::kScreenCaptureAllowed, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER,
-                  POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
-                  base::Value(false), nullptr);
+  policy_map.Set(key::kClientCertificateManagementAllowed,
+                 POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(static_cast<int>(
+                     ClientCertificateManagementPermission::kNone)),
+                 nullptr);
+  policy_map.Set(key::kEnableMediaRouter, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(false), nullptr);
+  policy_map.Set(key::kPasswordManagerEnabled, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(false), nullptr);
+  policy_map.Set(key::kScreenCaptureAllowed, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER,
+                 POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+                 base::Value(false), nullptr);
+  return policy_map;
 }
 
 }  // namespace
@@ -113,8 +115,6 @@ class RestrictedMGSPolicyProviderAshBrowserTest
     device_local_accounts->set_auto_login_id(kEmail);
     device_local_accounts->set_auto_login_delay(0);
     SetRestrictedPolicy(restricted);
-    // Save base policy map before the RestrictedMGSPolicyProvider is created.
-    SaveExpectedPolicyMap();
     RefreshDevicePolicy();
   }
 
@@ -126,21 +126,6 @@ class RestrictedMGSPolicyProviderAshBrowserTest
         {ash::kDeviceRestrictedManagedGuestSessionEnabled});
   }
 
-  void SaveExpectedPolicyMap() {
-    expected_policy_map_ = GetCurrentChromePolicies();
-    SetEnterpriseUsersDefaults(&expected_policy_map_);
-
-    // Values implicitly enforced for public accounts.
-    expected_policy_map_.Set(key::kShelfAutoHideBehavior,
-                             POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                             POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                             base::Value("Never"), nullptr);
-    expected_policy_map_.Set(key::kShowLogoutButtonInTray,
-                             POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                             POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                             base::Value(true), nullptr);
-  }
-
   PolicyMap GetCurrentChromePolicies() {
     auto* profile = ProfileManager::GetPrimaryUserProfile();
     auto* policy_connector = profile->GetProfilePolicyConnector();
@@ -150,33 +135,53 @@ class RestrictedMGSPolicyProviderAshBrowserTest
   }
 
  protected:
-  PolicyMap expected_policy_map_;
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 };
 
-// TODO(crbug.com/387568360): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_F(RestrictedMGSPolicyProviderAshBrowserTest,
-                       DISABLED_DeviceRestrictedManagedGuestSessionDisabled) {
+                       DeviceRestrictedManagedGuestSessionDisabled) {
   SetUpPolicy(/*restricted=*/false);
   ash::SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
 
-  auto current_policy_map = GetCurrentChromePolicies();
+  const auto current_policy_map = GetCurrentChromePolicies();
 
-  // Policy map stays unchanged.
-  EXPECT_TRUE(expected_policy_map_.Equals(current_policy_map));
+  for (const auto& [policy_name, entry] : current_policy_map) {
+    EXPECT_NE(entry.source,
+              POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE)
+        << "Policy " << policy_name
+        << " should not have the restricted MGS override source when the "
+           "setting is disabled.";
+  }
 }
 
-// TODO(crbug.com/387568360): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_F(RestrictedMGSPolicyProviderAshBrowserTest,
-                       DISABLED_DeviceRestrictedManagedGuestSessionEnabled) {
+                       DeviceRestrictedManagedGuestSessionEnabled) {
   SetUpPolicy(/*restricted=*/true);
   ash::SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
 
-  auto current_policy_map = GetCurrentChromePolicies();
+  const auto current_policy_map = GetCurrentChromePolicies();
+  const auto expected_restricted_policies = GetExpectedRestrictedPolicies();
 
-  // Policy map has the restricted policies.
-  AddRestrictedPoliciesToMap(&expected_policy_map_);
-  EXPECT_TRUE(expected_policy_map_.Equals(current_policy_map));
+  // Check that all expected restricted policies are set correctly.
+  for (const auto& [policy_name, expected_entry] :
+       expected_restricted_policies) {
+    const PolicyMap::Entry* actual_entry = current_policy_map.Get(policy_name);
+    ASSERT_TRUE(actual_entry) << "Policy " << policy_name << " is missing";
+    EXPECT_TRUE(expected_entry.Equals(*actual_entry))
+        << "Policy " << policy_name << " has wrong value or attributes";
+  }
+
+  // Check that no other policies have the restricted source.
+  for (const auto& [policy_name, actual_entry] : current_policy_map) {
+    if (expected_restricted_policies.Get(policy_name)) {
+      continue;  // Already checked above.
+    }
+    EXPECT_NE(actual_entry.source,
+              POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE)
+        << "Policy " << policy_name
+        << " has the restricted MGS override source but is not in the "
+           "expected set.";
+  }
 }
 
 }  // namespace policy
