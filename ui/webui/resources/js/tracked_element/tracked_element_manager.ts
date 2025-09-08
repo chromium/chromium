@@ -24,7 +24,8 @@
  *
  * In your WebUI component:
  *
- * 1.  Create an instance of `TrackedElementManager` in your component class.
+ * 1.  Get the singleton instance of `TrackedElementManager` in your component
+ *     class.
  *
  *     ```ts
  *     // in your component class:
@@ -32,7 +33,7 @@
  *
  *     constructor() {
  *       super();
- *       this.trackedElementManager = new TrackedElementManager();
+ *       this.trackedElementManager = TrackedElementManager.getInstance();
  *       // ...
  *     }
  *     ```
@@ -143,13 +144,22 @@ function computeIsVisible(element: Element): boolean {
 }
 
 export class TrackedElementManager {
+  private static instance_: TrackedElementManager|null = null;
+
+  static getInstance(): TrackedElementManager {
+    if (TrackedElementManager.instance_ === null) {
+      TrackedElementManager.instance_ = new TrackedElementManager();
+    }
+    return TrackedElementManager.instance_;
+  }
+
   private trackedElementHandler_: TrackedElementHandlerInterface;
   private trackedElements_: Map<HTMLElement, TrackedElement> = new Map();
   private fixedElementObserver_: IntersectionObserver;
   private resizeObserver_: ResizeObserver;
   private debouncedUpdateAllBoundsCallback_: () => void;
 
-  constructor() {
+  private constructor() {
     this.trackedElementHandler_ =
         TrackedElementProxyImpl.getInstance().getHandler();
 
@@ -176,7 +186,7 @@ export class TrackedElementManager {
     this.resizeObserver_.observe(document.body);
   }
 
-  destroy() {
+  reset() {
     this.resizeObserver_.disconnect();
     this.fixedElementObserver_.disconnect();
     document.removeEventListener(

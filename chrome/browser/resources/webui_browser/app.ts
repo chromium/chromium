@@ -78,7 +78,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     this.bookmarkBarController_ = new BookmarkBarController();
     this.tabStripController_ =
         new TabStripController(this, this.$.tabstrip, this.$.contentRegion);
-    this.trackedElementManager_ = new TrackedElementManager();
+    this.trackedElementManager_ = TrackedElementManager.getInstance();
 
     const callbackRouter = BrowserProxy.getCallbackRouter();
     callbackRouter.showSidePanel.addListener(this.showSidePanel_.bind(this));

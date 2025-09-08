@@ -69,12 +69,15 @@ suite('TrackedElementTest', function() {
     await new Promise(resolve => requestAnimationFrame(resolve));
   }
 
-  setup(() => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  suiteSetup(() => {
     const proxy = new TestTrackedElementProxy();
     TrackedElementProxyImpl.setInstance(proxy);
     handler = proxy.handler;
-    manager = new TrackedElementManager();
+    manager = TrackedElementManager.getInstance();
+  });
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     element = document.createElement('div');
     element.id = 'element';
@@ -84,7 +87,8 @@ suite('TrackedElementTest', function() {
   });
 
   teardown(() => {
-    manager.destroy();
+    handler.reset();
+    manager.reset();
   });
 
   test('startTracking sends visibility', async () => {
