@@ -331,7 +331,7 @@ GlicInstanceCoordinatorImpl::CreateViewForSidePanel(tabs::TabInterface* tab) {
 
 void GlicInstanceCoordinatorImpl::SidePanelShown(Browser* browser) {
   // Method should only be called on individual panels not the coordinator.
-  NOTREACHED();
+  NOTIMPLEMENTED();
 }
 
 base::CallbackListSubscription
