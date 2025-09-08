@@ -21,9 +21,8 @@ class AccountChooserViewDelegate {
   virtual void OnAccountSelected(const AccountInfo& account) = 0;
   // Called when the user clicks on the "Use a different account" button.
   virtual void OnAddAccountButtonClicked() = 0;
-  // Called when the dialog is closed or cancelled.  Note that
-  // widget_closed_reason maps to the views::Widget::ClosedReason enum.
-  virtual void OnFlowCancelled(int32_t widget_closed_reason) = 0;
+  // Called when the dialog is closed or cancelled.
+  virtual void OnFlowCancelled() = 0;
   // Called when the save button is clicked.
   virtual void OnSaveButtonClicked() = 0;
 };

@@ -28,6 +28,9 @@ class WebContents;
 namespace save_to_drive {
 class AccountChooserView;
 
+using AccountChosenCallback =
+    base::OnceCallback<void(std::optional<AccountInfo>)>;
+
 // This class is responsible for showing the flow for selecting an account to
 // save to Drive.
 class AccountChooserController
@@ -42,8 +45,7 @@ class AccountChooserController
   AccountChooserController& operator=(const AccountChooserController&) = delete;
   ~AccountChooserController() override;
 
-  void GetAccount(base::OnceCallback<void(std::optional<AccountInfo>)>
-                      on_account_selected_callback);
+  void GetAccount(AccountChosenCallback on_account_chosen_callback);
 
   // IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
@@ -80,7 +82,7 @@ class AccountChooserController
   void OnAddAccountButtonClicked() override;
   // User clicked "cancel" or closed the add account pop-up with no accounts
   // present
-  void OnFlowCancelled(int32_t widget_closed_reason) override;
+  void OnFlowCancelled() override;
   // User clicked on an account
   void OnAccountSelected(const AccountInfo& account_info) override;
   // User clicked "Save" button in the account chooser dialog.
@@ -107,14 +109,14 @@ class AccountChooserController
   //                         signin::IdentityManager::Observer>
   //     scoped_identity_manager_observation_{this};
 
-  // base::OnceCallback<void(std::optional<AccountInfo>)>
-  //     on_account_selected_callback_;
+  // All dialogs MUST be closed if this callback has been run.
+  AccountChosenCallback on_account_chosen_callback_;
 
   // Account chooser dialog related fields.
   raw_ptr<AccountChooserView> account_chooser_view_;
   std::unique_ptr<views::DialogDelegate> account_chooser_dialog_delegate_;
   std::unique_ptr<views::Widget> account_chooser_widget_;
-  // std::optional<AccountInfo> selected_account_;
+  std::optional<AccountInfo> selected_account_;
 
   // Add account popup related fields.
   raw_ptr<content::WebContents> add_account_popup_;

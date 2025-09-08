@@ -158,12 +158,10 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
 
   // Add the "Cancel" button.
   auto cancel_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(
-          &AccountChooserViewDelegate::OnFlowCancelled,
-          base::Unretained(parent_dialog_),
-          static_cast<int32_t>(
-              views::Widget::ClosedReason::kCancelButtonClicked)),
+      base::BindRepeating(&AccountChooserViewDelegate::OnFlowCancelled,
+                          base::Unretained(parent_dialog_)),
       l10n_util::GetStringUTF16(IDS_CANCEL));
+  cancel_button->SetProperty(views::kElementIdentifierKey, kCancelButtonId);
   cancel_button->SetStyle(ui::ButtonStyle::kTonal);
   cancel_button->SetAppearDisabledInInactiveWidget(true);
   footer->AddChildView(std::move(cancel_button));
@@ -174,6 +172,7 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
       base::BindOnce(&AccountChooserViewDelegate::OnSaveButtonClicked,
                      base::Unretained(parent_dialog_)),
       l10n_util::GetStringUTF16(IDS_SAVE));
+  save_button->SetProperty(views::kElementIdentifierKey, kSaveButtonId);
   save_button->SetStyle(ui::ButtonStyle::kProminent);
   save_button->SetAppearDisabledInInactiveWidget(true);
   footer->AddChildView(std::move(save_button));
@@ -307,4 +306,6 @@ END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AccountChooserView, kTopViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AccountChooserView, kAddAccountButtonId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AccountChooserView, kCancelButtonId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AccountChooserView, kSaveButtonId);
 }  // namespace save_to_drive

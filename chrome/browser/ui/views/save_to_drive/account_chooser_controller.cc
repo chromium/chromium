@@ -92,13 +92,13 @@ AccountChooserController::AccountChooserController(
           std::make_unique<AddAccountPopupObserver>(this)) {}
 
 AccountChooserController::~AccountChooserController() {
-  CloseAddAccountPopup();
-  CloseWidget();
+  OnFlowCancelled();
 }
 
 void AccountChooserController::GetAccount(
-    base::OnceCallback<void(std::optional<AccountInfo>)>
-        on_account_selected_callback) {
+    AccountChosenCallback on_account_chosen_callback) {
+  CHECK(on_account_chosen_callback);
+  on_account_chosen_callback_ = std::move(on_account_chosen_callback);
   ProfileInfo profile_info = GetProfileInfo();
   Show(std::move(profile_info));
 }
@@ -113,10 +113,10 @@ void AccountChooserController::OnAddAccountPopupDestroyed() {
   // This should happen before notifying the observer, where `this` will be
   // destroyed.
   add_account_popup_ = nullptr;
-  if (!add_account_popup_programatically_closed_) {
+  if (!add_account_popup_programatically_closed_ && !account_chooser_widget_) {
     // This means the user closed the popup window and the flow should be
     // canceled.
-    // TODO: cancel flow.
+    OnFlowCancelled();
   }
 }
 
@@ -164,10 +164,25 @@ void AccountChooserController::OnAddAccountButtonClicked() {
   ShowAddAccountDialog();
 }
 
-void AccountChooserController::OnFlowCancelled(int32_t widget_closed_reason) {}
+void AccountChooserController::OnFlowCancelled() {
+  if (on_account_chosen_callback_) {
+    CloseDialogs();
+    std::move(on_account_chosen_callback_).Run(std::nullopt);
+  }
+}
+
 void AccountChooserController::OnAccountSelected(
-    const AccountInfo& account_info) {}
-void AccountChooserController::OnSaveButtonClicked() {}
+    const AccountInfo& account_info) {
+  selected_account_ = account_info;
+}
+
+void AccountChooserController::OnSaveButtonClicked() {
+  if (on_account_chosen_callback_) {
+    CHECK(selected_account_.has_value());
+    CloseDialogs();
+    std::move(on_account_chosen_callback_).Run(selected_account_);
+  }
+}
 
 AccountChooserController::ProfileInfo
 AccountChooserController::GetProfileInfo() {
@@ -229,6 +244,11 @@ void AccountChooserController::CloseAddAccountPopup() {
   content::WebContents* popup = add_account_popup_;
   add_account_popup_ = nullptr;
   popup->Close();
+}
+
+void AccountChooserController::CloseDialogs() {
+  CloseAddAccountPopup();
+  CloseWidget();
 }
 
 }  // namespace save_to_drive

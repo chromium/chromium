@@ -18,10 +18,7 @@ class MockAccountChooserViewDelegate : public AccountChooserViewDelegate {
               (const AccountInfo& account),
               (override));
   MOCK_METHOD(void, OnAddAccountButtonClicked, (), (override));
-  MOCK_METHOD(void,
-              OnFlowCancelled,
-              (int32_t widget_closed_reason),
-              (override));
+  MOCK_METHOD(void, OnFlowCancelled, (), (override));
   MOCK_METHOD(void, OnSaveButtonClicked, (), (override));
 };
 }  // namespace save_to_drive

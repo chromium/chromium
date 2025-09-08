@@ -23,6 +23,8 @@ class AccountChooserView : public views::FlexLayoutView {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddAccountButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveButtonId);
 
   AccountChooserView(AccountChooserViewDelegate* parent_dialog,
                               const std::vector<AccountInfo>& accounts,

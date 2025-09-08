@@ -27,6 +27,28 @@ namespace {
 
 using ::save_to_drive::testing::GetTestAccount;
 
+AccountChosenCallback GetOnAccountChosenCallback(
+    const AccountInfo& expected_account,
+    content::WaiterHelper& waiter) {
+  return base::BindLambdaForTesting(
+      [&expected_account, &waiter](std::optional<AccountInfo> account) {
+        // Cannot match by id because IdentityTestEnvironment generates an
+        // id on your behalf.
+        EXPECT_EQ(account->full_name, expected_account.full_name);
+        EXPECT_EQ(account->email, expected_account.email);
+        waiter.OnEvent();
+      });
+}
+
+AccountChosenCallback GetOnNoAccountChosenCallback(
+    content::WaiterHelper& waiter) {
+  return base::BindLambdaForTesting(
+      [&waiter](std::optional<AccountInfo> account) {
+        EXPECT_FALSE(account.has_value());
+        waiter.OnEvent();
+      });
+}
+
 class AccountChooserControllerInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
@@ -88,12 +110,11 @@ class AccountChooserControllerInteractiveUiTest
     return persisted_account;
   }
 
-  auto GetAccount(base::OnceCallback<void(std::optional<AccountInfo>)>
-                      on_account_selected_callback) {
-    return Do([this, on_account_selected_callback =
-                         std::move(on_account_selected_callback)]() mutable {
+  auto GetAccount(AccountChosenCallback on_account_chosen_callback) {
+    return Do([this, on_account_chosen_callback =
+                         std::move(on_account_chosen_callback)]() mutable {
       account_chooser_controller_->GetAccount(
-          std::move(on_account_selected_callback));
+          std::move(on_account_chosen_callback));
     });
   }
 
@@ -107,6 +128,17 @@ class AccountChooserControllerInteractiveUiTest
               return BrowserList::GetInstance()->get(1)->is_type_popup();
             },
             "Expect second browser is popup."));
+  }
+
+  // Must be called after VerifyPopupOpened().
+  auto ClosePopup() {
+    return Do([]() { BrowserList::GetInstance()->get(1)->window()->Close(); });
+  }
+
+  auto VerifyPopupClosed() {
+    return CheckResult(
+        []() -> size_t { return BrowserList::GetInstance()->size(); }, 1u,
+        "Expect one browser.");
   }
 
  protected:
@@ -130,34 +162,60 @@ class AccountChooserControllerInteractiveUiTest
 };
 
 IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
-                       ShowAccountChooserOneAccount) {
+                       ShowAccountChooserAndChooseAccount) {
   AccountInfo expected_account =
       GetTestAccount("pothos", "test.com", /*gaia_id=*/1);
-  RunTestSequence(
-      CreateAccountChooserController(), MakeAccountAvailable(expected_account),
-      GetAccount(/*on_account_selected_callback=*/base::DoNothing()),
-      WaitForShow(AccountChooserView::kTopViewId),
-      EnsurePresent(AccountChooserView::kTopViewId));
+  content::WaiterHelper waiter;
+  AccountChosenCallback on_account_chosen_callback =
+      GetOnAccountChosenCallback(expected_account, waiter);
+  RunTestSequence(CreateAccountChooserController(),
+                  MakeAccountAvailable(expected_account),
+                  GetAccount(std::move(on_account_chosen_callback)),
+                  WaitForShow(AccountChooserView::kTopViewId),
+                  WaitForShow(AccountChooserView::kSaveButtonId),
+                  PressButton(AccountChooserView::kSaveButtonId),
+                  Do([&waiter]() { EXPECT_TRUE(waiter.Wait()); }));
 }
 
 IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
-                       ShowAddAccountPopupNoAccounts) {
-  RunTestSequence(
-      CreateAccountChooserController(),
-      GetAccount(/*on_account_selected_callback=*/base::DoNothing()),
-      VerifyPopupOpened());
+                       ShowAccountChooserAndCancelFlow) {
+  AccountInfo account = GetTestAccount("pothos", "test.com", /*gaia_id=*/1);
+  content::WaiterHelper waiter;
+  AccountChosenCallback on_account_chosen_callback =
+      GetOnNoAccountChosenCallback(waiter);
+  RunTestSequence(CreateAccountChooserController(),
+                  MakeAccountAvailable(account),
+                  GetAccount(std::move(on_account_chosen_callback)),
+                  WaitForShow(AccountChooserView::kTopViewId),
+                  WaitForShow(AccountChooserView::kCancelButtonId),
+                  PressButton(AccountChooserView::kCancelButtonId),
+                  WaitForHide(AccountChooserView::kTopViewId),
+                  Do([&waiter]() { EXPECT_TRUE(waiter.Wait()); }));
 }
 
 IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
-                       ClickAddAccountButtonOpensAddAccountPopup) {
-  AccountInfo expected_account =
-      GetTestAccount("pothos", "test.com", /*gaia_id=*/1);
-  RunTestSequence(
-      CreateAccountChooserController(), MakeAccountAvailable(expected_account),
-      GetAccount(/*on_account_selected_callback=*/base::DoNothing()),
-      WaitForShow(AccountChooserView::kAddAccountButtonId),
-      PressButton(AccountChooserView::kAddAccountButtonId),
-      VerifyPopupOpened());
+                       ShowAddAccountPopupNoAccountsAndCancelFlow) {
+  content::WaiterHelper waiter;
+  AccountChosenCallback on_account_chosen_callback =
+      GetOnNoAccountChosenCallback(waiter);
+  RunTestSequence(CreateAccountChooserController(),
+                  GetAccount(std::move(on_account_chosen_callback)),
+                  VerifyPopupOpened(), ClosePopup(), VerifyPopupClosed(),
+                  Do([&waiter]() { EXPECT_TRUE(waiter.Wait()); }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AccountChooserControllerInteractiveUiTest,
+    ClickAddAccountButtonOpensAddAccountPopupAndClosePopupDoesNotCancelFlow) {
+  AccountInfo account = GetTestAccount("pothos", "test.com", /*gaia_id=*/1);
+  RunTestSequence(CreateAccountChooserController(),
+                  MakeAccountAvailable(account),
+                  GetAccount(/*on_account_chosen_callback=*/base::DoNothing()),
+                  WaitForShow(AccountChooserView::kTopViewId),
+                  WaitForShow(AccountChooserView::kAddAccountButtonId),
+                  PressButton(AccountChooserView::kAddAccountButtonId),
+                  VerifyPopupOpened(), ClosePopup(), VerifyPopupClosed(),
+                  EnsurePresent(AccountChooserView::kTopViewId));
 }
 
 }  // namespace
