@@ -93,7 +93,6 @@ using ::testing::Combine;
 using ::testing::Eq;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::Truly;
 using ::testing::ValuesIn;
 using ::testing::WithArg;
@@ -599,12 +598,12 @@ IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
       PermissionRequestRelevance::kUnspecified);
   EXPECT_CALL(prediction_service(),
               StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
-      .WillRepeatedly(WithArg<2>(Invoke(
+      .WillRepeatedly(WithArg<2>(
           [&](PredictionService::LookupResponseCallback response_callback) {
             std::move(response_callback)
                 .Run(/*lookup_successful=*/true,
                      /*response_from_cache=*/true, prediction_service_response);
-          })));
+          }));
 
   TriggerPromptAndVerifyUi(test_url, PermissionAction::DISMISSED,
                            GetParam().should_expect_quiet_ui,
@@ -1028,12 +1027,12 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
                            test_case.expected_relevance);
   EXPECT_CALL(prediction_service(),
               StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
-      .WillRepeatedly(WithArg<2>(Invoke(
+      .WillRepeatedly(WithArg<2>(
           [&](PredictionService::LookupResponseCallback response_callback) {
             std::move(response_callback)
                 .Run(/*lookup_successful=*/true,
                      /*response_from_cache=*/true, prediction_service_response);
-          })));
+          }));
   TriggerPromptAndVerifyUi(
       /*test_url=*/"test.a", PermissionAction::DISMISSED,
       test_case.should_expect_quiet_ui, test_case.expected_relevance,
@@ -1262,12 +1261,12 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelLanguageDetectionBrowserTest,
       BuildPredictionServiceResponse(kLikelihoodVeryUnlikely);
 
   EXPECT_CALL(prediction_service(), StartLookup(_, _, _))
-      .WillRepeatedly(WithArg<2>(Invoke(
+      .WillRepeatedly(WithArg<2>(
           [&](PredictionService::LookupResponseCallback response_callback) {
             std::move(response_callback)
                 .Run(/*lookup_successful=*/true,
                      /*response_from_cache=*/true, prediction_service_response);
-          })));
+          }));
 
   set_dummy_screenshot_for_testing();
   set_dummy_inner_text_for_testing();
@@ -1427,12 +1426,12 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
                            PermissionRequestRelevance::kUnspecified);
   EXPECT_CALL(prediction_service(),
               StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
-      .WillRepeatedly(WithArg<2>(Invoke(
+      .WillRepeatedly(WithArg<2>(
           [&](PredictionService::LookupResponseCallback response_callback) {
             std::move(response_callback)
                 .Run(/*lookup_successful=*/true,
                      /*response_from_cache=*/true, prediction_service_response);
-          })));
+          }));
 
   TriggerPromptAndVerifyUi(
       /*test_url=*/"test.a", PermissionAction::DISMISSED,
@@ -1487,12 +1486,12 @@ IN_PROC_BROWSER_TEST_F(Aiv4ModelTimeoutBrowserTest,
                            PermissionRequestRelevance::kUnspecified);
   EXPECT_CALL(prediction_service(),
               StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
-      .WillRepeatedly(WithArg<2>(Invoke(
+      .WillRepeatedly(WithArg<2>(
           [&](PredictionService::LookupResponseCallback response_callback) {
             std::move(response_callback)
                 .Run(/*lookup_successful=*/true,
                      /*response_from_cache=*/true, prediction_service_response);
-          })));
+          }));
   TriggerPromptAndVerifyUi(
       /*test_url=*/"test.a", PermissionAction::DISMISSED,
       /*should_expect_quiet_ui=*/true,
@@ -1625,12 +1624,12 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
                            test_case.expected_relevance);
   EXPECT_CALL(prediction_service(),
               StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
-      .WillRepeatedly(WithArg<2>(Invoke(
+      .WillRepeatedly(WithArg<2>(
           [&](PredictionService::LookupResponseCallback response_callback) {
             std::move(response_callback)
                 .Run(/*lookup_successful=*/true,
                      /*response_from_cache=*/true, prediction_service_response);
-          })));
+          }));
   TriggerPromptAndVerifyUi(
       /*test_url=*/"test.a", PermissionAction::DISMISSED,
       test_case.should_expect_quiet_ui, test_case.expected_relevance,

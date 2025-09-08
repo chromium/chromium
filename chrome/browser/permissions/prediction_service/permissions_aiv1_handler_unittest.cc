@@ -44,7 +44,6 @@ using ::optimization_guide::proto::PermissionType;
 using ::permissions::RequestType;
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::NotNull;
@@ -164,33 +163,33 @@ class PermissionsAiv1HandlerTestBase : public testing::Test {
   void ExpectStartSessionAndReturn(
       optimization_guide::OptimizationGuideModelExecutor::Session* session) {
     EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [session](
                 optimization_guide::ModelBasedCapabilityKey feature,
                 const std::optional<optimization_guide::SessionConfigParams>&
                     config_params) {
               return session ? std::make_unique<NiceMock<MockSession>>(session)
                              : nullptr;
-            }));
+            });
   }
 
   void ExpectGetOnDeviceModelEligibilityAndReturn(EligibilityReason reason) {
     EXPECT_CALL(*mock_optimization_guide_keyed_service_,
                 GetOnDeviceModelEligibility(Eq(kFeatureKey)))
-        .WillOnce(Invoke(
+        .WillOnce(
             [reason](optimization_guide::ModelBasedCapabilityKey feature) {
               return reason;
-            }));
+            });
   }
 
   inline ModelExecutionResultStreamingCallback ExecuteModelAndReturnCallback(
       const PermissionsAiRequest& request) {
     ModelExecutionResultStreamingCallback response_callback;
     EXPECT_CALL(session_, ExecuteModel(EqualsProto(request), _))
-        .WillOnce(WithArg<1>(
-            Invoke([&](ModelExecutionResultStreamingCallback callback) {
+        .WillOnce(
+            WithArg<1>([&](ModelExecutionResultStreamingCallback callback) {
               response_callback = std::move(callback);
-            })));
+            }));
     return response_callback;
   }
 
@@ -332,10 +331,9 @@ TEST_P(ParametrizedPermissionsAiv1HandlerTest,
   PermissionsAiRequest request = BuildRequest(GetParam().permission_type);
   ModelExecutionResultStreamingCallback response_callback;
   EXPECT_CALL(session_, ExecuteModel(EqualsProto(request), _))
-      .WillOnce(WithArg<1>(
-          Invoke([&](ModelExecutionResultStreamingCallback callback) {
-            response_callback = std::move(callback);
-          })));
+      .WillOnce(WithArg<1>([&](ModelExecutionResultStreamingCallback callback) {
+        response_callback = std::move(callback);
+      }));
 
   ModelCallbackFuture future;
   permissions_aiv1_handler_->InquireAiOnDeviceModel(
@@ -380,10 +378,9 @@ TEST_F(PermissionsAiv1HandlerTest, IncompleResponseIsIgnored) {
       BuildRequest(PermissionType::PERMISSION_TYPE_NOTIFICATIONS);
   ModelExecutionResultStreamingCallback response_callback;
   EXPECT_CALL(session_, ExecuteModel(EqualsProto(request), _))
-      .WillOnce(WithArg<1>(
-          Invoke([&](ModelExecutionResultStreamingCallback callback) {
-            response_callback = std::move(callback);
-          })));
+      .WillOnce(WithArg<1>([&](ModelExecutionResultStreamingCallback callback) {
+        response_callback = std::move(callback);
+      }));
 
   int call_count = 0;
   permissions_aiv1_handler_->InquireAiOnDeviceModel(
@@ -443,10 +440,9 @@ TEST_F(PermissionsAiv1HandlerTest,
       BuildRequest(PermissionType::PERMISSION_TYPE_NOTIFICATIONS);
   ModelExecutionResultStreamingCallback response_callback;
   EXPECT_CALL(session_, ExecuteModel(EqualsProto(request), _))
-      .WillOnce(WithArg<1>(
-          Invoke([&](ModelExecutionResultStreamingCallback callback) {
-            response_callback = std::move(callback);
-          })));
+      .WillOnce(WithArg<1>([&](ModelExecutionResultStreamingCallback callback) {
+        response_callback = std::move(callback);
+      }));
 
   ModelCallbackFuture future_first_request;
   permissions_aiv1_handler_->InquireAiOnDeviceModel(
@@ -524,10 +520,10 @@ TEST_F(PermissionsAiv1HandlerTest, OldSessionGetsCancelledByTimer) {
   ExpectStartSessionAndReturn(&session_);
   ModelExecutionResultStreamingCallback response_callback;
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(WithArg<1>(Invoke(
+      .WillOnce(WithArg<1>(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
-                      callback) { response_callback = std::move(callback); })));
+                      callback) { response_callback = std::move(callback); }));
 
   // Second request will not get rejected and starts a new timer interval.
   ModelCallbackFuture future_second_request;
@@ -557,10 +553,10 @@ TEST_F(PermissionsAiv1HandlerTest, IncompleteResultsDoNotCancelTimer) {
 
   ModelExecutionResultStreamingCallback response_callback;
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(WithArg<1>(Invoke(
+      .WillOnce(WithArg<1>(
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
-                      callback) { response_callback = std::move(callback); })));
+                      callback) { response_callback = std::move(callback); }));
 
   // Timer gets started for inquiry request.
   ModelCallbackFuture future;
