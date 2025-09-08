@@ -1078,6 +1078,30 @@ TEST_F(BnplManagerTest,
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
+// Tests that `OnIssuerSelected()` correctly sets the instrument_id for an
+// externally linked issuer before proceeding with the flow.
+TEST_F(BnplManagerTest,
+       OnIssuerSelected_SetsInstrumentIdForExternallyLinkedIssuer) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
+  BnplIssuer externally_linked_issuer = test::GetTestLinkedBnplIssuer(
+      BnplIssuer::IssuerId::kBnplKlarna,
+      /*action_required=*/autofill::DenseSet(
+          {autofill::PaymentInstrument::ActionRequired::kAcceptTos}));
+
+  EXPECT_CALL(*payments_network_interface_,
+              GetDetailsForUpdateBnplPaymentInstrument)
+      .Times(1);
+
+  OnIssuerSelected(externally_linked_issuer);
+
+  auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
+  EXPECT_EQ(ongoing_flow_state->issuer, externally_linked_issuer);
+  EXPECT_EQ(
+      ongoing_flow_state->instrument_id,
+      base::NumberToString(
+          externally_linked_issuer.payment_instrument()->instrument_id()));
+}
+
 // Tests that `OnDidGetLegalMessageFromServer` shows an error when there is a
 // PaymentsRpcResult error.
 TEST_F(BnplManagerTest, OnDidGetLegalMessageFromServer_RpcError) {
