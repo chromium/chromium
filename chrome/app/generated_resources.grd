@@ -4044,7 +4044,7 @@ are declared in tools/grit/grit_args.gni.
         Notifications from this site may be disruptive
       </message>
       <message name="IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION" desc="Text used as notification message when requesting permission for Web Notifications via a notification. Used when the prediction service has decided that the user will be very unlikely to grant this permission.">
-        Notifications were automatically blocked because you usually don't allow them
+        Chrome thinks you don't want notifications from this site. So, requests are hidden to reduce interruptions.
       </message>
       <message name="IDS_GEOLOCATION_OFF_EXPLANATORY_TEXT" desc="Explanatory animated text that appears (and then disappears) in the address bar as part of the less-prominent UX, when a website requests the geolocation permission.">
         Location blocked
@@ -4053,7 +4053,7 @@ are declared in tools/grit/grit_args.gni.
         Location blocked
       </message>
       <message name="IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_PREDICTION_SERVICE_DESCRIPTION" desc="Text used as notification message when requesting permission for Geolocation. Used when the prediction service has decided that the user will be very unlikely to grant this permission.">
-        This site was blocked from knowing your precise location because you usually don't allow this
+        Chrome thinks you don't want to use your location on this site. So, requests are hidden to reduce interruptions.
       </message>
       <message name="IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON" desc="Text displayed on the button that enables geolocation for a site. This button is part of the geolocation status bubble, which is triggered when a user clicks on the blocked geolocation icon in the omnibox.">
         Allow for this site
