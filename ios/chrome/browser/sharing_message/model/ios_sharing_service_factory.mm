@@ -90,13 +90,12 @@ IOSSharingServiceFactory::IOSSharingServiceFactory()
 IOSSharingServiceFactory::~IOSSharingServiceFactory() {}
 
 std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   if (!base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
