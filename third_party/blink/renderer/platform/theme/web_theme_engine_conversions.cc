@@ -4,77 +4,54 @@
 
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace blink {
 
-ui::NativeTheme::Part NativeThemePart(WebThemeEngine::Part part) {
-  switch (part) {
-    case WebThemeEngine::kPartScrollbarDownArrow:
-      return ui::NativeTheme::kScrollbarDownArrow;
-    case WebThemeEngine::kPartScrollbarLeftArrow:
-      return ui::NativeTheme::kScrollbarLeftArrow;
-    case WebThemeEngine::kPartScrollbarRightArrow:
-      return ui::NativeTheme::kScrollbarRightArrow;
-    case WebThemeEngine::kPartScrollbarUpArrow:
-      return ui::NativeTheme::kScrollbarUpArrow;
-    case WebThemeEngine::kPartScrollbarHorizontalThumb:
-      return ui::NativeTheme::kScrollbarHorizontalThumb;
-    case WebThemeEngine::kPartScrollbarVerticalThumb:
-      return ui::NativeTheme::kScrollbarVerticalThumb;
-    case WebThemeEngine::kPartScrollbarHorizontalTrack:
-      return ui::NativeTheme::kScrollbarHorizontalTrack;
-    case WebThemeEngine::kPartScrollbarVerticalTrack:
-      return ui::NativeTheme::kScrollbarVerticalTrack;
-    case WebThemeEngine::kPartScrollbarCorner:
-      return ui::NativeTheme::kScrollbarCorner;
-    case WebThemeEngine::kPartCheckbox:
-      return ui::NativeTheme::kCheckbox;
-    case WebThemeEngine::kPartRadio:
-      return ui::NativeTheme::kRadio;
-    case WebThemeEngine::kPartButton:
-      return ui::NativeTheme::kPushButton;
-    case WebThemeEngine::kPartTextField:
-      return ui::NativeTheme::kTextField;
-    case WebThemeEngine::kPartMenuList:
-      return ui::NativeTheme::kMenuList;
-    case WebThemeEngine::kPartSliderTrack:
-      return ui::NativeTheme::kSliderTrack;
-    case WebThemeEngine::kPartSliderThumb:
-      return ui::NativeTheme::kSliderThumb;
-    case WebThemeEngine::kPartInnerSpinButton:
-      return ui::NativeTheme::kInnerSpinButton;
-    case WebThemeEngine::kPartProgressBar:
-      return ui::NativeTheme::kProgressBar;
-    default:
-      return ui::NativeTheme::kScrollbarDownArrow;
-  }
+using WTE = WebThemeEngine;
+using NT = ui::NativeTheme;
+
+NT::Part NativeThemePart(WTE::Part part) {
+  static constexpr auto kPartMap = base::MakeFixedFlatMap<WTE::Part, NT::Part>(
+      {{WTE::kPartScrollbarDownArrow, NT::kScrollbarDownArrow},
+       {WTE::kPartScrollbarLeftArrow, NT::kScrollbarLeftArrow},
+       {WTE::kPartScrollbarRightArrow, NT::kScrollbarRightArrow},
+       {WTE::kPartScrollbarUpArrow, NT::kScrollbarUpArrow},
+       {WTE::kPartScrollbarHorizontalThumb, NT::kScrollbarHorizontalThumb},
+       {WTE::kPartScrollbarVerticalThumb, NT::kScrollbarVerticalThumb},
+       {WTE::kPartScrollbarHorizontalTrack, NT::kScrollbarHorizontalTrack},
+       {WTE::kPartScrollbarVerticalTrack, NT::kScrollbarVerticalTrack},
+       {WTE::kPartScrollbarCorner, NT::kScrollbarCorner},
+       {WTE::kPartCheckbox, NT::kCheckbox},
+       {WTE::kPartRadio, NT::kRadio},
+       {WTE::kPartButton, NT::kPushButton},
+       {WTE::kPartTextField, NT::kTextField},
+       {WTE::kPartMenuList, NT::kMenuList},
+       {WTE::kPartSliderTrack, NT::kSliderTrack},
+       {WTE::kPartSliderThumb, NT::kSliderThumb},
+       {WTE::kPartInnerSpinButton, NT::kInnerSpinButton},
+       {WTE::kPartProgressBar, NT::kProgressBar}});
+  return kPartMap.at(part);
 }
 
-ui::NativeTheme::State NativeThemeState(WebThemeEngine::State state) {
-  switch (state) {
-    case WebThemeEngine::kStateDisabled:
-      return ui::NativeTheme::kDisabled;
-    case WebThemeEngine::kStateHover:
-      return ui::NativeTheme::kHovered;
-    case WebThemeEngine::kStateNormal:
-      return ui::NativeTheme::kNormal;
-    case WebThemeEngine::kStatePressed:
-      return ui::NativeTheme::kPressed;
-    default:
-      return ui::NativeTheme::kDisabled;
-  }
+NT::State NativeThemeState(WTE::State state) {
+  static constexpr auto kStateMap =
+      base::MakeFixedFlatMap<WTE::State, NT::State>(
+          {{WTE::kStateDisabled, NT::kDisabled},
+           {WTE::kStateHover, NT::kHovered},
+           {WTE::kStateNormal, NT::kNormal},
+           {WTE::kStatePressed, NT::kPressed}});
+  return kStateMap.at(state);
 }
 
-ui::NativeTheme::ColorScheme NativeColorScheme(
-    mojom::blink::ColorScheme color_scheme) {
-  switch (color_scheme) {
-    case mojom::blink::ColorScheme::kLight:
-      return ui::NativeTheme::ColorScheme::kLight;
-    case mojom::blink::ColorScheme::kDark:
-      return ui::NativeTheme::ColorScheme::kDark;
-  }
+NT::ColorScheme NativeColorScheme(mojom::blink::ColorScheme color_scheme) {
+  using MCS = mojom::blink::ColorScheme;
+  using NTCS = NT::ColorScheme;
+  static constexpr auto kColorSchemeMap = base::MakeFixedFlatMap<MCS, NTCS>(
+      {{MCS::kLight, NTCS::kLight}, {MCS::kDark, NTCS::kDark}});
+  return kColorSchemeMap.at(color_scheme);
 }
 
 }  // namespace blink

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/public/platform/web_theme_engine.h"
 
-#include <vector>
+#include <array>
+#include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
@@ -12,76 +13,58 @@
 namespace blink {
 
 TEST(WebThemeEngineTest, NativeSystemThemePart) {
-  std::vector<blink::WebThemeEngine::Part> blink_inputs = {
-      blink::WebThemeEngine::kPartScrollbarDownArrow,
-      blink::WebThemeEngine::kPartScrollbarLeftArrow,
-      blink::WebThemeEngine::kPartScrollbarRightArrow,
-      blink::WebThemeEngine::kPartScrollbarUpArrow,
-      blink::WebThemeEngine::kPartScrollbarHorizontalThumb,
-      blink::WebThemeEngine::kPartScrollbarVerticalThumb,
-      blink::WebThemeEngine::kPartScrollbarHorizontalTrack,
-      blink::WebThemeEngine::kPartScrollbarVerticalTrack,
-      blink::WebThemeEngine::kPartScrollbarCorner,
-      blink::WebThemeEngine::kPartCheckbox,
-      blink::WebThemeEngine::kPartRadio,
-      blink::WebThemeEngine::kPartButton,
-      blink::WebThemeEngine::kPartTextField,
-      blink::WebThemeEngine::kPartMenuList,
-      blink::WebThemeEngine::kPartSliderTrack,
-      blink::WebThemeEngine::kPartSliderThumb,
-      blink::WebThemeEngine::kPartInnerSpinButton,
-      blink::WebThemeEngine::kPartProgressBar};
-
-  std::vector<ui::NativeTheme::Part> native_theme_outputs = {
-      ui::NativeTheme::kScrollbarDownArrow,
-      ui::NativeTheme::kScrollbarLeftArrow,
-      ui::NativeTheme::kScrollbarRightArrow,
-      ui::NativeTheme::kScrollbarUpArrow,
-      ui::NativeTheme::kScrollbarHorizontalThumb,
-      ui::NativeTheme::kScrollbarVerticalThumb,
-      ui::NativeTheme::kScrollbarHorizontalTrack,
-      ui::NativeTheme::kScrollbarVerticalTrack,
-      ui::NativeTheme::kScrollbarCorner,
-      ui::NativeTheme::kCheckbox,
-      ui::NativeTheme::kRadio,
-      ui::NativeTheme::kPushButton,
-      ui::NativeTheme::kTextField,
-      ui::NativeTheme::kMenuList,
-      ui::NativeTheme::kSliderTrack,
-      ui::NativeTheme::kSliderThumb,
-      ui::NativeTheme::kInnerSpinButton,
-      ui::NativeTheme::kProgressBar};
-
-  for (size_t i = 0; i < blink_inputs.size(); ++i)
-    EXPECT_EQ(NativeThemePart(blink_inputs[i]), native_theme_outputs[i]);
+  static constexpr auto kParts = std::to_array<
+      std::pair<ui::NativeTheme::Part, blink::WebThemeEngine::Part>>(
+      {{ui::NativeTheme::kScrollbarDownArrow,
+        blink::WebThemeEngine::kPartScrollbarDownArrow},
+       {ui::NativeTheme::kScrollbarLeftArrow,
+        blink::WebThemeEngine::kPartScrollbarLeftArrow},
+       {ui::NativeTheme::kScrollbarRightArrow,
+        blink::WebThemeEngine::kPartScrollbarRightArrow},
+       {ui::NativeTheme::kScrollbarUpArrow,
+        blink::WebThemeEngine::kPartScrollbarUpArrow},
+       {ui::NativeTheme::kScrollbarHorizontalThumb,
+        blink::WebThemeEngine::kPartScrollbarHorizontalThumb},
+       {ui::NativeTheme::kScrollbarVerticalThumb,
+        blink::WebThemeEngine::kPartScrollbarVerticalThumb},
+       {ui::NativeTheme::kScrollbarHorizontalTrack,
+        blink::WebThemeEngine::kPartScrollbarHorizontalTrack},
+       {ui::NativeTheme::kScrollbarVerticalTrack,
+        blink::WebThemeEngine::kPartScrollbarVerticalTrack},
+       {ui::NativeTheme::kScrollbarCorner,
+        blink::WebThemeEngine::kPartScrollbarCorner},
+       {ui::NativeTheme::kCheckbox, blink::WebThemeEngine::kPartCheckbox},
+       {ui::NativeTheme::kRadio, blink::WebThemeEngine::kPartRadio},
+       {ui::NativeTheme::kPushButton, blink::WebThemeEngine::kPartButton},
+       {ui::NativeTheme::kTextField, blink::WebThemeEngine::kPartTextField},
+       {ui::NativeTheme::kMenuList, blink::WebThemeEngine::kPartMenuList},
+       {ui::NativeTheme::kSliderTrack, blink::WebThemeEngine::kPartSliderTrack},
+       {ui::NativeTheme::kSliderThumb, blink::WebThemeEngine::kPartSliderThumb},
+       {ui::NativeTheme::kInnerSpinButton,
+        blink::WebThemeEngine::kPartInnerSpinButton},
+       {ui::NativeTheme::kProgressBar,
+        blink::WebThemeEngine::kPartProgressBar}});
+  for (const auto& part : kParts) {
+    EXPECT_EQ(part.first, NativeThemePart(part.second));
+  }
 }
 
 TEST(WebThemeEngineTest, NativeSystemThemeState) {
-  std::vector<blink::WebThemeEngine::State> blink_inputs = {
-      blink::WebThemeEngine::kStateDisabled,
-      blink::WebThemeEngine::kStateHover,
-      blink::WebThemeEngine::kStateNormal,
-      blink::WebThemeEngine::kStatePressed,
-  };
-
-  std::vector<ui::NativeTheme::State> native_theme_outputs = {
-      ui::NativeTheme::kDisabled, ui::NativeTheme::kHovered,
-      ui::NativeTheme::kNormal, ui::NativeTheme::kPressed};
-
-  for (size_t i = 0; i < blink_inputs.size(); ++i)
-    EXPECT_EQ(NativeThemeState(blink_inputs[i]), native_theme_outputs[i]);
+  EXPECT_EQ(ui::NativeTheme::kDisabled,
+            NativeThemeState(blink::WebThemeEngine::kStateDisabled));
+  EXPECT_EQ(ui::NativeTheme::kHovered,
+            NativeThemeState(blink::WebThemeEngine::kStateHover));
+  EXPECT_EQ(ui::NativeTheme::kNormal,
+            NativeThemeState(blink::WebThemeEngine::kStateNormal));
+  EXPECT_EQ(ui::NativeTheme::kPressed,
+            NativeThemeState(blink::WebThemeEngine::kStatePressed));
 }
 
 TEST(WebThemeEngineTest, NativeColorScheme) {
-  std::vector<blink::mojom::ColorScheme> blink_inputs = {
-      blink::mojom::ColorScheme::kLight, blink::mojom::ColorScheme::kDark};
-
-  std::vector<ui::NativeTheme::ColorScheme> native_theme_outputs = {
-      ui::NativeTheme::ColorScheme::kLight,
-      ui::NativeTheme::ColorScheme::kDark};
-
-  for (size_t i = 0; i < blink_inputs.size(); ++i)
-    EXPECT_EQ(NativeColorScheme(blink_inputs[i]), native_theme_outputs[i]);
+  EXPECT_EQ(ui::NativeTheme::ColorScheme::kLight,
+            NativeColorScheme(blink::mojom::ColorScheme::kLight));
+  EXPECT_EQ(ui::NativeTheme::ColorScheme::kDark,
+            NativeColorScheme(blink::mojom::ColorScheme::kDark));
 }
 
 }  // namespace blink
