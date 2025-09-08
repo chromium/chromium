@@ -16,6 +16,8 @@ class WebState;
 
 namespace data_controls {
 
+class IOSDataControlsDialogFactory;
+
 // IOS implementation of `DataControlsDialog`. The warning dialog or blocking
 // toast shown to the user when a Data Controls policy is triggered.
 class IOSDataControlsDialog : public DataControlsDialog,
@@ -30,6 +32,8 @@ class IOSDataControlsDialog : public DataControlsDialog,
   void Show(base::OnceClosure on_destructed) override;
 
  private:
+  friend IOSDataControlsDialogFactory;
+
   std::u16string GetDialogTitle() const;
   std::u16string GetDialogLabel() const;
 

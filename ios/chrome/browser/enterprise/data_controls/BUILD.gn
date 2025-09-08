@@ -14,6 +14,8 @@ source_set("data_controls") {
     "data_controls_tab_helper.mm",
     "ios_data_controls_dialog.h",
     "ios_data_controls_dialog.mm",
+    "ios_data_controls_dialog_factory.h",
+    "ios_data_controls_dialog_factory.mm",
     "ios_rules_service.h",
     "ios_rules_service.mm",
     "ios_rules_service_factory.h",
@@ -28,6 +30,7 @@ source_set("data_controls") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/public",
+    "//ios/web/public:web_state_observer",
     "//ui/base/clipboard",
   ]
 }
