@@ -11,8 +11,10 @@ import '../module_header.js';
 import './icons.html.js';
 import './icon_container.js';
 
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit} from '../../i18n_setup.js';
@@ -66,11 +68,13 @@ export class ModuleElement extends ModuleElementBase {
 
   static override get properties() {
     return {
+      ariaLabels: {type: Object},
       tabGroups: {type: Object},
       showInfoDialog: {type: Boolean},
     };
   }
 
+  accessor ariaLabels: Map<string, string> = new Map();
   accessor tabGroups: TabGroup[] = [];
   accessor showInfoDialog: boolean = false;
 
@@ -81,12 +85,37 @@ export class ModuleElement extends ModuleElementBase {
     this.handler_ = TabGroupsProxyImpl.getInstance().handler;
   }
 
+  override async updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('tabGroups')) {
+      const entries = await Promise.all(this.tabGroups.map(async group => {
+        const label = await this.computeTabGroupButtonAriaLabel_(group);
+        return [group.id, label] as const;
+      }));
+      this.ariaLabels = new Map(entries);
+    }
+  }
+
   protected computeDescription_(time: string, device: string|null): string {
     return (device && device.length > 0) ? `${time} • ${device.trim()}` : time;
   }
 
   protected computeTabGroupColor_(color: Color): string {
     return colorIdToString(color);
+  }
+
+  protected async computeTabGroupButtonAriaLabel_(group: TabGroup):
+      Promise<string> {
+    const totalTabsStr =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'modulesTabGroupsTabsText', group.totalTabCount);
+    const description =
+        this.computeDescription_(group.updateTime, group.deviceName);
+    const sharedStr = group.isSharedTabGroup ? 'shared' : '';
+    return [totalTabsStr, group.title, description, sharedStr]
+        .filter(Boolean)
+        .join(' ');
   }
 
   protected getMenuItems_(): MenuItem[] {
