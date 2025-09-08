@@ -34,6 +34,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/test/mock_permission_request.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -745,6 +746,48 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   }
 }
 
+// Tests that showing a permission prompt bubble exits tab fullscreen.
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       PermissionPromptExitsTabFullscreen) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  FullscreenController* fullscreen_controller = browser()
+                                                    ->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+
+  // Enter tab fullscreen.
+  ToggleTabFullscreen(true);
+  ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
+
+  // Request a permission to show the bubble, which should exit fullscreen.
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  permission_request_manager->AddRequest(
+      web_contents->GetPrimaryMainFrame(),
+      std::make_unique<permissions::MockPermissionRequest>(
+          permissions::RequestType::kGeolocation));
+
+  ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = false}).Wait();
+  ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
+
+  // While bubble is showing, tab fullscreen cannot be entered.
+  EXPECT_THAT(content::EvalJs(web_contents,
+                              "document.documentElement.requestFullscreen()"),
+              content::EvalJsResult::IsError());
+  ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
+
+  // Accept the permission request to close the bubble.
+  permission_request_manager->Accept();
+
+  // Now we should be able to enter tab fullscreen again.
+  EXPECT_THAT(content::EvalJs(web_contents,
+                              "document.documentElement.requestFullscreen()"),
+              content::EvalJsResult::IsOk());
+  ASSERT_TRUE(fullscreen_controller->IsTabFullscreen());
+}
+
 // Tests ToggleFullscreenModeForTab always causes window to change.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        ToggleFullscreenModeForTab) {
@@ -1276,11 +1319,15 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
 
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
-    // Auto-accept Window Management permission prompts.
-    permissions::PermissionRequestManager* permission_request_manager =
-        permissions::PermissionRequestManager::FromWebContents(tab);
-    permission_request_manager->set_auto_response_for_test(
-        permissions::PermissionRequestManager::ACCEPT_ALL);
+    // Grant Window Management permission prompts.
+    // Don't use PermissionRequestManager::set_auto_response_for_test() because
+    // it shows the permission bubble before granting the permission, which will
+    // cause content fullscreen to exit due to security reason.
+    auto* content_settings =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    content_settings->SetContentSettingDefaultScope(
+        url, GURL(), ContentSettingsType::WINDOW_MANAGEMENT,
+        CONTENT_SETTING_ALLOW);
 
     return tab;
   }
