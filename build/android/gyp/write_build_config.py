@@ -532,7 +532,7 @@ def _ToTraceEventRewrittenPath(jar_dir, path):
   return os.path.join(jar_dir, path)
 
 
-def _WriteLintJson(params, lint_json, main_config):
+def _WriteLintJson(params, lint_json, javac_config, main_config):
   # Collect all sources and resources at the apk/bundle_module level.
   aars = set()
   srcjars = set()
@@ -567,13 +567,13 @@ def _WriteLintJson(params, lint_json, main_config):
     classpath = OrderedSet()
     manifests = OrderedSet(p['android_manifest'] for p in params.module_deps())
     for m in params.module_deps():
-      module_config = m.build_config_json()
-      classpath.update(module_config['javac_full_interface_classpath'])
-      manifests.update(module_config['extra_android_manifests'])
+      classpath.update(
+          m.javac_build_config_json()['javac_full_interface_classpath'])
+      manifests.update(m.build_config_json()['extra_android_manifests'])
     classpath = list(classpath)
     manifests = list(manifests)
   else:
-    classpath = main_config['javac_full_interface_classpath']
+    classpath = javac_config['javac_full_interface_classpath']
     manifests = [params['android_manifest']]
     manifests += main_config['extra_android_manifests']
 
@@ -652,6 +652,7 @@ def main():
 
   main_config = {}
   turbine_config = {}
+  javac_config = {}
   res_config = {}
   rtxt_config = {}
 
@@ -670,8 +671,6 @@ def main():
 
     main_config['javac_full_classpath'] = (list(tv.all_unprocessed_jars) +
                                            list(tv.all_input_jars_paths))
-    main_config['javac_full_interface_classpath'] = (
-        list(tv.all_interface_jars) + list(tv.all_input_jars_paths))
 
     if params.collects_processed_classpath():
       main_config['processed_classpath'] = list(tv.all_processed_jars)
@@ -715,8 +714,13 @@ def main():
     turbine_config['processor_classes'] = sorted(
         processor_deps.collect('main_class'))
 
-    # Duplicate this so that turbine does not need to depend on another .json.
+    # Duplicate so that turbine.py does not need to read another .json.
     turbine_config['sdk_interface_jars'] = sdk_interface_jars
+
+    javac_config['javac_full_interface_classpath'] = (
+        list(tv.all_interface_jars) + list(tv.all_input_jars_paths))
+    # Duplicate so that compile_java.py does not need to read another .json.
+    javac_config['sdk_interface_jars'] = sdk_interface_jars
 
   if params.is_dist_xar():
     if params.get('direct_deps_only'):
@@ -901,22 +905,35 @@ def main():
     ]
 
   if path := params.get('lint_json'):
-    _WriteLintJson(params, path, main_config)
+    _WriteLintJson(params, path, javac_config, main_config)
 
+  # Separate to prevent .java changes invalidating compile_resources.py, and
+  # new resource targets from invalidating java compiles.
   if res_config:
     path = build_config_path.replace('.build_config.json',
                                      '.res.build_config.json')
     build_utils.WriteJson(res_config, path, only_if_changed=True)
 
+  # Separate to prevent .java changes invalidating create_r_java.py, and new
+  # resource targets from invalidating java compiles.
   if rtxt_config:
     path = build_config_path.replace('.build_config.json',
                                      '.rtxt.build_config.json')
     build_utils.WriteJson(rtxt_config, path, only_if_changed=True)
 
+  # Separate to prevent transitive classpath changes invalidating turbine.py.
   if turbine_config:
     path = build_config_path.replace('.build_config.json',
                                      '.turbine.build_config.json')
     build_utils.WriteJson(turbine_config, path, only_if_changed=True)
+
+  # Separate to prevent APK / bundle-related values from invalidating
+  # compile_java.py, and to minimize the .json that compile_java.py needs to
+  # parse.
+  if javac_config:
+    path = build_config_path.replace('.build_config.json',
+                                     '.javac.build_config.json')
+    build_utils.WriteJson(javac_config, path, only_if_changed=True)
 
   build_utils.WriteJson(main_config, build_config_path, only_if_changed=True)
 

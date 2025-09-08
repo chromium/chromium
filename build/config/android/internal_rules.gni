@@ -154,9 +154,14 @@ template("write_build_config") {
       _type == "java_annotation_processor" || _type == "java_binary" ||
       _type == "robolectric_binary" ||
       (_type == "java_library" && !invoker.is_prebuilt)) {
-    _outputs += [ string_replace(invoker.build_config,
-                                 ".build_config.json",
-                                 ".turbine.build_config.json") ]
+    _outputs += [
+      string_replace(invoker.build_config,
+                     ".build_config.json",
+                     ".turbine.build_config.json"),
+      string_replace(invoker.build_config,
+                     ".build_config.json",
+                     ".javac.build_config.json"),
+    ]
   }
 
   if (current_toolchain == default_toolchain) {
@@ -1812,6 +1817,7 @@ if (enable_java_templates) {
       inputs = java_paths_for_inputs + [
                  invoker.build_config,
                  invoker.input_jar,
+                 invoker.javac_build_config,
                  invoker.turbine_build_config,
                ]
       depfile = "$target_gen_dir/$target_name.d"
@@ -1819,6 +1825,8 @@ if (enable_java_templates) {
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       _rebased_turbine_build_config =
           rebase_path(invoker.turbine_build_config, root_build_dir)
+      _rebased_javac_build_config =
+          rebase_path(invoker.javac_build_config, root_build_dir)
       args = [
         "--depfile",
         rebase_path(depfile, root_build_dir),
@@ -1832,7 +1840,7 @@ if (enable_java_templates) {
         "--chromium-output-dir",
         rebase_path(root_build_dir, root_build_dir),
         "--direct-classpath-jars=@FileArg($_rebased_turbine_build_config:interface_classpath)",
-        "--full-classpath-jars=@FileArg($_rebased_build_config:javac_full_interface_classpath)",
+        "--full-classpath-jars=@FileArg($_rebased_javac_build_config:javac_full_interface_classpath)",
         "--full-classpath-gn-targets=@FileArg($_rebased_build_config:javac_full_classpath_targets)",
       ]
       if (defined(invoker.header_jar_path)) {
@@ -3923,6 +3931,13 @@ if (enable_java_templates) {
         _srcjar_deps += [ ":$_fake_rjava_target" ]
       }
 
+      _javac_build_config = string_replace(_build_config,
+                                           ".build_config.json",
+                                           ".javac.build_config.json")
+      _turbine_build_config = string_replace(_build_config,
+                                             ".build_config.json",
+                                             ".turbine.build_config.json")
+
       if (_kt_files != []) {
         _abs_kt_files = get_path_info(_kt_files, "abspath")
         _kt_allowlist = [
@@ -3946,7 +3961,7 @@ if (enable_java_templates) {
           output_jar_path = _kotlinc_jar_path
           output_interface_jar_path = _kotlin_interface_jar_path
           main_target_name = _main_target_name
-          build_config = _build_config
+          build_config = _javac_build_config
           srcjar_deps = _srcjar_deps
           source_files = _source_files
           target_sources_file = _target_sources_file
@@ -3954,10 +3969,6 @@ if (enable_java_templates) {
           include_android_sdk = _requires_robolectric || _requires_android
         }
       }
-
-      _turbine_build_config = string_replace(_build_config,
-                                             ".build_config.json",
-                                             ".turbine.build_config.json")
 
       template("compile_java_helper") {
         _enable_errorprone =
@@ -3980,7 +3991,7 @@ if (enable_java_templates) {
           if (use_turbine) {
             build_config = _turbine_build_config
           } else {
-            build_config = _build_config
+            build_config = _javac_build_config
           }
 
           if (_enable_errorprone) {
@@ -4172,6 +4183,7 @@ if (enable_java_templates) {
               get_label_info(":${invoker.target_name}", "label_no_toolchain")
           input_jar = _unprocessed_jar_path
           build_config = _build_config
+          javac_build_config = _javac_build_config
           turbine_build_config = _turbine_build_config
         }
       } else {
