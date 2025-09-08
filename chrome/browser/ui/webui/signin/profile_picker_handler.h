@@ -76,6 +76,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   friend class ProfilePickerCreationFlowBrowserTest;
   friend class ProfilePickerEnterpriseCreationFlowBrowserTest;
   friend class StartupBrowserCreatorPickerInfobarTest;
+  friend class StartupBrowserCreatorOpenUrlsInNextProfileCreatedTest;
   friend class SupervisedProfilePickerHideGuestModeTest;
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerHandlerInUserProfileTest,
                            HandleExtendedAccountInformation);

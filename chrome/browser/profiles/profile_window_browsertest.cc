@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
   size_t num_browsers = BrowserList::GetInstance()->size();
   base::test::TestFuture<Browser*> future;
   profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
-                                        profile);
+                                        false, profile);
   ASSERT_TRUE(future.Get());
   EXPECT_NE(browser(), future.Get());
   EXPECT_EQ(profile, future.Get()->profile());
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
   size_t num_browsers = BrowserList::GetInstance()->size();
   base::test::TestFuture<Browser*> future;
   profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
-                                        profile);
+                                        false, profile);
   CreateBrowser(profile);
   EXPECT_EQ(profile, future.Get()->profile());
   EXPECT_EQ(num_browsers + 2, BrowserList::GetInstance()->size());
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
       run_loop.QuitClosure());
   profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)>(),
-                                        true, false, profile);
+                                        true, false, false, profile);
   run_loop.Run();
   EXPECT_EQ(num_browsers, BrowserList::GetInstance()->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());

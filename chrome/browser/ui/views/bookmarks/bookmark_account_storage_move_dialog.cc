@@ -239,7 +239,8 @@ void ShowDialog(Browser* browser,
         index, dialog_type, std::move(closed_callback));
     profiles::OpenBrowserWindowForProfile(
         std::move(on_browser_ready), /*always_create=*/false,
-        /*is_new_profile=*/false, browser->GetProfile()->GetOriginalProfile());
+        /*is_new_profile=*/false, /*open_command_line_urls=*/false,
+        browser->GetProfile()->GetOriginalProfile());
     return;
   }
 

@@ -322,6 +322,10 @@ class ProfilePicker {
   // startup or when Chrome is re-opened, e.g. when clicking on the dock icon on
   // MacOS when there are no windows, or from Windows tray icon.
   static StartupProfileMode GetStartupMode();
+
+  // Opens the command line urls in the next profile that is opened.
+  static void SetOpenCommandLineUrlsInNextProfileOpened(bool value);
+  static bool GetOpenCommandLineUrlsInNextProfileOpened();
 };
 
 #endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_

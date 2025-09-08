@@ -906,6 +906,63 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                   new_browser->GetTabStripModel()->GetActiveWebContents());
 }
 
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       CreateSignedInProfileOpensUrls) {
+  ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(true);
+  base::CommandLine::ForCurrentProcess()->AppendArg("https://www.google.com");
+  base::CommandLine::ForCurrentProcess()->AppendArg("https://www.youtube.com");
+  base::CommandLine::ForCurrentProcess()->AppendArg("https://www.gmail.com");
+
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  // Simulate a successful sign-in and wait for the sign-in to propagate to the
+  // flow, resulting in sync confirmation screen getting displayed.
+
+  Profile* profile_being_created = SignInForNewProfile(
+      GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
+
+  // Simulate closing the UI with "No, thanks".
+  LoginUIServiceFactory::GetForProfile(profile_being_created)
+      ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
+  BrowserWindowInterface* const new_browser =
+      BrowserAddedWaiter(/*total_count=*/2u).Wait();
+  ASSERT_EQ(4u, new_browser->GetTabStripModel()->count());
+  ASSERT_FALSE(ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened());
+
+  // Check expectations when the profile creation flow is done.
+  WaitForPickerClosed();
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       CreateSignedInProfileOpensUrlsOnPickProfile) {
+  ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(true);
+  base::CommandLine::ForCurrentProcess()->AppendArg("https://www.google.com");
+  base::CommandLine::ForCurrentProcess()->AppendArg("https://www.youtube.com");
+  base::CommandLine::ForCurrentProcess()->AppendArg("https://www.gmail.com");
+
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  // Create a second profile.
+  base::FilePath other_path = CreateNewProfileWithoutBrowser();
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* other_profile = profile_manager->GetProfile(other_path);
+
+  // Open the picker.
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+  // Open the other profile.
+  OpenProfileFromPicker(other_path, /*open_settings=*/false);
+
+  BrowserWindowInterface* const new_browser =
+      BrowserAddedWaiter(/*total_count=*/2u).Wait();
+  ASSERT_EQ(new_browser->GetProfile(), other_profile);
+  ASSERT_EQ(4u, new_browser->GetTabStripModel()->count());
+  ASSERT_FALSE(ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened());
+
+  // Check expectations when the profile creation flow is done.
+  WaitForPickerClosed();
+}
+
 // TODO(crbug.com/40868761): Test is flaky on Linux and Windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_CreateForceSignedInProfile DISABLED_CreateForceSignedInProfile

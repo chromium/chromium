@@ -29,6 +29,8 @@
 
 namespace {
 
+bool g_open_command_line_urls_in_next_profile_opened = false;
+
 constexpr base::TimeDelta kActiveTimeThreshold = base::Days(28);
 
 ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
@@ -208,4 +210,14 @@ StartupProfileMode ProfilePicker::GetStartupMode() {
     return StartupProfileMode::kProfilePicker;
   }
   return StartupProfileMode::kBrowserWindow;
+}
+
+// static
+void ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(bool value) {
+  g_open_command_line_urls_in_next_profile_opened = value;
+}
+
+// static
+bool ProfilePicker::GetOpenCommandLineUrlsInNextProfileOpened() {
+  return g_open_command_line_urls_in_next_profile_opened;
 }
