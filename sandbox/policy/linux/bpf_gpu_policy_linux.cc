@@ -104,6 +104,9 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
       return RestrictSchedTarget(GetPolicyPid(), sysno);
     case __NR_prlimit64:
       return RestrictPrlimit64(GetPolicyPid());
+    case __NR_memfd_create:
+      // TODO(crbug.com/442771181): temporary allowance for crasher.
+      return Allow();
     default:
       break;
   }
