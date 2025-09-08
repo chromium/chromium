@@ -660,7 +660,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EligiblePriceRange& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::FeatureSpecificFields& proto) {
   VISIT(send_tab_to_self_receiving_enabled);
   VISIT_ENUM(send_tab_to_self_receiving_type);
-  VISIT(floating_workspace_last_signin_time_windows_epoch_micros);
+  VISIT(auto_sign_out_last_signin_timestamp_windows_epoch_micros);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharingSpecificFields& proto) {

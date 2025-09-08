@@ -128,15 +128,15 @@ SpecificsToPhoneAsASecurityKeyInfo(const DeviceInfoSpecifics& specifics) {
   return to;
 }
 
-std::optional<base::Time> SpecificsToFloatingWorkspaceLastSigninTime(
+std::optional<base::Time> SpecificsToAutoSignOutLastSigninTimestamp(
     const DeviceInfoSpecifics& specifics) {
   if (!specifics.feature_fields()
-           .has_floating_workspace_last_signin_time_windows_epoch_micros()) {
+           .has_auto_sign_out_last_signin_timestamp_windows_epoch_micros()) {
     return std::nullopt;
   }
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
       specifics.feature_fields()
-          .floating_workspace_last_signin_time_windows_epoch_micros()));
+          .auto_sign_out_last_signin_timestamp_windows_epoch_micros()));
 }
 
 std::string GetVersionNumberFromSpecifics(
@@ -189,7 +189,7 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       specifics.invalidation_fields().instance_id_token(),
       GetDataTypeSetFromSpecificsFieldNumberList(
           specifics.invalidation_fields().interested_data_type_ids()),
-      SpecificsToFloatingWorkspaceLastSigninTime(specifics));
+      SpecificsToAutoSignOutLastSigninTimestamp(specifics));
 }
 
 // Allocate a EntityData and copies |specifics| into it.
@@ -250,7 +250,7 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
       info.send_tab_to_self_receiving_type());
   if (info.floating_workspace_last_signin_timestamp().has_value()) {
     feature_fields
-        ->set_floating_workspace_last_signin_time_windows_epoch_micros(
+        ->set_auto_sign_out_last_signin_timestamp_windows_epoch_micros(
             info.floating_workspace_last_signin_timestamp()
                 .value()
                 .ToDeltaSinceWindowsEpoch()
