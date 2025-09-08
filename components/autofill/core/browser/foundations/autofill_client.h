@@ -139,32 +139,32 @@ class AutofillClient {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class AddressPromptUserDecision {
-    kUndefined,
+    kUndefined = 0,
     // No prompt is shown and no decision is needed to proceed with the process.
-    kUserNotAsked,
+    kUserNotAsked = 1,
     // The user accepted the save/update/migration flow from the initial prompt.
-    kAccepted,
+    kAccepted = 2,
     // The user declined the save/update/migration flow from the initial prompt.
-    kDeclined,
+    kDeclined = 3,
     // The user accepted the save/update/migration flow from the edit dialog.
-    kEditAccepted,
+    kEditAccepted = 4,
     // The user declined the save/update/migration flow from the edit dialog.
-    kEditDeclined,
+    kEditDeclined = 5,
     // The user selected to never migrate a `kLocalOrSyncable` profile to the
     // account storage. Currently unused for new profile and update prompts, but
     // is triggered by explicitly declining a migration prompt.
-    kNever,
+    kNever = 6,
     // The user ignored the prompt.
-    kIgnored,
+    kIgnored = 7,
     // The save/update/migration message timed out before the user interacted.
     // This is only relevant on mobile.
-    kMessageTimeout,
+    kMessageTimeout = 8,
     // The user swipes away the save/update/migration message. This is only
     // relevant on mobile.
-    kMessageDeclined,
+    kMessageDeclined = 9,
     // The prompt is suppressed most likely because there is already another
     // prompt shown on the same tab.
-    kAutoDeclined,
+    kAutoDeclined = 10,
     kMaxValue = kAutoDeclined,
   };
 
