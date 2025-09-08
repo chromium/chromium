@@ -797,7 +797,7 @@ BASE_FEATURE(kAutofillGreekRegexes,
 COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kAutofillServerUploadMoreData,
              "AutofillServerUploadMoreData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/435646513) - Clean-up after feature lands at 100% Stable.
 // Enables the new experimental server-side signatures for evaluation purposes.
