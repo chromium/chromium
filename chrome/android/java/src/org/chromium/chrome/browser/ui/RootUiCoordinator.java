@@ -1008,7 +1008,10 @@ public class RootUiCoordinator
         if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) {
             mReaderModeBottomSheetManager =
                     new ReaderModeBottomSheetManager(
-                            mActivity, getBottomSheetController(), mActivityTabProvider);
+                            mActivity,
+                            getBottomSheetController(),
+                            mActivityTabProvider,
+                            mTopUiThemeColorProvider);
         }
 
         if (DeviceInfo.isAutomotive()) {

@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
@@ -60,6 +61,7 @@ public class ReaderModeBottomSheetManagerTest {
     @Mock private DomDistillerServiceFactoryJni mDomDistillerServiceFactoryJni;
     @Mock private DistilledPagePrefs mDistilledPagePrefs;
     @Mock private DomDistillerService mDomDistillerService;
+    @Mock private ThemeColorProvider mThemeColorProvider;
 
     @Captor private ArgumentCaptor<GestureStateListener> mGestureStateListenerCaptor;
     @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
@@ -104,7 +106,8 @@ public class ReaderModeBottomSheetManagerTest {
 
     private void createManagerAndGetTabObserver() {
         mManager =
-                new ReaderModeBottomSheetManager(mActivity, mBottomSheetController, mTabProvider);
+                new ReaderModeBottomSheetManager(
+                        mActivity, mBottomSheetController, mTabProvider, mThemeColorProvider);
         verify(mTabProvider).addObserver(mActivityTabObserverCaptor.capture());
         verify(mTab).addObserver(mEmptyTabObserverCaptor.capture());
     }

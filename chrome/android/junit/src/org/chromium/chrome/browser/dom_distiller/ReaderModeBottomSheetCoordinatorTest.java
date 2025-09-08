@@ -21,6 +21,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -30,6 +32,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -46,6 +50,9 @@ public class ReaderModeBottomSheetCoordinatorTest {
     @Mock private DomDistillerService mDomDistillerService;
     @Mock private DistilledPagePrefs mDistilledPagePrefs;
     @Mock private Profile mProfile;
+    @Mock private Tab mTab;
+    @Mock private ThemeColorProvider mThemeColorProvider;
+    @Captor private ArgumentCaptor<ThemeColorProvider.ThemeColorObserver> mThemeColorObserverCaptor;
 
     private ReaderModeBottomSheetCoordinator mCoordinator;
     private Activity mActivity;
@@ -55,12 +62,14 @@ public class ReaderModeBottomSheetCoordinatorTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mDomDistillerService.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefs);
         when(mDomDistillerServiceFactoryJni.getForProfile(any())).thenReturn(mDomDistillerService);
         DomDistillerServiceFactoryJni.setInstanceForTesting(mDomDistillerServiceFactoryJni);
         mCoordinator =
-                new ReaderModeBottomSheetCoordinator(mActivity, mProfile, mBottomSheetController);
+                new ReaderModeBottomSheetCoordinator(
+                        mTab, mActivity, mProfile, mBottomSheetController, mThemeColorProvider);
         mUserActionTester = new UserActionTester();
     }
 
@@ -117,5 +126,18 @@ public class ReaderModeBottomSheetCoordinatorTest {
 
         assertEquals(ContentPriority.LOW, bottomSheetContent.getPriority());
         assertTrue(bottomSheetContent.canSuppressInAnyState());
+    }
+
+    @Test
+    public void testCreateDestroy() {
+        // An observer should be added to the theme color provider on creation.
+        verify(mThemeColorProvider).addThemeColorObserver(mThemeColorObserverCaptor.capture());
+        // The theme color provider should be queried on creation.
+        verify(mThemeColorProvider).getThemeColor();
+        verify(mThemeColorProvider).getBrandedColorScheme();
+
+        mCoordinator.destroy();
+
+        verify(mThemeColorProvider).removeThemeColorObserver(mThemeColorObserverCaptor.getValue());
     }
 }

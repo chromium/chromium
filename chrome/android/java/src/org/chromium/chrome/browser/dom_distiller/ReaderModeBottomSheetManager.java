@@ -13,6 +13,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -55,6 +56,7 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final ActivityTabProvider mTabProvider;
+    private final ThemeColorProvider mThemeColorProvider;
     private final Callback<@Nullable Tab> mActivityTabTabObserver = this::onActivityTabChanged;
 
     private @Nullable ReaderModeBottomSheetCoordinator mCoordinator;
@@ -65,14 +67,17 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
      * @param context The {@link Context} for the manager.
      * @param bottomSheetController The {@link BottomSheetController} for the manager.
      * @param tabProvider The {@link ActivityTabProvider} for the manager.
+     * @param themeColorProvider The {@link ThemeColorProvider} for the manager.
      */
     public ReaderModeBottomSheetManager(
             Context context,
             BottomSheetController bottomSheetController,
-            ActivityTabProvider tabProvider) {
+            ActivityTabProvider tabProvider,
+            ThemeColorProvider themeColorProvider) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mTabProvider = tabProvider;
+        mThemeColorProvider = themeColorProvider;
         mTabProvider.addObserver(mActivityTabTabObserver);
         mActivityTabTabObserver.onResult(mTabProvider.get());
     }
@@ -139,7 +144,11 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
         if (mCoordinator == null) {
             mCoordinator =
                     new ReaderModeBottomSheetCoordinator(
-                            mContext, tab.getProfile(), mBottomSheetController);
+                            tab,
+                            mContext,
+                            tab.getProfile(),
+                            mBottomSheetController,
+                            mThemeColorProvider);
         }
         mCoordinator.show(/* showFullSheet= */ false);
     }
