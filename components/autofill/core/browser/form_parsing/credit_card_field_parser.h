@@ -86,7 +86,7 @@ class CreditCardFieldParser : public FormFieldParser {
   // Returns true if |scanner| points to a field that looks like a year
   // <select> for a credit card. i.e. it contains the current year and
   // the next few years.
-  static bool LikelyCardYearSelectField(ParsingContext* context,
+  static bool LikelyCardYearSelectField(ParsingContext& context,
                                         AutofillScanner* scanner);
 
   // Returns true if |scanner| points to a <select> field that contains credit

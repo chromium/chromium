@@ -282,7 +282,7 @@ bool CreditCardFieldParser::LikelyCardMonthSelectField(
 
 // static
 bool CreditCardFieldParser::LikelyCardYearSelectField(
-    ParsingContext* context,
+    ParsingContext& context,
     AutofillScanner* scanner) {
   if (scanner->IsEnd())
     return false;
@@ -305,7 +305,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
   }
 
   // Another way to eliminate days - filter out 'day' fields.
-  if (FormFieldParser::ParseField(*context, scanner, "DAY")) {
+  if (FormFieldParser::ParseField(context, scanner, "DAY")) {
     return false;
   }
 
@@ -489,12 +489,16 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   // pair of select fields that look like month/year.
   raw_ptr<const FormFieldData> expiration_month_field;
   raw_ptr<const FormFieldData> expiration_year_field;
+  using FieldAndCallback =
+      std::pair<raw_ptr<const FormFieldData>*, base::FunctionRef<bool()>>;
   if (ParseInAnyOrder(
-          scanner, {{&expiration_month_field,
-                     base::BindRepeating(&LikelyCardMonthSelectField, scanner)},
-                    {&expiration_year_field,
-                     base::BindRepeating(&LikelyCardYearSelectField, &context,
-                                         scanner)}})) {
+          scanner, {FieldAndCallback{
+                        &expiration_month_field,
+                        [&]() { return LikelyCardMonthSelectField(scanner); }},
+                    FieldAndCallback{&expiration_year_field, [&]() {
+                                       return LikelyCardYearSelectField(
+                                           context, scanner);
+                                     }}})) {
     // `LikelyCardMonthSelectField()` and  `LikelyCardYearSelectField()` look at
     // select option values, which are considered (high quality) labels for the
     // lack of a better enum value.

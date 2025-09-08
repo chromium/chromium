@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_PARSER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_PARSER_TEST_API_H_
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 
 namespace autofill {
@@ -26,8 +28,8 @@ class FormFieldParserTestApi {
 
   static bool ParseInAnyOrder(
       AutofillScanner* scanner,
-      std::vector<std::pair<raw_ptr<const FormFieldData>*,
-                            base::RepeatingCallback<bool()>>>
+      base::span<const std::pair<raw_ptr<const FormFieldData>*,
+                                 base::FunctionRef<bool()>>>
           fields_and_parsers) {
     return FormFieldParser::ParseInAnyOrder(scanner, fields_and_parsers);
   }

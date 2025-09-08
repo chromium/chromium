@@ -14,8 +14,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -287,8 +288,8 @@ class FormFieldParser {
   // reset to nullptr and the scanner is rewound to it's original position.
   static bool ParseInAnyOrder(
       AutofillScanner* scanner,
-      std::vector<std::pair<raw_ptr<const FormFieldData>*,
-                            base::RepeatingCallback<bool()>>>
+      base::span<const std::pair<raw_ptr<const FormFieldData>*,
+                                 base::FunctionRef<bool()>>>
           fields_and_parsers);
 
   // Adds an association between a `match` and a `type` into `field_candidates`.

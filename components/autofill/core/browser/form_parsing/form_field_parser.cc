@@ -547,9 +547,8 @@ bool FormFieldParser::ParseField(
 // static
 bool FormFieldParser::ParseInAnyOrder(
     AutofillScanner* scanner,
-    std::vector<std::pair<raw_ptr<const FormFieldData>*,
-                          base::RepeatingCallback<bool()>>>
-        fields_and_parsers) {
+    base::span<const std::pair<raw_ptr<const FormFieldData>*,
+                               base::FunctionRef<bool()>>> fields_and_parsers) {
   if (scanner->IsEnd()) {
     return fields_and_parsers.empty();
   }
@@ -565,7 +564,7 @@ bool FormFieldParser::ParseInAnyOrder(
     bool matches = true;
     for (int i : p) {
       const auto& [field, parser] = fields_and_parsers[i];
-      if (!scanner->IsEnd() && parser.Run()) {
+      if (!scanner->IsEnd() && parser()) {
         *field = &scanner->Cursor();
         scanner->Advance();
       } else {
@@ -578,7 +577,7 @@ bool FormFieldParser::ParseInAnyOrder(
     }
     scanner->RewindTo(original_pos);
   } while (std::next_permutation(p.begin(), p.end()));
-  for (const auto& [field, _] : fields_and_parsers) {
+  for (const auto& [field, parser] : fields_and_parsers) {
     *field = nullptr;
   }
   return false;
