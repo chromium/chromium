@@ -958,7 +958,7 @@ bool IsIPHGestureRecognitionImprovementEnabled() {
       kIPHGestureRecognitionAblation, kIPHGestureRecognitionImprovement, false);
 }
 
-BASE_FEATURE(NonModalSignInPromo, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(NonModalSignInPromo, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNonModalSignInPromoEnabled() {
   return base::FeatureList::IsEnabled(kNonModalSignInPromo);
