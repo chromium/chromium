@@ -53,4 +53,33 @@ TEST_F(SessionRestoreInfobarModelTest, GetSessionRestoreMessageValue_Prefs) {
       model.GetSessionRestoreMessageValue());
 }
 
+TEST_F(SessionRestoreInfobarModelTest, GetUntouchedSessionRestoreDefaultPref) {
+  TestingProfile profile;
+  auto model =
+      std::make_unique<SessionRestoreInfobarModel>(profile, false, false);
+  // Make sure the session restore preference is untouched.
+  EXPECT_TRUE(model->IsDefaultSessionRestorePref());
+  // Change session restore to default value.
+  profile.GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 4);
+  // Because the preference has been touched, default restore should be false.
+  EXPECT_FALSE(model->IsDefaultSessionRestorePref());
+}
+
+TEST_F(SessionRestoreInfobarModelTest,
+       GetUntouchedSessionRestoreDefaultPref_SetToDefault) {
+  TestingProfile profile;
+  auto model =
+      std::make_unique<SessionRestoreInfobarModel>(profile, false, false);
+  // Make sure the session restore preference is untouched.
+  EXPECT_TRUE(model->IsDefaultSessionRestorePref());
+
+  // Get the default value of the pref.
+  int default_value = profile.GetPrefs()->GetInteger(prefs::kRestoreOnStartup);
+  // Explicitly set session restore to its default value.
+  profile.GetPrefs()->SetInteger(prefs::kRestoreOnStartup, default_value);
+  // Because the preference has been explicitly set, even to the default value,
+  // default restore should be false.
+  EXPECT_FALSE(model->IsDefaultSessionRestorePref());
+}
+
 }  // namespace session_restore_infobar

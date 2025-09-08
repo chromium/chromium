@@ -48,6 +48,10 @@ class SessionRestoreInfobarModel {
   // Checks if the browser is restarting.
   bool IsBrowserRestarting() const;
 
+  // Returns true if the session restore preference is currently using its
+  // default value, and has not been set.
+  bool IsDefaultSessionRestorePref() const;
+
  private:
   const raw_ref<Profile> profile_;
   const bool was_restarted_;

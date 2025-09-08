@@ -62,8 +62,11 @@ SessionRestoreInfobarController::GetInfobarMessageType() {
             kTurnOffFromSession;
       }
     case SessionRestoreInfobarModel::SessionRestoreMessageValue::OpenNewTabPage:
-      return SessionRestoreInfoBarDelegate::InfobarMessageType::
-          kTurnOnSessionRestore;
+      if (model_->IsDefaultSessionRestorePref()) {
+        return SessionRestoreInfoBarDelegate::InfobarMessageType::
+            kTurnOnSessionRestore;
+      }
+      return SessionRestoreInfoBarDelegate::InfobarMessageType::kNone;
     case SessionRestoreInfobarModel::SessionRestoreMessageValue::
         OpenSpecificPages:
       return SessionRestoreInfoBarDelegate::InfobarMessageType::kNone;
