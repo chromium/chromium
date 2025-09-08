@@ -109,7 +109,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     test_profile_builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
     test_profile_builder.AddTestingFactory(
