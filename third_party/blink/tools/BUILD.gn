@@ -43,24 +43,12 @@ group("wpt_tests_isolate") {
   if (is_win) {
     data_deps += [ "//build/win:copy_cdb_to_output" ]
   }
-}
-
-if (is_android) {
-  group("wpt_tests_android_isolate") {
-    testonly = true
-    data = [
+  if (is_android) {
+    data += [
       # Emulator
       "//build/android/pylib/",
-
-      # Common expectation
-      "//third_party/blink/web_tests/LeakExpectations",
-      "//third_party/blink/web_tests/NeverFixTests",
-      "//third_party/blink/web_tests/SlowTests",
-      "//third_party/blink/web_tests/StaleTestExpectations",
-      "//third_party/blink/web_tests/TestExpectations",
     ]
-    data_deps = [
-      ":wpt_tests_isolate",
+    data_deps += [
       "//build/android:devil_chromium_py",
       "//build/android:test_runner_py",
       "//third_party/catapult/devil",
