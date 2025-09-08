@@ -2937,8 +2937,6 @@ crbug.com/433687466 external/wpt/webrtc/RTCDataChannel-worker-GC.html [ Failure 
 # UUID in URL dumped to `*-expected.txt`
 crbug.com/435005743 external/wpt/html/syntax/speculative-parsing/generated/page-load/script-src-event-handler.html [ Failure ]
 
-# Possibly flaky byte count in `*-expected.txt`
-crbug.com/434980772 external/wpt/fetch/fetch-later/quota/max-payload.tentative.https.window.html [ Failure ]
 
 crbug.com/434975373 external/wpt/svg/styling/image-sizing-min-content.tentative.svg [ Failure ]
 crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-calc-size.tentative.svg [ Failure ]
@@ -2948,13 +2946,6 @@ crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-min-content.tenta
 crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-stretch.tentative.svg [ Failure ]
 crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-viewport-units-with-ICB.tentative.html [ Failure ]
 crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-viewport-units.tentative.svg [ Failure ]
-
-crbug.com/434980772 external/wpt/fetch/fetch-later/quota/cross-origin-iframe/max-payload.tentative.https.window.html [ Timeout ]
-crbug.com/434980772 external/wpt/fetch/fetch-later/quota/cross-origin-iframe/oversized-payload.tentative.https.window.html [ Timeout ]
-crbug.com/434980772 external/wpt/fetch/fetch-later/quota/same-origin-iframe/accumulated-oversized-payload.tentative.https.window.html [ Timeout ]
-crbug.com/434980772 external/wpt/fetch/fetch-later/quota/same-origin-iframe/max-payload.tentative.https.window.html [ Timeout ]
-crbug.com/434980772 external/wpt/fetch/fetch-later/quota/same-origin-iframe/multiple-iframes.tentative.https.window.html [ Timeout ]
-crbug.com/434980772 external/wpt/fetch/fetch-later/quota/same-origin-iframe/oversized-payload.tentative.https.window.html [ Timeout ]
 
 # Reftest image failures
 crbug.com/435620307 external/wpt/css/css-anchor-position/position-visibility-initial.html [ Failure ]
@@ -3093,7 +3084,8 @@ crbug.com/438771348 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bou
 crbug.com/438909307 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-signature_verification_error.tentative.html [ Crash ]
 crbug.com/438780143 [ Win11-arm64 ] external/wpt/FileAPI/BlobURL/cross-partition.https.html [ Skip Timeout ]
 crbug.com/438780122 external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
-crbug.com/438789183 [ Win11-arm64 ] external/wpt/fetch/fetch-later/new-window.tentative.https.window.html [ Crash ]
+crbug.com/438789183 [ Win11-arm64 ] external/wpt/fetch/fetch-later/new-window.https.window.html [ Crash ]
+crbug.com/438789183 [ Mac ] external/wpt/fetch/fetch-later/new-window.https.window.html [ Crash ]
 crbug.com/438873385 [ Win11-arm64 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-to-coop-page-from-other_coop-ro_cross-origin.https.html [ Crash ]
 crbug.com/438780144 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=same_origin&worker_dip=none&window_dip=credentialless [ Skip Timeout ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Crash ]
@@ -9437,7 +9429,7 @@ crbug.com/400726001 [ Win ] external/wpt/css/css-ruby/ruby-text-combine-upright-
 crbug.com/400726001 [ Mac14 ] external/wpt/css/css-ruby/ruby-text-combine-upright-002b.html [ Failure Pass ]
 
 # Gardener 2025-03-07
-crbug.com/397311089 [ Debug Linux ] external/wpt/fetch/fetch-later/new-window.tentative.https.window.html [ Pass Timeout ]
+crbug.com/397311089 [ Debug Linux ] external/wpt/fetch/fetch-later/new-window.https.window.html [ Pass Timeout ]
 crbug.com/396746625 [ Linux ] wpt_internal/mediacapture-extensions/MediaStreamTrack-configurationchange.https.window.html [ Failure Pass ]
 
 # Gardener 2025-03-11

@@ -48,15 +48,15 @@ promise_test(async _ => {
   // Queues a max bytes request in the root document, which should also be
   // rejected, because the target URL's origin `HTTPS_ORIGIN` already has 64kb
   // pending from 1st request.
-  assert_throws_dom(
-      'QuotaExceededError',
+  assert_throws_quotaexceedederror(
       () => fetchLater(requestUrl, {
         method: 'POST',
         body: generatePayload(
             getRemainingQuota(QUOTA_PER_ORIGIN, requestUrl, headers), dataType),
         // Required, as the size of referrer also take up quota.
         referrer: '',
-      }));
+      }),
+      null, null);
 
   // Release quota taken by the pending requests for subsequent tests.
   for (const element of document.querySelectorAll('iframe')) {

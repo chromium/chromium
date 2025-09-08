@@ -399,8 +399,7 @@ class FetchLaterIframeExpectation {
             url, 'nothing', this.expectedErrorType.name);
       }
       if (e.data.type === FetchLaterIframeMessageType.ERROR) {
-        if (e.data.error.constructor === this.expectedErrorType &&
-            e.data.error.name === this.expectedErrorType.name) {
+        if (e.data.error.name === this.expectedErrorType.name) {
           return true;
         }
         throw new FetchLaterExpectationError(
@@ -417,9 +416,7 @@ class FetchLaterIframeExpectation {
         const actual = e.data.error.name || e.data.error.type;
         if (this.expectedDomErrorName === 'QuotaExceededError') {
           return actual == this.expectedDomErrorName;
-        } else if (
-            e.data.error.constructor.name === 'DOMException' &&
-            actual == this.expectedDomErrorName) {
+        } else if (actual == this.expectedDomErrorName) {
           return true;
         }
         throw new FetchLaterExpectationError(

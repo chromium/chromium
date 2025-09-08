@@ -947,7 +947,7 @@ virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-*
 virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/*
-virtual/produce-compile-hints/external/wpt/fetch/fetch-later/new-window.tentative.https.window.html
+virtual/produce-compile-hints/external/wpt/fetch/fetch-later/new-window.https.window.html
 virtual/produce-compile-hints/external/wpt/fetch/stale-while-revalidate/stale-*
 virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter*
 virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html
