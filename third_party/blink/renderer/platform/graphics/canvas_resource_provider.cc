@@ -1248,6 +1248,8 @@ CanvasResourceProvider::CreateBitmapProvider(gfx::Size size,
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
       provider->Clear();
+    // The Clear() call cannot turn a CRPBitmap invalid.
+    CHECK(provider->IsValid());
     return provider;
   }
   return nullptr;
@@ -1278,6 +1280,8 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
       provider->Clear();
+    // The Clear() call cannot turn a SW CRPSI invalid.
+    CHECK(provider->IsValid());
     return provider;
   }
 
@@ -1396,6 +1400,11 @@ CanvasResourceProvider::CreateSharedImageProvider(
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
       provider->Clear();
+
+    // Check whether an error occurred while flushing the recording.
+    if (!provider->IsValid()) {
+      return nullptr;
+    }
     return provider;
   }
 
@@ -1475,6 +1484,11 @@ CanvasResourceProvider::CreateSwapChainProvider(
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
       provider->Clear();
+
+    // Check whether an error occurred while flushing the recording.
+    if (!provider->IsValid()) {
+      return nullptr;
+    }
     return provider;
   }
 
