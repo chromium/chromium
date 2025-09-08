@@ -57,13 +57,12 @@ namespace {
 
 // Factory returning a mock feature engagement tracker.
 std::unique_ptr<KeyedService> BuildMockFeatureEngagementTracker(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
 
 // Factory returning a mock PromosManager.
-std::unique_ptr<KeyedService> BuildMockPromosManager(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildMockPromosManager(ProfileIOS* profile) {
   return std::make_unique<NiceMock<MockPromosManager>>();
 }
 
