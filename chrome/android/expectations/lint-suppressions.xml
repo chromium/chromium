@@ -214,7 +214,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- 1: Some strings in components_strings_grd are not used in other targets. -->
     <ignore regexp="webview_.*__lint.*components_strings_grd"/>
     <!-- TODO(crbug.com/371923550): Remove this suppression once plus address strings are migrated to the public repository. -->
-    <ignore regexp="components/plus_addresses/resources/strings/"/>
+    <ignore regexp="components/plus_addresses/core/browser/resources/strings/"/>
     <!-- 2: resource is used in C++ components/error_page. -->
     <ignore regexp="The resource `R.string.show_content` appears to be unused"/>
     <ignore regexp="The resource `R.string.hide_content` appears to be unused"/>

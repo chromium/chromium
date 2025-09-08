@@ -802,7 +802,7 @@
 	url = https://chrome-internal.googlesource.com/chrome/components/optimization_guide
 	gclient-condition = checkout_src_internal
 [submodule "components/plus_addresses/resources/internal"]
-	path = components/plus_addresses/resources/internal
+	path = components/plus_addresses/core/browser/resources/internal
 	url = https://chrome-internal.googlesource.com/chrome/components/plus_addresses/resources
 	gclient-condition = checkout_src_internal
 [submodule "components/resources/default_100_percent/google_chrome"]

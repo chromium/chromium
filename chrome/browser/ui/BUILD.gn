@@ -685,7 +685,8 @@ static_library("ui") {
   # TODO(crbug.com/413572035): Move into build files of the actual
   # modules depending on this. eg: autofill, user_education.
   if (is_chrome_branded) {
-    deps += [ "//components/plus_addresses/resources:vector_icons" ]
+    deps +=
+        [ "//components/plus_addresses/core/browser/resources:vector_icons" ]
   }
 
   # TODO(crbug.com/41437292): Remove this circular dependency.
@@ -4710,7 +4711,7 @@ static_library("ui") {
 
     # TODO(crbug.com/413572035): Move into build files of the actual modules depending
     # on this once they are fully modularized. eg: views/autofill, views/user_education.
-    deps += [ "//components/plus_addresses/resources/strings" ]
+    deps += [ "//components/plus_addresses/core/browser/resources/strings" ]
 
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [

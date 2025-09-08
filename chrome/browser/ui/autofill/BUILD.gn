@@ -186,7 +186,7 @@ source_set("impl") {
       "//components/android_autofill/browser:android",
       "//components/messages/android:feature_flags",
       "//components/password_manager/core/browser/features:password_features",
-      "//components/plus_addresses/resources/strings",
+      "//components/plus_addresses/core/browser/resources/strings",
     ]
   } else {
     sources += [
@@ -220,12 +220,13 @@ source_set("impl") {
       "//chrome/browser/ui/webui/signin:login",
       "//components/autofill/core/browser",
       "//components/password_manager/core/browser/features:password_features",
-      "//components/plus_addresses/resources/strings",
+      "//components/plus_addresses/core/browser/resources/strings",
       "//extensions/browser",
     ]
 
     if (is_chrome_branded) {
-      deps += [ "//components/plus_addresses/resources:vector_icons" ]
+      deps +=
+          [ "//components/plus_addresses/core/browser/resources:vector_icons" ]
     }
   }
 
@@ -503,7 +504,7 @@ if (!is_android) {
       "//components/password_manager/core/common",
       "//components/plus_addresses:test_support",
       "//components/plus_addresses/core/browser:blocklist_data",
-      "//components/plus_addresses/resources/strings",
+      "//components/plus_addresses/core/browser/resources/strings",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager:test_support",
       "//components/strings:components_strings",

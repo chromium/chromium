@@ -54,8 +54,8 @@ source_set("impl") {
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui_browser:feature_flag",
     "//components/data_sharing/public:features",
+    "//components/plus_addresses/core/browser/resources/strings",
     "//components/plus_addresses/core/common:features",
-    "//components/plus_addresses/resources/strings",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/vector_icons",
@@ -64,7 +64,8 @@ source_set("impl") {
     "//ui/menus",
   ]
   if (is_chrome_branded) {
-    deps += [ "//components/plus_addresses/resources:vector_icons" ]
+    deps +=
+        [ "//components/plus_addresses/core/browser/resources:vector_icons" ]
   }
 }
 
