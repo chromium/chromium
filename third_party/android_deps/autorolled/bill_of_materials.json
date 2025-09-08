@@ -897,22 +897,22 @@
     {
         "name": "room-common",
         "group": "androidx.room",
-        "version": "2.8.0-SNAPSHOT"
+        "version": "2.8.0-rc02"
     },
     {
         "name": "room-common-jvm",
         "group": "androidx.room",
-        "version": "2.8.0-SNAPSHOT"
+        "version": "2.8.0-rc02"
     },
     {
         "name": "room-runtime",
         "group": "androidx.room",
-        "version": "2.8.0-SNAPSHOT"
+        "version": "2.8.0-rc02"
     },
     {
         "name": "room-runtime-android",
         "group": "androidx.room",
-        "version": "2.8.0-SNAPSHOT"
+        "version": "2.8.0-rc02"
     },
     {
         "name": "savedstate",
@@ -1528,6 +1528,11 @@
         "name": "javawriter",
         "group": "com.squareup",
         "version": "2.1.1"
+    },
+    {
+        "name": "grpc-android",
+        "group": "io.grpc",
+        "version": "1.75.0"
     },
     {
         "name": "grpc-api",

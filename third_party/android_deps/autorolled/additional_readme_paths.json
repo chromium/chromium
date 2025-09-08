@@ -57,6 +57,7 @@
     "committed/libs/com_squareup_moshi_moshi",
     "committed/libs/com_squareup_okio_okio_jvm",
     "committed/libs/com_squareup_wire_wire_runtime_jvm",
+    "committed/libs/io_grpc_grpc_android",
     "committed/libs/io_grpc_grpc_api",
     "committed/libs/io_grpc_grpc_binder",
     "committed/libs/io_grpc_grpc_context",

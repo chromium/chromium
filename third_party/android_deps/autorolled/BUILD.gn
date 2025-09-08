@@ -616,6 +616,20 @@ template("define_autorolled_targets") {
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    android_aar_prebuilt("io_grpc_grpc_android_java") {
+      aar_path =
+          "autorolled/cipd/libs/io_grpc_grpc_android/grpc-android-1.75.0.aar"
+      info_path = "autorolled/committed/libs/io_grpc_grpc_android/io_grpc_grpc_android.info"
+      enable_bytecode_checks = false
+      testonly = true
+      deps = [
+        "//third_party/android_deps:guava_android_java",
+        "//third_party/android_deps:io_grpc_grpc_api_java",
+        "//third_party/android_deps:io_grpc_grpc_core_java",
+      ]
+    }
+
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("io_grpc_grpc_api_java") {
       jar_path = "autorolled/cipd/libs/io_grpc_grpc_api/grpc-api-1.75.0.jar"
       output_name = "io_grpc_grpc_api"
