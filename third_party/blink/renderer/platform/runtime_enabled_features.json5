@@ -1150,13 +1150,6 @@
       origin_trial_feature_name: "CrashReportingStorageAPI",
     },
     {
-      // Allow WebAuthn relying parties to report information about existing
-      // credentials back to credential storage providers.
-      // Enabled by default on M132. Remove flag on or after M135.
-      name: "CredentialManagerReport",
-      status: "stable",
-    },
-    {
       // When enabled, allowlisting script urls and scripts used in eval via
       // hashes will be supported in script-src. This is a no-op if the
       // network::features::kCSPScriptSrcHashesInV1 flag is off, since it
