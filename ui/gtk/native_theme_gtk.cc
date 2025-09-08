@@ -146,6 +146,18 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
   NativeTheme::NotifyOnNativeThemeUpdated();
 }
 
+void NativeThemeGtk::NotifyOnPreferredContrastUpdated() {
+  // NativeThemeGtk pulls information about contrast from NativeThemeAura. As
+  // such, Aura must be updated with this information before we call
+  // NotifyOnPreferredContrastUpdated().
+  if (auto* native_theme_aura = ui::NativeTheme::GetInstanceForNativeUi();
+      native_theme_aura->UpdateContrastRelatedStates(*this)) {
+    native_theme_aura->NotifyOnNativeThemeUpdated();
+  }
+
+  NativeTheme::NotifyOnPreferredContrastUpdated();
+}
+
 void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
                                     GtkParamSpec* param) {
   SetThemeCssOverride(ScopedCssProvider());

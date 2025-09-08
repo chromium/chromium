@@ -49,6 +49,7 @@ class NativeThemeGtk : public ui::NativeThemeBase {
                          const FrameTopAreaExtraParams& frame_top_area,
                          ColorScheme color_scheme) const override;
   void NotifyOnNativeThemeUpdated() override;
+  void NotifyOnPreferredContrastUpdated() override;
 
   void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
 

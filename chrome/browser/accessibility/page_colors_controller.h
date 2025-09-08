@@ -28,7 +28,7 @@ class PageColorsController : public KeyedService,
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // ui::NativeThemeObserver:
-  void OnPreferredContrastChanged() override;
+  void OnPreferredContrastChanged(ui::NativeTheme* observed_theme) override;
 
  private:
   // Handles when page colors preferences change.
@@ -37,7 +37,8 @@ class PageColorsController : public KeyedService,
   // This function makes use of different states such as the kPageColors,
   // kApplyPageColorsOnlyOnIncreasedContrast and OS increased contrast state to
   // calculate the used page colors.
-  ui::NativeTheme::PageColors CalculatePageColors();
+  ui::NativeTheme::PageColors CalculatePageColors(
+      const ui::NativeTheme& native_theme);
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};

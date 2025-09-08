@@ -14,11 +14,27 @@
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_factory.h"
-#endif  // BUILDFLAG(IS_LINUX)
+#endif
+
+namespace {
+
+ui::NativeTheme* GetNativeTheme() {
+#if BUILDFLAG(IS_LINUX)
+  // Allow the Linux native theme to update its state for page colors.
+  if (auto* linux_ui_theme = ui::GetDefaultLinuxUiTheme()) {
+    if (auto* linux_native_theme = linux_ui_theme->GetNativeTheme()) {
+      return linux_native_theme;
+    }
+  }
+#endif
+  return ui::NativeTheme::GetInstanceForNativeUi();
+}
+
+}  // namespace
 
 PageColorsController::PageColorsController(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
-  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+  theme_observation_.Observe(GetNativeTheme());
 
   pref_change_registrar_.Init(profile_prefs_);
   pref_change_registrar_.Add(
@@ -29,7 +45,7 @@ PageColorsController::PageColorsController(PrefService* profile_prefs)
       prefs::kApplyPageColorsOnlyOnIncreasedContrast,
       base::BindRepeating(&PageColorsController::OnPageColorsChanged,
                           weak_factory_.GetWeakPtr()));
-  OnPreferredContrastChanged();
+  OnPreferredContrastChanged(GetNativeTheme());
 }
 
 PageColorsController::~PageColorsController() = default;
@@ -48,7 +64,8 @@ void PageColorsController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/false);
 }
 
-void PageColorsController::OnPreferredContrastChanged() {
+void PageColorsController::OnPreferredContrastChanged(
+    ui::NativeTheme* observed_theme) {
 #if BUILDFLAG(IS_WIN)
   ui::NativeTheme::PageColors page_colors =
       static_cast<ui::NativeTheme::PageColors>(
@@ -58,8 +75,7 @@ void PageColorsController::OnPreferredContrastChanged() {
   DCHECK_GE(page_colors, ui::NativeTheme::PageColors::kOff);
   DCHECK_LE(page_colors, ui::NativeTheme::PageColors::kMaxValue);
 
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  if (native_theme->GetPreferredContrast() ==
+  if (observed_theme->GetPreferredContrast() ==
       ui::NativeTheme::PreferredContrast::kMore) {
     // If increased contrast just got turned on and page colors is 'Off', the
     // used value of Page Colors should be set to the default value which is
@@ -85,19 +101,12 @@ void PageColorsController::OnPreferredContrastChanged() {
 }
 
 void PageColorsController::OnPageColorsChanged() {
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-#if BUILDFLAG(IS_LINUX)
-  // Allow the Linux native theme to update its state for page colors.
-  if (auto* linux_ui_theme = ui::GetDefaultLinuxUiTheme()) {
-    if (auto* linux_native_theme = linux_ui_theme->GetNativeTheme()) {
-      native_theme = linux_native_theme;
-    }
-  }
-#endif  // BUILDFLAG(IS_LINUX)
+  auto* native_theme = GetNativeTheme();
 
   ui::NativeTheme::PageColors previous_page_colors =
       native_theme->GetPageColors();
-  ui::NativeTheme::PageColors current_page_colors = CalculatePageColors();
+  ui::NativeTheme::PageColors current_page_colors =
+      CalculatePageColors(*native_theme);
 
   if (previous_page_colors == current_page_colors) {
     return;
@@ -118,9 +127,8 @@ void PageColorsController::OnPageColorsChanged() {
   native_theme->NotifyOnNativeThemeUpdated();
 }
 
-ui::NativeTheme::PageColors PageColorsController::CalculatePageColors() {
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-
+ui::NativeTheme::PageColors PageColorsController::CalculatePageColors(
+    const ui::NativeTheme& native_theme) {
   ui::NativeTheme::PageColors page_colors =
       static_cast<ui::NativeTheme::PageColors>(
           profile_prefs_->GetInteger(prefs::kPageColors));
@@ -136,7 +144,7 @@ ui::NativeTheme::PageColors PageColorsController::CalculatePageColors() {
   // kApplyPageColorsOnlyOnIncreasedContrast is true and the OS is not in an
   // increased contrast mode.
   if (only_on_increased_contrast &&
-      native_theme->GetPreferredContrast() !=
+      native_theme.GetPreferredContrast() !=
           ui::NativeTheme::PreferredContrast::kMore) {
     used_page_colors = ui::NativeTheme::PageColors::kOff;
   }

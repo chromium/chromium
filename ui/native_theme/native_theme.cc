@@ -166,7 +166,7 @@ void NativeTheme::NotifyOnPreferredContrastUpdated() {
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   native_theme_observers_.Notify(
-      &NativeThemeObserver::OnPreferredContrastChanged);
+      &NativeThemeObserver::OnPreferredContrastChanged, this);
 }
 
 // static
@@ -372,6 +372,13 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
       theme_to_update_->UpdateContrastRelatedStates(*observed_theme);
 
   if (notify_observers) {
+    theme_to_update_->NotifyOnNativeThemeUpdated();
+  }
+}
+
+void NativeTheme::ColorSchemeNativeThemeObserver::OnPreferredContrastChanged(
+    ui::NativeTheme* observed_theme) {
+  if (theme_to_update_->UpdateContrastRelatedStates(*observed_theme)) {
     theme_to_update_->NotifyOnNativeThemeUpdated();
   }
 }

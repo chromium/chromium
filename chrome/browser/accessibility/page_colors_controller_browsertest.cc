@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
@@ -9,6 +10,11 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/native_theme/native_theme.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_factory.h"
+#endif
 
 class PageColorsControllerBrowserTest : public InProcessBrowserTest {
  public:
@@ -20,6 +26,14 @@ class PageColorsControllerBrowserTest : public InProcessBrowserTest {
   }
 
   ui::NativeTheme& ui_native_theme() {
+#if BUILDFLAG(IS_LINUX)
+    // Match PageColorsController::OnPageColorsChanged().
+    if (auto* const linux_ui_theme = ui::GetDefaultLinuxUiTheme()) {
+      if (auto* const linux_native_theme = linux_ui_theme->GetNativeTheme()) {
+        return *linux_native_theme;
+      }
+    }
+#endif
     return *ui::NativeTheme::GetInstanceForNativeUi();
   }
 };

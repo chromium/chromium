@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeObserver
   virtual void OnCaptionStyleUpdated() {}
 
   // Called when the system Increased Contrast state changes.
-  virtual void OnPreferredContrastChanged() {}
+  virtual void OnPreferredContrastChanged(ui::NativeTheme* observed_theme) {}
 };
 
 }  // namespace ui

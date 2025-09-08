@@ -634,6 +634,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
    private:
     // ui::NativeThemeObserver:
     void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+    void OnPreferredContrastChanged(ui::NativeTheme* observed_theme) override;
 
     // The theme that gets updated when OnNativeThemeUpdated() is called.
     const raw_ptr<NativeTheme> theme_to_update_;
