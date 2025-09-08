@@ -121,10 +121,10 @@ class WebRtcMediumTest : public ::testing::Test {
 TEST_F(WebRtcMediumTest, CreatePeerConnection) {
   MockPeerConnectionObserver observer;
   ON_CALL(GetMockWebRtcDependencies(), GetIceServers(testing::_))
-      .WillByDefault(testing::Invoke(
+      .WillByDefault(
           [](sharing::MockWebRtcDependencies::GetIceServersCallback callback) {
             std::move(callback).Run({});
-          }));
+          });
   EXPECT_CALL(GetMockWebRtcDependencies(), GetIceServers(testing::_));
 
   base::RunLoop loop;
@@ -154,11 +154,11 @@ TEST_F(WebRtcMediumTest, GetMessengerAndSendMessage) {
   EXPECT_CALL(GetMockWebRtcDependencies(),
               SendMessage(testing::Eq(from), testing::Eq(to), testing::_,
                           testing::Eq(std::string(message)), testing::_))
-      .WillOnce(testing::WithArg<4>(testing::Invoke(
+      .WillOnce(testing::WithArg<4>(
           [&](sharing::MockWebRtcDependencies::SendMessageCallback callback) {
             std::move(callback).Run(/*success=*/true);
             loop.Quit();
-          })));
+          }));
 
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
       GetMedium().GetSignalingMessenger(from, GetCountryCodeLocationHint("ZZ"));
@@ -177,7 +177,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndSendMessageWithUnknownLocationHint) {
   EXPECT_CALL(GetMockWebRtcDependencies(),
               SendMessage(testing::Eq(from), testing::Eq(to), testing::_,
                           testing::Eq(std::string(message)), testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](const std::string& self_id, const std::string& peer_id,
               ::sharing::mojom::LocationHintPtr location_hint,
               const std::string& message,
@@ -191,7 +191,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndSendMessageWithUnknownLocationHint) {
                 location_hint->format);
             std::move(callback).Run(/*success=*/true);
             loop.Quit();
-          }));
+          });
 
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
       GetMedium().GetSignalingMessenger(from, GetUnknownLocationHint());
@@ -208,7 +208,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessages) {
   EXPECT_CALL(GetMockWebRtcDependencies(),
               StartReceivingMessages(testing::Eq(from), testing::_, testing::_,
                                      testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](const std::string& self_id,
               ::sharing::mojom::LocationHintPtr location_hint,
               mojo::PendingRemote<::sharing::mojom::IncomingMessagesListener>
@@ -225,7 +225,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessages) {
                 std::move(listener));
             remote->OnMessage(std::string(message));
             remote->OnComplete(true);
-          }));
+          });
 
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
       GetMedium().GetSignalingMessenger(from, GetCountryCodeLocationHint("ZZ"));
@@ -250,7 +250,7 @@ TEST_F(WebRtcMediumTest, DISABLED_GetMessenger_StartAndStopReceivingMessages) {
   EXPECT_CALL(GetMockWebRtcDependencies(),
               StartReceivingMessages(testing::Eq(from), testing::_, testing::_,
                                      testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](const std::string& self_id,
               ::sharing::mojom::LocationHintPtr location_hint,
               mojo::PendingRemote<::sharing::mojom::IncomingMessagesListener>
@@ -270,7 +270,7 @@ TEST_F(WebRtcMediumTest, DISABLED_GetMessenger_StartAndStopReceivingMessages) {
 
             remote.Bind(std::move(listener));
             remote->OnMessage(std::string(message));
-          }));
+          });
 
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
       GetMedium().GetSignalingMessenger(from, GetUnknownLocationHint());
@@ -301,7 +301,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
   EXPECT_CALL(GetMockWebRtcDependencies(),
               StartReceivingMessages(testing::Eq(from), testing::_, testing::_,
                                      testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](const std::string& self_id,
               ::sharing::mojom::LocationHintPtr location_hint,
               mojo::PendingRemote<::sharing::mojom::IncomingMessagesListener>
@@ -318,7 +318,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
             mojo::Remote<::sharing::mojom::IncomingMessagesListener> remote(
                 std::move(listener));
             remote->OnMessage(std::string(message));
-          }));
+          });
 
   std::unique_ptr<api::WebRtcSignalingMessenger> messenger =
       GetMedium().GetSignalingMessenger(from, GetCallingCodeLocationHint("+1"));
@@ -345,7 +345,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
   EXPECT_CALL(GetMockWebRtcDependencies(),
               StartReceivingMessages(testing::Eq(from), testing::_, testing::_,
                                      testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](const std::string& self_id,
               ::sharing::mojom::LocationHintPtr location_hint,
               mojo::PendingRemote<::sharing::mojom::IncomingMessagesListener>
@@ -362,7 +362,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
             mojo::Remote<::sharing::mojom::IncomingMessagesListener> remote(
                 std::move(listener));
             remote->OnMessage(std::string(message));
-          }));
+          });
 
   base::RunLoop loop_2;
   EXPECT_TRUE(messenger->StartReceivingMessages(

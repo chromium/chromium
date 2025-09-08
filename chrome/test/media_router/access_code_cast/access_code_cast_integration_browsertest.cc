@@ -446,9 +446,9 @@ AccessCodeCastIntegrationBrowserTest::CreateImpl() {
           &AccessCodeCastIntegrationBrowserTest::MockOnChannelOpenedCall));
 
   ON_CALL(*cast_media_sink_service_impl, HasSink(_))
-      .WillByDefault(testing::Invoke([this](const MediaSink::Id& sink_id) {
+      .WillByDefault([this](const MediaSink::Id& sink_id) {
         return base::Contains(added_sink_ids_, sink_id);
-      }));
+      });
 
   // TODO(b/242777549): Properly delete the cast_media_sink_service_impl instead
   // of allowing leak.
