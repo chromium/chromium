@@ -36,12 +36,11 @@ ScreenTimeHistoryDeleterFactory::~ScreenTimeHistoryDeleterFactory() {}
 
 std::unique_ptr<KeyedService>
 ScreenTimeHistoryDeleterFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   if (!IsScreenTimeIntegrationEnabled()) {
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
