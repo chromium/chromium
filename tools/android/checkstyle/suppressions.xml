@@ -23,6 +23,7 @@
   <suppress id="SystemExitCheck" files="src/(build|testing|third_party|tools|base/test)/"/>
   <!-- Generated file has consecutive underscores in constant names. -->
   <suppress id="ConstantNameCheck" files="CronetStatsLog.java"/>
+  <suppress id="FullscreenDialogs" files="Test(Utils?)?\.java"/>
   <!-- jni_generator tests fail some checks. -->
   <suppress checks=".*" files="base/android/jni_generator/.*"/>
   <!-- The accessibility code uses "AX" throughout Chromium, allow in Java for
