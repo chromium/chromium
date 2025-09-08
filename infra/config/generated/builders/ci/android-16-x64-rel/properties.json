@@ -49,6 +49,10 @@
         {
           "builder": "android-16-x64-rel",
           "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "android-x64-rel",
+          "group": "tryserver.chromium.android"
         }
       ],
       "retry_failed_shards": true,
