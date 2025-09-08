@@ -83,7 +83,7 @@ class OfflinePageTabHelperDelayedModelTest : public PlatformTest {
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(
             [](std::unique_ptr<FakeReadingListModelStorage>& storage,
-               web::BrowserState*) -> std::unique_ptr<KeyedService> {
+               ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               DCHECK(storage.get());
               return std::make_unique<ReadingListModelImpl>(
                   std::move(storage), syncer::StorageType::kUnspecified,
