@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -141,7 +142,13 @@ void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
   component_loader->AddDefaultComponentExtensions(false);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // QuickOffice loads from rootfs at /usr/share/chromeos-assets/quickoffce
-  // which does not exist on bots for tests, so load test version.
+  // which does not exist on bots for tests, so load test version after the
+  // pending load finishes (fail or not).
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !component_loader->IsPendingAdd(
+        extension_misc::kQuickOfficeComponentExtensionId);
+  }));
+
   base::FilePath data_dir;
   CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &data_dir));
   base::RunLoop run_loop;
@@ -149,7 +156,7 @@ void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
       data_dir.Append("chromeos/file_manager/quickoffice"),
       extension_misc::kQuickOfficeComponentExtensionId,
       extensions::kManifestFilename, extensions::kManifestFilename,
-      run_loop.QuitClosure());
+      run_loop.QuitClosure(), {});
   run_loop.Run();
 #endif
   // AddDefaultComponentExtensions() is normally invoked during
