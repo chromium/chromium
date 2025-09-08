@@ -69,6 +69,7 @@ source_set("utils") {
   deps = [
     ":constants",
     "//base",
+    "//components/safety_check:features",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -90,6 +91,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safety_check:features",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

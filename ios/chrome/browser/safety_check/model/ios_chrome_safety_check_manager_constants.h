@@ -13,10 +13,6 @@
 // considering the request an Omaha error.
 const base::TimeDelta kOmahaNetworkWaitTime = base::Seconds(30);
 
-// The amount of time that must pass since the last Safety Check run before an
-// automatic run can be triggered.
-const base::TimeDelta kSafetyCheckAutorunDelay = base::Days(30);
-
 // Enum with all possible states of the update check.
 enum class UpdateChromeSafetyCheckState {
   // When the check has not been run yet.
