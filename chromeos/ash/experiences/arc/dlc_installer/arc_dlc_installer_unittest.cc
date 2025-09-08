@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
-#include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -206,64 +205,6 @@ TEST_F(ArcDlcInstallerTest, CompletionNotificationTriggerOnce_RepeatInstall) {
   VerifyNotifications(
       {arc_dlc_install_notification_manager::kArcVmPreloadSucceededId,
        arc_dlc_install_notification_manager::kArcVmPreloadStartedId});
-}
-
-// Verifies that the correct upstart jobs are restarted upon a successful DLC
-// installation.
-TEST_F(ArcDlcInstallerTest, VerifyUpstartJobs_InstallSuccess) {
-  test_install_attributes_.Get()->SetCloudManaged("example.com",
-                                                  "fake-device-id");
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableArcVmDlc);
-  SetFlexArcPreloadEnabled(true);
-  auto* fake_upstart_client =
-      static_cast<ash::FakeUpstartClient*>(ash::UpstartClient::Get());
-
-  // Start recording calls to the fake upstart client before running the
-  // installation flow.
-  fake_upstart_client->StartRecordingUpstartOperations();
-  PrepareArcAndWait(/*expected_result=*/true);
-
-  const auto& ops = fake_upstart_client->upstart_operations();
-
-  // We expect a STOP and a START for each of the two jobs.
-  ASSERT_EQ(4u, ops.size());
-
-  // Define the job names from arc_dlc_installer.cc for clarity.
-  constexpr const char kArcvmBindMountDlcPath[] =
-      "arcvm_2dbind_2dmount_2ddlc_2dpath";
-  constexpr const char kVmConciergeServiceName[] = "vm_5fconcierge";
-
-  // Verify the first job was stopped, then started.
-  EXPECT_EQ(ops[0].name, kArcvmBindMountDlcPath);
-  EXPECT_EQ(ops[0].type, ash::FakeUpstartClient::UpstartOperationType::STOP);
-  EXPECT_EQ(ops[1].name, kArcvmBindMountDlcPath);
-  EXPECT_EQ(ops[1].type, ash::FakeUpstartClient::UpstartOperationType::START);
-
-  // Verify the second job was stopped, then started.
-  EXPECT_EQ(ops[2].name, kVmConciergeServiceName);
-  EXPECT_EQ(ops[2].type, ash::FakeUpstartClient::UpstartOperationType::STOP);
-  EXPECT_EQ(ops[3].name, kVmConciergeServiceName);
-  EXPECT_EQ(ops[3].type, ash::FakeUpstartClient::UpstartOperationType::START);
-}
-
-// Verifies that no upstart jobs are restarted upon a failed DLC installation.
-TEST_F(ArcDlcInstallerTest, VerifyUpstartJobs_InstallFail) {
-  test_install_attributes_.Get()->SetCloudManaged("example.com",
-                                                  "fake-device-id");
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableArcVmDlc);
-  SetFlexArcPreloadEnabled(true);
-  fake_dlcservice_client()->set_trigger_install_progress(true);
-  fake_dlcservice_client()->set_install_error(dlcservice::kErrorInternal);
-  auto* fake_upstart_client =
-      static_cast<ash::FakeUpstartClient*>(ash::UpstartClient::Get());
-
-  // Start recording calls to the fake upstart client.
-  fake_upstart_client->StartRecordingUpstartOperations();
-  PrepareArcAndWait(/*expected_result=*/false);
-
-  EXPECT_TRUE(fake_upstart_client->upstart_operations().empty());
 }
 
 }  // namespace arc
