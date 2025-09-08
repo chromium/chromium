@@ -29,6 +29,7 @@
           en verwijder het vinkje bij '<ph name="NO_PREFETCH_DESCRIPTION" />'.
           Als het probleem aanhoudt, adviseren we deze optie weer aan te vinken
           voor betere prestaties.</translation>
+<translation id="6581867098636731226">Ga naar het Chrome-menu &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Netwerk en internet &gt; Proxy en deselecteer Instellingen automatisch detecteren.</translation>
 <translation id="7230956101631259640">Je bekijkt een beveiligde Chrome-pagina</translation>
 <translation id="8232971017369963250">Chrome wordt mogelijk gemaakt door het opensource-project <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome wordt ook mogelijk gemaakt door andere <ph name="BEGIN_LINK_OSS" />opensource-software<ph name="END_LINK_OSS" />.</translation>

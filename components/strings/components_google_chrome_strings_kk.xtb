@@ -27,6 +27,15 @@
           <ph name="ADVANCED_TITLE" />
           тармағына өтіп, "<ph name="NO_PREFETCH_DESCRIPTION" />" таңдауын алып тастаңыз.
           Бұл мәселені шешпесе, жүйенің жұмысын жақсарту үшін осы опцияны қайта таңдаған жөн.</translation>
+<translation id="6581867098636731226">"Chrome мәзірі &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Желі және интернет &gt; Прокси-сервер"
+          тармағына өтіп, "Параметрлерді автоматты түрде анықтау" опциясын таңдаудан алыңыз.</translation>
 <translation id="7230956101631259640">Қауіпсіз Chrome бетін көрудесіз</translation>
 <translation id="8232971017369963250">Chrome браузері <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ашық кодты бағдарлама жобасы арқылы қолжетімді болады.</translation>
 <translation id="8279509328145658601">Сонымен қатар Chrome браузері басқа <ph name="BEGIN_LINK_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_OSS" /> арқылы қолжетімді болады.</translation>

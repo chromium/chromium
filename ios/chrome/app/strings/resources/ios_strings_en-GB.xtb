@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Your PIN wasn't changed. Please check your Internet connection and try again</translation>
 <translation id="1063070031224282617">Choose where to save '<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />' (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Reviews based on your interests</translation>
+<translation id="1072679792409426431">Disabled by your administrator</translation>
 <translation id="1074827084851510304">You are about to delete {password_count} passwords and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="1076421457278169141">Code scanned</translation>
 <translation id="1081114897601629648">The following passwords were not imported to Google Password Manager, because they don't match with the requirements.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{This address will be deleted from this device.}other{These addresses will be deleted from this device.}}</translation>
 <translation id="2297989278479054870">After you sign out, the bookmarks, passwords and more in your Google Account will be removed from this device.</translation>
 <translation id="2299218006564889602">Your passwords are encrypted on your device before they’re saved to Google Password Manager.</translation>
+<translation id="2306265833370324042">Show <ph name="SEARCH_ENGINE_NAME" /> details</translation>
 <translation id="2309265394777270359">Close tab</translation>
 <translation id="2311077293164383652">Close pinned tab</translation>
 <translation id="2316129865977710310">No, thanks</translation>
@@ -671,7 +673,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3631443864840848029">Make sure that you're saving your current password for this site.</translation>
 <translation id="3642060527569456384">Tab groups automatically save and update across all your devices.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} password is saved only to this device. To use it on your other devices, save it in your Google Account, {email}.}other{{count} passwords are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}</translation>
-<translation id="3650299480924308502">After you sign out, unsaved data will be deleted from this device. This could include passwords, history and more.</translation>
 <translation id="3659297405161482746">No payment methods found</translation>
 <translation id="3668816008081204991">Reading list is hidden</translation>
 <translation id="3670030362669914947">Number</translation>
@@ -1201,6 +1202,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5709005673595820640">{count,plural, =1{You have {count} reused password that could put your security at risk. Fix it now to stay safe.}other{You have {count} reused passwords that could put your security at risk. Fix them now to stay safe.}}</translation>
 <translation id="57094364128775171">Suggest strong password…</translation>
 <translation id="5718049162805123412">You should change these now</translation>
+<translation id="5721040778297053709">Position credit card in this frame</translation>
 <translation id="572328651809341494">Recent tabs</translation>
 <translation id="5724941645893276623">To browse the web privately, add a new tab</translation>
 <translation id="5728072125198221967">Linked Google services</translation>
@@ -1568,7 +1570,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7055240621761583113">Autofill the password</translation>
 <translation id="7063811929043357292">Your account is managed by your parent.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">To protect your organisation's security, unsaved data will be deleted from this device. This could include passwords, history and more.</translation>
 <translation id="7067780033517902110">All files</translation>
 <translation id="707086654079606593">Manage addresses…</translation>
 <translation id="7080806333218412752">Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats. Temporarily links this data to your Google Account when you’re signed in, to protect you across Google apps.</translation>
@@ -1780,6 +1781,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7889910613639381518">Easy and secure access with the Google Password Manager widget.</translation>
 <translation id="7899199123054742721">Mark all unread</translation>
 <translation id="7911190106180361398">Your organisation doesn't allow for you to sync everything.</translation>
+<translation id="7918999344502274923">Hide <ph name="SEARCH_ENGINE_NAME" /> details</translation>
 <translation id="792357691529995513">No issues found</translation>
 <translation id="7925108652071887026">Auto-fill data</translation>
 <translation id="7926975587469166629">Card nickname</translation>

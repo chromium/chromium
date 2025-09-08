@@ -50,6 +50,7 @@
 <translation id="1080116354587839789">Ajustar à largura</translation>
 <translation id="1081061862829655580">Bandeja 19</translation>
 <translation id="1082026381988252344">Rolar e aplicar zoom ao conteúdo da guia compartilhada</translation>
+<translation id="108859316315249327">Tente outra vez</translation>
 <translation id="1088664500620117635">O preço normal de <ph name="PRODUCT_NAME" /> varia de <ph name="LOW_PRICE" /> a <ph name="HIGH_PRICE" />, mas o preço atual na Web é de <ph name="CURRENT_PRICE" />.</translation>
 <translation id="1089439967362294234">Alterar senha</translation>
 <translation id="1089599132348386324">Você pode mudar isso quando quiser nas configurações do Chrome.</translation>
@@ -927,7 +928,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2515629240566999685">Verificar o sinal na sua área</translation>
 <translation id="2515761554693942801">Você escolheu fazer a verificação com o Touch ID em sites que usam o provedor <ph name="PROVIDER_ORIGIN" />. Esse provedor pode ter armazenado informações sobre sua forma de pagamento, mas você pode <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Entre em contato com o emissor do cartão.</translation>
-<translation id="2519250377986324805">Saiba como</translation>
 <translation id="2521385132275182522">Grampo na parte inferior direita</translation>
 <translation id="2521736961081452453">Criar formulário</translation>
 <translation id="2524461107774643265">Adicione Mais Informações</translation>
@@ -1280,7 +1280,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3140646734028448730">Serviços comerciais</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
 <translation id="3141641372357166056">Nenhuma decisão de consentimento</translation>
-<translation id="3144458715650412431">As políticas de teste foram aplicadas. Acesse chrome://policy/test para revisar ou redefinir. As políticas de administrador não serão aplicadas.</translation>
+<translation id="3144458715650412431">As políticas de teste foram aplicadas e podem ser revisadas ou redefinidas em chrome://policy/test. As políticas de administrador não serão aplicadas.</translation>
 <translation id="3145945101586104090">Falha ao decodificar resposta</translation>
 <translation id="3147941219998826815">Viagens de baixo custo e de última hora</translation>
 <translation id="3150653042067488994">Erro temporário do servidor</translation>
@@ -2469,6 +2469,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5097099694988056070">Estatísticas do dispositivo, como uso de CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 pol.</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5102512728737175215">Pressione Tab e depois Enter para perguntar ao Modo IA</translation>
 <translation id="510644072453496781">Papelão (fim)</translation>
 <translation id="5106648964679263509">O cartão virtual <ph name="BNPL_ISSUER_NAME" /> foi preenchido</translation>
 <translation id="5108567515277121477">Cartão fidelidade</translation>
@@ -3477,6 +3478,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6786145470008421571">Envelope de 15 cm x 23 cm</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787094689637422836">Estamos lançando novos recursos de privacidade que oferecem mais opções de anúncios.</translation>
+<translation id="6788615780749001893">Botão do Modo IA, pressione Enter para perguntar ao Modo IA</translation>
 <translation id="6789062271869667677">Contínua (longa)</translation>
 <translation id="678982761784843853">IDs de conteúdo protegido</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
@@ -3542,7 +3544,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6898699227549475383">O (Organização)</translation>
 <translation id="6900702165119149418">Você não fez login</translation>
 <translation id="6903907808598579934">Ativar a sincronização</translation>
-<translation id="6905163627763043954">Testar</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="691024665142758461">Fazer o download de vários arquivos</translation>
 <translation id="691046363691324218">Número de reparação</translation>
@@ -3832,7 +3833,7 @@ Mais detalhes:
 <translation id="7393475648162498734">Mostrar recompensas e benefícios disponíveis para seus cartões na finalização da compra</translation>
 <translation id="7393971683644170444">Conectando ao emissor do seu cartão…</translation>
 <translation id="739728382607845710">Ícone do gerenciador de pagamentos</translation>
-<translation id="7399616692258236448">As solicitações de localização são bloqueadas automaticamente para todos os sites, exceto os que você permitir</translation>
+<translation id="7399616692258236448">Os pedidos de acesso à localização são bloqueados automaticamente para todos os sites, exceto os que você permitir</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Compartilhar esta guia com um link, um QR code, uma transmissão, entre outras opções</translation>
 <translation id="7403591733719184120">Seu <ph name="DEVICE_NAME" /> é gerenciado</translation>

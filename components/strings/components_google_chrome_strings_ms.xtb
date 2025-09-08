@@ -33,6 +33,16 @@
           dan nyahpilih "<ph name="NO_PREFETCH_DESCRIPTION" />."
           Jika tindakan ini tidak menyelesaikan isu ini, kami cadangkan agar memilih pilihan ini
           sekali lagi untuk prestasi yang dipertingkatkan.</translation>
+<translation id="6581867098636731226">Akses
+          menu Chrome &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Rangkaian &amp; Internet &gt; Proksi
+          dan nyahpilih "Kesan tetapan secara automatik".</translation>
 <translation id="7230956101631259640">Anda sedang melihat halaman Chrome yang selamat</translation>
 <translation id="8232971017369963250">Chrome berjaya dilaksanakan oleh projek sumber terbuka <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome juga berjaya dilaksanakan oleh <ph name="BEGIN_LINK_OSS" />perisian sumber terbuka<ph name="END_LINK_OSS" /> yang lain.</translation>

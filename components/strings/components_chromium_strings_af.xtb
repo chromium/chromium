@@ -2,6 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="130631256467250065">Jou veranderinge sal in werking tree wanneer jy jou toestel herbegin.</translation>
+<translation id="261308610302996111">Gaan na
+          die Chromium-kieslys &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          en maak seker jou opstelling is op “geen instaanbediener nie” of “direk” gestel.</translation>
 <translation id="275588974610408078">Omvalrapportering is nie beskikbaar in Chromium nie.</translation>
 <translation id="3064346599913645280">Jy bekyk tans 'n veilige Chromium-bladsy</translation>
 <translation id="3255926992597692024">Chromium probeer tans instellings vir die invul van betaalmetodes wysig.</translation>
@@ -14,6 +22,16 @@
 <translation id="4949828774841497663">Gaan na Apps &gt; Stelselinstellings &gt; Netwerk, kies die
           aktiewe netwerk, klik die Besonderhedeknoppie, en ontkies enige instaanbedieners
           wat dalk gekies is.</translation>
+<translation id="6480456350195404966">Gaan na
+          die Chromium-kieslys &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Netwerk en internet &gt; Instaanbediener
+          en ontkies “Vind instellings outomaties”.</translation>
 <translation id="648062525172759633">Hierdie bladsye is bedoel vir gebruik deur Chromium-ontwikkelaars en word dalk nie aktief onderhou of getoets nie. As jy hulle wil aktiveer, navigeer na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik die knoppie om ontfoutbladsye te aktiveer en navigeer dan terug na hierdie bladsy toe.</translation>
 <translation id="6549378540556750549">Chromium word ook moontlik gemaak deur ander <ph name="BEGIN_LINK_OSS" />oopbronsagteware<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Jou veranderinge sal in werking tree wanneer jy Chromium weer herbegin.</translation>

@@ -30,6 +30,7 @@
         然後取消勾選 [<ph name="NO_PREFETCH_DESCRIPTION" />]。
         如果仍然無法解決問題，建議你重新勾選這個選項
         以增進效能。</translation>
+<translation id="6581867098636731226">依序前往 Chrome 選單 &gt;「<ph name="SETTINGS_TITLE" />」&gt;「<ph name="SYSTEM_TITLE" />」&gt;「<ph name="PROXIES_TITLE" />」&gt;「網路和網際網路」&gt;「Proxy」，然後取消選取「自動偵測設定」。</translation>
 <translation id="7230956101631259640">目前顯示的是安全型 Chrome 網頁</translation>
 <translation id="8232971017369963250">Chrome 的開發受惠於 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 開放原始碼計畫。</translation>
 <translation id="8279509328145658601">Chrome 的開發也受惠於其他<ph name="BEGIN_LINK_OSS" />開放原始碼軟體<ph name="END_LINK_OSS" />。</translation>

@@ -12,6 +12,9 @@
 <translation id="1059838145689930908">Pour utiliser cette extension en tant que <ph name="USER_EMAIL_ADDRESS" />, connectez-vous à Chrome.</translation>
 <translation id="1065672644894730302">Impossible de lire vos préférences.
 Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifications apportées à vos préférences ne seront pas enregistrées.</translation>
+<translation id="1070377999570795893">Une extension qui risque de modifier le fonctionnement de Chrome a été ajoutée via un autre programme sur votre ordinateur.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Rechercher avec Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> utilisait Chrome précédemment</translation>
 <translation id="110877069173485804">Voici votre Chrome</translation>
@@ -47,6 +50,9 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1547295885616600893">Chrome OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Arrête la tâche mise en surbrillance.</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
+<translation id="1585717515139318619">Un thème qui risque de modifier le fonctionnement de Chrome a été ajouté via un autre programme sur votre ordinateur.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Votre webcam est en cours d'utilisation dans Google Chrome.</translation>
 <translation id="1587325591171447154">Chrome a bloqué <ph name="FILE_NAME" />, car ce fichier est dangereux.</translation>
 <translation id="1597911401261118146">Pour vérifier si vos mots de passe sont suffisamment sécurisés afin d'empêcher toute violation de données et d'autres problèmes de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chrome<ph name="END_LINK" />.</translation>
@@ -552,6 +558,9 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7572537927358445944">Désactivée • Chrome ne peut pas vérifier d'où vient cette extension</translation>
 <translation id="7583399374488819119">Programme d'installation de <ph name="COMPANY_NAME" /></translation>
 <translation id="7602868996817972616">Poser des questions à Google à propos de cette page</translation>
+<translation id="760353356052806707">Une application qui risque de modifier le fonctionnement de Chrome a été ajoutée via un autre programme sur votre ordinateur
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Celles-ci n'étendent, ne modifient ni ne restreignent les conditions d'utilisation de Google Chrome OS.</translation>
 <translation id="7627609214560473136">Pour protéger vos données, autorisez Chrome à supprimer les autorisations des sites que vous n'avez pas consultés récemment.</translation>

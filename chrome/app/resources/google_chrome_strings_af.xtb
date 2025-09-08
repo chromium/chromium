@@ -13,6 +13,9 @@
 <translation id="1065672644894730302">Jou voorkeure kan nie gelees word nie.
 
 Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure sal nie gestoor word nie.</translation>
+<translation id="1070377999570795893">'n Ander program op jou rekenaar het 'n uitbreiding bygevoeg wat dalk die manier sal verander waarop Chrome werk.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Soek met Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> het voorheen Chrome gebruik</translation>
 <translation id="110877069173485804">Dit is jou Chrome</translation>
@@ -48,6 +51,9 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1547295885616600893">Chrome-bedryfstelsel word deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" /> moontlik gemaak.</translation>
 <translation id="1547469039832541117">Beëindig die gemerkte taak.</translation>
 <translation id="1553358976309200471">Dateer Chrome op</translation>
+<translation id="1585717515139318619">'n Ander program op jou rekenaar het 'n tema bygevoeg wat dalk die manier sal verander waarop Chrome werk.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome gebruik tans jou kamera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is gevaarlik en daarom het Chrome dit geblokkeer.</translation>
 <translation id="1597911401261118146"><ph name="BEGIN_LINK" />Meld by Chrome aan<ph name="END_LINK" /> om te kyk of jou wagwoorde teen dataskendings en ander sekuriteitkwessies beveilig word.</translation>
@@ -455,6 +461,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6321592572353357376">Die uitbreiding “<ph name="EXTENSION_NAME" />” wil hê dat jy by Chrome moet aanmeld</translation>
 <translation id="6326175484149238433">Verwyder van Chrome af</translation>
 <translation id="6327105987658262776">Geen opdatering is beskikbaar nie.</translation>
+<translation id="6334815226785304306">Maak Google Chrome die verstekblaaier en speld dit aan die taakbalk vas</translation>
 <translation id="6360449101159168105">Geheue is beskikbaar gemaak terwyl hierdie oortjie onaktief was om Chrome vinnig te hou. Jy kan kies om hierdie werf altyd daarvan uit te sluit om onaktief te wees.</translation>
 <translation id="6388799252195623474">help my hiermee</translation>
 <translation id="6412673304250309937">Vergelyk URL'e met 'n lys onveilige werwe wat in Chrome geberg word. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chrome dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
@@ -553,6 +560,9 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7572537927358445944">Af • Chrome kan nie verifieer waarvandaan hierdie uitbreiding kom nie</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installeerder</translation>
 <translation id="7602868996817972616">Vra Google oor hierdie bladsy</translation>
+<translation id="760353356052806707">'n Ander program op jou rekenaar het 'n program bygevoeg wat dalk die manier sal verander waarop Chrome werk.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> vereis dat jy die volgende diensbepalings lees en aanvaar voordat jy hierdie toestel gebruik. Hierdie bepalings verander, beperk of brei nie die Google Chrome-bedryfstelsel se bepalings uit nie.</translation>
 <translation id="7627609214560473136">Laat Chrome toestemmings van werwe verwyder wat jy nie onlangs besoek het nie om jou data te beskerm.</translation>

@@ -671,7 +671,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3631443864840848029">Veillez à enregistrer votre mot de passe actuel pour ce site.</translation>
 <translation id="3642060527569456384">Les groupes d'onglets sont automatiquement enregistrés et mis à jour sur tous vos appareils.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google ({email}).}one{{count} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google ({email}).}other{{count} mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google ({email}).}}</translation>
-<translation id="3650299480924308502">Lorsque vous vous déconnectez, les données non enregistrées sont supprimées de cet appareil. Il peut s'agir de mots de passe, de l'historique, etc.</translation>
 <translation id="3659297405161482746">Aucun mode de paiement trouvé</translation>
 <translation id="3668816008081204991">La liste de lecture est masquée</translation>
 <translation id="3670030362669914947">Numéro</translation>
@@ -1568,7 +1567,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7055240621761583113">Saisir automatiquement le mot de passe</translation>
 <translation id="7063811929043357292">Ton compte est géré par ton parent.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">Pour protéger la sécurité de votre organisation, les données non enregistrées seront supprimées de cet appareil. Il peut s'agir de mots de passe, de l'historique, etc.</translation>
 <translation id="7067780033517902110">Tous les fichiers</translation>
 <translation id="707086654079606593">Gérer les adresses…</translation>
 <translation id="7080806333218412752">Il envoie des URL à la navigation sécurisée pour les vérifier. Il transmet également un petit échantillon de pages, de téléchargements, d'informations système et de l'activité des extensions afin d'identifier de nouvelles menaces. De même, pour vous protéger dans l'ensemble des applications Google, il associe temporairement ces données à votre compte Google lorsque vous êtes connecté.</translation>

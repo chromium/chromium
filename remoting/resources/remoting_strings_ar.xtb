@@ -7,9 +7,9 @@
 <translation id="1297009705180977556">حدث خطأ أثناء الاتصال بـ <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">العنصر المطلوب غير موجود.</translation>
 <translation id="1480046233931937785">أسماء المشاركين</translation>
-<translation id="1520828917794284345">تغيير حجم سطح المكتب للملاءمة</translation>
-<translation id="1546934824884762070">حدث خطأ غير متوقع. يُرجى الإبلاغ عن هذه المشكلة إلى مطوري البرامج.</translation>
-<translation id="1697532407822776718">أنت الآن على أتم استعداد.</translation>
+<translation id="1520828917794284345">تغيير حجم شاشة سطح المكتب للملاءمة</translation>
+<translation id="1546934824884762070">حدث خطأ غير متوقع. يُرجى إبلاغ مطوري البرامج عن هذه المشكلة.</translation>
+<translation id="1697532407822776718">اكتملت عملية الإعداد</translation>
 <translation id="1742469581923031760">جارٍ الاتصال...</translation>
 <translation id="177040763384871009">للسماح بفتح الروابط التي تم النقر عليها على الجهاز البعيد على متصفِّح العميل، يجب تغيير متصفِّح الويب على النظام إلى "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">‏عنوان IP للقناة التابع للعميل: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
@@ -29,32 +29,32 @@
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2366718077645204424">يتعذّر الوصول إلى المضيف. وقد يعود ذلك إلى إعداد الشبكة المُستخدمة.</translation>
 <translation id="242591256144136845">‏جميع حقوق الطبع والنشر محفوظة لصالح شركة Google LLC لعام 2025.</translation>
-<translation id="2504109125669302160">منح إذن "أدوات تمكين الوصول" إلى <ph name="PRODUCT_NAME" /></translation>
+<translation id="2504109125669302160">يجب منح <ph name="PRODUCT_NAME" /> إذن الوصول إلى "أدوات تسهيل الاستخدام"</translation>
 <translation id="2509394361235492552">متصل بـ <ph name="HOSTNAME" /></translation>
-<translation id="2540992418118313681">هل ترغب في مشاركة هذا الكمبيوتر مع مستخدم آخر للمشاهدة والتحكم؟</translation>
+<translation id="2540992418118313681">هل تهمّك مشاركة هذا الكمبيوتر مع مستخدم آخر للمشاهدة والتحكم؟</translation>
 <translation id="2579271889603567289">تعطّل المضيف أو تعذّر بدء تشغيله.</translation>
 <translation id="2599300881200251572">‏تمكن هذه الخدمة الاتصالات الواردة من عملاء سطح المكتب البعيد من Chrome.</translation>
 <translation id="2647232381348739934">‏خدمة التوافق مع نظام التشغيل Chrome</translation>
 <translation id="2676780859508944670">جارٍ العمل…</translation>
 <translation id="2699970397166997657">‏التوافق مع نظام التشغيل Chrome</translation>
 <translation id="2758123043070977469">حدثت مشكلة أثناء المصادقة، يُرجى إعادة تسجيل الدخول.</translation>
-<translation id="2803375539583399270">أدخل رقم التعريف الشخصي</translation>
+<translation id="2803375539583399270">إدخال رقم التعريف الشخصي</translation>
 <translation id="2919669478609886916">تتم مشاركة هذا الجهاز حاليًا مع مستخدم آخر. هل المطلوب فعلاً متابعة المشاركة؟</translation>
 <translation id="2929683002824598593">مشاركة الجهاز</translation>
 <translation id="2939145106548231838">المصادقة للاستضافة</translation>
 <translation id="3027681561976217984">وضع اللمس</translation>
-<translation id="3106379468611574572">الكمبيوتر البعيد لا يستجيب لطلبات الاتصال. يُرجى التحقق من اتصاله بالإنترنت وإعادة المحاولة.</translation>
+<translation id="3106379468611574572">لا يستجيب الكمبيوتر البعيد لطلبات الاتصال. يُرجى التحقق من اتصاله بالإنترنت وإعادة المحاولة.</translation>
 <translation id="3150823315463303127">تعذّر المضيف في قراءة السياسة.</translation>
 <translation id="3171922709365450819">هذا الجهاز لا يعمل مع هذا البرنامج لأنه يتطلب مصادقة جهة خارجية.</translation>
 <translation id="3197730452537982411">سطح المكتب البعيد</translation>
 <translation id="324272851072175193">إرسال هذه التعليمات بالبريد الإلكتروني</translation>
 <translation id="3305934114213025800">تمّ طلب إجراء تغييرات من قِبل "<ph name="PRODUCT_NAME" />"</translation>
-<translation id="3339299787263251426">الدخول إلى جهاز الكمبيوتر لديك بشكل آمن على الإنترنت</translation>
+<translation id="3339299787263251426">يمكنك تصفّح الإنترنت بشكل آمن على جهاز الكمبيوتر الخاص بك</translation>
 <translation id="3385242214819933234">مالك المضيف غير صالح.</translation>
 <translation id="3423542133075182604">عملية التحكم عن بعد في مفتاح الأمان</translation>
 <translation id="3581045510967524389">تعذر الاتصال بالشبكة. يُرجى التحقق من اتصال الجهاز بالإنترنت.</translation>
 <translation id="3596628256176442606">‏تمكن هذه الخدمة الاتصالات الواردة من عملاء التوافق مع نظام التشغيل Chrome.</translation>
-<translation id="3695446226812920698">تعرَّف على كيفية إجراء ذلك</translation>
+<translation id="3695446226812920698">معرفة المزيد</translation>
 <translation id="3776024066357219166">‏انتهت جلسة الاتصال بجهازك عن بعد من Chrome.</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3897092660631435901">قائمة</translation>
@@ -77,11 +77,11 @@
 <translation id="4450893287417543264">عدم الإظهار مرة أخرى</translation>
 <translation id="4513946894732546136">ملاحظات</translation>
 <translation id="4563926062592110512">تم إلغاء ربط العميل: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="4618411825115957973">‏لم يتم ضبط <ph name="URL_FORWARDER_NAME" /> بشكل صحيح. يُرجى اختيار متصفّح ويب تلقائي مختلف ثم تفعيل ميزة إعادة توجيه عناوين URL مجدّدًا.</translation>
+<translation id="4618411825115957973">‏لم يتم ضبط "<ph name="URL_FORWARDER_NAME" />" بشكل صحيح. يُرجى اختيار متصفّح ويب تلقائي مختلف ثم تفعيل ميزة إعادة توجيه عناوين URL مجدّدًا.</translation>
 <translation id="4635770493235256822">الأجهزة عن بُعد</translation>
 <translation id="4660011489602794167">عرض لوحة المفاتيح</translation>
 <translation id="4703799847237267011">‏انتهت جلسة تطبيق التوافق مع نظام التشغيل Chrome.</translation>
-<translation id="4741792197137897469">‏تعذّرت المصادقة،يُرجى تسجيل الدخول إلى Chrome مرة أخرى.</translation>
+<translation id="4741792197137897469">‏تعذّرت المصادقة. يُرجى تسجيل الدخول إلى Chrome مرة أخرى.</translation>
 <translation id="4784508858340177375">‏تعطل الخادم X أو تعذّر بدء تشغيله.</translation>
 <translation id="4798680868612952294">خيارات الماوس</translation>
 <translation id="4804818685124855865">إلغاء الربط</translation>
@@ -90,7 +90,7 @@
 <translation id="4867841927763172006">‏إرسال PrtScn</translation>
 <translation id="4974476491460646149">تم إغلاق الاتصال بـ <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">تحتاج أولاً إلى إعداد جهاز الكمبيوتر لإتاحة الدخول عن بُعد</translation>
-<translation id="4987330545941822761">‏لا يمكن لميزة "الوصول إلى الكمبيوتر المكتبي عن بُعد من Chrome" تحديد المتصفّح الذي يجب استخدامه لفتح عناوين URL على الجهاز. يُرجى اختيار المتصفّح من القائمة أدناه.</translation>
+<translation id="4987330545941822761">‏لا يمكن لميزة "الاتصال بجهازك عن بعد من Chrome" تحديد المتصفّح الذي يجب استخدامه لفتح عناوين URL على الجهاز. يُرجى اختيار المتصفّح من القائمة أدناه.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (غير متصل بالإنترنت)</translation>
 <translation id="507204348399810022">هل المطلوب فعلاً إيقاف الاتصالات عن بُعد بـ <ph name="HOSTNAME" />؟</translation>
 <translation id="5095424396646120601">إعداد تقارير الأعطال</translation>
@@ -119,17 +119,17 @@
 <translation id="6178645564515549384">مضيف الرسائل الأصلي للمساعدة عن بُعد</translation>
 <translation id="618120821413932081">تحديث الدقة عن بُعد لملاءمة النافذة</translation>
 <translation id="6223301979382383752">فتح الإعدادات المفضّلة لـ "تسجيل الشاشة"</translation>
-<translation id="6252344563748670011">وصلك من "<ph name="CLIENT_USERNAME" />" طلب إذن بالوصول إلى جهازك للاطّلاع على الشاشة والتحكّم بلوحة المفاتيح والماوس. هل تريد مشاركة جهازك؟</translation>
+<translation id="6252344563748670011">وصلك من "<ph name="CLIENT_USERNAME" />" طلب إذن بالوصول إلى جهازك للاطّلاع على الشاشة والتحكّم بلوحة المفاتيح والماوس. هل المطلوب مشاركة جهازك؟</translation>
 <translation id="6284412385303060032">‏تم إيقاف المضيف الذي يعمل على شاشة تسجيل لوحة التحكم لدعم الوضع Curtain من خلال التبديل إلى مضيف يعمل في جلسة خاصة بالمستخدم.</translation>
 <translation id="6542902059648396432">الإبلاغ عن مشكلة...</translation>
 <translation id="6583902294974160967">الدعم</translation>
 <translation id="6612717000975622067">‏إرسال Ctrl-Alt-Del</translation>
 <translation id="6625262630437221505">{0,plural, =1{في حال عدم اتخاذ إجراء، سيبدأ جهازك تلقائيًا المشاركة بعد ثانية واحدة.}zero{في حال عدم اتخاذ إجراء، سيبدأ جهازك تلقائيًا المشاركة بعد # ثانية.}two{في حال عدم اتخاذ إجراء، سيبدأ جهازك تلقائيًا المشاركة بعد ثانيتَين.}few{في حال عدم اتخاذ إجراء، سيبدأ جهازك تلقائيًا المشاركة بعد # ثوانٍ.}many{في حال عدم اتخاذ إجراء، سيبدأ جهازك تلقائيًا المشاركة بعد # ثانية.}other{في حال عدم اتخاذ إجراء، سيبدأ جهازك تلقائيًا المشاركة بعد # ثانية.}}</translation>
-<translation id="6654753848497929428">مشاركة</translation>
-<translation id="677755392401385740">بدأ المضيف للمستخدم: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6654753848497929428">المشاركة</translation>
+<translation id="677755392401385740">بدء المضيف للمستخدم: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">‏تطبيق مساعِد لفتح عنوان URL على برنامج "<ph name="PRODUCT_NAME" />"</translation>
 <translation id="6939719207673461467">عرض/إخفاء لوحة المفاتيح</translation>
-<translation id="6963936880795878952">تم حظر الاتصالات بجهاز الكمبيوتر البعيد مؤقتًا نظرًا لأن شخصًا ما كان يحاول الاتصال به باستخدام رقم تعريف شخصي غير صالح. يُرجى إعادة المحاولة لاحقًا.</translation>
+<translation id="6963936880795878952">تم حظر الاتصالات بجهاز الكمبيوتر البعيد مؤقتًا لأنّ أحدًا كان يحاول الاتصال به باستخدام رقم تعريف شخصي غير صالح. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6985691951107243942">هل مطلوب بالتأكيد تعطيل الاتصالات عن بُعد بـ "<ph name="HOSTNAME" />"؟ في حال التراجع عن هذا القرار، سيلزم الانتقال إلى جهاز الكمبيوتر لإعادة تمكين الاتصالات.</translation>
 <translation id="7019153418965365059">خطأ بالمضيف غير معروف: <ph name="HOST_OFFLINE_REASON" />.</translation>
@@ -143,11 +143,11 @@
 <translation id="7319983568955948908">إيقاف المشاركة</translation>
 <translation id="7359298090707901886">‏لا يمكن استخدام المتصفّح الذي تم اختياره لفتح عناوين URL على الجهاز المحلي.</translation>
 <translation id="7401733114166276557">‏سطح المكتب البعيد من Chrome</translation>
-<translation id="7434397035092923453">تم رفض دخول العميل: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="7434397035092923453">تم رفض وصول العميل: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">العميل المتصل: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">تغيير حساب</translation>
 <translation id="7535110896613603182">فتح إعدادات التطبيقات التلقائية</translation>
-<translation id="7628469622942688817">تذكّر رقم التعريف الشخصي التابع لي على هذا الجهاز.</translation>
+<translation id="7628469622942688817">تذكُّر رقم التعريف الشخصي التابع لي على هذا الجهاز</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7665369617277396874">إضافة حساب</translation>
@@ -156,14 +156,14 @@
 <translation id="7714222945760997814">الإبلاغ عن هذا</translation>
 <translation id="7868137160098754906">يُرجى إدخال رقم التعريف الشخصي لجهاز الكمبيوتر البعيد.</translation>
 <translation id="7895403300744144251">لا تسمح سياسات الأمان على جهاز الكمبيوتر البعيد بالاتصالات من حسابك.</translation>
-<translation id="7936528439960309876">إرساء إلى اليسار</translation>
-<translation id="7970576581263377361">‏تعذّرت المصادقة.يُرجى تسجيل الدخول إلى Chromium مرة أخرى.</translation>
+<translation id="7936528439960309876">الإرساء إلى اليسار</translation>
+<translation id="7970576581263377361">‏تعذّرت المصادقة. يُرجى تسجيل الدخول إلى Chromium مرة أخرى.</translation>
 <translation id="7981525049612125370">انتهت صلاحية الجلسة البعيدة.</translation>
 <translation id="8038111231936746805">(تلقائي)</translation>
 <translation id="8041089156583427627">إرسال تعليقات</translation>
 <translation id="8060029310790625334">مركز المساعدة</translation>
 <translation id="806699900641041263">جارٍ الاتصال بـ <ph name="HOSTNAME" /></translation>
-<translation id="8073845705237259513">‏لاستخدام سطح المكتب البعيد من Chrome، يجب إضافة حساب في Google إلى جهازك.</translation>
+<translation id="8073845705237259513">‏لاستخدام ميزة "الاتصال بجهازك عن بعد من Chrome"، يجب إضافة حساب Google إلى جهازك.</translation>
 <translation id="809687642899217504">أجهزة الكمبيوتر الخاصة بي</translation>
 <translation id="8116630183974937060">حدث خطأ في الشبكة. يُرجى التحقق من اتصال جهازك بالإنترنت وإعادة المحاولة.</translation>
 <translation id="8295077433896346116">‏لاستخدام <ph name="PRODUCT_NAME" />، عليك منح إذن "أدوات تسهيل الاستخدام" لكي يصل الطلب من الجهاز البعيد إلى جهاز Mac هذا.
@@ -172,21 +172,21 @@
 
 في حال سبق ووضعت علامة في المربّع بجانب "<ph name="SERVICE_SCRIPT_NAME" />"، عليك إزالة العلامة ثم وضعها مرة أخرى.</translation>
 <translation id="8305209735512572429">عملية مصادقة الويب عن بُعد</translation>
-<translation id="8383794970363966105">‏لاستخدام التوافق مع نظام التشغيل Chrome، يجب إضافة حساب في Google إلى جهازك.</translation>
+<translation id="8383794970363966105">‏للتوافق مع نظام التشغيل Chrome، يجب إضافة حساب في Google إلى جهازك.</translation>
 <translation id="8386846956409881180">‏تم إعداد المضيف بواسطة بيانات اعتماد OAuth غير صالحة.</translation>
 <translation id="8397385476380433240">منح الإذن إلى <ph name="PRODUCT_NAME" /></translation>
-<translation id="8406498562923498210">‏عليك اختيار جلسة لإطلاقها ضمن بيئة "سطح المكتب البعيد من Chrome". (تجدر الإشارة إلى أنه يمكن ألا تدعم بعض أنواع الجلسات التشغيل ضمن "سطح المكتب البعيد من Chrome" وعلى وحدة التحكّم المحلية في آنٍ واحد.)</translation>
+<translation id="8406498562923498210">‏عليك اختيار جلسة لإطلاقها ضمن بيئة "الاتصال بجهازك عن بعد من Chrome". (تجدر الإشارة إلى أنه يمكن ألا تدعم بعض أنواع الجلسات التشغيل ضمن "الاتصال بجهازك عن بعد من Chrome" وعلى وحدة التحكّم المحلية في آنٍ واحد.)</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8445362773033888690">‏عرض في متجر Google Play</translation>
 <translation id="8509907436388546015">عملية دمج سطح المكتب</translation>
 <translation id="8513093439376855948">مضيف الرسائل الأصلي لإدارة المضيف عن بُعد</translation>
 <translation id="8525306231823319788">ملء الشاشة</translation>
-<translation id="858006550102277544">تعليق</translation>
-<translation id="8743328882720071828">هل تريد السماح لـ <ph name="CLIENT_USERNAME" /> برؤية جهاز الكمبيوتر والتحكم فيه؟</translation>
-<translation id="8747048596626351634">‏تعطلت الجلسة أو تعذّر بدء تشغيلها. في حال وجود ~/.chrome-remote-desktop-session على جهاز الكمبيوتر البعيد، تأكد من بدء تشغيلها لعملية مقدمة لفترة زمنية طويلة، مثل بيئة سطح المكتب أو مدير النوافذ.</translation>
+<translation id="858006550102277544">التعليق</translation>
+<translation id="8743328882720071828">هل مطلوب السماح لـ <ph name="CLIENT_USERNAME" /> بالاطّلاع على جهاز الكمبيوتر والتحكّم فيه؟</translation>
+<translation id="8747048596626351634">‏تعطلت الجلسة أو تعذّر بدئها. في حال توفّرت جلسة ~/.chrome-remote-desktop-session على الكمبيوتر البعيد، يُرجى التأكّد من أنّها تؤدي إلى عملية طويلة في المقدّمة، مثل بيئة سطح المكتب أو مدير النوافذ.</translation>
 <translation id="8804164990146287819">سياسة الخصوصية</translation>
 <translation id="8906511416443321782">‏مطلوب منح إمكانية الوصول إلى الميكروفون لتسجيل الصوت وبثه إلى برنامج "سطح المكتب البعيد من Chrome".</translation>
-<translation id="9111855907838866522">أنت متصل بجهازك البعيد. ولفتح القائمة، يُرجى النقر على الشاشة باستخدام أربعة أصابع.</translation>
+<translation id="9111855907838866522">لقد تمَّ الاتصال بجهازك البعيد. لفتح القائمة، يُرجى النقر على الشاشة باستخدام أربعة أصابع.</translation>
 <translation id="9126115402994542723">عدم المطالبة برقم التعريف الشخصي مرة أخرى عند الاتصال بهذا المضيف من هذا الجهاز.</translation>
 <translation id="916856682307586697">‏إطلاق جلسة Xsession التلقائية</translation>
 <translation id="9187628920394877737">منح إذن "تسجيل الشاشة" إلى <ph name="PRODUCT_NAME" /></translation>

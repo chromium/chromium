@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">PIN Anda tidak diubah. Periksa koneksi internet Anda, lalu coba lagi</translation>
 <translation id="1063070031224282617">Pilih tempat untuk menyimpan "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Ulasan berdasarkan minat Anda</translation>
+<translation id="1072679792409426431">Dinonaktifkan oleh administrator Anda</translation>
 <translation id="1074827084851510304">Anda akan menghapus {password_count} sandi dan daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="1076421457278169141">Kode telah dipindai</translation>
 <translation id="1081114897601629648">Sandi berikut tidak diimpor ke Pengelola Sandi Google karena tidak sesuai dengan persyaratan.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Alamat ini akan dihapus dari perangkat ini.}other{Alamat ini akan dihapus dari perangkat ini.}}</translation>
 <translation id="2297989278479054870">Setelah Anda logout, bookmark, sandi, dan data lainnya di Akun Google Anda akan dihapus dari perangkat ini.</translation>
 <translation id="2299218006564889602">Sandi Anda dienkripsi di perangkat sebelum disimpan ke Pengelola Sandi Google.</translation>
+<translation id="2306265833370324042">Tampilkan detail <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Tutup Tab</translation>
 <translation id="2311077293164383652">Tutup Tab Tersemat</translation>
 <translation id="2316129865977710310">Lain kali</translation>
@@ -671,7 +673,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3631443864840848029">Pastikan Anda menyimpan sandi saat ini untuk situs ini.</translation>
 <translation id="3642060527569456384">Grup tab disimpan dan diperbarui otomatis di semua perangkat Anda.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, {email}.}other{{count} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, {email}.}}</translation>
-<translation id="3650299480924308502">Setelah Anda logout, data yang belum disimpan akan dihapus dari perangkat ini. Data ini dapat mencakup sandi, histori, dan lainnya.</translation>
 <translation id="3659297405161482746">Metode pembayaran tidak ditemukan</translation>
 <translation id="3668816008081204991">Daftar bacaan disembunyikan</translation>
 <translation id="3670030362669914947">Nomor</translation>
@@ -1201,6 +1202,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5709005673595820640">{count,plural, =1{Anda memiliki {count} sandi yang digunakan ulang yang dapat membahayakan keamanan Anda. Perbaiki sekarang agar tetap terlindungi.}other{Anda memiliki {count} sandi yang digunakan ulang yang dapat membahayakan keamanan Anda. Perbaiki sekarang agar tetap terlindungi.}}</translation>
 <translation id="57094364128775171">Sarankan sandi yang kuat…</translation>
 <translation id="5718049162805123412">Anda harus mengubahnya sekarang</translation>
+<translation id="5721040778297053709">Posisikan kartu kredit dalam bingkai ini</translation>
 <translation id="572328651809341494">Tab terbaru</translation>
 <translation id="5724941645893276623">Untuk browsing web secara rahasia, tambahkan tab baru</translation>
 <translation id="5728072125198221967">Layanan Google tertaut</translation>
@@ -1568,7 +1570,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7055240621761583113">Isi otomatis sandi</translation>
 <translation id="7063811929043357292">Akunmu dikelola oleh orang tuamu.
 <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">Untuk melindungi keamanan organisasi Anda, data yang belum disimpan akan dihapus dari perangkat ini. Data ini dapat mencakup sandi, histori, dan lainnya.</translation>
 <translation id="7067780033517902110">Semua Jenis File</translation>
 <translation id="707086654079606593">Kelola alamat…</translation>
 <translation id="7080806333218412752">Mengirimkan URL ke Safe Browsing untuk memeriksanya. Juga mengirimkan sedikit contoh halaman, download, aktivitas ekstensi, dan informasi sistem untuk membantu menemukan ancaman baru. Menautkan sementara data ini ke Akun Google Anda saat login, untuk melindungi Anda ketika menggunakan berbagai aplikasi Google.</translation>
@@ -1780,6 +1781,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7889910613639381518">Akses mudah dan aman dengan widget Pengelola Sandi Google.</translation>
 <translation id="7899199123054742721">Tandai semua belum dibaca</translation>
 <translation id="7911190106180361398">Organisasi tidak mengizinkan Anda menyinkronkan semuanya.</translation>
+<translation id="7918999344502274923">Sembunyikan detail <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Tidak ditemukan masalah</translation>
 <translation id="7925108652071887026">Mengisi otomatis data</translation>
 <translation id="7926975587469166629">Nama panggilan kartu</translation>

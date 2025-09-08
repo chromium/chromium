@@ -11,6 +11,9 @@
 <translation id="1051793555070215510">Vui lòng dành một phút làm bản khảo sát này để giúp chúng tôi cải thiện chế độ ẩn danh.</translation>
 <translation id="1059838145689930908">Để sử dụng tiện ích này bằng tài khoản <ph name="USER_EMAIL_ADDRESS" />, hãy đăng nhập vào Chrome.</translation>
 <translation id="1065672644894730302">Không thể đọc tùy chọn của bạn. Một số tính năng có thể không khả dụng và các thay đổi đối với tùy chọn sẽ không được lưu.</translation>
+<translation id="1070377999570795893">Một chương trình khác trên máy tính của bạn đã thêm một tiện ích có thể thay đổi cách Chrome hoạt động.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Tìm bằng Google Ống kính</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> trước đó đã sử dụng Chrome</translation>
 <translation id="110877069173485804">Đây là Chrome của bạn</translation>
@@ -46,6 +49,9 @@
 <translation id="1547295885616600893">ChromeOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
 <translation id="1547469039832541117">Kết thúc tác vụ được làm nổi bật.</translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
+<translation id="1585717515139318619">Một chương trình khác trên máy tính của bạn đã thêm một chủ đề có thể thay đổi cách Chrome hoạt động.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome đang sử dụng máy ảnh của bạn.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> nguy hiểm, do đó Chrome đã chặn tệp.</translation>
 <translation id="1597911401261118146">Để kiểm tra xem mật khẩu của bạn có bị ảnh hưởng bởi các vụ rò rỉ dữ liệu và sự cố bảo mật khác hay không, hãy <ph name="BEGIN_LINK" />đăng nhập vào Chrome<ph name="END_LINK" />.</translation>
@@ -451,6 +457,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6321592572353357376">Tiện ích "<ph name="EXTENSION_NAME" />" muốn bạn đăng nhập vào Chrome</translation>
 <translation id="6326175484149238433">Xóa khỏi Chrome</translation>
 <translation id="6327105987658262776">Hiện không có bản cập nhật nào.</translation>
+<translation id="6334815226785304306">Đặt Google Chrome làm trình duyệt mặc định và ghim vào thanh tác vụ</translation>
 <translation id="6360449101159168105">Mặc dù thẻ này không hoạt động nhưng bộ nhớ đã được giải phóng để giúp Chrome luôn hoạt động nhanh. Bạn có thể chọn luôn loại trừ trang web này khỏi trạng thái không hoạt động.</translation>
 <translation id="6388799252195623474">giúp tôi tra cứu về nội dung này</translation>
 <translation id="6412673304250309937">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, Chrome cũng có thể gửi các URL, bao gồm cả các đoạn nội dung trên trang, đến tính năng Duyệt web an toàn.</translation>
@@ -462,7 +469,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6489302989675808168">Bật • Chrome không thể xác minh nguồn gốc của tiện ích này</translation>
 <translation id="6493527311031785448">Google Chrome đang cố gắng <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome đã tự động đóng</translation>
-<translation id="6506909944137591434">Chrome cần quyền truy cập máy ảnh để tạo bản đồ 3D về các khu vực xung quanh bạn</translation>
+<translation id="6506909944137591434">Chrome cần quyền truy cập camera để tạo bản đồ 3D khu vực xung quanh bạn</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome dành cho nhà phát triển</translation>
 <translation id="6520670145826811516">Để cho phép Chrome dùng thông tin vị trí, hãy cấp quyền sử dụng trong phần <ph name="BEGIN_LINK" />cài đặt hệ thống<ph name="END_LINK" /></translation>
 <translation id="6532945796722480006">Mở Gemini trong Chrome Canary</translation>
@@ -549,6 +556,9 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7572537927358445944">Tắt • Chrome không thể xác minh nguồn gốc của tiện ích này</translation>
 <translation id="7583399374488819119">Trình cài đặt <ph name="COMPANY_NAME" /></translation>
 <translation id="7602868996817972616">Hỏi Google về trang này</translation>
+<translation id="760353356052806707">Một chương trình khác trên máy tính của bạn đã thêm một ứng dụng có thể thay đổi cách Chrome hoạt động.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> yêu cầu bạn phải đọc và chấp nhận Điều khoản dịch vụ sau đây trước khi sử dụng thiết bị này. Những điều khoản này không mở rộng, sửa đổi hay giới hạn Điều khoản của Google ChromeOS.</translation>
 <translation id="7627609214560473136">Để bảo vệ dữ liệu của bạn, hãy cho phép Chrome loại bỏ quyền của các trang web mà gần đây bạn không truy cập.</translation>
@@ -639,7 +649,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8575047640889685742">Sử dụng <ph name="BEGIN_LINK" />cụm mật khẩu của riêng bạn<ph name="END_LINK" /> để mã hoá tất cả dữ liệu Chrome trong Tài khoản Google Các địa chỉ và phương thức thanh toán từ Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.</translation>
 <translation id="8601359445272098721">Mới! Bạn có thể dịch cả văn bản và hình ảnh trên màn hình bằng cách chọn nút "dịch màn hình"</translation>
 <translation id="8614913330719544658">Google Chrome không hồi đáp. Chạy lại ngay bây giờ?</translation>
-<translation id="861702415419836452">Chromium cần có quyền sử dụng máy ảnh của bạn để tạo bản đồ 3D về các khu vực xung quanh bạn</translation>
+<translation id="861702415419836452">Chromium cần có quyền truy cập camera để tạo bản đồ 3D khu vực xung quanh bạn</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome sẽ khởi động lại sau 1 phút}other{Chrome sẽ khởi động lại sau # phút}}</translation>
 <translation id="8637932705841171563">Để chia sẻ cửa sổ, hãy cho phép Chrome ghi màn hình trong phần Cài đặt hệ thống</translation>
 <translation id="8641606876632989680">Chrome sẽ thông báo khi mật khẩu bạn dùng để đăng nhập đã bị lộ</translation>

@@ -114,9 +114,6 @@
 <translation id="1069814191880976658">অন্য এখন স্ক্ৰীন বাছনি কৰক</translation>
 <translation id="107022587824771715">টেবৰ গোটৰ পৰামৰ্শ বৰ্তমান উপলব্ধ নহয়। আপুনি <ph name="BEGIN_LINK" />এতিয়া ৰিফ্ৰেশ্ব কৰিব পাৰে<ph name="END_LINK" /> বা পাছত পুনৰ চেষ্টা কৰিব পাৰে</translation>
 <translation id="1070357312245925724">নেভিগেশ্বনৰ শ্বৰ্টকাট</translation>
-<translation id="1070377999570795893">আপোনাৰ কম্পিউটাৰৰ অন্য প্ৰ’গামে যোগ কৰা এক্সটেনশ্বনে Chrome কার্যপ্ৰণালী সলনি কৰিব পাৰে।
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1070705170564860382"><ph name="COUNTDOWN_SECONDS" /> ছেকেণ্ডত বিকল্প ব্ৰাউজাৰত খোলা হ’ব</translation>
 <translation id="1071661533099313342">পৃথক ভিউ</translation>
 <translation id="1071917609930274619">ডেটা এনচাইফাৰমেণ্ট</translation>
@@ -854,9 +851,6 @@
 <translation id="1583082742220286248">ছেশ্বনটো পুনৰ আৰম্ভ কৰা হৈছে</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> স্থানীয়ভাৱে প্ৰক্ৰিয়াকৰণ কৰা হৈছে আৰু ই অফলাইনত কাম কৰে</translation>
 <translation id="1584990664401018068">আপুনি ব্যৱহাৰ কৰি থকা ৱাই-ফাই (<ph name="NETWORK_ID" />)ৰ বাবে বিশ্বাসযোগ্যতা প্ৰমাণ কৰিব লগা হ’ব পাৰে।</translation>
-<translation id="1585717515139318619">আপোনাৰ কম্পিউটাৰৰ অন্য প্ৰ'গামে কোনো থীম যোগ কৰিছে যি Chromeৰ কার্যকলাপ সলনি কৰিব পাৰে।
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587275751631642843">&amp;JavaScriptৰ কনছ’ল</translation>
 <translation id="1587907146729660231">আপোনাৰ আঙুলিৰে পাৱাৰ বুটামটো স্পৰ্শ কৰক</translation>
 <translation id="1588438908519853928">সাধাৰণ</translation>
@@ -3365,6 +3359,7 @@
 <translation id="331080746368555063">ব্যক্তিগত ছাইটসমূহে আপোনাৰ কোম্পানীৰ ইণ্ট্ৰানেটৰ দৰে বস্তুবোৰ অন্তৰ্ভুক্ত কৰিব পাৰে</translation>
 <translation id="3311007761540106761">ছিষ্টেম ডিফ’ল্ট</translation>
 <translation id="3311445899360743395">এই এপ্‌টোৰ সৈতে জড়িত ডেটা এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব পাৰে।</translation>
+<translation id="3312300514034250578">বৰ্ধিত সুৰক্ষিত ব্ৰাউজিং</translation>
 <translation id="3312470654018965389">Linux কণ্টেইনাৰটো কনফিগাৰ কৰি থকা হৈছে</translation>
 <translation id="3312883087018430408">কোনো এক নিৰ্দিষ্ট ছাইট অথবা Chromeৰ কোনো অংশ সন্ধান কৰিবলৈ ঠিকনাৰ বাৰত ইয়াৰ শ্বৰ্টকাটটো টাইপ কৰি তাৰ পাছত আপোনাৰ পচন্দৰ কীব’ৰ্ডৰ শ্বৰ্টকাটটো দিয়ক। উদাহৰণস্বৰূপে, কেৱল বুকমাৰ্ক সন্ধান কৰিবলৈ "@bookmarks" টাইপ কৰক আৰু তাৰ পাছত টেব অথবা স্পেচ টিপক।</translation>
 <translation id="3313622045786997898">প্ৰমাণপত্ৰ চহীৰ মান</translation>
@@ -3672,6 +3667,7 @@
 <translation id="3522088408596898827">ডিস্কৰ ঠাই একেবাৰে কমি গৈছে। ডিস্কৰ ঠাই খালী কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3522979239100719575">উপলব্ধ প্ৰ’ফাইল বিচাৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="3523447078673133727">ছাইটসমূহক আপোনাৰ হাত ট্ৰেক কৰিবলৈ নিদিব</translation>
+<translation id="3523789730715594198">আপুনি যিকোনো সময়তে ছেটিঙত ছিংক কৰা বন্ধ কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="3524518036046613664">প্ৰিণ্টাৰৰ দৰে আপোনাৰ স্থানীয় নেটৱৰ্কত থকা ডিভাইচসমূহ বিচাৰি উলিয়াওক</translation>
 <translation id="3524965460886318643">ৰপ্তানি কার্যসমূহ</translation>
 <translation id="3525606571546393707">আন ফ’ল্ডাৰৰ পৰা ফাইলটো খোলাৰ চেষ্টা কৰক বা সীমিতভাৱে চোৱা আৰু সম্পাদনা কৰাৰ বিকল্পসমূহ ব্যৱহাৰ কৰিবলৈ "প্ৰাথমিক সম্পাদকত খোলক" সুবিধাটো বাছনি কৰক।</translation>
@@ -5523,7 +5519,7 @@
 <translation id="4812073856515324252"><ph name="APP_NAME" />ৰ বাবে আপোনাৰ পাছকী ক’ত ছেভ কৰিব বাছনি কৰক</translation>
 <translation id="4813512666221746211">নেটৱৰ্কৰ আসোঁৱাহ</translation>
 <translation id="4814114628197290459">IBAN মচক</translation>
-<translation id="4814327014588285482">এৰক আৰু মোক পাছত মনত পেলাওক</translation>
+<translation id="4814327014588285482">এৰক আৰু মোক পাছত মনত পেলাই দিব</translation>
 <translation id="4814378367953456825">এই ফিংগাৰপ্ৰিণ্টটোৰ বাবে এটা নাম দিয়ক</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, সবিশেষ</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{১ টা বুকমাৰ্ক মচা হ’ল}one{{COUNT} টা বুকমাৰ্ক মচা হ’ল}other{{COUNT} টা বুকমাৰ্ক মচা হ’ল}}</translation>
@@ -6632,6 +6628,7 @@
 <translation id="5595307023264033512">ছাইটসমূহে ব্যৱহাৰ কৰা মুঠ ষ্ট’ৰেজ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">ঠিকনা সম্পাদনা কৰক</translation>
 <translation id="5596627076506792578">অধিক বিকল্প</translation>
+<translation id="5596808802173376270">প্ৰদান কৰা পুনঃস্থাপন কৰা ফাইলত সমস্যা আছে - পূৰ্বৰে পৰা থকা Linux অতিথিৰ বাবে ভুল প্ৰকাৰৰ সম্ভাৱনা আছে। অধিক তথ্যৰ বাবে /var/লগ/বাৰ্তাসমূহ চাওক।</translation>
 <translation id="5600348067066185292">ইনষ্টল কৰিবলৈ কেইটামান সহজ পদক্ষেপ গ্ৰহণ কৰিব লাগে। আপোনাৰ কম্পিউটাৰত সালসলনি কৰাৰ আগতে নিশ্চিত কৰিবলৈ আপুনি আৰু এটা সুযোগ পাব।</translation>
 <translation id="5600706100022181951">আপডে’টটো ম’বাইল ডেটাৰ <ph name="UPDATE_SIZE_MB" /> এম.বি. ব্যৱহাৰ কৰি ডাউনল’ড কৰা হ’ব। আপুনি অব্যাহত ৰাখিবলৈ বিচাৰেনে?</translation>
 <translation id="5601503069213153581">পিন</translation>
@@ -8093,6 +8090,7 @@
 <translation id="6657240842932274095">ছিষ্টেম সেৱাসমূহক আপোনাৰ অৱস্থান ব্যৱহাৰ কৰাৰ অনুমতি দিবনে?</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6659213950629089752">"<ph name="NAME" />" এক্সটেনশ্বনে এই পৃষ্ঠাটো জুম কৰিছে</translation>
+<translation id="6659594942844771486">ব্ৰাউজাৰ টেব</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> - কেমেৰাৰ ৰেকৰ্ডিং</translation>
 <translation id="6660301751798595791">কণ্ঠধ্বনিৰ বাছনি</translation>
 <translation id="6660819301598582123">অসমৰ এশিঙীয়া গঁড় পৃথিৱী বিখ্যাত।</translation>
@@ -9726,10 +9724,6 @@
     নিকটৱৰ্তী ডিভাইচসমূহে <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> হিচাপে দেখা পাব...</translation>
 <translation id="7786889348652477777">এপ্ &amp;পুনৰ ল’ড কৰক</translation>
 <translation id="7787308148023287649">আনখন স্ক্ৰীনত দেখুৱাওক</translation>
-<translation id="7788298548579301890">আপোনাৰ কম্পিউটাৰৰ অন্য প্ৰ’গ্ৰেম যোগ কৰা এপ্‌টোৱে Chrome কার্যপ্ৰণালী সলনি কৰিব পাৰে।
-
-
-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7789895198197042595">আপোনাৰ ঘৰৰ ঠিকনাটোৱে সমগ্ৰ Google সেৱাত আপোনাৰ কামসমূহ কৰাত আপোনাক সহায় কৰিব পাৰে, যেনে, অধিক প্ৰাসংগিক Search ফলাফল আৰু Google Maps দিক্-নিৰ্দেশনা লাভ কৰা। আপুনি নিজৰ <ph name="BEGIN_LINK" />Google একাউণ্ট <ph name="USERNAME" /><ph name="END_LINK" />ত নিজৰ ঠিকনা সম্পাদনা কৰিব বা মচিব পাৰে।</translation>
 <translation id="7791269138074599214">ইনপুট পদ্ধতি</translation>
 <translation id="7791429245559955092">এই এপ্লিকেশ্বনটো আপুনি বৰ্তমান ব্যৱহাৰ কৰা Chromeৰ প্ৰ’ফাইলটোত ইনষ্টল কৰা হ’ব</translation>
@@ -9833,6 +9827,7 @@
 <translation id="786073089922909430">সেৱা: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ডাউনল'ডসমূহ</translation>
 <translation id="7861846108263890455">Google একাউণ্টৰ ভাষা</translation>
+<translation id="7863211248337747225">এপ্‌টো ইনষ্টল কৰক</translation>
 <translation id="7864114920800968141"><ph name="NUM_MIN" /> মিনিটত</translation>
 <translation id="7864539943188674973">ব্লুটুথ অক্ষম কৰক</translation>
 <translation id="7864825798076155402">আপোনাৰ Google একাউণ্টত ছেভ কৰিবনে?</translation>

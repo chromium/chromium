@@ -632,6 +632,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4042941173059740150">Fortsæt til <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Felt i bunden</translation>
 <translation id="4045441967987592849">Genåbn</translation>
+<translation id="4049920046559074950">Flere valgmuligheder for <ph name="INSTANCE_TITLE" /></translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardfane med ny aktivitet i delte fanegrupper}one{<ph name="TABS_COUNT_MANY" /> standardfane med ny aktivitet i delte fanegrupper}other{<ph name="TABS_COUNT_MANY" /> standardfaner med ny aktivitet i delte fanegrupper}}</translation>
 <translation id="405365679581583349">Opdater Google Play-tjenester</translation>
 <translation id="405399507749852140">Få besked, hvis prisen falder på et website</translation>
@@ -1727,7 +1728,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8798449543960971550">Læst</translation>
 <translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8803797964927776877">{ITEMS_COUNT,plural, =1{Elementet er gemt på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}one{Elementet er gemt på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}other{Elementerne er gemt på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
-<translation id="8804742093141782941">Behold gruppen</translation>
+<translation id="8804742093141782941">Behold gruppe</translation>
 <translation id="8812260976093120287">På nogle websites kan du betale med ovenstående understøttede betalingsapps på din enhed.</translation>
 <translation id="8816556050903368450">Inklusiv link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Indholdet på fanen Forhåndsvisning kan ikke vises.</translation>

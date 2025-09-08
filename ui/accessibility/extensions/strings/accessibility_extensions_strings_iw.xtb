@@ -14,24 +14,24 @@
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2179565792157161713">פתיחת תיאור ארוך בכרטיסייה חדשה</translation>
 <translation id="2223143012868735942">מסנן צבע הניתן להתאמה המופעל באתרים כדי לשפר את ההבחנה בין צבעים.</translation>
-<translation id="2394933097471027016">רוצה לנסות עכשיו? דפדוף עם סמן מופעל תמיד בדף זה!</translation>
+<translation id="2394933097471027016">דפדוף עם סמן הטקסט מופעל תמיד בדף זה! רוצה לנסות עכשיו?</translation>
 <translation id="2471847333270902538">ערכת צבעים עבור <ph name="SITE" />:</translation>
 <translation id="2648340354586434750">‏צריך ללחוץ לחיצה ארוכה על ‎&lt;span class='key'&gt;‎Option&lt;/span&gt;‎ כדי לעבור לפי מילים.</translation>
 <translation id="2795227192542594043">תוסף זה מספק סמן הניתן להזזה בדף האינטרנט, כך שניתן לבחור טקסט באמצעות המקלדת.</translation>
 <translation id="2808027189040546825">שלב 1: בוחרים את השורה שמכילה את הכוכבים העמומים ביותר:</translation>
-<translation id="2965611304828530558">‏&lt;p&gt;כשמגיעים לקישור או לרכיב אינטרקטיבי, מתבצע בהם מיקוד אוטומטי. כדי ללחוץ על קישור או כפתור ‎&lt;/p&gt; &lt;p&gt;‎ יש ללחוץ על ‎&lt;span class="key"&gt;Enter&lt;/span&gt;‎ כשהמסך ממוקד ברכיב אינטראקטיבי (למשל תיבת טקסט או תיבת רשימה) שקולט לחיצות על מקשי חיצים, יש ללחוץ על ‎&lt;span class="key"&gt;Esc&lt;/span&gt;‎ ואז על מקש החץ שמאלה או ימינה, כדי להמשיך לדפדף עם סמן. ‎&lt;/p&gt; &lt;p&gt;‎ כדי לעבור לרכיב האינטראקטיבי הבא שאפשר למקד בו את המסך, יש ללחוץ על ‎&lt;span class="key"&gt;Tab&lt;/span&gt;‎ ‏&lt;/p&gt;</translation>
+<translation id="2965611304828530558">‏&lt;p&gt;כשמגיעים לקישור או לרכיב אינטרקטיבי, מתבצע בהם מיקוד אוטומטי. כדי ללחוץ על קישור או כפתור ‎&lt;/p&gt; &lt;p&gt;‎ יש ללחוץ על ‎&lt;span class="key"&gt;Enter&lt;/span&gt;‎ כשהמסך ממוקד ברכיב אינטראקטיבי (למשל תיבת טקסט או תיבת רשימה) שקולט לחיצות על מקשי חיצים, יש ללחוץ על ‎&lt;span class="key"&gt;Esc&lt;/span&gt;‎ ואז על מקש החץ שמאלה או ימינה, כדי להמשיך לדפדף עם סמן טקסט. ‎&lt;/p&gt; &lt;p&gt;‎ כדי לעבור לרכיב האינטראקטיבי הבא שאפשר למקד בו את המסך, יש ללחוץ על ‎&lt;span class="key"&gt;Tab&lt;/span&gt;‎ ‏&lt;/p&gt;</translation>
 <translation id="3252573918265662711">הגדרות</translation>
 <translation id="3410969471888629217">מחיקת ההתאמות האישיות של האתר</translation>
 <translation id="3435896845095436175">הפעלה</translation>
-<translation id="3622586652998721735">הגדרה כברירת מחדל של ערכת צבעים</translation>
+<translation id="3622586652998721735">הגדרת ערכת צבעים כברירת מחדל</translation>
 <translation id="3812541808639806898">‏מציג טקסט Alt של תמונה</translation>
-<translation id="381767806621926835">‏כדי לגשת לתיאור הארוך יש ללחוץ לחיצה ארוכה על הפריט עם המאפיין "longdesc" או "aria-describedat".</translation>
+<translation id="381767806621926835">‏כדי לגשת לתיאור הארוך של פריט כלשהו עם המאפיין "longdesc" או "aria-describedat", לוחצים עליו בלחיצה ימנית.</translation>
 <translation id="4023902424053835668">דפדף בטקסט של דפי אינטרנט באמצעות מקשי החצים.</translation>
 <translation id="4388820049312272371">הדגשת מיקום הסמן באמצעות הבהוב מהיר.</translation>
 <translation id="4394049700291259645">השבתה</translation>
 <translation id="4769065380738716500">‏תמונות הוחלפו על-ידי טקסט ה-alt שלהן.</translation>
 <translation id="4896660567607030658">אין משוב, פשוט להציג את הסמן.</translation>
-<translation id="4937901943818762779">התרת תמונות המכילות אנימציה, אך רק פעם אחת.</translation>
+<translation id="4937901943818762779">הצגת תמונות אנימציה פעם אחת בלבד</translation>
 <translation id="4949131196216960195">‏כדי להפעיל דפדוף עם סמן טקסט צריך ללחוץ על &lt;span class='key'&gt;חיפוש&lt;/span&gt;‏ + &lt;img src='increase_brightness.png'&gt; (מקש הגברת הבהירות או F7). כדי להשבית אותו צריך ללחוץ עליו שוב.</translation>
 <translation id="4954450790315188152">כאשר 'דפדוף עם סמן' מופעל:</translation>
 <translation id="5041932793799765940">שינוי צבע</translation>

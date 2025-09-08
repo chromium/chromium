@@ -29,6 +29,15 @@
           の順に移動して、[<ph name="NO_PREFETCH_DESCRIPTION" />] をオフにします。
           上記を行っても問題が解決しない場合は、パフォーマンス向上のため
           このオプションを再びオンにすることをおすすめします。</translation>
+<translation id="6581867098636731226">Chrome メニュー &gt;
+          [<ph name="SETTINGS_TITLE" />]
+          &gt;
+          [<ph name="SYSTEM_TITLE" />]
+          &gt;
+          [<ph name="PROXIES_TITLE" />]
+          &gt;
+          [ネットワークとインターネット] &gt; [プロキシ]
+          に移動して、[設定を自動的に検出する] の選択を解除します。</translation>
 <translation id="7230956101631259640">保護された Chrome ページを表示しています</translation>
 <translation id="8232971017369963250">Chrome は <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> のオープンソース プロジェクトによって実現しました。</translation>
 <translation id="8279509328145658601">Chrome の実現には、他の<ph name="BEGIN_LINK_OSS" />オープンソース ソフトウェア<ph name="END_LINK_OSS" />もかかわっています。</translation>

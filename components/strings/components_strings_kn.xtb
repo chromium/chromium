@@ -50,6 +50,7 @@
 <translation id="1080116354587839789">ಅಗಲಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="1081061862829655580">ಟ್ರೇ 19</translation>
 <translation id="1082026381988252344">ನಿಮ್ಮ ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್‌ನ ಕಂಟೆಂಟ್‌ಗಳನ್ನು ಸ್ಕ್ರಾಲ್ ಮಾಡಿ ಮತ್ತು ಜೂಮ್ ಮಾಡಿ</translation>
+<translation id="108859316315249327">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="1088664500620117635"><ph name="PRODUCT_NAME" /> ನ ಸಾಮಾನ್ಯ ಬೆಲೆ <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> ಆಗಿದೆ ಆದರೆ ವೆಬ್‌ನಾದ್ಯಂತ ಪ್ರಸ್ತುತ ಬೆಲೆ <ph name="CURRENT_PRICE" /> ಇದೆ.</translation>
 <translation id="1089439967362294234">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="1089599132348386324">ನೀವು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ನಿಮ್ಮ ನಿರ್ಧಾರವನ್ನು ಬದಲಾಯಿಸಬಹುದು.</translation>
@@ -74,6 +75,7 @@
 <translation id="1123753900084781868">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="112840717907525620">ನೀತಿಯ ಕ್ಯಾಷ್ ಸರಿಯಾಗಿದೆ</translation>
 <translation id="1131264053432022307">ನೀವು ನಕಲಿಸಿದ ಚಿತ್ರ</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" /> – ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು, ಮೇಲಿನಿಂದ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ ಮತ್ತು ಹಿಂದಕ್ಕೆ ಹೋಗುವ ಬಟನ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="1138458427267715730">ವೆಬ್‌ನಾದ್ಯಂತ ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದಾಗ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1142713751288681188">ಕಾಗದದ ಪ್ರಕಾರ</translation>
 <translation id="1144136880160289237">ನೀವು ಇನ್ನೂ ಯಾವುದೇ ಸಕ್ರಿಯ ವಿಷಯಗಳನ್ನು ಹೊಂದಿಲ್ಲ</translation>
@@ -453,6 +455,7 @@
 <translation id="1734878702283171397">ಸಿಸ್ಟಂ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> ರಂದು ಅವಧಿ ಮುಕ್ತಾಯಗೊಳ್ಳುತ್ತದೆ</translation>
 <translation id="1736420071277903564">ಕಂಪ್ಯೂಟರ್</translation>
+<translation id="1740404923954980840">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು, ಮೇಲಿನಿಂದ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ ಮತ್ತು ಹಿಂದಕ್ಕೆ ಹೋಗುವ ಬಟನ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="1741474054575634405">ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ...</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode ಕಾರ್ಯನೀತಿಯು <ph name="SECURE_DNS_MODE_SECURE" /> ಆಗಿದ್ದಾಗ, ಮಾನ್ಯವಾದ ಸ್ಟ್ರಿಂಗ್ ಅನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸಬೇಕು.</translation>
 <translation id="1743393865165844832">ಹಾಸಿಗೆ ತಯಾರಿಕೆ ಮತ್ತು ಹಾಸಿಗೆ ಲಿನೆನ್‌ಗಳು</translation>
@@ -927,7 +930,6 @@
 <translation id="2515629240566999685">ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿನ ಸಿಗ್ನಲ್ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2515761554693942801">ನೀವು <ph name="PROVIDER_ORIGIN" /> ಬಳಸುವ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ಸ್ಪರ್ಶ ID ಯ ಮೂಲಕ ದೃಢೀಕರಿಸುವ ಆಯ್ಕೆಯನ್ನು ಮಾಡಿದ್ದೀರಿ. ಈ ಪೂರೈಕೆದಾರರು ನಿಮ್ಮ ಪಾವತಿ ವಿಧಾನದ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸಿಟ್ಟಿರಬಹುದು, ನೀವು ಅದನ್ನು <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">ಈ ಕಾರ್ಡ್ ಲಭ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಕಾರ್ಡ್ ಪೂರೈಕೆದಾರರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
-<translation id="2519250377986324805">ಹೇಗೆಂದು ನೋಡಿ</translation>
 <translation id="2521385132275182522">ಕೆಳಗಿನ ಬಲಭಾಗದಲ್ಲಿ ಸ್ಟೇಪಲ್ ಹಾಕಿ</translation>
 <translation id="2521736961081452453">ಫಾರ್ಮ್ ಆನ್ನು ರಚಿಸಿ</translation>
 <translation id="2524461107774643265">ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಿ</translation>
@@ -1154,6 +1156,7 @@
 <translation id="2933624813161016821">ಎಂಬಾಸಿಂಗ್ ಫಾಯಿಲ್</translation>
 <translation id="293796669683825859">ಕಾಮೆಂಟ್‌ಗಳು</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – ನಿಮ್ಮ ಕರ್ಸರ್ ಅನ್ನು ತೋರಿಸಲು, ಆ್ಯಪ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ, ಪುಟವನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಿ ಅಥವಾ ಹಿಂದಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="2940418897281183211">PNG ಇಮೇಜ್</translation>
 <translation id="2941878205777356567">ಎನ್ವಲಪ್ 9 x 12 ಇಂಚು</translation>
 <translation id="2941952326391522266">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು <ph name="DOMAIN2" /> ದಿಂದ ಆಗಿದೆ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
@@ -1321,6 +1324,7 @@
 <translation id="3207960819495026254">ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3208701679386778924">ವರದಿಯೊಂದನ್ನು ಕಳುಹಿಸಿ ಇದರಿಂದ ನಾವು ಮತ್ತಷ್ಟು ChromeOS ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಸುಧಾರಿಸಬಹುದು.</translation>
 <translation id="3209034400446768650">ಈ ಪುಟವು, ಶುಲ್ಕ ವಿಧಿಸಬಹುದು</translation>
+<translation id="3212468046572043669">ಡೌನ್‌ಲೋಡ್ ಪ್ರಾರಂಭವಾಗಿದೆ. ಅದನ್ನು ವೀಕ್ಷಿಸಲು, ಮೇಲಿನಿಂದ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ ಮತ್ತು ಹಿಂದಕ್ಕೆ ಹೋಗುವ ಬಟನ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> ನಲ್ಲಿ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯ ಮೇಲೆ ನಿಗಾ ಇಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3215092763954878852">WebAuthn ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="3215311088819828484">ಫಲಿತಾಂಶವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1857,6 +1861,7 @@
 <translation id="4085326869263783566">ನನಗೆ ಬರೆಯಲು ಸಹಾಯ ಮಾಡಿ. ತೆರೆಯಲು, ಟ್ಯಾಪ್‌ ಮಾಡಿ ಮತ್ತು Enter ಕೀಯನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="4085769736382018559">ಉತ್ಪನ್ನಗಳನ್ನು ಹೋಲಿಸಿ</translation>
 <translation id="4085778582400064057">ನೀಲಿ 2</translation>
+<translation id="4085859451613666999">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, ಹಾಗಾಗಿ ನೀವು ಭವಿಷ್ಯದ ಖರೀದಿಗಳಿಗಾಗಿ ಅದನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಬಹುದು</translation>
 <translation id="4088981014127559358">ಅಂಚು 1 ಚಿತ್ರ Y ಶಿಫ್ಟ್</translation>
 <translation id="4089152113577680600">ಟ್ರೇ 14</translation>
 <translation id="4092349052316400070">ವಿಳಾಸವನ್ನು ಭರ್ತಿ ಮಾಡಿ</translation>
@@ -2406,6 +2411,7 @@
 <translation id="4995474875135717171">ಮಾರ್ಪಡಿಸಲಾಗಿದೆ:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಸೈಟ್ ಹುಡುಕಾಟ ಮತ್ತು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="4998950033665438990">ಏಕ ಮುಖ</translation>
+<translation id="5001338033791319371">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು ಮತ್ತು ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನೋಡಲು, ಮೇಲಿನಿಂದ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ ಮತ್ತು ಹಿಂದಕ್ಕೆ ಹೋಗುವ ಬಟನ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="5001526427543320409">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳು</translation>
 <translation id="5002932099480077015">ಸಕ್ರಿಯವಾಗಿದ್ದರೆ, ವೇಗವಾಗಿ ಫಾರ್ಮ್ ಭರ್ತಿ ಮಾಡಲು Chrome ಈ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಪ್ರತಿಯನ್ನು ಸಂಗ್ರಹಿಸುತ್ತದೆ.</translation>
 <translation id="5007344584818503324">ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್ ಗುಂಪುಗಳ ಚಟುವಟಿಕೆ</translation>
@@ -2466,6 +2472,7 @@
 <translation id="5097099694988056070">CPU/RAM ಬಳಕೆ ರೀತಿಯ ಸಾಧನದ ಅಂಕಿಅಂಶಗಳು</translation>
 <translation id="5097468150760963273">27 x 39 ಇಂಚು</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5102512728737175215">AI ಮೋಡ್ ಕೇಳಲು ಟ್ಯಾಬ್ ಒತ್ತಿ ನಂತರ ಎಂಟರ್ ಒತ್ತಿರಿ</translation>
 <translation id="510644072453496781">ಕಾರ್ಡ್‌ಬೋರ್ಡ್ (ಮುಕ್ತಾಯ)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> ಭರ್ತಿ ಮಾಡಲು ವರ್ಚುವಲ್ ಕಾರ್ಡ್</translation>
 <translation id="5108567515277121477">ಲಾಯಲ್ಟಿ ಕಾರ್ಡ್</translation>
@@ -3474,6 +3481,7 @@
 <translation id="6786145470008421571">ಎನ್ವಲಪ್ 6 x 9 ಇಂಚು</translation>
 <translation id="6786747875388722282">ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು</translation>
 <translation id="6787094689637422836">ನಿಮಗೆ ಕಾಣಿಸುವ ಜಾಹೀರಾತುಗಳ ಮೇಲೆ ನಿಮಗೆ ಹೆಚ್ಚಿನ ಆಯ್ಕೆಯನ್ನು ನೀಡುವ ಹೊಸ ಗೌಪ್ಯತೆ ಫೀಚರ್‌ಗಳನ್ನು ನಾವು ಪ್ರಾರಂಭಿಸುತ್ತಿದ್ದೇವೆ.</translation>
+<translation id="6788615780749001893">AI ಮೋಡ್ ಬಟನ್, AI ಮೋಡ್ ಕೇಳಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="6789062271869667677">ನಿರಂತರ (ಉದ್ದ)</translation>
 <translation id="678982761784843853">ಸಂರಕ್ಷಿತ ವಿಷಯದ ಐಡಿಗಳು</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
@@ -3539,7 +3547,6 @@
 <translation id="6898699227549475383">ಸಂಸ್ಥೆ (O)</translation>
 <translation id="6900702165119149418">ನೀವು ಸೈನ್ ಔಟ್ ಆಗಿದ್ದೀರಿ</translation>
 <translation id="6903907808598579934">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
-<translation id="6905163627763043954">ಅದನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6907458757809079309">ಫಿಟ್‌ನೆಸ್</translation>
 <translation id="691024665142758461">ಅನೇಕ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಿ</translation>
 <translation id="691046363691324218">ರಿಡ್ರೆಸ್ ಸಂಖ್ಯೆ</translation>
@@ -3967,6 +3974,7 @@
 <translation id="7582602800368606489">Google Calendar ನಲ್ಲಿ ಹೊಸ ಈವೆಂಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="7586676035079382730">ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="7588707273764747927">ವರ್ಗಾಯಿಸಿ</translation>
+<translation id="7589062909165841767">ನಿಮ್ಮ Google ಖಾತೆಯು ನಿಮ್ಮ <ph name="BEGIN_LINK_GAA" />Gemini ಆ್ಯಪ್‌ಗಳ ಚಟುವಟಿಕೆಯನ್ನು<ph name="END_LINK_GAA" /> ಹೊಂದಿರಬಹುದು</translation>
 <translation id="7591288787774558753">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕೇ?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" /> ನಲ್ಲಿ ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾವನ್ನು ಬಳಸಲು <ph name="EMBEDDED_URL" /> ಬಯಸುತ್ತಿದೆ</translation>
 <translation id="7592362899630581445">ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರವು ಹೆಸರಿನ ನಿರ್ಬಂಧನೆಗಳನ್ನು ಉಲ್ಲಂಘಿಸುತ್ತದೆ.</translation>
@@ -4252,6 +4260,7 @@
 <translation id="8075736640322370409">ಹೊಸ Google Sheet ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="8075898834294118863">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8076492880354921740">ಟ್ಯಾಬ್‌ಗಳು</translation>
+<translation id="8076880883123051368">ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ನಲ್ಲಿ ನಿಮ್ಮ <ph name="BEGIN_LINK_GAA" />Gemini ಆ್ಯಪ್‌ಗಳ ಚಟುವಟಿಕೆ<ph name="END_LINK_GAA" /> ನಂತಹ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು</translation>
 <translation id="8077669823243888800">ಎನ್ವಲಪ್ ಚೈನೀಸ್ #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{ಗೌಪ್ಯ ಫೈಲ್ ಅನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕೆ?}one{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕೆ?}other{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಬೇಕೆ?}}</translation>
 <translation id="8079031581361219619">ಸೈಟ್ ಅನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಬೇಕೇ?</translation>
@@ -4385,6 +4394,7 @@
 <translation id="8294431847097064396">ಮೂಲ</translation>
 <translation id="8297545700510100061">ಕುಕೀಗಳು ಮತ್ತು ಇತರ ಸೈಟ್ ಡೇಟಾವನ್ನು ಬಳಸಿಕೊಂಡು ನಿಮ್ಮನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲಾಗುತ್ತದೆ, ಉದಾಹರಣೆಗೆ ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಮಾಡಲು ಅಥವಾ ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಬಳಸಲಾಗುತ್ತದೆ. ಈ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗಾಗಿ ಕುಕೀಗಳನ್ನು ನಿರ್ವಹಿಸಲು, <ph name="SETTINGS" /> ನೋಡಿ.</translation>
 <translation id="8298115750975731693">ನೀವು ಬಳಸುತ್ತಿರುವ ವೈ-ಫೈ (<ph name="WIFI_NAME" />) ಗೆ ನೀವು <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ಅನ್ನು ಭೇಟಿ ನೀಡುವ ಅಗತ್ಯವಿದೆ.</translation>
+<translation id="8298399736867690281">ಕಾರ್ಡ್ ಅನ್ನು ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8301894345671534559">ಕೋಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="8304912090860925649">ಹೊಸ ಹೋಲಿಕೆಯ ಟೇಬಲ್</translation>
 <translation id="830498451218851433">ಅರ್ಧ ಮಡಿಸಿ</translation>
@@ -4905,6 +4915,7 @@
 <translation id="9192361865877479444">ಲೋಹ (ಮ್ಯಾಟ್)</translation>
 <translation id="9192947025498305328">ಕ್ಲೀನ್ ಬ್ಯೂಟಿ</translation>
 <translation id="9195969368671142407">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ Google ಖಾತೆಗೆ ಉಳಿತಾಯವನ್ನು ಮಿತಿಗೊಳಿಸಿದಾಗ, ನೀವು ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಅಥವಾ ಸೇರಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
+<translation id="9198613052465150219">ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK_GMA" />history.google.com<ph name="END_LINK_GMA" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು</translation>
 <translation id="9199905725844810519">ಪ್ರಿಂಟಿಂಗ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="9201904868909900493">ಸಮೀಕ್ಷೆಯನ್ನು ತೆರೆಯಲಾಗುತ್ತಿದೆ …</translation>
 <translation id="9204089334327209740">ಒಮ್ಮೆ ಅಪ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡ ನಂತರ, ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ನೀವು <ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿ ಮಾರ್ಪಡಿಸಬಹುದು. ಟ್ರ್ಯಾಶ್‌ನಲ್ಲಿರುವ ಯಾವುದೇ ಫೈಲ್‌ಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಸ್ಥಳೀಯ ಸಂಗ್ರಹಣೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>

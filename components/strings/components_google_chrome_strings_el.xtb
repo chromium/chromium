@@ -34,6 +34,16 @@
         και αποεπιλέξτε "<ph name="NO_PREFETCH_DESCRIPTION" />".
         Εάν με αυτόν τον τρόπο δεν επιλύεται το ζήτημά σας, συνιστούμε
         να ενεργοποιήσετε ξανά αυτή την επιλογή για βελτιωμένη απόδοση.</translation>
+<translation id="6581867098636731226">Μεταβείτε στο
+          Μενού του Chrome &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Δίκτυο και διαδίκτυο &gt; Διακομιστής μεσολάβησης
+          και αποεπιλέξτε την επιλογή Αυτόματη ανίχνευση ρυθμίσεων.</translation>
 <translation id="7230956101631259640">Βλέπετε μια ασφαλή σελίδα Chrome</translation>
 <translation id="8232971017369963250">Το Chrome υλοποιήθηκε με το έργο ανοικτού κώδικα <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Το Chrome υλοποιήθηκε με τη βοήθεια και άλλων <ph name="BEGIN_LINK_OSS" />λογισμικών ανοικτού κώδικα<ph name="END_LINK_OSS" />.</translation>

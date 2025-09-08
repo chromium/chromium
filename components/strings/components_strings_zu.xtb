@@ -50,6 +50,7 @@
 <translation id="1080116354587839789">Lingana nobubanzi</translation>
 <translation id="1081061862829655580">Ithileyi 15</translation>
 <translation id="1082026381988252344">Skrola bese usondeza okuqukethwe kwethebhu yakho yokwabelana</translation>
+<translation id="108859316315249327">Zama futhi</translation>
 <translation id="1088664500620117635">Intengo ejwayelekile ye-<ph name="PRODUCT_NAME" /> ngu-<ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> kodwa intengo ka-<ph name="CURRENT_PRICE" /> kuyo yonke iwebhu.</translation>
 <translation id="1089439967362294234">Shintsha iphasiwedi</translation>
 <translation id="1089599132348386324">Ungashintsha umqondo wakho noma kunini kumasethingi eChrome.</translation>
@@ -927,7 +928,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2515629240566999685">Ukuhlola isignali endaweni yakho</translation>
 <translation id="2515761554693942801">Ukhethe ukuqinisekisa nge-Touch ID kumawebhusayithi asebenzisa i-<ph name="PROVIDER_ORIGIN" />. Lo mhlinzeki kungenzeka ukuthi ulondoloze ulwazi olumayelana nendlela yakho yokukhokha, ongakwazi uku-<ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Alitholakali leli khadi. Sicela uxhumane nabahlinzeki bekhadi lakho.</translation>
-<translation id="2519250377986324805">Bona ukuthi kanjani</translation>
 <translation id="2521385132275182522">Namathisela phansi kwesokudla</translation>
 <translation id="2521736961081452453">Dala ifomu</translation>
 <translation id="2524461107774643265">Engeza ulwazi olungeziwe</translation>
@@ -2466,6 +2466,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5097099694988056070">Izibalo zedivayisi ezifana nokusetshenziswa kwe-CPU/i-RAM</translation>
 <translation id="5097468150760963273">U-27 x 39 phakathi</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5102512728737175215">Cindezela ithebhu bese ucindezela okuthi enter ukuze ubuze Imodi ye-AI</translation>
 <translation id="510644072453496781">I-Cardboard (U-End)</translation>
 <translation id="5106648964679263509">Ikhadi eliku-app le-<ph name="BNPL_ISSUER_NAME" /> ligcwalisiwe</translation>
 <translation id="5108567515277121477">Ikhadi lobuqotho</translation>
@@ -3474,6 +3475,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6786145470008421571">Imvilophu ye-6 x 9 in</translation>
 <translation id="6786747875388722282">Izandiso</translation>
 <translation id="6787094689637422836">Sethula izakhi ezintsha zobumfihlo ezikunikeza ukukhetha okwengeziwe kunezikhangiso ozibonayo.</translation>
+<translation id="6788615780749001893">Inkinobho Yemodi ye-AI, cindezela okuthi Enter ukuze ubuze Imodi ye-AI</translation>
 <translation id="6789062271869667677">Okuqhubekayo (Okude)</translation>
 <translation id="678982761784843853">Ama-ID wokuqukethwe okuvikelekile</translation>
 <translation id="6790428901817661496">Dlala</translation>
@@ -3539,7 +3541,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6898699227549475383">Inhlangano (O)</translation>
 <translation id="6900702165119149418">Uphume ngemvume</translation>
 <translation id="6903907808598579934">Vula ukuv</translation>
-<translation id="6905163627763043954">Yizame</translation>
 <translation id="6907458757809079309">Ukufaneleka</translation>
 <translation id="691024665142758461">Landa amafayela amaningi</translation>
 <translation id="691046363691324218">Inombolo yokulungisa</translation>

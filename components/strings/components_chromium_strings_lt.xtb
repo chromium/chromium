@@ -2,6 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="130631256467250065">Pakeitimai įsigalios kitą kartą iš naujo paleidus įrenginį.</translation>
+<translation id="261308610302996111">Eikite į
+          „Chromium“ meniu &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          ir įsitikinkite, kad konfigūracija nustatyta kaip „be tarpinio serverio“ arba „tiesioginė“.</translation>
 <translation id="275588974610408078">„Chromium“ negalima teikti strigčių ataskaitų.</translation>
 <translation id="3064346599913645280">Peržiūrite saugų „Chromium“ puslapį</translation>
 <translation id="3255926992597692024">„Chromium“ bando keisti mokėjimo metodų pildymo nustatymus.</translation>
@@ -14,6 +22,16 @@
 <translation id="4949828774841497663">Eikite į skiltį „Programos“ &gt; „Sistemos nustatymai“ &gt; „Tinklas“, pasirinkite
           aktyvų tinklą, spustelėkite mygtuką „Išsami informacija...“ ir panaikinkite visų tarpinių serverių,
           kurie galėjo būti pasirinkti, pasirinkimą.</translation>
+<translation id="6480456350195404966">Eikite į
+          „Chromium“ meniu &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          „Tinklas ir internetas“ &gt; „Tarpinis serveris“
+          ir panaikinkite parinkties „Automatiškai aptikti nustatymus“ pasirinkimą.</translation>
 <translation id="648062525172759633">Šie puslapiai skirti naudoti „Chromium“ kūrėjams ir gali nebūti aktyviai tvarkomi ar išbandomi. Jei norite juos įgalinti, eikite adresu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, spustelėkite mygtuką, kad įgalintumėte derinimo puslapius, ir tada grįžkite į šį puslapį.</translation>
 <translation id="6549378540556750549">„Chromium“ taip pat pasiekiama naudojant kitą <ph name="BEGIN_LINK_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Pakeitimai įsigalios kitą kartą iš naujo paleidus „Chromium“.</translation>

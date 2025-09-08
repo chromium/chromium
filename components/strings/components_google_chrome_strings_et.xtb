@@ -32,6 +32,16 @@
         ja tühistage valik „<ph name="NO_PREFETCH_DESCRIPTION" />”.
         Kui see probleemi ei lahenda, soovitame toimivuse parandamiseks
         selle valiku uuesti teha.</translation>
+<translation id="6581867098636731226">Avage
+          Chrome'i menüü &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Võrk ja internet &gt; Puhverserver
+          ning tühistage valik „Tuvasta seaded automaatselt“.</translation>
 <translation id="7230956101631259640">Vaatate turvalist Google Chrome'i lehte</translation>
 <translation id="8232971017369963250">Chrome'i võimaldab pakkuda <ph name="BEGIN_LINK_CHROMIUM" />Chromiumi<ph name="END_LINK_CHROMIUM" /> avatud lähtekoodi projekt.</translation>
 <translation id="8279509328145658601">Chrome'i võimaldab pakkuda ka muu <ph name="BEGIN_LINK_OSS" />avatud lähtekoodiga tarkvara<ph name="END_LINK_OSS" />.</translation>

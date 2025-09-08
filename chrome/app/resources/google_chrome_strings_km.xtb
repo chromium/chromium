@@ -13,6 +13,9 @@
 <translation id="1065672644894730302">ចំណូលចិត្តរបស់អ្នកមិនអាចអានបានទេ។
 
 លក្ខណៈពិសេសមួយចំនួនប្រហែលជាមិនមាន ហើយការប្តូរទៅចំណូលចិត្តនឹងមិនត្រូវបានរក្សាទុកទេ។</translation>
+<translation id="1070377999570795893">កម្មវិធីផ្សេងទៀតនៅលើកុំព្យូទ័ររបស់អ្នកបានបន្ថែមផ្នែកបន្ថែមមួយដែលអាចផ្លាស់ប្តូររបៀបដែល Chrome ដំណើរការ។
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">ស្វែងរក​ដោយ​ប្រើ Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> បានប្រើ Chrome កាលពីមុន</translation>
 <translation id="110877069173485804">នេះគឺជា Chrome របស់អ្នក</translation>
@@ -48,6 +51,9 @@
 <translation id="1547295885616600893">ChromeOS អាចបង្កើតឡើងបានដោយ<ph name="BEGIN_LINK_CROS_OSS" />កម្មវិធីកូដ​ចំហ<ph name="END_LINK_CROS_OSS" />បន្ថែម។</translation>
 <translation id="1547469039832541117">បញ្ចប់​កិច្ចការ​ដែលបាន​រំលេច។</translation>
 <translation id="1553358976309200471">ធ្វើបច្ចុប្បន្នភាព Chrome</translation>
+<translation id="1585717515139318619">កម្មវិធីផ្សេងទៀតនៅលើកុំព្យូទ័ររបស់អ្នកបានបន្ថែមធីមមួយដែលអាចផ្លាស់ប្តូររបៀបដែល Chrome ដំណើរការ។
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome កំពុងប្រើកាមេរ៉ារបស់អ្នក។</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> មានគ្រោះថ្នាក់ ដូច្នេះ Chrome បានរារាំងវា។</translation>
 <translation id="1597911401261118146">ដើម្បីពិនិត្យមើលថា​តើពាក្យសម្ងាត់​របស់អ្នក​មានសុវត្ថិភាពពី​ការបែកធ្លាយ​ទិន្នន័យ និងបញ្ហាសុវត្ថិភាព​ផ្សេងទៀតឬអត់ សូម​<ph name="BEGIN_LINK" />ចូល Chrome<ph name="END_LINK" />។</translation>
@@ -454,6 +460,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="6321592572353357376">កម្មវិធី​បន្ថែម "<ph name="EXTENSION_NAME" />" ចង់ឱ្យ​អ្នកចូលគណនី Chrome</translation>
 <translation id="6326175484149238433">ដកចេញពី Chrome</translation>
 <translation id="6327105987658262776">មិនមានកំណែថ្មីទេ។</translation>
+<translation id="6334815226785304306">កំណត់ Google Chrome ជា​កម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម និង​ខ្ទាស់ទៅ​របារកិច្ចការ</translation>
 <translation id="6360449101159168105">នៅពេលផ្ទាំងនេះអសកម្ម អង្គចងចាំត្រូវបានសម្អាត ដើម្បីរក្សា Chrome ឱ្យដើរលឿន។ អ្នកអាចជ្រើសរើសដកគេហទំព័រនេះចេញពីភាពអសកម្មបានជានិច្ច។</translation>
 <translation id="6388799252195623474">ជួយខ្ញុំ​ពាក់ព័ន្ធនឹង​ករណីនេះ</translation>
 <translation id="6412673304250309937">ពិនិត្យ URL ធៀបនឹងបញ្ជីគេហទំព័រគ្មានសុវត្ថិភាព ដែលរក្សាទុកនៅក្នុង Chrome។ ប្រសិនបើគេហទំព័រណាមួយ​ព្យាយាមលួចពាក្យសម្ងាត់របស់អ្នក ឬនៅពេលអ្នកទាញយក​ឯកសារដែលអាចបង្កគ្រោះថ្នាក់នោះ Chrome ក៏ប្រហែលជាបញ្ជូន URL រួមជាមួយផ្នែកនៃខ្លឹមសារទំព័រ ទៅការរុករកដោយសុវត្ថិភាពផងដែរ។</translation>
@@ -552,6 +559,9 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7572537927358445944">បិទ • Chrome មិនអាចផ្ទៀងផ្ទាត់ប្រភពរបស់កម្មវិធីបន្ថែម​នេះបានទេ</translation>
 <translation id="7583399374488819119">កម្មវិធីដំឡើង <ph name="COMPANY_NAME" /></translation>
 <translation id="7602868996817972616">សួរ Google អំពី​ទំព័រនេះ</translation>
+<translation id="760353356052806707">កម្មវិធីផ្សេងទៀតនៅលើកុំព្យូទ័ររបស់អ្នកបានបន្ថែមកម្មវិធីមួយដែលអាចផ្លាស់ប្តូររបៀបដែល Chrome ដំណើរការ។
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> តម្រូវឱ្យអ្នកអាន និងយល់ព្រមតាមលក្ខខណ្ឌប្រើប្រាស់ខាងក្រោម មុនពេលប្រើឧបករណ៍នេះ។ លក្ខខណ្ឌទាំងនេះមិនបន្ថែម កែប្រែ ឬដាក់កំហិតលើលក្ខខណ្ឌ Google ChromeOS ទេ។</translation>
 <translation id="7627609214560473136">ដើម្បីការពារទិន្នន័យរបស់អ្នក សូមឱ្យ Chrome ដកការអនុញ្ញាតចេញពីគេហទំព័រដែលអ្នកមិនបានចូលមើលថ្មីៗនេះ។</translation>

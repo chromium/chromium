@@ -178,6 +178,9 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3155163173539279776">Lancarkan Semula Chromium</translation>
 <translation id="3161522574479303604">Semua bahasa</translation>
 <translation id="3179665906251668410">Buka Pautan dalam Tetingkap Inko&amp;gnito Chromium</translation>
+<translation id="3183357154200327217">Program lain pada komputer anda telah menambahkan tema yang boleh mengubah cara Chromium berfungsi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Sesuaikan profil Chromium baharu anda</translation>
 <translation id="3224847870593914902">Untuk mengalih keluar Google Account anda daripada Chromium, log keluar dari Chromium dalam halaman Tetapan</translation>
 <translation id="3234316605225071811">Kemudian, Chromium boleh bertanya sama ada anda mahu menggunakan maklumat yang disimpan bagi mengisi borang untuk anda secara automatik atau tidak</translation>
@@ -242,6 +245,9 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4036079820698952681">Bantu jadikan Chromium lebih baik dengan melaporkan <ph name="BEGIN_LINK" />tetapan semasa<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Peningkatan keselamatan penting dan ciri baharu tersedia dalam versi terkini.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
+<translation id="4061696872429826774">Program lain pada komputer anda telah menambahkan sambungan yang boleh mengubah cara Chromium berfungsi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisasi anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Organisasi anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="4118474109249235144">Inkognito Chromium</translation>
 <translation id="4122186850977583290">Akses halaman Perihal Chromium</translation>
@@ -401,6 +407,9 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="6174920971222007286">Fail ini mungkin berbahaya<ph name="LINE_BREAK" />Chromium boleh menyemak muat turun ini untuk anda jika anda memberikan kata laluan. Maklumat tentang fail itu akan dihantar kepada Penyemakan Imbas Selamat Google tetapi kandungan dan kata laluan fail akan kekal pada peranti anda.</translation>
 <translation id="6182736845697986886">Pemasangan gagal akibat ralat dalaman pelayan kemaskinian.</translation>
 <translation id="6183079672144801177">Pastikan anda telah log masuk ke Chromium pada <ph name="TARGET_DEVICE_NAME" /> anda, kemudian cuba hantar lagi.</translation>
+<translation id="6204922163963157461">Program lain pada komputer anda telah menambahkan apl yang boleh mengubah cara Chromium berfungsi.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Komputer ini telah mempunyai versi Chromium yang lebih baharu. Jika perisian tidak berfungsi, sila nyahpasang Chromium dan cuba lagi.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium akan dilancarkan semula sekarang}=1{Chromium akan dilancarkan semula dalam masa sesaat}other{Chromium akan dilancarkan semula dalam masa # saat}}</translation>
 <translation id="6239161312595354541">Tanya Carian Imej tentang video ini</translation>
@@ -617,6 +626,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="878572486461146056">Ralat pemasangan: Pentadbir rangkaian anda telah menggunakan Dasar Kumpulan yang menghalang pemasangan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium memerlukan kebenaran untuk mengakses kamera dan mikrofon anda bagi tapak ini</translation>
 <translation id="8818550178040858407">Log Masuk ke Chromium?</translation>
+<translation id="8823401858233292222">Jadikan Chromium penyemak imbas lalai dan sematkan pada bar tugas</translation>
 <translation id="8826492472752484139">Klik “Password Manager”</translation>
 <translation id="8833697763442816810">Sistem Chromium OS</translation>
 <translation id="8852026904190808918">Bahasa ini digunakan untuk memaparkan menu, tetapan, makluman dan teks lain dalam Chromium</translation>

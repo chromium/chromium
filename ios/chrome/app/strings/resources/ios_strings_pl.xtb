@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Twój kod PIN nie został zmieniony. Sprawdź połączenie z internetem i spróbuj ponownie</translation>
 <translation id="1063070031224282617">Wybierz, gdzie zapisać plik „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />” (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Opinie na podstawie Twoich zainteresowań</translation>
+<translation id="1072679792409426431">Wyłączone przez administratora</translation>
 <translation id="1074827084851510304">Nastąpi usunięcie {password_count} haseł oraz listy witryn i aplikacji, w przypadku których nie chcesz zapisywać danych logowania. Konta utworzone przez Ciebie w witrynach i aplikacjach nie zostaną usunięte.</translation>
 <translation id="1076421457278169141">Kod został zeskanowany</translation>
 <translation id="1081114897601629648">Nie udało się zaimportować tych haseł do Menedżera haseł Google, ponieważ nie spełniają wymagań.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Ten adres zostanie usunięty z tego urządzenia.}few{Te adresy zostaną usunięte z tego urządzenia.}many{Te adresy zostaną usunięte z tego urządzenia.}other{Te adresy zostaną usunięte z tego urządzenia.}}</translation>
 <translation id="2297989278479054870">Po wylogowaniu z tego urządzenia zostaną usunięte zakładki, hasła i inne ustawienia na koncie Google.</translation>
 <translation id="2299218006564889602">Przed zapisaniem w menedżerze haseł Google hasła są szyfrowane na urządzeniu.</translation>
+<translation id="2306265833370324042">Pokaż szczegóły <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Zamknij kartę</translation>
 <translation id="2311077293164383652">Zamknij przypiętą kartę</translation>
 <translation id="2316129865977710310">Nie, dziękuję</translation>
@@ -671,7 +673,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3631443864840848029">Upewnij się, że zapisujesz bieżące hasło do witryny.</translation>
 <translation id="3642060527569456384">Grupy kart są automatycznie zapisywane i aktualizowane na wszystkich Twoich urządzeniach.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie Google {email}.}few{{count} hasła zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}many{{count} haseł zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}other{{count} hasła zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}}</translation>
-<translation id="3650299480924308502">Po wylogowaniu niezapisane dane zostaną usunięte z tego urządzenia. Może to obejmować m.in. hasła i historię.</translation>
 <translation id="3659297405161482746">Nie znaleziono form płatności</translation>
 <translation id="3668816008081204991">Lista Do przeczytania jest ukryta</translation>
 <translation id="3670030362669914947">Numer</translation>
@@ -1201,6 +1202,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5709005673595820640">{count,plural, =1{Masz {count} hasło, które zostało użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}few{Masz {count} hasła, które zostały użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}many{Masz {count} haseł, które zostały użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}other{Masz {count} hasła, które zostały użyte ponownie, a to może narazić Cię na niebezpieczeństwo. Dla bezpieczeństwa zmień je jak najszybciej.}}</translation>
 <translation id="57094364128775171">Zaproponuj silne hasło…</translation>
 <translation id="5718049162805123412">Należy je teraz zmienić</translation>
+<translation id="5721040778297053709">Umieść kartę kredytową w tej ramce</translation>
 <translation id="572328651809341494">Ostatnie karty</translation>
 <translation id="5724941645893276623">Aby przeglądać strony internetowe prywatnie, dodaj nową kartę</translation>
 <translation id="5728072125198221967">Połączone usługi Google</translation>
@@ -1568,7 +1570,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7055240621761583113">Automatycznie uzupełnij hasło</translation>
 <translation id="7063811929043357292">Twoim kontem zarządza rodzic.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">Ze względu na bezpieczeństwo organizacji niezapisane dane zostaną usunięte z tego urządzenia. Może to obejmować m.in. hasła i historię.</translation>
 <translation id="7067780033517902110">Wszystkie pliki</translation>
 <translation id="707086654079606593">Zarządzaj adresami…</translation>
 <translation id="7080806333218412752">Wysyłaj adresy URL do sprawdzenia przez usługę Bezpieczne przeglądanie. Funkcja wysyła też małe próbki stron, pobieranych plików, aktywności rozszerzeń i informacji o systemie, by pomóc w wykrywaniu nowych zagrożeń. Tymczasowo łączy te dane z Twoim kontem Google, gdy się na nie zalogujesz, by chronić Cię we wszystkich aplikacjach Google.</translation>
@@ -1780,6 +1781,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7889910613639381518">Łatwy i bezpieczny dostęp dzięki widżetowi Menedżera haseł Google.</translation>
 <translation id="7899199123054742721">Oznacz wszystkie jako nieprzeczytane</translation>
 <translation id="7911190106180361398">Twoja organizacja nie pozwala Ci synchronizować wszystkich danych.</translation>
+<translation id="7918999344502274923">Ukryj szczegóły wyszukiwarki <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Nie znaleziono problemów</translation>
 <translation id="7925108652071887026">Dane autouzupełniania</translation>
 <translation id="7926975587469166629">Nazwa karty</translation>

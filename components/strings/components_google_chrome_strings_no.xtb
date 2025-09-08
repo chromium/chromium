@@ -30,6 +30,16 @@
         og fjern avmerkingen for «<ph name="NO_PREFETCH_DESCRIPTION" />».
         Hvis dette ikke løser problemet, bør du velge dette alternativet
         på nytt for bedre ytelse.</translation>
+<translation id="6581867098636731226">Gå til
+          Chrome-menyen &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Nettverk og internett &gt; Proxy-tjener
+          og velg bort «Oppdag innstillinger automatisk».</translation>
 <translation id="7230956101631259640">Du er på en sikker Chrome-side</translation>
 <translation id="8232971017369963250">Chrome er tilgjengelig som følge av åpen-kildekode-prosjektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome er også tilgjengelig takket være annen <ph name="BEGIN_LINK_OSS" />programvare med åpen kildekode<ph name="END_LINK_OSS" />.</translation>

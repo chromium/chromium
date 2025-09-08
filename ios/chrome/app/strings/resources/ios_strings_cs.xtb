@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">Kód PIN nebyl změněn. Zkontrolujte připojení k internetu a zkuste to znovu</translation>
 <translation id="1063070031224282617">Vyberte, kam chcete uložit soubor „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />“ (<ph name="FILE_SIZE" />)</translation>
 <translation id="1072476005125066234">Recenze na základě vašich zájmů</translation>
+<translation id="1072679792409426431">Zakázáno administrátorem</translation>
 <translation id="1074827084851510304">Chystáte se smazat hesla ({password_count}) a seznam webů a aplikací, pro které jste ukládání přihlašovacích údajů zakázali. Účty vytvořené pro weby a aplikace se nesmažou.</translation>
 <translation id="1076421457278169141">Kód byl naskenován</translation>
 <translation id="1081114897601629648">Následující hesla se do Správce hesel Google neimportovala, protože neodpovídají požadavkům.</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{Tato adresa bude z tohoto zařízení smazána.}few{Tyto adresy budou z tohoto zařízení smazány.}many{Tyto adresy budou z tohoto zařízení smazány.}other{Tyto adresy budou z tohoto zařízení smazány.}}</translation>
 <translation id="2297989278479054870">Po odhlášení budou z tohoto zařízení odstraněny záložky, hesla a další položky ve vašem účtu Google.</translation>
 <translation id="2299218006564889602">Hesla jsou před uložením do Správce hesel Google v zařízení zašifrována.</translation>
+<translation id="2306265833370324042">Zobrazit podrobnosti vyhledávače <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Zavřít kartu</translation>
 <translation id="2311077293164383652">Zavřít připnutou kartu</translation>
 <translation id="2316129865977710310">Ne, děkuji</translation>
@@ -671,7 +673,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3631443864840848029">Dejte pozor, abyste uložili aktuální heslo pro tento web.</translation>
 <translation id="3642060527569456384">Skupiny karet se automaticky ukládají a aktualizují na všech vašich zařízeních.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} heslo je uloženo pouze na tomto zařízení. Pokud ji chcete používat v jiných zařízeních, uložte ji do svého účtu Google {email}.}few{{count} hesla jsou uložena pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}many{{count} hesla je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}other{{count} hesel je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google {email}.}}</translation>
-<translation id="3650299480924308502">Po odhlášení se neuložená data z tohoto zařízení vymažou. Může to zahrnovat hesla, historii a další data.</translation>
 <translation id="3659297405161482746">Nebyly nalezeny žádné platební metody</translation>
 <translation id="3668816008081204991">Seznam četby je skrytý</translation>
 <translation id="3670030362669914947">Číslo</translation>
@@ -1201,6 +1202,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5709005673595820640">{count,plural, =1{Máte {count} opakovaně použité heslo, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}few{Máte {count} opakovaně použitá hesla, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}many{Máte {count} opakovaně použitého hesla, které by mohlo ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}other{Máte {count} opakovaně použitých hesel, která by mohla ohrozit vaši bezpečnost. Pokud chcete být v bezpečí, ihned to vyřešte.}}</translation>
 <translation id="57094364128775171">Navrhnout silné heslo…</translation>
 <translation id="5718049162805123412">Měli byste je hned změnit</translation>
+<translation id="5721040778297053709">Umístěte kreditní kartu do tohoto rámečku</translation>
 <translation id="572328651809341494">Nedávno použité karty</translation>
 <translation id="5724941645893276623">Chcete-li procházet web v soukromí, přidejte novou kartu</translation>
 <translation id="5728072125198221967">Propojené služby Google</translation>
@@ -1568,7 +1570,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7055240621761583113">Automaticky vyplnit heslo</translation>
 <translation id="7063811929043357292">Tvůj účet spravuje rodič.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">Kvůli ochraně bezpečnosti vaší organizace budou z tohoto zařízení smazána neuložená data. Může to zahrnovat hesla, historii a další data.</translation>
 <translation id="7067780033517902110">Všechny soubory</translation>
 <translation id="707086654079606593">Spravovat adresy…</translation>
 <translation id="7080806333218412752">Odesílá adresy URL ke kontrole ve funkci Bezpečné prohlížení. Odesílá také malý vzorek stránek, stažených souborů, rozšíření, aktivity a informací o systému a pomáhá tak odhalovat nové hrozby. Když jste přihlášeni k účtu Google, jsou s ním tato data dočasně spojena, abychom vás mohli v aplikacích Google chránit.</translation>
@@ -1780,6 +1781,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7889910613639381518">Snadný a bezpečný přístup pomocí widgetu Správce hesel Google.</translation>
 <translation id="7899199123054742721">Označit všechny nepřečtené</translation>
 <translation id="7911190106180361398">Vaše organizace nepovoluje synchronizaci všeho.</translation>
+<translation id="7918999344502274923">Skrýt podrobnosti vyhledávače <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="792357691529995513">Nebyly zjištěny žádné problémy</translation>
 <translation id="7925108652071887026">Data automatického vyplňování</translation>
 <translation id="7926975587469166629">Přezdívka karty</translation>

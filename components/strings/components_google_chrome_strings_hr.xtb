@@ -31,6 +31,15 @@
         <ph name="ADVANCED_TITLE" />
         pa poništite odabir stavke "<ph name="NO_PREFETCH_DESCRIPTION" />".
         Ako se time ne riješi poteškoća, preporučujemo da ponovo odaberete tu opciju radi bolje izvedbe.</translation>
+<translation id="6581867098636731226">Otvorite
+          izbornik preglednika Chrome &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Mreža i internet &gt; Proxy i poništite odabir opcije Automatski otkrij postavke.</translation>
 <translation id="7230956101631259640">Gledate sigurnu stranicu Chromea</translation>
 <translation id="8232971017369963250">Chrome je omogućio <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />, projekt otvorenog izvornog koda.</translation>
 <translation id="8279509328145658601">Chrome je omogućio i drugi <ph name="BEGIN_LINK_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_OSS" />.</translation>

@@ -13,6 +13,9 @@
 <translation id="1065672644894730302">Your preferences cannot be read.
 
 Some features may be unavailable and changes to preferences won't be saved.</translation>
+<translation id="1070377999570795893">Another program on your computer added an extension that may change the way Chrome works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Search with Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> was previously using Chrome</translation>
 <translation id="110877069173485804">This is your Chrome</translation>
@@ -48,6 +51,9 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1547295885616600893">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Ends the highlighted task.</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
+<translation id="1585717515139318619">Another program on your computer added a theme that may change the way Chrome works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome is using your camera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is dangerous, so Chrome has blocked it.</translation>
 <translation id="1597911401261118146">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chrome<ph name="END_LINK" />.</translation>
@@ -455,6 +461,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6321592572353357376">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chrome</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6327105987658262776">No update is available.</translation>
+<translation id="6334815226785304306">Make Google Chrome the default browser and pin to the taskbar</translation>
 <translation id="6360449101159168105">While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.</translation>
 <translation id="6388799252195623474">help me with this</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
@@ -553,6 +560,9 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7572537927358445944">Off • Chrome can't verify where this extension comes from</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>
 <translation id="7602868996817972616">Ask Google about this page</translation>
+<translation id="760353356052806707">Another program on your computer added an app that may change the way Chrome works.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS terms.</translation>
 <translation id="7627609214560473136">To protect your data, let Chrome remove permissions from sites that you haven't visited recently.</translation>

@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">PIN 码未更改。请检查网络连接，然后重试</translation>
 <translation id="1063070031224282617">选择保存“<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”(<ph name="FILE_SIZE" />) 的位置</translation>
 <translation id="1072476005125066234">根据您的兴趣推荐的评价</translation>
+<translation id="1072679792409426431">已被管理员停用</translation>
 <translation id="1074827084851510304">您即将删除 {password_count} 个密码以及您选择一律不保存登录信息的网站和应用列表。您为网站和应用创建的任何账号都不会被删除。</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
 <translation id="1081114897601629648">以下密码不符合要求，因此未导入 Google 密码管理工具。</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{这个地址将被从此设备中删除。}other{这些地址将被从此设备中删除。}}</translation>
 <translation id="2297989278479054870">当您退出 Google 账号后，该账号中的书签、密码等信息都将从此设备中移除。</translation>
 <translation id="2299218006564889602">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理工具中。</translation>
+<translation id="2306265833370324042">显示<ph name="SEARCH_ENGINE_NAME" />详细信息</translation>
 <translation id="2309265394777270359">关闭标签页</translation>
 <translation id="2311077293164383652">关闭固定标签页</translation>
 <translation id="2316129865977710310">不用了，谢谢</translation>
@@ -671,7 +673,6 @@
 <translation id="3631443864840848029">请确保您保存的是此网站当前的密码。</translation>
 <translation id="3642060527569456384">标签页分组会自动保存并在您的所有设备上更新。</translation>
 <translation id="3643338347976071250">{count,plural, =1{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
-<translation id="3650299480924308502">您退出账号后，未保存的数据将从此设备中删除。这些数据可能包括密码、历史记录等。</translation>
 <translation id="3659297405161482746">未找到任何支付方式</translation>
 <translation id="3668816008081204991">已隐藏阅读清单</translation>
 <translation id="3670030362669914947">卡号</translation>
@@ -1201,6 +1202,7 @@
 <translation id="5709005673595820640">{count,plural, =1{您有 {count} 个重复使用的密码，这可能会给您带来安全风险。请立即修改以确保安全。}other{您有 {count} 个重复使用的密码，这可能会给您带来安全风险。请立即修改以确保安全。}}</translation>
 <translation id="57094364128775171">建议安全系数高的密码…</translation>
 <translation id="5718049162805123412">您应立即更改密码</translation>
+<translation id="5721040778297053709">将信用卡放到此框内</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
 <translation id="5724941645893276623">若要私密地浏览网页，请添加新标签页</translation>
 <translation id="5728072125198221967">关联的 Google 服务</translation>
@@ -1568,7 +1570,6 @@
 <translation id="7055240621761583113">自动填充密码</translation>
 <translation id="7063811929043357292">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">为保护贵组织的安全，未保存的数据将从此设备中删除。这些数据可能包括密码、历史记录等。</translation>
 <translation id="7067780033517902110">所有文件</translation>
 <translation id="707086654079606593">管理地址…</translation>
 <translation id="7080806333218412752">会将网址发送给“安全浏览”功能进行检查。还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁。而且，会在您登录后暂时将这些数据关联到您的 Google 账号，以便在各个 Google 应用中为您提供保护。</translation>
@@ -1780,6 +1781,7 @@
 <translation id="7889910613639381518">使用“Google 密码管理工具”小组件查询密码，方便又安全。</translation>
 <translation id="7899199123054742721">全部标为未读</translation>
 <translation id="7911190106180361398">贵组织不允许您同步所有内容。</translation>
+<translation id="7918999344502274923">隐藏<ph name="SEARCH_ENGINE_NAME" />详细信息</translation>
 <translation id="792357691529995513">未发现任何问题</translation>
 <translation id="7925108652071887026">自动填充数据</translation>
 <translation id="7926975587469166629">卡的别名</translation>

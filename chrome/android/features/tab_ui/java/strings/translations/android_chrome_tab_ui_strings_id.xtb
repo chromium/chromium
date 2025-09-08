@@ -11,7 +11,7 @@
 <translation id="1273910660700874265">Opsi grup tab <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Pilih kapan tab dan grup tab dipindahkan secara otomatis ke bagian tidak aktif.</translation>
 <translation id="1321004960118052490">Item yang tidak aktif tidak akan menumpuk</translation>
-<translation id="1329584516321524826">Baru saja diupdate</translation>
+<translation id="1329584516321524826">Baru saja diperbarui</translation>
 <translation id="1340839264183302272">Keluar dari grup</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab bersama <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />, dengan label <ph name="CARD_LABEL" />.}other{Luaskan grup tab bersama <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />, dengan label <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Anda dapat menemukan semua grup tab di sini</translation>

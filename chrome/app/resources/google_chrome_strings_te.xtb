@@ -11,6 +11,9 @@
 <translation id="1051793555070215510">ఈ 1 నిమిషం సర్వేను పూర్తి చేసి అజ్ఞాత మోడ్‌ను మెరుగుపరచడంలో మాకు సహాయపడండి.</translation>
 <translation id="1059838145689930908"><ph name="USER_EMAIL_ADDRESS" />‌గా ఈ ఎక్స్‌టెన్షన్‌ను ఉపయోగించడానికి, Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="1065672644894730302">మీ ప్రాధాన్యతలు చదవబడలేవు. కొన్ని లక్షణాలు అందుబాటులో ఉండకపోవచ్చు మరియు ప్రాధాన్యతలకు మార్పులు సేవ్ చేయబడకపోవచ్చు.</translation>
+<translation id="1070377999570795893">మీ కంప్యూటర్‌లోని మరొక ప్రోగ్రామ్ Chrome పని చేసే విధానాన్ని మార్చగలిగే ఒక ఎక్స్‌టెన్షన్‌ని జోడించింది.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Google Lensతో సెర్చ్ చేయండి</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> మునుపు Chromeని ఉపయోగించింది</translation>
 <translation id="110877069173485804">ఇది మీ Chrome</translation>
@@ -46,6 +49,9 @@
 <translation id="1547295885616600893">ChromeOS అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="1547469039832541117">హైలైట్ అయిన టాస్క్‌ను ముగిస్తుంది.</translation>
 <translation id="1553358976309200471">Chromeని అప్‌డేట్ చేయండి</translation>
+<translation id="1585717515139318619">మీ కంప్యూటర్‌లోని మరొక ప్రోగ్రామ్ Chrome పని చేసే విధానాన్ని మార్చే థీమ్‌ను జోడించింది.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome మీ కెమెరాను ఉపయోగిస్తోంది.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> హానికరం, కావున Chrome దాన్ని బ్లాక్ చేసింది.</translation>
 <translation id="1597911401261118146">డేటా ఉల్లంఘనల నుండి, ఇతర భద్రతా సమస్యల నుండి మీ పాస్‌వర్డ్‌లు సురక్షితంగా ఉన్నాయో లేదో చెక్ చేయడానికి, <ph name="BEGIN_LINK" />Chromeకు సైన్ ఇన్ చేయండి<ph name="END_LINK" />.</translation>
@@ -447,6 +453,7 @@
 <translation id="6321592572353357376">ఎక్స్‌టెన్షన్ "<ph name="EXTENSION_NAME" />" కోసం, మీరు Chromeకు సైన్ ఇన్ చేయాలి</translation>
 <translation id="6326175484149238433">Chrome నుండి తీసివేయండి</translation>
 <translation id="6327105987658262776">అప్‌డేట్ ఏదీ అందుబాటులో లేదు.</translation>
+<translation id="6334815226785304306">Google Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేసి, టాస్క్‌బార్‌కు పిన్ చేయండి</translation>
 <translation id="6360449101159168105">ఈ ట్యాబ్ ఇన్‌యాక్టివ్‌గా ఉన్నప్పుడు, Chromeను వేగంగా ఉంచడానికి మెమరీ ఖాళీ చేయబడింది. మీరు ఏ సమయంలోనైనా ఈ సైట్ ఇన్‌యాక్టివ్‌గా ఉండకుండా మినహాయించడాన్ని ఎంచుకోవచ్చు.</translation>
 <translation id="6388799252195623474">ఈ విషయంలో నాకు సహాయం కావాలి</translation>
 <translation id="6412673304250309937">Chromeలో స్టోర్ చేసిన సురక్షితం కాని సైట్‌ల లిస్ట్‌తో కూడిన URLలను చెక్ చేస్తుంది. ఏదైనా సైట్ మీ పాస్‌వర్డ్‌ను దొంగిలించే ప్రయత్నం చేసినా, లేదంటే ఏదైనా హానికరమైన ఫైల్‌ను మీరు డౌన్‌లోడ్ చేసినా, సదరు URLలను, ఆయా పేజీల కంటెంట్‌లోని కొన్ని భాగాలను కూడా Chrome, 'సురక్షిత బ్రౌజింగ్'కు పంపవచ్చు.</translation>
@@ -545,6 +552,9 @@
 <translation id="7572537927358445944">ఆఫ్‌లో ఉంది • ఈ ఎక్స్‌టెన్షన్ ఎక్కడ నుండి వచ్చిందో Chromem వెరిఫై చేయలేదు</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ఇన్‌స్టాలర్</translation>
 <translation id="7602868996817972616">ఈ పేజీ వివరాల గురించి Googleను అడగండి</translation>
+<translation id="760353356052806707">మీ కంప్యూటర్‌లోని మరొక ప్రోగ్రామ్ Chrome పని చేసే విధానాన్ని మార్చే యాప్‌ను జోడించింది.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> కోసం ఈ పరికరాన్ని ఉపయోగించడానికి ముందు కింది సర్వీస్ నియమాలను మీరు చదివి, అంగీకరించాలి. ఈ నియమాలు Google ChromeOS నియమాలను విస్తరింపజేయవు, సవరించవు లేదా పరిమితం చేయవు.</translation>
 <translation id="7627609214560473136">మీ డేటాను సురక్షితంగా ఉంచడానికి, మీరు ఇటీవల ఉపయోగించని సైట్‌లకు అనుమతులను తీసివేయడానికి Chromeకు అనుమతినివ్వండి.</translation>

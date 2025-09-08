@@ -632,6 +632,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə <ph name="SITE_ETLD_PLUS_ONE" /> saytına davam edin</translation>
 <translation id="4044708993631234325">Aşağıdakı vərəq</translation>
 <translation id="4045441967987592849">Yenidən açın</translation>
+<translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> üçün əlavə seçimlər</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Paylaşılan tab qruplarında yeni fəaliyyəti olan <ph name="TABS_COUNT_ONE" /> standart tab}other{Paylaşılan tab qruplarında yeni fəaliyyəti olan <ph name="TABS_COUNT_MANY" /> standart tab}}</translation>
 <translation id="405365679581583349">Google Play xidmətlərini yeniləyin</translation>
 <translation id="405399507749852140">Hər hansı bir saytda qiymət enərsə, bildiriş alın</translation>

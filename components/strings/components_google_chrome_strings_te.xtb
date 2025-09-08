@@ -31,6 +31,16 @@
           ఆపై "<ph name="NO_PREFETCH_DESCRIPTION" />" ఎంపికను తీసివేయండి.
           దీని వల్ల సమస్య పరిష్కారం కాకపోతే, మెరుగైన పనితీరు కోసం మీరు
           ఈ ఎంపికను మళ్లీ ఎంచుకోవాలని మేము సిఫార్సు చేస్తున్నాము.</translation>
+<translation id="6581867098636731226">Chrome
+          మెనూ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          నెట్‌వర్క్ &amp; ఇంటర్నెట్ &gt; ప్రాక్సీకి వెళ్లి,
+          "సెట్టింగ్‌లను ఆటోమేటిక్‌గా గుర్తించడం" అనే ఎంపికను తొలగించండి.</translation>
 <translation id="7230956101631259640">మీరు సురక్షితమైన Chrome పేజీని చూస్తున్నారు</translation>
 <translation id="8232971017369963250"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ఓపెన్ సోర్స్ ప్రాజెక్ట్ ద్వారా Chromeను రూపొందించడం సాధ్యమయ్యింది.</translation>
 <translation id="8279509328145658601">ఇతర <ph name="BEGIN_LINK_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_OSS" /> ద్వారా కూడా Chromeను రూపొందించడం సాధ్యమయ్యింది.</translation>

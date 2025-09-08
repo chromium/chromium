@@ -671,7 +671,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3631443864840848029">Salve a senha atual para este site.</translation>
 <translation id="3642060527569456384">Os grupos de guias são salvos e atualizados automaticamente em todos os seus dispositivos.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} senhas foram salvas apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>
-<translation id="3650299480924308502">Depois que você sair, os dados não salvos serão excluídos do dispositivo. Isso pode incluir senhas, histórico e muito mais.</translation>
 <translation id="3659297405161482746">Nenhuma forma de pagamento encontrada</translation>
 <translation id="3668816008081204991">A Lista de leitura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
@@ -1568,7 +1567,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7055240621761583113">Preencher a senha automaticamente</translation>
 <translation id="7063811929043357292">Sua conta é gerenciada pelo seu familiar responsável.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">Para proteger a segurança da sua organização, os dados não salvos serão excluídos deste dispositivo. Isso pode incluir senhas, histórico e muito mais.</translation>
 <translation id="7067780033517902110">Todos os arquivos</translation>
 <translation id="707086654079606593">Gerenciar endereços…</translation>
 <translation id="7080806333218412752">Envia URLs para a verificação pelo recurso Navegação segura. Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
@@ -1967,7 +1965,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8601611099293226919">Pesquisar na tela usando o Lens</translation>
 <translation id="8605219856220328675">Fechar guia.</translation>
 <translation id="8609743333007776886">Adicionar ${url} aos favoritos</translation>
-<translation id="8611922158252451755">Compartilhe com cautela. Qualquer pessoa com o link pode editar todas as guias. O link expira em 48 horas.</translation>
+<translation id="8611922158252451755">Compartilhe com cautela. Qualquer pessoa com o link pode editar todas as guias. Ele expira em 48 horas.</translation>
 <translation id="8614671330774943747">Acessar o seletor de guias</translation>
 <translation id="8620640915598389714">Editar</translation>
 <translation id="8625706492572042370">Editar tela inicial</translation>
@@ -2095,7 +2093,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9055291197094969722">Crie grupos de guias para organizar as guias abertas e manter a produtividade</translation>
 <translation id="9055580485132823283">Você está prestes a excluir {password_count} senhas, {passkey_count} chaves de acesso e a lista de sites e apps em que escolheu nunca salvar informações de login. As contas que você criou em sites e apps não serão excluídas.</translation>
-<translation id="9057030985451135243">Saiba mais sobre os grupos de guias compartilhados</translation>
+<translation id="9057030985451135243">Saiba mais sobre os grupos de guias compartilhados.</translation>
 <translation id="9057972802061533987">Não foi possível seguir. Algo deu errado.</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9066097352053395362">Ocultar opção "Editar favorito"</translation>

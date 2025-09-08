@@ -33,6 +33,16 @@
           i opozovite izbor opcije „<ph name="NO_PREFETCH_DESCRIPTION" />“.
           Ako vam to ne reši problem, preporučujemo da ponovo izaberete
           ovu opciju radi boljih performansi.</translation>
+<translation id="6581867098636731226">Idite u
+          Chrome meni &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          Mreža i internet &gt; Proksi
+          i poništite izbor opcije Automatski otkrij podešavanja.</translation>
 <translation id="7230956101631259640">Pregledate bezbednu Chrome stranicu</translation>
 <translation id="8232971017369963250">Chrome omogućava <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> projekat otvorenog koda.</translation>
 <translation id="8279509328145658601">Chrome omogućava i drugi <ph name="BEGIN_LINK_OSS" />softver otvorenog koda<ph name="END_LINK_OSS" />.</translation>

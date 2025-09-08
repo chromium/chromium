@@ -51,7 +51,7 @@
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab und der Farbe <ph name="COLOR_NAME" /> wiederherstellen und öffnen.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs und der Farbe <ph name="COLOR_NAME" /> wiederherstellen und öffnen.}}</translation>
 <translation id="2662028055331606429">Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Zur Website</translation>
-<translation id="2671423594960767771">Gruppe teilen</translation>
+<translation id="2671423594960767771">Gruppe freigeben</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{Vor <ph name="NUM_WEEKS_ONE" /> Woche aktualisiert}other{Vor <ph name="NUM_WEEKS_MANY" /> Wochen aktualisiert}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{Vor <ph name="NUM_HOURS_ONE" /> Stunde aktualisiert}other{Vor <ph name="NUM_HOURS_MANY" /> Stunden aktualisiert}}</translation>
 <translation id="2755485474385016903">Änderungen sind für alle Gruppenmitglieder sichtbar</translation>

@@ -19,6 +19,7 @@
 <translation id="1062138828266376352">የእርስዎ ፒን አልተለወጠም። የበይነመረብ ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ</translation>
 <translation id="1063070031224282617">«<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />» (<ph name="FILE_SIZE" />) የት እንደሚቀመጥ ይምረጡ</translation>
 <translation id="1072476005125066234">በእርስዎ ዝንባሌዎች ላይ የተመሰረቱ ግምገማዎች</translation>
+<translation id="1072679792409426431">በእርስዎ አስተዳዳሪ ተሰናክሏል</translation>
 <translation id="1074827084851510304">{password_count} የይለፍ ቃሎችን እና በመለያ መግቢያ መረጃን መቼም ላለማስቀመጥ የመረጡባቸውን የጣቢያዎች እና መተግበሪያዎች ዝርዝር ሊሰርዙ ነው። ለጣቢያዎች ወይም ለመተግበሪያዎች የፈጠሩት ማንኛውም መለያ አይሰረዝም።</translation>
 <translation id="1076421457278169141">ኮድ ተቃኝቷል</translation>
 <translation id="1081114897601629648">የሚከተሉት የይለፍ ቃላት ወደ Google የይለፍ ቃል አስተዳዳሪ አልመጡም፣ ምክንያቱም ከመስፈርቶቹ ጋር አይዛመዱም።</translation>
@@ -348,6 +349,7 @@
 <translation id="2287614783861766820">{count,plural, =1{ይህ አድራሻ ከዚህ መሣሪያ ይሰረዛል።}one{ይህ አድራሻ ከዚህ መሣሪያ ይሰረዛል።}other{እነዚህ አድራሻዎች ከዚህ መሣሪያ ይሰረዛሉ።}}</translation>
 <translation id="2297989278479054870">ዘግተው ከወጡ በኋላ በGoogle መለያዎ ውስጥ ዕልባቶች፣ የይለፍ ቃላት እና ሌሎች ከዚህ መሣሪያ ላይ ይወገዳል።</translation>
 <translation id="2299218006564889602">የይለፍ ቃላትዎ ወደ Google የይለፍ ቃል አስተዳዳሪ ከመቀመጣቸው በፊት በመሳሪያዎ ላይ ይመሣጠራል።</translation>
+<translation id="2306265833370324042">የ<ph name="SEARCH_ENGINE_NAME" /> ዝርዝሮችን አሳይ</translation>
 <translation id="2309265394777270359">ትርን ዝጋ</translation>
 <translation id="2311077293164383652">የተሰካ ትርን ዝጋ</translation>
 <translation id="2316129865977710310">አይ፣ አመሰግናለሁ</translation>
@@ -671,7 +673,6 @@
 <translation id="3631443864840848029">ለዚህ ጣቢያ የአሁኑን የይለፍ ቃልዎን ማስቀመጥዎን ያረጋግጡ።</translation>
 <translation id="3642060527569456384">የትር ቡድኖች በሁሉም መሣሪያዎችዎ ላይ በራስ-ሰር ይቀመጣሉ እና ይዘመናሉ።</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎቸዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}one{{count} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}other{{count} የይለፍ ቃላት ብቻ በዚሀ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጧቸው።}}</translation>
-<translation id="3650299480924308502">ዘግተው ከውጡ በኋላ ያልተቀመጠ ውሂብ ከዚህ መሣሪያ ይሰረዛል። ይህ እንደ የይለፍ ቃላትን፣ ታሪክን እና ሌሎችንም ሊያካትት ይችላል።</translation>
 <translation id="3659297405161482746">ምንም የመክፈያ ዘዴዎች አልተገኙም</translation>
 <translation id="3668816008081204991">የንባብ ዝርዝር ተደብቋል</translation>
 <translation id="3670030362669914947">ቁጥር</translation>
@@ -1201,6 +1202,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5709005673595820640">{count,plural, =1{የእርስዎን ደህንነት ስጋት ውስጥ ሊያስገባ የሚችል {count} ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል አለዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን ያስተካክሉት።}one{የእርስዎን ደህንነት ስጋት ውስጥ ሊያስገባ የሚችል {count} ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል አለዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን ያስተካክሉት።}other{የእርስዎን ደህንነት ስጋት ውስጥ ሊያስገቡ የሚችሉ {count} ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃላት አሉዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን እነሱን ያስተካክሉ።}}</translation>
 <translation id="57094364128775171">ጠንካራ የይለፍ ቃል ጠቁም...</translation>
 <translation id="5718049162805123412">እነዚህን አሁን መቀየር አለብዎት</translation>
+<translation id="5721040778297053709">ክሬዲት ካርድን በዚህ ክፈፍ ውስጥ ያድርጉት</translation>
 <translation id="572328651809341494">የቅርብ ጊዜ ትሮች</translation>
 <translation id="5724941645893276623">ድሩን በግል ለማሰስ አዲስ ትር ያክሉ</translation>
 <translation id="5728072125198221967">የተገናኙ የGoogle አገልግሎቶች</translation>
@@ -1568,7 +1570,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7055240621761583113">የይለፍ ቃሉን በራስ-ሙላ</translation>
 <translation id="7063811929043357292">የእርስዎ መለያ የሚተዳደረው በወላጅዎ ነው።
 <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
-<translation id="7067610207756299941">የድርጅትዎን ደህንነት ለመጠበቅ ያልተቀመጠ ውሂብ ከዚህ መሣሪያ ይሰረዛል። ይህ እንደ የይለፍ ቃላትን፣ ታሪክን እና ሌሎችንም ሊያካትት ይችላል።</translation>
 <translation id="7067780033517902110">ሁሉም ፋይሎች</translation>
 <translation id="707086654079606593">አድራሻዎችን አስተዳድር…</translation>
 <translation id="7080806333218412752">ዩአርኤሎችን ለመፈተሽ ወደ ደህንነቱ የተጠበቀ አሰሳ ይልካቸዋል። አዲስ ስጋቶችን ፈልጎ ለማግኘት እንዲያግዝ በተጨማሪም የገጾች፣ ውርዶች፣ የቅጥያ እንቅስቃሴ እና የሥርዓት መረጃ ትንሽ ናሙና ይልካል። እርስዎን በመላው የGoogle መተግበሪያዎች ላይ ለመጠበቅ ይህን ውሂብ ለጊዜው ከGoogle መለያዎ ጋር ያገናኘዋል።</translation>
@@ -1780,6 +1781,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7889910613639381518">በGoogle የይለፍ ቃል አስተዳዳሪ ምግብር ቀላል እና ደህንነቱ የተጠበቀ መዳረሻ።</translation>
 <translation id="7899199123054742721">ሁሉም እንዳልተነበቡ ምልክት አድርግ</translation>
 <translation id="7911190106180361398">የእርስዎ ድርጅት ሁሉንም ነገር እንዲያሰምሩ አይፈቅድልዎትም።</translation>
+<translation id="7918999344502274923"><ph name="SEARCH_ENGINE_NAME" /> ዝርዝሮችን ደብቅ</translation>
 <translation id="792357691529995513">ምንም ችግሮች አልተገኙም</translation>
 <translation id="7925108652071887026">የራስ-ሙላ ውሂብ</translation>
 <translation id="7926975587469166629">የካርድ ቅጽል ስም</translation>

@@ -11,6 +11,9 @@
 <translation id="1051793555070215510">Responda a esta pesquisa de um minuto e ajude a melhorar a navegação anônima.</translation>
 <translation id="1059838145689930908">Para usar essa extensão com a conta <ph name="USER_EMAIL_ADDRESS" />, faça login no Chrome.</translation>
 <translation id="1065672644894730302">Não foi possível ler suas preferências. Alguns recursos podem não estar disponíveis e as alterações nas preferências não serão salvas.</translation>
+<translation id="1070377999570795893">Outro programa no seu computador adicionou uma extensão que pode mudar a forma como o Google Chrome funciona.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Pesquisar com o Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> estava usando o Chrome anteriormente</translation>
 <translation id="110877069173485804">Este é seu Chrome</translation>
@@ -46,6 +49,9 @@
 <translation id="1547295885616600893">A criação do ChromeOS só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Encerra a tarefa destacada.</translation>
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
+<translation id="1585717515139318619">Outro programa no seu computador adicionou um tema que pode mudar a forma como o Google Chrome funciona.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">O Google Chrome está usando sua câmera.</translation>
 <translation id="1587325591171447154">O arquivo <ph name="FILE_NAME" /> é perigoso. Por isso ele foi bloqueado pelo Chrome.</translation>
 <translation id="1597911401261118146">Para verificar se suas senhas estão protegidas contra violações de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />faça login no Chrome<ph name="END_LINK" />.</translation>
@@ -161,7 +167,7 @@
 <translation id="2871893339301912279">Você fez login no Google Chrome.</translation>
 <translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Gerenciador de tarefas</translation>
-<translation id="2888126860611144412">Sobre o Google Chrome</translation>
+<translation id="2888126860611144412">Sobre o Chrome</translation>
 <translation id="2915996080311180594">Reiniciar mais tarde</translation>
 <translation id="2926676257163822632">Senhas fracas são fáceis de adivinhar. Deixe o Chrome <ph name="BEGIN_LINK" />criar e guardar senhas fortes para você<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">O Chrome precisa da permissão de acesso à câmera para este site</translation>
@@ -545,6 +551,9 @@
 <translation id="7572537927358445944">Desativada: o Chrome não consegue verificar a origem dessa extensão</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
 <translation id="7602868996817972616">Perguntar ao Google sobre esta página</translation>
+<translation id="760353356052806707">Outro programa no seu computador adicionou um aplicativo que pode mudar a forma como o Google Chrome funciona.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> requer que você leia e aceite os Termos de Serviço a seguir antes de usar o dispositivo. Esses termos não ampliam, modificam nem limitam os Termos do Google ChromeOS.</translation>
 <translation id="7627609214560473136">Para proteger seus dados, permita que o Chrome remova permissões de sites que você não visitou recentemente.</translation>

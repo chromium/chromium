@@ -30,6 +30,16 @@
         <ph name="ADVANCED_TITLE" />
         ပြီးတော့  "<ph name="NO_PREFETCH_DESCRIPTION" />"အား ရွေးထားမှုကို ဖြုတ်လိုက်ပါ။
         အဲဒါက ပြဿနာကို ဖြေရှင်း မပေးသေးပါက၊ လုပ်ကိုင်မှုကို မြှင့်တင်ပေးရန် ဒီရွေးချယ်မှုကို ထပ်ပြီး ရွေးရန်ကို ကျွန်ုပ်တို့ အကြံပေးပါသည်။</translation>
+<translation id="6581867098636731226">ဤသို့သွားပါ-
+          Chrome မီနူး &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          ကွန်ရက်နှင့် အင်တာနက် &gt; ပရောက်စီ
+          ထို့နောက် “ဆက်တင်များကို အလိုအလျောက် သိရှိရန်” ကို ပြန်ဖြုတ်ပါ။</translation>
 <translation id="7230956101631259640">သင်သည် လုံခြုံသော Chrome စာမျက်နှာကို ကြည့်ရှုနေပါသည်</translation>
 <translation id="8232971017369963250"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> အခမဲ့ ရင်းမြစ်ပရောဂျက်ဖြင့် Chrome ကို ထုတ်လုပ်ထားသည်။</translation>
 <translation id="8279509328145658601">အခြား <ph name="BEGIN_LINK_OSS" />အခမဲ့ ရင်းမြစ်ဆော့ဖ်ဝဲ<ph name="END_LINK_OSS" /> ဖြင့်လည်း Chrome ကို ထုတ်လုပ်ထားသည်။</translation>

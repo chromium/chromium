@@ -50,6 +50,7 @@
 <translation id="1080116354587839789">Se ajusta al ancho</translation>
 <translation id="1081061862829655580">Bandeja 19</translation>
 <translation id="1082026381988252344">Desplazar y ampliar el contenido de tu pestaña compartida</translation>
+<translation id="108859316315249327">Reintentar</translation>
 <translation id="1088664500620117635">El rango de precio habitual de <ph name="PRODUCT_NAME" /> está entre <ph name="LOW_PRICE" /> y <ph name="HIGH_PRICE" />, pero el precio actual en la Web es de <ph name="CURRENT_PRICE" />.</translation>
 <translation id="1089439967362294234">Cambiar contraseña</translation>
 <translation id="1089599132348386324">Puedes cambiar de opinión en cualquier momento modificando la configuración de Chrome.</translation>
@@ -74,6 +75,7 @@
 <translation id="1123753900084781868">Subtítulos automáticos no está disponible en estos momentos</translation>
 <translation id="112840717907525620">Caché de política correcta</translation>
 <translation id="1131264053432022307">Imagen copiada</translation>
+<translation id="1132735979845538847"><ph name="ORIGIN" />: para salir de la pantalla completa, arrastra desde la parte superior y toca el botón para volver</translation>
 <translation id="1138458427267715730">Recibe alertas cuando el precio baje en cualquier sitio de la Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1144136880160289237">Aún no tienes ningún tema activo</translation>
@@ -379,7 +381,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="161612500287664753">Pregunta a la Búsqueda de Google acerca de esta página</translation>
 <translation id="1617276713587758852">Crossovers</translation>
 <translation id="1619007254056372606">Gestionar los datos de sitios en el dispositivo</translation>
-<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ha eliminado una pestaña</translation>
+<translation id="1619648179761984213">Pestaña eliminada (<ph name="USER_DISPLAY_NAME" />)</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1622966923835127638">Economía empresarial</translation>
 <translation id="1623104350909869708">Evitar que esta página cree cuadros de diálogo adicionales</translation>
@@ -454,6 +456,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1734878702283171397">Intenta ponerte en contacto con el administrador del sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, caduca el <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Ordenador</translation>
+<translation id="1740404923954980840">Para salir de la pantalla completa, arrastra desde la parte superior y toca el botón para volver</translation>
 <translation id="1741474054575634405">Gestionar tarjetas de fidelización...</translation>
 <translation id="1741613555002899862">Se debe especificar y debe ser una cadena válida cuando DnsOverHttpsMode sea <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Sábanas y ropa de cama</translation>
@@ -927,7 +930,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2515629240566999685">Comprobar la señal en tu zona</translation>
 <translation id="2515761554693942801">Has elegido realizar la verificación con Touch ID en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Este proveedor puede haber almacenado información sobre tu método de pago, que puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="2518584823165598232">Esta tarjeta no está disponible. Ponte en contacto con el proveedor de tu tarjeta.</translation>
-<translation id="2519250377986324805">Ver cómo</translation>
 <translation id="2521385132275182522">Grapado en la parte inferior derecha</translation>
 <translation id="2521736961081452453">Crear formulario</translation>
 <translation id="2524461107774643265">Añade más información</translation>
@@ -968,7 +970,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2573170131138724450">Televisiones</translation>
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2580031090587209073">Opciones para compartir</translation>
-<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> ha añadido una pestaña</translation>
+<translation id="258135245577667916">Pestaña añadida (<ph name="USER_DISPLAY_NAME" />)</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2587841377698384444">ID de la API del directorio:</translation>
 <translation id="2588322182880276190">Logotipo de Chrome</translation>
@@ -1154,6 +1156,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2933624813161016821">Papel de aluminio gofrado</translation>
 <translation id="293796669683825859">Comentarios</translation>
 <translation id="2938225289965773019">Abrir enlaces de <ph name="PROTOCOL" /></translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" />: para mostrar el cursor, cambia de app, vuelve a cargar la página o vuelve atrás</translation>
 <translation id="2940418897281183211">Imagen PNG</translation>
 <translation id="2941878205777356567">Sobre de 9x12 pulgadas</translation>
 <translation id="2941952326391522266">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, su certificado de seguridad procede de <ph name="DOMAIN2" />. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
@@ -1323,6 +1326,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3208701679386778924">Envía un informe para que podamos mejorar las próximas actualizaciones de ChromeOS.</translation>
 <translation id="3209034400446768650">La página puede cobrarte dinero</translation>
+<translation id="3212468046572043669">Descarga iniciada. Para verla, arrastra desde la parte superior y toca el botón para volver.</translation>
 <translation id="3212581601480735796">Se está vigilando tu actividad en <ph name="HOSTNAME" /></translation>
 <translation id="3215092763954878852">No se ha podido usar WebAuthn</translation>
 <translation id="3215311088819828484">Resultado actualizado</translation>
@@ -1860,6 +1864,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4085326869263783566">Ayúdame a escribir. Pulsa Tabulador y luego Intro para abrir esta función.</translation>
 <translation id="4085769736382018559">Compara productos</translation>
 <translation id="4085778582400064057">Azul 2</translation>
+<translation id="4085859451613666999">Tu tarjeta se ha guardado en tu cuenta de Google para que puedas autocompletarla en futuras compras</translation>
 <translation id="4088981014127559358">Cara 1 del desplazamiento de la imagen en el eje Y</translation>
 <translation id="4089152113577680600">Bandeja 14</translation>
 <translation id="4092349052316400070">Rellenar dirección</translation>
@@ -2409,6 +2414,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4995474875135717171">Modificado:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para gestionar las búsquedas en el sitio y tu buscador predeterminado</translation>
 <translation id="4998950033665438990">Una cara</translation>
+<translation id="5001338033791319371">Para salir de la pantalla completa y ver la descarga, arrastra desde la parte superior y toca el botón para volver</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5002932099480077015">Si se habilita esta opción, Chrome guardará una copia de tu tarjeta en este dispositivo para rellenar la información más rápido.</translation>
 <translation id="5007344584818503324">Actividad de los grupos de pestañas compartidas</translation>
@@ -2469,6 +2475,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5097099694988056070">Estadísticas del dispositivo, como uso de CPU y RAM</translation>
 <translation id="5097468150760963273">27x39 pulgadas</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5102512728737175215">Pulsa Tabulador y, a continuación, Intro para interactuar con Modo IA</translation>
 <translation id="510644072453496781">Cartón (bordes cerrados)</translation>
 <translation id="5106648964679263509">Tarjeta virtual de <ph name="BNPL_ISSUER_NAME" /> rellenada</translation>
 <translation id="5108567515277121477">Tarjeta de fidelización</translation>
@@ -2627,7 +2634,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5363309033720083897">Puerto serie permitido por tu administrador</translation>
 <translation id="5363532265530011914">Calcetines y medias</translation>
 <translation id="5371425731340848620">Actualizar tarjeta</translation>
-<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ha cambiado una pestaña</translation>
+<translation id="537425196847960924">Pestaña cambiada (<ph name="USER_DISPLAY_NAME" />)</translation>
 <translation id="5374324662289354619">Las páginas de depuración internas están inhabilitadas en estos momentos.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Tu reloj está atrasado" o "Tu reloj está adelantado" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
@@ -3477,6 +3484,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6786145470008421571">Sobre de 6x9 pulgadas</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6787094689637422836">Vamos a lanzar nuevas funciones de privacidad para que puedas controlar mejor los anuncios que ves.</translation>
+<translation id="6788615780749001893">Botón Modo IA, pulsa Intro para interactuar con Modo IA</translation>
 <translation id="6789062271869667677">Impresión continua (larga)</translation>
 <translation id="678982761784843853">IDs de contenido protegido</translation>
 <translation id="6790428901817661496">Reproducir</translation>
@@ -3542,7 +3550,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6898699227549475383">Organización (O)</translation>
 <translation id="6900702165119149418">Se ha cerrado tu sesión</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
-<translation id="6905163627763043954">Probar</translation>
 <translation id="6907458757809079309">Actividad física</translation>
 <translation id="691024665142758461">Descargar varios archivos</translation>
 <translation id="691046363691324218">Número Redress</translation>
@@ -3971,6 +3978,7 @@ Más información:
 <translation id="7582602800368606489">Crea un nuevo evento en Google Calendar rápidamente</translation>
 <translation id="7586676035079382730">Notificaciones no permitidas</translation>
 <translation id="7588707273764747927">De transferencia</translation>
+<translation id="7589062909165841767">Es posible que tu cuenta de Google tenga activado el ajuste <ph name="BEGIN_LINK_GAA" />Actividad en las apps de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="7591288787774558753">¿Compartir contenido confidencial?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> quiere usar tus cookies y datos de sitios en <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">El certificado del servidor incluye un nombre que está fuera de su cobertura.</translation>
@@ -4256,6 +4264,7 @@ Más información:
 <translation id="8075736640322370409">Crea una nueva Hoja de cálculo de Google rápidamente</translation>
 <translation id="8075898834294118863">Gestionar la configuración del sitio</translation>
 <translation id="8076492880354921740">Pestañas</translation>
+<translation id="8076880883123051368">Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, como tu <ph name="BEGIN_LINK_GAA" />Actividad en las apps de Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="8077669823243888800">Sobre chino n.º 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{¿Subir archivo confidencial?}other{¿Subir archivos confidenciales?}}</translation>
 <translation id="8079031581361219619">¿Quieres volver a cargar el sitio web?</translation>
@@ -4389,6 +4398,7 @@ Más información:
 <translation id="8294431847097064396">Origen</translation>
 <translation id="8297545700510100061">Las cookies y otros datos de los sitios se usan para recordarte. Así, podrás iniciar sesión o ver anuncios personalizados, entre otras cosas. Para gestionar las cookies de todos los sitios, ve a <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">La red Wi-Fi que estás utilizando (<ph name="WIFI_NAME" />) puede requerir que accedas a la página <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298399736867690281">Tarjeta guardada solo en el dispositivo</translation>
 <translation id="8301894345671534559">Introducir código</translation>
 <translation id="8304912090860925649">Nueva tabla comparativa</translation>
 <translation id="830498451218851433">Plegado al medio</translation>
@@ -4909,6 +4919,7 @@ Más información:
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Belleza con productos sostenibles</translation>
 <translation id="9195969368671142407">Si tu organización limita lo que puedes guardar en tu cuenta de Google, no podrás compartir ni unirte a grupos de pestañas</translation>
+<translation id="9198613052465150219">Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en la página <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">La impresión está bloqueada</translation>
 <translation id="9201904868909900493">Abriendo encuesta...</translation>
 <translation id="9204089334327209740">Cuando termine la subida, podrás modificar tus archivos en <ph name="CLOUD_PROVIDER" />. El almacenamiento local, incluidos los archivos de la papelera, se eliminará automáticamente.</translation>
@@ -4950,7 +4961,7 @@ Más información:
 <translation id="95676157383774931">Botón de Modo IA, activar para preguntar a Modo IA de Google</translation>
 <translation id="95721182352849470">Amarillo 2</translation>
 <translation id="961663415146723894">Encuadernar por la parte inferior</translation>
-<translation id="961856697154696964">Borrar datos de navegación</translation>
+<translation id="961856697154696964">Borrar datos navegación</translation>
 <translation id="961930410699694996">Ubicación permitida esta vez</translation>
 <translation id="962484866189421427">Este contenido podría intentar instalar aplicaciones engañosas que se hagan pasar por otra persona o recojan datos que podrían usarse para realizar un seguimiento de tu actividad. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">De acuerdo con una ley de tu zona, Chromium te pide que elijas tu buscador predeterminado. Los buscadores que aparecen en la lista son populares en tu zona y se muestran en orden aleatorio.</translation>

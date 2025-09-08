@@ -13,6 +13,9 @@
 <translation id="1065672644894730302">አማራጮችዎ ሊነበቡ አልቻሉም።
 
 አንዳንድ ባህሪያት ላይገኙ ይችላሉ፣ እና በአማራጮች ላይ የተደረጉ ለውጦች አይቀመጡም።</translation>
+<translation id="1070377999570795893">በኮምፒውተርዎ ላይ ያለ ሌላ ፕሮግራም Chrome የሚሰራበት መንገድ ሊቀይር የሚችል አንድ ቅጥያ አክሏል።
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">በGoogle ሌንስ ይፈልጉ</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> ከዚህ ቀደም Chromeን እየተጠቀመ ነበር</translation>
 <translation id="110877069173485804">ይሄ የእርስዎ Chrome ነው</translation>
@@ -48,6 +51,9 @@
 <translation id="1547295885616600893">ChromeOS በተጨማሪ <ph name="BEGIN_LINK_CROS_OSS" />ክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_CROS_OSS" /> እውን ሊሆን ችሏል።</translation>
 <translation id="1547469039832541117">የደመቀውን ተግባር ይጨርሳል።</translation>
 <translation id="1553358976309200471">Chromeን አዘምን</translation>
+<translation id="1585717515139318619">በኮምፒውተርዎ ላይ ያለ ሌላ ፕሮግራም Chrome የሚሰራበት መንገድ ሊቀይር የሚችል አንድ ገጽታ አክሏል።
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome ካሜራዎን እየተጠቀመ ነው።</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> አደገኛ ነው፣ ስለዚህ Chrome አግዶታል።</translation>
 <translation id="1597911401261118146">የእርስዎ የይለፍ ቃላት ከውሂብ ጥሰቶች እና ሌሎች የደህንነት ችግሮች ነፃ መሆናቸውን ለማረጋገጥ <ph name="BEGIN_LINK" />በመለያ ወደ Chrome ይግቡ<ph name="END_LINK" />።</translation>
@@ -455,6 +461,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6321592572353357376">ቅጥያው «<ph name="EXTENSION_NAME" />» በመለያ ወደ Chrome እንዲገቡ ይፈልጋል</translation>
 <translation id="6326175484149238433">ከChrome አስወግድ</translation>
 <translation id="6327105987658262776">ምንም ዝማኔ የለም።</translation>
+<translation id="6334815226785304306">Google Chromeን ነባሪ አሳሽ ያድርጉ እና ወደ የተግባር አሞሌ ፒን ያድርጉ</translation>
 <translation id="6360449101159168105">ይህ ትር ቦዝኖ ሳለ Chromeን ፈጣን እንደሆነ ለማቆየት ማህደረ ትውስታ ነፃ ተደርጓል። ይህን ጣቢያ ሁልጊዜ ከመቦዘን ማግለል መምረጥ ይችላሉ።</translation>
 <translation id="6388799252195623474">በዚህ አግዘኝ</translation>
 <translation id="6412673304250309937">በChrome ላይ የተከማቹ ድህንነታቸው ያልተጠበቁ ጣቢያዎች ዝርዝር ጋር ዩአርኤሎችን ይፈትሻል። አንድ ጣቢያ የእርስዎን የይለፍ ቃል ለመስረቅ ከሞከረ ወይም ጎጂ ፋይል ካወረደ Chrome እንዲሁም የገጽ ይዘትን ክፍሎችም ጨምሮ ዩአርኤሎችን ወደ የጥንቃቄ አሰሳ መላክ ሊልክ ይችላል።</translation>
@@ -553,6 +560,9 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="7572537927358445944">ጠፍቷል • Chrome ይህ ቅጥያ ከየት እንደመጣ ማረጋገጥ አይችልም</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ጫኝ</translation>
 <translation id="7602868996817972616">Googleን ስለዚህ ገፅ ይጠይቁ</translation>
+<translation id="760353356052806707">Chrome የሚሰራበትን መንገድ የሚለውጥ መተግበሪያ ሌላ ፕሮግም በኮምፒውተርዎ ታክሏል።
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> ይህን መሣሪያ ከመጠቀምዎ በፊት የሚከተለውን የአገልግሎት ውል እንዲያነብቡ እና እንዲቀበሉ ይፈለጋል። ይህ ውል የGoogle ChromeOS ውሉን አያስፋፋውም፣ አይቀይረውም ወይም አይገድበውም።</translation>
 <translation id="7627609214560473136">ውሂብዎን ለመጠበቅ Chrome እርስዎ በቅርቡ ካልጎበኟቸው ጣቢያዎች ላይ ፈቃዶችን እንዲያስወግድ ይፍቀዱ።</translation>
