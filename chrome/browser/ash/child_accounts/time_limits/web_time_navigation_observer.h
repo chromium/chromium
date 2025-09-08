@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_NAVIGATION_OBSERVER_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_NAVIGATION_OBSERVER_H_
 
-#include <optional>
-
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -67,18 +65,12 @@ class WebTimeNavigationObserver
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
 
-  const std::optional<NavigationInfo>& last_navigation_info() const {
-    return last_navigation_info_;
-  }
-
  private:
   friend class content::WebContentsUserData<WebTimeNavigationObserver>;
 
   explicit WebTimeNavigationObserver(content::WebContents* web_contents);
 
   base::ObserverList<EventListener> listeners_;
-
-  std::optional<NavigationInfo> last_navigation_info_ = std::nullopt;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

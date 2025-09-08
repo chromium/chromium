@@ -55,18 +55,15 @@ bool WebTimeNavigationObserver::IsWebApp() const {
 }
 
 void WebTimeNavigationObserver::PrimaryPageChanged(content::Page& page) {
-  if (!last_navigation_info_.has_value()) {
-    last_navigation_info_ = NavigationInfo();
-  }
-
-  last_navigation_info_->navigation_finish_time = base::Time::Now();
-  last_navigation_info_->is_error = page.GetMainDocument().IsErrorDocument();
-  last_navigation_info_->is_web_app = IsWebApp();
-  last_navigation_info_->url = page.GetMainDocument().GetLastCommittedURL();
-  last_navigation_info_->web_contents = web_contents();
+  NavigationInfo info;
+  info.navigation_finish_time = base::Time::Now();
+  info.is_error = page.GetMainDocument().IsErrorDocument();
+  info.is_web_app = IsWebApp();
+  info.url = page.GetMainDocument().GetLastCommittedURL();
+  info.web_contents = web_contents();
 
   for (auto& listener : listeners_) {
-    listener.OnWebActivityChanged(last_navigation_info_.value());
+    listener.OnWebActivityChanged(info);
   }
 }
 

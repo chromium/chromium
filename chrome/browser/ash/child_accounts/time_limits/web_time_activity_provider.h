@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_ACTIVITY_PROVIDER_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_ACTIVITY_PROVIDER_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <vector>
@@ -90,6 +91,12 @@ class WebTimeActivityProvider : public WebTimeNavigationObserver::EventListener,
   // The default chrome app activity state.
   ChromeAppActivityState chrome_app_activity_state_ =
       ChromeAppActivityState::kInactive;
+
+  // A map from a navigation observer to its most recently reported navigation
+  // info.
+  std::map<const WebTimeNavigationObserver*,
+           WebTimeNavigationObserver::NavigationInfo>
+      navigation_info_map_;
 
   base::ScopedObservation<AppServiceWrapper, AppServiceWrapper::EventListener>
       app_service_wrapper_observation_{this};
