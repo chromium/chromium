@@ -3906,24 +3906,6 @@ INSTANTIATE_TEST_SUITE_P(
             /*url_arg=*/std::nullopt,
             /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kNormal,
             /*extra_switch_name=*/switches::kIgnoreProfileDirectoryIfNotExists},
-        // Skip the picker when a specific profile is requested by email.
-        ProfilePickerSetup{/*expected_to_show=*/false,
-                           /*switch_name=*/switches::kProfileEmail,
-                           /*switch_value_ascii=*/"user0@gmail.com"},
-        // Show the picker if the profile email is not found.
-        ProfilePickerSetup{/*expected_to_show=*/true,
-                           /*switch_name=*/switches::kProfileEmail,
-                           /*switch_value_ascii=*/"unknown@gmail.com"},
-        // Show the create new profile dialog if the profile is not found even
-        // when a URL is provided.
-        ProfilePickerSetup{
-            /*expected_to_show=*/true,
-            /*switch_name=*/switches::kProfileEmail,
-            /*switch_value_ascii=*/"unknown@gmail.com",
-            /*url_arg=*/GURL("https://www.foo.com/"),
-            /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kNormal,
-            /*extra_switch_name=*/
-            switches::kCreateProfileEmailIfNotExists},
         // Skip the picker when a URL is provided on command-line (used by the
         // OS when Chrome is the default web browser) and use the last used
         // profile, instead.
@@ -3956,6 +3938,194 @@ INSTANTIATE_TEST_SUITE_P(
             /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kNormal,
             /*extra_switch_name=*/
             switches::kIgnoreProfileDirectoryIfNotExists}));
+
+// Skips the profile picker when the specified profile email matches one of the
+// active profiles.
+class StartupBrowserCreatorPickerProfileEmailTest
+    : public StartupBrowserCreatorPickerTestBase {
+ public:
+  StartupBrowserCreatorPickerProfileEmailTest() = default;
+  StartupBrowserCreatorPickerProfileEmailTest(
+      const StartupBrowserCreatorPickerProfileEmailTest&) = delete;
+  StartupBrowserCreatorPickerProfileEmailTest& operator=(
+      const StartupBrowserCreatorPickerProfileEmailTest&) = delete;
+  ~StartupBrowserCreatorPickerProfileEmailTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    StartupBrowserCreatorPickerTestBase::SetUpCommandLine(command_line);
+    if (content::IsPreTest()) {
+      return;
+    }
+    command_line->AppendSwitchASCII(switches::kProfileEmail, "user0@gmail.com");
+  }
+
+ private:
+  // Prevent the browser from automatically relaunching in the PRE_ test. The
+  // browser will be relaunched by the main test.
+  upgrade_util::ScopedRelaunchChromeBrowserOverride relaunch_chrome_override_{
+      base::BindRepeating([](const base::CommandLine&) { return true; })};
+};
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerProfileEmailTest,
+                       PRE_TestSetup) {
+  CreateMultipleProfiles();
+
+  // Need to close the browser window manually so that the main test does
+  // not treat it as session restore.
+  CloseAllBrowsers();
+
+  // Ensure everything is written to disk before moving on to the main test.
+  content::RunAllTasksUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerProfileEmailTest, TestSetup) {
+  // Check the ProfilePicker.
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+
+  // Check the browser window.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+
+  // No Guest profile was created.
+  for (const Profile* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    EXPECT_FALSE(profile->IsGuestSession());
+  }
+}
+
+// Shows the profile picker when there are multiple active profiles and the
+// specified profile email doesn't match any of them.
+class StartupBrowserCreatorPickerUnknownProfileEmail
+    : public StartupBrowserCreatorPickerTestBase {
+ public:
+  StartupBrowserCreatorPickerUnknownProfileEmail() = default;
+  StartupBrowserCreatorPickerUnknownProfileEmail(
+      const StartupBrowserCreatorPickerUnknownProfileEmail&) = delete;
+  StartupBrowserCreatorPickerUnknownProfileEmail& operator=(
+      const StartupBrowserCreatorPickerUnknownProfileEmail&) = delete;
+  ~StartupBrowserCreatorPickerUnknownProfileEmail() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    StartupBrowserCreatorPickerTestBase::SetUpCommandLine(command_line);
+    if (content::IsPreTest()) {
+      return;
+    }
+    command_line->AppendSwitchASCII(switches::kProfileEmail,
+                                    "unknown@gmail.com");
+  }
+
+ private:
+  // Prevent the browser from automatically relaunching in the PRE_ test. The
+  // browser will be relaunched by the main test.
+  upgrade_util::ScopedRelaunchChromeBrowserOverride relaunch_chrome_override_{
+      base::BindRepeating([](const base::CommandLine&) { return true; })};
+};
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerUnknownProfileEmail,
+                       PRE_TestSetup) {
+  CreateMultipleProfiles();
+
+  // Need to close the browser window manually so that the main test does
+  // not treat it as session restore.
+  CloseAllBrowsers();
+
+  // Ensure everything is written to disk before moving on to the main test.
+  content::RunAllTasksUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerUnknownProfileEmail,
+                       TestSetup) {
+  // Check the ProfilePicker.
+  if (!ProfilePicker::IsOpen()) {
+    base::RunLoop run_loop;
+    ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  // Check the browser window.
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // No Guest profile was created.
+  for (const Profile* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    EXPECT_FALSE(profile->IsGuestSession());
+  }
+}
+
+// Shows the profile picker for an unknown email with
+// kCreateProfileEmailIfNotExists switch, even with a URL on the command line.
+class StartupBrowserCreatorPickerUnknownEmailCreateProfileIfNotExists
+    : public StartupBrowserCreatorPickerTestBase {
+ public:
+  StartupBrowserCreatorPickerUnknownEmailCreateProfileIfNotExists() = default;
+  StartupBrowserCreatorPickerUnknownEmailCreateProfileIfNotExists(
+      const StartupBrowserCreatorPickerUnknownEmailCreateProfileIfNotExists&) =
+      delete;
+  StartupBrowserCreatorPickerUnknownEmailCreateProfileIfNotExists& operator=(
+      const StartupBrowserCreatorPickerUnknownEmailCreateProfileIfNotExists&) =
+      delete;
+  ~StartupBrowserCreatorPickerUnknownEmailCreateProfileIfNotExists() override =
+      default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    StartupBrowserCreatorPickerTestBase::SetUpCommandLine(command_line);
+    if (content::IsPreTest()) {
+      return;
+    }
+    command_line->AppendArg("https://www.foo.com/");
+    command_line->AppendSwitchASCII(switches::kProfileEmail,
+                                    "unknown@gmail.com");
+    command_line->AppendSwitch(switches::kCreateProfileEmailIfNotExists);
+  }
+
+ private:
+  // Prevent the browser from automatically relaunching in the PRE_ test. The
+  // browser will be relaunched by the main test.
+  upgrade_util::ScopedRelaunchChromeBrowserOverride relaunch_chrome_override_{
+      base::BindRepeating([](const base::CommandLine&) { return true; })};
+
+  // The `kCreateProfileEmailIfNotExists` switch requires the
+  // `kCreateProfileIfNoneExists` feature to be enabled.
+  // TODO: Remove once enabled by default
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kCreateProfileIfNoneExists};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    StartupBrowserCreatorPickerUnknownEmailCreateProfileIfNotExists,
+    PRE_TestSetup) {
+  CreateMultipleProfiles();
+
+  // Need to close the browser window manually so that the main test does
+  // not treat it as session restore.
+  CloseAllBrowsers();
+
+  // Ensure everything is written to disk before moving on to the main test.
+  content::RunAllTasksUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    StartupBrowserCreatorPickerUnknownEmailCreateProfileIfNotExists,
+    TestSetup) {
+  // Check the ProfilePicker.
+  if (!ProfilePicker::IsOpen()) {
+    base::RunLoop run_loop;
+    ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  // Check the browser window.
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // No Guest profile was created.
+  for (const Profile* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    EXPECT_FALSE(profile->IsGuestSession());
+  }
+}
 
 class GuestStartupBrowserCreatorPickerTest
     : public StartupBrowserCreatorPickerTestBase {
