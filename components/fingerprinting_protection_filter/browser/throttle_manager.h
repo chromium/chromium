@@ -307,9 +307,6 @@ class ThrottleManager : public base::SupportsUserData::Data,
 
   std::unique_ptr<subresource_filter::PageLoadStatistics> statistics_;
 
-  // TODO(https://crbug.com/40280666): Add statistics once they are available in
-  // a shared SubresourceFilter directory.
-
   // True if the current committed main frame load in this WebContents has
   // notified the delegate that a subresource was disallowed. The callback
   // should only be called at most once per main frame load.

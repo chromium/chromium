@@ -99,8 +99,6 @@ class FingerprintingProtectionChildNavigationThrottleTest
                         registry, parent_filter_.get(),
                         /*is_incognito=*/GetParam(),
                         base::BindRepeating([](const GURL& filtered_url) {
-                          // TODO(https://crbug.com/40280666): Implement new
-                          // console message.
                           return base::StringPrintf(
                               kDisallowedConsoleMessageFormat,
                               filtered_url.possibly_invalid_spec().c_str());
