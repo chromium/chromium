@@ -43,7 +43,6 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.RectProvider;
@@ -147,11 +146,11 @@ class KeyboardAccessoryViewBinder {
         protected void bind(AutofillBarItem item, ChipView chipView) {
             TraceEvent.begin("BarItemChipViewHolder#bind");
             boolean iphShown =
-                    maybeShowIph(
+                    KeyboardAccessoryIphUtils.maybeShowIph(
+                            mKeyboardAccessory.getFeatureEngagementTracker(),
                             item,
                             chipView,
-                            mRootViewForIPH,
-                            mKeyboardAccessory.getFeatureEngagementTracker());
+                            mRootViewForIPH);
             mKeyboardAccessory.setAllowClicksWhileObscured(iphShown);
 
             // Credit card or IBAN chips never occupy the entire width of the window to allow for
@@ -361,49 +360,5 @@ class KeyboardAccessoryViewBinder {
 
     private static boolean containsIbanInfo(AutofillSuggestion suggestion) {
         return suggestion.getSuggestionType() == SuggestionType.IBAN_ENTRY;
-    }
-
-    /**
-     * Determines whether an IPH bubble should be shown, and displays the IPH if eligible.
-     *
-     * @param item The {@link AutofillBarItem} that is associated with IPH.
-     * @param chipView The {@link ChipView} that the IPH is anchored to.
-     * @param rootViewForIph The root {@link View} for IPH.
-     * @param featureEngagementTracker The {@link Tracker} associated with the current session.
-     * @return True if IPH is triggered, and false if no IPH should be triggered.
-     */
-    // TODO (crbug.com/408984579): consider moving this logic out of this class.
-    private static boolean maybeShowIph(
-            AutofillBarItem item,
-            ChipView chipView,
-            View rootViewForIph,
-            Tracker featureEngagementTracker) {
-        String iphFeature = item.getFeatureForIph();
-        if (iphFeature == null) return false;
-
-        if ((iphFeature.equals(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)
-                        || iphFeature.equals(
-                                FeatureConstants
-                                        .KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE))
-                && item.getSuggestion().getIconId() != 0) {
-            return showHelpBubble(
-                    featureEngagementTracker,
-                    iphFeature,
-                    chipView.getStartIconViewRect(),
-                    chipView.getContext(),
-                    rootViewForIph);
-        }
-
-        if (iphFeature.equals(
-                FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE)) {
-            return showHelpBubble(
-                    featureEngagementTracker,
-                    iphFeature,
-                    chipView,
-                    rootViewForIph,
-                    item.getSuggestion().getIphDescriptionText());
-        }
-
-        return showHelpBubble(featureEngagementTracker, iphFeature, chipView, rootViewForIph, null);
     }
 }

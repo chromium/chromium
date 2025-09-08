@@ -241,4 +241,48 @@ class KeyboardAccessoryIphUtils {
     }
 
     private KeyboardAccessoryIphUtils() {}
+
+    /**
+     * Determines whether an IPH bubble should be shown, and displays the IPH if eligible.
+     *
+     * @param tracker The {@link Tracker} associated with the current session.
+     * @param item The {@link AutofillBarItem} that is associated with IPH.
+     * @param chipView The {@link ChipView} that the IPH is anchored to.
+     * @param rootView The root {@link View} for IPH.
+     * @return True if IPH is triggered, and false if no IPH should be triggered.
+     */
+    static boolean maybeShowIph(
+            Tracker tracker,
+            KeyboardAccessoryProperties.AutofillBarItem item,
+            View chipView,
+            View rootView) {
+        String iphFeature = item.getFeatureForIph();
+        if (iphFeature == null) return false;
+
+        if ((iphFeature.equals(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)
+                        || iphFeature.equals(
+                                FeatureConstants
+                                        .KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE))
+                && item.getSuggestion().getIconId() != 0) {
+            return showHelpBubble(
+                    tracker,
+                    iphFeature,
+                    ((org.chromium.components.browser_ui.widget.chips.ChipView) chipView)
+                            .getStartIconViewRect(),
+                    chipView.getContext(),
+                    rootView);
+        }
+
+        if (iphFeature.equals(
+                FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE)) {
+            return showHelpBubble(
+                    tracker,
+                    iphFeature,
+                    chipView,
+                    rootView,
+                    item.getSuggestion().getIphDescriptionText());
+        }
+
+        return showHelpBubble(tracker, iphFeature, chipView, rootView, null);
+    }
 }
