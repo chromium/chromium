@@ -268,9 +268,8 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
                               ios::HistoryServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                web::BrowserState, password_manager::TestPasswordStore>));
+        base::BindOnce(&password_manager::BuildPasswordStore<
+                       ProfileIOS, password_manager::TestPasswordStore>));
     builder.SetPrefService(std::move(prefs));
     profile_ = std::move(builder).Build();
 
