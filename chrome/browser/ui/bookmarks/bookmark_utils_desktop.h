@@ -14,7 +14,7 @@
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Browser;
 struct NavigateParams;

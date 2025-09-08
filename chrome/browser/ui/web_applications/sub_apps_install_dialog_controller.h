@@ -14,7 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "components/webapps/common/web_app_id.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {

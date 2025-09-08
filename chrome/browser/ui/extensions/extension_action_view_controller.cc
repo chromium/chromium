@@ -47,7 +47,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/native_theme/native_theme.h"
 
 using extensions::ActionInfo;

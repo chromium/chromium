@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 class DialogModel;

@@ -10,7 +10,7 @@
 #include "base/observer_list_types.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ash::printing::print_preview {
 

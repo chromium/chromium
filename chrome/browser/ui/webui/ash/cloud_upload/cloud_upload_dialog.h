@@ -28,7 +28,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Profile;
 

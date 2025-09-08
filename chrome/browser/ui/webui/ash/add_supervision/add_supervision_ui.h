@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "url/gurl.h"

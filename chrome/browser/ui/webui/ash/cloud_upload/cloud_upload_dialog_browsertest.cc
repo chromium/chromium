@@ -68,7 +68,7 @@
 #include "extensions/common/constants.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ash::cloud_upload {
 

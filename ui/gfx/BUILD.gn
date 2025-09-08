@@ -533,7 +533,6 @@ source_set("native_widget_types_sources") {
   public = [
     "native_ui_types.h",
     "native_widget_types.h",
-    "native_window_types.h",
   ]
 
   public_deps = [ "//base" ]

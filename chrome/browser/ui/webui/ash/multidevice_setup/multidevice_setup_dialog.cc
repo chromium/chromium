@@ -32,7 +32,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 #include "ui/wm/core/shadow_types.h"

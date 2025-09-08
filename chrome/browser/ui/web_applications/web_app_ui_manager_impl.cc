@@ -69,7 +69,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/native_window_tracker/native_window_tracker.h"
 #include "url/gurl.h"
 #include "url/origin.h"
