@@ -100,6 +100,10 @@ public final class ReadAloudFeatures {
         return ChromeFeatureList.sReadAloudAudioOverviewsSpeedAdditionPercentage.getValue();
     }
 
+    public static int getReadabilityDelayMsAfterPageLoad() {
+      return ChromeFeatureList.sReadAloudReadabilityDelayMsAfterPageLoad.getValue();
+    }
+
     public static @IneligibilityReason int getIneligibilityReason() {
         return sIneligibilityReason;
     }

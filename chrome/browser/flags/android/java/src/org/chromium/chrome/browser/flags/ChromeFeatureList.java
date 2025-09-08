@@ -1735,6 +1735,12 @@ public abstract class ChromeFeatureList {
                     "read_aloud_audio_overviews_speed_addition_percentage",
                     20);
 
+    public static final IntCachedFeatureParam sReadAloudReadabilityDelayMsAfterPageLoad =
+            newIntCachedFeatureParam(
+              READALOUD,
+              "read_aloud_readability_delay_ms_after_page_load",
+              3000);
+
     /** Controls whether Referrer App ID is passed to Search Results Page via client= param. */
     public static final BooleanCachedFeatureParam sSearchinCctApplyReferrerId =
             newBooleanCachedFeatureParam(SEARCH_IN_CCT, "apply_referrer_id", false);
@@ -1867,6 +1873,7 @@ public abstract class ChromeFeatureList {
                     sPCctMinimumHeightRatio,
                     sPriceChangeModuleSkipShoppingPersistedTabDataDelayedInit,
                     sReadAloudAudioOverviewsSpeedAdditionPercentage,
+                    sReadAloudReadabilityDelayMsAfterPageLoad,
                     sSearchinCctApplyReferrerId,
                     sSearchinCctOmniboxAllowedPackageNames,
                     sStartSurfaceReturnTimeTabletSecs,
