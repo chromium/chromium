@@ -2748,11 +2748,11 @@ if (_is_default_toolchain) {
              "chrome_android",
              "--zero-tests-executed-ok",
            ]
-    data = [ "//third_party/blink/web_tests/platform/android/" ]
     data_deps = [
       ":chrome_public_apk",
       "//chrome/test/chromedriver:chromedriver_server($host_toolchain)",
       "//third_party/blink/tools:wpt_tests_android_isolate",
+      "//third_party/blink/web_tests:wpt_tests",
     ]
   }
 

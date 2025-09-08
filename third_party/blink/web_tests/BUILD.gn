@@ -184,6 +184,15 @@ group("expectations") {
       "platform/mac-mac14-arm64/",
       "platform/mac-mac15-arm64/",
     ]
+  } else if (is_android) {
+    # The dependent target usually only needs one of `android/` (Clank) or
+    # `webview/`. However, both directories are small enough that it's ok to
+    # always include both.
+    data += [
+      "platform/linux/",
+      "platform/webview/",
+      "platform/android/",
+    ]
   }
 
   # flag-specific tests only runs on linux & mac as of now
