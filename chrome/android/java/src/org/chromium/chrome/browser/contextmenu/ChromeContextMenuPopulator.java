@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_CONTENT_DESC;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_IMAGE;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.END_BUTTON_MENU_ID;
+import static org.chromium.chrome.browser.incognito.IncognitoUtils.shouldOpenIncognitoAsWindow;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
@@ -222,6 +223,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.SHOW_INTEREST_IN_ELEMENT,
             Action.ENTER_PICTURE_IN_PICTURE,
             Action.EXIT_PICTURE_IN_PICTURE,
+            Action.OPEN_IN_INCOGNITO_WINDOW,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -276,7 +278,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int SHOW_INTEREST_IN_ELEMENT = 48;
             int ENTER_PICTURE_IN_PICTURE = 49;
             int EXIT_PICTURE_IN_PICTURE = 50;
-            int NUM_ENTRIES = 51;
+            int OPEN_IN_INCOGNITO_WINDOW = 51;
+            int NUM_ENTRIES = 52;
         }
 
         // LINT.ThenChange(/tools/metrics/histograms/enums.xml:ContextMenuOptionAndroid)
@@ -449,13 +452,20 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 if (mMode == ContextMenuMode.NORMAL) {
                     linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
                     linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB_IN_GROUP));
-                    if (!mItemDelegate.isIncognito() && mItemDelegate.isIncognitoSupported()) {
+                    if (!mItemDelegate.isIncognito()
+                            && mItemDelegate.isIncognitoSupported()
+                            && !shouldOpenIncognitoAsWindow()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
                     }
                     if (mItemDelegate.isOpenInOtherWindowSupported()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_OTHER_WINDOW));
                     } else if (isTabletScreen() && mItemDelegate.canEnterMultiWindowMode()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_NEW_WINDOW));
+                    }
+                    if (!mItemDelegate.isIncognito()
+                            && mItemDelegate.isIncognitoSupported()
+                            && shouldOpenIncognitoAsWindow()) {
+                        linkGroup.add(createListItem(Item.OPEN_IN_INCOGNITO_WINDOW));
                     }
                 }
                 if (mParams.getOpenedFromInterestFor()) {
@@ -834,6 +844,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_open_in_incognito_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_INCOGNITO_TAB);
             mItemDelegate.onOpenInNewIncognitoTab(mParams.getUrl());
+        } else if (itemId == R.id.contextmenu_open_in_incognito_window) {
+            recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_INCOGNITO_WINDOW);
+            mItemDelegate.onOpenInIncognitoWindow(mParams.getUrl());
         } else if (itemId == R.id.contextmenu_open_in_other_window) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_OTHER_WINDOW);
             mItemDelegate.onOpenInOtherWindow(mParams.getUrl(), mParams.getReferrer());

@@ -330,6 +330,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testHttpLink() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams params = getHttpLinkParams();
@@ -418,6 +419,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testHttpLinkWithDownloadBlockedByPolicy() {
         FirstRunStatus.setFirstRunFlowComplete(true);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
@@ -494,6 +496,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testHttpLinkWithPreviewTabEnabled() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -571,6 +574,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testDataUrlDisablesPreviewTab() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -807,6 +811,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testVideoLink() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         GURL sourceUrl = new GURL("http://www.blah.com/");
@@ -917,6 +922,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testVideoLinkWithDownloadBlockedByPolicy() {
         FirstRunStatus.setFirstRunFlowComplete(true);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
@@ -1163,6 +1169,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testHttpLinkWithImageHiFi() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams params =
@@ -1339,6 +1346,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testReadLater() {
         FirstRunStatus.setFirstRunFlowComplete(true);
 
@@ -1503,6 +1511,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOpenInOtherWindow() {
         FirstRunStatus.setFirstRunFlowComplete(true);
 
@@ -1558,47 +1567,17 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOpenInNewWindow() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        checkOpenInNewWindowItems(/* isIncognitoWindowFeatureEnabled= */ false);
+    }
 
-        ContextMenuParams params =
-                new ContextMenuParams(
-                        0,
-                        mMenuModelBridge,
-                        ContextMenuDataMediaType.NONE,
-                        ContextMenuDataMediaFlags.MEDIA_NONE,
-                        new GURL(PAGE_URL),
-                        new GURL(LINK_URL),
-                        LINK_TEXT,
-                        GURL.emptyGURL(),
-                        GURL.emptyGURL(),
-                        "",
-                        null,
-                        false,
-                        0,
-                        0,
-                        MenuSourceType.TOUCH,
-                        false,
-                        /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
-                        /* additionalNavigationParams= */ null);
-
-        when(mItemDelegate.canEnterMultiWindowMode()).thenReturn(true);
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        doReturn(true).when(mPopulator).isTabletScreen();
-        int[] expectedMultiWindow = {
-            R.id.contextmenu_open_in_new_tab,
-            R.id.contextmenu_open_in_new_tab_in_group,
-            R.id.contextmenu_open_in_incognito_tab,
-            R.id.contextmenu_open_in_new_window,
-            R.id.contextmenu_open_in_ephemeral_tab,
-            R.id.contextmenu_copy_link_address,
-            R.id.contextmenu_copy_link_text,
-            R.id.contextmenu_save_link_as,
-            R.id.contextmenu_read_later,
-            R.id.contextmenu_share_link
-        };
-        checkMenuOptions(expectedMultiWindow);
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testOpenInNewWindow_incognitoWindowEnabled() {
+        checkOpenInNewWindowItems(/* isIncognitoWindowFeatureEnabled= */ true);
     }
 
     @Test
@@ -2572,5 +2551,38 @@ public class ChromeContextMenuPopulatorTest {
             }
         }
         return null;
+    }
+
+    private void checkOpenInNewWindowItems(boolean isIncognitoWindowFeatureEnabled) {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+        ContextMenuParams params = getHttpLinkParams();
+
+        when(mItemDelegate.isIncognito()).thenReturn(false);
+        when(mItemDelegate.isIncognitoSupported()).thenReturn(true);
+        when(mItemDelegate.canEnterMultiWindowMode()).thenReturn(true);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        doReturn(true).when(mPopulator).isTabletScreen();
+
+        List<Integer> expectedItems = new ArrayList<>();
+        expectedItems.add(R.id.contextmenu_open_in_new_tab);
+        expectedItems.add(R.id.contextmenu_open_in_new_tab_in_group);
+
+        if (isIncognitoWindowFeatureEnabled) {
+            expectedItems.add(R.id.contextmenu_open_in_new_window);
+            expectedItems.add(R.id.contextmenu_open_in_incognito_window);
+        } else {
+            expectedItems.add(R.id.contextmenu_open_in_incognito_tab);
+            expectedItems.add(R.id.contextmenu_open_in_new_window);
+        }
+
+        expectedItems.add(R.id.contextmenu_open_in_ephemeral_tab);
+        expectedItems.add(R.id.contextmenu_copy_link_address);
+        expectedItems.add(R.id.contextmenu_copy_link_text);
+        expectedItems.add(R.id.contextmenu_save_link_as);
+        expectedItems.add(R.id.contextmenu_read_later);
+        expectedItems.add(R.id.contextmenu_share_link);
+
+        int[] expectedItemsArray = expectedItems.stream().mapToInt(Integer::intValue).toArray();
+        checkMenuOptions(expectedItemsArray);
     }
 }

@@ -2683,6 +2683,7 @@ Called by update_net_error_codes.py.-->
   <int value="48" label="Show Interest In Element"/>
   <int value="49" label="Enter Picture in Picture"/>
   <int value="50" label="Exit Picture in Picture"/>
+  <int value="51" label="Open in Incognito window"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java:ContextMenuUma.Action) -->

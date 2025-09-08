@@ -349,6 +349,24 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 true);
     }
 
+    /**
+     * Called when the {@code url} should be opened in an incognito window.
+     *
+     * @param url The URL to open.
+     */
+    public void onOpenInIncognitoWindow(GURL url) {
+        ChromeAsyncTabLauncher incognitoLauncher =
+                new ChromeAsyncTabLauncher(/* incognito= */ true);
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
+        Activity activity = TabUtils.getActivity(mTab);
+        incognitoLauncher.launchTabInOtherWindow(
+                loadUrlParams,
+                assumeNonNull(activity),
+                mTab.getParentId(),
+                MultiWindowUtils.getForegroundWindowActivityWithProfileType(
+                        activity, /* incognito= */ true));
+    }
+
     @Override
     public GURL getPageUrl() {
         return mTab.getUrl();

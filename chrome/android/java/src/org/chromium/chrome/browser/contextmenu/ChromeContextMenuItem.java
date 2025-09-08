@@ -190,7 +190,7 @@ class ChromeContextMenuItem {
         R.string.contextmenu_open_in_new_tab, // Item.OPEN_IN_NEW_TAB:
         R.string.contextmenu_open_in_new_tab_group, // Item.OPEN_IN_NEW_TAB_IN_GROUP
         R.string.contextmenu_open_in_incognito_tab, // Item.OPEN_IN_INCOGNITO_TAB:
-        R.string.contextmenu_open_in_incognito_window, // Item.OPEN_IN_INCOGNITO_TAB:
+        R.string.contextmenu_open_in_incognito_window, // Item.OPEN_IN_INCOGNITO_WINDOW:
         R.string.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW:
         R.string.contextmenu_open_in_new_window, // Item.OPEN_IN_NEW_WINDOW:
         R.string.contextmenu_show_interest_in_element, // Item.SHOW_INTEREST_IN_ELEMENT
