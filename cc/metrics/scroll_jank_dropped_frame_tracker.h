@@ -31,6 +31,7 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
                                     float abs_total_raw_delta_pixels,
                                     float max_abs_inertial_raw_delta_pixels);
   void OnScrollStarted();
+  void OnScrollEnded();
 
   void set_scroll_jank_ukm_reporter(
       ScrollJankUkmReporter* scroll_jank_ukm_reporter) {

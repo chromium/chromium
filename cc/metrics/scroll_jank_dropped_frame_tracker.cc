@@ -67,12 +67,17 @@ ScrollJankDroppedFrameTracker::~ScrollJankDroppedFrameTracker() {
 }
 
 void ScrollJankDroppedFrameTracker::EmitPerScrollHistogramsAndResetCounters() {
+  if (!per_scroll_.has_value()) {
+    return;
+  }
+
   // There should be at least one presented frame given the method is only
   // called after we have a successful presentation.
   if (per_scroll_->num_presented_frames == 0) {
     // TODO(crbug.com/40067426): Debug cases where we can have 0 presented
     // frames.
     TRACE_EVENT_INSTANT("input", "NoPresentedFramesInScroll");
+    per_scroll_ = std::nullopt;
     return;
   }
   int delayed_frames_percentage =
@@ -86,14 +91,15 @@ void ScrollJankDroppedFrameTracker::EmitPerScrollHistogramsAndResetCounters() {
                               per_scroll_->missed_vsyncs, kVsyncCountsMin,
                               kVsyncCountsMax, kVsyncCountsBuckets);
 
-  per_scroll_->missed_frames = 0;
-  per_scroll_->missed_vsyncs = 0;
-  per_scroll_->num_presented_frames = 0;
-  per_scroll_->max_missed_vsyncs = 0;
+  per_scroll_ = std::nullopt;
 }
 
 void ScrollJankDroppedFrameTracker::
     EmitPerScrollV4HistogramsAndResetCounters() {
+  if (!per_scroll_v4_.has_value()) {
+    return;
+  }
+
   DCHECK_GE(per_scroll_v4_->presented_frames, per_scroll_v4_->delayed_frames);
 
   // There should be at least one presented frame given the method is only
@@ -104,7 +110,7 @@ void ScrollJankDroppedFrameTracker::
                                  per_scroll_v4_->presented_frames);
   }
 
-  per_scroll_v4_ = JankDataPerScrollV4();
+  per_scroll_v4_ = std::nullopt;
 }
 
 void ScrollJankDroppedFrameTracker::EmitPerWindowHistogramsAndResetCounters() {
@@ -496,14 +502,24 @@ void ScrollJankDroppedFrameTracker::UpdateDelayedFrameAndMissedVsyncCountersV4(
 }
 
 void ScrollJankDroppedFrameTracker::OnScrollStarted() {
-  if (per_scroll_.has_value()) {
-    EmitPerScrollHistogramsAndResetCounters();
-    EmitPerScrollV4HistogramsAndResetCounters();
-  } else {
-    per_scroll_ = JankData();
-    per_scroll_v4_ = JankDataPerScrollV4();
-  }
+  // In case ScrollJankDroppedFrameTracker wasn't informed about the end of the
+  // previous scroll, emit histograms for the previous scroll now.
+  EmitPerScrollHistogramsAndResetCounters();
+  EmitPerScrollV4HistogramsAndResetCounters();
+  per_scroll_ = JankData();
+  per_scroll_v4_ = JankDataPerScrollV4();
   prev_frame_data_ = std::nullopt;
+}
+
+void ScrollJankDroppedFrameTracker::OnScrollEnded() {
+  if (base::FeatureList::IsEnabled(
+          features::kEmitPerScrollJankV1MetricAtEndOfScroll)) {
+    EmitPerScrollHistogramsAndResetCounters();
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kEmitPerScrollJankV4MetricAtEndOfScroll)) {
+    EmitPerScrollV4HistogramsAndResetCounters();
+  }
 }
 
 }  // namespace cc

@@ -236,6 +236,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     double,
     kScrollJankV4MetricFlingContinuityThreshold);
 
+// When enabled, the V1/V4 per-scroll jank metric will be emitted at the end of
+// a scroll (as opposed to at the beginning of the next scroll).
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kEmitPerScrollJankV1MetricAtEndOfScroll);
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kEmitPerScrollJankV4MetricAtEndOfScroll);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

@@ -280,4 +280,9 @@ BASE_FEATURE_PARAM(double,
                    &kScrollJankV4Metric,
                    "fling_continuity_threshold_pixels",
                    0.2);
+
+BASE_FEATURE(kEmitPerScrollJankV1MetricAtEndOfScroll,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEmitPerScrollJankV4MetricAtEndOfScroll,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
