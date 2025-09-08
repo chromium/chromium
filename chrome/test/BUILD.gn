@@ -1558,6 +1558,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/declarative_net_request/declarative_net_request_apitest.cc",
       "../browser/extensions/api/declarative_net_request/declarative_net_request_browsertest.cc",
       "../browser/extensions/api/developer_private/developer_private_apitest.cc",
+      "../browser/extensions/api/devtools/devtools_apitest.cc",
       "../browser/extensions/api/dns/dns_apitest.cc",
       "../browser/extensions/api/extension_action/extension_action_apitest.cc",
       "../browser/extensions/api/extension_action/test_icon_image_observer.cc",
