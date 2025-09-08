@@ -70,6 +70,8 @@ const char kPDFStructureTypeHeading[] = "H";
 
 // Table 368 in PDF 32000-2:2020 spec, section 14.8.4.7.2
 const char kPDFStructureTypeListItemLabel[] = "Lbl";
+const char kPDFStructureTypeEmphasis[] = "Em";
+const char kPDFStructureTypeStrong[] = "Strong";
 const char kPDFStructureTypeLink[] = "Link";
 
 // Table 370 in PDF 32000-2:2020 spec, section 14.8.4.8.2
@@ -156,6 +158,12 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       break;
     case ax::mojom::Role::kLink:
       tag->fTypeString = kPDFStructureTypeLink;
+      break;
+    case ax::mojom::Role::kEmphasis:
+      tag->fTypeString = kPDFStructureTypeEmphasis;
+      break;
+    case ax::mojom::Role::kStrong:
+      tag->fTypeString = kPDFStructureTypeStrong;
       break;
     case ax::mojom::Role::kList:
       tag->fTypeString = kPDFStructureTypeList;
