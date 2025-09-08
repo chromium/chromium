@@ -10,8 +10,12 @@ namespace cc {
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.cc.input
 enum class BrowserControlsState {
+  // All browser controls should remain fully visible.
   kShown = 1,
+  // All browser controls should remain at the minimum allowed shown ratio.
   kHidden = 2,
+  // Both states are permitted. In this state, the browser controls will hide
+  // when the user scrolls down, and show when the user scrolls up.
   kBoth = 3,
   kMaxValue = kBoth
 };
