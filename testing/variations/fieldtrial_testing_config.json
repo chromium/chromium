@@ -16537,6 +16537,21 @@
             ]
         }
     ],
+    "OfferPinToTaskbarInSettings": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OfferPinToTaskbarInSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "OfferPinToTaskbarInfoBar": [
         {
             "platforms": [
