@@ -2063,5 +2063,19 @@ TEST(PNGTests, Ihdr50ActlIdatFctl30Fdat) {
   EXPECT_EQ(margin, SkColorSetARGB(0, 0, 0, 0));
 }
 
+// Regression test for https://crbug.com/442086666.
+TEST(PNGTests, ActlZero) {
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kDecodersTestingDir, "actl-num-frames-0.png");
+  EXPECT_FALSE(data->empty());
+  auto decoder = CreatePNGDecoder();
+  decoder->SetData(data.get(), true);
+
+  // Not crashing when calling `FrameCount` is the main verification in this
+  // test.
+  auto frame_count = decoder->FrameCount();
+  EXPECT_LE(frame_count, 1u);
+}
+
 }  // namespace
 }  // namespace blink
