@@ -968,11 +968,27 @@ void ViewAccessibility::OnTooltipTextChanged(
 }
 
 void ViewAccessibility::OnViewAddedToWidget() {
-  // Ideally, we would like to set the class name when the object is created,
-  // this would be done in the ctor, but due to inheritance and the
-  // implementation of `GetClassName`, it would not work. As such, we set it
-  // here, since at this point the view object is fully initialized.
-  SetClassName(std::string(view_->GetClassName()));
+  // The accessibility class name is set after the view has been attached
+  // to a widget, ensuring the object is fully constructed and its class
+  // name is stable.
+  std::string effective_class = std::string(view_->GetClassName());
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows, Narrator restricts focus to web content in Scan Mode only when
+  // the root web area’s parent has class name "Chrome_WidgetWin_1". This is a
+  // hardcoded behavior. It worked before Chromium enabled UIA by default, since
+  // the MSAA Proxy added the root web area under a window with that class name.
+  // We’re collaborating with the Narrator team to update their tab detection
+  // logic, but rollout will take time. This is a temporary mitigation. See
+  // https://crbug.com/443225250 for details.
+  if (::ui::AXPlatform::GetInstance().IsUiaProviderEnabled() &&
+      features::IsFixNarratorWebContentContainmentEnabled() &&
+      effective_class == "ContentsContainerView") {
+    effective_class = "Chrome_WidgetWin_1";
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  SetClassName(effective_class);
 }
 
 void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {
