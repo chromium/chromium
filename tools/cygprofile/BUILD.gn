@@ -55,7 +55,7 @@ generate_orderfile_test("generate_orderfile_android_trichrome_chrome_bundle") {
 }
 
 generate_orderfile_test("generate_orderfile_android_webview") {
-  browser_name = "android-webview"
+  browser_name = "android-webview-standalone"
   suffix = "_android_webview"
   arch = "arm"
   profile_webview = true
@@ -70,7 +70,7 @@ if (defined(android_app_secondary_abi)) {
   }
 
   generate_orderfile_test("generate_orderfile_android_webview_64") {
-    browser_name = "android-webview"
+    browser_name = "android-webview-standalone"
     suffix = "_android_webview"
     arch = "arm64"
     profile_webview = true

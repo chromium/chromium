@@ -87,10 +87,19 @@ def GenerateOrderfile(options, device):
   lib_chrome_so = orderfile_shared.GetLibchromeSoPath(options.out_dir,
                                                       options.arch)
   try:
+    if options.profile_webview:
+      if options.arch == 'arm64':
+        webview_target = 'system_webview_32_64_apk'
+      else:
+        webview_target = 'system_webview_apk'
+      webview_installer_path = str(options.out_dir / 'bin' / webview_target)
+    else:
+      webview_installer_path = None
     files = orderfile_shared.CollectProfiles(profiler, options.profile_webview,
                                              options.arch,
                                              options.android_browser,
-                                             str(options.out_dir))
+                                             str(options.out_dir),
+                                             webview_installer_path)
     ordered_symbols, _ = orderfile_shared.ProcessProfiles(files, lib_chrome_so)
     with open(_GetUnpatchedOrderfileFilename(options), 'w') as orderfile:
       orderfile.write('\n'.join(ordered_symbols))
