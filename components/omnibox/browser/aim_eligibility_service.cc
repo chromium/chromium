@@ -69,6 +69,9 @@ enum class ServerRequestStatus {
 static constexpr char kRequestPath[] = "/async/folae";
 static constexpr char kRequestQuery[] = "async=_fmt:pb";
 
+// The default value for the AIM policy pref; 0 = allowed, 1 = disallowed.
+constexpr int kAIModeAllowedDefault = 0;
+
 // Returns the request URL or an empty GURL if a valid URL cannot be created;
 // e.g., Google is not the default search provider.
 GURL GetRequestUrl(const TemplateURLService& template_url_service) {
@@ -124,6 +127,12 @@ const net::NetworkTrafficAnnotationTag kRequestTrafficAnnotation =
 // static
 void AimEligibilityService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kResponsePrefName, "");
+  registry->RegisterIntegerPref(omnibox::kAIModeSettings,
+                                kAIModeAllowedDefault);
+}
+
+bool AimEligibilityService::IsAimAllowedByPolicy(const PrefService* prefs) {
+  return prefs->GetInteger(omnibox::kAIModeSettings) == kAIModeAllowedDefault;
 }
 
 AimEligibilityService::AimEligibilityService(
@@ -177,7 +186,7 @@ bool AimEligibilityService::IsAimLocallyEligible() const {
 
   // Always check Google DSE and Policy requirements.
   if (!search::DefaultSearchProviderIsGoogle(&template_url_service_.get()) ||
-      !omnibox::IsAimAllowedByPolicy(&pref_service_.get())) {
+      !IsAimAllowedByPolicy(&pref_service_.get())) {
     return false;
   }
 

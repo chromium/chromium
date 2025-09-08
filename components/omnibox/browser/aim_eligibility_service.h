@@ -30,6 +30,8 @@ class AimEligibilityService : public KeyedService {
  public:
   // See comment for `WriteToPref()`.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  // Returns true if the AIM is allowed per the policy.
+  static bool IsAimAllowedByPolicy(const PrefService* prefs);
 
   AimEligibilityService(
       PrefService& pref_service,
