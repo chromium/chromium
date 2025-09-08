@@ -608,10 +608,7 @@ UseCounterMetricsRecorder::GetAnimatedCSSProperties2WebDXFeatureMap() {
   static const base::NoDestructor<
       const base::flat_map<CSSSampleId, WebDXFeature>>
       kMap{{
-          // TODO(jstenback): This animated kFontPalette is being investigated.
-          // Uncomment this once that's resolved, or replace this with something
-          // else that matches the resolution of the investigation
-          // {CSSSampleId::kFontPalette, WebDXFeature::kFontPaletteAnimation}
+          {CSSSampleId::kFontPalette, WebDXFeature::kFontPaletteAnimation},
           {CSSSampleId::kDisplay, WebDXFeature::kDisplayAnimation},
           // Add new features above this line.
       }};
