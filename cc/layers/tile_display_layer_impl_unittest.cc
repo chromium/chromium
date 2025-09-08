@@ -555,4 +555,86 @@ TEST_F(TileDisplayLayerImplTest, RemoveTilingOnNonExistentTilingDoesNotCrash) {
   EXPECT_EQ(raw_layer->GetTilingForTesting(1.0), nullptr);
 }
 
+// Verifies that setting tile contents with `update_damage=true` records the
+// correct damage rect on the layer.
+TEST_F(TileDisplayLayerImplTest,
+       SetTileContentsRecordsDamageWhenUpdateDamageIsTrue) {
+  // Configure the layer to have 5 tiles to be able to test damage from
+  // individual tile updates.
+  constexpr gfx::Size kLayerBounds(100, 100);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+  constexpr gfx::Size kTileSize(20, 20);
+  const TileIndex kTileIndex1{1, 2};
+  const TileIndex kTileIndex2{3, 0};
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  tiling.SetTileSize(kTileSize);
+  tiling.SetTilingRect(kLayerRect);
+
+  // When SetTileContents is called with update_damage=true, it calculates the
+  // area that needs to be redrawn (the damage). This calculation happens in the
+  // tile's coordinate system first. However, the final damage must be recorded
+  // on the layer in the layer's coordinate system. TileDisplayLayerImpl uses
+  // the inverse of the raster transform to map the tile's damage rectangle
+  // back into the layer's coordinate space. Explicitly initialize the raster
+  // transform to be the identity transform (it is not explicitly initialized by
+  // default).
+  tiling.SetRasterTransform(gfx::AxisTransform2d());
+
+  // Set content for a tile and check that the damage rect is updated.
+  tiling.SetTileContents(kTileIndex1, SkColors::kRed,
+                         /*update_damage=*/true);
+  EXPECT_EQ(
+      raw_layer->GetDamageRect(),
+      tiling.tiling_data()->TileBoundsWithBorder(kTileIndex1.i, kTileIndex1.j));
+
+  // Set content for another tile and check that the damage rect is expanded.
+  tiling.SetTileContents(kTileIndex2, SkColors::kBlue,
+                         /*update_damage=*/true);
+  gfx::Rect expected_damage_rect;
+  expected_damage_rect.Union(
+      tiling.tiling_data()->TileBoundsWithBorder(kTileIndex1.i, kTileIndex1.j));
+  expected_damage_rect.Union(
+      tiling.tiling_data()->TileBoundsWithBorder(kTileIndex2.i, kTileIndex2.j));
+  EXPECT_EQ(raw_layer->GetDamageRect(), expected_damage_rect);
+
+  // Reset change tracking and check that the damage rect is cleared.
+  raw_layer->ResetChangeTracking();
+  EXPECT_TRUE(raw_layer->GetDamageRect().IsEmpty());
+}
+
+// Verifies that setting tile contents with `update_damage=false` does not
+// record damage on the layer.
+TEST_F(TileDisplayLayerImplTest,
+       SetTileContentsDoesntRecordDamageWhenUpdateDamageIsFalse) {
+  // Configure the layer to have 5 tiles to be able to test damage from
+  // individual tile updates.
+  constexpr gfx::Size kLayerBounds(100, 100);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+  constexpr gfx::Size kTileSize(20, 20);
+  const TileIndex kTileIndex{1, 2};
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  tiling.SetTileSize(kTileSize);
+  tiling.SetTilingRect(kLayerRect);
+
+  tiling.SetTileContents(kTileIndex, SkColors::kRed,
+                         /*update_damage=*/false);
+  EXPECT_TRUE(raw_layer->GetDamageRect().IsEmpty());
+}
+
 }  // namespace cc
