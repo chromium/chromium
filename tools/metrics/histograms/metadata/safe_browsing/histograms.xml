@@ -3172,7 +3172,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogDisabledOutcome"
-    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2025-09-29">
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2026-03-14">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -3184,7 +3184,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogEnabledOutcome"
-    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2025-09-14">
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2026-03-14">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
