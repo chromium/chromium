@@ -624,6 +624,8 @@ export class ComposeboxElement extends I18nMixinLit
     // makes sure zero suggest results aren't focused when they are returned.
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
       this.$.matches.selectFirst();
+    } else {
+      this.$.matches.unselect();
     }
   }
 }
