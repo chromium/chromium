@@ -688,7 +688,7 @@ TEST(PasswordManagerUtil, FindLoginWithChangedPassword) {
   EXPECT_CALL(*form_manager, GetPendingCredentials())
       .WillOnce(testing::ReturnRef(submitted_form));
 
-  EXPECT_EQ(*FindLoginWithChangedPassword(*form_manager.get()),
+  EXPECT_EQ(*FindChangedPasswordLoginWithBackup(*form_manager.get()),
             backup_password_match);
 }
 
