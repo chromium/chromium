@@ -19220,21 +19220,6 @@
             ]
         }
     ],
-    "PrivacySandboxAttestationsDefaultDeny": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "DefaultAllowPrivacySandboxAttestations"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxGetPromptFromNoticeService": [
         {
             "platforms": [
