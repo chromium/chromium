@@ -1162,9 +1162,7 @@ InlineLayoutStateStack::ApplyBaselineShift(wtf_size_t stack_index,
             LayoutUnit text_bottom =
                 font_data->GetFontMetrics().FixedDescent(baseline_type);
             baseline_shift = text_bottom - child.metrics.descent;
-            break;
           }
-          DUMP_WILL_BE_NOTREACHED();
           break;
         case EVerticalAlign::kTop:
         case EVerticalAlign::kBottom:
