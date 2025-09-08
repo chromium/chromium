@@ -5629,6 +5629,8 @@ chromium-metrics-reviews@google.com.
     <variant name="Orphaned"
         summary="Tokens discarded (neither spent nor expired) on network
                  context destruction."/>
+    <variant name="Recycled"
+        summary="Previously orphaned tokens added to the cache"/>
     <variant name="Spent" summary="Token used for a proxy connection."/>
   </token>
 </histogram>

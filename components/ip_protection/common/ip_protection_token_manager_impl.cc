@@ -114,11 +114,16 @@ void IpProtectionTokenManagerImpl::ProcessInitialTokens(
               });
   }
   RemoveExpiredTokens();
+
+  // Record recycled (previously orphaned, unexpired) tokens.
+  size_t recycled_count = 0;
   for (const auto& [_, cache] : cache_by_geo_) {
-    if (!cache.empty()) {
-      cache_has_been_filled_ = true;
-      break;
-    }
+    recycled_count += cache.size();
+  }
+  if (recycled_count > 0) {
+    cache_has_been_filled_ = true;
+    Telemetry().RecordTokenCountEvent(
+        proxy_layer_, IpProtectionTokenCountEvent::kRecycled, recycled_count);
   }
 }
 

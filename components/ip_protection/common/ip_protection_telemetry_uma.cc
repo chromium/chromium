@@ -67,6 +67,8 @@ std::string TokenCountEventToString(IpProtectionTokenCountEvent event) {
       return "Expired";
     case IpProtectionTokenCountEvent::kOrphaned:
       return "Orphaned";
+    case IpProtectionTokenCountEvent::kRecycled:
+      return "Recycled";
   }
   NOTREACHED();
 }

@@ -40,8 +40,10 @@ namespace ip_protection {
 
 namespace {
 
+using ::base::Bucket;
 using ::testing::ElementsAre;
 using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 constexpr char kGeoChangeTokenPresence[] =
     "NetworkService.IpProtection.GeoChangeTokenPresence";
@@ -73,6 +75,8 @@ constexpr char kProxyBTokenCountExpiredHistogram[] =
     "NetworkService.IpProtection.ProxyB.TokenCount.Expired";
 constexpr char kProxyATokenCountOrphanedHistogram[] =
     "NetworkService.IpProtection.ProxyA.TokenCount.Orphaned";
+constexpr char kProxyATokenCountRecycledHistogram[] =
+    "NetworkService.IpProtection.ProxyA.TokenCount.Recycled";
 
 constexpr base::TimeDelta kTokenLimitExceededDelay = base::Minutes(10);
 constexpr base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
@@ -1377,6 +1381,13 @@ TEST_F(IpProtectionTokenManagerImplTest, InitialTokens) {
 
   EXPECT_TRUE(token_manager->WasTokenCacheEverFilled());
   EXPECT_TRUE(token_manager->IsAuthTokenAvailable(kMountainViewGeoId));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamplesForPrefix(
+          "NetworkService.IpProtection.ProxyA.TokenCount."),
+      UnorderedElementsAre(
+          Pair(kProxyATokenCountRecycledHistogram, BucketsAre(Bucket(1, 1))),
+          Pair(kProxyATokenCountExpiredHistogram, BucketsAre(Bucket(1, 1)))));
+
   auto token = token_manager->GetAuthToken(kMountainViewGeoId);
   ASSERT_TRUE(token);
   EXPECT_EQ(token->token, "good-token");
@@ -1397,6 +1408,10 @@ TEST_F(IpProtectionTokenManagerImplTest, InitialTokensAllExpired) {
 
   EXPECT_FALSE(token_manager->WasTokenCacheEverFilled());
   EXPECT_FALSE(token_manager->IsAuthTokenAvailable(kMountainViewGeoId));
+  EXPECT_THAT(histogram_tester_.GetAllSamplesForPrefix(
+                  "NetworkService.IpProtection.ProxyA.TokenCount."),
+              UnorderedElementsAre(Pair(kProxyATokenCountExpiredHistogram,
+                                        BucketsAre(Bucket(2, 1)))));
 }
 
 TEST_F(IpProtectionTokenManagerImplTest, InitialTokensSkipsPrefill) {

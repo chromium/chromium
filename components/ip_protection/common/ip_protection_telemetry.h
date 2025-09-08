@@ -92,7 +92,8 @@ enum class IpProtectionTokenCountEvent {
   kSpent = 1,
   kExpired = 2,
   kOrphaned = 3,
-  kMaxValue = kOrphaned,
+  kRecycled = 4,
+  kMaxValue = kRecycled,
 };
 
 // An abstract interface for all of the telemetry associated with IP Protection.
