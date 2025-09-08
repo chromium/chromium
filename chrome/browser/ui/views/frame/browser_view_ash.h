@@ -30,10 +30,6 @@ class BrowserViewAsh : public BrowserView {
   // views::ClientView:
   void UpdateWindowRoundedCorners(
       const gfx::RoundedCornersF& window_radii) override;
-
- private:
-  gfx::RoundedCornersF contents_webview_radii_;
-  gfx::RoundedCornersF devtools_webview_radii_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_ASH_H_

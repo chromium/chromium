@@ -14,8 +14,21 @@
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
+
+namespace {
+
+void SetRoundedCornersOnHost(views::NativeViewHost* host,
+                             const gfx::RoundedCornersF& radii) {
+  auto* layer = host->GetUILayer();
+  if (layer && layer->rounded_corner_radii() != radii) {
+    host->SetCornerRadii(radii);
+  }
+}
+
+}  // namespace
 
 BrowserViewAsh::BrowserViewAsh(Browser* browser) : BrowserView(browser) {}
 
@@ -66,9 +79,8 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
       0, 0, right_aligned_side_panel_showing ? 0 : window_radii.lower_right(),
       left_aligned_side_panel_showing ? 0 : window_radii.lower_left());
 
-  if (!IsInSplitView() && devtools_webview_radii_ != devtools_webview_radii) {
-    devtools_webview_radii_ = devtools_webview_radii;
-    devtools_webview->holder()->SetCornerRadii(devtools_webview_radii_);
+  if (!IsInSplitView()) {
+    SetRoundedCornersOnHost(devtools_webview->holder(), devtools_webview_radii);
   }
 
   const ContentsContainerView::DevToolsDockedPlacement devtools_placement =
@@ -115,7 +127,7 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
                      ContentsContainerView::DevToolsDockedPlacement::kRight)
             ? 0
             : window_radii.lower_left());
-    ntp_footer->holder()->SetCornerRadii(ntp_footer_radii);
+    SetRoundedCornersOnHost(ntp_footer->holder(), ntp_footer_radii);
   }
 
   const gfx::RoundedCornersF contents_webview_radii(
@@ -152,10 +164,8 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
       }
     } else {
       // We only round contents_webview, if SadTabView is not showing.
-      if (contents_webview_radii_ != contents_webview_radii) {
-        contents_webview_radii_ = contents_webview_radii;
-        contents_webview->holder()->SetCornerRadii(contents_webview_radii);
-      }
+      SetRoundedCornersOnHost(contents_webview->holder(),
+                              contents_webview_radii);
     }
   }
 
