@@ -53,6 +53,16 @@ class MockAppBoundEncryptionOverrides
               (override));
 };
 
+class ScopedOverridesForTesting {
+ public:
+  explicit ScopedOverridesForTesting(
+      AppBoundEncryptionOverridesForTesting& overrides) {
+    SetOverridesForTesting(&overrides);
+  }
+
+  ~ScopedOverridesForTesting() { SetOverridesForTesting(nullptr); }
+};
+
 HRESULT DefaultEncrypt(ProtectionLevel level,
                        const std::string& plaintext,
                        std::string& ciphertext,
@@ -142,7 +152,7 @@ TEST_F(AppBoundEncryptionProviderTest, InvalidKeyRegenerated) {
   base::test::TaskEnvironment env;
   ::testing::StrictMock<MockAppBoundEncryptionOverrides> mock_app_bound;
 
-  SetOverridesForTesting(&mock_app_bound);
+  ScopedOverridesForTesting overrides(mock_app_bound);
 
   ON_CALL(mock_app_bound, EncryptAppBoundString)
       .WillByDefault(::testing::Invoke(DefaultEncrypt));
@@ -204,7 +214,7 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
   base::test::TaskEnvironment env;
   ::testing::StrictMock<MockAppBoundEncryptionOverrides> mock_app_bound;
 
-  SetOverridesForTesting(&mock_app_bound);
+  ScopedOverridesForTesting overrides(mock_app_bound);
 
   ON_CALL(mock_app_bound, EncryptAppBoundString)
       .WillByDefault(::testing::Invoke(DefaultEncrypt));
@@ -423,8 +433,6 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
     // The key returned should be same as the new one generated in part 4.
     EXPECT_EQ(*key, *new_encryption_key);
   }
-
-  SetOverridesForTesting(nullptr);
 }
 
 }  // namespace os_crypt
