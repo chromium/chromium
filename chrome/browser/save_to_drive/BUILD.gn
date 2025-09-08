@@ -74,6 +74,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "drive_uploader_unittest.cc",
+    "multipart_drive_uploader_unittest.cc",
     "save_to_drive_flow_unittest.cc",
     "time_remaining_calculator_unittest.cc",
   ]

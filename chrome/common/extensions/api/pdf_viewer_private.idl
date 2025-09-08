@@ -53,17 +53,32 @@ namespace pdfViewerPrivate {
     // The error type of the upload.
     SaveToDriveErrorType errorType;
 
-    // The ID of the drive item that was uploaded.
+    // The ID of the drive item that was uploaded. It is only set if the upload
+    // was successful, i.e. if `status` is `UPLOAD_COMPLETED`.
     DOMString? driveItemId;
 
-    // The total size of the file in bytes.
+    // The total size of the file in bytes. It is only set if the upload is in
+    // progress or completed, i.e. if `status` is `UPLOAD_STARTED`,
+    // `UPLOAD_IN_PROGRESS`, or `UPLOAD_COMPLETED`.
     long? fileSizeBytes;
 
-    // The number of bytes that have been uploaded.
+    // The number of bytes that have been uploaded. It is only set if the upload
+    // is in progress or completed, i.e. if `status` is `UPLOAD_STARTED`,
+    // `UPLOAD_IN_PROGRESS`, or `UPLOAD_COMPLETED`.
     long? uploadedBytes;
 
-    // The localized metadata and progress of the file.
+    // The localized metadata and progress of the file. It is only set if the
+    // upload is in progress or completed, i.e. if `status` is `UPLOAD_STARTED`,
+    // `UPLOAD_IN_PROGRESS`, or `UPLOAD_COMPLETED`.
     DOMString? fileMetadata;
+
+    // The name of the file. It is only set if the upload was successful, i.e.
+    // if `status` is `UPLOAD_COMPLETED`.
+    DOMString? fileName;
+
+    // The name of the parent folder. It is only set if the upload was
+    // successful, i.e. if `status` is `UPLOAD_COMPLETED`.
+    DOMString? parentFolderName;
   };
 
   // Nearly identical to mimeHandlerPrivate.StreamInfo, but without a mime type

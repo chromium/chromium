@@ -115,15 +115,18 @@ DriveUploader::DriveUploader(DriveUploaderType drive_uploader_type,
                              std::string title,
                              AccountInfo account_info,
                              ProgressCallback progress_callback,
-                             Profile* profile)
+                             Profile* profile,
+                             ContentReader* content_reader)
     : drive_uploader_type_(drive_uploader_type),
       title_(std::move(title)),
       account_info_(std::move(account_info)),
       progress_callback_(std::move(progress_callback)),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       url_loader_factory_(profile->GetDefaultStoragePartition()
-                              ->GetURLLoaderFactoryForBrowserProcess()) {
+                              ->GetURLLoaderFactoryForBrowserProcess()),
+      content_reader_(content_reader) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(content_reader_);
 }
 
 DriveUploader::~DriveUploader() = default;
@@ -232,6 +235,15 @@ DriveUploader::CreateEndpointFetcher(
 
 DriveUploaderType DriveUploader::get_drive_uploader_type_for_testing() const {
   return drive_uploader_type_;
+}
+
+void DriveUploader::set_oauth_headers_for_testing(
+    std::vector<std::string> oauth_headers) {
+  oauth_headers_ = std::move(oauth_headers);
+}
+
+const std::vector<std::string>& DriveUploader::oauth_headers() const {
+  return oauth_headers_;
 }
 
 }  // namespace save_to_drive

@@ -4,23 +4,198 @@
 
 #include "chrome/browser/save_to_drive/multipart_drive_uploader.h"
 
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+#include "base/functional/bind.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/strings/strcat.h"
+#include "chrome/browser/save_to_drive/content_reader.h"
+#include "chrome/browser/save_to_drive/drive_uploader.h"
+#include "chrome/common/extensions/api/pdf_viewer_private.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "google_apis/common/base_requests.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "net/base/mime_util.h"
+#include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
+#include "url/gurl.h"
+
 namespace save_to_drive {
+namespace {
+
+using extensions::api::pdf_viewer_private::SaveToDriveErrorType;
+using extensions::api::pdf_viewer_private::SaveToDriveProgress;
+using extensions::api::pdf_viewer_private::SaveToDriveStatus;
+
+constexpr char kContentTypeKey[] = "Content-Type";
+constexpr char kDataContentType[] = "Content-Type: application/octet-stream";
+constexpr char kDriveUploadUrl[] =
+    "https://www.googleapis.com/upload/drive/v3beta/files";
+constexpr char kMetadataContentType[] =
+    "Content-Type: application/json; charset=UTF-8";
+constexpr char kMultiPartUploadType[] = "multipart";
+constexpr char kUploadContentLengthKey[] =
+    "X-Goog-Upload-Header-Content-Length";
+constexpr char kUploadProtocolKey[] = "X-Goog-Upload-Protocol";
+constexpr char kUploadTypeQueryParameterKey[] = "uploadType";
+
+constexpr std::string_view kErrorReasonQuotaExceeded = "quotaExceeded";
+constexpr std::string_view kErrorStorageQuotaExceeded = "storageQuotaExceeded";
+
+SaveToDriveProgress CreateSuccessProgress(
+    const endpoint_fetcher::EndpointResponse& endpoint_response,
+    size_t file_size,
+    std::string_view parent_folder_name) {
+  SaveToDriveProgress progress;
+  // The upload is not considered successful until the response is parsed.
+  progress.status = SaveToDriveStatus::kUploadFailed;
+  progress.error_type = SaveToDriveErrorType::kUnknownError;
+
+  if (endpoint_response.response.empty()) {
+    return progress;
+  }
+  std::optional<base::Value::Dict> dict =
+      base::JSONReader::ReadDict(endpoint_response.response);
+  if (!dict) {
+    return progress;
+  }
+  const std::string* file_id = dict->FindString("id");
+  if (!file_id) {
+    return progress;
+  }
+  const std::string* name = dict->FindString("name");
+  if (!name) {
+    return progress;
+  }
+  progress.status = SaveToDriveStatus::kUploadCompleted;
+  progress.error_type = SaveToDriveErrorType::kNoError;
+  progress.drive_item_id = *file_id;
+  progress.file_size_bytes = file_size;
+  progress.uploaded_bytes = file_size;
+  progress.file_name = *name;
+  progress.parent_folder_name = parent_folder_name;
+  return progress;
+}
+
+// See https://developers.google.com/drive/handle-errors for error handling.
+SaveToDriveProgress CreateErrorProgress(
+    const endpoint_fetcher::EndpointResponse& endpoint_response) {
+  SaveToDriveProgress progress;
+  progress.status = SaveToDriveStatus::kUploadFailed;
+  progress.error_type = SaveToDriveErrorType::kUnknownError;
+
+  if (endpoint_response.http_status_code == net::HTTP_UNAUTHORIZED) {
+    progress.error_type = SaveToDriveErrorType::kOauthError;
+    return progress;
+  }
+
+  const std::optional<std::string> reason =
+      google_apis::MapJsonErrorToReason(endpoint_response.response);
+  // Public documentation recommends checking for `storageQuotaExceeded` but for
+  // some cases it returns `quotaExceeded'.
+  if (reason && (*reason == kErrorReasonQuotaExceeded ||
+                 *reason == kErrorStorageQuotaExceeded)) {
+    progress.error_type = SaveToDriveErrorType::kQuotaExceeded;
+  }
+  return progress;
+}
+
+}  // namespace
 
 MultipartDriveUploader::MultipartDriveUploader(
     std::string title,
     AccountInfo account_info,
     ProgressCallback progress_callback,
-    Profile* profile)
+    Profile* profile,
+    ContentReader* content_reader)
     : DriveUploader(DriveUploaderType::kMultipart,
                     std::move(title),
                     std::move(account_info),
                     std::move(progress_callback),
-                    profile) {}
+                    profile,
+                    content_reader) {}
 
 MultipartDriveUploader::~MultipartDriveUploader() = default;
 
 void MultipartDriveUploader::UploadFile() {
-  // TODO(crbug.com/424208776): Implement MultipartDriveUploader.
+  auto callback = base::BindOnce(&MultipartDriveUploader::OnContentRead,
+                                 weak_ptr_factory_.GetWeakPtr());
+  content_reader_->Read(0, content_reader_->GetSize(), std::move(callback));
+}
+
+void MultipartDriveUploader::OnContentRead(mojo_base::BigBuffer buffer) {
+  const std::vector<std::string>& headers = oauth_headers();
+  SaveToDriveErrorType error_type = SaveToDriveErrorType::kNoError;
+  if (headers.empty()) {
+    error_type = SaveToDriveErrorType::kOauthError;
+  } else if (!parent_folder_) {
+    error_type = SaveToDriveErrorType::kParentFolderSelectionFailed;
+  } else if (buffer.size() == 0) {
+    error_type = SaveToDriveErrorType::kUnknownError;
+  }
+  if (error_type != SaveToDriveErrorType::kNoError) {
+    SaveToDriveProgress progress;
+    progress.status = SaveToDriveStatus::kUploadFailed;
+    progress.error_type = error_type;
+    progress_callback_.Run(std::move(progress));
+    return;
+  }
+  const GURL url = net::AppendOrReplaceQueryParameter(
+      GURL(kDriveUploadUrl), kUploadTypeQueryParameterKey,
+      kMultiPartUploadType);
+  base::Value::Dict metadata_dict;
+  metadata_dict.Set("name", title_);
+  metadata_dict.Set("parents", base::Value::List().Append(parent_folder_->id));
+
+  const std::string boundary = net::GenerateMimeMultipartBoundary();
+  const std::string request_body =
+      base::StrCat({"--", boundary, "\r\n", kMetadataContentType, "\r\n\r\n",
+                    *base::WriteJson(metadata_dict), "\r\n--", boundary, "\r\n",
+                    kDataContentType, "\r\n\r\n", base::as_string_view(buffer),
+                    "\r\n--", boundary, "--\r\n"});
+
+  const std::string content_type =
+      base::StrCat({"multipart/related; boundary=", boundary});
+
+  std::vector<std::string> request_headers = headers;
+  request_headers.insert(
+      request_headers.end(),
+      {kContentTypeKey, content_type, kUploadProtocolKey, kMultiPartUploadType,
+       kUploadContentLengthKey, base::NumberToString(buffer.size())});
+
+  upload_endpoint_fetcher_ = CreateEndpointFetcher(
+      url, endpoint_fetcher::HttpMethod::kPost, content_type, request_body,
+      request_headers,
+      base::BindRepeating(&MultipartDriveUploader::OnUploadProgress,
+                          weak_ptr_factory_.GetWeakPtr()));
+  upload_endpoint_fetcher_->Fetch(
+      base::BindOnce(&MultipartDriveUploader::HandleUploadResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void MultipartDriveUploader::OnUploadProgress(uint64_t current_bytes,
+                                              uint64_t total_bytes) {
+  SaveToDriveProgress progress;
+  progress.status = SaveToDriveStatus::kUploadInProgress;
+  progress.error_type = SaveToDriveErrorType::kNoError;
+  progress.file_size_bytes = total_bytes;
+  progress.uploaded_bytes = current_bytes;
+  progress_callback_.Run(std::move(progress));
+}
+
+void MultipartDriveUploader::HandleUploadResponse(
+    std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
+  bool is_success = response->http_status_code == net::HTTP_OK ||
+                    response->http_status_code == net::HTTP_CREATED;
+  size_t file_size = content_reader_->GetSize();
+  progress_callback_.Run(
+      is_success
+          ? CreateSuccessProgress(*response, file_size, parent_folder_->name)
+          : CreateErrorProgress(*response));
 }
 
 }  // namespace save_to_drive

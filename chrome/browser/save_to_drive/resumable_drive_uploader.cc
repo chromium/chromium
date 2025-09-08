@@ -10,12 +10,14 @@ ResumableDriveUploader::ResumableDriveUploader(
     std::string title,
     AccountInfo account_info,
     ProgressCallback progress_callback,
-    Profile* profile)
+    Profile* profile,
+    ContentReader* content_reader)
     : DriveUploader(DriveUploaderType::kResumable,
                     std::move(title),
                     std::move(account_info),
                     std::move(progress_callback),
-                    profile) {}
+                    profile,
+                    content_reader) {}
 
 ResumableDriveUploader::~ResumableDriveUploader() = default;
 

@@ -65,12 +65,14 @@ class FakeDriveUploader : public DriveUploader {
   FakeDriveUploader(std::string title,
                     AccountInfo account_info,
                     ProgressCallback progress_callback,
-                    Profile* profile)
+                    Profile* profile,
+                    ContentReader* content_reader)
       : DriveUploader(DriveUploaderType::kUnknown,
                       std::move(title),
                       std::move(account_info),
                       std::move(progress_callback),
-                      profile) {}
+                      profile,
+                      content_reader) {}
   FakeDriveUploader(const FakeDriveUploader&) = delete;
   FakeDriveUploader& operator=(const FakeDriveUploader&) = delete;
   ~FakeDriveUploader() override = default;
@@ -107,7 +109,8 @@ TEST_F(DriveUploaderTest, FetchAccessTokenSuccess) {
   auto account_info = test_env()->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   auto uploader = std::make_unique<FakeDriveUploader>(
-      "test_title", account_info, progress_callback_.Get(), profile_.get());
+      "test_title", account_info, progress_callback_.Get(), profile_.get(),
+      &mock_content_reader_);
 
   EXPECT_CALL(progress_callback_,
               Run(AllOf(Field(&SaveToDriveProgress::status,
@@ -124,7 +127,8 @@ TEST_F(DriveUploaderTest, FetchAccessTokenFailure) {
   auto account_info = test_env()->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   auto uploader = std::make_unique<FakeDriveUploader>(
-      "test_title", account_info, progress_callback_.Get(), profile_.get());
+      "test_title", account_info, progress_callback_.Get(), profile_.get(),
+      &mock_content_reader_);
 
   EXPECT_CALL(progress_callback_,
               Run(AllOf(Field(&SaveToDriveProgress::status,
@@ -143,7 +147,8 @@ TEST_F(DriveUploaderTest, NoRefreshToken) {
   account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("12345"));
 
   auto uploader = std::make_unique<FakeDriveUploader>(
-      "test_title", account_info, progress_callback_.Get(), profile_.get());
+      "test_title", account_info, progress_callback_.Get(), profile_.get(),
+      &mock_content_reader_);
 
   EXPECT_CALL(progress_callback_,
               Run(AllOf(Field(&SaveToDriveProgress::status,
@@ -180,7 +185,8 @@ class FetchParentFolderTest : public DriveUploaderTest {
                                               SaveToDriveStatus::kFetchOauth)));
     TestFuture<void> future;
     FakeDriveUploader uploader("test_title", std::move(account_info),
-                               progress_callback_.Get(), profile_.get());
+                               progress_callback_.Get(), profile_.get(),
+                               &mock_content_reader_);
 
     if (expected.has_value()) {
       EXPECT_CALL(progress_callback_,

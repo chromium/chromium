@@ -43,6 +43,8 @@ struct AccessTokenInfo;
 
 namespace save_to_drive {
 
+class ContentReader;
+
 // The type of the Drive uploader.
 enum class DriveUploaderType {
   kUnknown,
@@ -66,7 +68,8 @@ class DriveUploader {
                 std::string title,
                 AccountInfo account_info,
                 ProgressCallback progress_callback,
-                Profile* profile);
+                Profile* profile,
+                ContentReader* content_reader);
   DriveUploader(const DriveUploader&) = delete;
   DriveUploader& operator=(const DriveUploader&) = delete;
   virtual ~DriveUploader();
@@ -79,6 +82,8 @@ class DriveUploader {
   virtual void UploadFile() = 0;
 
   DriveUploaderType get_drive_uploader_type_for_testing() const;
+
+  void set_oauth_headers_for_testing(std::vector<std::string> oauth_headers);
 
   // Metadata of a Drive item. This is used to parse the response from the
   // Drive API.
@@ -109,16 +114,21 @@ class DriveUploader {
   void OnFetchParentFolder(
       std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
+  const std::vector<std::string>& oauth_headers() const;
+
   const DriveUploaderType drive_uploader_type_;
   const std::string title_;
   const AccountInfo account_info_;
   const ProgressCallback progress_callback_;
-  std::vector<std::string> oauth_headers_;
-  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<endpoint_fetcher::EndpointFetcher> parent_endpoint_fetcher_;
   std::optional<Item> parent_folder_;
+  const raw_ptr<ContentReader> content_reader_;
+
+ private:
+  std::vector<std::string> oauth_headers_;
 
   base::WeakPtrFactory<DriveUploader> weak_ptr_factory_{this};
 };

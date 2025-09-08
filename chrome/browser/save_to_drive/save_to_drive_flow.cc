@@ -128,11 +128,11 @@ void SaveToDriveFlow::OnOpenContent(AccountInfo account_info, bool success) {
   if (base::ByteCount(content_reader_->GetSize()) < kMultipartUploadThreshold) {
     drive_uploader_ = std::make_unique<MultipartDriveUploader>(
         std::move(title), std::move(account_info),
-        std::move(upload_progress_callback), profile);
+        std::move(upload_progress_callback), profile, content_reader_.get());
   } else {
     drive_uploader_ = std::make_unique<ResumableDriveUploader>(
         std::move(title), std::move(account_info),
-        std::move(upload_progress_callback), profile);
+        std::move(upload_progress_callback), profile, content_reader_.get());
   }
   drive_uploader_->Start();
 }
