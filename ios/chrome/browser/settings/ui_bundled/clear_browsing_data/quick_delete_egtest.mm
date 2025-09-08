@@ -615,7 +615,15 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 }
 
 // Tests that the browsing data summary is updated when the time range changes.
-- (void)testSummaryUpdatesWhenTimeRangeChanges {
+// TODO(crbug.com/443704367): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSummaryUpdatesWhenTimeRangeChanges \
+  DISABLED_testSummaryUpdatesWhenTimeRangeChanges
+#else
+#define MAYBE_testSummaryUpdatesWhenTimeRangeChanges \
+  testSummaryUpdatesWhenTimeRangeChanges
+#endif
+- (void)MAYBE_testSummaryUpdatesWhenTimeRangeChanges {
   // Set pref to the last hour.
   [ChromeEarlGrey
       setIntegerValue:static_cast<int>(browsing_data::TimePeriod::LAST_HOUR)
@@ -1578,7 +1586,15 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 // Tests the footer search history link is opened correctly and metrics are
 // recorded in the corrresponding histogram bucket.
-- (void)testOpenSearchHistoryMyActivityFooterLink {
+// TODO(crbug.com/443704367): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenSearchHistoryMyActivityFooterLink \
+  DISABLED_testOpenSearchHistoryMyActivityFooterLink
+#else
+#define MAYBE_testOpenSearchHistoryMyActivityFooterLink \
+  testOpenSearchHistoryMyActivityFooterLink
+#endif
+- (void)MAYBE_testOpenSearchHistoryMyActivityFooterLink {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   // Sign in is required to show the footer.
   [self signIn];
@@ -1694,7 +1710,15 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 // Tests that a user in the `ConsentLevel::kSignin` state will remain signed in
 // after clearing their browsing history.
-- (void)testUserSignedInWhenClearingBrowsingData {
+// TODO(crbug.com/443704367): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testUserSignedInWhenClearingBrowsingData \
+  DISABLED_testUserSignedInWhenClearingBrowsingData
+#else
+#define MAYBE_testUserSignedInWhenClearingBrowsingData \
+  testUserSignedInWhenClearingBrowsingData
+#endif
+- (void)MAYBE_testUserSignedInWhenClearingBrowsingData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
