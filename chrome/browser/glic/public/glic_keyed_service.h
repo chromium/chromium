@@ -212,7 +212,7 @@ class GlicKeyedService : public KeyedService {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 
-  Host& host();
+  std::vector<Host*> GetAllHosts();
   HostManager& host_manager();
   GlicZeroStateSuggestionsManager& zero_state_suggestions_manager() {
     return *zero_state_suggestions_manager_;
@@ -225,7 +225,7 @@ class GlicKeyedService : public KeyedService {
   bool IsGlicWebUi(content::WebContents* web_contents);
 
   // Get the Host associated with the given browser's active tab, or null
-  // if there is none.
+  // if there is none. `bwi` can be null if preloaded with no browser open.
   Host* GetHostForActiveTab(BrowserWindowInterface* bwi);
 
  private:

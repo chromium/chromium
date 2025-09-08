@@ -57,14 +57,8 @@ void GlicActorTaskIconController::UpdateCurrentTaskIconUiState() {
     auto* glic_service = GlicKeyedService::Get(profile_);
 
     CurrentView current_view = CurrentView::kConversation;
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-      Host* host = glic_service->GetHostForActiveTab(browser_);
-      if (host) {
-        current_view = host->GetPrimaryCurrentView();
-      }
-    } else {
-      current_view =
-          glic_service->window_controller().host().GetPrimaryCurrentView();
+    if (Host* host = glic_service->GetHostForActiveTab(browser_)) {
+      current_view = host->GetPrimaryCurrentView();
     }
 
     OnStateUpdate(glic_service->window_controller().state(), current_view,

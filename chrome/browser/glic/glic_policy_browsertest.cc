@@ -281,6 +281,13 @@ class GlicPolicyTest : public PolicyTest {
   }
 
  protected:
+  // Get the active tab's glic host. Must be called only after instantiating
+  // glic.
+  Host* GetHost() {
+    return GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+        ->GetHostForActiveTab(browser());
+  }
+
   // The first profile.
   raw_ptr<Profile> profile_1_;
   // The second profile.
@@ -580,7 +587,8 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
 
   ASSERT_TRUE(service->window_controller().IsShowing());
 
-  GlicAppStateObserver app_observer(&service->host());
+  Host* host = GetHost();
+  GlicAppStateObserver app_observer(host);
   app_observer.Wait(mojom::WebUiState::kError);
 
   // Disable the policy.
@@ -588,10 +596,9 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
   ASSERT_EQ(kDisabledValue,
             profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return service->host().GetPrimaryWebUiState() ==
-           mojom::WebUiState::kDisabledByAdmin;
+    return host->GetPrimaryWebUiState() == mojom::WebUiState::kDisabledByAdmin;
   })) << "Timed out waiting for unavailable state. Current state: "
-      << service->host().GetPrimaryWebUiState();
+      << host->GetPrimaryWebUiState();
   ASSERT_TRUE(service->window_controller().IsShowing());
 
 // Flakiness on linux.

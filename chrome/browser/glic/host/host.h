@@ -300,11 +300,13 @@ class HostManager {
   // Returns whether `contents` is the glic WebUI web contents.
   bool IsGlicWebUi(content::WebContents* contents);
 
+  // Get pointers to all Hosts, including those for chrome://glic in a tab.
+  std::vector<Host*> GetAllHosts();
+
   Host* FindHostForTabForTesting(tabs::TabInterface& tab);
 
  private:
   class DummyHostDelegate;
-  std::vector<Host*> GetAllHosts();
   raw_ptr<Profile> profile_;
   std::vector<Host*> instance_hosts_;
   std::unique_ptr<DummyHostDelegate> dummy_host_delegate_;

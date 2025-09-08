@@ -1584,8 +1584,8 @@ void GlicWindowControllerImpl::SetWindowState(State new_state) {
     }
   }
 
-  floaty_state_change_callback_list_.Notify(
-      state_, glic_service_->host().GetPrimaryCurrentView());
+  floaty_state_change_callback_list_.Notify(state_,
+                                            host().GetPrimaryCurrentView());
 
   if (IsWindowOpenAndReady()) {
     glic_service_->metrics()->OnGlicWindowOpenAndReady();

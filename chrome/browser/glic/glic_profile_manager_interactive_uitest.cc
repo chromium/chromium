@@ -153,7 +153,8 @@ class GlicProfileManagerUiTest
         if (!warmed) {
           return false;
         }
-        auto* contents = service->host().webui_contents();
+        auto* contents =
+            service->GetHostForActiveTab(nullptr)->webui_contents();
         if (!contents) {
           contents = service->fre_controller().GetWebContents();
         }
@@ -179,7 +180,7 @@ class GlicProfileManagerUiTest
       if (ShouldWarmFRE()) {
         web_client_contents_ = service->fre_controller().GetWebContents();
       } else {
-        web_client_contents_ = service->host().webui_contents();
+        web_client_contents_ = GetHostForActiveTab()->webui_contents();
       }
     });
   }
@@ -192,8 +193,9 @@ class GlicProfileManagerUiTest
                   service->fre_controller().GetWebContents());
         EXPECT_NE(nullptr, service->fre_controller().GetWebContents());
       } else {
-        EXPECT_EQ(web_client_contents_, service->host().webui_contents());
-        EXPECT_NE(nullptr, service->host().webui_contents());
+        EXPECT_EQ(web_client_contents_,
+                  GetHostForActiveTab()->webui_contents());
+        EXPECT_NE(nullptr, GetHostForActiveTab()->webui_contents());
       }
       web_client_contents_ = nullptr;
     });

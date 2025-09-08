@@ -751,10 +751,6 @@ bool GlicKeyedService::IsGlicWebUi(content::WebContents* web_contents) {
   return host_manager().IsGlicWebUi(web_contents);
 }
 
-Host& GlicKeyedService::host() {
-  return window_controller().host();
-}
-
 HostManager& GlicKeyedService::host_manager() {
   if (!UseDefaultWindowController()) {
     // Must be accessed through an instance.
@@ -763,9 +759,13 @@ HostManager& GlicKeyedService::host_manager() {
   return window_controller().host_manager();
 }
 
+std::vector<Host*> GlicKeyedService::GetAllHosts() {
+  return host_manager().GetAllHosts();
+}
+
 Host* GlicKeyedService::GetHostForActiveTab(BrowserWindowInterface* bwi) {
   if (UseDefaultWindowController()) {
-    NOTREACHED();
+    return &window_controller().host();
   }
 
   // TODO(refactor): Add a method for getting the floating instance.

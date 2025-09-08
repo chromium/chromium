@@ -187,7 +187,8 @@ class GlicApiTestBase : public T {
 
   Host* GetHost() {
     Profile* profile = T::browser()->profile();
-    return &GlicKeyedServiceFactory::GetGlicKeyedService(profile)->host();
+    return GlicKeyedServiceFactory::GetGlicKeyedService(profile)
+        ->GetHostForActiveTab(T::browser());
   }
 
   // Run the test typescript function. The typescript function must have the
@@ -249,7 +250,7 @@ class GlicApiTestBase : public T {
   }
 
   void WaitForWebUiState(mojom::WebUiState state) {
-    WebUIStateListener listener(&T::host());
+    WebUIStateListener listener(T::GetHostForActiveTab());
     listener.WaitForWebUiState(state);
   }
 
