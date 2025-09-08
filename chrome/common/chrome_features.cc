@@ -1535,10 +1535,6 @@ const base::FeatureParam<base::TimeDelta>
         base::Seconds(5)};
 #endif
 
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(UseChromiumUpdater, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(WebAppManifestIconUpdating, base::FEATURE_DISABLED_BY_DEFAULT);
 
