@@ -81,10 +81,10 @@ class SuggestionGenerator {
                                       HybridPasskeyAvailability>;
 
   // Obtains data that will be used to generate suggestions on a given
-  // `trigger_field` that belongs to `form` by calling `GenerateSuggestions`
-  // later (See top-level documentation of `SuggestionGenerator` for more
-  // details). Once the data is obtained, `callback` is called with the
-  // `SuggestionDataSource` of which the data is for and the corresponding
+  // `trigger_field` that belongs to `form`.
+  //
+  // Once the data is obtained, `callback` is called with the
+  // `SuggestionDataSource` which the data is for and the corresponding list of
   // `SuggestionData`. `form_structure` and `trigger_autofill_field` may be null
   // if the `form` or `trigger_field` wasn't yet parsed.
   //
@@ -92,8 +92,14 @@ class SuggestionGenerator {
   // `trigger_field` and `form`.  In order to support those cases, fetched data
   // is tracked by the `SuggestionDataSource`, to ensure that correct generation
   // logic is later used.
-  // Note: That each `FillingProduct` can fetch only one type of
+  // Note that each `FillingProduct` can fetch only one type of
   // `SuggestionDataSource` per `FetchSuggestionData` call.
+  //
+  // All filtering of suggestion data should happen in this function (relevance
+  // filtering, prefix matching, deduplication, ordering, etc.), as the next
+  // phase in suggestion generation (see top-level ddocumentation for more
+  // details) must generate a Suggestion object for each of the passed
+  // `SuggestionData` and in the given order.
   virtual void FetchSuggestionData(
       const FormData& form,
       const FormFieldData& trigger_field,
@@ -106,13 +112,19 @@ class SuggestionGenerator {
           callback) = 0;
 
   // Generates suggestions given `all_suggestion_data` that were fetched by
-  // calling `FetchSuggestionData` on all generators (See top-level
+  // calling `FetchSuggestionData` on all generators (see top-level
   // documentation of `SuggestionGenerator` for more details).
+  //
   // Suggestions were triggered on `trigger_field` which belongs to `form`.
   // `callback` is called when generation is complete and a list of `Suggestion`
   // objects is passed along with the corresponding `FillingProduct`.
   // `form_structure` and `trigger_autofill_field` may be null if the `form` or
-  // `trigger_field` wasn't yet parsed.
+  // the `trigger_field` weren't parsed yet.
+  //
+  // We assume no further filtering/mutation of `all_suggestion_data` beyond
+  // this point. That is, the function must generate a `Suggestion` object for
+  // each of the `SuggestionData` of its corresponding `FillingProduct` and in
+  // the given order.
   virtual void GenerateSuggestions(
       const FormData& form,
       const FormFieldData& trigger_field,
