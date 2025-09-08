@@ -299,8 +299,8 @@ public class StripLayoutHelper
                                     && !mTabGroupModelFilter.tabGroupExists(mSourceTabGroupId);
 
                     // Skip if the rebuild will be handled elsewhere after reaching a "proper" tab
-                    // state, such as confirming the group deletion or tab is being pinned.
-                    if (!removedHiddenLastTabInGroup && !movedTab.getIsPinned()) {
+                    // state, such as confirming the group deletion.
+                    if (!removedHiddenLastTabInGroup) {
                         onTabMergeToOrMoveOutOfGroup();
                     }
 

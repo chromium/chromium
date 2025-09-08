@@ -2035,12 +2035,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         }
 
-        if (isChangingPinState) {
-            for (TabModelObserver obs : mTabModelObservers) {
-                obs.didChangePinState(tab);
-            }
-        }
-
         if (isMovingOutOfGroup) {
             assumeNonNull(oldTabGroupId);
             boolean wasLastTabInGroup =
@@ -2063,6 +2057,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (isMergingIntoGroup) {
             for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
                 observer.didMergeTabToGroup(tab, isDestinationTab);
+            }
+        }
+
+        if (isChangingPinState) {
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.didChangePinState(tab);
             }
         }
 
