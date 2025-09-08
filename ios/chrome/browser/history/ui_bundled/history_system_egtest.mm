@@ -338,7 +338,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that if only some of the history entries are deleted from Delete
 // Browsing Data, then the history view is updated to reflect those deletions.
-- (void)testPartialDeletion {
+// TODO(crbug.com/443700732): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testPartialDeletion DISABLED_testPartialDeletion
+#else
+#define MAYBE_testPartialDeletion testPartialDeletion
+#endif
+- (void)MAYBE_testPartialDeletion {
   const char olderURLString[] = "https://example.com";
   const GURL olderURL = GURL(olderURLString);
 
