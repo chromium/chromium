@@ -89,6 +89,7 @@ class GlicInstance : public GlicInstanceDelegate {
   void GetZeroStateSuggestionsForFocusedTab() override;
 
  private:
+  void MaybeShowHostUi(GlicUiEmbedder* embedder);
   void OnAssociatedTabDestroyed(tabs::TabInterface* tab,
                                 const ConversationId& conversation_id);
 

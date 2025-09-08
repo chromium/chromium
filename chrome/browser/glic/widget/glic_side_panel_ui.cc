@@ -21,6 +21,10 @@ GlicSidePanelUi::GlicSidePanelUi(base::WeakPtr<tabs::TabInterface> tab,
     : tab_(tab), instance_(instance) {}
 GlicSidePanelUi::~GlicSidePanelUi() = default;
 
+Host::Delegate* GlicSidePanelUi::GetHostDelegate() {
+  return this;
+}
+
 const mojom::PanelState& GlicSidePanelUi::GetPanelState() const {
   NOTIMPLEMENTED();
   return panel_state_;
@@ -68,7 +72,7 @@ void GlicSidePanelUi::Show() {
   side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
 }
 
-std::unique_ptr<GlicView> GlicSidePanelUi::CreateGlicView() {
+std::unique_ptr<views::View> GlicSidePanelUi::CreateView() {
   auto glic_view = std::make_unique<GlicView>(
       instance_->profile(), GlicWidget::GetInitialSize(), nullptr);
   // TODO(refactor): use the right host when we have multiple hosts

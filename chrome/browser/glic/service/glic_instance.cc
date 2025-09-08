@@ -51,7 +51,14 @@ void GlicInstance::DetachInstance() {
 }
 
 bool GlicInstance::IsShowing() const {
-  return embedder_ && embedder_->IsShowing();
+  if (!embedder_) {
+    return false;
+  }
+  if (auto* delegate = embedder_->GetHostDelegate()) {
+    return delegate->IsShowing();
+  }
+  // TODO: Implement IsShowing for inactive embedders.
+  return false;
 }
 
 GlicInstance::EmbedderType GlicInstance::GetEmbedderType() {
@@ -77,17 +84,10 @@ void GlicInstance::Show(tabs::TabInterface* tab) {
         break;
     }
   }
-  host_->Initialize(embedder_.get());
 
-  // Create the WebContents if it's not already created.
-  host_->CreateContents(/*initially_hidden=*/false);
-  host_->NotifyWindowIntentToShow();
+  MaybeShowHostUi(embedder_.get());
 
   embedder_->Show();
-
-  // TODO: NotifyPanelStateChanged() here
-  // TODO: pass in the correct invocation source
-  host_->PanelWillOpen(mojom::InvocationSource::kTopChromeButton);
 }
 
 void GlicInstance::Close() {
@@ -151,6 +151,23 @@ void GlicInstance::DisassociateFromTab(tabs::TabInterface* tab) {
 
 bool GlicInstance::IsOrphaned() const {
   return associated_tab_subscriptions_.empty();
+}
+
+void GlicInstance::MaybeShowHostUi(GlicUiEmbedder* embedder) {
+  Host::Delegate* delegate = embedder->GetHostDelegate();
+  if (!delegate) {
+    return;
+  }
+
+  host_->Initialize(delegate);
+
+  // Create the WebContents if it's not already created.
+  host_->CreateContents(/*initially_hidden=*/false);
+  host_->NotifyWindowIntentToShow();
+
+  // TODO: NotifyPanelStateChanged() here
+  // TODO: pass in the correct invocation source
+  host_->PanelWillOpen(mojom::InvocationSource::kTopChromeButton);
 }
 
 void GlicInstance::OnAssociatedTabDestroyed(

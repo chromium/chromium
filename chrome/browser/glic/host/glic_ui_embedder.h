@@ -8,18 +8,26 @@
 #include <memory>
 
 #include "chrome/browser/glic/host/host.h"
+#include "ui/views/view.h"
+
+namespace views {
+class View;
+}
 
 namespace glic {
 
-class GlicView;
-
-class GlicUiEmbedder : public Host::Delegate {
+class GlicUiEmbedder {
  public:
+  virtual ~GlicUiEmbedder() = default;
+
+  // Returns the Host::Delegate if this embedder uses one.
+  virtual Host::Delegate* GetHostDelegate() = 0;
+
   // Show the glic UI.
   virtual void Show() = 0;
 
   // Create the WebView in which to show glic.
-  virtual std::unique_ptr<GlicView> CreateGlicView() = 0;
+  virtual std::unique_ptr<views::View> CreateView() = 0;
 };
 
 }  // namespace glic

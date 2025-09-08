@@ -326,7 +326,7 @@ GlicInstanceCoordinatorImpl::CreateViewForSidePanel(tabs::TabInterface* tab) {
   }
   auto* instance = GetOrCreateGlicInstanceForTab(tab);
   CHECK(instance);
-  return instance->embedder().CreateGlicView();
+  return instance->embedder().CreateView();
 }
 
 void GlicInstanceCoordinatorImpl::SidePanelShown(Browser* browser) {

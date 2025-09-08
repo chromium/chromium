@@ -11,6 +11,10 @@ namespace glic {
 GlicFloatingUi::GlicFloatingUi() = default;
 GlicFloatingUi::~GlicFloatingUi() = default;
 
+Host::Delegate* GlicFloatingUi::GetHostDelegate() {
+  return this;
+}
+
 const mojom::PanelState& GlicFloatingUi::GetPanelState() const {
   NOTIMPLEMENTED();
   return panel_state_;
@@ -52,7 +56,7 @@ void GlicFloatingUi::Show() {
   NOTIMPLEMENTED();
 }
 
-std::unique_ptr<GlicView> GlicFloatingUi::CreateGlicView() {
+std::unique_ptr<views::View> GlicFloatingUi::CreateView() {
   NOTIMPLEMENTED();
   return nullptr;
 }

@@ -164,6 +164,7 @@ source_set("impl") {
     "widget/browser_conditions.h",
     "widget/glic_floating_ui.cc",
     "widget/glic_floating_ui.h",
+    "widget/glic_inactive_side_panel_ui.h",
     "widget/glic_panel_hotkey_delegate.cc",
     "widget/glic_panel_hotkey_delegate.h",
     "widget/glic_side_panel_ui.cc",

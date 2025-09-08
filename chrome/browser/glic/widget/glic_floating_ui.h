@@ -6,20 +6,26 @@
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_FLOATING_UI_H_
 
 #include "base/time/time.h"
-#include "chrome/browser/glic/host/glic.mojom-forward.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_ui_embedder.h"
+#include "chrome/browser/glic/host/host.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace glic {
 
 // A stub implementation of GlicUiEmbedder for floating UIs.
-class GlicFloatingUi : public GlicUiEmbedder {
+class GlicFloatingUi : public GlicUiEmbedder, public Host::Delegate {
  public:
   GlicFloatingUi();
   ~GlicFloatingUi() override;
 
   // GlicUiEmbedder:
+  Host::Delegate* GetHostDelegate() override;
+  void Show() override;
+  std::unique_ptr<views::View> CreateView() override;
+
+  // Host::Delegate:
   const mojom::PanelState& GetPanelState() const override;
   void Resize(const gfx::Size& size,
               base::TimeDelta duration,
@@ -31,8 +37,6 @@ class GlicFloatingUi : public GlicUiEmbedder {
   void Detach() override;
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   bool IsShowing() const override;
-  void Show() override;
-  std::unique_ptr<GlicView> CreateGlicView() override;
 
  private:
   mojom::PanelState panel_state_;
