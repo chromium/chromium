@@ -15,13 +15,12 @@
 #import "components/security_interstitials/core/https_only_mode_allowlist.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 
-class ProfileIOS;
-
 // HttpsUpgradeServiceImpl tracks the allowlist decisions for HTTPS-Only mode.
 // Decisions are scoped to the host.
 class HttpsUpgradeServiceImpl : public HttpsUpgradeService {
  public:
-  explicit HttpsUpgradeServiceImpl(ProfileIOS* context);
+  HttpsUpgradeServiceImpl(bool off_the_record,
+                          HostContentSettingsMap* host_content_settings_map);
   ~HttpsUpgradeServiceImpl() override;
 
   // HttpsUpgradeService methods:
@@ -31,8 +30,8 @@ class HttpsUpgradeServiceImpl : public HttpsUpgradeService {
 
  private:
   std::unique_ptr<base::Clock> clock_;
-  raw_ptr<ProfileIOS> context_;
   security_interstitials::HttpsOnlyModeAllowlist allowlist_;
+  bool off_the_record_;
 };
 
 #endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_IMPL_H_

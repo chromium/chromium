@@ -8,31 +8,30 @@
 #import "base/time/default_clock.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 // The default expiration for HTTPS-First Mode bypasses is 15 days.
 const base::TimeDelta kDeltaDefaultExpiration = base::Days(15);
 }  // namespace
 
-HttpsUpgradeServiceImpl::HttpsUpgradeServiceImpl(ProfileIOS* context)
-    : clock_(new base::DefaultClock()),
-      context_(context),
-      allowlist_(ios::HostContentSettingsMapFactory::GetForProfile(context),
+HttpsUpgradeServiceImpl::HttpsUpgradeServiceImpl(
+    bool off_the_record,
+    HostContentSettingsMap* host_content_settings_map)
+    : clock_(std::make_unique<base::DefaultClock>()),
+      allowlist_(host_content_settings_map,
                  clock_.get(),
-                 kDeltaDefaultExpiration) {
-  DCHECK(context_);
-}
+                 kDeltaDefaultExpiration),
+      off_the_record_(off_the_record) {}
 
 HttpsUpgradeServiceImpl::~HttpsUpgradeServiceImpl() = default;
 
 bool HttpsUpgradeServiceImpl::IsHttpAllowedForHost(
     const std::string& host) const {
-  return allowlist_.IsHttpAllowedForHost(host, context_->IsOffTheRecord());
+  return allowlist_.IsHttpAllowedForHost(host, off_the_record_);
 }
 
 void HttpsUpgradeServiceImpl::AllowHttpForHost(const std::string& host) {
-  allowlist_.AllowHttpForHost(host, context_->IsOffTheRecord());
+  allowlist_.AllowHttpForHost(host, off_the_record_);
 }
 
 void HttpsUpgradeServiceImpl::ClearAllowlist(base::Time delete_begin,
