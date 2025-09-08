@@ -878,9 +878,7 @@ UChar LayoutText::PreviousCharacter() const {
   // find previous text layoutObject if one exists
   const LayoutObject* previous_text = PreviousInPreOrder();
   for (; previous_text; previous_text = previous_text->PreviousInPreOrder()) {
-    if (RuntimeEnabledFeatures::
-            IgnoreOutOfFlowPositionForPreviousTextEnabled() &&
-        previous_text->IsOutOfFlowPositioned()) {
+    if (previous_text->IsOutOfFlowPositioned()) {
       continue;
     }
     if (!IsInlineFlowOrEmptyText(previous_text)) {

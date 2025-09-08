@@ -2729,11 +2729,6 @@
       status: "stable",
     },
     {
-      // crbug.com/40602913
-      name: "IgnoreOutOfFlowPositionForPreviousText",
-      status: "stable",
-    },
-    {
       name: "ImageDataPixelFormat",
       status: "stable",
     },
