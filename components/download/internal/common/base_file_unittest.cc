@@ -20,8 +20,8 @@
 #include "build/build_config.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
+#include "crypto/hash.h"
 #include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -38,24 +38,22 @@ const std::string_view kTestData4 = "supercalifragilisticexpialidocious";
 int64_t kTestDataBytesWasted = 0;
 
 // SHA-256 hash of kTestData1 (excluding terminating NUL).
-const uint8_t kHashOfTestData1[] = {
-    0x0b, 0x2d, 0x3f, 0x3f, 0x79, 0x43, 0xad, 0x64, 0xb8, 0x60, 0xdf,
-    0x94, 0xd0, 0x5c, 0xb5, 0x6a, 0x8a, 0x97, 0xc6, 0xec, 0x57, 0x68,
-    0xb5, 0xb7, 0x0b, 0x93, 0x0c, 0x5a, 0xa7, 0xfa, 0x9a, 0xde};
+const auto kHashOfTestData1 = std::to_array<uint8_t>(
+    {0x0b, 0x2d, 0x3f, 0x3f, 0x79, 0x43, 0xad, 0x64, 0xb8, 0x60, 0xdf,
+     0x94, 0xd0, 0x5c, 0xb5, 0x6a, 0x8a, 0x97, 0xc6, 0xec, 0x57, 0x68,
+     0xb5, 0xb7, 0x0b, 0x93, 0x0c, 0x5a, 0xa7, 0xfa, 0x9a, 0xde});
 
 // SHA-256 hash of kTestData1 ++ kTestData2 ++ kTestData3 (excluding terminating
 // NUL).
-const uint8_t kHashOfTestData1To3[] = {
-    0xcb, 0xf6, 0x8b, 0xf1, 0x0f, 0x80, 0x03, 0xdb, 0x86, 0xb3, 0x13,
-    0x43, 0xaf, 0xac, 0x8c, 0x71, 0x75, 0xbd, 0x03, 0xfb, 0x5f, 0xc9,
-    0x05, 0x65, 0x0f, 0x8c, 0x80, 0xaf, 0x08, 0x74, 0x43, 0xa8};
+const auto kHashOfTestData1To3 = std::to_array<uint8_t>(
+    {0xcb, 0xf6, 0x8b, 0xf1, 0x0f, 0x80, 0x03, 0xdb, 0x86, 0xb3, 0x13,
+     0x43, 0xaf, 0xac, 0x8c, 0x71, 0x75, 0xbd, 0x03, 0xfb, 0x5f, 0xc9,
+     0x05, 0x65, 0x0f, 0x8c, 0x80, 0xaf, 0x08, 0x74, 0x43, 0xa8});
 
 }  // namespace
 
 class BaseFileTest : public testing::Test {
  public:
-  static const unsigned char kEmptySha256Hash[crypto::kSHA256Length];
-
   BaseFileTest()
       : expect_file_survives_(false),
         expect_in_progress_(true),
@@ -180,14 +178,12 @@ class BaseFileTest : public testing::Test {
         << "Interrupt reason = " << err;
   }
 
-  template <size_t SZ>
-  static void ExpectHashValue(const uint8_t (&expected_hash)[SZ],
-                              std::unique_ptr<crypto::SecureHash> hash_state) {
-    std::vector<uint8_t> hash_value(hash_state->GetHashLength());
-    hash_state->Finish(&hash_value.front(), hash_value.size());
-    ASSERT_EQ(SZ, hash_value.size());
-    UNSAFE_TODO(EXPECT_EQ(
-        0, memcmp(expected_hash, &hash_value.front(), hash_value.size())));
+  static void ExpectHashValue(
+      base::span<const uint8_t, crypto::hash::kSha256Size> expected_hash,
+      std::unique_ptr<crypto::SecureHash> hash_state) {
+    std::array<uint8_t, crypto::hash::kSha256Size> result;
+    hash_state->Finish(result);
+    EXPECT_EQ(base::span(result), expected_hash);
   }
 
  private:
@@ -215,9 +211,6 @@ class BaseFileTest : public testing::Test {
   std::string expected_data_;
   DownloadInterruptReason expected_error_;
 };
-
-// This will initialize the entire array to zero.
-const unsigned char BaseFileTest::kEmptySha256Hash[] = {0};
 
 // Test the most basic scenario: just create the object and do a sanity check
 // on all its accessors. This is actually a case that rarely happens
@@ -725,11 +718,11 @@ TEST_F(BaseFileTest, ExistingBaseFileUnknownHashTooLongForLargeFile) {
   set_expected_data(contents);
   std::string new_data(kFileSize - kIntermediateSize, 'a');
   ASSERT_TRUE(AppendDataToFile(new_data));
-  const uint8_t kExpectedHash[] = {
+  const auto kExpectedHash = std::to_array<uint8_t>({
       0x9b, 0xc1, 0xb2, 0xa2, 0x88, 0xb2, 0x6a, 0xf7, 0x25, 0x7a, 0x36,
       0x27, 0x7a, 0xe3, 0x81, 0x6a, 0x7d, 0x4f, 0x16, 0xe8, 0x9c, 0x1e,
       0x7e, 0x77, 0xd0, 0xa5, 0xc4, 0x8b, 0xad, 0x62, 0xb3, 0x60,
-  };
+  });
   ExpectHashValue(kExpectedHash, base_file_->Finish());
 }
 

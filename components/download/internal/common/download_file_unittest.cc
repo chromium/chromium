@@ -74,7 +74,7 @@ std::string GetHexEncodedHashValue(crypto::SecureHash* hash_state) {
   if (!hash_state)
     return std::string();
   std::vector<uint8_t> hash_value(hash_state->GetHashLength());
-  hash_state->Finish(&hash_value.front(), hash_value.size());
+  hash_state->Finish(hash_value);
   return base::HexEncode(hash_value);
 }
 

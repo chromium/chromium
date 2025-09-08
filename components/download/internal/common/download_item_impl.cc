@@ -2294,9 +2294,9 @@ void DownloadItemImpl::SetHashState(
   }
 
   std::unique_ptr<crypto::SecureHash> clone_of_hash_state(hash_state_->Clone());
-  std::vector<char> hash_value(clone_of_hash_state->GetHashLength());
-  clone_of_hash_state->Finish(&hash_value.front(), hash_value.size());
-  destination_info_.hash.assign(hash_value.begin(), hash_value.end());
+  destination_info_.hash.resize(clone_of_hash_state->GetHashLength());
+  clone_of_hash_state->Finish(
+      base::as_writable_byte_span(destination_info_.hash));
 }
 
 void DownloadItemImpl::ReleaseDownloadFile(bool destroy_file) {
