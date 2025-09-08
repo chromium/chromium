@@ -7121,6 +7121,24 @@
             ]
         }
     ],
+    "ContextualSuggestionsAnimationImprovements": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "LoadingSuggestionsAnimationEnabled",
+                    "enable_features": [
+                        "LoadingSuggestionsAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "ControlsVisibilityFromNavigations": [
         {
             "platforms": [
@@ -16657,11 +16675,9 @@
                     "enable_features": [
                         "AiModeOmniboxEntryPoint",
                         "AllowAiModeMatches",
-                        "LoadingSuggestionsAnimation",
                         "OmniboxHideAimEntrypointOnUserInput",
                         "OmniboxToolbelt",
-                        "OpenLensActionUITweaks",
-                        "SuggestionsFulfilledByLensSupported"
+                        "OpenLensActionUITweaks"
                     ]
                 }
             ]
