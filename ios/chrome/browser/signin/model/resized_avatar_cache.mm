@@ -50,6 +50,7 @@
 }
 
 - (UIImage*)resizedAvatarForIdentity:(id<SystemIdentity>)identity {
+  CHECK(identity, base::NotFatalUntil::M144);
   SystemIdentityManager* system_identity_manager =
       GetApplicationContext()->GetSystemIdentityManager();
 

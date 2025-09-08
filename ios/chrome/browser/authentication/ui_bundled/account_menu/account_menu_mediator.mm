@@ -121,6 +121,9 @@
     _prepareChangeProfile = prepareChangeProfile;
     _primaryIdentityBeforeSignin = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
+    // TODO(crbug.com/442569188): Replace by check once the cause of
+    // crbug.com/442569188 is identified.
+    DUMP_WILL_BE_CHECK(_primaryIdentityBeforeSignin);
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
     [self updateIdentitiesIfAllowed];
