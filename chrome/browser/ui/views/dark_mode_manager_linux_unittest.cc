@@ -80,7 +80,6 @@ MATCHER_P2(Calls, interface, member, "") {
 using testing::_;
 using testing::AtLeast;
 using testing::ByMove;
-using testing::Invoke;
 using testing::Mock;
 using testing::Return;
 using testing::StrictMock;
@@ -133,16 +132,15 @@ class DarkModeManagerLinuxTest : public testing::Test {
 
     EXPECT_CALL(*mock_systemd_proxy_, DoCallMethod(_, _, _))
         .Times(AtLeast(0))
-        .WillRepeatedly(
-            Invoke([](dbus::MethodCall*, int,
-                      dbus::ObjectProxy::ResponseCallback* callback) {
-              std::move(*callback).Run(nullptr);
-            }));
+        .WillRepeatedly([](dbus::MethodCall*, int,
+                           dbus::ObjectProxy::ResponseCallback* callback) {
+          std::move(*callback).Run(nullptr);
+        });
 
     EXPECT_CALL(*mock_dbus_proxy_,
                 DoCallMethod(Calls(DBUS_INTERFACE_DBUS, "NameHasOwner"), _, _))
-        .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                            dbus::ObjectProxy::ResponseCallback* callback) {
+        .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                     dbus::ObjectProxy::ResponseCallback* callback) {
           dbus::MessageReader reader(method_call);
           std::string service_name;
           EXPECT_TRUE(reader.PopString(&service_name));
@@ -152,7 +150,7 @@ class DarkModeManagerLinuxTest : public testing::Test {
           dbus::MessageWriter writer(response.get());
           writer.AppendBool(true);
           std::move(*callback).Run(response.get());
-        }));
+        });
 
     EXPECT_CALL(*mock_bus_,
                 GetObjectProxy(

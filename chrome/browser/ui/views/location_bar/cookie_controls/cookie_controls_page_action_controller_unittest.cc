@@ -31,7 +31,6 @@
 namespace {
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::ReturnRef;
 
@@ -120,16 +119,16 @@ class CookieControlsPageActionControllerTest
     user_education_.emplace(&mock_browser_window_interface_);
 
     ON_CALL(page_action_controller_, AddActivity(kActionShowCookieControls))
-        .WillByDefault(Invoke([&](actions::ActionId) {
+        .WillByDefault([&](actions::ActionId) {
           return page_actions::ScopedPageActionActivity(
               page_action_controller_, kActionShowCookieControls);
-        }));
+        });
 
     ON_CALL(*user_education_, MaybeShowFeaturePromo(_))
-        .WillByDefault(Invoke([](user_education::FeaturePromoParams params) {
+        .WillByDefault([](user_education::FeaturePromoParams params) {
           std::move(params.show_promo_result_callback)
               .Run(user_education::FeaturePromoResult::Success());
-        }));
+        });
 
     ON_CALL(*mock_bubble_delegate_, IsReloading()).WillByDefault(Return(false));
     ON_CALL(*mock_bubble_delegate_, HasBubble()).WillByDefault(Return(false));
@@ -413,10 +412,10 @@ TEST_P(CookieControlsPageActionControllerTest, MaybeShowIPH) {
 
 TEST_P(CookieControlsPageActionControllerTest, ShowChipOnIPHFailure) {
   EXPECT_CALL(user_education(), MaybeShowFeaturePromo)
-      .WillOnce(testing::Invoke([](user_education::FeaturePromoParams params) {
+      .WillOnce([](user_education::FeaturePromoParams params) {
         std::move(params.show_promo_result_callback)
             .Run(user_education::FeaturePromoResult::kError);
-      }));
+      });
   EXPECT_CALL(page_action_controller(),
               ShowSuggestionChip(kActionShowCookieControls, _))
       .Times(1);
@@ -428,10 +427,10 @@ TEST_P(CookieControlsPageActionControllerTest, ShowChipOnIPHFailure) {
 
 TEST_P(CookieControlsPageActionControllerTest, SetActivityOnIPHShown) {
   EXPECT_CALL(user_education(), MaybeShowFeaturePromo)
-      .WillOnce(testing::Invoke([](user_education::FeaturePromoParams params) {
+      .WillOnce([](user_education::FeaturePromoParams params) {
         std::move(params.show_promo_result_callback)
             .Run(user_education::FeaturePromoResult::Success());
-      }));
+      });
   EXPECT_CALL(page_action_controller(), AddActivity(kActionShowCookieControls))
       .Times(1)
       .WillOnce(Return(page_actions::ScopedPageActionActivity(

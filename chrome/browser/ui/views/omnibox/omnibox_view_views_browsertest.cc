@@ -1363,7 +1363,7 @@ class OmniboxViewViewsOnFocusZpsTest : public OmniboxViewViewsTest {
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsOnFocusZpsTest, ShowHatsSurvey) {
   EXPECT_CALL(*mock_hats_service(), LaunchSurvey(_, _, _, _, _, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const std::string& trigger, base::OnceClosure success_callback,
              base::OnceClosure failure_callback,
              const SurveyBitsData& product_specific_bits_data,
@@ -1373,7 +1373,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsOnFocusZpsTest, ShowHatsSurvey) {
             EXPECT_TRUE(
                 trigger == kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness ||
                 trigger == kHatsSurveyTriggerOnFocusZpsSuggestionsUtility);
-          }));
+          });
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://test.com/")));

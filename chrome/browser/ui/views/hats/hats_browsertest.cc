@@ -172,11 +172,10 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   // The hats_next_mock.html will provide a state update to the dialog to
   // indicate that the survey has been loaded.
   base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, ShowWidget)
-      .WillOnce(testing::Invoke([dialog, &run_loop]() {
-        EXPECT_FALSE(dialog->IsWaitingForSurveyForTesting());
-        run_loop.Quit();
-      }));
+  EXPECT_CALL(*dialog, ShowWidget).WillOnce([dialog, &run_loop]() {
+    EXPECT_FALSE(dialog->IsWaitingForSurveyForTesting());
+    run_loop.Quit();
+  });
   run_loop.Run();
 
   EXPECT_EQ(1, success_count);
@@ -231,11 +230,10 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
   // The hats_next_mock.html will provide a state update to the dialog to
   // indicate that the survey has been loaded.
   base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, ShowWidget)
-      .WillOnce(testing::Invoke([dialog, &run_loop]() {
-        EXPECT_FALSE(dialog->IsWaitingForSurveyForTesting());
-        run_loop.Quit();
-      }));
+  EXPECT_CALL(*dialog, ShowWidget).WillOnce([dialog, &run_loop]() {
+    EXPECT_FALSE(dialog->IsWaitingForSurveyForTesting());
+    run_loop.Quit();
+  });
   run_loop.Run();
 
   EXPECT_EQ(1, success_count);
@@ -446,9 +444,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
 
   // Allow the dialog to open before checking the zoom level of the contents.
   base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, ShowWidget).WillOnce(testing::Invoke([&run_loop]() {
-    run_loop.Quit();
-  }));
+  EXPECT_CALL(*dialog, ShowWidget).WillOnce([&run_loop]() { run_loop.Quit(); });
   run_loop.Run();
 
   EXPECT_TRUE(blink::ZoomValuesEqual(

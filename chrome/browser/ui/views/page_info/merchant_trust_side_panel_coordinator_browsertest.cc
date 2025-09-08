@@ -30,7 +30,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using testing::Invoke;
 using testing::Return;
 
 namespace {
@@ -83,13 +82,13 @@ class MerchantTrustSidePanelCoordinatorBrowserTest
 
     // Mock GetMerchanTrustInfo based on the requested URL.
     ON_CALL(*service(), GetMerchantTrustInfo(_, _))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [](const GURL& url, page_info::MerchantDataCallback callback) {
               std::move(callback).Run(
                   url, url == GURL(kUrlWithMerchantTrustData)
                            ? std::make_optional(CreateValidMerchantData())
                            : std::nullopt);
-            }));
+            });
   }
 
   GURL CreateUrl(const std::string& host) {
@@ -133,10 +132,10 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
   // Refresh the page and check that the side panel is still open.
   EXPECT_CALL(*service(), GetMerchantTrustInfo(_, _))
       .WillRepeatedly(
-          Invoke([](const GURL& url, page_info::MerchantDataCallback callback) {
+          [](const GURL& url, page_info::MerchantDataCallback callback) {
             std::move(callback).Run(
                 url, std::make_optional(CreateValidMerchantData()));
-          }));
+          });
 
   EXPECT_CALL(*service(), RecordMerchantTrustInteraction(
                               _, page_info::MerchantTrustInteraction::
@@ -165,9 +164,9 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
   // Navigate to a different URL with no merchant trust data.
   EXPECT_CALL(*service(), GetMerchantTrustInfo(_, _))
       .WillRepeatedly(
-          Invoke([](const GURL& url, page_info::MerchantDataCallback callback) {
+          [](const GURL& url, page_info::MerchantDataCallback callback) {
             std::move(callback).Run(url, std::nullopt);
-          }));
+          });
   EXPECT_CALL(*service(), RecordMerchantTrustInteraction(
                               _, page_info::MerchantTrustInteraction::
                                      kSidePanelClosedOnSameTabNavigation))

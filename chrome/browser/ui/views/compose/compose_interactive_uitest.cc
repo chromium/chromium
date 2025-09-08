@@ -196,13 +196,13 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
         *mock_optimization_guide_keyed_service_,
         CanApplyOptimization(
             _, _, An<optimization_guide::OptimizationGuideDecisionCallback>()))
-        .WillByDefault(testing::Invoke(
+        .WillByDefault(
             [](const GURL&, optimization_guide::proto::OptimizationType type,
                optimization_guide::OptimizationGuideDecisionCallback callback) {
               std::move(callback).Run(
                   optimization_guide::OptimizationGuideDecision::kTrue,
                   optimization_guide::OptimizationMetadata());
-            }));
+            });
     ON_CALL(*mock_optimization_guide_keyed_service_,
             CanApplyOptimization(
                 _, _, An<optimization_guide::OptimizationMetadata*>()))
@@ -216,7 +216,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
           return std::make_unique<NiceMock<MockSession>>(&session());
         });
     ON_CALL(session(), ExecuteModel(_, _))
-        .WillByDefault(testing::WithArg<1>(testing::Invoke(
+        .WillByDefault(testing::WithArg<1>(
             [&](optimization_guide::
                     OptimizationGuideModelExecutionResultStreamingCallback
                         callback) {
@@ -226,7 +226,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
                       std::move(callback),
                       OptimizationGuideStreamingResult(
                           ComposeResponse(true, "Cucumbers"), true, false)));
-            })));
+            }));
   }
 
   void SetUpAccount() {

@@ -201,12 +201,12 @@ TEST_F(DropTargetViewTest, CannotDropEmptyURL) {
 
 TEST_F(DropTargetViewTest, GetDropFormats) {
   ON_CALL(drag_delegate(), GetDropFormats(testing::_, testing::_))
-      .WillByDefault(testing::Invoke(
+      .WillByDefault(
           [](int* formats, std::set<ui::ClipboardFormatType>* format_types) {
             *formats = ui::OSExchangeData::URL;
             format_types->insert(ui::ClipboardFormatType::UrlType());
             return true;
-          }));
+          });
   int formats = 0;
   std::set<ui::ClipboardFormatType> format_types;
   EXPECT_TRUE(drop_target_view()->GetDropFormats(&formats, &format_types));
