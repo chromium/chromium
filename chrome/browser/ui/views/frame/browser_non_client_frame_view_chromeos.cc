@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -116,6 +117,13 @@ content::RenderWidgetHost* GetRenderWidgetHost(views::WebView* web_view) {
     }
   }
   return nullptr;
+}
+
+// Returns whether `browser` should draw its frame header.
+// The default is true.
+bool ShouldDrawFrameHeader(BrowserWindowInterface* browser) {
+  // Currently, frame headers are only disabled for custom tab browsers.
+  return browser->GetType() != BrowserWindowInterface::Type::TYPE_CUSTOM_TAB;
 }
 
 DEFINE_UI_CLASS_PROPERTY_KEY(BrowserNonClientFrameViewChromeOS*,
@@ -251,8 +259,7 @@ void BrowserNonClientFrameViewChromeOS::Init() {
   }
 
   display_observer_.emplace(this);
-
-  if (frame()->ShouldDrawFrameHeader()) {
+  if (ShouldDrawFrameHeader(browser)) {
     frame_header_ = CreateFrameHeader();
   }
 
@@ -640,7 +647,7 @@ bool BrowserNonClientFrameViewChromeOS::DoesIntersectRect(
 }
 
 views::View::Views BrowserNonClientFrameViewChromeOS::GetChildrenInZOrder() {
-  if (frame()->ShouldDrawFrameHeader() && frame_header_) {
+  if (ShouldDrawFrameHeader(browser_view()->browser()) && frame_header_) {
     return frame_header_->GetAdjustedChildrenInZOrder(this);
   }
 

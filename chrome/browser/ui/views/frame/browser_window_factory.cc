@@ -24,7 +24,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/frame/browser_view_ash.h"
-#include "chrome/browser/ui/views/frame/custom_tab_browser_frame.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
 
@@ -52,18 +51,12 @@ BrowserWindow::CreateBrowserWindow(Browser* browser,
   // Create the view and the frame. The frame will attach itself via the view
   // so we don't need to do anything with the pointer.
   BrowserView* view = nullptr;
-  std::unique_ptr<BrowserFrame> browser_frame;
 #if BUILDFLAG(IS_CHROMEOS)
   view = new BrowserViewAsh(browser);
-  if (view->browser()->is_type_custom_tab()) {
-    browser_frame = std::make_unique<CustomTabBrowserFrame>(view);
-  }
 #else
   view = new BrowserView(browser);
 #endif
-  if (!browser_frame) {
-    browser_frame = std::make_unique<BrowserFrame>(view);
-  }
+  auto browser_frame = std::make_unique<BrowserFrame>(view);
   view->set_frame(std::move(browser_frame));
   if (in_tab_dragging) {
     view->frame()->SetTabDragKind(TabDragKind::kAllTabs);

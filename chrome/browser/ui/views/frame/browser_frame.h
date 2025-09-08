@@ -114,9 +114,6 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // Returns true when the window placement should be saved.
   bool ShouldSaveWindowPlacement() const;
 
-  // Returns true when a frame header should be drawn.
-  virtual bool ShouldDrawFrameHeader() const;
-
   // Retrieves the window placement (show state and bounds) for restoring.
   void GetWindowPlacement(gfx::Rect* bounds,
                           ui::mojom::WindowShowState* show_state) const;
