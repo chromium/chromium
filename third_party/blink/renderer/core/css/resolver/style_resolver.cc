@@ -2012,7 +2012,7 @@ void StyleResolver::ApplyBaseStyle(
       for (const CSSPropertyValue& property : inline_style->Properties()) {
         StyleBuilder::ApplyProperty(
             property.Name(), state,
-            property.Value().EnsureScopedValue(&GetDocument()));
+            property.Value().EnsureScopedValue(&element->GetTreeScope()));
         author_flags |= CSSProperty::Get(property.PropertyID()).GetFlags();
       }
     }
