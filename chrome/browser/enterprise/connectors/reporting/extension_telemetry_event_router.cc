@@ -33,6 +33,41 @@ using RemoteHostContactedInfo = safe_browsing::
 using TabsApiInfo =
     safe_browsing::ExtensionTelemetryReportRequest_SignalInfo_TabsApiInfo;
 
+std::unique_ptr<ExtensionTelemetryReportRequest>
+CreateRedactedExtensionTelemetryReportRequestProto(
+    const ExtensionTelemetryReportRequest* request) {
+  auto redacted_request = std::make_unique<ExtensionTelemetryReportRequest>();
+
+  redacted_request->set_creation_timestamp_msec(
+      request->creation_timestamp_msec());
+
+  for (const auto& report : request->reports()) {
+    safe_browsing::ExtensionTelemetryReportRequest_Report* redacted_report =
+        redacted_request->add_reports();
+
+    // Copy ExtensionInfo
+    *redacted_report->mutable_extension() = report.extension();
+
+    // Copy select subset of signals.
+    for (const auto& signal : report.signals()) {
+      if (signal.has_cookies_get_all_info()) {
+        *redacted_report->add_signals()->mutable_cookies_get_all_info() =
+            signal.cookies_get_all_info();
+      } else if (signal.has_cookies_get_info()) {
+        *redacted_report->add_signals()->mutable_cookies_get_info() =
+            signal.cookies_get_info();
+      } else if (signal.has_remote_host_contacted_info()) {
+        *redacted_report->add_signals()->mutable_remote_host_contacted_info() =
+            signal.remote_host_contacted_info();
+      } else if (signal.has_tabs_api_info()) {
+        *redacted_report->add_signals()->mutable_tabs_api_info() =
+            signal.tabs_api_info();
+      }
+    }
+  }
+  return redacted_request;
+}
+
 base::Value::Dict CreateExtensionInfoDict(const ExtensionInfo& extension_info) {
   base::Value::Dict dict;
   dict.Set(ExtensionTelemetryEventRouter::kKeyId, extension_info.id());
@@ -303,7 +338,8 @@ void ExtensionTelemetryEventRouter::UploadTelemetryReport(
     chrome::cros::reporting::proto::ExtensionTelemetryEvent
         extension_telemetry_event;
     *extension_telemetry_event.mutable_extension_telemetry_report() =
-        *telemetry_report_request;
+        *CreateRedactedExtensionTelemetryReportRequestProto(
+            telemetry_report_request.get());
     extension_telemetry_event.set_profile_identifier(
         reporting_client->GetProfileIdentifier());
     extension_telemetry_event.set_profile_user_name(
