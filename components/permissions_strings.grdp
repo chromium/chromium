@@ -40,13 +40,13 @@
       Notifications are automatically blocked for all sites except ones you allow
     </message>
     <message name="IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_PREDICTION_SERVICE_MESSAGE" desc="Text used as notification message when requesting permission for Web Notifications via a notification. Used when the prediction service has decided that the user will be very unlikely to grant this permission.">
-      Notifications were automatically blocked because you usually don't allow them
+      Chrome thinks you don't want notifications from this site. So, requests are hidden to reduce interruptions.
     </message>
     <message name="IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI" desc="Text used as notification message when requesting Gelocation permission. Used when quiet UI is enabled in settings.">
       Location requests are automatically blocked for all sites except ones you allow
     </message>
     <message name="IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_PREDICTION_SERVICE" desc="Text used as notification message when requesting permission for Geolocation. Used when the prediction service has decided that the user will be very unlikely to grant this permission.">
-      This site was blocked from knowing your precise location because you usually don't allow this
+      Chrome thinks you don't want to use your location on this site. So, requests are hidden to reduce interruptions.
     </message>
     <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT" desc="Text requesting permission for a site to access the computer's microphone.">
       <ph name="HOST">$1<ex>html5rocks.com</ex></ph> wants to use your microphone
