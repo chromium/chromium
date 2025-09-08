@@ -255,17 +255,27 @@ def FetchBetaPackage(name, rust_git_hash, triple=None):
 
 
 def InstallBetaPackage(package_dir, install_dir):
+    cmd = []
     if sys.platform == 'win32':
         # The install scripts on windows require relative, posix-style paths.
         install_dir = os.path.relpath(install_dir).replace('\\', '/')
-    args = [
+        # Windows might get confused on how to run an sh file if we don't
+        # invoke the executable directly
+        where = subprocess.check_output(['where.exe', 'sh'], text=True)
+        sh_exe = where.splitlines()[0]
+        cmd += [sh_exe]
+
+    cmd += [
+        os.path.join(package_dir, 'install.sh'),
         f'--destdir={install_dir}',
         f'--prefix=',
     ]
+
     if sys.platform.startswith('linux'):
         # Avoid warnings due to not running as root.
-        args += ['--disable-ldconfig']
-    RunCommand([os.path.join(package_dir, 'install.sh')] + args)
+        cmd += ['--disable-ldconfig']
+
+    RunCommand(cmd)
 
 
 def VendorForStdlib(cargo_bin):
