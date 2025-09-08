@@ -43,7 +43,7 @@ public class Origin {
      * Constructs a canonical Origin from an Uri. Will return {@code null} for origins that are not
      * HTTP or HTTPS.
      */
-    public static @Nullable Origin create(Uri uri) {
+    public static @Nullable Origin create(@Nullable Uri uri) {
         if (uri == null || uri.getScheme() == null || uri.getAuthority() == null) {
             return null;
         }

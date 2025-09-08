@@ -12,11 +12,12 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -38,6 +39,7 @@ import java.util.function.Supplier;
  * Implements {@link SessionHandler} for the given instance of Custom Tab activity; registers and
  * unregisters itself in {@link SessionDataHolder}.
  */
+@NullMarked
 public class CustomTabSessionHandler implements SessionHandler, StartStopWithNativeObserver {
 
     private static final String TAG = "CctSessionHandler";
@@ -82,7 +84,7 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     }
 
     @Override
-    public SessionHolder<?> getSession() {
+    public @Nullable SessionHolder<?> getSession() {
         return mIntentDataProvider.getSession();
     }
 
@@ -104,7 +106,9 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
 
     @Override
     public boolean updateRemoteViews(
-            RemoteViews remoteViews, int[] clickableIDs, PendingIntent pendingIntent) {
+            @Nullable RemoteViews remoteViews,
+            int @Nullable [] clickableIDs,
+            @Nullable PendingIntent pendingIntent) {
         return mBottomBarDelegate.get().updateRemoteViews(remoteViews, clickableIDs, pendingIntent);
     }
 

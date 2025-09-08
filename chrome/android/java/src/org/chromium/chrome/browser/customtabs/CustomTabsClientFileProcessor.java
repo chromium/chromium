@@ -42,7 +42,8 @@ public class CustomTabsClientFileProcessor {
      * @return {@code true} if successful.
      */
     @WorkerThread
-    public boolean processFile(SessionHolder<?> session, Uri uri, int purpose, Bundle extras) {
+    public boolean processFile(
+            SessionHolder<?> session, Uri uri, int purpose, @Nullable Bundle extras) {
         if (uri == null) {
             Log.w(TAG, "Received a null uri");
             return false;

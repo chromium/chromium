@@ -254,7 +254,9 @@ public class CustomTabBottomBarDelegate
      * @return Whether the update is successful.
      */
     public boolean updateRemoteViews(
-            RemoteViews remoteViews, int[] clickableIDs, PendingIntent pendingIntent) {
+            @Nullable RemoteViews remoteViews,
+            int @Nullable [] clickableIDs,
+            @Nullable PendingIntent pendingIntent) {
         // If the contentView is already set, it should have priority to keep being displayed over
         // any remote views that are trying to be updated.
         if (mBottomBarContentView != null && mKeepContentView) {
