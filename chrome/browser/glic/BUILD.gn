@@ -116,6 +116,8 @@ source_set("impl") {
     "glic_user_status_request.cc",
     "glic_zero_state_suggestions_manager.cc",
     "host/auth_controller.cc",
+    "host/context/glic_empty_focused_tab_manager.cc",
+    "host/context/glic_empty_focused_tab_manager.h",
     "host/context/glic_focused_browser_manager.cc",
     "host/context/glic_focused_browser_manager.h",
     "host/context/glic_focused_browser_manager_interface.h",
