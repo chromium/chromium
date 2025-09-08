@@ -81,7 +81,7 @@ BASE_FEATURE(kAppBoundEncryptionKeyV3,
 
 BASE_FEATURE(kRegenerateKeyForCatastrophicFailures,
              "RegenerateKeyForCatastrophicFailures",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 AppBoundEncryptionProviderWin::AppBoundEncryptionProviderWin(
