@@ -11,8 +11,9 @@ import '../module_header.js';
 import './icons.html.js';
 import './icon_container.js';
 
-import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit} from '../../i18n_setup.js';
 import {Color} from '../../tab_group_types.mojom-webui.js';
@@ -112,7 +113,8 @@ export class ModuleElement extends ModuleElementBase {
   }
 
   protected shouldShowZeroStateCard_(): boolean {
-    return this.tabGroups.length === 0;
+    return loadTimeData.getBoolean('tabGroupsModuleZeroStateEnabled') &&
+        this.tabGroups.length === 0;
   }
 
   protected getTabGroups_(): TabGroup[] {
@@ -160,14 +162,18 @@ async function createElement(): Promise<ModuleElement|null> {
   const {tabGroups} =
       await TabGroupsProxyImpl.getInstance().handler.getTabGroups();
 
-  const element = new ModuleElement();
-
   if (!tabGroups) {
-    // Still within the dismissal time window--skip showing either tab groups or
-    // zero-state cards.
+    // Still within the dismissal time window--skip rendering module.
     return null;
   }
 
+  if (!loadTimeData.getBoolean('tabGroupsModuleZeroStateEnabled') &&
+      tabGroups.length === 0) {
+    // If zero-state is disabled and there are no groups, skip rendering module.
+    return null;
+  }
+
+  const element = new ModuleElement();
   element.tabGroups = tabGroups;
   return element;
 }

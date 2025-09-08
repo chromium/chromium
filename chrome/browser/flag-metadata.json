@@ -7281,6 +7281,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "ntp-tab-groups-module-zero-state",
+    "owners": [ "temao@google.com", "tiborg@chromium.org", "dpenning@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "ntp-view-hierarchy-repair",
     "owners": [ "adamta@chromium.org", "sczs@chromium.org" ],
     "expiry_milestone": 140

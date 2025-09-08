@@ -7628,6 +7628,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpTabGroupsModuleVariations,
                                     "DesktopNtpModules")},
 
+    {"ntp-tab-groups-module-zero-state",
+     flag_descriptions::kNtpTabGroupsModuleZeroStateName,
+     flag_descriptions::kNtpTabGroupsModuleZeroStateDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpTabGroupsModuleZeroState)},
+
     {"ntp-wallpaper-search-button",
      flag_descriptions::kNtpWallpaperSearchButtonName,
      flag_descriptions::kNtpWallpaperSearchButtonDescription, kOsDesktop,

@@ -19221,6 +19221,7 @@ from previous Chrome versions.
   <int value="1790384966" label="StylusRichGestures:enabled"/>
   <int value="1790721876" label="ArcSwitchToKeyMintOnTOverride:enabled"/>
   <int value="1791693211" label="sparky-feature-key:disabled"/>
+  <int value="1792252889" label="kNtpTabGroupsModuleZeroState:enabled"/>
   <int value="1792609232" label="NTPShortcuts:enabled"/>
   <int value="1793023585"
       label="ClickToCallContextMenuForSelectedText:disabled"/>
@@ -19603,6 +19604,7 @@ from previous Chrome versions.
   <int value="1922609313"
       label="DeviceBoundSessionAccessObserverSharedRemote:enabled"/>
   <int value="1923052799" label="CrostiniUseDlc:disabled"/>
+  <int value="1923388804" label="kNtpTabGroupsModuleZeroState:disabled"/>
   <int value="1923496816" label="AssistantIntentTranslateInfo:disabled"/>
   <int value="1923780021" label="PrivacyReorderedAndroid:enabled"/>
   <int value="1924192543" label="ProactiveTabFreezeAndDiscard:enabled"/>

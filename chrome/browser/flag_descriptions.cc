@@ -5928,6 +5928,12 @@ const char kNtpTabGroupsModuleName[] = "NTP Tab Groups Module";
 const char kNtpTabGroupsModuleDescription[] =
     "Shows the Tab Groups module on the New Tab Page.";
 
+const char kNtpTabGroupsModuleZeroStateName[] =
+    "NTP Tab Groups Zero State Card";
+const char kNtpTabGroupsModuleZeroStateDescription[] =
+    "Enables the zero-state card for the Tab Groups Module on the New Tab "
+    "Page.";
+
 const char kNtpWallpaperSearchButtonName[] = "NTP Wallpaper Search Button";
 const char kNtpWallpaperSearchButtonDescription[] =
     "Enables entry point on New Tab Page for Customize Chrome Side Panel "

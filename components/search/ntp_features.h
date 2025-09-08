@@ -81,6 +81,7 @@ BASE_DECLARE_FEATURE(kNtpMicrosoftAuthenticationModule);
 BASE_DECLARE_FEATURE(kNtpOneGoogleBarAsyncBarParts);
 BASE_DECLARE_FEATURE(kNtpFooter);
 BASE_DECLARE_FEATURE(kNtpTabGroupsModule);
+BASE_DECLARE_FEATURE(kNtpTabGroupsModuleZeroState);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.

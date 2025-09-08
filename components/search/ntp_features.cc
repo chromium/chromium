@@ -310,6 +310,12 @@ BASE_FEATURE(kNtpTabGroupsModule,
              "kNtpTabGroupsModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, zero tab group card will be shown if the user doesn't have any
+// tab groups.
+BASE_FEATURE(kNtpTabGroupsModuleZeroState,
+             "kNtpTabGroupsModuleZeroState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kNtpModuleIgnoredCriteriaThreshold[] =
     "NtpModuleIgnoredCriteriaThreshold";
 const char kNtpModuleIgnoredHaTSDelayTimeParam[] =

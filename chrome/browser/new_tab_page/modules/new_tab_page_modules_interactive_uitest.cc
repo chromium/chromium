@@ -430,7 +430,8 @@ class NewTabPageModulesInteractiveTabGroupsUiTest
 
   void SetUp() override {
     features.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kNtpTabGroupsModule},
+        /*enabled_features=*/{ntp_features::kNtpTabGroupsModule,
+                              ntp_features::kNtpTabGroupsModuleZeroState},
         /*disabled_features=*/{});
     InteractiveBrowserTest::SetUp();
   }
