@@ -17,6 +17,11 @@ import "services/data_decoder/public/mojom/xml_parser.mojom";
 import "services/data_decoder/public/mojom/ble_scan_parser.mojom";
 
 // The main interface to the Data Decoder service.
+//
+// IMPORTANT: Before adding something, please consider if there is a viable
+// memory-safe implementation; the data decoder is already a grab bag of random
+// stuff and process startup time can be a major performance tax, especially on
+// mobile.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface DataDecoderService {
   // Binds an interface which can be used to decode compressed image data.
