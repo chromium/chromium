@@ -244,15 +244,13 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   // data. This method finds the first element which has most recent data.
   ElementHolder* GetElementWithLatestContent();
 
-  // Gets a backing with latest content corresponding to the given stream. There
-  // could be multiple backings supporting the given stream. So this method
-  // prioritizes one with the latest content. If no matching backing is found
-  // which has the latest content, then it returns first backing which supports
-  // the given stream else return null.
-  // Note the eventually this method will be able to allocate a new backing on
-  // the fly if it can not find any existing backing which can support the given
-  // stream. We can then rename this method to GetOrAllocateBacking().
-  SharedImageBacking* GetBacking(SharedImageAccessStream stream);
+  // Gets or allocates a backing for a given |stream|.
+  // If a backing with a given |stream| is present, it will either return the
+  // backing with the latest content OR will return any supported backing (the
+  // first one it finds).
+  // If no backing is found, then it will allocate an appropriate backing which
+  // can support the |stream|.
+  SharedImageBacking* GetOrAllocateBacking(SharedImageAccessStream stream);
 
   // Returns the gpu backing from the list of |element_| which has a shm and a
   // gpu backing.
@@ -266,9 +264,10 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
 
   // Runs CreateSharedImage() on `factory` and stores the result in `backing`.
   // If successful this will update the estimated size of compound backing.
-  void LazyCreateBacking(base::WeakPtr<SharedImageBackingFactory> factory,
-                         std::string debug_label,
-                         std::unique_ptr<SharedImageBacking>& backing);
+  void CreateBackingFromBackingFactory(
+      base::WeakPtr<SharedImageBackingFactory> factory,
+      std::string debug_label,
+      std::unique_ptr<SharedImageBacking>& backing);
 
   void OnCopyToGpuMemoryBufferComplete(bool success);
 

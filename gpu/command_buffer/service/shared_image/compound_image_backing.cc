@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -45,6 +46,12 @@
 namespace gpu {
 namespace {
 
+// Allows CompoundImageBacking to allocate backings during runtime if a
+// compatible backing to serve clients requested usage is not already present.
+BASE_FEATURE(kUseDynamicBackingAllocations,
+             "UseDynamicBackingAllocations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr AccessStreamSet kMemoryStreamSet = {SharedImageAccessStream::kMemory};
 
 // Unique GUIDs for child backings.
@@ -74,6 +81,32 @@ gpu::SharedImageUsageSet GetShmSharedImageUsage(SharedImageUsageSet usage) {
     new_usage |= SHARED_IMAGE_USAGE_SCANOUT;
   }
   return new_usage;
+}
+
+// This might need further tweaking in order to be able to choose appropriate
+// backing. Note that the backing usually doesnt know at this point if the
+// access stream will be used for read or write.
+SharedImageUsageSet GetUsageFromAccessStream(SharedImageAccessStream stream) {
+  switch (stream) {
+    case SharedImageAccessStream::kGL:
+      return SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+    case SharedImageAccessStream::kSkia:
+      return SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+             SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+    case SharedImageAccessStream::kDawn:
+      return SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+    case SharedImageAccessStream::kOverlay:
+      return SHARED_IMAGE_USAGE_SCANOUT;
+    case SharedImageAccessStream::kVaapi:
+      return SHARED_IMAGE_USAGE_VIDEO_DECODE;
+    case SharedImageAccessStream::kMemory:
+      // Below usage set ensures that only SharedMemoryImageBacking will be able
+      // to support this stream.
+      return SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_CPU_READ |
+             SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -595,10 +628,12 @@ CompoundImageBacking::CompoundImageBacking(
   gpu_element.access_streams =
       base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
 
-  // LazyCreateBacking will be called on demand.
-  gpu_element.create_callback = base::BindOnce(
-      &CompoundImageBacking::LazyCreateBacking, base::Unretained(this),
-      std::move(gpu_backing_factory), std::move(debug_label));
+  // CreateBackingFromBackingFactory will be called on demand. Hence this is
+  // lazy backing creation.
+  gpu_element.create_callback =
+      base::BindOnce(&CompoundImageBacking::CreateBackingFromBackingFactory,
+                     base::Unretained(this), std::move(gpu_backing_factory),
+                     std::move(debug_label));
   elements_.push_back(std::move(gpu_element));
 }
 
@@ -744,7 +779,7 @@ std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
     wgpu::BackendType backend_type,
     std::vector<wgpu::TextureFormat> view_formats,
     scoped_refptr<SharedContextState> context_state) {
-  auto* backing = GetBacking(SharedImageAccessStream::kDawn);
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kDawn);
   if (!backing)
     return nullptr;
 
@@ -760,7 +795,7 @@ std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
 std::unique_ptr<GLTextureImageRepresentation>
 CompoundImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                        MemoryTypeTracker* tracker) {
-  auto* backing = GetBacking(SharedImageAccessStream::kGL);
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL);
   if (!backing)
     return nullptr;
 
@@ -775,7 +810,7 @@ CompoundImageBacking::ProduceGLTexture(SharedImageManager* manager,
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 CompoundImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                   MemoryTypeTracker* tracker) {
-  auto* backing = GetBacking(SharedImageAccessStream::kGL);
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kGL);
   if (!backing)
     return nullptr;
 
@@ -793,7 +828,7 @@ CompoundImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  auto* backing = GetBacking(SharedImageAccessStream::kSkia);
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kSkia);
   if (!backing)
     return nullptr;
 
@@ -811,7 +846,7 @@ CompoundImageBacking::ProduceSkiaGraphite(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  auto* backing = GetBacking(SharedImageAccessStream::kSkia);
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kSkia);
   if (!backing) {
     return nullptr;
   }
@@ -828,7 +863,7 @@ CompoundImageBacking::ProduceSkiaGraphite(
 std::unique_ptr<OverlayImageRepresentation>
 CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
                                      MemoryTypeTracker* tracker) {
-  auto* backing = GetBacking(SharedImageAccessStream::kOverlay);
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kOverlay);
   if (!backing)
     return nullptr;
 
@@ -920,7 +955,7 @@ CompoundImageBacking::GetElementWithLatestContent() {
   return nullptr;
 }
 
-SharedImageBacking* CompoundImageBacking::GetBacking(
+SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
     SharedImageAccessStream stream) {
   ElementHolder* best_match = nullptr;
   ElementHolder* any_match = nullptr;
@@ -942,11 +977,34 @@ SharedImageBacking* CompoundImageBacking::GetBacking(
   }
 
   ElementHolder* target_element = best_match ? best_match : any_match;
-  if (!target_element) {
-    LOG(ERROR) << "Could not find or create a backing for representation.";
-    return nullptr;
+  if (target_element) {
+    return target_element->GetBacking();
   }
-  return target_element->GetBacking();
+
+  // If no backing is found, we will try to create a new one. This feature is
+  // disabled by default currently until SharedImageCopyManager is fully ready
+  // to support all the existing gpu-gpu copy usages.
+  if (base::FeatureList::IsEnabled(kUseDynamicBackingAllocations) &&
+      shared_image_factory_) {
+    SharedImageUsageSet usage = GetUsageFromAccessStream(stream);
+    auto* gpu_backing_factory = shared_image_factory_->GetFactoryByUsage(
+        usage, format(), size(),
+        /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
+
+    if (gpu_backing_factory) {
+      ElementHolder element;
+      element.access_streams.Put(stream);
+      CreateBackingFromBackingFactory(gpu_backing_factory->GetWeakPtr(),
+                                      debug_label(), element.backing);
+      if (element.backing) {
+        elements_.push_back(std::move(element));
+        return elements_.back().GetBacking();
+      }
+    }
+  }
+
+  LOG(ERROR) << "Could not find or create a backing for representation.";
+  return nullptr;
 }
 
 SharedImageBacking* CompoundImageBacking::GetGpuBacking() {
@@ -959,7 +1017,7 @@ SharedImageBacking* CompoundImageBacking::GetGpuBacking() {
   return nullptr;
 }
 
-void CompoundImageBacking::LazyCreateBacking(
+void CompoundImageBacking::CreateBackingFromBackingFactory(
     base::WeakPtr<SharedImageBackingFactory> factory,
     std::string debug_label,
     std::unique_ptr<SharedImageBacking>& backing) {
