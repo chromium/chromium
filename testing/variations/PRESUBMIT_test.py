@@ -134,7 +134,7 @@ class UndeclaredFeaturesTest(unittest.TestCase):
                                                changed_lines)
     self.assertEqual(result, [])
 
-  def testTwoParameterFeatureWithMacroParametersOnDifferentLines(self):
+  def testOldTwoParameterFeatureWithMacroParametersOnDifferentLines(self):
     self._create_file_in_repo(
         'components/feature_e.cc', 'BASE_FEATURE(FeatureE,\n'
         '             base::FEATURE_ENABLED_BY_DEFAULT);')
@@ -147,6 +147,42 @@ class UndeclaredFeaturesTest(unittest.TestCase):
         }]
     }
     changed_lines = [(1, '"enable_features": ["FeatureE"]')]
+    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
+                                               self.mock_output_api, json_data,
+                                               changed_lines)
+    self.assertEqual(result, [])
+
+  def testTwoParameterMacro(self):
+    self._create_file_in_repo(
+        'components/feature_g.cc',
+        'BASE_FEATURE(kFeatureG, base::FEATURE_ENABLED_BY_DEFAULT);')
+    json_data = {
+        'Study1': [{
+            'experiments': [{
+                'name': 'group1',
+                'enable_features': ['FeatureG']
+            }]
+        }]
+    }
+    changed_lines = [(1, '"enable_features": ["FeatureG"]')]
+    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
+                                               self.mock_output_api, json_data,
+                                               changed_lines)
+    self.assertEqual(result, [])
+
+  def testTwoParameterMacroWithParametersOnDifferentLines(self):
+    self._create_file_in_repo(
+        'components/feature_h.cc', 'BASE_FEATURE(kFeatureH,\n'
+        '             base::FEATURE_ENABLED_BY_DEFAULT);')
+    json_data = {
+        'Study1': [{
+            'experiments': [{
+                'name': 'group1',
+                'enable_features': ['FeatureH']
+            }]
+        }]
+    }
+    changed_lines = [(1, '"enable_features": ["FeatureH"]')]
     result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
                                                self.mock_output_api, json_data,
                                                changed_lines)
