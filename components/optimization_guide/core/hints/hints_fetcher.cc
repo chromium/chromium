@@ -331,13 +331,6 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
   active_url_loader_->AttachStringForUpload(serialized_request,
                                             "application/x-protobuf");
 
-  UMA_HISTOGRAM_COUNTS_100(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount",
-      filtered_hosts.size());
-  UMA_HISTOGRAM_COUNTS_100(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount",
-      valid_urls.size());
-
   // Record histogram variants based on request context.
   // Histogram macro doesn't allow dynamic string. Use function.
   base::UmaHistogramCounts100(

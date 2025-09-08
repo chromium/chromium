@@ -598,7 +598,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherEnabled) {
   // in each of the following histograms as One Platform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
@@ -627,7 +629,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   // in each of the following histograms as One Platform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
@@ -663,7 +667,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   // in each of the following histograms as One Platform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   // Wait until histograms have been updated before performing checks for
@@ -695,7 +701,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   // in each of the following histograms as One Platform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   // Wait until histograms have been updated before performing checks for
@@ -726,7 +734,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   // in each of the following histograms as One Platform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   // Wait until histograms have been updated before performing checks for
@@ -761,7 +771,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   // We expect that we requested hints for 1 URL.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+                "PageNavigation",
+                1),
             1);
 }
 
@@ -802,7 +814,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   // in each of the following histograms as OnePlatform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "PageNavigation",
+                1),
             1);
 
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
@@ -857,12 +871,16 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
   // in each of the following histograms as OnePlatform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   // There should be 2 sites in the engagement service.
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 2, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "BatchUpdateActiveTabs",
+      2, 1);
 
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
@@ -891,7 +909,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherFetches) {
   // in each of the following histograms as hints fetching is enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
@@ -1003,7 +1023,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   // in each of the following histograms as One Platform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
@@ -1106,7 +1128,9 @@ IN_PROC_BROWSER_TEST_F(
   // in each of the following histograms as One Platform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
@@ -1197,7 +1221,9 @@ IN_PROC_BROWSER_TEST_F(
   // in each of the following histograms as One Platform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
@@ -1289,7 +1315,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherPre3pcdBrowserTest,
   // in each of the following histograms as hints fetching is enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
@@ -1344,7 +1372,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
   // in each of the following histograms as One Platform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
@@ -1392,9 +1422,13 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
   WaitUntilHintsFetcherRequestReceived();
   EXPECT_EQ(1u, count_hints_requests_received());
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 3, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "BatchUpdateGoogleSRP",
+      3, 1);
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 7, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "BatchUpdateGoogleSRP",
+      7, 1);
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
@@ -1447,7 +1481,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPagePrerenderingBrowserTest,
   // in each of the following histograms as One Platform Hints are enabled.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
-                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+                "BatchUpdateActiveTabs",
+                1),
             1);
 
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
@@ -1478,7 +1514,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPagePrerenderingBrowserTest,
       prerender_helper()->AddPrerender(prerender_url);
   EXPECT_EQ(0u, count_hints_requests_received());
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0, 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "BatchUpdateGoogleSRP",
+      0, 0);
   histogram_tester->ExpectTotalCount(
       optimization_guide::kLoadedHintLocalHistogramString, 1);
 
@@ -1492,9 +1530,13 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPagePrerenderingBrowserTest,
       histogram_tester, optimization_guide::kLoadedHintLocalHistogramString, 2);
 
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 3, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "BatchUpdateGoogleSRP",
+      3, 1);
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 7, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "BatchUpdateGoogleSRP",
+      7, 1);
 }
 
 class HintsFetcherSearchPageDisabledBrowserTest
@@ -1550,9 +1592,13 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageDisabledBrowserTest,
   SetExpectedHintsRequestForHostsAndUrls(srp_request);
   EXPECT_EQ(1u, count_hints_requests_received());
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester->ExpectTotalCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
       "PageNavigation",
@@ -1579,9 +1625,13 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageDisabledBrowserTest,
       2);
   EXPECT_EQ(1u, count_hints_requests_received());
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 2);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      1, 2);
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 2);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      1, 2);
   histogram_tester->ExpectTotalCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
       "PageNavigation",
@@ -1677,9 +1727,13 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageLimitedURLsBrowserTest,
             1);
   EXPECT_EQ(1u, count_hints_requests_received());
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "BatchUpdateGoogleSRP",
+      1, 1);
   histogram_tester->ExpectBucketCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "BatchUpdateGoogleSRP",
+      1, 1);
   histogram_tester->ExpectTotalCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
       "BatchUpdateGoogleSRP",

@@ -685,7 +685,8 @@ TEST_P(HintsFetcherTest, MaxUrlsForOptimizationGuideServiceHintsFetch) {
   EXPECT_TRUE(hints_fetched());
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount",
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "BatchUpdateActiveTabs",
       max_urls_in_fetch_request, 1);
 
   proto::GetHintsRequest last_request;

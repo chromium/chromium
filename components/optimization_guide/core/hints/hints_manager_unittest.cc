@@ -2017,9 +2017,13 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      0);
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      0);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus", 0);
 }
@@ -2037,9 +2041,13 @@ TEST_F(HintsManagerFetchingTest, HintsFetchedAtNavigationTime) {
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);
@@ -2061,9 +2069,13 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      0);
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchNotAttempted, 1);
@@ -2085,7 +2097,9 @@ TEST_F(HintsManagerFetchingTest,
   CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
   RunUntilIdle();
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchURL, 1);
@@ -2122,9 +2136,13 @@ TEST_F(HintsManagerFetchingTest,
   CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
   RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 0, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      0, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHost, 1);
@@ -2156,7 +2174,9 @@ TEST_F(HintsManagerFetchingTest, URLHintsNotFetchedAtNavigationTime) {
     RunUntilIdle();
 
     histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+        "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+        "PageNavigation",
+        0);
 
     // Make sure navigation data is populated correctly.
     EXPECT_TRUE(navigation_data->hints_fetch_latency().has_value());
@@ -2213,7 +2233,9 @@ TEST_F(HintsManagerFetchingTest, URLWithNoHintsNotRefetchedAtNavigationTime) {
     CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
     RunUntilIdle();
     histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+        "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+        "PageNavigation",
+        0);
 
     // Make sure navigation data is populated correctly.
     EXPECT_TRUE(navigation_data->hints_fetch_latency().has_value());
@@ -3787,9 +3809,13 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);
@@ -3814,9 +3840,13 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);

@@ -738,16 +738,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount"
-    units="total host count" expires_after="M145">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>catliu@chromium.org</owner>
-  <summary>
-    Records the number of hosts selected for sending a hint request. This will
-    be captured when any hint request is initiated.
-  </summary>
-</histogram>
-
 <histogram
     name="OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount.{RequestContext}"
     units="total host count" expires_after="2025-12-21">
@@ -762,7 +752,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.NetErrorCode"
-    enum="NetErrorCodes" expires_after="2025-08-24">
+    enum="NetErrorCodes" expires_after="2026-08-24">
   <owner>rajendrant@chromium.org</owner>
   <owner>catliu@chromium.org</owner>
   <summary>
@@ -791,16 +781,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each HintsFetch request to the Optimization Guide Service, log the HTTP
     response code on success and failure.
-  </summary>
-</histogram>
-
-<histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount"
-    units="total url count" expires_after="2025-08-24">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>catliu@chromium.org</owner>
-  <summary>
-    Records the number of URLs selected for sending a hint request. This will be
-    captured when any hint request is initiated.
   </summary>
 </histogram>
 
