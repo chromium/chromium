@@ -8,11 +8,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "components/lens/lens_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "pdf/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#include "pdf/mojom/pdf.mojom.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace lens {
 
@@ -127,11 +134,52 @@ void TabContextualizationController::GetPageContext(
   contextual_input_data->page_title =
       base::UTF16ToUTF8(web_contents->GetTitle());
 
-  CaptureScreenshot(
-      base::BindOnce(&TabContextualizationController::OnScreenshotCaptured,
-                     base::Unretained(this), std::move(callback),
-                     std::move(contextual_input_data)));
+#if BUILDFLAG(ENABLE_PDF)
+  // Capture the PDF bytes if the PDF helper exists.
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+  if (pdf_helper) {
+    // Fetch the PDF bytes then run the callback.
+    pdf_helper->GetPdfBytes(
+        /*size_limit=*/lens::features::GetLensOverlayFileUploadLimitBytes(),
+        base::BindOnce(&TabContextualizationController::OnPdfBytesReceived,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(contextual_input_data), std::move(callback)));
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+void TabContextualizationController::OnPdfBytesReceived(
+    std::unique_ptr<lens::ContextualInputData> data,
+    GetPageContextCallback callback,
+    pdf::mojom::PdfListener::GetPdfBytesStatus status,
+    const std::vector<uint8_t>& bytes,
+    uint32_t page_count) {
+  data->primary_content_type = lens::MimeType::kPdf;
+  data->context_input = std::vector<lens::ContextualInput>();
+  // TODO(crbug.com/370530197): Show user error message if status is not
+  // success.
+  if (status != pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess ||
+      page_count == 0) {
+    std::move(callback).Run(std::move(data));
+    return;
+  }
+
+  base::span<const uint8_t> file_data_span = base::span(bytes);
+  std::vector<uint8_t> file_data_vector(file_data_span.begin(),
+                                        file_data_span.end());
+  data->context_input->push_back(
+      lens::ContextualInput(std::move(file_data_vector), lens::MimeType::kPdf));
+
+  // TODO(crbug.com/443743308): Parallelize the screenshot capture with the
+  // PDF bytes fetch.
+  CaptureScreenshot(base::BindOnce(
+      &TabContextualizationController::OnScreenshotCaptured,
+      base::Unretained(this), std::move(callback), std::move(data)));
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 void TabContextualizationController::CaptureScreenshot(
     base::OnceCallback<void(const SkBitmap&)> callback) {

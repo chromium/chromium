@@ -16,7 +16,13 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "pdf/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#include "pdf/mojom/pdf.mojom.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace optimization_guide {
 struct AIPageContentResult;
@@ -86,6 +92,14 @@ class TabContextualizationController : public content::WebContentsObserver {
       const GURL& main_frame_url,
       std::vector<optimization_guide::FrameMetadata> frame_metadata,
       GetPageContextEligibilityCallback callback);
+
+#if BUILDFLAG(ENABLE_PDF)
+  void OnPdfBytesReceived(std::unique_ptr<lens::ContextualInputData> data,
+                          GetPageContextCallback callback,
+                          pdf::mojom::PdfListener::GetPdfBytesStatus status,
+                          const std::vector<uint8_t>& bytes,
+                          uint32_t page_count);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   void CaptureScreenshot(base::OnceCallback<void(const SkBitmap&)> callback);
 

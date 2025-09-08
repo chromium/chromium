@@ -68,6 +68,7 @@ if (is_android) {
     sources = [ "java/res/drawable/lens_icon.xml" ]
   }
 } else {
+  import("//pdf/features.gni")
   source_set("lens_tab_contextualization_test") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -79,9 +80,16 @@ if (is_android) {
       "//components/lens",
       "//content/test:test_support",
       "//net:test_support",
+      "//pdf:buildflags",
       "//testing/gmock",
       "//testing/gtest",
       "//url",
     ]
+    if (enable_pdf) {
+      deps += [
+        "//chrome/browser/pdf:pdf_extension_test_utils",
+        "//pdf:features",
+      ]
+    }
   }
 }
