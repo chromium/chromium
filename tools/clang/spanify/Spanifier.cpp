@@ -33,10 +33,27 @@ using namespace clang::ast_matchers;
 
 namespace {
 
+// Specifies how `EmitContainerPointerRewrites()` should behave.
+enum class ContainerPointerRewritesMode {
+  // When `container` is not (and will not be) a span, but is fed into a
+  // spanified context (e.g. a spanified function), `container` must be
+  // wrapped in `base::span()`.
+  kWrapWithBaseSpan,
+
+  // When `container` will be a span, but is positioned on a frontier
+  // (and must have `.data()` appended), `container` should not be
+  // re-wrapped in `base::span`.
+  kDontWrapWithBaseSpan,
+};
+
 // Forward declarations
 std::string GetArraySize(const clang::ArrayTypeLoc& array_type_loc,
                          const clang::SourceManager& source_manager,
                          const clang::ASTContext& ast_context);
+clang::SourceLocation EmitContainerPointerRewrites(
+    const MatchFinder::MatchResult& result,
+    std::string_view key,
+    ContainerPointerRewritesMode mode);
 
 // For debugging/assertions. Dump the match result to stderr.
 void DumpMatchResult(const MatchFinder::MatchResult& result) {
@@ -1335,23 +1352,28 @@ void EraseMemberCall(const std::string& node,
 // Return a replacement that appends `.data()` to the matched expression.
 void AppendDataCall(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
+  const std::string key = GetRHS(result);
   auto rep_range = clang::SourceRange(getSourceRange(result).getEnd());
 
   std::string replacement_text = ".data()";
 
   if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator")) {
-    // Insert enclosing parenthesis for expressions with UnaryOperators
-    auto begin_range = clang::SourceRange(getSourceRange(result).getBegin());
-    EmitReplacement(GetRHS(result),
-                    GetReplacementDirective(begin_range, "(", source_manager,
-                                            kAppendDataCallPrecedence));
-    replacement_text = ").data()";
+    if (result.Nodes.getNodeAs<clang::Expr>("container_buff_address")) {
+      rep_range = EmitContainerPointerRewrites(
+          result, key, ContainerPointerRewritesMode::kDontWrapWithBaseSpan);
+    } else {
+      // Insert enclosing parenthesis for expressions with UnaryOperators
+      auto begin_range = clang::SourceRange(getSourceRange(result).getBegin());
+      EmitReplacement(key,
+                      GetReplacementDirective(begin_range, "(", source_manager,
+                                              kAppendDataCallPrecedence));
+      replacement_text = ").data()";
+    }
   }
 
   EmitReplacement(
-      GetRHS(result),
-      GetReplacementDirective(rep_range, replacement_text, source_manager,
-                              -kAppendDataCallPrecedence));
+      key, GetReplacementDirective(rep_range, replacement_text, source_manager,
+                                   -kAppendDataCallPrecedence));
 }
 
 // Given that we want to emit `.subspan(expr)`,
@@ -1435,12 +1457,21 @@ const clang::Expr* GetIndexExprForSubspan(
 // Handles `&container[offset]` being used as a buffer.
 //
 // To handle a value passed into a newly spanified function:
-// *  replaces `&` with `base::span<T>(`
-// *  replaces `[` with `).subspan(`
-// *  fixes up the `offset` expression if necessary
-// *  replaces `]` with `)`
-void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
-                                  std::string_view key) {
+// 1. replaces `&` with `base::span<T>(`
+// 2. replaces `[` with `).subspan(`
+// 3. fixes up the `offset` expression if necessary
+// 4. replaces `]` with `)`
+//
+// To handle a frontier value inside a newly spanified function:
+// [skip step 1]
+// 2. replaces `[` with `.subspan(`
+// etc.
+//
+// Returns the source location just beyond the right-hand bracket.
+clang::SourceLocation EmitContainerPointerRewrites(
+    const MatchFinder::MatchResult& result,
+    std::string_view key,
+    ContainerPointerRewritesMode mode) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::LangOptions& lang_opts = result.Context->getLangOpts();
   auto replacement_range = GetNodeOrCrash<clang::UnaryOperator>(
@@ -1450,14 +1481,18 @@ void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
   // Stretch across the `&`.
   replacement_range.setEnd(replacement_range.getBegin().getLocWithOffset(1));
 
-  const auto& contained_type =
-      *GetNodeOrCrash<clang::QualType>(result, "contained_type", __FUNCTION__);
-
   const auto* subscript_expr =
       GetNodeOrCrash<clang::Expr>(result, "subscript_expr", __FUNCTION__);
 
+  std::string_view declref_bind_name = "container_decl_ref";
+  std::string_view subspan_opener = ").subspan(";
+  if (mode == ContainerPointerRewritesMode::kDontWrapWithBaseSpan) {
+    declref_bind_name = "rhs_expr";
+    subspan_opener = ".subspan(";
+  }
+
   const auto& container_decl_ref =
-      *GetNodeOrCrash<clang::Expr>(result, "container_decl_ref", __FUNCTION__);
+      *GetNodeOrCrash<clang::Expr>(result, declref_bind_name, __FUNCTION__);
   const clang::SourceLocation left_bracket =
       GetExprRange(container_decl_ref, source_manager, lang_opts).getEnd();
   clang::SourceLocation right_bracket =
@@ -1472,27 +1507,46 @@ void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
     replacement_range = {left_bracket, right_bracket.getLocWithOffset(1)};
     EmitReplacement(key, GetReplacementDirective(replacement_range, "",
                                                  *result.SourceManager));
-    return;
+    return right_bracket.getLocWithOffset(1);
   }
 
-  EmitReplacement(
-      key, GetReplacementDirective(
-               replacement_range,
-               llvm::formatv("base::span<{0}>(  ",
-                             GetTypeAsString(contained_type, *result.Context)),
-               source_manager));
+  // Step 1
+  if (mode == ContainerPointerRewritesMode::kWrapWithBaseSpan) {
+    // Emit the opening `base::span(`.
+    const auto& contained_type = *GetNodeOrCrash<clang::QualType>(
+        result, "contained_type", __FUNCTION__);
+    EmitReplacement(
+        key,
+        GetReplacementDirective(
+            replacement_range,
+            llvm::formatv("base::span<{0}>(",
+                          GetTypeAsString(contained_type, *result.Context)),
+            source_manager));
+  } else {
+    // Just delete the `&`.
+    EmitReplacement(key,
+                    GetReplacementDirective(
+                        replacement_range,
+                        // Mysteriously, emitting a pure deletion replacement
+                        // also eats the preceding comma in our test cases.
+                        " ", source_manager));
+  }
 
+  // Step 2
   EmitReplacement(key, GetReplacementDirective(
                            {left_bracket, left_bracket.getLocWithOffset(1)},
-                           ").subspan( ", source_manager));
+                           std::string(subspan_opener), source_manager));
 
+  // Step 3
   const clang::Expr* index = GetIndexExprForSubspan(result, subscript_expr);
   assert(index);
   RewriteExprForSubspan(index, result, key);
 
+  // Step 4
   EmitReplacement(key, GetReplacementDirective(
                            {right_bracket, right_bracket.getLocWithOffset(1)},
                            ")", source_manager));
+  return right_bracket.getLocWithOffset(1);
 }
 
 // Handles code that passes address to a local variable as a single element
@@ -1755,7 +1809,8 @@ std::string GetNodeFromSizeExpr(const clang::Expr* size_expr,
   }
 
   if (result.Nodes.getNodeAs<clang::UnaryOperator>("container_buff_address")) {
-    EmitContainerPointerRewrites(result, key);
+    EmitContainerPointerRewrites(
+        result, key, ContainerPointerRewritesMode::kWrapWithBaseSpan);
   }
 
   EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager));
@@ -3299,6 +3354,38 @@ class Spanifier {
         callee(cxxMethodDecl(hasName("get"), ofClass(hasName("raw_ptr")))),
         has(memberExpr(has(rhs_expr))));
 
+    // Much the same as `buff_address_from_container` above. This reuses
+    // the same business logic in `EmitContainerPointerRewrites()`, but
+    // specifically covers frontier parameters that already came from
+    // nodes without size information.
+    //
+    // There are two obstacles to total unification:
+    // 1. The call site of `EmitContainerPointerRewrites()` is hard to
+    //    position. We need a key, and depending on the usage mode
+    //    (this site, or the size nodes matched by
+    //    `buff_address_from_container`), the surrounding plumbing
+    //    also needs to change.
+    // 2. The different bindings are hard to unify. Unification is also
+    //    unlikely to greatly improve readability.
+    auto index_into_pointer =
+        unaryOperator(
+            hasOperatorName("&"),
+            hasUnaryOperand(anyOf(
+                arraySubscriptExpr(
+                    hasBase(declRefExpr(to(rhs_var)).bind("rhs_expr")),
+                    optionally(hasIndex(integerLiteral(equals(0u))
+                                            .bind("zero_container_offset"))))
+                    .bind("subscript_expr"),
+                cxxOperatorCallExpr(
+                    callee(functionDecl(hasName("operator[]"))),
+                    hasArgument(0, hasType(raw_ptr_type)),
+                    hasDescendant(declRefExpr(to(rhs_var)).bind("rhs_expr")),
+                    optionally(
+                        hasDescendant(integerLiteral(equals(0u))
+                                          .bind("zero_container_offset"))))
+                    .bind("subscript_expr"))))
+            .bind("unaryOperator");
+
     auto rhs_exprs_without_size_nodes =
         expr(ignoringParenCasts(anyOf(
                  rhs_expr,
@@ -3316,7 +3403,8 @@ class Spanifier {
                      callee(cxxMethodDecl(ofClass(hasName("raw_ptr")))),
                      hasOperatorName("++"), hasArgument(0, rhs_expr))
                      .bind("raw_ptr_operator++"),
-                 get_calls_on_raw_ptr)),
+                 get_calls_on_raw_ptr,
+                 expr(index_into_pointer).bind("container_buff_address"))),
              reinterpret_cast_wrapper)
             .bind("span_frontier");
 
