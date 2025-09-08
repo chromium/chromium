@@ -8578,6 +8578,11 @@
     "expiry_milestone": 145
   },
   {
+    "name" : "reader-mode-new-css-enabled",
+    "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "reader-mode-page-eligibility-enabled",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
     "expiry_milestone": 145

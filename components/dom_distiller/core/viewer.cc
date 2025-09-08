@@ -74,6 +74,12 @@ std::string GetVersionedCss() {
         IDR_DISTILLER_NEW_CSS);
   }
 #endif
+#if BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(dom_distiller::kEnableReaderModeNewCss)) {
+    return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+        IDR_DISTILLER_NEW_CSS);
+  }
+#endif
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
       IDR_DISTILLER_CSS);
 }

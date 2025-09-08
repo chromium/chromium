@@ -86,4 +86,10 @@ static jlong JNI_DomDistillerFeatureMap_GetNativeMap(JNIEnv* env) {
 }  // namespace android
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kEnableReaderModeNewCss,
+             "EnableReaderModeNewCss",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace dom_distiller

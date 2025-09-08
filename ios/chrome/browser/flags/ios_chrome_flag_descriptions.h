@@ -819,6 +819,9 @@ extern const char kReaderModeTranslationDescription[];
 extern const char kReaderModeDefaultBrowserPromoName[];
 extern const char kReaderModeDefaultBrowserPromoDescription[];
 
+extern const char kReaderModeNewCssName[];
+extern const char kReaderModeNewCssDescription[];
+
 // Title and description for the flag to refactor the toolbarsSize.
 extern const char kRefactorToolbarsSizeName[];
 extern const char kRefactorToolbarsSizeDescription[];
