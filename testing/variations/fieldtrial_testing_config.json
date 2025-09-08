@@ -18321,6 +18321,24 @@
             ]
         }
     ],
+    "PlatformExperienceHelperNotificationText": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_5",
+                    "params": {
+                        "UseNotificationTextIndex ": "5"
+                    },
+                    "enable_features": [
+                        "ShouldUseSpecificPEHNotificationText"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlayReadyHardwareSecureDecryption": [
         {
             "platforms": [
