@@ -786,8 +786,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="(14) CLOSE_WATCHER"/>
   <int value="12" label="(17) TAB_HISTORY"/>
   <int value="13" label="(XX) TAB_RETURN_TO_CHROME_START_SURFACE (Deprecated)"/>
-  <int value="14" label="(18) SHOW_READING_LIST"/>
-  <int value="15" label="(19) MINIMIZE_APP_AND_CLOSE_TAB"/>
+  <int value="14" label="(19) SHOW_READING_LIST"/>
+  <int value="15" label="(20) MINIMIZE_APP_AND_CLOSE_TAB"/>
   <int value="16" label="(15) FIND_TOOLBAR"/>
   <int value="17" label="(12) LOCATION_BAR"/>
   <int value="18" label="(01) XR_DELEGATE"/>
@@ -795,6 +795,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="(16) BOTTOM_CONTROLS"/>
   <int value="21" label="(07) HUB"/>
   <int value="22" label="(06) ARCHIVED_TABS_DIALOG"/>
+  <int value="23" label="(18) NATIVE_PAGE"/>
 </enum>
 
 <!-- LINT.IfChange(BackPressTabCloseType) -->

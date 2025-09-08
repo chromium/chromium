@@ -74,9 +74,10 @@ public class BackPressManager implements Destroyable {
         map.put(Type.BOTTOM_CONTROLS, 20);
         map.put(Type.HUB, 21);
         map.put(Type.ARCHIVED_TABS_DIALOG, 22);
+        map.put(Type.NATIVE_PAGE, 23);
 
         // Add new one here and update array size.
-        sMetricsMaxValue = 23;
+        sMetricsMaxValue = 24;
         sMetricsMap = map;
     }
 
