@@ -234,25 +234,19 @@ class BitIterator {
 struct Config {
   size_t MakeFromBits(const uint8_t* bits, size_t size) {
     BitIterator it(bits, size);
-#if BUILDFLAG(IS_ANDROID)
-    attrib_helper.red_size = 8;
-    attrib_helper.green_size = 8;
-    attrib_helper.blue_size = 8;
-    attrib_helper.alpha_size = it.GetBit() ? 8 : 0;
-#endif
     [[maybe_unused]] bool es3 = it.GetBit();
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
-    attrib_helper.context_type = CONTEXT_TYPE_OPENGLES2;
+    context_type = CONTEXT_TYPE_OPENGLES2;
 #else
     bool es31 = it.GetBit();
     if (es3) {
-      attrib_helper.context_type =
+      context_type =
           es31 ? CONTEXT_TYPE_OPENGLES31_FOR_TESTING : CONTEXT_TYPE_OPENGLES3;
     } else {
-      attrib_helper.context_type = CONTEXT_TYPE_OPENGLES2;
+      context_type = CONTEXT_TYPE_OPENGLES2;
     }
 #endif
-    attrib_helper.enable_gpu_rasterization = it.GetBit();
+    enable_gpu_rasterization = it.GetBit();
 
 #if defined(GPU_FUZZER_USE_STUB)
     std::vector<std::string_view> enabled_extensions;
@@ -279,22 +273,23 @@ struct Config {
 #if defined(GPU_FUZZER_USE_PASSTHROUGH_CMD_DECODER) && \
     !defined(GPU_FUZZER_USE_RASTER_DECODER)
     gl_context_attribs.webgl_compatibility_context =
-        IsWebGLContextType(attrib_helper.context_type);
+        IsWebGLContextType(context_type);
     gl_context_attribs.global_texture_share_group = true;
     gl_context_attribs.robust_resource_initialization = true;
     gl_context_attribs.robust_buffer_access = true;
     gl_context_attribs.allow_client_arrays = false;
     gl_context_attribs.client_major_es_version =
-        IsWebGL2OrES3OrHigherContextType(attrib_helper.context_type) ? 3 : 2;
+        IsWebGL2OrES3OrHigherContextType(context_type) ? 3 : 2;
     gl_context_attribs.client_minor_es_version =
-        IsES31ForTestingContextType(attrib_helper.context_type) ? 1 : 0;
+        IsES31ForTestingContextType(context_type) ? 1 : 0;
 #endif
 
     return it.consumed_bytes();
   }
 
+  ContextType context_type = CONTEXT_TYPE_OPENGLES2;
+  bool enable_gpu_rasterization = false;
   GpuDriverBugWorkarounds workarounds;
-  ContextCreationAttribs attrib_helper;
   gl::GLContextAttribs gl_context_attribs;
 #if defined(GPU_FUZZER_USE_STUB)
   const char* version;
@@ -445,9 +440,9 @@ class CommandBufferSetup {
         shared_image_manager_.get(), context_state_, /*is_privileged=*/true);
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
-    auto result = decoder_->Initialize(
-        config_.attrib_helper.enable_gpu_rasterization,
-        config_.attrib_helper.lose_context_when_out_of_memory);
+    auto result =
+        decoder_->Initialize(config_.enable_gpu_rasterization,
+                             /*lose_context_when_out_of_memory=*/false);
     if (result != gpu::ContextResult::kSuccess) {
       return false;
     }
@@ -470,10 +465,10 @@ class CommandBufferSetup {
                                            &outputter_, context_group.get());
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
-    auto result = decoder_->Initialize(
-        context->default_surface(), context, /*offscreen=*/true,
-        config_.attrib_helper.context_type,
-        config_.attrib_helper.lose_context_when_out_of_memory);
+    auto result =
+        decoder_->Initialize(context->default_surface(), context,
+                             /*offscreen=*/true, config_.context_type,
+                             /*lose_context_when_out_of_memory=*/false);
     if (result != gpu::ContextResult::kSuccess) {
       return false;
     }
