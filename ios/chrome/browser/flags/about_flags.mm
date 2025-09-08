@@ -2908,6 +2908,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          sync_preferences::features::kEnableCrossDevicePrefTracker)},
+    {"aim-server-eligibility-en",
+     flag_descriptions::kIOSOmniboxAimServerEligibilityEnName,
+     flag_descriptions::kIOSOmniboxAimServerEligibilityEnDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kAimServerEligibilityEnabledEn)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
