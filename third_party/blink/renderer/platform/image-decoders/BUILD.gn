@@ -32,8 +32,6 @@ component("image_decoders") {
     "image_frame.h",
     "jpeg/jpeg_image_decoder.cc",
     "jpeg/jpeg_image_decoder.h",
-    "png/png_decoder_factory.cc",
-    "png/png_decoder_factory.h",
     "png/png_image_decoder.cc",
     "png/png_image_decoder.h",
     "rw_buffer.cc",

@@ -5,9 +5,10 @@
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_image_decoder.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/compiler_specific.h"
-#include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
+#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -218,9 +219,9 @@ bool ICOImageDecoder::DecodeAtIndex(wtf_size_t index) {
   if (!png_decoders_[index]) {
     AlphaOption alpha_option =
         premultiply_alpha_ ? kAlphaPremultiplied : kAlphaNotPremultiplied;
-    png_decoders_[index] = CreatePngImageDecoder(
-        alpha_option, ImageDecoder::kDefaultBitDepth, color_behavior_,
-        max_decoded_bytes_, dir_entry.image_offset_);
+    png_decoders_[index] = std::make_unique<PngImageDecoder>(
+        alpha_option, color_behavior_, max_decoded_bytes_,
+        dir_entry.image_offset_);
     SetDataForPNGDecoderAtIndex(index);
   }
   auto* png_decoder = png_decoders_[index].get();

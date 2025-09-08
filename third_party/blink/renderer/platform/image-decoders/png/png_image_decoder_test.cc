@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
+
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -13,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
-#include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -50,9 +51,8 @@ namespace {
 std::unique_ptr<ImageDecoder> CreatePNGDecoder(
     ImageDecoder::AlphaOption alpha_option,
     ColorBehavior color_behavior) {
-  return CreatePngImageDecoder(alpha_option, ImageDecoder::kDefaultBitDepth,
-                               color_behavior,
-                               ImageDecoder::kNoDecodedImageByteLimit);
+  return std::make_unique<PngImageDecoder>(
+      alpha_option, color_behavior, ImageDecoder::kNoDecodedImageByteLimit);
 }
 
 std::unique_ptr<ImageDecoder> CreatePNGDecoder(
@@ -65,10 +65,10 @@ std::unique_ptr<ImageDecoder> CreatePNGDecoder() {
 }
 
 std::unique_ptr<ImageDecoder> Create16BitPNGDecoder() {
-  return CreatePngImageDecoder(ImageDecoder::kAlphaNotPremultiplied,
-                               ImageDecoder::kHighBitDepthToHalfFloat,
-                               ColorBehavior::kTag,
-                               ImageDecoder::kNoDecodedImageByteLimit);
+  return std::make_unique<PngImageDecoder>(
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTag,
+      ImageDecoder::kNoDecodedImageByteLimit, PngImageDecoder::kNoReadingOffset,
+      ImageDecoder::kHighBitDepthToHalfFloat);
 }
 
 std::unique_ptr<ImageDecoder> CreatePNGDecoderWithPngData(
@@ -1250,10 +1250,9 @@ TEST(AnimatedPNGTests, Offset) {
 
   // Use the same defaults as CreatePNGDecoder, except use the (arbitrary)
   // non-zero offset.
-  auto decoder = CreatePngImageDecoder(
-      ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTransformToSRGB, ImageDecoder::kNoDecodedImageByteLimit,
-      kOffset);
+  auto decoder = std::make_unique<PngImageDecoder>(
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+      ImageDecoder::kNoDecodedImageByteLimit, kOffset);
   decoder->SetData(data, true);
   ASSERT_EQ(kExpectedFrameCount, decoder->FrameCount());
 
