@@ -808,7 +808,8 @@ content::WebContents* FedCmAccountSelectionView::GetRpWebContents() {
 }
 
 bool FedCmAccountSelectionView::CanFitInWebContents() {
-  CHECK(web_contents() && (dialog_widget_ || parked_dialog_view_));
+  CHECK(web_contents());
+  CHECK(dialog_widget_ || parked_dialog_view_);
 
   gfx::Size web_contents_size = web_contents()->GetSize();
   gfx::Size preferred_bubble_size =
