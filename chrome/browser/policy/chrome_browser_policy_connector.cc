@@ -169,6 +169,12 @@ ChromeBrowserPolicyConnector::GetPlatformProvider() {
   return platform_provider_.get();
 }
 
+void ChromeBrowserPolicyConnector::RefreshPlatformPolicies() {
+  if (ConfigurationPolicyProvider* platform_provider = GetPlatformProvider()) {
+    platform_provider->RefreshPolicies(policy::PolicyFetchReason::kUserRequest);
+  }
+}
+
 ConfigurationPolicyProvider*
 ChromeBrowserPolicyConnector::local_test_policy_provider() {
   if (local_test_provider_for_testing_) {

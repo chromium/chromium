@@ -46,6 +46,7 @@
 #include "chrome/browser/extensions/startup_helper.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
@@ -1491,6 +1492,16 @@ void StartupBrowserCreator::ProcessCommandLineWithProfile(
     LOG(ERROR) << "Failed to load the profile.";
     return;
   }
+
+  // Trigger immediate policy refresh when Chrome is already running.
+  // Useful for testing or forcing policy updates without waiting for
+  // the next scheduled refresh.
+  if (command_line.HasSwitch(switches::kRefreshPlatformPolicy)) {
+    g_browser_process->browser_policy_connector()->RefreshPlatformPolicies();
+    // Return early to prevent opening a new browser window.
+    return;
+  }
+
   Profiles last_opened_profiles;
 #if !BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS multiple profiles doesn't apply.

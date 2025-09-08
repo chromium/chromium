@@ -122,6 +122,7 @@ extern const char kForceAppMode[];
 extern const char kForceDevToolsAvailable[];
 #endif
 extern const char kForceFirstRun[];
+extern const char kRefreshPlatformPolicy[];
 extern const char kForceWhatsNew[];
 extern const char kHideCrashRestoreBubble[];
 extern const char kHomePage[];
