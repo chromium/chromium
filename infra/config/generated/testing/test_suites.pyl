@@ -255,7 +255,6 @@
       'google_apis_unittests': {},
       'ipc_tests': {},
       'latency_unittests': {},
-      'libcups_unittests': {},
       'media_unittests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.media_unittests.filter',
@@ -443,7 +442,6 @@
       'google_apis_unittests': {},
       'ipc_tests': {},
       'latency_unittests': {},
-      'libcups_unittests': {},
       'media_unittests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.betty.media_unittests.filter',

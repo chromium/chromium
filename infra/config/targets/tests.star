@@ -1716,10 +1716,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "libcups_unittests",
-)
-
-targets.tests.gtest_test(
     name = "libjingle_xmpp_unittests",
 )
 

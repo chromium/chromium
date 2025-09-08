@@ -260,17 +260,6 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
-        "autotest_name": "chromium",
-        "cros_board": "brya",
-        "cros_model": "kano",
-        "name": "libcups_unittests RELEASE_LKGM",
-        "shard_level_retries_on_ctp": 1,
-        "test": "libcups_unittests",
-        "test_id_prefix": "ninja://chrome/services/cups_proxy:libcups_unittests/",
-        "use_lkgm": true,
-        "variant_id": "RELEASE_LKGM"
-      },
-      {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.media_unittests.filter"
         ],

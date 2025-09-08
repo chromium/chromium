@@ -1230,10 +1230,6 @@
     "label": "//third_party/leveldatabase:leveldb_unittests",
     "type": "console_test_launcher",
   },
-  "libcups_unittests": {
-    "label": "//chrome/services/cups_proxy:libcups_unittests",
-    "type": "console_test_launcher",
-  },
   "libjingle_xmpp_unittests": {
     "label": "//third_party/libjingle_xmpp:libjingle_xmpp_unittests",
     "type": "console_test_launcher",

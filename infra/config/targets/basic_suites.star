@@ -200,7 +200,6 @@ targets.legacy_basic_suite(
         "google_apis_unittests": targets.legacy_test_config(),
         "ipc_tests": targets.legacy_test_config(),
         "latency_unittests": targets.legacy_test_config(),
-        "libcups_unittests": targets.legacy_test_config(),
         "media_unittests": targets.legacy_test_config(
             args = [
                 "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.media_unittests.filter",
@@ -287,7 +286,6 @@ targets.legacy_basic_suite(
         "google_apis_unittests": targets.legacy_test_config(),
         "ipc_tests": targets.legacy_test_config(),
         "latency_unittests": targets.legacy_test_config(),
-        "libcups_unittests": targets.legacy_test_config(),
         "media_unittests": targets.legacy_test_config(
             args = [
                 # TODO(b/351276191): Switch to gerneral chromeos.betty.media_unittests.filter

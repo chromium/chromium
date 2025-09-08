@@ -1531,12 +1531,6 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
-    name = "libcups_unittests",
-    label = "//chrome/services/cups_proxy:libcups_unittests",
-    module_scheme = "gtest",
-)
-
-targets.binaries.console_test_launcher(
     name = "libjingle_xmpp_unittests",
     label = "//third_party/libjingle_xmpp:libjingle_xmpp_unittests",
     module_scheme = "gtest",
