@@ -1018,6 +1018,40 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   EXPECT_EQ(kHasTransparentBackground, output->has_transparent_background);
 }
 
+// Verifies that backdrop filters with null (no) crop rect still work correctly.
+// This ensures that null backdrop_filter_bounds means "don't apply bounds"
+// rather than "don't show any backdrop-filter".
+TEST_F(StructTraitsTest, BackdropFilterWithNullBounds) {
+  base::test::TaskEnvironment task_environment;
+
+  // Create a null backdrop filter bounds
+  const std::optional<SkPath> kBackdropFilterBounds;
+
+  cc::FilterOperations backdrop_filters;
+  backdrop_filters.Append(cc::FilterOperation::CreateBlurFilter(5.0f));
+
+  auto input = CompositorRenderPass::Create();
+  input->SetAll(CompositorRenderPassId{1u}, gfx::Rect(100, 100), gfx::Rect(),
+                gfx::Transform(), cc::FilterOperations(), backdrop_filters,
+                kBackdropFilterBounds, SubtreeCaptureId(), gfx::Size(100, 100),
+                ViewTransitionElementResourceId(), true, false, false, false,
+                false);
+
+  std::unique_ptr<CompositorRenderPass> output;
+  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(input,
+                                                                   output);
+
+  // backdrop_filter_bounds should remain nullopt after serialization
+  EXPECT_EQ(kBackdropFilterBounds, output->backdrop_filter_bounds);
+  EXPECT_FALSE(output->backdrop_filter_bounds.has_value());
+
+  // Verify backdrop filters should still be present and valid
+  EXPECT_FALSE(output->backdrop_filters.IsEmpty());
+  EXPECT_EQ(1u, output->backdrop_filters.size());
+  EXPECT_EQ(cc::FilterOperation::BLUR, output->backdrop_filters.at(0).type());
+  EXPECT_EQ(5.0f, output->backdrop_filters.at(0).amount());
+}
+
 TEST_F(StructTraitsTest, QuadListBasic) {
   auto render_pass = CompositorRenderPass::Create();
   render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(), gfx::Rect(),
