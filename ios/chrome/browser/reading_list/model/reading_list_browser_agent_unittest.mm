@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/prefs/testing_pref_service.h"

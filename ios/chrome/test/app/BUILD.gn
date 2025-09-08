@@ -117,7 +117,6 @@ source_set("test_support") {
     "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/testing:open_url_context",
-    "//ios/third_party/material_components_ios",
     "//ios/web",
     "//ios/web/public/security",
     "//ios/web/public/test",

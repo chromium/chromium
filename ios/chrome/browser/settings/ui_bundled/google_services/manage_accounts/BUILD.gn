@@ -55,7 +55,6 @@ source_set("manage_accounts") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
-    "//ios/third_party/material_components_ios",
   ]
 }
 

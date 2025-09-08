@@ -89,7 +89,6 @@ source_set("bubble_view") {
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

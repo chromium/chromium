@@ -285,7 +285,6 @@ source_set("identity_confirmation_profile_agent") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
 }

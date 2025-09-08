@@ -7,12 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@class MDCSnackbarMessage;
 @class SnackbarMessage;
-
-// Returns a MDCSnackbarMessage instance. During EGTests, the snackbar duration
-// is updated to have the maximum duration.
-MDCSnackbarMessage* CreateSnackbarMessage(NSString* text);
 
 // Returns a SnackbarMessage instance. During EGTests, the snackbar duration
 // is updated to have the maximum duration.

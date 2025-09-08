@@ -45,7 +45,6 @@ source_set("buttons") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
-    "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//ui/base",
   ]

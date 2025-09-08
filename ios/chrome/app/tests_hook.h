@@ -186,7 +186,7 @@ void SignalAppLaunched();
 base::TimeDelta PasswordCheckMinimumDuration();
 
 // Duration for snackbars. If the value is 0, the default value from
-// -[MDCSnackbarMessage duration] should not be updated.
+// -[SnackbarMessage duration] should not be updated.
 base::TimeDelta GetOverriddenSnackbarDuration();
 
 // Returns a Drive service instance that should be used in EG tests. The real

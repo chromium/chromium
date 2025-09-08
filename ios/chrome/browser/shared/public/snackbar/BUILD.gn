@@ -9,10 +9,7 @@ source_set("snackbar") {
     "snackbar_message_action.h",
     "snackbar_message_action.mm",
   ]
-  deps = [
-    "//base",
-    "//ios/third_party/material_components_ios",
-  ]
+  deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]
 }
 
@@ -21,4 +18,5 @@ source_set("constants") {
     "snackbar_constants.h",
     "snackbar_constants.mm",
   ]
+  deps = [ "//base" ]
 }

@@ -67,7 +67,6 @@ source_set("coordinator") {
     "//ios/chrome/common",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
-    "//ios/third_party/material_components_ios",
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",

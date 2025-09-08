@@ -171,22 +171,6 @@ NSString* DisplayName() {
 
 @implementation FakeSnackbarImplementation
 
-// Empty implementations for the old methods that are not used in this test.
-- (void)showSnackbarMessage:(MDCSnackbarMessage*)message {
-}
-
-- (void)showSnackbarMessageOverBrowserToolbar:(MDCSnackbarMessage*)message {
-}
-
-- (void)showSnackbarMessage:(MDCSnackbarMessage*)message
-             withHapticType:(UINotificationFeedbackType)type {
-}
-
-- (void)showSnackbarMessage:(MDCSnackbarMessage*)message
-               bottomOffset:(CGFloat)offset {
-}
-
-// Implementations for the new custom snackbar methods.
 - (void)showCustomSnackbarMessage:(SnackbarMessage*)message {
   self.snackbarMessage = message.title;
 }

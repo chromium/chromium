@@ -87,7 +87,6 @@ source_set("snackbar_util") {
     "//base",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/public/snackbar",
-    "//ios/third_party/material_components_ios",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -181,7 +180,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/third_party/material_components_ios",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",

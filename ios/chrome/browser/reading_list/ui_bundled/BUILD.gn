@@ -80,7 +80,6 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/table_view",
-    "//ios/third_party/material_components_ios",
     "//ios/web",
     "//ios/web/common",
     "//ios/web/public",
@@ -91,7 +90,6 @@ source_set("coordinator") {
   ]
   allow_circular_includes_from =
       [ "//ios/chrome/browser/side_swipe/ui_bundled" ]
-  public_deps = [ "//ios/third_party/material_components_ios" ]
   frameworks = [ "UIKit.framework" ]
 }
 

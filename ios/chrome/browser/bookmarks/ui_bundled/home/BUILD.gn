@@ -94,7 +94,6 @@ source_set("home") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/util",
-    "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//ios/web/public/navigation:referrer",

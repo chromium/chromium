@@ -34,7 +34,6 @@ source_set("core") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/common/ui/colors",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

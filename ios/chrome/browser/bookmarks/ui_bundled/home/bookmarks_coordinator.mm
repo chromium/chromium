@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
-
-#import <MaterialComponents/MaterialSnackbar.h>
 #import <stdint.h>
 
 #import "base/apple/foundation_util.h"

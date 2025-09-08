@@ -4,8 +4,6 @@
 
 #import "ios/chrome/app/profile/identity_confirmation_profile_agent.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/logging.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"

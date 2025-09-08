@@ -290,14 +290,15 @@ source_set("eg_app_support+eg2") {
     "//components/strings",
     "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/webauthn/model",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/test/app:test_support",
     "//ios/public/provider/chrome/browser/passcode_settings:passcode_settings_api",
     "//ios/testing/earl_grey:eg_app_support+eg2",
-    "//ios/third_party/material_components_ios",
     "//url",
   ]
 

@@ -141,7 +141,6 @@ source_set("coordinator") {
   if (ios_enable_widget_kit_extension) {
     deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
   }
-  public_deps = [ "//ios/third_party/material_components_ios" ]
 }
 
 source_set("commands") {
