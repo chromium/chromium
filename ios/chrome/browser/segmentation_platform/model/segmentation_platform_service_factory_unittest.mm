@@ -225,7 +225,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
               .Then(SegmentationPlatformServiceFactory::GetDefaultFactory()));
       builder.AddTestingFactory(
           commerce::ShoppingServiceFactory::GetInstance(),
-          base::BindRepeating([](web::BrowserState*)
+          base::BindRepeating([](ProfileIOS* profile)
                                   -> std::unique_ptr<KeyedService> {
             std::unique_ptr<bookmarks::BookmarkNode> bookmark =
                 std::make_unique<bookmarks::BookmarkNode>(
