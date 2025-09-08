@@ -219,6 +219,21 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Tests that an error is returned for a discarded page.
+  async function invalidTarget_discardedPage() {
+    await chrome.userScripts.unregister();
+
+    const tab = await navigateToRequestedUrl();
+    await chrome.tabs.discard(tab.id);
+
+    const script = {js: [{file: 'script.js'}], target: {tabId: tab.id}};
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.execute(script),
+        `Error: Cannot access contents of a discarded page.`);
+
+    chrome.test.succeed();
+  },
+
   async function invalidWorldId_UnderscoreError() {
     await chrome.userScripts.unregister();
 
