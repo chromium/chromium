@@ -175,6 +175,7 @@ source_set("vaapi_test_utils") {
   deps = [
     ":common",
     "//base",
+    "//components/viz/common:shared_image_format",
     "//testing/gtest",
     "//third_party/libyuv",
   ]

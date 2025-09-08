@@ -36,6 +36,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/chromeos_camera/gpu_jpeg_encode_accelerator_factory.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/buildflags.h"
@@ -682,7 +683,7 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
   PrepareMemory(bitstream_buffer_id);
 
   auto input_buffer = gbm_buffer_manager_->CreateGbmBuffer(
-      test_image->visible_size, gfx::BufferFormat::YUV_420_BIPLANAR,
+      test_image->visible_size, viz::MultiPlaneFormat::kNV12,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
       gpu::kNullSurfaceHandle, nullptr);
   ASSERT_EQ(input_buffer->Map(), true);
@@ -703,7 +704,7 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
   LOG_ASSERT(input_frame.get());
 
   auto output_buffer = gbm_buffer_manager_->CreateGbmBuffer(
-      gfx::Size(kJpegMaxSize, 1), gfx::BufferFormat::R_8,
+      gfx::Size(kJpegMaxSize, 1), viz::SinglePlaneFormat::kR_8,
       gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
       nullptr);
   ASSERT_EQ(output_buffer->Map(), true);

@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/video_types.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
@@ -163,7 +164,7 @@ class GbmBufferMapping : public NativePixmapMapping {
   static std::unique_ptr<GbmBufferMapping> CreateGbmBufferMapping(
       gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
-      const gfx::BufferFormat& format) {
+      viz::SharedImageFormat format) {
     std::unique_ptr<TestGbmBufferManager> gbm_buffer_manager =
         std::make_unique<TestGbmBufferManager>();
     std::unique_ptr<TestGbmBuffer> gbm_buffer =
@@ -210,7 +211,7 @@ class Tile4Mapping : public NativePixmapMapping {
   static std::unique_ptr<Tile4Mapping> CreateTile4Mapping(
       gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
-      const gfx::BufferFormat& format) {
+      viz::SharedImageFormat format) {
     size_t plane_strides[2];
     size_t plane_sizes[2];
     uint8_t* plane_addrs[2];
@@ -324,7 +325,7 @@ class Tile4Mapping : public NativePixmapMapping {
 std::unique_ptr<NativePixmapMapping> CreateNativePixmapMapping(
     gfx::NativePixmapHandle& handle,
     const gfx::Size& size,
-    const gfx::BufferFormat& format) {
+    viz::SharedImageFormat format) {
   if (handle.modifier == I915_FORMAT_MOD_4_TILED) {
     return Tile4Mapping::CreateTile4Mapping(handle, size, format);
   }
@@ -359,19 +360,20 @@ std::unique_ptr<DecodedImage> NativePixmapToDecodedImage(
     const gfx::BufferFormat& format) {
   uint32_t fourcc;
   uint32_t number_of_planes;
-  if (format == gfx::BufferFormat::YVU_420) {
+  viz::SharedImageFormat si_format = viz::GetSharedImageFormat(format);
+  if (si_format == viz::MultiPlaneFormat::kYV12) {
     fourcc = VA_FOURCC_I420;
     number_of_planes = 3;
-  } else if (format == gfx::BufferFormat::YUV_420_BIPLANAR) {
+  } else if (si_format == viz::MultiPlaneFormat::kNV12) {
     fourcc = VA_FOURCC_NV12;
     number_of_planes = 2;
   } else {
-    LOG(ERROR) << "Unsupported format " << gfx::BufferFormatToString(format);
+    LOG(ERROR) << "Unsupported format " << si_format.ToString();
     return nullptr;
   }
 
   std::unique_ptr<NativePixmapMapping> mapping =
-      CreateNativePixmapMapping(handle, size, format);
+      CreateNativePixmapMapping(handle, size, si_format);
 
   if (!mapping) {
     LOG(ERROR) << "Failed to create NativePixmapMapping";

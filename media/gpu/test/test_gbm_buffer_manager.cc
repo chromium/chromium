@@ -70,18 +70,18 @@ gbm_device* CreateGbmDevice() {
   return nullptr;
 }
 
-uint32_t GetDrmFormat(gfx::BufferFormat gfx_format) {
-  switch (gfx_format) {
-    case gfx::BufferFormat::R_8:
-      return DRM_FORMAT_R8;
-    case gfx::BufferFormat::YVU_420:
-      return DRM_FORMAT_YVU420;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return DRM_FORMAT_NV12;
-    // Add more formats when needed.
-    default:
-      return 0;
+uint32_t GetDrmFormat(viz::SharedImageFormat si_format) {
+  if (si_format == viz::SinglePlaneFormat::kR_8) {
+    return DRM_FORMAT_R8;
   }
+  if (si_format == viz::MultiPlaneFormat::kYV12) {
+    return DRM_FORMAT_YVU420;
+  }
+  if (si_format == viz::MultiPlaneFormat::kNV12) {
+    return DRM_FORMAT_NV12;
+  }
+  // Add more formats when needed.
+  return 0;
 }
 
 uint32_t GetGbmUsage(gfx::BufferUsage usage) {
@@ -103,7 +103,7 @@ uint32_t GetGbmUsage(gfx::BufferUsage usage) {
 
 }  // namespace
 
-TestGbmBuffer::TestGbmBuffer(gfx::BufferFormat format, gbm_bo* buffer_object)
+TestGbmBuffer::TestGbmBuffer(gbm_bo* buffer_object)
     : buffer_object_(buffer_object), mapped_(false) {
   gfx::NativePixmapHandle native_pixmap_handle;
   for (size_t i = 0;
@@ -195,7 +195,7 @@ TestGbmBufferManager::~TestGbmBufferManager() = default;
 
 std::unique_ptr<TestGbmBuffer> TestGbmBufferManager::CreateGbmBuffer(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     gpu::SurfaceHandle surface_handle,
     base::WaitableEvent* shutdown_event) {
@@ -206,8 +206,8 @@ std::unique_ptr<TestGbmBuffer> TestGbmBufferManager::CreateGbmBuffer(
 
   const uint32_t drm_format = GetDrmFormat(format);
   if (!drm_format) {
-    LOG(ERROR) << "Unable to convert gfx::BufferFormat "
-               << static_cast<int>(format) << " to DRM format";
+    LOG(ERROR) << "Unable to convert viz::SharedImageFormat "
+               << format.ToString() << " to DRM format";
     return nullptr;
   }
 
@@ -229,26 +229,24 @@ std::unique_ptr<TestGbmBuffer> TestGbmBufferManager::CreateGbmBuffer(
     return nullptr;
   }
 
-  return std::make_unique<TestGbmBuffer>(format, buffer_object);
+  return std::make_unique<TestGbmBuffer>(buffer_object);
 }
 
 std::unique_ptr<TestGbmBuffer> TestGbmBufferManager::ImportDmaBuf(
     const gfx::NativePixmapHandle& handle,
     const gfx::Size& size,
-    gfx::BufferFormat format) {
-  if (handle.planes.size() !=
-      gfx::NumberOfPlanesForLinearBufferFormat(format)) {
+    viz::SharedImageFormat format) {
+  if (handle.planes.size() != static_cast<size_t>(format.NumberOfPlanes())) {
     // This could happen if e.g., we get a compressed RGBA buffer where one
     // plane is for metadata. We don't support this case.
-    LOG(ERROR) << "Cannot import " << gfx::BufferFormatToString(format)
-               << " with " << handle.planes.size() << " plane(s) (expected "
-               << gfx::NumberOfPlanesForLinearBufferFormat(format)
-               << " plane(s))";
+    LOG(ERROR) << "Cannot import " << format.ToString() << " with "
+               << handle.planes.size() << " plane(s) (expected "
+               << format.NumberOfPlanes() << " plane(s))";
     return nullptr;
   }
   const uint32_t drm_format = GetDrmFormat(format);
   if (!drm_format) {
-    LOG(ERROR) << "Unsupported format " << gfx::BufferFormatToString(format);
+    LOG(ERROR) << "Unsupported format " << format.ToString();
     return nullptr;
   }
   gbm_import_fd_modifier_data import_data{
@@ -274,11 +272,12 @@ std::unique_ptr<TestGbmBuffer> TestGbmBufferManager::ImportDmaBuf(
     PLOG(ERROR) << "Could not import the DmaBuf into gbm";
     return nullptr;
   }
-  return std::make_unique<TestGbmBuffer>(format, buffer_object);
+  return std::make_unique<TestGbmBuffer>(buffer_object);
 }
 
-bool TestGbmBufferManager::IsFormatAndUsageSupported(gfx::BufferFormat format,
-                                                     gfx::BufferUsage usage) {
+bool TestGbmBufferManager::IsFormatAndUsageSupported(
+    viz::SharedImageFormat format,
+    gfx::BufferUsage usage) {
   const uint32_t drm_format = GetDrmFormat(format);
   if (!drm_format) {
     return false;

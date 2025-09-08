@@ -51,6 +51,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/chromeos_camera/gpu_mjpeg_decode_accelerator_factory.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/test_data_util.h"
@@ -321,15 +322,14 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
   DCHECK(gbm_buffer_manager_);
 
   // Create a buffer and get a NativePixmapHandle from it.
-  const std::optional<gfx::BufferFormat> gfx_format =
-      media::VideoPixelFormatToGfxBufferFormat(format);
-  if (!gfx_format) {
+  const std::optional<viz::SharedImageFormat> si_format =
+      media::VideoPixelFormatToSharedImageFormat(format);
+  if (!si_format) {
     LOG(ERROR) << "Unsupported pixel format: " << format;
     return nullptr;
   }
   std::unique_ptr<media::TestGbmBuffer> buffer =
-      gbm_buffer_manager_->CreateGbmBuffer(coded_size, *gfx_format,
-                                           kBufferUsage,
+      gbm_buffer_manager_->CreateGbmBuffer(coded_size, *si_format, kBufferUsage,
                                            gpu::kNullSurfaceHandle, nullptr);
   if (!buffer) {
     LOG(ERROR) << "Failed to create buffer";
@@ -427,8 +427,9 @@ base::ScopedFD MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufFd(
   // The buffer has R_8 format and dimensions (|size|, 1).
   std::unique_ptr<media::TestGbmBuffer> buffer =
       gbm_buffer_manager_->CreateGbmBuffer(
-          gfx::Size(base::checked_cast<int>(size), 1), gfx::BufferFormat::R_8,
-          kBufferUsage, gpu::kNullSurfaceHandle, nullptr);
+          gfx::Size(base::checked_cast<int>(size), 1),
+          viz::SinglePlaneFormat::kR_8, kBufferUsage, gpu::kNullSurfaceHandle,
+          nullptr);
   if (!buffer) {
     LOG(ERROR) << "Failed to create buffer";
     return base::ScopedFD();
@@ -469,10 +470,10 @@ MjpegDecodeAcceleratorTestEnvironment::GetSupportedDmaBufFormats() {
   };
   std::vector<media::VideoPixelFormat> supported_formats;
   for (const media::VideoPixelFormat format : kPreferredFormats) {
-    const std::optional<gfx::BufferFormat> gfx_format =
-        media::VideoPixelFormatToGfxBufferFormat(format);
-    if (gfx_format && gbm_buffer_manager_->IsFormatAndUsageSupported(
-                          *gfx_format, kBufferUsage)) {
+    const std::optional<viz::SharedImageFormat> si_format =
+        media::VideoPixelFormatToSharedImageFormat(format);
+    if (si_format && gbm_buffer_manager_->IsFormatAndUsageSupported(
+                         *si_format, kBufferUsage)) {
       supported_formats.push_back(format);
     }
   }
