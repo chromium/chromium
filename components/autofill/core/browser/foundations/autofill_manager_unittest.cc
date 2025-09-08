@@ -339,6 +339,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnAfterTextFieldDidScroll).Times(0);
   EXPECT_CALL(observer, OnBeforeSelectControlSelectionChanged).Times(0);
   EXPECT_CALL(observer, OnAfterSelectControlSelectionChanged).Times(0);
+  EXPECT_CALL(observer, OnBeforeSelectFieldOptionsDidChange).Times(0);
+  EXPECT_CALL(observer, OnAfterSelectFieldOptionsDidChange).Times(0);
   EXPECT_CALL(observer, OnBeforeDidFillAutofillFormData).Times(0);
   EXPECT_CALL(observer, OnAfterDidFillAutofillFormData).Times(0);
   EXPECT_CALL(observer, OnBeforeAskForValuesToFill).Times(0);
@@ -463,6 +465,15 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnAfterSelectControlSelectionChanged(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     manager().OnSelectControlSelectionChanged(form, field.global_id());
+    std::move(run_loop).Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnBeforeSelectFieldOptionsDidChange(m, f));
+    EXPECT_CALL(observer, OnAfterSelectFieldOptionsDidChange(m, f))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    manager().OnSelectFieldOptionsDidChange(form);
     std::move(run_loop).Run();
   }
 

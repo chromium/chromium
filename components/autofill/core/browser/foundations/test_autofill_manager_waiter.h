@@ -32,6 +32,7 @@ enum class AutofillManagerEvent {
   kTextFieldValueChanged,
   kTextFieldDidScroll,
   kSelectControlSelectionChanged,
+  kSelectFieldOptionsDidChange,
   kAskForValuesToFill,
   kFocusOnFormField,
   kDidFillAutofillFormData,
@@ -208,6 +209,11 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   void OnAfterSelectControlSelectionChanged(AutofillManager& manager,
                                             FormGlobalId form,
                                             FieldGlobalId field) override;
+
+  void OnBeforeSelectFieldOptionsDidChange(AutofillManager& manager,
+                                           FormGlobalId form) override;
+  void OnAfterSelectFieldOptionsDidChange(AutofillManager& manager,
+                                          FormGlobalId form) override;
 
   void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                   FormGlobalId form,
@@ -448,6 +454,14 @@ class TestAutofillManagerSingleEventWaiter {
                                               FieldGlobalId field) override {
       MaybeQuit(&Observer::OnAfterSelectControlSelectionChanged, manager, form,
                 field);
+    }
+    void OnBeforeSelectFieldOptionsDidChange(AutofillManager& manager,
+                                             FormGlobalId form) override {
+      MaybeQuit(&Observer::OnBeforeSelectFieldOptionsDidChange, manager, form);
+    }
+    void OnAfterSelectFieldOptionsDidChange(AutofillManager& manager,
+                                            FormGlobalId form) override {
+      MaybeQuit(&Observer::OnAfterSelectFieldOptionsDidChange, manager, form);
     }
     void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                     FormGlobalId form,

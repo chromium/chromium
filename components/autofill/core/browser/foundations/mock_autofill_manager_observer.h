@@ -72,6 +72,15 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               (override));
 
   MOCK_METHOD(void,
+              OnBeforeSelectFieldOptionsDidChange,
+              (AutofillManager&, FormGlobalId),
+              (override));
+  MOCK_METHOD(void,
+              OnAfterSelectFieldOptionsDidChange,
+              (AutofillManager&, FormGlobalId),
+              (override));
+
+  MOCK_METHOD(void,
               OnBeforeDidFillAutofillFormData,
               (AutofillManager&, FormGlobalId),
               (override));

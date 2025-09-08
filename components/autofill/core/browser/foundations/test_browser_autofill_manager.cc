@@ -73,6 +73,11 @@ void TestBrowserAutofillManager::OnTextFieldValueChanged(
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
+void TestBrowserAutofillManager::OnDidEndTextFieldEditing() {
+  AutofillManager::OnDidEndTextFieldEditing();
+  ASSERT_TRUE(waiter_.Wait(0));
+}
+
 void TestBrowserAutofillManager::OnTextFieldDidScroll(
     const FormData& form,
     const FieldGlobalId& field_id) {
@@ -84,6 +89,12 @@ void TestBrowserAutofillManager::OnSelectControlSelectionChanged(
     const FormData& form,
     const FieldGlobalId& field_id) {
   AutofillManager::OnSelectControlSelectionChanged(form, field_id);
+  ASSERT_TRUE(waiter_.Wait(0));
+}
+
+void TestBrowserAutofillManager::OnSelectFieldOptionsDidChange(
+    const FormData& form) {
+  AutofillManager::OnSelectFieldOptionsDidChange(form);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 

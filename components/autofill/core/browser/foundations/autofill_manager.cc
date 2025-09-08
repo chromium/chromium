@@ -51,8 +51,8 @@ namespace autofill {
 
 namespace {
 
-// ParsingCallback(), NotifyObserversCallback(), and NotifyNoObserversCallback()
-// assemble the reply callback for ParseFormAsync().
+// ParsingCallback() and NotifyObserversCallback() assemble the reply callback
+// for ParseFormAsync().
 //
 // An event
 //   AutofillManager::OnFoo(const FormData& form, args...)
@@ -66,13 +66,7 @@ namespace {
 //
 // The corresponding callback for ParseFormAsync() is assembled by
 //   ParsingCallback(&AutofillManager::OnFooImpl, ...)
-//       .Then(NotifyNoObserversCallback())
-// or
-//   ParsingCallback(&AutofillManager::OnFooImpl, ...)
 //       .Then(NotifyObserversCallback(&Observer::OnAfterFoo, ...))
-//
-// `.Then(NotifyNoObserversCallback())` is needed in the first case to discard
-// the return type of ParsingCallback().
 template <typename Functor, typename... Args>
 base::OnceCallback<AutofillManager&(AutofillManager&, const FormData&)>
 ParsingCallback(Functor&& functor, Args&&... args) {
@@ -97,11 +91,6 @@ NotifyObserversCallback(Functor&& functor, Args&&... args) {
                              std::forward<Args>(args)...);
       },
       std::forward<Functor>(functor), std::forward<Args>(args)...);
-}
-
-// See ParsingCallback().
-base::OnceCallback<void(AutofillManager&)> NotifyNoObserversCallback() {
-  return base::DoNothingAs<void(AutofillManager&)>();
 }
 
 // Returns true if |live_form| does not match |cached_form|.
@@ -448,9 +437,13 @@ void AutofillManager::OnSelectFieldOptionsDidChange(const FormData& form) {
   if (!IsValidFormData(form)) {
     return;
   }
+  NotifyObservers(&Observer::OnBeforeSelectFieldOptionsDidChange,
+                  form.global_id());
   ParseFormAsync(
       form, ParsingCallback(&AutofillManager::OnSelectFieldOptionsDidChangeImpl)
-                .Then(NotifyNoObserversCallback()));
+                .Then(NotifyObserversCallback(
+                    &Observer::OnAfterSelectFieldOptionsDidChange,
+                    form.global_id())));
 }
 
 void AutofillManager::OnJavaScriptChangedAutofilledValue(

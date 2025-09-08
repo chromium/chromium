@@ -191,6 +191,18 @@ void TestAutofillManagerWaiter::OnAfterSelectControlSelectionChanged(
   OnAfter(Event::kSelectControlSelectionChanged);
 }
 
+void TestAutofillManagerWaiter::OnBeforeSelectFieldOptionsDidChange(
+    AutofillManager& manager,
+    FormGlobalId form) {
+  OnBefore(Event::kSelectFieldOptionsDidChange);
+}
+
+void TestAutofillManagerWaiter::OnAfterSelectFieldOptionsDidChange(
+    AutofillManager& manager,
+    FormGlobalId form) {
+  OnAfter(Event::kSelectFieldOptionsDidChange);
+}
+
 void TestAutofillManagerWaiter::OnBeforeAskForValuesToFill(
     AutofillManager& manager,
     FormGlobalId form,

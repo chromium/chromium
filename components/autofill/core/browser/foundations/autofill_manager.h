@@ -157,6 +157,11 @@ class AutofillManager
                                          FormGlobalId form,
                                          FieldGlobalId field) {}
 
+    virtual void OnBeforeSelectFieldOptionsDidChange(AutofillManager& manager,
+                                                     FormGlobalId form) {}
+    virtual void OnAfterSelectFieldOptionsDidChange(AutofillManager& manager,
+                                                    FormGlobalId form) {}
+
     virtual void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
                                                  FormGlobalId form) {}
     virtual void OnAfterDidFillAutofillFormData(AutofillManager& manager,
@@ -244,12 +249,12 @@ class AutofillManager
   virtual void OnTextFieldValueChanged(const FormData& form,
                                        const FieldGlobalId& field_id,
                                        const base::TimeTicks timestamp);
-  void OnDidEndTextFieldEditing();
+  virtual void OnDidEndTextFieldEditing();
   virtual void OnTextFieldDidScroll(const FormData& form,
                                     const FieldGlobalId& field_id);
   virtual void OnSelectControlSelectionChanged(const FormData& form,
                                                const FieldGlobalId& field_id);
-  void OnSelectFieldOptionsDidChange(const FormData& form);
+  virtual void OnSelectFieldOptionsDidChange(const FormData& form);
   virtual void OnFocusOnFormField(const FormData& form,
                                   const FieldGlobalId& field_id);
   void OnFocusOnNonFormField();

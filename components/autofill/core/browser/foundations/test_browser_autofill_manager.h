@@ -51,10 +51,12 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   void OnTextFieldValueChanged(const FormData& form,
                                const FieldGlobalId& field_id,
                                const base::TimeTicks timestamp) override;
+  void OnDidEndTextFieldEditing() override;
   void OnTextFieldDidScroll(const FormData& form,
                             const FieldGlobalId& field_id) override;
   void OnSelectControlSelectionChanged(const FormData& form,
                                        const FieldGlobalId& field_id) override;
+  void OnSelectFieldOptionsDidChange(const FormData& form) override;
   void OnAskForValuesToFill(
       const FormData& form,
       const FieldGlobalId& field_id,
