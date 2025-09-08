@@ -178,13 +178,18 @@ bool IsValidFileUploadStatusForMultimodalRequest(
 }
 
 // Returns the media type for the given mime type.
-lens::LensOverlayRequestId::MediaType MediaTypeForMimeType(
-    lens::MimeType mime_type) {
+lens::LensOverlayRequestId::MediaType GetMediaType(
+    lens::MimeType mime_type,
+    bool has_viewport_screenshot) {
   switch (mime_type) {
     case lens::MimeType::kPdf:
-      return lens::LensOverlayRequestId::MEDIA_TYPE_PDF;
+      return has_viewport_screenshot
+                 ? lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE
+                 : lens::LensOverlayRequestId::MEDIA_TYPE_PDF;
     case lens::MimeType::kAnnotatedPageContent:
-      return lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE;
+      return has_viewport_screenshot
+                 ? lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE
+                 : lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE;
     case lens::MimeType::kImage:
       [[fallthrough]];
     default:
@@ -326,7 +331,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
                  ? lens::RequestIdUpdateMode::kPageContentWithViewportRequest
                  : lens::RequestIdUpdateMode::kPageContentRequest),
       current_file_info.mime_type_,
-      MediaTypeForMimeType(current_file_info.mime_type_));
+      GetMediaType(current_file_info.mime_type_, has_viewport_screenshot));
 
   // Preparing for the upload requests require multiple async flows to
   // complete before the request is ready to be send to the server. Start the
