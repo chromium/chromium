@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -100,10 +101,11 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
                          views::DISTANCE_CONTROL_LIST_VERTICAL))
       .AddRows(ShowRadioButtons() ? 3 : 1, views::TableLayout::kFixedSize);
 
+  auto dialog_model_info = web_app_info_->GetIconBitmapsForSecureSurfaces();
   gfx::Size image_size(web_app::kWebAppIconSmall, web_app::kWebAppIconSmall);
   gfx::ImageSkia image(
-      std::make_unique<WebAppInfoImageSource>(web_app::kWebAppIconSmall,
-                                              web_app_info_->icon_bitmaps.any),
+      std::make_unique<WebAppInfoImageSource>(
+          web_app::kWebAppIconSmall, std::move(dialog_model_info.bitmaps)),
       image_size);
 
   // Builds the header row child views.
@@ -127,6 +129,7 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
               views::DialogContentType::kControl,
               views::DialogContentType::kText))
           .AddChildren(views::Builder<views::ImageView>()
+                           .CopyAddressTo(&icon_view_)
                            .SetImageSize(image_size)
                            .SetImage(ui::ImageModel::FromImageSkia(image)),
                        views::Builder<views::Textfield>()
@@ -138,6 +141,14 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
                            .SetAccessibleName(l10n_util::GetStringUTF16(
                                IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL))
                            .SetController(this));
+
+  if (dialog_model_info.is_maskable) {
+    web_app::MaskIconOnOs(
+        *image.bitmap(),
+        base::BindOnce(
+            &CreateShortcutConfirmationView::OnIconMaskedShowOnDialog,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 
   const auto display_mode = web_app_info_->user_display_mode;
 
@@ -268,6 +279,14 @@ void CreateShortcutConfirmationView::RunCloseCallbackIfExists() {
     CHECK(web_app_info_);
     std::move(callback_).Run(false, std::move(web_app_info_));
   }
+}
+
+void CreateShortcutConfirmationView::OnIconMaskedShowOnDialog(
+    SkBitmap masked_bitmap) {
+  CHECK(icon_view_);
+  gfx::Image masked_image =
+      gfx::Image::CreateFrom1xBitmap(std::move(masked_bitmap));
+  icon_view_->SetImage(ui::ImageModel::FromImage(masked_image));
 }
 
 BEGIN_METADATA(CreateShortcutConfirmationView)

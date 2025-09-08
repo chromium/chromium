@@ -63,6 +63,7 @@ class LaunchAppUserChoiceDialogView : public views::DialogDelegateView {
   void OnClosed();
   void InitChildViews();
   void OnIconsRead(IconMetadataFromDisk icon_metadata);
+  void OnIconMaskedUpdateDialog(SkBitmap masked_bitmap);
 
   // Runs the close_callback_ provided during Show() if it exists.
   void RunCloseCallback(bool allowed, bool remember_user_choice);

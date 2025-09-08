@@ -81,6 +81,8 @@ class CreateShortcutConfirmationView : public views::DialogDelegateView,
 
   void RunCloseCallbackIfExists();
 
+  void OnIconMaskedShowOnDialog(SkBitmap masked_bitmap);
+
   // The WebAppInstallInfo that the user is editing.
   // Cleared when the dialog completes (Accept/WindowClosing).
   std::unique_ptr<web_app::WebAppInstallInfo> web_app_info_;
@@ -100,6 +102,9 @@ class CreateShortcutConfirmationView : public views::DialogDelegateView,
 
   // Textfield showing the title of the app.
   raw_ptr<views::Textfield> title_tf_ = nullptr;
+
+  // Field showing the icon of the app.
+  raw_ptr<views::ImageView> icon_view_ = nullptr;
 
   base::WeakPtrFactory<CreateShortcutConfirmationView> weak_ptr_factory_{this};
 };

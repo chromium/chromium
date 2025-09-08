@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,14 +16,18 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace web_app {
+
+namespace {
 
 using DialogViewIDForTesting =
     SubAppsInstallDialogController::SubAppsInstallDialogViewID;
@@ -39,6 +44,14 @@ const std::u16string kSubAppName2 = u"Sub App 2";
 const std::u16string kSubAppName3 = u"Sub App 3";
 
 class SubAppsInstallDialogControllerBrowserTest : public InProcessBrowserTest {
+ public:
+  SubAppsInstallDialogControllerBrowserTest() = default;
+  SubAppsInstallDialogControllerBrowserTest(
+      const SubAppsInstallDialogControllerBrowserTest&) = delete;
+  SubAppsInstallDialogControllerBrowserTest& operator=(
+      const SubAppsInstallDialogControllerBrowserTest&) = delete;
+  ~SubAppsInstallDialogControllerBrowserTest() override = default;
+
  protected:
   std::unique_ptr<SubAppsInstallDialogController> CreateDefaultController(
       base::OnceCallback<void(bool)> callback) {
@@ -51,19 +64,24 @@ class SubAppsInstallDialogControllerBrowserTest : public InProcessBrowserTest {
                      browser()->window()->GetNativeWindow());
     return controller;
   }
-};
 
-std::unique_ptr<WebAppInstallInfo> CreateInstallInfoWithIconForSubApp(
-    const std::u16string& name) {
-  const GeneratedIconsInfo icon_info(
-      IconPurpose::ANY, {web_app::icon_size::k32}, {SK_ColorBLACK});
-  std::unique_ptr<WebAppInstallInfo> sub_app_install_info =
-      WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kSubAppStartURL));
-  sub_app_install_info->title = name;
-  web_app::AddIconsToWebAppInstallInfo(sub_app_install_info.get(),
-                                       GURL(kSubAppIconURL), {icon_info});
-  return sub_app_install_info;
-}
+  std::unique_ptr<WebAppInstallInfo> CreateInstallInfoWithIconForSubApp(
+      const std::u16string& name) {
+    const GeneratedIconsInfo any_icon_info1(IconPurpose::ANY, {icon_size::k32},
+                                            {SK_ColorBLACK});
+    const GeneratedIconsInfo any_icon_info2(IconPurpose::MASKABLE,
+                                            {icon_size::k32}, {SK_ColorBLUE});
+    std::unique_ptr<WebAppInstallInfo> sub_app_install_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kSubAppStartURL));
+    sub_app_install_info->title = name;
+    web_app::AddIconsToWebAppInstallInfo(sub_app_install_info.get(),
+                                         GURL(kSubAppIconURL),
+                                         {any_icon_info1, any_icon_info2});
+    return sub_app_install_info;
+  }
+
+  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
+};
 
 IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
                        DialogViewSetUpCorrectly) {
@@ -185,5 +203,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
   views::test::WidgetDestroyedWaiter widget_observer(widget);
   widget_observer.Wait();
 }
+
+}  // namespace
 
 }  // namespace web_app

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -193,6 +194,21 @@ void LaunchAppUserChoiceDialogView::OnIconsRead(
                          web_app::kWebAppIconSmall, std::move(icon_bitmaps)),
                      image_size);
   icon_image_view_->SetImage(ui::ImageModel::FromImageSkia(image_skia));
+
+  if (icon_metadata.purpose == IconPurpose::MASKABLE) {
+    web_app::MaskIconOnOs(
+        *image_skia.bitmap(),
+        base::BindOnce(&LaunchAppUserChoiceDialogView::OnIconMaskedUpdateDialog,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void LaunchAppUserChoiceDialogView::OnIconMaskedUpdateDialog(
+    SkBitmap masked_bitmap) {
+  CHECK(icon_image_view_);
+  CHECK(!masked_bitmap.drawsNothing());
+  icon_image_view_->SetImage(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFrom1xBitmap(std::move(masked_bitmap))));
 }
 
 BEGIN_METADATA(LaunchAppUserChoiceDialogView)

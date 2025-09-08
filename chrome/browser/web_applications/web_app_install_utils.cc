@@ -780,7 +780,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   }
   sync_proto.clear_trusted_icons();
   for (const apps::IconInfo& trusted_icon : web_app_info.trusted_icons) {
-    *(sync_proto.add_icon_infos()) = AppIconInfoToSyncProto(trusted_icon);
+    *(sync_proto.add_trusted_icons()) = AppIconInfoToSyncProto(trusted_icon);
   }
   web_app.SetSyncProto(std::move(sync_proto));
 
