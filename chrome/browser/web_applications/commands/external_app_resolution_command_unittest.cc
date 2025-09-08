@@ -177,7 +177,7 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
   void LoadIconsFromDB(const webapps::AppId& app_id,
                        const std::vector<SquareSizePx>& sizes_px) {
     BitmapData icon_bitmaps;
-    base::test::TestFuture<BitmapData> future;
+    base::test::TestFuture<IconMetadataFromDisk> future;
     WebAppIconManager& icon_manager = provider()->icon_manager();
 
     // We can use this to test if icons of a specific size do not exist in the
@@ -191,7 +191,7 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
 
     icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
         app_id, sizes_px, IconPurpose::ANY, future.GetCallback());
-    app_to_icons_data_[app_id] = future.Take();
+    app_to_icons_data_[app_id] = std::move(future.Take().icons_map);
   }
 
   std::vector<SquareSizePx> GetIconSizesForApp(const webapps::AppId& app_id) {

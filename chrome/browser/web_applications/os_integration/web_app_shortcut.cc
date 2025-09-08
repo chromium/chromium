@@ -292,23 +292,24 @@ void PopulateFaviconPurposeForShortcutInfo(
                      app->is_diy_app())
           .Then(std::move(callback));
 
+  auto icons_packaging_callback =
+      base::BindOnce(&PackageIconsIntoImageFamily,
+                     /*allow_empty=*/purpose != IconPurpose::ANY)
+          .Then(std::move(populate_and_return_shortcut_info));
+
   if (!icon_sizes_in_px.empty()) {
     icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
         app->app_id(), icon_sizes_in_px, purpose,
-        base::BindOnce(&PackageIconsIntoImageFamily,
-                       /*allow_empty=*/purpose != IconPurpose::ANY)
-            .Then(std::move(populate_and_return_shortcut_info)));
+        web_app::WebAppIconManager::BitmapsFromIconMetadataExtractor(
+            std::move(icons_packaging_callback)));
     return;
   }
 
   // If there is no single icon at the desired sizes, we will resize what we can
   // get.
   SquareSizePx desired_icon_size = GetDesiredIconSizesForShortcut().back();
-  icon_manager.ReadIconAndResize(
-      app->app_id(), purpose, desired_icon_size,
-      base::BindOnce(&PackageIconsIntoImageFamily,
-                     /*allow_empty=*/purpose != IconPurpose::ANY)
-          .Then(std::move(populate_and_return_shortcut_info)));
+  icon_manager.ReadIconAndResize(app->app_id(), purpose, desired_icon_size,
+                                 std::move(icons_packaging_callback));
 }
 
 void PopulateFaviconForShortcutInfo(

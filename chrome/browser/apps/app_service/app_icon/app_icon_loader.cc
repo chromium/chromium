@@ -531,8 +531,9 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
 
       icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
           web_app_id, icon_pixel_sizes, *icon_purpose_to_read,
-          base::BindOnce(&AppIconLoader::OnReadWebAppIcon,
-                         base::WrapRefCounted(this)));
+          web_app::WebAppIconManager::BitmapsFromIconMetadataExtractor(
+              base::BindOnce(&AppIconLoader::OnReadWebAppIcon,
+                             base::WrapRefCounted(this))));
 
       return;
     }
@@ -756,9 +757,11 @@ void AppIconLoader::GetWebAppCompressedIconData(
   icon_pixel_sizes.emplace_back(size_and_purpose->size_px);
   icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
       web_app_id, icon_pixel_sizes, *icon_purpose_to_read,
-      base::BindOnce(&AppIconLoader::OnReadWebAppForCompressedIconData,
-                     base::WrapRefCounted(this),
-                     *icon_purpose_to_read == web_app::IconPurpose::MASKABLE));
+      web_app::WebAppIconManager::BitmapsFromIconMetadataExtractor(
+          base::BindOnce(
+              &AppIconLoader::OnReadWebAppForCompressedIconData,
+              base::WrapRefCounted(this),
+              *icon_purpose_to_read == web_app::IconPurpose::MASKABLE)));
 }
 
 void AppIconLoader::GetChromeAppCompressedIconData(

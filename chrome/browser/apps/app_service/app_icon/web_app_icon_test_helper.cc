@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -64,10 +65,10 @@ gfx::ImageSkia WebAppIconTestHelper::GenerateWebAppIcon(
     const std::vector<int>& sizes_px,
     apps::ScaleToSize scale_to_size_in_px,
     bool skip_icon_effects) {
-  base::test::TestFuture<std::map<web_app::SquareSizePx, SkBitmap>> future;
+  base::test::TestFuture<web_app::IconMetadataFromDisk> future;
   icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
       app_id, sizes_px, purpose, future.GetCallback());
-  auto icon_bitmaps = future.Take();
+  web_app::SizeToBitmap icon_bitmaps = std::move(future.Take().icons_map);
 
   gfx::ImageSkia output_image_skia;
 

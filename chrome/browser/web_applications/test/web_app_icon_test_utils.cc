@@ -284,12 +284,11 @@ SkColor IconManagerReadAppIconPixel(WebAppIconManager& icon_manager,
   base::RunLoop run_loop;
   icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
       app_id, {size_px}, IconPurpose::ANY,
-      base::BindLambdaForTesting(
-          [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-            DCHECK(base::Contains(icon_bitmaps, size_px));
-            result = icon_bitmaps.at(size_px).getColor(x, y);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
+        DCHECK(base::Contains(icon_metadata.icons_map, size_px));
+        result = icon_metadata.icons_map.at(size_px).getColor(x, y);
+        run_loop.Quit();
+      }));
   run_loop.Run();
   return result;
 }

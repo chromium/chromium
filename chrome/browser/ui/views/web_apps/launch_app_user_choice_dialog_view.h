@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -61,7 +62,7 @@ class LaunchAppUserChoiceDialogView : public views::DialogDelegateView {
   void OnCanceled();
   void OnClosed();
   void InitChildViews();
-  void OnIconsRead(std::map<SquareSizePx, SkBitmap> icon_bitmaps);
+  void OnIconsRead(IconMetadataFromDisk icon_metadata);
 
   // Runs the close_callback_ provided during Show() if it exists.
   void RunCloseCallback(bool allowed, bool remember_user_choice);

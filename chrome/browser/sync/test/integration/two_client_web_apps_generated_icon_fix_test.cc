@@ -18,6 +18,8 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/sync/base/time.h"
@@ -52,6 +54,8 @@ struct GeneratedIconFixFutures {
         fix.GetCallback();
   }
 };
+
+constexpr int kIconSize = 256;
 
 }  // namespace
 
@@ -122,19 +126,23 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
              is_correct_color == other.is_correct_color;
     }
   };
+
   IconState CheckIconState(Profile* profile, const webapps::AppId& app_id) {
-    base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> icons_future;
+    base::test::TestFuture<IconMetadataFromDisk> icons_future;
     fake_providers_[profile]
         ->icon_manager()
         .ReadTrustedIconsWithFallbackToManifestIcons(
-            app_id, {256}, IconPurpose::ANY, icons_future.GetCallback());
+            app_id, {kIconSize}, IconPurpose::ANY, icons_future.GetCallback());
+    SizeToBitmap icons_bitmap = std::move(icons_future.Take().icons_map);
+    CHECK(base::Contains(icons_bitmap, kIconSize));
+
     return {
         .is_generated = fake_providers_[profile]
                             ->registrar_unsafe()
                             .GetAppById(app_id)
                             ->is_generated_icon(),
         .is_correct_color =
-            icons_future.Get<0>().at(256).getColor(100, 100) == SK_ColorBLUE,
+            icons_bitmap[kIconSize].getColor(100, 100) == SK_ColorBLUE,
     };
   }
 

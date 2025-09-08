@@ -314,12 +314,13 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifestTrustedIcons) {
           kWebAppId, /*input_size=*/96));
 
   // Verify reading the bitmap for the trusted icons.
-  base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> icons_future;
+  base::test::TestFuture<IconMetadataFromDisk> icons_future;
   provider()->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
       kWebAppId, {icon_size::k512}, IconPurpose::ANY,
       icons_future.GetCallback());
   ASSERT_TRUE(icons_future.Wait());
-  std::map<SquareSizePx, SkBitmap> trusted_bitmaps = icons_future.Get();
+  std::map<SquareSizePx, SkBitmap> trusted_bitmaps =
+      std::move(icons_future.Take().icons_map);
   EXPECT_THAT(trusted_bitmaps[icon_size::k512],
               gfx::test::EqualsBitmap(icons_map[icon_url2][0]));
 }
@@ -1162,11 +1163,12 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
       GetDisplayMode().value_or(blink::mojom::DisplayMode::kMinimalUi);
   EXPECT_EQ(registrar.GetAppEffectiveDisplayMode(app_id), display_mode);
 
-  base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> icons_future;
+  base::test::TestFuture<IconMetadataFromDisk> icons_future;
   provider()->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
       app_id, {icon_size::k256}, IconPurpose::ANY, icons_future.GetCallback());
   ASSERT_TRUE(icons_future.Wait());
-  std::map<SquareSizePx, SkBitmap> bitmaps = icons_future.Get();
+  std::map<SquareSizePx, SkBitmap> bitmaps =
+      std::move(icons_future.Take().icons_map);
   EXPECT_THAT(bitmaps[icon_size::k256],
               gfx::test::EqualsBitmap(GenerateExpected256Icon()));
 

@@ -12,6 +12,7 @@
 #include <initializer_list>
 #include <ostream>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
@@ -325,14 +326,14 @@ TypedResult<SkBitmap> ReadShortcutsMenuIconBlocking(
 
 // Performs blocking I/O. May be called on another thread.
 // Returns empty map if any errors occurred.
-TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconAndResizeBlocking(
+TypedResult<SizeToBitmap> ReadIconAndResizeBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const IconId& icon_id,
     SquareSizePx target_icon_size_px,
     bool is_trusted) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadIconAndResizeBlocking");
-  TypedResult<std::map<SquareSizePx, SkBitmap>> result;
+  TypedResult<SizeToBitmap> result;
 
   TypedResult<SkBitmap> read_result = ReadIconBlocking(
       std::move(utils), web_apps_directory, icon_id, is_trusted);
@@ -355,7 +356,7 @@ TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconAndResizeBlocking(
 }
 
 // Performs blocking I/O. May be called on another thread.
-TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconsBlocking(
+TypedResult<IconMetadataFromDisk> ReadIconsBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const webapps::AppId& app_id,
@@ -363,7 +364,7 @@ TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconsBlocking(
     const std::vector<SquareSizePx>& icon_sizes,
     bool read_trusted_icons) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadIconsBlocking");
-  TypedResult<std::map<SquareSizePx, SkBitmap>> result;
+  TypedResult<IconMetadataFromDisk> result;
 
   for (SquareSizePx icon_size_px : icon_sizes) {
     IconId icon_id(app_id, purpose, icon_size_px);
@@ -371,7 +372,8 @@ TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconsBlocking(
         utils, web_apps_directory, icon_id, read_trusted_icons);
     base::Extend(result.error_log, std::move(read_result.error_log));
     if (!read_result.value.empty()) {
-      result.value[icon_size_px] = std::move(read_result.value);
+      result.value.icons_map[icon_size_px] = std::move(read_result.value);
+      result.value.purpose = purpose;
     }
   }
 
@@ -379,55 +381,45 @@ TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconsBlocking(
 }
 
 // Performs blocking I/O. May be called on another thread.
-TypedResult<std::map<SquareSizePx, SkBitmap>> ReadTrustedIconsBlocking(
+TypedResult<IconMetadataFromDisk> ReadTrustedIconsBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const webapps::AppId& app_id,
     IconPurpose purpose_for_fallback,
     const std::vector<SquareSizePx>& icon_sizes) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadTrustedIconsBlocking");
-  TypedResult<std::map<SquareSizePx, SkBitmap>> result;
-  base::FilePath trusted_icon_directory =
-      web_apps_directory.Append(kTrustedIconFolderName);
+  TypedResult<IconMetadataFromDisk> result;
 
-  for (SquareSizePx icon_size_px : icon_sizes) {
-    TypedResult<SkBitmap> read_result;
-    // First, check for `MASKABLE` trusted icons if the OS wants them.
+// First check for maskable icons available on Mac and ChromeOS.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-    IconId icon_id_maskable(app_id, IconPurpose::MASKABLE, icon_size_px);
-    read_result = ReadIconBlocking(utils, web_apps_directory, icon_id_maskable,
-                                   /*read_trusted_icons=*/true);
-    base::Extend(result.error_log, std::move(read_result.error_log));
-    if (!read_result.value.empty()) {
-      result.value[icon_size_px] = std::move(read_result.value);
-    }
+  result = ReadIconsBlocking(utils, web_apps_directory, app_id,
+                             IconPurpose::MASKABLE, icon_sizes,
+                             /*read_trusted_icons=*/true);
+  if (!result.value.icons_map.empty()) {
+    result.value.purpose = IconPurpose::MASKABLE;
+    return result;
+  }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
-    // Check for `ANY` trusted icons. For MacOS and ChromeOS,
-    // this behaves as a fallback to check for `ANY` icons if no maskable
-    // ones have been found for `icon_size_px`.
-    if (!base::Contains(result.value, icon_size_px)) {
-      IconId icon_id_any(app_id, IconPurpose::ANY, icon_size_px);
-      read_result = ReadIconBlocking(utils, web_apps_directory, icon_id_any,
-                                     /*read_trusted_icons=*/true);
-      base::Extend(result.error_log, std::move(read_result.error_log));
-      if (!read_result.value.empty()) {
-        result.value[icon_size_px] = std::move(read_result.value);
-      }
-    }
+  // Check for `ANY` trusted icons. For MacOS and ChromeOS,
+  // this behaves as a fallback to check for `ANY` icons if no maskable
+  // ones have been found.
+  result = ReadIconsBlocking(utils, web_apps_directory, app_id,
+                             IconPurpose::ANY, icon_sizes,
+                             /*read_trusted_icons=*/true);
+  if (!result.value.icons_map.empty()) {
+    result.value.purpose = IconPurpose::ANY;
+    return result;
+  }
 
-    // If no icons for `icon_size_px` has been found in the trusted icon
-    // directory, then read from the top level icons directory storing the
-    // manifest icon bitmaps.
-    if (!base::Contains(result.value, icon_size_px)) {
-      IconId icon_id_any(app_id, purpose_for_fallback, icon_size_px);
-      read_result = ReadIconBlocking(utils, web_apps_directory, icon_id_any,
-                                     /*read_trusted_icons=*/false);
-      base::Extend(result.error_log, std::move(read_result.error_log));
-      if (!read_result.value.empty()) {
-        result.value[icon_size_px] = std::move(read_result.value);
-      }
-    }
+  // If no icons has been found in the trusted icon
+  // directory, then read from the top level icons directory storing the
+  // manifest icon bitmaps.
+  result = ReadIconsBlocking(utils, web_apps_directory, app_id,
+                             purpose_for_fallback, icon_sizes,
+                             /*read_trusted_icons=*/false);
+  if (!result.value.icons_map.empty()) {
+    result.value.purpose = purpose_for_fallback;
   }
 
   return result;
@@ -473,24 +465,24 @@ TypedResult<WebAppIconManager::WebAppBitmaps> ReadAllIconsBlocking(
 
   // Read manifest icons (untrusted) first.
   for (const auto& purpose_sizes : manifest_icon_purpose_to_sizes) {
-    TypedResult<std::map<SquareSizePx, SkBitmap>> read_result =
+    TypedResult<IconMetadataFromDisk> read_result =
         ReadIconsBlocking(utils, web_apps_directory, app_id,
                           purpose_sizes.first, purpose_sizes.second,
                           /*read_trusted_icons=*/false);
     base::Extend(result.error_log, std::move(read_result.error_log));
     result.value.manifest_icons.SetBitmapsForPurpose(
-        purpose_sizes.first, std::move(read_result.value));
+        purpose_sizes.first, std::move(read_result.value.icons_map));
   }
 
   // Read trusted icons next.
   for (const auto& purpose_sizes : trusted_icon_purpose_to_sizes) {
-    TypedResult<std::map<SquareSizePx, SkBitmap>> read_result =
+    TypedResult<IconMetadataFromDisk> read_result =
         ReadIconsBlocking(utils, web_apps_directory, app_id,
                           purpose_sizes.first, purpose_sizes.second,
                           /*read_trusted_icons=*/true);
     base::Extend(result.error_log, std::move(read_result.error_log));
     result.value.trusted_icons.SetBitmapsForPurpose(
-        purpose_sizes.first, std::move(read_result.value));
+        purpose_sizes.first, std::move(read_result.value.icons_map));
   }
 
   return result;
@@ -509,7 +501,7 @@ TypedResult<ShortcutsMenuIconBitmaps> ReadShortcutsMenuIconsBlocking(
     IconBitmaps result;
 
     for (IconPurpose purpose : kIconPurposes) {
-      std::map<SquareSizePx, SkBitmap> bitmaps;
+      SizeToBitmap bitmaps;
 
       for (SquareSizePx icon_size_px :
            item_info.downloaded_icon_sizes.GetSizesForPurpose(purpose)) {
@@ -622,7 +614,7 @@ WebAppIconManager::IconFilesCheck CheckForEmptyOrMissingIconFilesBlocking(
 }
 
 gfx::ImageSkia ConvertFaviconBitmapsToImageSkia(
-    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps) {
+    const SizeToBitmap& icon_bitmaps) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ConvertFaviconBitmapsToImageSkia");
   gfx::ImageSkia image_skia;
 
@@ -897,7 +889,7 @@ class WriteIconsJob {
       int shortcut_index = -1;
       for (const IconBitmaps& icon_bitmaps : shortcuts_menu_icon_bitmaps_) {
         ++shortcut_index;
-        const std::map<SquareSizePx, SkBitmap>& bitmaps =
+        const SizeToBitmap& bitmaps =
             icon_bitmaps.GetBitmapsForPurpose(purpose);
         if (bitmaps.empty())
           continue;
@@ -1011,6 +1003,13 @@ uint64_t AccumulateIconsSizeForApp(std::vector<base::FilePath> icon_paths) {
 
 }  // namespace
 
+IconMetadataFromDisk::IconMetadataFromDisk() = default;
+IconMetadataFromDisk::~IconMetadataFromDisk() = default;
+IconMetadataFromDisk::IconMetadataFromDisk(
+    IconMetadataFromDisk&& icon_metadata) = default;
+IconMetadataFromDisk& IconMetadataFromDisk::operator=(
+    IconMetadataFromDisk&& icon_metadata) = default;
+
 WebAppIconManager::WebAppIconManager(Profile* profile)
     : icon_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -1021,6 +1020,19 @@ WebAppIconManager::WebAppIconManager(Profile* profile)
 }
 
 WebAppIconManager::~WebAppIconManager() = default;
+
+// static
+ReadIconMetadataCallback WebAppIconManager::BitmapsFromIconMetadataExtractor(
+    base::OnceCallback<void(std::map<int, SkBitmap>)> icon_metadata_callback) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(std::map<int, SkBitmap>)>
+             icon_metadata_callback,
+         IconMetadataFromDisk icon_metadata_from_disk) {
+        std::move(icon_metadata_callback)
+            .Run(std::move(icon_metadata_from_disk.icons_map));
+      },
+      std::move(icon_metadata_callback));
+}
 
 void WebAppIconManager::WriteData(
     webapps::AppId app_id,
@@ -1172,41 +1184,17 @@ bool WebAppIconManager::HasSmallestIcon(
   return FindIconMatchBigger(app_id, purposes, min_size).has_value();
 }
 
-void WebAppIconManager::ReadUntrustedIcons(const webapps::AppId& app_id,
-                                           IconPurpose purpose,
-                                           const SortedSizesPx& icon_sizes,
-                                           ReadIconsCallback callback) {
-  TRACE_EVENT0("ui", "WebAppIconManager::ReadIcons");
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!provider_->registrar_unsafe().GetAppById(app_id)) {
-    std::move(callback).Run(std::map<SquareSizePx, SkBitmap>());
-    return;
-  }
-  DCHECK(HasIcons(app_id, purpose, icon_sizes));
-
-  icon_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          ReadIconsBlocking, provider_->file_utils(), web_apps_directory_,
-          app_id, purpose,
-          std::vector<SquareSizePx>(icon_sizes.begin(), icon_sizes.end()),
-          /*read_trusted_icons=*/false),
-      base::BindOnce(&LogErrorsCallCallback<std::map<SquareSizePx, SkBitmap>>,
-                     GetWeakPtr(), std::move(callback)));
-}
-
 void WebAppIconManager::ReadTrustedIconsWithFallbackToManifestIcons(
     const webapps::AppId& app_id,
     const SortedSizesPx& icon_sizes,
     IconPurpose purpose_for_fallback,
-    ReadIconsCallback callback) {
+    ReadIconMetadataCallback callback) {
   TRACE_EVENT0(
       "ui", "WebAppIconManager::ReadTrustedIconsWithFallbackToManifestIcons");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!provider_->registrar_unsafe().GetAppById(app_id)) {
-    std::move(callback).Run(std::map<SquareSizePx, SkBitmap>());
+    std::move(callback).Run(IconMetadataFromDisk());
     return;
   }
 
@@ -1224,8 +1212,8 @@ void WebAppIconManager::ReadTrustedIconsWithFallbackToManifestIcons(
           ReadTrustedIconsBlocking, provider_->file_utils(),
           web_apps_directory_, app_id, purpose_for_fallback,
           std::vector<SquareSizePx>(icon_sizes.begin(), icon_sizes.end())),
-      base::BindOnce(&LogErrorsCallCallback<std::map<SquareSizePx, SkBitmap>>,
-                     GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&LogErrorsCallCallback<IconMetadataFromDisk>, GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void WebAppIconManager::ReadAllShortcutMenuIconsWithTimestamp(
@@ -1506,7 +1494,7 @@ void WebAppIconManager::ReadIconAndResize(const webapps::AppId& app_id,
   }
 
   if (!best_icon) {
-    std::move(callback).Run(std::map<SquareSizePx, SkBitmap>());
+    std::move(callback).Run(SizeToBitmap());
     return;
   }
 
@@ -1516,8 +1504,8 @@ void WebAppIconManager::ReadIconAndResize(const webapps::AppId& app_id,
       base::BindOnce(ReadIconAndResizeBlocking, provider_->file_utils(),
                      web_apps_directory_, std::move(icon_id), desired_icon_size,
                      best_icon->is_trusted),
-      base::BindOnce(&LogErrorsCallCallback<std::map<SquareSizePx, SkBitmap>>,
-                     GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&LogErrorsCallCallback<SizeToBitmap>, GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void WebAppIconManager::ReadFavicons(const webapps::AppId& app_id,
@@ -1562,11 +1550,11 @@ void WebAppIconManager::ReadFavicons(const webapps::AppId& app_id,
                                     GetWeakPtr(), std::move(callback)));
 }
 
-void WebAppIconManager::OnReadFavicons(
-    ReadImageSkiaCallback callback,
-    std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+void WebAppIconManager::OnReadFavicons(ReadImageSkiaCallback callback,
+                                       IconMetadataFromDisk icon_metadata) {
   TRACE_EVENT0("ui", "WebAppIconManager::OnReadFavicons");
-  std::move(callback).Run(ConvertFaviconBitmapsToImageSkia(icon_bitmaps));
+  std::move(callback).Run(
+      ConvertFaviconBitmapsToImageSkia(std::move(icon_metadata.icons_map)));
 }
 
 void WebAppIconManager::CheckForEmptyOrMissingIconFiles(
@@ -1614,6 +1602,30 @@ base::WeakPtr<const WebAppIconManager> WebAppIconManager::GetWeakPtr() const {
 
 base::WeakPtr<WebAppIconManager> WebAppIconManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void WebAppIconManager::ReadUntrustedIcons(const webapps::AppId& app_id,
+                                           IconPurpose purpose,
+                                           const SortedSizesPx& icon_sizes,
+                                           ReadIconMetadataCallback callback) {
+  TRACE_EVENT0("ui", "WebAppIconManager::ReadIcons");
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!provider_->registrar_unsafe().GetAppById(app_id)) {
+    std::move(callback).Run(IconMetadataFromDisk());
+    return;
+  }
+  DCHECK(HasIcons(app_id, purpose, icon_sizes));
+
+  icon_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          ReadIconsBlocking, provider_->file_utils(), web_apps_directory_,
+          app_id, purpose,
+          std::vector<SquareSizePx>(icon_sizes.begin(), icon_sizes.end()),
+          /*read_trusted_icons=*/false),
+      base::BindOnce(&LogErrorsCallCallback<IconMetadataFromDisk>, GetWeakPtr(),
+                     std::move(callback)));
 }
 
 std::optional<WebAppIconManager::IconSizeAndPurpose>

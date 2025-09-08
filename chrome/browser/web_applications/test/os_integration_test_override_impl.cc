@@ -143,12 +143,12 @@ std::optional<SkBitmap> IconManagerReadIconForSize(
   base::RunLoop run_loop;
   icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
       app_id, {size_px}, IconPurpose::ANY,
-      base::BindLambdaForTesting(
-          [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-            CHECK(base::Contains(icon_bitmaps, size_px));
-            result = icon_bitmaps.at(size_px);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
+        SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
+        CHECK(base::Contains(icon_bitmaps, size_px));
+        result = icon_bitmaps[size_px];
+        run_loop.Quit();
+      }));
   run_loop.Run();
   return result;
 }

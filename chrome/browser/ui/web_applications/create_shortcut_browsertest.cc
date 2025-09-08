@@ -327,11 +327,14 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, UseHostWhenTitleIsUrl) {
       browser(), https_server()->GetURL("example.com", "/empty.html"));
   webapps::AppId app_id = InstallDiyAppForCurrentUrl();
 
-  base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> future;
-  WebAppProvider::GetForTest(profile())->icon_manager().ReadUntrustedIcons(
-      app_id, IconPurpose::ANY, {icon_size::k128}, future.GetCallback());
+  base::test::TestFuture<IconMetadataFromDisk> future;
+  WebAppProvider::GetForTest(profile())
+      ->icon_manager()
+      .ReadTrustedIconsWithFallbackToManifestIcons(
+          app_id, {icon_size::k128}, IconPurpose::ANY, future.GetCallback());
 
-  std::map<SquareSizePx, SkBitmap> icon_bitmaps = future.Get();
+  IconMetadataFromDisk icon_metadata = future.Take();
+  SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
   auto icon_it = icon_bitmaps.find(icon_size::k128);
   ASSERT_TRUE(icon_it != icon_bitmaps.end());
   SkBitmap bitmap = icon_it->second;

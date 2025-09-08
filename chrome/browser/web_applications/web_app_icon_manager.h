@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -22,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
@@ -43,6 +45,20 @@ class WebAppProvider;
 using HomeTabIconBitmaps = std::vector<SkBitmap>;
 using SquareSizeDip = int;
 
+// Returning metadata about icon bitmaps that are read from the disk.
+struct IconMetadataFromDisk {
+  IconMetadataFromDisk();
+  ~IconMetadataFromDisk();
+  IconMetadataFromDisk(IconMetadataFromDisk&& icon_metadata);
+  IconMetadataFromDisk& operator=(IconMetadataFromDisk&& icon_metadata);
+
+  SizeToBitmap icons_map;
+  IconPurpose purpose = IconPurpose::ANY;
+};
+
+using ReadIconMetadataCallback =
+    base::OnceCallback<void(IconMetadataFromDisk icon_bitmap_metadata)>;
+
 // Exclusively used from the UI thread.
 class WebAppIconManager : public WebAppInstallManagerObserver {
  public:
@@ -57,6 +73,13 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   ~WebAppIconManager() override;
 
   using WriteDataCallback = base::OnceCallback<void(bool success)>;
+
+  // Utility functions that wrap a base::OnceCallback that only reads size to
+  // bitmap information into a ReadIconMetadataCallback. Useful to call into
+  // ReadTrustedIconsWithFallbackToManifestIcons() if the purpose information is
+  // not required for the use-case.
+  static ReadIconMetadataCallback BitmapsFromIconMetadataExtractor(
+      base::OnceCallback<void(std::map<int, SkBitmap>)> icon_metadata_callback);
 
   // Writes all data (icons) for an app.
   void WriteData(webapps::AppId app_id,
@@ -108,28 +131,19 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
                        const std::vector<IconPurpose>& purposes,
                        SquareSizePx min_size) const;
 
-  using ReadIconsCallback =
-      base::OnceCallback<void(std::map<SquareSizePx, SkBitmap> icon_bitmaps)>;
-
-  // Reads specified icon bitmaps for an app and |purpose|. These icons are
-  // downloaded directly from the manifest and are not always surfaced to the
-  // end user, which is why they are untrusted. Returns empty map in |callback|
-  // if IO error.
-  void ReadUntrustedIcons(const webapps::AppId& app_id,
-                          IconPurpose purpose,
-                          const SortedSizesPx& icon_sizes,
-                          ReadIconsCallback callback);
-
   // Reads the bitmaps for the trusted icon for an app of sizes specified in
   // `icon_sizes`. Returns empty map in `callback` if an IO error happens.
   // The `purpose_for_fallback` information is used as a fallback to read the
   // icon bitmaps obtained from the manifest, mimicking the behavior of
   // ReadUntrustedIcons().
+  // By default the callback returns a IconPurpose in it as well. To only get
+  // the map of icon size to bitmaps, pass the callback via
+  // BitmapsFromIconMetadataExtractor().
   void ReadTrustedIconsWithFallbackToManifestIcons(
       const webapps::AppId& app_id,
       const SortedSizesPx& icon_sizes,
       IconPurpose purpose_for_fallback,
-      ReadIconsCallback callback);
+      ReadIconMetadataCallback callback);
 
   // Mimics WebAppShortcutsMenuItemInfo but stores timestamps instead of icons
   // for os integration.
@@ -212,6 +226,8 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   void OnWebAppInstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
+  using ReadIconsCallback = base::OnceCallback<void(SizeToBitmap icon_bitmaps)>;
+
   // Calls back with an icon of the |desired_icon_size| and |purpose|, resizing
   // an icon of a different size if necessary. If no icons were available, calls
   // back with an empty map. Prefers resizing a large icon smaller over resizing
@@ -252,8 +268,31 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   std::vector<std::string>* error_log() { return error_log_.get(); }
 
  private:
+  // Since ReadUntrustedIcons() is only used for testing, have the test class be
+  // friended here.
+  FRIEND_TEST_ALL_PREFIXES(WebAppIconManagerTest, WriteAndReadIcons_AnyOnly);
+  FRIEND_TEST_ALL_PREFIXES(WebAppIconManagerTest,
+                           WriteAndReadIcons_MaskableOnly);
+  FRIEND_TEST_ALL_PREFIXES(WebAppIconManagerTest,
+                           WriteAndReadIcons_MonochromeOnly);
+  FRIEND_TEST_ALL_PREFIXES(WebAppIconManagerTest,
+                           WriteAndReadIcons_AnyAndMaskable);
+  FRIEND_TEST_ALL_PREFIXES(WebAppIconManagerTest,
+                           WriteAndReadIcons_AnyAndMonochrome);
+  FRIEND_TEST_ALL_PREFIXES(WebAppIconManagerTest, ReadIconsFailed);
+  FRIEND_TEST_ALL_PREFIXES(WebAppIconManagerTest, FindExact);
+
   base::WeakPtr<const WebAppIconManager> GetWeakPtr() const;
   base::WeakPtr<WebAppIconManager> GetWeakPtr();
+
+  // Reads specified icon bitmaps for an app and |purpose|. These icons are
+  // downloaded directly from the manifest and are not always surfaced to the
+  // end user, which is why they are untrusted. Returns empty map in |callback|
+  // if IO error.
+  void ReadUntrustedIcons(const webapps::AppId& app_id,
+                          IconPurpose purpose,
+                          const SortedSizesPx& icon_sizes,
+                          ReadIconMetadataCallback callback);
 
   std::optional<IconSizeAndPurpose> FindIconMatchSmaller(
       const webapps::AppId& app_id,
@@ -262,7 +301,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
       bool skip_trusted_icons_for_favicons = false) const;
 
   void OnReadFavicons(ReadImageSkiaCallback callback,
-                      std::map<SquareSizePx, SkBitmap> icon_bitmaps);
+                      IconMetadataFromDisk icon_metadata);
 
   void ReadFavicon(const webapps::AppId& app_id);
   void OnReadFavicon(const webapps::AppId& app_id, gfx::ImageSkia image_skia);

@@ -709,7 +709,7 @@ void WebAppUiManagerImpl::OnIconsReadForUninstall(
     std::unique_ptr<ui::NativeWindowTracker> parent_window_tracker,
     UninstallCompleteCallback complete_callback,
     UninstallScheduledCallback uninstall_scheduled_callback,
-    std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+    IconMetadataFromDisk icon_metadata) {
   if (parent_window && parent_window_tracker->WasNativeWindowDestroyed()) {
     OnUninstallCancelled(std::move(complete_callback),
                          std::move(uninstall_scheduled_callback));
@@ -718,7 +718,7 @@ void WebAppUiManagerImpl::OnIconsReadForUninstall(
 
   ShowWebAppUninstallDialog(
       profile_, app_id, uninstall_source, parent_window,
-      std::move(icon_bitmaps),
+      std::move(icon_metadata),
       base::BindOnce(&WebAppUiManagerImpl::ScheduleUninstallIfUserRequested,
                      weak_ptr_factory_.GetWeakPtr(), app_id, uninstall_source,
                      std::move(complete_callback),

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -180,7 +181,8 @@ void LaunchAppUserChoiceDialogView::RunCloseCallback(
 }
 
 void LaunchAppUserChoiceDialogView::OnIconsRead(
-    std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+    IconMetadataFromDisk icon_metadata) {
+  SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
   if (icon_bitmaps.empty() || !icon_image_view_) {
     return;
   }
