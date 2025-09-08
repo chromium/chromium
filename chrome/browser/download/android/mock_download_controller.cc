@@ -26,13 +26,6 @@ void MockDownloadController::StartContextMenuDownload(
     content::WebContents* web_contents,
     bool is_media) {}
 
-void MockDownloadController::AcquireFileAccessPermission(
-    const content::WebContents::Getter& wc_getter,
-    DownloadControllerBase::AcquireFileAccessPermissionCallback cb) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(cb), approve_file_access_request_));
-}
-
 void MockDownloadController::SetApproveFileAccessRequestForTesting(
     bool approve) {
   approve_file_access_request_ = approve;

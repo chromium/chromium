@@ -171,12 +171,6 @@ class OfflinePageUtils {
 
   // Returns true if |web_contents| is showing a trusted offline page.
   static bool IsShowingTrustedOfflinePage(content::WebContents* web_contents);
-
-  // Tries to acquires the file access permission. |callback| will be called
-  // to inform if the file access permission is granted.
-  static void AcquireFileAccessPermission(
-      content::WebContents* web_contents,
-      base::OnceCallback<void(bool)> callback);
 };
 
 }  // namespace offline_pages

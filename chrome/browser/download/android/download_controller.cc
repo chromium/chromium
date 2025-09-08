@@ -95,27 +95,6 @@ namespace {
 // Guards download_controller_
 base::LazyInstance<base::Lock>::DestructorAtExit g_download_controller_lock_;
 
-void CreateContextMenuDownloadInternal(
-    const GURL& url,
-    const content::WebContents::Getter& wc_getter,
-    const content::ContextMenuParams& params,
-    bool is_media,
-    bool granted) {
-  content::WebContents* web_contents = wc_getter.Run();
-  if (!granted)
-    return;
-
-  if (!web_contents) {
-    return;
-  }
-
-  RecordDownloadSource(DOWNLOAD_INITIATED_BY_CONTEXT_MENU);
-  auto origin = offline_pages::android::OfflinePageBridge::GetEncodedOriginApp(
-      web_contents);
-  download::CreateContextMenuDownload(url, web_contents, params, origin,
-                                      is_media);
-}
-
 // Helper class for retrieving a DownloadManager.
 class DownloadManagerGetter : public DownloadManager::Observer {
  public:
@@ -158,38 +137,6 @@ void ScheduleRemoveDownloadItem(download::DownloadItem* download) {
       FROM_HERE,
       base::BindOnce(&RemoveDownloadItem, std::move(download_manager_getter),
                      download->GetGuid()));
-}
-
-void OnRequestFileAccessResult(
-    const content::WebContents::Getter& web_contents_getter,
-    DownloadControllerBase::AcquireFileAccessPermissionCallback cb,
-    bool granted,
-    const std::string& permission_to_update) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (!granted && !permission_to_update.empty() && web_contents_getter.Run()) {
-    WebContents* web_contents = web_contents_getter.Run();
-    std::vector<std::string> permissions;
-    permissions.push_back(permission_to_update);
-
-    PermissionUpdateMessageController::CreateForWebContents(web_contents);
-    PermissionUpdateMessageController::FromWebContents(web_contents)
-        ->ShowMessage(permissions, IDR_ANDORID_MESSAGE_PERMISSION_STORAGE,
-                      IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE,
-                      IDS_MESSAGE_STORAGE_ACCESS_PERMISSION_TEXT,
-                      std::move(cb));
-    return;
-  }
-
-  std::move(cb).Run(granted);
-}
-
-void OnStoragePermissionDecided(
-    DownloadControllerBase::AcquireFileAccessPermissionCallback cb,
-    bool granted) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::move(cb).Run(granted);
 }
 
 bool ShouldOpenPdfInline(DownloadItem* item) {
@@ -243,27 +190,6 @@ void LogAppVerificationPromptToPrefs(download::DownloadItem* item) {
 }
 
 }  // namespace
-
-static void JNI_DownloadController_OnAcquirePermissionResult(
-    JNIEnv* env,
-    jlong callback_id,
-    jboolean granted,
-    std::string& permission_to_update) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(callback_id);
-
-  if (!DownloadController::GetInstance()
-           ->validator()
-           ->ValidateAndClearJavaCallback(callback_id)) {
-    return;
-  }
-
-  // Convert java long long int to c++ pointer, take ownership.
-  std::unique_ptr<DownloadController::AcquirePermissionCallback> cb(
-      reinterpret_cast<DownloadController::AcquirePermissionCallback*>(
-          callback_id));
-  std::move(*cb).Run(granted, permission_to_update);
-}
 
 static void JNI_DownloadController_CancelDownload(JNIEnv* env,
                                                   Profile* profile,
@@ -370,39 +296,6 @@ DownloadController::DownloadController() = default;
 
 DownloadController::~DownloadController() = default;
 
-void DownloadController::AcquireFileAccessPermission(
-    const content::WebContents::Getter& web_contents_getter,
-    DownloadControllerBase::AcquireFileAccessPermissionCallback cb) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  WebContents* web_contents = web_contents_getter.Run();
-  ui::ViewAndroid* view_android =
-      web_contents ? web_contents->GetNativeView() : nullptr;
-  ui::WindowAndroid* window_android =
-      view_android ? view_android->GetWindowAndroid() : nullptr;
-  ScopedJavaLocalRef<jobject> jwindow_android =
-      window_android ? window_android->GetJavaObject()
-                     : ScopedJavaLocalRef<jobject>();
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  bool has_file_access_permission =
-      Java_DownloadController_hasFileAccess(env, jwindow_android);
-  if (has_file_access_permission) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(cb), true));
-    return;
-  }
-
-  AcquirePermissionCallback callback(base::BindOnce(
-      &OnRequestFileAccessResult, web_contents_getter,
-      base::BindOnce(&OnStoragePermissionDecided, std::move(cb))));
-  // Make copy on the heap so we can pass the pointer through JNI.
-  intptr_t callback_id = reinterpret_cast<intptr_t>(
-      new AcquirePermissionCallback(std::move(callback)));
-  validator_.AddJavaCallback(callback_id);
-  Java_DownloadController_requestFileAccess(env, callback_id, jwindow_android);
-}
-
 void DownloadController::CreateAndroidDownload(
     const content::WebContents::Getter& wc_getter,
     const DownloadInfo& info) {
@@ -415,20 +308,6 @@ void DownloadController::StartAndroidDownload(
     const content::WebContents::Getter& wc_getter,
     const DownloadInfo& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  AcquireFileAccessPermission(
-      wc_getter,
-      base::BindOnce(&DownloadController::StartAndroidDownloadInternal,
-                     base::Unretained(this), wc_getter, info));
-}
-
-void DownloadController::StartAndroidDownloadInternal(
-    const content::WebContents::Getter& wc_getter,
-    const DownloadInfo& info,
-    bool allowed) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!allowed)
-    return;
 
   JNIEnv* env = base::android::AttachCurrentThread();
   std::u16string file_name =
@@ -633,16 +512,15 @@ void DownloadController::StartContextMenuDownload(
     const ContextMenuParams& params,
     WebContents* web_contents,
     bool is_media) {
-  int process_id =
-      web_contents->GetRenderViewHost()->GetProcess()->GetDeprecatedID();
-  int routing_id = web_contents->GetRenderViewHost()->GetRoutingID();
+  if (!web_contents) {
+    return;
+  }
 
-  const content::WebContents::Getter& wc_getter(
-      base::BindRepeating(&GetWebContents, process_id, routing_id));
-
-  AcquireFileAccessPermission(
-      wc_getter, base::BindOnce(&CreateContextMenuDownloadInternal, url,
-                                wc_getter, params, is_media));
+  RecordDownloadSource(DOWNLOAD_INITIATED_BY_CONTEXT_MENU);
+  auto origin = offline_pages::android::OfflinePageBridge::GetEncodedOriginApp(
+      web_contents);
+  download::CreateContextMenuDownload(url, web_contents, params, origin,
+                                      is_media);
 }
 
 ProfileKey* DownloadController::GetProfileKey(DownloadItem* download_item) {
