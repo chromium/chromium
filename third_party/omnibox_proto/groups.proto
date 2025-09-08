@@ -96,6 +96,7 @@ enum GroupId {
   // suggestions with MIA.
   GROUP_MIA_RECOMMENDATIONS = 45000;
   GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA = 45001;
+  GROUP_AI_MODE_ZERO_SUGGEST_CANNED = 45002;
 
   // Cross platform suggestions with vanilla visual representation (i.e.
   // vertical, primary column, and no header), but useful for sorting.
