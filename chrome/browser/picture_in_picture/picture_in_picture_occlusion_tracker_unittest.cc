@@ -14,7 +14,6 @@
 namespace {
 
 using testing::_;
-using testing::Invoke;
 
 class MockPictureInPictureOcclusionObserver
     : public PictureInPictureOcclusionObserver {
@@ -291,13 +290,13 @@ TEST_F(PictureInPictureOcclusionTrackerTest,
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   occludable_widget2->Show();
 
-  EXPECT_CALL(observer, OnOcclusionStateChanged(true)).WillOnce(Invoke([&]() {
+  EXPECT_CALL(observer, OnOcclusionStateChanged(true)).WillOnce([&]() {
     testing::Mock::VerifyAndClearExpectations(&observer);
 
     // Synchronously start observing the second widget when we see that the
     // first is occluded. This should not crash.
     observation.Observe(occludable_widget2.get());
-  }));
+  });
 
   // Start observing `occludable_widget`. This should immediately inform the
   // observer that the window is occluded and therefore synchronously start

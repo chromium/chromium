@@ -141,10 +141,9 @@ TEST_F(PasswordCredentialUIControllerTest, OnAuthenticationCompleted_Success) {
 
   base::OnceCallback<void(bool)> auth_callback;
   EXPECT_CALL(mock_ui_controller(), AuthenticateUserWithMessage)
-      .WillOnce(testing::Invoke(
-          [&](const std::u16string&, base::OnceCallback<void(bool)> cb) {
-            auth_callback = std::move(cb);
-          }));
+      .WillOnce([&](const std::u16string&, base::OnceCallback<void(bool)> cb) {
+        auth_callback = std::move(cb);
+      });
   controller_->OnStepTransition();
 
   EXPECT_CALL(callback, Run).Times(1);
@@ -168,10 +167,9 @@ TEST_F(PasswordCredentialUIControllerTest, OnAuthenticationCompleted_Failure) {
 
   base::OnceCallback<void(bool)> auth_callback;
   EXPECT_CALL(mock_ui_controller(), AuthenticateUserWithMessage)
-      .WillOnce(testing::Invoke(
-          [&](const std::u16string&, base::OnceCallback<void(bool)> cb) {
-            auth_callback = std::move(cb);
-          }));
+      .WillOnce([&](const std::u16string&, base::OnceCallback<void(bool)> cb) {
+        auth_callback = std::move(cb);
+      });
   controller_->OnStepTransition();
 
   EXPECT_CALL(callback, Run).Times(0);

@@ -26,7 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 
 class DevToolsUIBindingsTest : public testing::Test {};
 
@@ -245,10 +244,9 @@ class DevToolsUIBindingsDispatchHttpRequestTest : public testing::Test {
 
   void ExpectCanMakeRequest(bool can_make_request) {
     EXPECT_CALL(*mock_handler_ptr_, CanMakeRequest(_, _))
-        .WillOnce(
-            Invoke([=](Profile*, base::OnceCallback<void(bool)> callback) {
-              std::move(callback).Run(can_make_request);
-            }));
+        .WillOnce([=](Profile*, base::OnceCallback<void(bool)> callback) {
+          std::move(callback).Run(can_make_request);
+        });
   }
 
   // Helper to configure a response for a specific URL.

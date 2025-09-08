@@ -287,20 +287,19 @@ class MockDownloadTargetDeterminerDelegate
         .WillByDefault(WithArg<2>(ScheduleCallback2(
             base::FilePath(), DownloadPathReservationTracker::UNIQUIFY)));
     ON_CALL(*this, ReserveVirtualPath_(_, _, _, _, _))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [](DownloadItem* download, const base::FilePath& virtual_path,
                bool create_directory,
                DownloadPathReservationTracker::FilenameConflictAction action,
                ReservedPathCallback& callback) {
               std::move(callback).Run(download::PathValidationResult::SUCCESS,
                                       virtual_path);
-            }));
+            });
     ON_CALL(*this, RequestConfirmation_(_, _, _, _))
-        .WillByDefault(
-            Invoke(&MockDownloadTargetDeterminerDelegate::NullPromptUser));
+        .WillByDefault(&MockDownloadTargetDeterminerDelegate::NullPromptUser);
     ON_CALL(*this, DetermineLocalPath_(_, _, _))
-        .WillByDefault(Invoke(
-            &MockDownloadTargetDeterminerDelegate::NullDetermineLocalPath));
+        .WillByDefault(
+            &MockDownloadTargetDeterminerDelegate::NullDetermineLocalPath);
     ON_CALL(*this, GetFileMimeType_(_, _))
         .WillByDefault(WithArg<1>(ScheduleCallback("")));
   }
@@ -1831,7 +1830,7 @@ TEST_F(DownloadTargetDeterminerTest, NotifyExtensionsSafe) {
   };
 
   ON_CALL(*delegate(), NotifyExtensions_(_, _, _))
-      .WillByDefault(Invoke(&NotifyExtensionsOverridePath));
+      .WillByDefault(&NotifyExtensionsOverridePath);
   RunTestCasesWithActiveItem(kNotifyExtensionsTestCases,
                              std::size(kNotifyExtensionsTestCases));
 }
@@ -1866,7 +1865,7 @@ TEST_F(DownloadTargetDeterminerTest, NotifyExtensionsUnsafe) {
       EXPECT_UNCONFIRMED};
 
   ON_CALL(*delegate(), NotifyExtensions_(_, _, _))
-      .WillByDefault(Invoke(&NotifyExtensionsOverridePath));
+      .WillByDefault(&NotifyExtensionsOverridePath);
   RunTestCasesWithActiveItem(base::span_from_ref(kNotHandledBySafeBrowsing), 1);
 
   ON_CALL(*delegate(), CheckDownloadUrl_(_, _, _))

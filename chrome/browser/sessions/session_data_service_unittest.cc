@@ -25,7 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 using testing::StrictMock;
 
@@ -180,13 +179,13 @@ TEST_F(SessionDataServiceTest, ContinueUnfinishedDeletions) {
   // Deletion is not marked as finished, so it will continue on restart.
   auto new_deleter = CreateDeleter();
   EXPECT_CALL(*new_deleter, DeleteSessionOnlyData(true, _))
-      .WillOnce(Invoke(&RunCallback));
+      .WillOnce(&RunCallback);
   RestartService(std::move(new_deleter));
   Mock::VerifyAndClearExpectations(deleter());
 
   // At shutdown, another deletion is started. This time it finishes.
   EXPECT_CALL(*deleter(), DeleteSessionOnlyData(false, _))
-      .WillOnce(Invoke(&RunCallback));
+      .WillOnce(&RunCallback);
   service()->StartCleanup();
   Mock::VerifyAndClearExpectations(deleter());
 

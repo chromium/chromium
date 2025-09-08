@@ -55,7 +55,6 @@ namespace segmentation_platform {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 
@@ -539,11 +538,11 @@ class SegmentationPlatformUkmModelTest : public SegmentationPlatformTest {
         {{kSegmentId1, utils_.GetSamplePageLoadMetadata(kSqlFeatureQuery)}});
     MockDefaultModelProvider* provider = utils_.GetDefaultOverride(kSegmentId1);
     EXPECT_CALL(*provider, ExecuteModelWithInput(_, _))
-        .WillRepeatedly(Invoke([&](const ModelProvider::Request& inputs,
-                                   ModelProvider::ExecutionCallback callback) {
+        .WillRepeatedly([&](const ModelProvider::Request& inputs,
+                            ModelProvider::ExecutionCallback callback) {
           input_feature_in_last_execution_ = inputs;
           std::move(callback).Run(ModelProvider::Response(1, 0.5));
-        }));
+        });
   }
 
   void PreRunTestOnMainThread() override {

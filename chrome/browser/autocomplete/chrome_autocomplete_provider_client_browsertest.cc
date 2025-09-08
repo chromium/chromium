@@ -105,11 +105,10 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
                        OpenLensOverlay_Show) {
   EXPECT_CALL(*GetLensSearchController(), OpenLensOverlay(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [](lens::LensOverlayInvocationSource invocation_source) {
-            EXPECT_EQ(lens::LensOverlayInvocationSource::kOmniboxPageAction,
-                      invocation_source);
-          }));
+      .WillOnce([](lens::LensOverlayInvocationSource invocation_source) {
+        EXPECT_EQ(lens::LensOverlayInvocationSource::kOmniboxPageAction,
+                  invocation_source);
+      });
 
   GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/true);
 }
@@ -118,11 +117,10 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
                        OpenLensOverlay_DontShow) {
   EXPECT_CALL(*GetLensSearchController(), StartContextualization(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [](lens::LensOverlayInvocationSource invocation_source) {
-            EXPECT_EQ(lens::LensOverlayInvocationSource::kOmnibox,
-                      invocation_source);
-          }));
+      .WillOnce([](lens::LensOverlayInvocationSource invocation_source) {
+        EXPECT_EQ(lens::LensOverlayInvocationSource::kOmnibox,
+                  invocation_source);
+      });
 
   GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/false);
 }

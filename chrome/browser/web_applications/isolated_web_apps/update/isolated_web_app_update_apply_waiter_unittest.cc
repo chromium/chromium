@@ -63,9 +63,9 @@ TEST_F(IsolatedWebAppUpdateApplyWaiterTest, AwaitsWindowsClosed) {
   EXPECT_EQ(CountProfileKeepAlives(profile()), 1ul);
 
   base::MockRepeatingCallback<void(webapps::AppId)> callback;
-  EXPECT_CALL(callback, Run(url_info_.app_id()))
-      .WillOnce(::testing::Invoke(
-          [&]() { ui_manager().SetNumWindowsForApp(url_info_.app_id(), 0); }));
+  EXPECT_CALL(callback, Run(url_info_.app_id())).WillOnce([&]() {
+    ui_manager().SetNumWindowsForApp(url_info_.app_id(), 0);
+  });
   ui_manager().SetOnNotifyOnAllAppWindowsClosedCallback(callback.Get());
 
   base::test::TestFuture<std::unique_ptr<ScopedKeepAlive>,

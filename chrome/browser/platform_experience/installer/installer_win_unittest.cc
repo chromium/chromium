@@ -238,10 +238,10 @@ TEST_F(PlatformExperienceInstallerWinTest, UserInstall_LaunchSuccess) {
 TEST_F(PlatformExperienceInstallerWinTest,
        UserInstall_LaunchFails_FileNotFound) {
   EXPECT_CALL(mock_delegate_, LaunchProcess(testing::_, testing::_))
-      .WillOnce(testing::Invoke([](const auto&, const auto&) {
+      .WillOnce([](const auto&, const auto&) {
         ::SetLastError(ERROR_FILE_NOT_FOUND);
         return base::Process();  // Return invalid process
-      }));
+      });
 
   RunMaybeInstallForSystem(/*is_system_install=*/false);
 
@@ -254,10 +254,10 @@ TEST_F(PlatformExperienceInstallerWinTest,
 TEST_F(PlatformExperienceInstallerWinTest,
        UserInstall_LaunchFails_AccessDenied) {
   EXPECT_CALL(mock_delegate_, LaunchProcess(testing::_, testing::_))
-      .WillOnce(testing::Invoke([](const auto&, const auto&) {
+      .WillOnce([](const auto&, const auto&) {
         ::SetLastError(ERROR_ACCESS_DENIED);
         return base::Process();  // Return invalid process
-      }));
+      });
 
   RunMaybeInstallForSystem(/*is_system_install=*/false);
 
@@ -271,10 +271,10 @@ TEST_F(PlatformExperienceInstallerWinTest,
 TEST_F(PlatformExperienceInstallerWinTest,
        UserInstall_LaunchFails_OtherFailure) {
   EXPECT_CALL(mock_delegate_, LaunchProcess(testing::_, testing::_))
-      .WillOnce(testing::Invoke([](const auto&, const auto&) {
+      .WillOnce([](const auto&, const auto&) {
         ::SetLastError(ERROR_INVALID_FUNCTION);  // An arbitrary error
         return base::Process();                  // Return invalid process
-      }));
+      });
 
   RunMaybeInstallForSystem(/*is_system_install=*/false);
 

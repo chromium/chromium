@@ -253,8 +253,8 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
   void WaitForFinalTabScores() {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_, NotifyTabScoreChanged(nullptr, 0.0))
-        .WillOnce(::testing::Invoke(
-            [&run_loop](content::WebContents*, float) { run_loop.Quit(); }));
+        .WillOnce(
+            [&run_loop](content::WebContents*, float) { run_loop.Quit(); });
     run_loop.Run();
   }
 

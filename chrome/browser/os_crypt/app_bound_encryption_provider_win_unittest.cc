@@ -154,10 +154,8 @@ TEST_F(AppBoundEncryptionProviderTest, InvalidKeyRegenerated) {
 
   ScopedOverridesForTesting overrides(mock_app_bound);
 
-  ON_CALL(mock_app_bound, EncryptAppBoundString)
-      .WillByDefault(::testing::Invoke(DefaultEncrypt));
-  ON_CALL(mock_app_bound, DecryptAppBoundString)
-      .WillByDefault(::testing::Invoke(DefaultDecrypt));
+  ON_CALL(mock_app_bound, EncryptAppBoundString).WillByDefault(DefaultEncrypt);
+  ON_CALL(mock_app_bound, DecryptAppBoundString).WillByDefault(DefaultDecrypt);
   ON_CALL(mock_app_bound, GetAppBoundEncryptionSupportLevel)
       .WillByDefault(::testing::Return(SupportLevel::kSupported));
 
@@ -216,10 +214,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
 
   ScopedOverridesForTesting overrides(mock_app_bound);
 
-  ON_CALL(mock_app_bound, EncryptAppBoundString)
-      .WillByDefault(::testing::Invoke(DefaultEncrypt));
-  ON_CALL(mock_app_bound, DecryptAppBoundString)
-      .WillByDefault(::testing::Invoke(DefaultDecrypt));
+  ON_CALL(mock_app_bound, EncryptAppBoundString).WillByDefault(DefaultEncrypt);
+  ON_CALL(mock_app_bound, DecryptAppBoundString).WillByDefault(DefaultDecrypt);
   ON_CALL(mock_app_bound, GetAppBoundEncryptionSupportLevel)
       .WillByDefault(::testing::Return(SupportLevel::kSupported));
 

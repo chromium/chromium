@@ -58,7 +58,6 @@ using testing::AllOf;
 using testing::DoAll;
 using testing::Eq;
 using testing::Field;
-using testing::Invoke;
 using testing::Property;
 using testing::Return;
 using testing::SetArgPointee;

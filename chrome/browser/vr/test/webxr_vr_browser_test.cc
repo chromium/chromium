@@ -18,7 +18,6 @@
 #endif
 
 using testing::_;
-using testing::Invoke;
 
 namespace vr {
 

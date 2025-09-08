@@ -563,12 +563,11 @@ TEST_F(SerialChooserContextTest, EphemeralPermissionRevokedOnDisconnect) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(port_observer(), OnPortRemoved(testing::_))
-        .WillOnce(
-            testing::Invoke([&](const device::mojom::SerialPortInfo& info) {
-              EXPECT_EQ(port->token, info.token);
-              EXPECT_TRUE(context()->HasPortPermission(origin, info));
-              run_loop.Quit();
-            }));
+        .WillOnce([&](const device::mojom::SerialPortInfo& info) {
+          EXPECT_EQ(port->token, info.token);
+          EXPECT_TRUE(context()->HasPortPermission(origin, info));
+          run_loop.Quit();
+        });
     run_loop.Run();
   }
   EXPECT_FALSE(context()->HasPortPermission(origin, *port));
@@ -605,12 +604,11 @@ TEST_F(SerialChooserContextTest, PersistenceRequiresDisplayName) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(port_observer(), OnPortRemoved(testing::_))
-        .WillOnce(
-            testing::Invoke([&](const device::mojom::SerialPortInfo& info) {
-              EXPECT_EQ(port->token, info.token);
-              EXPECT_TRUE(context()->HasPortPermission(origin, info));
-              run_loop.Quit();
-            }));
+        .WillOnce([&](const device::mojom::SerialPortInfo& info) {
+          EXPECT_EQ(port->token, info.token);
+          EXPECT_TRUE(context()->HasPortPermission(origin, info));
+          run_loop.Quit();
+        });
     run_loop.Run();
   }
   EXPECT_FALSE(context()->HasPortPermission(origin, *port));
@@ -642,12 +640,11 @@ TEST_F(SerialChooserContextTest, PersistentPermissionNotRevokedOnDisconnect) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(port_observer(), OnPortRemoved(testing::_))
-        .WillOnce(
-            testing::Invoke([&](const device::mojom::SerialPortInfo& info) {
-              EXPECT_EQ(port->token, info.token);
-              EXPECT_TRUE(context()->HasPortPermission(origin, info));
-              run_loop.Quit();
-            }));
+        .WillOnce([&](const device::mojom::SerialPortInfo& info) {
+          EXPECT_EQ(port->token, info.token);
+          EXPECT_TRUE(context()->HasPortPermission(origin, info));
+          run_loop.Quit();
+        });
     run_loop.Run();
   }
 

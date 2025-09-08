@@ -21,7 +21,6 @@
 using ::testing::_;
 using ::testing::An;
 using ::testing::ByRef;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 
 namespace v8_compile_hints {

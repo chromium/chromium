@@ -214,12 +214,11 @@ TEST_F(InterstitialEnterpriseUtilTest,
   base::Value::Dict report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            report_dict = std::move(report);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        report_dict = std::move(report);
+        run_loop.Quit();
+      });
 
   MaybeTriggerSecurityInterstitialShownEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
@@ -258,12 +257,11 @@ TEST_F(InterstitialEnterpriseUtilTest,
   base::Value::Dict report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            report_dict = std::move(report);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        report_dict = std::move(report);
+        run_loop.Quit();
+      });
 
   MaybeTriggerSecurityInterstitialProceededEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
@@ -306,12 +304,11 @@ TEST_F(InterstitialEnterpriseUtilTest,
   base::Value::Dict report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            report_dict = std::move(report);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        report_dict = std::move(report);
+        run_loop.Quit();
+      });
 
   MaybeTriggerUrlFilteringInterstitialEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
@@ -358,12 +355,11 @@ TEST_F(InterstitialEnterpriseUtilTest, ReferrerChainFallsbackToEventUrl) {
   base::Value::Dict report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](bool include_device_info, base::Value::Dict&& report,
-              policy::CloudPolicyClient::ResultCallback callback) {
-            report_dict = std::move(report);
-            run_loop.Quit();
-          }));
+      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+                    policy::CloudPolicyClient::ResultCallback callback) {
+        report_dict = std::move(report);
+        run_loop.Quit();
+      });
 
   MaybeTriggerUrlFilteringInterstitialEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
