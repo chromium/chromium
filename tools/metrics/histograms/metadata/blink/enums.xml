@@ -8567,6 +8567,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="398" label="FetchRequestStreams"/>
   <int value="399" label="TransferableStreams"/>
   <int value="400" label="ReadableByteStreams"/>
+  <int value="401" label="DevicePosture"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

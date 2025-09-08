@@ -450,6 +450,9 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kFetchRequestStreams},
           {WebFeature::kReadableStreamWithByteSource,
            WebDXFeature::kReadableByteStreams},
+          {WebFeature::kDevicePostureMediaFeature,
+           WebDXFeature::kDevicePosture},
+          {WebFeature::kDevicePosture, WebDXFeature::kDevicePosture},
           // Add new features above this line.
       }};
 
