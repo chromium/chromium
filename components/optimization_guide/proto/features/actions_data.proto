@@ -393,7 +393,7 @@ message WindowObservation {
 }
 
 // Information about a chrome tab.
-// Next ID: 6
+// Next ID: 7
 message TabObservation {
   // Unique id
   int32 id = 1 [features = { field_presence: EXPLICIT }];
@@ -409,6 +409,10 @@ message TabObservation {
 
   // The result of the tab observation.
   TabObservationResult result = 5 [features = { field_presence: EXPLICIT }];
+
+  // Metadata about the page content.
+  // The number of meta tags returned is limited to 32.
+  PageMetadata metadata = 6 [features = { field_presence: EXPLICIT }];
 
   // Result codes of a tab observation. It may be possible
   // to retry an observation given specific error codes.

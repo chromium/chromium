@@ -296,6 +296,8 @@ enum AutofillAiEntityType {
   AUTOFILL_AI_ENTITY_TYPE_KNOWN_TRAVELER_NUMBER = 5;
 
   AUTOFILL_AI_ENTITY_TYPE_REDRESS_NUMBER = 6;
+
+  AUTOFILL_AI_ENTITY_TYPE_FLIGHT_RESERVATION = 7;
 }
 
 // Defines the different types of storage that can hold AutofillAi entities.

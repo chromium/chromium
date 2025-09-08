@@ -882,7 +882,7 @@ message FormData {
   string action_url = 5 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 14
+// Next ID: 15
 message FormFieldData {
   // The name for the field.
   string field_name = 1 [features = { field_presence: EXPLICIT }];
@@ -936,6 +936,14 @@ message FormFieldData {
   // moment. But it can and should be used for inference since it is contained
   // in the metadata pipeline.
   string aria_label = 13 [features = { field_presence: EXPLICIT }];
+
+  // The text of the elements denoted by the aria-describedby attribute of field
+  // or the value of its aria-description attribute, with priority given to the
+  // aria-describedby attribute.
+  // TODO(crbug.com/389631485): The client doesn't set this for model requests at the
+  // moment. But it can and should be used for inference since it is contained
+  // in the metadata pipeline.
+  string aria_description = 14 [features = { field_presence: EXPLICIT }];
 }
 
 message TableRow {
@@ -1000,6 +1008,33 @@ message Coordinate {
   int32 x = 1 [features = { field_presence: EXPLICIT }];
 
   int32 y = 2 [features = { field_presence: EXPLICIT }];
+}
+
+// A meta tag (https://developer.mozilla.org/en-US/docs/Wecrbug.com/HTML/Element/meta).
+// Next ID: 3
+message MetaTag {
+  // The name attribute of the meta tag.
+  string name = 1 [features = { field_presence: EXPLICIT }];
+
+  // The content attribute of the meta tag.
+  string content = 2 [features = { field_presence: EXPLICIT }];
+}
+
+// Metadata about a frame.
+// Next ID: 3
+message FrameMetadata {
+  // The URL of the frame.
+  string url = 1 [features = { field_presence: EXPLICIT }];
+
+  repeated MetaTag meta_tags = 2;
+}
+
+// Metadata (URL and meta tags) from page content. Includes data from meta tags
+// for all frames on this page.
+// Next ID: 2
+message PageMetadata {
+  // The main frame is the first entry in the array.
+  repeated FrameMetadata frame_metadata = 1;
 }
 
 // Selection text affinity, part of the a11y snapshot.
