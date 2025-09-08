@@ -10,15 +10,11 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/power_bookmarks/common/power_bookmark_observer.h"
 #include "components/power_bookmarks/storage/power_bookmark_database.h"
-#include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
-
-namespace syncer {
-class DataTypeControllerDelegate;
-}  // namespace syncer
 
 namespace power_bookmarks {
 
@@ -27,7 +23,7 @@ struct SearchParams;
 // Class responsible for marshalling calls from the browser thread which the
 // service is called from and the background thread which the database is
 // run on. Calls to this class should be posted on the background task_runner.
-class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
+class PowerBookmarkBackend {
  public:
   // `database_dir` the directory to create the backend database in.
   // `frontend_task_runner` the task runner which the service runs, used to
@@ -43,10 +39,6 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
   virtual ~PowerBookmarkBackend();
 
   void Init(bool use_database);
-
-  // For sync codebase only: gets a weak reference to the sync controller
-  // delegate.
-  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
 
   // Returns a vector of Powers for the given `url`. Use `power_type` to
   // restrict which type is returned or use POWER_TYPE_UNSPECIFIED to return
@@ -83,16 +75,7 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
       const GURL& url,
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type);
 
-  // PowerBookmarkSyncBridge::Delegate
-  std::vector<std::unique_ptr<Power>> GetAllPowers() override;
-  std::vector<std::unique_ptr<Power>> GetPowersForGUIDs(
-      const std::vector<std::string>& guids) override;
-  std::unique_ptr<Power> GetPowerForGUID(const std::string& guid) override;
-  bool CreateOrMergePowerFromSync(const Power& power) override;
-  bool DeletePowerFromSync(const std::string& guid) override;
-  PowerBookmarkSyncMetadataDatabase* GetSyncMetadataDatabase() override;
-  std::unique_ptr<Transaction> BeginTransaction() override;
-  void NotifyPowersChanged() override;
+  void NotifyPowersChanged();
 
  private:
   // Commit the change. If success then notify the observer, otherwise report
@@ -103,10 +86,6 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
 
   std::unique_ptr<PowerBookmarkDatabase> db_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Sync Bridge implementation. Only initialized when the sqlite database is
-  // used.
-  std::unique_ptr<PowerBookmarkSyncBridge> bridge_;
 
   scoped_refptr<base::SequencedTaskRunner> frontend_task_runner_;
 

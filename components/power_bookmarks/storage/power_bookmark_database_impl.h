@@ -17,7 +17,6 @@
 namespace power_bookmarks {
 
 struct SearchParams;
-class PowerBookmarkSyncMetadataDatabase;
 
 constexpr base::FilePath::CharType kDatabaseName[] =
     FILE_PATH_LITERAL("PowerBookmarks.db");
@@ -51,14 +50,9 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
       const GURL& url,
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
       std::vector<std::string>* deleted_guids = nullptr) override;
-  std::vector<std::unique_ptr<Power>> GetAllPowers() override;
-  std::vector<std::unique_ptr<Power>> GetPowersForGUIDs(
-      const std::vector<std::string>& guids) override;
-  std::unique_ptr<Power> GetPowerForGUID(const std::string& guid) override;
-  bool CreateOrMergePowerFromSync(const Power& power) override;
-  bool DeletePowerFromSync(const std::string& guid) override;
-  PowerBookmarkSyncMetadataDatabase* GetSyncMetadataDatabase() override;
   std::unique_ptr<Transaction> BeginTransaction() override;
+
+  std::unique_ptr<Power> GetPowerForGUID(const std::string& guid);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PowerBookmarkDatabaseImplTest,
@@ -87,7 +81,6 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
   sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<PowerBookmarkSyncMetadataDatabase> sync_db_;
 
   const base::FilePath database_path_;
 

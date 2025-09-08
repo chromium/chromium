@@ -13,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "components/power_bookmarks/common/power_bookmark_metrics.h"
 #include "components/power_bookmarks/common/search_params.h"
-#include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "sql/error_delegate_util.h"
 #include "sql/statement.h"
@@ -158,8 +157,6 @@ PowerBookmarkDatabaseImpl::PowerBookmarkDatabaseImpl(
     : db_(sql::DatabaseOptions().set_cache_size(128),
           /*tag=*/"PowerBookmarks"),
       database_path_(database_dir.Append(kDatabaseName)) {
-  sync_db_ =
-      std::make_unique<PowerBookmarkSyncMetadataDatabase>(&db_, &meta_table_);
 }
 
 PowerBookmarkDatabaseImpl::~PowerBookmarkDatabaseImpl() {
@@ -195,13 +192,6 @@ bool PowerBookmarkDatabaseImpl::Init() {
 
   if (!InitSchema()) {
     DLOG(ERROR) << "Failed to create schema for power bookmarks database: "
-                << db_.GetErrorMessage();
-    db_.Close();
-    return false;
-  }
-
-  if (!sync_db_->Init()) {
-    DLOG(ERROR) << "Failed to initialize sync metadata db: "
                 << db_.GetErrorMessage();
     db_.Close();
     return false;
@@ -600,67 +590,6 @@ bool PowerBookmarkDatabaseImpl::DeletePowersForURL(
   return true;
 }
 
-std::vector<std::unique_ptr<Power>>
-PowerBookmarkDatabaseImpl::GetPowersForGUIDs(
-    const std::vector<std::string>& guids) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  for (auto& guid : guids) {
-    DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
-  }
-  const std::string query =
-      base::StrCat({"SELECT blobs.id, blobs.specifics, saves.url "
-                    "FROM blobs JOIN saves ON blobs.id=saves.id "
-                    "WHERE saves.id IN ('",
-                    base::JoinString(guids, "','"), "')"});
-  db_.IsSQLValid(query);
-  sql::Statement statement(db_.GetUniqueStatement(query));
-  std::vector<std::unique_ptr<Power>> powers;
-  while (statement.Step()) {
-    DCHECK_EQ(3, statement.ColumnCount());
-
-    std::optional<sync_pb::PowerBookmarkSpecifics> specifics =
-        DeserializeOrDelete(
-            statement.ColumnStringView(1),
-            base::Uuid::ParseLowercase(statement.ColumnStringView(0)));
-    if (!specifics.has_value())
-      continue;
-
-    powers.emplace_back(CreatePowerFromSpecifics(specifics.value()));
-  }
-
-  return powers;
-}
-
-std::vector<std::unique_ptr<Power>> PowerBookmarkDatabaseImpl::GetAllPowers() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  static constexpr char kGetPowersSql[] =
-      // clang-format off
-      "SELECT blobs.id, blobs.specifics, saves.url "
-          "FROM blobs JOIN saves ON blobs.id=saves.id";
-  // clang-format on
-  DCHECK(db_.IsSQLValid(kGetPowersSql));
-
-  sql::Statement statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kGetPowersSql));
-  std::vector<std::unique_ptr<Power>> powers;
-  while (statement.Step()) {
-    DCHECK_EQ(3, statement.ColumnCount());
-
-    std::optional<sync_pb::PowerBookmarkSpecifics> specifics =
-        DeserializeOrDelete(
-            statement.ColumnStringView(1),
-            base::Uuid::ParseLowercase(statement.ColumnStringView(0)));
-    if (!specifics.has_value())
-      continue;
-
-    powers.emplace_back(CreatePowerFromSpecifics(specifics.value()));
-  }
-
-  return powers;
-}
-
 std::unique_ptr<Power> PowerBookmarkDatabaseImpl::GetPowerForGUID(
     const std::string& guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -692,28 +621,6 @@ std::unique_ptr<Power> PowerBookmarkDatabaseImpl::GetPowerForGUID(
   }
 
   return nullptr;
-}
-
-bool PowerBookmarkDatabaseImpl::CreateOrMergePowerFromSync(const Power& power) {
-  auto existing_power = GetPowerForGUID(power.guid_string());
-  if (existing_power) {
-    // The merged data is not sent back to sync in order to prevent sending data
-    // back and forth between two clients. Usually sync data from the server
-    // should override local data, which make it unnecessary to send data back.
-    existing_power->Merge(power);
-    return UpdatePowerInternal(*existing_power);
-  } else {
-    return CreatePowerInternal(power);
-  }
-}
-
-bool PowerBookmarkDatabaseImpl::DeletePowerFromSync(const std::string& guid) {
-  return DeletePower(base::Uuid::ParseLowercase(guid));
-}
-
-PowerBookmarkSyncMetadataDatabase*
-PowerBookmarkDatabaseImpl::GetSyncMetadataDatabase() {
-  return sync_db_.get();
 }
 
 std::optional<sync_pb::PowerBookmarkSpecifics>

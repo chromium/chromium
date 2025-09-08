@@ -25,10 +25,6 @@ namespace bookmarks {
 class BookmarkModel;
 }  // namespace bookmarks
 
-namespace syncer {
-class DataTypeControllerDelegate;
-}  // namespace syncer
-
 namespace power_bookmarks {
 
 class Power;
@@ -67,11 +63,6 @@ class PowerBookmarkService : public KeyedService,
   PowerBookmarkService& operator=(const PowerBookmarkService&) = delete;
 
   ~PowerBookmarkService() override;
-
-  // For sync codebase only: instantiates a controller delegate to interact with
-  // PowerBookmarkSyncBridge. Must be called from the UI thread.
-  std::unique_ptr<syncer::DataTypeControllerDelegate>
-  CreateSyncControllerDelegate();
 
   // Returns a vector of Powers for the given `url` through the given
   // `callback`. Use `power_type` to restrict which type is returned or use

@@ -181,8 +181,8 @@ TEST_F(PowerBookmarkDatabaseImplTest, InitDatabase) {
     sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_file_path()));
 
-    // Database should have 4 tables: meta, saves, blobs and sync_meta.
-    EXPECT_EQ(4u, sql::test::CountSQLTables(&db));
+    // Database should have 3 tables: meta, saves, and blobs.
+    EXPECT_EQ(3u, sql::test::CountSQLTables(&db));
   }
 }
 
@@ -894,46 +894,6 @@ TEST_F(PowerBookmarkDatabaseImplTest, DeletePowersForURLUnspecifiedType) {
   stored_powers = pbdb->GetPowersForURL(
       kGoogleUrl, sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK);
   EXPECT_EQ(0u, stored_powers.size());
-}
-
-TEST_F(PowerBookmarkDatabaseImplTest, GetAllPowers) {
-  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
-      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
-  EXPECT_TRUE(pbdb->Init());
-
-  EXPECT_TRUE(pbdb->CreatePower(MakePower(kGoogleUrl, kMockType)));
-
-  EXPECT_TRUE(
-      pbdb->CreatePower(MakePower(GURL("https://bing.com"), kMockType)));
-
-  std::vector<std::unique_ptr<Power>> stored_powers = pbdb->GetAllPowers();
-  EXPECT_EQ(2u, stored_powers.size());
-}
-
-TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForGUIDs) {
-  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
-      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
-  EXPECT_TRUE(pbdb->Init());
-
-  auto power1 = MakePower(kGoogleUrl, kMockType);
-  auto power2 = MakePower(kGoogleUrl, kMockType);
-  auto power3 = MakePower(GURL("https://bing.com"), kMockType);
-  auto guid1 = power1->guid_string();
-  auto guid2 = power2->guid_string();
-
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power1)));
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power2)));
-  EXPECT_TRUE(pbdb->CreatePower(std::move(power3)));
-
-  std::vector<std::unique_ptr<Power>> stored_powers =
-      pbdb->GetPowersForGUIDs({guid1, guid2});
-  EXPECT_EQ(2u, stored_powers.size());
-  EXPECT_EQ(kGoogleUrl, stored_powers[0]->url());
-  EXPECT_EQ(kGoogleUrl, stored_powers[1]->url());
-
-  stored_powers = pbdb->GetPowersForGUIDs({guid1});
-  EXPECT_EQ(1u, stored_powers.size());
-  EXPECT_EQ(kGoogleUrl, stored_powers[0]->url());
 }
 
 TEST_F(PowerBookmarkDatabaseImplTest, GetPowerForGUID) {
