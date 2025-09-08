@@ -462,7 +462,7 @@ void WebContentDecryptionModuleSessionImpl::OnSessionMessage(
     const std::vector<uint8_t>& message) {
   DCHECK(client_) << "Client not set before message event";
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  client_->OnSessionMessage(message_type, message.data(), message.size());
+  client_->OnSessionMessage(message_type, message);
 }
 
 void WebContentDecryptionModuleSessionImpl::OnSessionKeysChange(

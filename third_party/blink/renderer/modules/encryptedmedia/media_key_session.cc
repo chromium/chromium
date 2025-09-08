@@ -966,8 +966,7 @@ void MediaKeySession::ActionTimerFired(TimerBase*) {
 
 // Queue a task to fire a simple event named keymessage at the new object.
 void MediaKeySession::OnSessionMessage(media::CdmMessageType message_type,
-                                       const unsigned char* message,
-                                       size_t message_length) {
+                                       base::span<const uint8_t> message) {
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL) << __func__ << "(" << this << ")";
 
   // Verify that 'message' not fired before session initialization is complete.
@@ -996,8 +995,7 @@ void MediaKeySession::OnSessionMessage(media::CdmMessageType message_type,
       init->setMessageType("individualization-request");
       break;
   }
-  init->setMessage(
-      DOMArrayBuffer::Create(UNSAFE_TODO(base::span(message, message_length))));
+  init->setMessage(DOMArrayBuffer::Create(message));
 
   MediaKeyMessageEvent* event =
       MediaKeyMessageEvent::Create(event_type_names::kMessage, init);

@@ -55,8 +55,7 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleSession {
   class BLINK_PLATFORM_EXPORT Client {
    public:
     virtual void OnSessionMessage(media::CdmMessageType,
-                                  const unsigned char* message,
-                                  size_t message_length) = 0;
+                                  base::span<const uint8_t> message) = 0;
     virtual void OnSessionClosed(media::CdmSessionClosedReason reason) = 0;
 
     // Called when the expiration time for the session changes.
