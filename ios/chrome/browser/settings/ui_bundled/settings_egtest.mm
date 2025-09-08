@@ -341,14 +341,26 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 
 // Verifies that metrics reporting works properly under possible settings of the
 // preference kMetricsReportingEnabled.
-- (void)testMetricsReporting {
+// TODO(crbug.com/382632442): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testMetricsReporting DISABLED_testMetricsReporting
+#else
+#define MAYBE_testMetricsReporting testMetricsReporting
+#endif
+- (void)MAYBE_testMetricsReporting {
   [self assertsMetricsPrefsForService:kMetrics];
 }
 
 // Verifies that crashpad reporting works properly under possible settings of
 // the preference `kMetricsReportingEnabled`.
 // NOTE: crashpad only allows uploading for non-first-launch runs.
-- (void)testCrashpadReporting {
+// TODO(crbug.com/382632442): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testCrashpadReporting DISABLED_testCrashpadReporting
+#else
+#define MAYBE_testCrashpadReporting testCrashpadReporting
+#endif
+- (void)MAYBE_testCrashpadReporting {
   [self assertsMetricsPrefsForService:kCrashpad];
 }
 
