@@ -7337,17 +7337,6 @@ interface PromiseRejectionEvent : Event
     getter promise
     getter reason
     method constructor
-interface Proofreader
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter correctionExplanationLanguage
-    getter expectedInputLanguages
-    getter includeCorrectionExplanations
-    getter includeCorrectionTypes
-    method constructor
-    method destroy
-    method proofread
 interface ProtectedAudience
     attribute @@toStringTag
     method constructor
