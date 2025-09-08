@@ -4776,7 +4776,7 @@
     },
     {
       name: "SvgScriptElementAsyncAttribute",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SvgSmilPruneInstanceTimes",
