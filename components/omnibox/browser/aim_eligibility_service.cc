@@ -21,6 +21,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -140,10 +143,12 @@ bool AimEligibilityService::IsAimAllowedByPolicy(const PrefService* prefs) {
 AimEligibilityService::AimEligibilityService(
     PrefService& pref_service,
     TemplateURLService* template_url_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager* identity_manager)
     : pref_service_(pref_service),
       template_url_service_(template_url_service),
-      url_loader_factory_(url_loader_factory) {
+      url_loader_factory_(url_loader_factory),
+      identity_manager_(identity_manager) {
   if (base::FeatureList::IsEnabled(kAimEnabled)) {
     Initialize();
   }
@@ -242,9 +247,10 @@ void AimEligibilityService::Initialize() {
   initialized_ = true;
 
   LoadMostRecentResponse();
-  // TODO(crbug.com/436898763): Call `StartServerEligibilityRequest()` to
-  // refresh the server response when user sign-in state changes.
   StartServerEligibilityRequest();
+  if (identity_manager_) {
+    identity_manager_observation_.Observe(identity_manager_);
+  }
 }
 
 void AimEligibilityService::NotifyObservers() const {
@@ -356,4 +362,12 @@ void AimEligibilityService::OnServerEligibilityResponse(
   }
 
   NotifyObservers();
+}
+
+void AimEligibilityService::OnAccountsInCookieUpdated(
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+    const GoogleServiceAuthError& error) {
+  // Change to the accounts in the cookie jar might affect AIM eligibility.
+  // Refresh the server eligibility state.
+  StartServerEligibilityRequest();
 }

@@ -24,7 +24,8 @@ class IOSChromeAimEligibilityService : public AimEligibilityService {
   IOSChromeAimEligibilityService(
       PrefService* pref_service,
       TemplateURLService* template_url_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager);
   ~IOSChromeAimEligibilityService() override;
 
   // AimEligibilityService:

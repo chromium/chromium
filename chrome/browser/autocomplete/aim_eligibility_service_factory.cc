@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -25,7 +26,8 @@ std::unique_ptr<KeyedService> BuildServiceInstance(
       CHECK_DEREF(profile->GetPrefs()),
       TemplateURLServiceFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace
@@ -61,6 +63,7 @@ AimEligibilityServiceFactory::AimEligibilityServiceFactory()
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(TemplateURLServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 AimEligibilityServiceFactory::~AimEligibilityServiceFactory() = default;

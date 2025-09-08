@@ -20,10 +20,12 @@
 ChromeAimEligibilityService::ChromeAimEligibilityService(
     PrefService& pref_service,
     TemplateURLService* template_url_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager* identity_manager)
     : AimEligibilityService(pref_service,
                             template_url_service,
-                            url_loader_factory) {}
+                            url_loader_factory,
+                            identity_manager) {}
 
 ChromeAimEligibilityService::~ChromeAimEligibilityService() = default;
 

@@ -15,7 +15,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 
 class AimEligibilityServiceObserver;
@@ -32,7 +36,8 @@ class SharedURLLoaderFactory;
 BASE_DECLARE_FEATURE(kAimServerEligibilityEnabled);
 
 // Utility service to check if the profile is eligible for AI mode features.
-class AimEligibilityService : public KeyedService {
+class AimEligibilityService : public KeyedService,
+                              public signin::IdentityManager::Observer {
  public:
   // See comment for `WriteToPref()`.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -42,7 +47,8 @@ class AimEligibilityService : public KeyedService {
   AimEligibilityService(
       PrefService& pref_service,
       TemplateURLService* template_url_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager);
   ~AimEligibilityService() override;
 
   // Checks if the application country matches the given country.
@@ -94,7 +100,12 @@ class AimEligibilityService : public KeyedService {
   // Initializes the service.
   void Initialize();
 
-  // Notify `observers_` ineligibles may have changed.
+  // signin::IdentityManager::Observer:
+  void OnAccountsInCookieUpdated(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const GoogleServiceAuthError& error) override;
+
+  // Notify `observers_` that eligibility may have changed.
   void NotifyObservers() const;
 
   // Updates `most_recent_response_` and the prefs with `response_proto`.
@@ -117,7 +128,13 @@ class AimEligibilityService : public KeyedService {
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
   const raw_ptr<TemplateURLService> template_url_service_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+
   base::CallbackListSubscription template_url_service_subscription_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Update on each successfully server response.
   omnibox::AimEligibilityResponse most_recent_response_;
