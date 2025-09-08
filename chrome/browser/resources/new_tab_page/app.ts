@@ -38,7 +38,7 @@ import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
 import type {IframeElement} from './iframe.js';
 import type {LogoElement} from './logo.js';
-import {recordBoolean, recordDuration, recordEnumeration, recordLoadDuration, recordSparseValueWithPersistentHash, recordValue} from './metrics_utils.js';
+import {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordSparseValueWithPersistentHash} from './metrics_utils.js';
 import {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 import type {PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {IphFeature, NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
@@ -392,24 +392,18 @@ export class AppElement extends AppElementBase {
      */
     this.backgroundImageLoadStartEpoch_ = performance.timeOrigin;
 
-    recordValue(
-        {
-          metricName: 'NewTabPage.Height',
-          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
-          min: 1,
-          max: 1000,
-          buckets: 200,
-        },
-        Math.floor(window.innerHeight));
-    recordValue(
-        {
-          metricName: 'NewTabPage.Width',
-          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
-          min: 1,
-          max: 1920,
-          buckets: 384,
-        },
-        Math.floor(window.innerWidth));
+    recordLinearValue(
+        'NewTabPage.Height',
+        /*min=*/ 1,
+        /*max=*/ 1000,
+        /*buckets=*/ 200,
+        /*value=*/ Math.floor(window.innerHeight));
+    recordLinearValue(
+        'NewTabPage.Width',
+        /*min=*/ 1,
+        /*max=*/ 1920,
+        /*buckets=*/ 384,
+        /*value=*/ Math.floor(window.innerWidth));
 
     ColorChangeUpdater.forDocument().start();
   }

@@ -8,6 +8,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CalendarEvent} from '../../calendar_data.mojom-webui.js';
+import {recordSmallCount} from '../../metrics_utils.js';
 import {WindowProxy} from '../../window_proxy.js';
 
 import {getCss} from './calendar.css.js';
@@ -57,7 +58,7 @@ export class CalendarElement extends CrLitElement {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('events')) {
-      chrome.metricsPrivate.recordSmallCount(
+      recordSmallCount(
           `NewTabPage.${this.moduleName}.ShownEvents`, this.events.length);
       this.expandedEventIndex_ = this.computeExpandedEventIndex_();
       if (this.expandedEventIndex_ !== -1) {

@@ -11,7 +11,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit, loadTimeData} from '../../i18n_setup.js';
-import {recordEnumeration, recordOccurrence, recordSmallCount, recordValue} from '../../metrics_utils.js';
+import {recordEnumeration, recordLogValue, recordOccurrence, recordSmallCount} from '../../metrics_utils.js';
 import {ScoredURLUserAction} from '../../most_relevant_tab_resumption.mojom-webui.js';
 import type {URLVisit} from '../../url_visit_types.mojom-webui.js';
 import {FormFactor, VisitSource} from '../../url_visit_types.mojom-webui.js';
@@ -175,15 +175,12 @@ export class ModuleElement extends I18nMixinLit
         VisitSource.MAX_VALUE);
 
     // Calculate the number of milliseconds in the difference. Max is 4 days.
-    recordValue(
-        {
-          metricName: 'NewTabPage.TabResumption.TimeElapsedSinceLastVisit',
-          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
-          min: 60 * 1000,
-          max: 4 * 24 * 60 * 60 * 1000,
-          buckets: 50,
-        },
-        Number(urlVisit.relativeTime.microseconds / 1000n));
+    recordLogValue(
+        'NewTabPage.TabResumption.TimeElapsedSinceLastVisit',
+        /*min=*/ 60 * 1000,
+        /*max=*/ 4 * 24 * 60 * 60 * 1000,
+        /*buckets=*/ 50,
+        /*value=*/ Number(urlVisit.relativeTime.microseconds / 1000n));
 
     MostRelevantTabResumptionProxyImpl.getInstance().handler.recordAction(
         ScoredURLUserAction.kActivated, urlVisit.urlKey,

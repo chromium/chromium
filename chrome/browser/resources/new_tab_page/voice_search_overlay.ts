@@ -431,7 +431,7 @@ export class VoiceSearchOverlayElement extends CrLitElement {
   }
 
   private onError_(error: Error) {
-    chrome.metricsPrivate.recordEnumerationValue(
+    recordEnumeration(
         'NewTabPage.VoiceErrors', error, Object.keys(Error).length);
     if (error === Error.ABORTED) {
       // We are in the process of closing voice search.

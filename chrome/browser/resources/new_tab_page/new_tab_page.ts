@@ -27,7 +27,7 @@ export {DoodleShareDialogElement} from './doodle_share_dialog.js';
 export {IframeElement} from './iframe.js';
 export {ProcessedFile, processFile} from './image_processor.js';
 export {LogoElement} from './logo.js';
-export {recordBoolean, recordDuration, recordEnumeration, recordLoadDuration, recordOccurrence, recordPerdecage, recordSmallCount, recordSparseValueWithPersistentHash, recordValue} from './metrics_utils.js';
+export {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordLogValue, recordOccurrence, recordPerdecage, recordSmallCount, recordSparseValueWithPersistentHash} from './metrics_utils.js';
 export {NewTabPageProxy} from './new_tab_page_proxy.js';
 export {checkTransparency, isBMP, isPNG, isWebP} from './transparency.js';
 export {$$} from './utils.js';
