@@ -568,6 +568,7 @@ void SearchSuggestionParser::Results::Clear() {
   experiment_stats_v2s.clear();
   relevances_from_server = false;
   suggestion_groups_map.clear();
+  smart_compose_inline_hint.clear();
 }
 
 bool SearchSuggestionParser::Results::HasServerProvidedScores() const {
@@ -663,7 +664,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
   // 3rd element: Ignore the optional description list for now.
   // 4th element: Disregard the query URL list.
-  // 5th element: Disregard the optional key-value pairs from the server.
+  // 5th element: Disregard the optional key-value pairs from the server for
+  // now.
 
   // Reset suggested relevance information.
   results->verbatim_relevance = -1;
@@ -678,6 +680,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   int prerender_index = -1;
   omnibox::GroupsInfo groups_info;
 
+  // Parse the optional key-value pairs from the server (5th element).
   if (root_list.size() > 4u && root_list[4].is_dict()) {
     const base::Value::Dict& extras = root_list[4].GetDict();
 
@@ -759,6 +762,18 @@ bool SearchSuggestionParser::ParseSuggestResults(
     if (subtype_identifiers &&
         subtype_identifiers->size() != results_list.size()) {
       subtype_identifiers = nullptr;
+    }
+
+    // Clear old smart compose result. New result may or may not have a smart
+    // compose field.
+    results->smart_compose_inline_hint.clear();
+    // Smart compose response.
+    const base::Value::Dict* smart_compose_data =
+        extras.FindDict("google:smartcompose");
+    if (smart_compose_data) {
+      // Smart compose completion.
+      results->smart_compose_inline_hint =
+          FindStringOrEmpty(*smart_compose_data, "c");
     }
 
     // Store the metadata that came with the response in case we need to pass

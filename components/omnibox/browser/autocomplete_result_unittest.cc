@@ -393,6 +393,7 @@ TEST_F(AutocompleteResultTest, SwapMatches) {
                           TestSchemeClassifier());
   matches.push_back(match);
   r1.AppendMatches(matches);
+  r1.set_smart_compose_inline_hint("smart compose!");
   r1.SortAndCull(input, &template_url_service(), triggered_feature_service(),
                  /*is_lens_active=*/false,
                  /*can_show_contextual_suggestions=*/false,
@@ -403,9 +404,11 @@ TEST_F(AutocompleteResultTest, SwapMatches) {
   r1.SwapMatchesWith(&r2);
   EXPECT_TRUE(r1.empty());
   EXPECT_FALSE(r1.default_match());
+  EXPECT_TRUE(r1.smart_compose_inline_hint().empty());
   ASSERT_FALSE(r2.empty());
   EXPECT_TRUE(r2.default_match());
   EXPECT_EQ(&*r2.begin(), r2.default_match());
+  EXPECT_EQ("smart compose!", r2.smart_compose_inline_hint());
 }
 
 TEST_F(AutocompleteResultTest, AlternateNavUrl) {

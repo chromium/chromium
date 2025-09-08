@@ -138,6 +138,7 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      smartComposeInlineHint_: {type: String},
     };
   }
 
@@ -167,6 +168,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor showErrorScrim_: boolean = false;
   protected accessor errorMessage_: string = '';
   protected accessor result_: AutocompleteResult|null = null;
+  protected accessor smartComposeInlineHint_: string = '';
   protected accessor inputPlaceholder_: string =
       loadTimeData.getString('searchboxComposePlaceholder');
   protected accessor composeboxShowPdfUpload_: boolean =
@@ -338,6 +340,10 @@ export class ComposeboxElement extends I18nMixinLit
 
   resetText() {
     this.$.input.value = '';
+  }
+
+  getSmartComposeForTesting() {
+    return this.smartComposeInlineHint_;
   }
 
   protected computeCancelButtonTitle_() {
@@ -611,6 +617,9 @@ export class ComposeboxElement extends I18nMixinLit
     this.result_ = result;
     const hasMatches = this.result_?.matches?.length > 0;
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
+    this.smartComposeInlineHint_ = this.result_.smartComposeInlineHint ?
+        mojoString16ToString(this.result_.smartComposeInlineHint) :
+        '';
     // Zero suggest matches are not allowed to be default. Therefore, this
     // makes sure zero suggest results aren't focused when they are returned.
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {

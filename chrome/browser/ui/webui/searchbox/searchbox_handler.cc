@@ -444,7 +444,8 @@ searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
       input,
       CreateSuggestionGroupsMap(result, prefs, result.suggestion_groups_map()),
       CreateAutocompleteMatches(result, edit_model, bookmark_model,
-                                result.suggestion_groups_map(), turl_service));
+                                result.suggestion_groups_map(), turl_service),
+      base::UTF8ToUTF16(result.smart_compose_inline_hint()));
 }
 
 }  // namespace

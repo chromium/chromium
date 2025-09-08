@@ -10,7 +10,7 @@ import {FileUploadErrorType, FileUploadStatus} from 'chrome://resources/cr_compo
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {AutocompleteMatch, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -130,6 +130,18 @@ suite('NewTabPageComposeboxTest', () => {
       answer: null,
       tailSuggestCommonPrefix: null,
     };
+  }
+
+  function createAutocompleteResult(
+      modifiers: Partial<AutocompleteResult> = {}): AutocompleteResult {
+    const base: AutocompleteResult = {
+      input: stringToMojoString16(''),
+      matches: [],
+      suggestionGroupsMap: {},
+      smartComposeInlineHint: null,
+    };
+
+    return Object.assign(base, modifiers);
   }
 
   function createSearchMatch(modifiers: Partial<AutocompleteMatch> = {}):
@@ -572,11 +584,11 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.input.value = 'test';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
     const matches = [createSearchMatch({allowedToBeDefaultMatch: true})];
-    searchboxCallbackRouterRemote.autocompleteResultChanged({
-      input: stringToMojoString16('test'),
-      matches,
-      suggestionGroupsMap: {},
-    });
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16('test'),
+          matches,
+        }));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     composeboxElement.$.submitIcon.click();
@@ -620,11 +632,11 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.input.value = 'test';
     composeboxElement.$.input.dispatchEvent(new Event('input'));
     const matches = [createSearchMatch({allowedToBeDefaultMatch: true})];
-    searchboxCallbackRouterRemote.autocompleteResultChanged({
-      input: stringToMojoString16('test'),
-      matches,
-      suggestionGroupsMap: {},
-    });
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16('test'),
+          matches: matches,
+        }));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
     const shiftEnterEvent = new KeyboardEvent('keydown', {
@@ -725,11 +737,10 @@ suite('NewTabPageComposeboxTest', () => {
       createSearchMatch(),
       createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
     ];
-    searchboxCallbackRouterRemote.autocompleteResultChanged({
-      input: stringToMojoString16(''),
-      matches,
-      suggestionGroupsMap: {},
-    });
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          matches: matches,
+        }));
 
     assertTrue(await areMatchesShowing());
 
@@ -788,6 +799,25 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Restore.
     loadTimeData.overrideValues({composeboxShowZps: false});
+  });
+
+  test('smart compose response added', async () => {
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Add input.
+    composeboxElement.$.input.value = 'smart ';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16('smart '),
+          matches: [],
+          smartComposeInlineHint: stringToMojoString16('compose'),
+        }));
+    await microtasksFinished();
+
+    assertEquals('compose', composeboxElement.getSmartComposeForTesting());
   });
 
   test('composebox does not open match when only file present', async () => {

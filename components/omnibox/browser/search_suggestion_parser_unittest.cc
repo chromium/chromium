@@ -173,6 +173,9 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
           "bpc": false,
           "tlw": false
         },
+        "google:smartcompose": {
+          "c": "smart compose!"
+        },
         "google:fieldtrialtriggered": true,
         "google:suggestdetail": [{}, {
             "google:entityinfo": ")" +
@@ -254,6 +257,10 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
     const auto& experiment_stats_v2 = results.experiment_stats_v2s[2];
     ASSERT_EQ(10003, experiment_stats_v2.type_int());
     ASSERT_EQ("0:54", experiment_stats_v2.string_value());
+  }
+  {
+    const auto& smart_compose_inline_hint = results.smart_compose_inline_hint;
+    ASSERT_EQ("smart compose!", smart_compose_inline_hint);
   }
   ASSERT_EQ(1U, results.gws_event_id_hashes.size());
   int64_t expected = -223372036854775808;
