@@ -15,6 +15,27 @@
 class PrefRegistrySimple;
 class PrefService;
 
+// Values in this enum are stored in prefs, so if you change them you may need
+// to add migration code.
+enum class PageColors {
+  // Web theme forced colors state and CSS color values match the UI theme.
+  kNoPreference = 0,
+
+  // Web theme disables forced colors regardless of UI theme. The web theme
+  // preferred color scheme tracks that of the UI theme.
+  kOff = 1,
+
+  // Web theme enables forces colors regardless of the UI theme. CSS color
+  // values are set corresponding to one of the below themes.
+  kDusk = 2,      // Mimics Win 11 "Dusk"
+  kDesert = 3,    // Mimics Win 11 "Desert"
+  kNightSky = 4,  // Mimics Win 11 "Night Sky"
+  kAquatic = 5,   // Mimics Win 11 "Aquatic"
+  kWhite = 6,     // Mimics Win 10 "High Contrast White"
+
+  kMaxValue = kWhite,
+};
+
 // Manages the page colors feature, which allows overriding the web theme's
 // forced colors.
 class PageColorsController : public KeyedService,
@@ -26,17 +47,23 @@ class PageColorsController : public KeyedService,
   ~PageColorsController() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  static void MigrateObsoleteProfilePrefs(PrefService* profile_prefs);
 
   // ui::NativeThemeObserver:
   void OnPreferredContrastChanged(ui::NativeTheme* observed_theme) override;
 
- private:
-  // Handles when page colors preferences change.
-  void OnPageColorsChanged();
+  // Requests that the web theme base its forced colors on `page_colors`,
+  // subject to relevant prefs and native theme state.
+  void SetRequestedPageColors(PageColors page_colors);
 
-  // This function makes use of different states such as the kPageColors,
-  // kApplyPageColorsOnlyOnIncreasedContrast and OS increased contrast state to
-  // calculate the used page colors.
+ private:
+  // Updates the web theme's forced colors and other state based on relevant
+  // prefs. If anything changed, notifies the web theme's observers.
+  void RecomputePageColors();
+
+  // This function makes use of different states such as the
+  // kRequestedPageColors, kApplyPageColorsOnlyOnIncreasedContrast and OS
+  // increased contrast state to calculate the used page colors.
   ui::NativeTheme::PageColors CalculatePageColors(
       const ui::NativeTheme& native_theme);
 

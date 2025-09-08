@@ -62,7 +62,7 @@ enum {
   // common_syncable_prefs_database.cc and
   // ios_chrome_syncable_prefs_database.cc.
   kAppLanguagePromptShown = 100000,
-  // kPrefExplicitLanguageAskShown = 100001,  // depreccated
+  // kPrefExplicitLanguageAskShown = 100001,  // deprecated
   kContextualSearchEnabled = 100002,
   kContextualSearchWasFullyPrivacyEnabled = 100003,
   kAccessibilityImageLabelsEnabledAndroid = 100004,
@@ -86,7 +86,7 @@ enum {
   kShowHomeButton = 100022,
   kPinnedExtensions = 100023,
   kSupervisedUserApprovedExtensions = 100024,
-  // kIsDefaultPageColorsOnHighContrast = 100025, (no longer synced)
+  // kIsDefaultPageColorsOnHighContrast = 100025, (deprecated)
   kShowFullscreenToolbar = 100026,
   kAllowJavascriptAppleEvents = 100027,
   kRestoreAppsAndPagesPrefName = 100028,
@@ -224,7 +224,7 @@ enum {
   kNetworkPredictionOptions = 100159,
   kNetworkQualities = 100160,
   // kNtpAppPageNames = 100161, (deprecated)
-  // kPageColors = 100162, (no longer synced)
+  // kPageColors = 100162, (deprecated)
   kPerformanceTracingEnabled = 100163,
   kPluginsAlwaysOpenPdfExternally = 100164,
   // kPrivacySandboxApisEnabled = 100165, (deprecated)

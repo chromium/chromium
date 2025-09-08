@@ -3019,6 +3019,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
       profile_path.Append(FILE_PATH_LITERAL("Login Data For Account-journal")));
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  // Added 09/2025.
+  PageColorsController::MigrateObsoleteProfilePrefs(profile_prefs);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 

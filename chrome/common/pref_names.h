@@ -1474,21 +1474,14 @@ inline constexpr char kAccessibilityMainNodeAnnotationsEnabled[] =
 
 // Pref indicating the page colors option the user wants. Page colors is an
 // accessibility feature that simulates forced colors mode at the browser level.
-inline constexpr char kPageColors[] = "settings.a11y.page_colors";
+inline constexpr char kRequestedPageColors[] =
+    "settings.a11y.requested_page_colors";
 
 // Boolean Pref that indicates whether the user wants to enable page colors only
 // when the OS is in an Increased Contrast mode such as High Contrast on Windows
 // or Increased Contrast on Mac.
 inline constexpr char kApplyPageColorsOnlyOnIncreasedContrast[] =
     "settings.a11y.apply_page_colors_only_on_increased_contrast";
-
-#if BUILDFLAG(IS_WIN)
-// Boolean that indicates what the default page colors state should be. When
-// true, page colors will be 'High Contrast' when OS High Contrast is turned on,
-// otherwise page colors will remain 'Off'.
-inline constexpr char kIsDefaultPageColorsOnHighContrast[] =
-    "settings.a11y.is_default_page_colors_on_high_contrast";
-#endif  // BUILDFLAG(IS_WIN)
 
 // List pref containing site urls where forced colors should not be applied.
 inline constexpr char kPageColorsBlockList[] =

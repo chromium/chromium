@@ -424,13 +424,8 @@ using PageColorsBrowserClientTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
                        PageColorsAffectsWebContents) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kPageColors, ui::NativeTheme::PageColors::kDusk);
-
-  browser()
-      ->tab_strip_model()
-      ->GetActiveWebContents()
-      ->OnWebPreferencesChanged();
+  PageColorsControllerFactory::GetForProfile(browser()->profile())
+      ->SetRequestedPageColors(PageColors::kDusk);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("http://foo.com")));
 
@@ -446,13 +441,8 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
 
 IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
                        PageColorsAffectsCssPseudoElements) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kPageColors, ui::NativeTheme::PageColors::kDesert);
-
-  browser()
-      ->tab_strip_model()
-      ->GetActiveWebContents()
-      ->OnWebPreferencesChanged();
+  PageColorsControllerFactory::GetForProfile(browser()->profile())
+      ->SetRequestedPageColors(PageColors::kDesert);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), ui_test_utils::GetTestUrl(
