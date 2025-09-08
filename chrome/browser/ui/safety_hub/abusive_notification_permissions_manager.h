@@ -51,6 +51,15 @@ class AbusiveNotificationPermissionsManager {
       GURL url,
       const raw_ptr<const base::Clock> clock);
 
+  // Sets the `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` value for a url, given
+  // the constraints and whether the user wants to ignore future
+  // auto-revocation.
+  static void SetRevokedAbusiveNotificationPermission(
+      HostContentSettingsMap* hcsm,
+      GURL url,
+      bool is_ignored,
+      const content_settings::ContentSettingConstraints& constraints = {});
+
   // Calls `PerformSafeBrowsingChecks` on URLs which have notifications
   // enabled and haven't been marked as a URL to be ignored.
   void CheckNotificationPermissionOrigins();

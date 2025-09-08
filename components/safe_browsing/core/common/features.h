@@ -328,6 +328,10 @@ BASE_DECLARE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist);
 // Enables saving gaia password hash from the Profile Picker sign-in flow.
 BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
 
+// Enables showing manual notification auto-revocations in Safety Hub, allowing
+// users to review and manage the revoked permissions.
+BASE_DECLARE_FEATURE(kShowManualNotificationRevocationsSafetyHub);
+
 // Enables replacing notification contents with a Chrome warning when the
 // on-device model returns a sufficiently suspicious verdict.
 BASE_DECLARE_FEATURE(kShowWarningsForSuspiciousNotifications);
