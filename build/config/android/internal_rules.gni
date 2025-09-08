@@ -141,13 +141,22 @@ template("write_build_config") {
                                  ".res.build_config.json") ]
   }
 
+  # ParamsJson.needs_transitive_rtxt()
   if (_type == "dist_aar" ||
-      (_type == "java_library" &&
-       (!invoker.is_prebuilt || (defined(invoker.dex_needs_classpath) &&
-                                 invoker.dex_needs_classpath)))) {
+      (_type == "java_library" && !invoker.is_prebuilt)) {
     _outputs += [ string_replace(invoker.build_config,
                                  ".build_config.json",
                                  ".rtxt.build_config.json") ]
+  }
+
+  # ParamsJson.is_compile_type()
+  if (_type == "android_apk" || _type == "android_app_bundle_module" ||
+      _type == "java_annotation_processor" || _type == "java_binary" ||
+      _type == "robolectric_binary" ||
+      (_type == "java_library" && !invoker.is_prebuilt)) {
+    _outputs += [ string_replace(invoker.build_config,
+                                 ".build_config.json",
+                                 ".turbine.build_config.json") ]
   }
 
   if (current_toolchain == default_toolchain) {
@@ -1803,10 +1812,13 @@ if (enable_java_templates) {
       inputs = java_paths_for_inputs + [
                  invoker.build_config,
                  invoker.input_jar,
+                 invoker.turbine_build_config,
                ]
       depfile = "$target_gen_dir/$target_name.d"
       outputs = [ "$target_out_dir/$target_name.bytecode.stamp" ]
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
+      _rebased_turbine_build_config =
+          rebase_path(invoker.turbine_build_config, root_build_dir)
       args = [
         "--depfile",
         rebase_path(depfile, root_build_dir),
@@ -1819,7 +1831,7 @@ if (enable_java_templates) {
         rebase_path(outputs[0], root_build_dir),
         "--chromium-output-dir",
         rebase_path(root_build_dir, root_build_dir),
-        "--direct-classpath-jars=@FileArg($_rebased_build_config:interface_classpath)",
+        "--direct-classpath-jars=@FileArg($_rebased_turbine_build_config:interface_classpath)",
         "--full-classpath-jars=@FileArg($_rebased_build_config:javac_full_interface_classpath)",
         "--full-classpath-gn-targets=@FileArg($_rebased_build_config:javac_full_classpath_targets)",
       ]
@@ -3943,6 +3955,10 @@ if (enable_java_templates) {
         }
       }
 
+      _turbine_build_config = string_replace(_build_config,
+                                             ".build_config.json",
+                                             ".turbine.build_config.json")
+
       template("compile_java_helper") {
         _enable_errorprone =
             defined(invoker.enable_errorprone) && invoker.enable_errorprone
@@ -3961,7 +3977,11 @@ if (enable_java_templates) {
           enable_errorprone = _enable_errorprone
           use_turbine = defined(invoker.use_turbine) && invoker.use_turbine
 
-          build_config = _build_config
+          if (use_turbine) {
+            build_config = _turbine_build_config
+          } else {
+            build_config = _build_config
+          }
 
           if (_enable_errorprone) {
             source_files = _errorprone_source_files
@@ -4152,6 +4172,7 @@ if (enable_java_templates) {
               get_label_info(":${invoker.target_name}", "label_no_toolchain")
           input_jar = _unprocessed_jar_path
           build_config = _build_config
+          turbine_build_config = _turbine_build_config
         }
       } else {
         not_needed(invoker, [ "missing_classes_allowlist" ])

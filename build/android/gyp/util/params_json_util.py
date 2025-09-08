@@ -42,14 +42,18 @@ _COLLECTS_NATIVE_LIBRARIES_TYPES = frozenset([
     'robolectric_binary',
 ])
 
-_CLASSPATH_TYPES = frozenset([
+_COMPILE_TYPES = frozenset([
     'android_apk',
     'android_app_bundle_module',
-    'dist_aar',
-    'dist_jar',
     'java_annotation_processor',
     'java_binary',
+    'java_library',
     'robolectric_binary',
+])
+
+_CLASSPATH_TYPES = frozenset(list(_COMPILE_TYPES) + [
+    'dist_aar',
+    'dist_jar',
 ])
 
 # Track inputs for use in depfiles.
@@ -369,8 +373,21 @@ class ParamsJson(dict):
   def has_classpath(self):
     """Returns True if the target type has a classpath."""
     if self.is_library():
-      return self.get('dex_needs_classpath') or not self.get('is_prebuilt')
+      return bool(self.get('dex_needs_classpath') or not self.is_prebuilt())
     return self.type in _CLASSPATH_TYPES
+
+  def is_compile_type(self):
+    """Returns True if the target has a compile step."""
+    return not self.is_prebuilt() and self.type in _COMPILE_TYPES
+
+  def needs_transitive_rtxt(self):
+    """Returns True if the target populates "dependency_rtxt_files"."""
+    return self.type == 'dist_aar' or (self.is_library()
+                                       and not self.is_prebuilt())
+
+  def is_prebuilt(self):
+    """If it's a java_library prebuilt."""
+    return self.is_library() and self.get('is_prebuilt', False)
 
   def is_resource_type(self):
     """Returns True if the target is an Android resource type."""

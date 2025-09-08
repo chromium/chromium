@@ -651,6 +651,7 @@ def main():
       manifest.CheckInstrumentationElements(manifest.GetPackageName())
 
   main_config = {}
+  turbine_config = {}
   res_config = {}
   rtxt_config = {}
 
@@ -666,17 +667,6 @@ def main():
 
   if has_classpath:
     tv = _TransitiveValuesBuilder(params).Build()
-
-    main_config['interface_classpath'] = list(tv.direct_interface_jars) + list(
-        tv.direct_input_jars_paths)
-    # processor_configs will be of type 'java_annotation_processor', and so not
-    # included in deps().recursive().of_type('java_library'). Annotation
-    # processors run as part of the build, so need processed_jar_path.
-    processor_deps = params.processor_deps()
-    main_config['processor_classpath'] = _SortClasspath(
-        processor_deps.recursive()).collect('processed_jar_path')
-    main_config['processor_classes'] = sorted(
-        processor_deps.collect('main_class'))
 
     main_config['javac_full_classpath'] = (list(tv.all_unprocessed_jars) +
                                            list(tv.all_input_jars_paths))
@@ -694,13 +684,14 @@ def main():
     if params.collects_dex_paths():
       main_config['all_dex_files'] = list(tv.all_dex_files)
 
-    if target_type in ('dist_aar', 'java_library'):
+    if params.needs_transitive_rtxt():
       rtxt_config['dependency_rtxt_files'] = (
           params.resource_deps().collect('rtxt_path'))
 
     sdk_deps = params.deps().of_type('system_java_library')
     main_config['sdk_jars'] = sdk_deps.collect('unprocessed_jar_path')
-    main_config['sdk_interface_jars'] = sdk_deps.collect('interface_jar_path')
+    sdk_interface_jars = sdk_deps.collect('interface_jar_path')
+    main_config['sdk_interface_jars'] = sdk_interface_jars
 
     if proguard_enabled or target_type == 'dist_aar':
       main_config['proguard_all_configs'] = sorted(tv.proguard_configs)
@@ -710,6 +701,22 @@ def main():
 
     if is_apk_or_module:
       main_config['java_resources_jars'] = sorted(tv.java_resources_jars)
+
+  if params.is_compile_type():
+    # Needed by turbine.py and check_for_missing_direct_deps.py:
+    turbine_config['interface_classpath'] = list(
+        tv.direct_interface_jars) + list(tv.direct_input_jars_paths)
+    # processor_configs will be of type 'java_annotation_processor', and so not
+    # included in deps().recursive().of_type('java_library'). Annotation
+    # processors run as part of the build, so need processed_jar_path.
+    processor_deps = params.processor_deps()
+    turbine_config['processor_classpath'] = _SortClasspath(
+        processor_deps.recursive()).collect('processed_jar_path')
+    turbine_config['processor_classes'] = sorted(
+        processor_deps.collect('main_class'))
+
+    # Duplicate this so that turbine does not need to depend on another .json.
+    turbine_config['sdk_interface_jars'] = sdk_interface_jars
 
   if params.is_dist_xar():
     if params.get('direct_deps_only'):
@@ -905,6 +912,11 @@ def main():
     path = build_config_path.replace('.build_config.json',
                                      '.rtxt.build_config.json')
     build_utils.WriteJson(rtxt_config, path, only_if_changed=True)
+
+  if turbine_config:
+    path = build_config_path.replace('.build_config.json',
+                                     '.turbine.build_config.json')
+    build_utils.WriteJson(turbine_config, path, only_if_changed=True)
 
   build_utils.WriteJson(main_config, build_config_path, only_if_changed=True)
 
