@@ -620,8 +620,7 @@ using SyncDeviceInfoMap = std::map<
 // Statistics -----------------------------------------------------------------
 
 // HistoryCountResult encapsulates the result of a call to
-// HistoryBackend::GetHistoryCount or
-// HistoryBackend::CountUniqueHostsVisitedLastMonth.
+// HistoryBackend::GetHistoryCount.
 struct HistoryCountResult {
   // Indicates whether the call was successful or not. If false, then `count`
   // is undefined.

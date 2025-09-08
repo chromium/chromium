@@ -325,21 +325,6 @@ base::CancelableTaskTracker::TaskId HistoryService::GetAnnotatedVisits(
       std::move(callback));
 }
 
-base::CancelableTaskTracker::TaskId HistoryService::ToAnnotatedVisits(
-    const VisitVector& visit_rows,
-    bool compute_redirect_chain_start_properties,
-    ToAnnotatedVisitsCallback callback,
-    base::CancelableTaskTracker* tracker) const {
-  DCHECK(backend_task_runner_) << "History service being called after cleanup";
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return tracker->PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::ToAnnotatedVisitsFromRows,
-                     history_backend_, visit_rows,
-                     compute_redirect_chain_start_properties),
-      std::move(callback));
-}
-
 base::CancelableTaskTracker::TaskId HistoryService::ReplaceClusters(
     const std::vector<int64_t>& ids_to_delete,
     const std::vector<Cluster>& clusters_to_add,
@@ -417,21 +402,6 @@ base::CancelableTaskTracker::TaskId HistoryService::UpdateClusterVisit(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::UpdateClusterVisit, history_backend_,
                      cluster_visit),
-      std::move(callback));
-}
-
-base::CancelableTaskTracker::TaskId
-HistoryService::UpdateVisitsInteractionState(
-    const std::vector<VisitID>& visit_ids,
-    const ClusterVisit::InteractionState interaction_state,
-    base::OnceClosure callback,
-    base::CancelableTaskTracker* tracker) {
-  DCHECK(backend_task_runner_) << "History service being called after cleanup";
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return tracker->PostTaskAndReply(
-      backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::UpdateVisitsInteractionState,
-                     history_backend_, visit_ids, interaction_state),
       std::move(callback));
 }
 
@@ -1190,19 +1160,6 @@ base::CancelableTaskTracker::TaskId HistoryService::GetHistoryCount(
       std::move(callback));
 }
 
-void HistoryService::CountUniqueHostsVisitedLastMonth(
-    GetHistoryCountCallback callback,
-    base::CancelableTaskTracker* tracker) {
-  DCHECK(backend_task_runner_) << "History service being called after cleanup";
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  tracker->PostTaskAndReplyWithResult(
-      backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::CountUniqueHostsVisitedLastMonth,
-                     history_backend_),
-      std::move(callback));
-}
-
 void HistoryService::GetDomainDiversity(
     base::Time report_time,
     int number_of_days_to_report,
@@ -1411,16 +1368,6 @@ base::CancelableTaskTracker::TaskId HistoryService::GetVisibleVisitCountToHost(
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (origin_queried_closure_for_testing_) {
-    callback = base::BindOnce(
-        [](base::OnceClosure origin_queried_closure,
-           GetVisibleVisitCountToHostCallback wrapped_callback,
-           VisibleVisitCountToHostResult result) {
-          std::move(wrapped_callback).Run(std::move(result));
-          std::move(origin_queried_closure).Run();
-        },
-        std::move(origin_queried_closure_for_testing_), std::move(callback));
-  }
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::GetVisibleVisitCountToHost,
@@ -1662,19 +1609,6 @@ void HistoryService::ExpireHistory(
                             base::BindOnce(&HistoryBackend::ExpireHistory,
                                            history_backend_, expire_list),
                             std::move(callback));
-}
-
-void HistoryService::ExpireHistoryBeforeForTesting(
-    base::Time end_time,
-    base::OnceClosure callback,
-    base::CancelableTaskTracker* tracker) {
-  DCHECK(backend_task_runner_) << "History service being called after cleanup";
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  tracker->PostTaskAndReply(
-      backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::ExpireHistoryBeforeForTesting,
-                     history_backend_, end_time),
-      std::move(callback));
 }
 
 void HistoryService::DeleteLocalAndRemoteHistoryBetween(

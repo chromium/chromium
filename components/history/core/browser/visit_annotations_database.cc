@@ -1100,29 +1100,6 @@ void VisitAnnotationsDatabase::DeleteClusters(
   }
 }
 
-void VisitAnnotationsDatabase::UpdateVisitsInteractionState(
-    const std::vector<VisitID>& visit_ids,
-    ClusterVisit::InteractionState interaction_state) {
-  if (visit_ids.empty()) {
-    return;
-  }
-
-  sql::Statement statement(
-      GetDB().GetCachedStatement(SQL_FROM_HERE,
-                                 "UPDATE clusters_and_visits "
-                                 "SET interaction_state=? WHERE visit_id=?"));
-  for (auto visit_id : visit_ids) {
-    statement.Reset(true);
-    statement.BindInt(0,
-                      ClusterVisit::InteractionStateToInt(interaction_state));
-    statement.BindInt64(1, visit_id);
-    if (!statement.Run()) {
-      DVLOG(0) << "Failed to execute visit hide statement:  "
-               << "visit_id = " << visit_id;
-    }
-  }
-}
-
 bool VisitAnnotationsDatabase::MigrateFlocAllowedToAnnotationsTable() {
   if (!GetDB().DoesTableExist("content_annotations")) {
     NOTREACHED() << " content_annotations table should exist before migration";

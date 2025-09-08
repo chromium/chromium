@@ -145,11 +145,6 @@ class VisitAnnotationsDatabase {
   // Delete `Cluster`s from the table.
   void DeleteClusters(const std::vector<int64_t>& cluster_ids);
 
-  // Update the interaction state of cluster visits.
-  void UpdateVisitsInteractionState(
-      const std::vector<VisitID>& visit_ids,
-      ClusterVisit::InteractionState interaction_state);
-
   // Converts categories to something that can be stored in the database eg:
   // "mid1:score1,mid2:score2". As the serialized format is already being
   // synced, the implementation of these functions should not be changed.

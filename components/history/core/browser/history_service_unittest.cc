@@ -901,21 +901,6 @@ base::Time GetTimeInThePast(base::Time base_time,
          base::Minutes(minutes) + base::Seconds(seconds);
 }
 
-// Helper to contain a callback and run loop logic.
-int GetMonthlyHostCountHelper(HistoryService* history,
-                              base::CancelableTaskTracker* tracker) {
-  base::RunLoop run_loop;
-  int count = 0;
-  history->CountUniqueHostsVisitedLastMonth(
-      base::BindLambdaForTesting([&](HistoryCountResult result) {
-        count = result.count;
-        run_loop.Quit();
-      }),
-      tracker);
-  run_loop.Run();
-  return count;
-}
-
 std::pair<DomainDiversityResults, DomainDiversityResults>
 GetDomainDiversityHelper(HistoryService* history,
                          base::Time begin_time,
@@ -967,28 +952,6 @@ void TestDomainMetricSet(const DomainMetricSet& metric_set,
   TestDomainMetric(metric_set.seven_day_metric, expected_seven_day_metric);
   TestDomainMetric(metric_set.twenty_eight_day_metric,
                    expected_twenty_eight_day_metric);
-}
-
-// Counts hosts visited in the last month.
-TEST_F(HistoryServiceTest, CountMonthlyVisitedHosts) {
-  HistoryService* history = history_service_.get();
-  ASSERT_TRUE(history);
-
-  AddPageInThePast(history, "http://www.google.com/", 0);
-  EXPECT_EQ(1, GetMonthlyHostCountHelper(history, &tracker_));
-
-  AddPageInThePast(history, "http://www.google.com/foo", 1);
-  AddPageInThePast(history, "https://www.google.com/foo", 5);
-  AddPageInThePast(history, "https://www.gmail.com/foo", 10);
-  // Expect 2 because only host part of URL counts.
-  EXPECT_EQ(2, GetMonthlyHostCountHelper(history, &tracker_));
-
-  AddPageInThePast(history, "https://www.gmail.com/foo", 31);
-  // Count should not change since URL added is older than a month.
-  EXPECT_EQ(2, GetMonthlyHostCountHelper(history, &tracker_));
-
-  AddPageInThePast(history, "https://www.yahoo.com/foo", 29);
-  EXPECT_EQ(3, GetMonthlyHostCountHelper(history, &tracker_));
 }
 
 TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {

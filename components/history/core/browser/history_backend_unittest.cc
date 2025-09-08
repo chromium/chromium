@@ -4687,20 +4687,6 @@ TEST_F(HistoryBackendTest, AddClusters_GetCluster) {
   VerifyCluster(backend_->GetCluster(2, true), {0});
 }
 
-TEST_F(HistoryBackendTest, AddClusters_UpdateVisitsInteractionState) {
-  AddAnnotatedVisit(0);  // Visit ID 1.
-  AddCluster({1});
-  auto cluster = backend_->GetCluster(1, false);
-  ASSERT_EQ(cluster.visits[0].interaction_state,
-            ClusterVisit::InteractionState::kDefault);
-  backend_->UpdateVisitsInteractionState({1},
-                                         ClusterVisit::InteractionState::kDone);
-
-  cluster = backend_->GetCluster(1, false);
-  ASSERT_EQ(cluster.visits[0].interaction_state,
-            ClusterVisit::InteractionState::kDone);
-}
-
 TEST_F(HistoryBackendTest, ReserveNextClusterIdWithVisit_GetCluster) {
   AddAnnotatedVisit(1);
   ClusterVisit visit_1;

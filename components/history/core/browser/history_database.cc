@@ -278,26 +278,6 @@ void HistoryDatabase::ComputeDatabaseMetrics(
   }
 }
 
-int HistoryDatabase::CountUniqueHostsVisitedLastMonth() {
-  // Collect all URLs visited within the last month.
-  base::Time one_month_ago = base::Time::Now() - base::Days(30);
-
-  sql::Statement url_sql(
-      db_.GetUniqueStatement("SELECT url FROM urls "
-                             "WHERE last_visit_time > ? "
-                             "AND hidden = 0 "
-                             "AND visit_count > 0"));
-  url_sql.BindTime(0, one_month_ago);
-
-  std::set<std::string> hosts;
-  while (url_sql.Step()) {
-    GURL url(url_sql.ColumnStringView(0));
-    hosts.insert(url.host());
-  }
-
-  return hosts.size();
-}
-
 DomainsVisitedResult HistoryDatabase::GetUniqueDomainsVisited(
     base::Time begin_time,
     base::Time end_time) {

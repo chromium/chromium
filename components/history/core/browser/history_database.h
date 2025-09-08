@@ -76,9 +76,6 @@ class HistoryDatabase : public DownloadDatabase,
   // called once and only upon successful Init.
   void ComputeDatabaseMetrics(const base::FilePath& filename);
 
-  // Counts the number of unique Hosts visited in the last month.
-  int CountUniqueHostsVisitedLastMonth();
-
   // Gets unique domains (eTLD+1) visited within the time range
   // [`begin_time`, `end_time`) for local and synced visits sorted in
   // reverse-chronological order.

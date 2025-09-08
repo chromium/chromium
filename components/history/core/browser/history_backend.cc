@@ -2044,10 +2044,6 @@ HistoryCountResult HistoryBackend::GetHistoryCount(const Time& begin_time,
   return {db_ && db_->GetHistoryCount(begin_time, end_time, &count), count};
 }
 
-HistoryCountResult HistoryBackend::CountUniqueHostsVisitedLastMonth() {
-  return {!!db_, db_ ? db_->CountUniqueHostsVisitedLastMonth() : 0};
-}
-
 std::pair<DomainDiversityResults, DomainDiversityResults>
 HistoryBackend::GetDomainDiversity(
     base::Time report_time,
@@ -2531,16 +2527,6 @@ void HistoryBackend::UpdateClusterVisit(
   }
 
   db_->UpdateClusterVisit(cluster_id, cluster_visit);
-}
-
-void HistoryBackend::UpdateVisitsInteractionState(
-    const std::vector<VisitID>& visit_ids,
-    const ClusterVisit::InteractionState interaction_state) {
-  TRACE_EVENT0("browser", "HistoryBackend::UpdateVisitsInteractionState");
-  if (!db_) {
-    return;
-  }
-  db_->UpdateVisitsInteractionState(visit_ids, interaction_state);
 }
 
 std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
@@ -3532,13 +3518,6 @@ void HistoryBackend::ExpireHistory(
     if (update_first_recorded_time)
       db_->GetStartDate(&first_recorded_time_);
   }
-}
-
-void HistoryBackend::ExpireHistoryBeforeForTesting(base::Time end_time) {
-  if (!db_)
-    return;
-
-  expirer_.ExpireHistoryBeforeForTesting(end_time);
 }
 
 void HistoryBackend::URLsNoLongerBookmarked(const std::set<GURL>& urls) {

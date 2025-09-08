@@ -356,9 +356,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   HistoryCountResult GetHistoryCount(const base::Time& begin_time,
                                      const base::Time& end_time);
 
-  // Returns the number of hosts visited in the last month.
-  HistoryCountResult CountUniqueHostsVisitedLastMonth();
-
   // Returns a collection of domain diversity metrics. Each metric is an
   // unsigned integer representing the number of unique domains (effective
   // top-level domain (eTLD) + 1, e.g. "foo.com", "bar.co.uk") visited within
@@ -571,14 +568,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   void UpdateClusterTriggerability(const std::vector<Cluster>& clusters);
 
-  // Use `UpdateVisitsInteractionState` instead to preserve the visits' scores.
   void HideVisits(const std::vector<VisitID>& visit_ids);
 
   void UpdateClusterVisit(const history::ClusterVisit& cluster_visit);
-
-  void UpdateVisitsInteractionState(
-      const std::vector<VisitID>& visit_ids,
-      const ClusterVisit::InteractionState interaction_state);
 
   std::vector<Cluster> GetMostRecentClusters(
       base::Time inclusive_min_time,
@@ -779,10 +771,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // The fields of `ExpireHistoryArgs` map directly to the arguments of
   // ExpireHistoryBetween().
   void ExpireHistory(const std::vector<ExpireHistoryArgs>& expire_list);
-
-  // Expires all visits before and including the given time, updating the URLs
-  // accordingly.
-  void ExpireHistoryBeforeForTesting(base::Time end_time);
 
   // Bookmarks -----------------------------------------------------------------
 
