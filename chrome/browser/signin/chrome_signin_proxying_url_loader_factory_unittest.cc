@@ -26,7 +26,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Invoke;
 using testing::_;
 
 namespace signin {
@@ -170,51 +169,49 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
   // The delegate will be called twice to process a request, first when the
   // request is started and again when the request is redirected.
   EXPECT_CALL(*delegate, ProcessRequest)
-      .WillOnce(
-          Invoke([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
-            EXPECT_EQ(kTestURL, adapter->GetUrl());
-            EXPECT_EQ(network::mojom::RequestDestination::kDocument,
-                      adapter->GetRequestDestination());
-            EXPECT_TRUE(adapter->IsOutermostMainFrame());
-            EXPECT_EQ(kTestReferrer, adapter->GetReferrer());
+      .WillOnce([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
+        EXPECT_EQ(kTestURL, adapter->GetUrl());
+        EXPECT_EQ(network::mojom::RequestDestination::kDocument,
+                  adapter->GetRequestDestination());
+        EXPECT_TRUE(adapter->IsOutermostMainFrame());
+        EXPECT_EQ(kTestReferrer, adapter->GetReferrer());
 
-            EXPECT_TRUE(adapter->HasHeader("X-Request-1"));
-            adapter->RemoveRequestHeaderByName("X-Request-1");
-            EXPECT_FALSE(adapter->HasHeader("X-Request-1"));
+        EXPECT_TRUE(adapter->HasHeader("X-Request-1"));
+        adapter->RemoveRequestHeaderByName("X-Request-1");
+        EXPECT_FALSE(adapter->HasHeader("X-Request-1"));
 
-            adapter->SetExtraHeaderByName("X-Request-2", "Bar");
-            EXPECT_TRUE(adapter->HasHeader("X-Request-2"));
+        adapter->SetExtraHeaderByName("X-Request-2", "Bar");
+        EXPECT_TRUE(adapter->HasHeader("X-Request-2"));
 
-            EXPECT_EQ(GURL(), redirect_url);
+        EXPECT_EQ(GURL(), redirect_url);
 
-            adapter->SetDestructionCallback(destruction_callback.Get());
-          }))
-      .WillOnce(
-          Invoke([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
-            EXPECT_EQ(network::mojom::RequestDestination::kDocument,
-                      adapter->GetRequestDestination());
-            EXPECT_TRUE(adapter->IsOutermostMainFrame());
+        adapter->SetDestructionCallback(destruction_callback.Get());
+      })
+      .WillOnce([&](ChromeRequestAdapter* adapter, const GURL& redirect_url) {
+        EXPECT_EQ(network::mojom::RequestDestination::kDocument,
+                  adapter->GetRequestDestination());
+        EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
-            // Changes to the URL and referrer take effect after the redirect
-            // is followed.
-            EXPECT_EQ(kTestURL, adapter->GetUrl());
-            EXPECT_EQ(kTestReferrer, adapter->GetReferrer());
+        // Changes to the URL and referrer take effect after the redirect
+        // is followed.
+        EXPECT_EQ(kTestURL, adapter->GetUrl());
+        EXPECT_EQ(kTestReferrer, adapter->GetReferrer());
 
-            // X-Request-1 and X-Request-2 were modified in the previous call to
-            // ProcessRequest(). These changes should still be present.
-            EXPECT_FALSE(adapter->HasHeader("X-Request-1"));
-            EXPECT_TRUE(adapter->HasHeader("X-Request-2"));
+        // X-Request-1 and X-Request-2 were modified in the previous call to
+        // ProcessRequest(). These changes should still be present.
+        EXPECT_FALSE(adapter->HasHeader("X-Request-1"));
+        EXPECT_TRUE(adapter->HasHeader("X-Request-2"));
 
-            adapter->RemoveRequestHeaderByName("X-Request-2");
-            EXPECT_FALSE(adapter->HasHeader("X-Request-2"));
+        adapter->RemoveRequestHeaderByName("X-Request-2");
+        EXPECT_FALSE(adapter->HasHeader("X-Request-2"));
 
-            adapter->SetExtraHeaderByName("X-Request-3", "Baz");
-            EXPECT_TRUE(adapter->HasHeader("X-Request-3"));
+        adapter->SetExtraHeaderByName("X-Request-3", "Baz");
+        EXPECT_TRUE(adapter->HasHeader("X-Request-3"));
 
-            EXPECT_EQ(kTestRedirectURL, redirect_url);
+        EXPECT_EQ(kTestRedirectURL, redirect_url);
 
-            adapter->SetDestructionCallback(ignored_destruction_callback.Get());
-          }));
+        adapter->SetDestructionCallback(ignored_destruction_callback.Get());
+      });
 
   const void* const kResponseUserDataKey = &kResponseUserDataKey;
   std::unique_ptr<base::SupportsUserData::Data> response_user_data =
@@ -225,7 +222,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
   // The delegate will also be called twice to process a response, first when
   // the redirect is received and again for the redirect response.
   EXPECT_CALL(*delegate, ProcessResponse)
-      .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
+      .WillOnce([&](ResponseAdapter* adapter, const GURL& redirect_url) {
         EXPECT_EQ(kTestURL, adapter->GetUrl());
         EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
@@ -240,8 +237,8 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
         adapter->RemoveHeader("X-Response-2");
 
         EXPECT_EQ(kTestRedirectURL, redirect_url);
-      }))
-      .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
+      })
+      .WillOnce([&](ResponseAdapter* adapter, const GURL& redirect_url) {
         EXPECT_EQ(kTestRedirectURL, adapter->GetUrl());
         EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
@@ -258,7 +255,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
         adapter->RemoveHeader("X-Response-3");
 
         EXPECT_EQ(GURL(), redirect_url);
-      }));
+      });
 
   // Set up a redirect and final response.
   {
@@ -396,20 +393,20 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ResponseWithNullHeaders) {
   // The delegate will also be called twice to process a response, first when
   // the redirect is received and again for the redirect response.
   EXPECT_CALL(*delegate, ProcessResponse)
-      .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
+      .WillOnce([&](ResponseAdapter* adapter, const GURL& redirect_url) {
         EXPECT_EQ(kTestURL, adapter->GetUrl());
         EXPECT_EQ(kTestRedirectURL, redirect_url);
         // This should not crash.
         adapter->RemoveHeader("TestHeader");
         EXPECT_FALSE(adapter->GetHeaders());
-      }))
-      .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
+      })
+      .WillOnce([&](ResponseAdapter* adapter, const GURL& redirect_url) {
         EXPECT_EQ(kTestRedirectURL, adapter->GetUrl());
         EXPECT_EQ(GURL(), redirect_url);
         // This should not crash.
         adapter->RemoveHeader("TestHeader");
         EXPECT_FALSE(adapter->GetHeaders());
-      }));
+      });
 
   // Set up a redirect and final response.
   {

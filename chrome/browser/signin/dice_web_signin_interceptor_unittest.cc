@@ -1214,12 +1214,12 @@ TEST_F(DiceWebSigninInterceptorTest, InterceptionInProgress) {
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_))
-      .WillOnce(testing::WithArg<2>(testing::Invoke(
+      .WillOnce(testing::WithArg<2>(
           [&delegate_callback](
               base::OnceCallback<void(SigninInterceptionResult)> callback) {
             delegate_callback = std::move(callback);
             return nullptr;
-          })));
+          }));
   MaybeIntercept(account_info.account_id);
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
   EXPECT_TRUE(interceptor()->is_interception_in_progress());
@@ -1265,11 +1265,11 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineCreationRepeatedly) {
                 ShowSigninInterceptionBubble(
                     web_contents(), MatchBubbleParameters(expected_parameters),
                     testing::_))
-        .WillOnce(testing::WithArg<2>(testing::Invoke(
+        .WillOnce(testing::WithArg<2>(
             [](base::OnceCallback<void(SigninInterceptionResult)> callback) {
               std::move(callback).Run(SigninInterceptionResult::kDeclined);
               return nullptr;
-            })));
+            }));
     MaybeIntercept(account_info.account_id);
     EXPECT_EQ(interceptor()->is_interception_in_progress(), false);
     histogram_tester.ExpectUniqueSample(
@@ -1327,11 +1327,11 @@ TEST_F(DiceWebSigninInterceptorTest,
                 ShowSigninInterceptionBubble(
                     web_contents(), MatchBubbleParameters(expected_parameters),
                     testing::_))
-        .WillOnce(testing::WithArg<2>(testing::Invoke(
+        .WillOnce(testing::WithArg<2>(
             [](base::OnceCallback<void(SigninInterceptionResult)> callback) {
               std::move(callback).Run(SigninInterceptionResult::kDeclined);
               return nullptr;
-            })));
+            }));
     MaybeIntercept(account_info.account_id);
     EXPECT_EQ(interceptor()->is_interception_in_progress(), false);
     histogram_tester.ExpectUniqueSample(
@@ -1387,11 +1387,11 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineSwitchRepeatedly_NoLimit) {
                 ShowSigninInterceptionBubble(
                     web_contents(), MatchBubbleParameters(expected_parameters),
                     testing::_))
-        .WillOnce(testing::WithArg<2>(testing::Invoke(
+        .WillOnce(testing::WithArg<2>(
             [](base::OnceCallback<void(SigninInterceptionResult)> callback) {
               std::move(callback).Run(SigninInterceptionResult::kDeclined);
               return nullptr;
-            })));
+            }));
     MaybeIntercept(account_info.account_id);
     EXPECT_EQ(interceptor()->is_interception_in_progress(), false);
     histogram_tester.ExpectUniqueSample(
