@@ -59,7 +59,7 @@ mojom::blink::FullscreenOptionsPtr ToMojoOptions(
     FullscreenRequestType request_type) {
   auto fullscreen_options = mojom::blink::FullscreenOptions::New();
   fullscreen_options->prefers_navigation_bar =
-      options->navigationUI() == "show";
+      options->navigationUI() == V8FullscreenNavigationUI::Enum::kShow;
   if (options->hasScreen() &&
       options->screen()->DisplayId() != Screen::kInvalidDisplayId) {
     fullscreen_options->display_id = options->screen()->DisplayId();

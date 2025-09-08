@@ -230,7 +230,7 @@ TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
   EXPECT_EQ(method, request->method());
   EXPECT_EQ(V8RequestDestination::Enum::kAudio, request->destination());
   EXPECT_EQ(referrer, request->referrer());
-  EXPECT_EQ("navigate", request->mode());
+  EXPECT_EQ(V8RequestMode::Enum::kNavigate, request->mode());
 
   Headers* request_headers = request->getHeaders();
 

@@ -1049,7 +1049,9 @@ const char* validateGetPublicKeyCredentialPRFExtension(
 void EmitImmediateMediationUseCounters(
     ExecutionContext* context,
     const CredentialRequestOptions* options) {
-  CHECK(options->hasMediation() && options->mediation() == "immediate");
+  CHECK(options->hasMediation() &&
+        options->mediation() ==
+            V8CredentialMediationRequirement::Enum::kImmediate);
   if (options->hasPublicKey() && options->password()) {
     UseCounter::Count(
         context,
@@ -1395,7 +1397,9 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   // assumed to be ambient, when the flag is on. This will change.
   if (RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled() &&
       options->hasPublicKey() && options->hasPassword() &&
-      options->password() && options->mediation() == "conditional") {
+      options->password() &&
+      options->mediation() ==
+          V8CredentialMediationRequirement::Enum::kConditional) {
     // Unsupported ambient credential types:
     if (options->hasOtp() || options->hasIdentity() ||
         (options->publicKey()->hasExtensions() &&
@@ -1414,7 +1418,8 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   }
 
   if (options->hasOtp() && options->otp()->hasTransport()) {
-    if (!options->otp()->transport().Contains("sms")) {
+    if (!options->otp()->transport().Contains(
+            V8OTPCredentialTransportType::Enum::kSms)) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "Unsupported transport type for OTP Credentials"));
@@ -1453,13 +1458,15 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     }
   }
   CredentialMediationRequirement requirement;
-  if (options->mediation() == "conditional") {
+  if (options->mediation() ==
+      V8CredentialMediationRequirement::Enum::kConditional) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
         "Conditional mediation is not supported for this credential type"));
     return promise;
   }
-  if (options->mediation() == "immediate") {
+  if (options->mediation() ==
+      V8CredentialMediationRequirement::Enum::kImmediate) {
     if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(context)) {
       if (options->password()) {
         if (RuntimeEnabledFeatures::
@@ -1898,7 +1905,9 @@ AuthenticationCredentialsContainer::create(
     }
   } else {
     if (RuntimeEnabledFeatures::WebAuthenticationConditionalCreateEnabled()) {
-      mojo_options->is_conditional = options->mediation() == "conditional";
+      mojo_options->is_conditional =
+          options->mediation() ==
+          V8CredentialMediationRequirement::Enum::kConditional;
     }
     authenticator->MakeCredential(
         std::move(mojo_options),

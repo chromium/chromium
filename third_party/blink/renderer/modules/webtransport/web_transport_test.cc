@@ -1857,7 +1857,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenClose) {
       scope.GetIsolate(), read_tester.Value().V8Value());
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "WebTransportError");
-  EXPECT_EQ(exception->source(), "session");
+  EXPECT_EQ(exception->source(), V8WebTransportErrorSource::Enum::kSession);
   EXPECT_EQ(exception->streamErrorCode(), std::nullopt);
 }
 
@@ -1885,7 +1885,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenRemoteClose) {
       scope.GetIsolate(), read_tester.Value().V8Value());
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "WebTransportError");
-  EXPECT_EQ(exception->source(), "session");
+  EXPECT_EQ(exception->source(), V8WebTransportErrorSource::Enum::kSession);
   EXPECT_EQ(exception->streamErrorCode(), std::nullopt);
 }
 
@@ -2090,7 +2090,7 @@ TEST_F(WebTransportTest, ReceivedResetStream) {
   ASSERT_TRUE(error);
 
   EXPECT_EQ(error->streamErrorCode(), kCode);
-  EXPECT_EQ(error->source(), "stream");
+  EXPECT_EQ(error->source(), V8WebTransportErrorSource::Enum::kStream);
 
   EXPECT_TRUE(bidirectional_stream->writable()->IsWritable());
 }
@@ -2138,7 +2138,7 @@ TEST_F(WebTransportTest, ReceivedStopSending) {
   ASSERT_TRUE(error);
 
   EXPECT_EQ(error->streamErrorCode(), kCode);
-  EXPECT_EQ(error->source(), "stream");
+  EXPECT_EQ(error->source(), V8WebTransportErrorSource::Enum::kStream);
 
   EXPECT_TRUE(bidirectional_stream->readable()->IsReadable());
 }

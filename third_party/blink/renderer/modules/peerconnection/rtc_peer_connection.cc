@@ -2310,9 +2310,9 @@ void RTCPeerConnection::RegisterTrack(MediaStreamTrack* track) {
 }
 
 void RTCPeerConnection::NoteSdpCreated(const RTCSessionDescriptionInit& desc) {
-  if (desc.type() == "offer") {
+  if (desc.type() == V8RTCSdpType::Enum::kOffer) {
     last_offer_ = desc.sdp();
-  } else if (desc.type() == "answer") {
+  } else if (desc.type() == V8RTCSdpType::Enum::kAnswer) {
     last_answer_ = desc.sdp();
   }
 }

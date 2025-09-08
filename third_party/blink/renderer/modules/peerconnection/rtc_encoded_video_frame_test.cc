@@ -641,7 +641,7 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorOnEmptyFrameWorks) {
 
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_NE(new_frame, nullptr);
-  EXPECT_EQ(new_frame->type(), "empty");
+  EXPECT_EQ(new_frame->type(), V8RTCEncodedVideoFrameType::Enum::kEmpty);
 }
 
 TEST_F(RTCEncodedVideoFrameTest, ConstructorWithMetadataOnEmptyFrameFails) {

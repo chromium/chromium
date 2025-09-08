@@ -6756,7 +6756,8 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
                               ? FocusDelegation::kDelegateFocus
                               : FocusDelegation::kNone;
   auto slot_assignment = (shadow_root_init_dict->hasSlotAssignment() &&
-                          shadow_root_init_dict->slotAssignment() == "manual")
+                          shadow_root_init_dict->slotAssignment() ==
+                              V8SlotAssignmentMode::Enum::kManual)
                              ? SlotAssignmentMode::kManual
                              : SlotAssignmentMode::kNamed;
   auto reference_target =

@@ -864,7 +864,7 @@ TEST(DOMWebSocketTest, binaryType) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
-  EXPECT_EQ("blob", websocket_scope.Socket().binaryType());
+  EXPECT_EQ(V8BinaryType::Enum::kBlob, websocket_scope.Socket().binaryType());
 
   websocket_scope.Socket().setBinaryType(
       V8BinaryType(V8BinaryType::Enum::kArraybuffer));

@@ -506,7 +506,8 @@ void XMLHttpRequest::setResponseType(
       GetExecutionContext() && GetExecutionContext()->IsWindow();
   // 1. If the current global object is not a Window object and the given value
   // is "document", then return.
-  if (!is_window && response_type == "document") {
+  if (!is_window &&
+      response_type == V8XMLHttpRequestResponseType::Enum::kDocument) {
     return;
   }
 

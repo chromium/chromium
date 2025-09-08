@@ -134,7 +134,8 @@ File* File::Create(ExecutionContext* context,
     last_modified = base::Time::Now();
   }
   DCHECK(options->hasEndings());
-  bool normalize_line_endings_to_native = options->endings() == "native";
+  const bool normalize_line_endings_to_native =
+      options->endings() == V8EndingType::Enum::kNative;
   if (normalize_line_endings_to_native)
     UseCounter::Count(context, WebFeature::kFileAPINativeLineEndings);
 

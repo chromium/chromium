@@ -804,7 +804,7 @@ TEST(AnimationAnimationEffectTest, UpdateTiming) {
   effect_timing = OptionalEffectTiming::Create();
   effect_timing->setFill("backwards");
   effect->updateTiming(effect_timing);
-  EXPECT_EQ("backwards", effect->getTiming()->fill());
+  EXPECT_EQ(V8FillMode::Enum::kBackwards, effect->getTiming()->fill());
 
   EXPECT_EQ(0, effect->getTiming()->iterationStart());
   effect_timing = OptionalEffectTiming::Create();
@@ -818,11 +818,13 @@ TEST(AnimationAnimationEffectTest, UpdateTiming) {
   effect->updateTiming(effect_timing);
   EXPECT_EQ(10, effect->getTiming()->iterations());
 
-  EXPECT_EQ("normal", effect->getTiming()->direction());
+  EXPECT_EQ(V8PlaybackDirection::Enum::kNormal,
+            effect->getTiming()->direction());
   effect_timing = OptionalEffectTiming::Create();
   effect_timing->setDirection("reverse");
   effect->updateTiming(effect_timing);
-  EXPECT_EQ("reverse", effect->getTiming()->direction());
+  EXPECT_EQ(V8PlaybackDirection::Enum::kReverse,
+            effect->getTiming()->direction());
 
   EXPECT_EQ("linear", effect->getTiming()->easing());
   effect_timing = OptionalEffectTiming::Create();

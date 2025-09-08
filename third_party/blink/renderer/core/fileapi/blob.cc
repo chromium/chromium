@@ -151,7 +151,8 @@ Blob* Blob::Create(ExecutionContext* context,
                    const BlobPropertyBag* options) {
   DCHECK(options->hasType());
   DCHECK(options->hasEndings());
-  bool normalize_line_endings_to_native = (options->endings() == "native");
+  const bool normalize_line_endings_to_native =
+      (options->endings() == V8EndingType::Enum::kNative);
   if (normalize_line_endings_to_native)
     UseCounter::Count(context, WebFeature::kFileAPINativeLineEndings);
   UseCounter::Count(context, WebFeature::kCreateObjectBlob);

@@ -567,9 +567,9 @@ Request* Request::CreateRequestWithRequestOrString(
   // https://wicg.github.io/priority-hints/#fetch-integration
   if (init->hasPriority()) {
     UseCounter::Count(execution_context, WebFeature::kPriorityHints);
-    if (init->priority() == "low") {
+    if (init->priority() == V8FetchPriority::Enum::kLow) {
       request->SetFetchPriorityHint(mojom::blink::FetchPriorityHint::kLow);
-    } else if (init->priority() == "high") {
+    } else if (init->priority() == V8FetchPriority::Enum::kHigh) {
       request->SetFetchPriorityHint(mojom::blink::FetchPriorityHint::kHigh);
     }
   }

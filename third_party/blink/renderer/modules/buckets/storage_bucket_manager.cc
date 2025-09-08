@@ -64,9 +64,10 @@ mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
   }
 
   if (options->hasDurability()) {
-    policies->durability = options->durability() == "strict"
-                               ? mojom::blink::BucketDurability::kStrict
-                               : mojom::blink::BucketDurability::kRelaxed;
+    policies->durability =
+        options->durability() == V8StorageBucketDurability::Enum::kStrict
+            ? mojom::blink::BucketDurability::kStrict
+            : mojom::blink::BucketDurability::kRelaxed;
     policies->has_durability = true;
   }
 

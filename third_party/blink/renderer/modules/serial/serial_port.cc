@@ -182,7 +182,8 @@ ScriptPromise<IDLUndefined> SerialPort::open(ScriptState* script_state,
   }
   buffer_size_ = options->bufferSize();
 
-  hardware_flow_control_ = options->flowControl() == "hardware";
+  hardware_flow_control_ =
+      options->flowControl() == V8FlowControlType::Enum::kHardware;
   mojo_options->has_cts_flow_control = true;
   mojo_options->cts_flow_control = hardware_flow_control_;
 

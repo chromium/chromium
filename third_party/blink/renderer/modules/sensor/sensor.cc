@@ -87,7 +87,8 @@ Sensor::Sensor(ExecutionContext* execution_context,
              exception_state,
              sensor_type,
              features) {
-  use_screen_coords_ = (options->referenceFrame() == "screen");
+  use_screen_coords_ =
+      (options->referenceFrame() == V8LocalCoordinateSystem::Enum::kScreen);
 }
 
 Sensor::~Sensor() = default;
