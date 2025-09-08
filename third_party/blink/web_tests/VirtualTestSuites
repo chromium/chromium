@@ -383,7 +383,7 @@
     "args": [
       "--disable-features=BlockCrossPartitionBlobUrlFetching,EnforceNoopenerOnBlobURLNavigation"
     ],
-    "expires": "Sep 1, 2025",
+    "expires": "Mar 1, 2026",
     "owners": [
       "awillia@chromium.org"
     ]
