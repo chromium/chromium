@@ -216,8 +216,7 @@ SupervisedUserService::SupervisedUserService(
          "a dependency of this service.";
 
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          kPropagateDeviceContentFiltersToSupervisedUser) &&
+  if (!UseLocalSupervision() &&
       (base::FeatureList::IsEnabled(
           kSupervisedUserClearDeviceContentFiltersPrefsOnStartup))) {
     // Users with disabled experiment cannot have these prefs set in user space
