@@ -66,7 +66,7 @@ if (enable_extensions) {
     "bluetooth.webidl",
     "cec_private.webidl",
     "clipboard.idl",
-    "extension_options_internal.idl",
+    "extension_options_internal.webidl",
     "feedback_private.idl",
     "file_system.idl",
     "guest_view_internal.json",
