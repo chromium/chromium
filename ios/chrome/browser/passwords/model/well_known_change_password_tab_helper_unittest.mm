@@ -67,7 +67,7 @@ void LoadUrlWithTransition(web::WebState* web_state,
   navigation_manager->LoadURLWithParams(params);
 }
 
-std::unique_ptr<KeyedService> MakeMockAffiliationService(web::BrowserState*) {
+std::unique_ptr<KeyedService> MakeMockAffiliationService(ProfileIOS* profile) {
   return std::make_unique<NiceMock<affiliations::MockAffiliationService>>();
 }
 

@@ -72,8 +72,7 @@ class MockRouter : public enterprise_connectors::ReportingEventRouter {
       (override));
 };
 
-std::unique_ptr<KeyedService> MakeMockRouter(web::BrowserState* browser_state) {
-  auto* profile = ProfileIOS::FromBrowserState(browser_state);
+std::unique_ptr<KeyedService> MakeMockRouter(ProfileIOS* profile) {
   return std::make_unique<MockRouter>(
       enterprise_connectors::IOSRealtimeReportingClientFactory::GetForProfile(
           profile));
@@ -90,7 +89,7 @@ class IOSChromePasswordManagerClientTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         enterprise_connectors::IOSReportingEventRouterFactory::GetInstance(),
-        base::BindRepeating(&MakeMockRouter));
+        base::BindOnce(&MakeMockRouter));
     profile_ = std::move(builder).Build();
     reporting_event_router_ = static_cast<MockRouter*>(
         enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
