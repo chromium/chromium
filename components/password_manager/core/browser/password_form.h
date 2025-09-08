@@ -579,7 +579,8 @@ struct PasswordForm {
   std::optional<base::Time> GetPasswordBackupDateCreated() const;
 
   // Updates the note with a password change backup specific
-  // `unique_display_name`.
+  // `unique_display_name`. This always updates the creation timestamp of the
+  // note.
   void SetPasswordBackupNote(const std::u16string& new_note_value);
 
   // Deletes the backup note from the password, it uses a specific
