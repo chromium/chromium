@@ -62,6 +62,7 @@ const char kPDFStructureTypeDocument[] = "Document";
 
 // Table 365 in PDF 32000-2:2020 spec, section 14.8.4.4
 const char kPDFStructureTypeDiv[] = "Div";
+const char kPDFStructureTypeAside[] = "Aside";
 const char kPDFStructureTypeNonStruct[] = "NonStruct";
 
 // Table 366 in PDF 32000-2:2020 spec, section 14.8.4.5
@@ -151,6 +152,9 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       break;
     case ax::mojom::Role::kGenericContainer:
       tag->fTypeString = kPDFStructureTypeDiv;
+      break;
+    case ax::mojom::Role::kComplementary:
+      tag->fTypeString = kPDFStructureTypeAside;
       break;
     case ax::mojom::Role::kHeading:
       tag->fTypeString = GetHeadingStructureType(ax_node->GetIntAttribute(
