@@ -85,6 +85,11 @@ BASE_FEATURE(kAutofillAiCreateEntityDataManager,
 #endif
 );
 
+// If enabled, AutofillAi supports flight reservations.
+BASE_FEATURE(kAutofillAiFlightReservation,
+             "AutofillAiFlightReservation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, no account-level capabilities are checked to determine whether
 // a user is eligible for AutofillAI.
 BASE_FEATURE(kAutofillAiIgnoreCapabilityCheck,

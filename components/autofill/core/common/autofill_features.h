@@ -30,6 +30,8 @@ BASE_DECLARE_FEATURE(kAutofillAiAlwaysTriggerServerModel);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiCreateEntityDataManager);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAiFlightReservation);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiIgnoreCapabilityCheck);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool>
