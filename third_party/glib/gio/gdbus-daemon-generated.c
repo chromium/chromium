@@ -4697,7 +4697,11 @@ _g_freedesktop_dbus_skeleton_dbus_interface_get_properties (GDBusInterfaceSkelet
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (__g_freedesktop_dbus_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; __g_freedesktop_dbus_interface_info.parent_struct.properties[n] != NULL; n++)

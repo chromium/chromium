@@ -10,7 +10,7 @@
 #  include "config.h"
 #endif
 
-#include <meta-dbus-input-capture.h>
+#include "meta-dbus-input-capture.h"
 
 #include <string.h>
 #ifdef G_OS_UNIX
@@ -385,8 +385,8 @@ _g_dbus_codegen_marshal_BOOLEAN__OBJECT_OBJECT (
 {
   typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectObjectFunc)
        (void *data1,
-        GUnixFDList *arg_fd_list,
         GDBusMethodInvocation *arg_method_invocation,
+        GUnixFDList *arg_fd_list,
         void *data2);
   _GDbusCodegenMarshalBoolean_ObjectObjectFunc callback;
   GCClosure *cc = (GCClosure*) closure;
@@ -1423,7 +1423,11 @@ meta_dbus_input_capture_skeleton_dbus_interface_get_properties (GDBusInterfaceSk
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_meta_dbus_input_capture_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _meta_dbus_input_capture_interface_info.parent_struct.properties[n] != NULL; n++)
@@ -1516,8 +1520,13 @@ _meta_dbus_input_capture_emit_changed (gpointer user_data)
   guint num_changes;
 
   g_mutex_lock (&skeleton->priv->lock);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+  g_variant_builder_init_static (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#else
   g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
   g_variant_builder_init (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#endif
   for (l = skeleton->priv->changed_properties, num_changes = 0; l != NULL; l = l->next)
     {
       ChangedProperty *cp = l->data;
@@ -3210,7 +3219,7 @@ meta_dbus_input_capture_session_call_connect_to_eis (
  * meta_dbus_input_capture_session_call_connect_to_eis_finish:
  * @proxy: A #MetaDBusInputCaptureSessionProxy.
  * @out_fd: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out) (optional): Return location for a #GUnixFDList or %NULL to ignore.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL to ignore.
  * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to meta_dbus_input_capture_session_call_connect_to_eis().
  * @error: Return location for error or %NULL.
  *
@@ -3243,7 +3252,7 @@ _out:
  * @proxy: A #MetaDBusInputCaptureSessionProxy.
  * @fd_list: (nullable): A #GUnixFDList or %NULL.
  * @out_fd: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out): Return location for a #GUnixFDList or %NULL.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL.
  * @cancellable: (nullable): A #GCancellable or %NULL.
  * @error: Return location for error or %NULL.
  *
@@ -4159,7 +4168,11 @@ meta_dbus_input_capture_session_skeleton_dbus_interface_get_properties (GDBusInt
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_meta_dbus_input_capture_session_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _meta_dbus_input_capture_session_interface_info.parent_struct.properties[n] != NULL; n++)

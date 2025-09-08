@@ -97,6 +97,7 @@ find "$TMP_DIR/src/meta" -name '*.h' -printf '%P\n' |
 
 # copy generated dbus files
 find "$TMP_DIR/src" -name 'meta-dbus*' -printf '%P\n'
+rsync "$TMP_DIR/src/"meta-dbus* ../data/
 
 rm -rf "$TMP_DIR"
 

@@ -7,11 +7,13 @@
 
 #define ENABLE_NLS 1
 
-#define EXEEXT
+#define EXEEXT 
+
+#define FILE_MONITOR_BACKEND_INOTIFY 1
 
 #define GETTEXT_PACKAGE "glib20"
 
-#define GLIB_BINARY_AGE 8101
+#define GLIB_BINARY_AGE 8504
 
 #define GLIB_INTERFACE_AGE 0
 
@@ -21,9 +23,9 @@
 
 #define GLIB_MAJOR_VERSION 2
 
-#define GLIB_MICRO_VERSION 1
+#define GLIB_MICRO_VERSION 4
 
-#define GLIB_MINOR_VERSION 81
+#define GLIB_MINOR_VERSION 85
 
 #define GLIB_RUNSTATEDIR "/run"
 
@@ -57,9 +59,11 @@
 
 #define HAVE_ENDSERVENT 1
 
-#define HAVE_EPOLL_CREATE 1
+#define HAVE_EPOLL_CREATE1 1
 
 #define HAVE_EVENTFD 1
+
+#define HAVE_FACCESSAT 1
 
 #define HAVE_FALLOCATE 1
 
@@ -83,9 +87,15 @@
 
 #define HAVE_GETC_UNLOCKED 1
 
+#define HAVE_GETFSENT 1
+
 #define HAVE_GETGRGID_R 1
 
+#define HAVE_GETIFADDRS 1
+
 #define HAVE_GETMNTENT_R 1
+
+#define HAVE_GETPWNAM_R 1
 
 #define HAVE_GETPWUID_R 1
 
@@ -137,13 +147,13 @@
 
 #define HAVE_LC_MESSAGES 1
 
-#define HAVE_LIBELF 1
-
 #undef HAVE_LIBMOUNT
 
 #define HAVE_LIMITS_H 1
 
 #define HAVE_LINK 1
+
+#define HAVE_LINUX_NETLINK_H 1
 
 #define HAVE_LOCALE_H 1
 
@@ -162,6 +172,8 @@
 #define HAVE_MBRTOWC 1
 
 #define HAVE_MEMALIGN 1
+
+#define HAVE_MEMMEM 1
 
 #define HAVE_MEMORY_H 1
 
@@ -311,6 +323,8 @@
 
 #define HAVE_SYMLINK 1
 
+#define HAVE_SYSINFO 1
+
 #define HAVE_SYSLOG_H 1
 
 #undef HAVE_SYSPROF
@@ -395,13 +409,13 @@
 
 #define PACKAGE_NAME "glib"
 
-#define PACKAGE_STRING "glib 2.81.1"
+#define PACKAGE_STRING "glib 2.85.4"
 
 #define PACKAGE_TARNAME "glib"
 
 #define PACKAGE_URL ""
 
-#define PACKAGE_VERSION "2.81.1"
+#define PACKAGE_VERSION "2.85.4"
 
 #define SIZEOF_CHAR 1
 
@@ -436,6 +450,7 @@
 
 #define _GNU_SOURCE 1
 
-#define gl_extern_inline
+#define gl_extern_inline 
 
-#define gl_unused
+#define gl_unused 
+

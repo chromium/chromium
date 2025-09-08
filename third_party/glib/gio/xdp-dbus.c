@@ -251,8 +251,8 @@ _g_dbus_codegen_marshal_BOOLEAN__OBJECT_OBJECT_VARIANT_BOOLEAN_BOOLEAN (
 {
   typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectObjectVariantBooleanBooleanFunc)
        (void *data1,
-        GUnixFDList *arg_fd_list,
         GDBusMethodInvocation *arg_method_invocation,
+        GUnixFDList *arg_fd_list,
         GVariant *arg_o_path_fd,
         gboolean arg_reuse_existing,
         gboolean arg_persistent,
@@ -302,8 +302,8 @@ _g_dbus_codegen_marshal_BOOLEAN__OBJECT_OBJECT_VARIANT_STRING_BOOLEAN_BOOLEAN (
 {
   typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectObjectVariantStringBooleanBooleanFunc)
        (void *data1,
-        GUnixFDList *arg_fd_list,
         GDBusMethodInvocation *arg_method_invocation,
+        GUnixFDList *arg_fd_list,
         GVariant *arg_o_path_parent_fd,
         const gchar *arg_filename,
         gboolean arg_reuse_existing,
@@ -355,8 +355,8 @@ _g_dbus_codegen_marshal_BOOLEAN__OBJECT_OBJECT_VARIANT_UINT_STRING_BOXED (
 {
   typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectObjectVariantUintStringBoxedFunc)
        (void *data1,
-        GUnixFDList *arg_fd_list,
         GDBusMethodInvocation *arg_method_invocation,
+        GUnixFDList *arg_fd_list,
         GVariant *arg_o_path_fds,
         guint arg_flags,
         const gchar *arg_app_id,
@@ -408,8 +408,8 @@ _g_dbus_codegen_marshal_BOOLEAN__OBJECT_OBJECT_VARIANT_STRING_UINT_STRING_BOXED 
 {
   typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectObjectVariantStringUintStringBoxedFunc)
        (void *data1,
-        GUnixFDList *arg_fd_list,
         GDBusMethodInvocation *arg_method_invocation,
+        GUnixFDList *arg_fd_list,
         GVariant *arg_o_path_fd,
         const gchar *arg_filename,
         guint arg_flags,
@@ -606,8 +606,8 @@ _g_dbus_codegen_marshal_BOOLEAN__OBJECT_OBJECT_STRING_VARIANT_VARIANT (
 {
   typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectObjectStringVariantVariantFunc)
        (void *data1,
-        GUnixFDList *arg_fd_list,
         GDBusMethodInvocation *arg_method_invocation,
+        GUnixFDList *arg_fd_list,
         const gchar *arg_parent_window,
         GVariant *arg_fd,
         GVariant *arg_options,
@@ -657,8 +657,8 @@ _g_dbus_codegen_marshal_BOOLEAN__OBJECT_OBJECT_VARIANT (
 {
   typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectObjectVariantFunc)
        (void *data1,
-        GUnixFDList *arg_fd_list,
         GDBusMethodInvocation *arg_method_invocation,
+        GUnixFDList *arg_fd_list,
         GVariant *arg_fd,
         void *data2);
   _GDbusCodegenMarshalBoolean_ObjectObjectVariantFunc callback;
@@ -2103,7 +2103,7 @@ gxdp_documents_call_add (
  * gxdp_documents_call_add_finish:
  * @proxy: A #GXdpDocumentsProxy.
  * @out_doc_id: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out) (optional): Return location for a #GUnixFDList or %NULL to ignore.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL to ignore.
  * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gxdp_documents_call_add().
  * @error: Return location for error or %NULL.
  *
@@ -2139,7 +2139,7 @@ _out:
  * @arg_persistent: Argument to pass with the method invocation.
  * @fd_list: (nullable): A #GUnixFDList or %NULL.
  * @out_doc_id: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out): Return location for a #GUnixFDList or %NULL.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL.
  * @cancellable: (nullable): A #GCancellable or %NULL.
  * @error: Return location for error or %NULL.
  *
@@ -2233,7 +2233,7 @@ gxdp_documents_call_add_named (
  * gxdp_documents_call_add_named_finish:
  * @proxy: A #GXdpDocumentsProxy.
  * @out_doc_id: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out) (optional): Return location for a #GUnixFDList or %NULL to ignore.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL to ignore.
  * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gxdp_documents_call_add_named().
  * @error: Return location for error or %NULL.
  *
@@ -2270,7 +2270,7 @@ _out:
  * @arg_persistent: Argument to pass with the method invocation.
  * @fd_list: (nullable): A #GUnixFDList or %NULL.
  * @out_doc_id: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out): Return location for a #GUnixFDList or %NULL.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL.
  * @cancellable: (nullable): A #GCancellable or %NULL.
  * @error: Return location for error or %NULL.
  *
@@ -2367,7 +2367,7 @@ gxdp_documents_call_add_full (
  * @proxy: A #GXdpDocumentsProxy.
  * @out_doc_ids: (out) (optional) (array zero-terminated=1): Return location for return parameter or %NULL to ignore.
  * @out_extra_out: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out) (optional): Return location for a #GUnixFDList or %NULL to ignore.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL to ignore.
  * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gxdp_documents_call_add_full().
  * @error: Return location for error or %NULL.
  *
@@ -2407,7 +2407,7 @@ _out:
  * @fd_list: (nullable): A #GUnixFDList or %NULL.
  * @out_doc_ids: (out) (optional) (array zero-terminated=1): Return location for return parameter or %NULL to ignore.
  * @out_extra_out: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out): Return location for a #GUnixFDList or %NULL.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL.
  * @cancellable: (nullable): A #GCancellable or %NULL.
  * @error: Return location for error or %NULL.
  *
@@ -2509,7 +2509,7 @@ gxdp_documents_call_add_named_full (
  * @proxy: A #GXdpDocumentsProxy.
  * @out_doc_id: (out) (optional): Return location for return parameter or %NULL to ignore.
  * @out_extra_out: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out) (optional): Return location for a #GUnixFDList or %NULL to ignore.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL to ignore.
  * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gxdp_documents_call_add_named_full().
  * @error: Return location for error or %NULL.
  *
@@ -2550,7 +2550,7 @@ _out:
  * @fd_list: (nullable): A #GUnixFDList or %NULL.
  * @out_doc_id: (out) (optional): Return location for return parameter or %NULL to ignore.
  * @out_extra_out: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out): Return location for a #GUnixFDList or %NULL.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL.
  * @cancellable: (nullable): A #GCancellable or %NULL.
  * @error: Return location for error or %NULL.
  *
@@ -4077,7 +4077,11 @@ gxdp_documents_skeleton_dbus_interface_get_properties (GDBusInterfaceSkeleton *_
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_gxdp_documents_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _gxdp_documents_interface_info.parent_struct.properties[n] != NULL; n++)
@@ -4170,8 +4174,13 @@ _gxdp_documents_emit_changed (gpointer user_data)
   guint num_changes;
 
   g_mutex_lock (&skeleton->priv->lock);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+  g_variant_builder_init_static (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#else
   g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
   g_variant_builder_init (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#endif
   for (l = skeleton->priv->changed_properties, num_changes = 0; l != NULL; l = l->next)
     {
       ChangedProperty *cp = l->data;
@@ -5009,7 +5018,7 @@ gxdp_open_uri_call_open_file (
  * gxdp_open_uri_call_open_file_finish:
  * @proxy: A #GXdpOpenURIProxy.
  * @out_handle: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out) (optional): Return location for a #GUnixFDList or %NULL to ignore.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL to ignore.
  * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gxdp_open_uri_call_open_file().
  * @error: Return location for error or %NULL.
  *
@@ -5045,7 +5054,7 @@ _out:
  * @arg_options: Argument to pass with the method invocation.
  * @fd_list: (nullable): A #GUnixFDList or %NULL.
  * @out_handle: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out): Return location for a #GUnixFDList or %NULL.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL.
  * @cancellable: (nullable): A #GCancellable or %NULL.
  * @error: Return location for error or %NULL.
  *
@@ -5136,7 +5145,7 @@ gxdp_open_uri_call_open_directory (
  * gxdp_open_uri_call_open_directory_finish:
  * @proxy: A #GXdpOpenURIProxy.
  * @out_handle: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out) (optional): Return location for a #GUnixFDList or %NULL to ignore.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL to ignore.
  * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gxdp_open_uri_call_open_directory().
  * @error: Return location for error or %NULL.
  *
@@ -5172,7 +5181,7 @@ _out:
  * @arg_options: Argument to pass with the method invocation.
  * @fd_list: (nullable): A #GUnixFDList or %NULL.
  * @out_handle: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out): Return location for a #GUnixFDList or %NULL.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL.
  * @cancellable: (nullable): A #GCancellable or %NULL.
  * @error: Return location for error or %NULL.
  *
@@ -5883,7 +5892,11 @@ gxdp_open_uri_skeleton_dbus_interface_get_properties (GDBusInterfaceSkeleton *_s
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_gxdp_open_uri_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _gxdp_open_uri_interface_info.parent_struct.properties[n] != NULL; n++)
@@ -5976,8 +5989,13 @@ _gxdp_open_uri_emit_changed (gpointer user_data)
   guint num_changes;
 
   g_mutex_lock (&skeleton->priv->lock);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+  g_variant_builder_init_static (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#else
   g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
   g_variant_builder_init (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#endif
   for (l = skeleton->priv->changed_properties, num_changes = 0; l != NULL; l = l->next)
     {
       ChangedProperty *cp = l->data;
@@ -7125,7 +7143,11 @@ gxdp_proxy_resolver_skeleton_dbus_interface_get_properties (GDBusInterfaceSkelet
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_gxdp_proxy_resolver_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _gxdp_proxy_resolver_interface_info.parent_struct.properties[n] != NULL; n++)
@@ -7218,8 +7240,13 @@ _gxdp_proxy_resolver_emit_changed (gpointer user_data)
   guint num_changes;
 
   g_mutex_lock (&skeleton->priv->lock);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+  g_variant_builder_init_static (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#else
   g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
   g_variant_builder_init (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#endif
   for (l = skeleton->priv->changed_properties, num_changes = 0; l != NULL; l = l->next)
     {
       ChangedProperty *cp = l->data;
@@ -7686,7 +7713,7 @@ gxdp_trash_call_trash_file (
  * gxdp_trash_call_trash_file_finish:
  * @proxy: A #GXdpTrashProxy.
  * @out_result: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out) (optional): Return location for a #GUnixFDList or %NULL to ignore.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL to ignore.
  * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to gxdp_trash_call_trash_file().
  * @error: Return location for error or %NULL.
  *
@@ -7720,7 +7747,7 @@ _out:
  * @arg_fd: Argument to pass with the method invocation.
  * @fd_list: (nullable): A #GUnixFDList or %NULL.
  * @out_result: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out): Return location for a #GUnixFDList or %NULL.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL.
  * @cancellable: (nullable): A #GCancellable or %NULL.
  * @error: Return location for error or %NULL.
  *
@@ -8382,7 +8409,11 @@ gxdp_trash_skeleton_dbus_interface_get_properties (GDBusInterfaceSkeleton *_skel
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_gxdp_trash_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _gxdp_trash_interface_info.parent_struct.properties[n] != NULL; n++)
@@ -8475,8 +8506,13 @@ _gxdp_trash_emit_changed (gpointer user_data)
   guint num_changes;
 
   g_mutex_lock (&skeleton->priv->lock);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+  g_variant_builder_init_static (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#else
   g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
   g_variant_builder_init (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#endif
   for (l = skeleton->priv->changed_properties, num_changes = 0; l != NULL; l = l->next)
     {
       ChangedProperty *cp = l->data;

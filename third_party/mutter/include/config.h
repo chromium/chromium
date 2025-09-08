@@ -2,13 +2,13 @@
 #define GETTEXT_PACKAGE "mutter"
 
 /* Version number of package */
-#define VERSION "48.alpha"
+#define VERSION "48.4"
 
 /* Name of package */
 #define PACKAGE_NAME "mutter"
 
 /* Version number of package */
-#define PACKAGE_VERSION "48.alpha"
+#define PACKAGE_VERSION "48.4"
 
 /* Search path for plugins */
 #define MUTTER_PLUGIN_DIR "."
@@ -51,8 +51,8 @@
 /* libwacom has get_num_rings() */
 #undef HAVE_LIBWACOM_GET_NUM_RINGS
 
-/* Building with libsystemd */
-#define HAVE_LIBSYSTEMD
+/* Building with logind */
+#define HAVE_LOGIND
 
 /* Define if you want to enable the native (KMS) backend based on systemd */
 #define HAVE_NATIVE_BACKEND
@@ -91,9 +91,7 @@
 /* #undef XWAYLAND_PATH */
 
 /* Xwayland applications allowed to issue keyboard grabs */
-#define XWAYLAND_GRAB_DEFAULT_ACCESS_RULES                                \
-  "gnome-boxes,remote-viewer,virt-viewer,virt-manager,vinagre,vncviewer," \
-  "Xephyr"
+#define XWAYLAND_GRAB_DEFAULT_ACCESS_RULES "gnome-boxes,remote-viewer,virt-viewer,virt-manager,vinagre,vncviewer,Xephyr"
 
 /* XKB base prefix */
 /* #undef XKB_BASE */
@@ -140,6 +138,9 @@
 
 /* libdrm defines struct drm_plane_size_hint */
 #define HAVE_DRM_PLANE_SIZE_HINT
+
+/* Whether xkbcommon has led definitions for kana/compose */
+#undef HAVE_XKBCOMMON_KANA_COMPOSE_LEDS
 
 /* Building with font rendering integration support */
 #undef HAVE_FONTS

@@ -1,7 +1,7 @@
 Name: mutter
 URL: https://gitlab.gnome.org/GNOME/mutter
-Version: 48.alpha
-Revision: e99ff5359c4134093efe3cb2aa208e4addf565c6
+Version: 48.4
+Revision: 7c88672bfc702f7d47c6b3755147fbeb859391af
 Update Mechanism: Manual
 License: GPL-2.0
 License File: LICENSE

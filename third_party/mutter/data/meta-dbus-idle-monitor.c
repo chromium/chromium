@@ -10,7 +10,7 @@
 #  include "config.h"
 #endif
 
-#include <meta-dbus-idle-monitor.h>
+#include "meta-dbus-idle-monitor.h"
 
 #include <string.h>
 #ifdef G_OS_UNIX
@@ -1962,7 +1962,11 @@ meta_dbus_idle_monitor_skeleton_dbus_interface_get_properties (GDBusInterfaceSke
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_meta_dbus_idle_monitor_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _meta_dbus_idle_monitor_interface_info.parent_struct.properties[n] != NULL; n++)

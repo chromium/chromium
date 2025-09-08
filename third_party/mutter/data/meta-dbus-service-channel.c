@@ -10,7 +10,7 @@
 #  include "config.h"
 #endif
 
-#include <meta-dbus-service-channel.h>
+#include "meta-dbus-service-channel.h"
 
 #include <string.h>
 #ifdef G_OS_UNIX
@@ -208,8 +208,8 @@ _g_dbus_codegen_marshal_BOOLEAN__OBJECT_OBJECT_UINT (
 {
   typedef gboolean (*_GDbusCodegenMarshalBoolean_ObjectObjectUintFunc)
        (void *data1,
-        GUnixFDList *arg_fd_list,
         GDBusMethodInvocation *arg_method_invocation,
+        GUnixFDList *arg_fd_list,
         guint arg_service_client_type,
         void *data2);
   _GDbusCodegenMarshalBoolean_ObjectObjectUintFunc callback;
@@ -457,7 +457,7 @@ meta_dbus_service_channel_call_open_wayland_service_connection (
  * meta_dbus_service_channel_call_open_wayland_service_connection_finish:
  * @proxy: A #MetaDBusServiceChannelProxy.
  * @out_fd: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out) (optional): Return location for a #GUnixFDList or %NULL to ignore.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL to ignore.
  * @res: The #GAsyncResult obtained from the #GAsyncReadyCallback passed to meta_dbus_service_channel_call_open_wayland_service_connection().
  * @error: Return location for error or %NULL.
  *
@@ -491,7 +491,7 @@ _out:
  * @arg_service_client_type: Argument to pass with the method invocation.
  * @fd_list: (nullable): A #GUnixFDList or %NULL.
  * @out_fd: (out) (optional): Return location for return parameter or %NULL to ignore.
- * @out_fd_list: (out): Return location for a #GUnixFDList or %NULL.
+ * @out_fd_list: (out) (optional) (nullable): Return location for a #GUnixFDList or %NULL.
  * @cancellable: (nullable): A #GCancellable or %NULL.
  * @error: Return location for error or %NULL.
  *
@@ -1084,7 +1084,11 @@ meta_dbus_service_channel_skeleton_dbus_interface_get_properties (GDBusInterface
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_meta_dbus_service_channel_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _meta_dbus_service_channel_interface_info.parent_struct.properties[n] != NULL; n++)
