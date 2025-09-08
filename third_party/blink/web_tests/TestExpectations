@@ -2971,12 +2971,12 @@ crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-005.html [ Fail
 crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-006.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac12 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?3-4 [ Crash ]
-[ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-4-test [ Pass Timeout ]
-external/wpt/webdriver/tests/classic/element_clear/scroll_into_view.py [ Failure ]
-external/wpt/webdriver/tests/classic/element_click/scroll_into_view.py [ Failure ]
-external/wpt/webdriver/tests/classic/element_send_keys/scroll_into_view.py [ Failure ]
-external/wpt/webdriver/tests/classic/take_element_screenshot/scroll_into_view.py [ Failure ]
+crbug.com/443762762 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?3-4 [ Crash ]
+crbug.com/443773848 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-4-test [ Pass Timeout ]
+crbug.com/443773822 external/wpt/webdriver/tests/classic/element_clear/scroll_into_view.py [ Failure ]
+crbug.com/443773822 external/wpt/webdriver/tests/classic/element_click/scroll_into_view.py [ Failure ]
+crbug.com/443773822 external/wpt/webdriver/tests/classic/element_send_keys/scroll_into_view.py [ Failure ]
+crbug.com/443773822 external/wpt/webdriver/tests/classic/take_element_screenshot/scroll_into_view.py [ Failure ]
 crbug.com/443427214 [ Mac14 ] external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Skip Timeout ]
 crbug.com/443445658 [ Mac14 ] virtual/fedcm-accounts-push/external/wpt/fedcm/fedcm-accounts-push/fedcm-accounts-push-caches-pictures.tentative.https.html [ Crash ]
 crbug.com/443445658 [ Mac14 ] virtual/select-audio-output/external/wpt/audio-output/selectAudioOutput-permissions-policy.https.sub.html [ Timeout ]
