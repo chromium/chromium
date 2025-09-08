@@ -728,6 +728,8 @@ class HistoryService : public KeyedService,
 
   // Sets the history service's device info tracker and local device info
   // provider.
+  // TODO(crbug.com/40250371): Remove this and pass the services in on
+  // construction instead.
   void SetDeviceInfoServices(
       syncer::DeviceInfoTracker* device_info_tracker,
       syncer::LocalDeviceInfoProvider* local_device_info_provider);
@@ -738,8 +740,6 @@ class HistoryService : public KeyedService,
 
   // syncer::DeviceInfoTracker::Observer overrides.
   void OnDeviceInfoChange() override;
-
-  void OnDeviceInfoShutdown() override;
 
   // Schedules a HistoryDBTask for running on the history backend. See
   // HistoryDBTask for details on what this does. Takes ownership of `task`.
