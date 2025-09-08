@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/buildflag.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
@@ -344,6 +345,10 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void ResumeAfterConnected(int result);
 
   void RecordStreamRequestResult(int result);
+
+  // Called from DoCreateStreamComplete() to add trace event parameters.
+  void AddTraceParamsForStreamRequestResult(perfetto::EventContext ctx,
+                                            int result);
 
   void ProcessAltSvcHeader();
 

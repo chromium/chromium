@@ -25,6 +25,8 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/address_family.h"
@@ -1132,11 +1134,12 @@ int HttpNetworkTransaction::DoCreateStream() {
 
 int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
   CHECK(stream_request_);
-  TRACE_EVENT(
-      "net", "HttpNetworkTransaction::CreateStreamComplete",
-      NetLogWithSourceToFlow(net_log_), "result", result, "negotiated_protocol",
-      stream_request_->completed() ? stream_request_->negotiated_protocol()
-                                   : NextProto::kProtoUnknown);
+  TRACE_EVENT("net", "HttpNetworkTransaction::CreateStreamComplete",
+              NetLogWithSourceToFlow(net_log_),
+              [&](perfetto::EventContext ctx) {
+                AddTraceParamsForStreamRequestResult(std::move(ctx), result);
+              });
+
   create_stream_end_time_ = base::TimeTicks::Now();
   stream_request_completion_details_ = stream_request_->completion_details();
   RecordStreamRequestResult(result);
@@ -2506,6 +2509,36 @@ void HttpNetworkTransaction::ProcessAltSvcHeader() {
           session_, network_anonymization_key_, response_.headers.get(),
           url::SchemeHostPort(request_->url));
     }
+  }
+}
+
+void HttpNetworkTransaction::AddTraceParamsForStreamRequestResult(
+    perfetto::EventContext ctx,
+    int result) {
+  auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+
+  auto* result_annotation = event->add_debug_annotations();
+  result_annotation->set_name("result");
+  result_annotation->set_int_value(result);
+
+  if (!stream_request_->completed()) {
+    return;
+  }
+
+  auto* negotiated_protocol_annotation = event->add_debug_annotations();
+  negotiated_protocol_annotation->set_name("negotiated_protocol");
+  negotiated_protocol_annotation->set_uint_value(
+      static_cast<uint64_t>(stream_request_->negotiated_protocol()));
+
+  const std::optional<HttpStreamRequest::CompletionDetails> details =
+      stream_request_->completion_details();
+  CHECK(details.has_value());
+
+  if (details->session_source.has_value()) {
+    auto* session_source_annotation = event->add_debug_annotations();
+    session_source_annotation->set_name("session_source");
+    session_source_annotation->set_uint_value(
+        static_cast<uint64_t>(*details->session_source));
   }
 }
 
