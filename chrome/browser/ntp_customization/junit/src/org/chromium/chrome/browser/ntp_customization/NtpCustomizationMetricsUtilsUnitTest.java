@@ -71,4 +71,20 @@ public class NtpCustomizationMetricsUtilsUnitTest {
         NtpCustomizationMetricsUtils.recordModuleToggledInBottomSheet(moduleType, isEnabled);
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    public void testRecordMvtToggledInBottomSheet() {
+        String histogramName = "NewTabPage.Customization.MvtEnabled";
+
+        boolean isEnabled = true;
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, isEnabled);
+        NtpCustomizationMetricsUtils.recordMvtToggledInBottomSheet(isEnabled);
+        histogramWatcher.assertExpected();
+
+        isEnabled = false;
+        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, isEnabled);
+        NtpCustomizationMetricsUtils.recordMvtToggledInBottomSheet(isEnabled);
+        histogramWatcher.assertExpected();
+    }
 }

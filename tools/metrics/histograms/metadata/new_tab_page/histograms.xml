@@ -634,6 +634,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Customization.MvtEnabled" enum="BooleanEnabled"
+    expires_after="2026-08-31">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yanlinghu@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Android: Records when the Most Visited Tiles section on the New Tab Page is
+    toggled to be visible or invisible. The histogram is logged each time a user
+    clicks the toggle switch in the my shortcuts bottom sheet. Each press of the
+    toggle switch is counted as a separate count.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Customization.OpenBottomSheetEntry"
     enum="NtpCustomizationEntryPoint" expires_after="2026-02-22">
   <owner>hanxi@chromium.org</owner>

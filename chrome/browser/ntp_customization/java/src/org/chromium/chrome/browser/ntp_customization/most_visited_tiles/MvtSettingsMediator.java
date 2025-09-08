@@ -14,6 +14,7 @@ import android.support.annotation.VisibleForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -50,6 +51,7 @@ public class MvtSettingsMediator {
 
     @VisibleForTesting
     void onMvtSwitchToggled(boolean isEnabled) {
+        NtpCustomizationMetricsUtils.recordMvtToggledInBottomSheet(isEnabled);
         NtpCustomizationConfigManager.getInstance().setPrefIsMvtToggleOn(isEnabled);
     }
 

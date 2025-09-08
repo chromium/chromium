@@ -17,6 +17,10 @@ public class NtpCustomizationMetricsUtils {
     static final String HISTOGRAM_NTP_CUSTOMIZATION_PREFIX = "NewTabPage.Customization";
 
     @VisibleForTesting
+    static final String HISTOGRAM_NTP_CUSTOMIZATION_MVT_ENABLED =
+            HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".MvtEnabled";
+
+    @VisibleForTesting
     static final String HISTOGRAM_BOTTOM_SHEET_SHOWN =
             HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".BottomSheet.Shown";
 
@@ -75,5 +79,15 @@ public class NtpCustomizationMetricsUtils {
                 HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + name,
                 moduleType,
                 ModuleDelegate.ModuleType.NUM_ENTRIES);
+    }
+
+    /**
+     * Records the visibility of the Most Visited Tiles section on the New Tab Page as controlled by
+     * the toggle in the bottom sheet.
+     *
+     * @param isEnabled True if the module is enabled (visible).
+     */
+    public static void recordMvtToggledInBottomSheet(boolean isEnabled) {
+        RecordHistogram.recordBooleanHistogram(HISTOGRAM_NTP_CUSTOMIZATION_MVT_ENABLED, isEnabled);
     }
 }

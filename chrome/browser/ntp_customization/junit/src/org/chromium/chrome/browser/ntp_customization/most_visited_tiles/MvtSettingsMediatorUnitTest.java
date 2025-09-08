@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -83,14 +84,22 @@ public class MvtSettingsMediatorUnitTest {
 
     @Test
     public void testOnMvtSwitchToggledAndState() {
+        String histogramName = "NewTabPage.Customization.MvtEnabled";
+
         NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, /* value= */ true);
         mMediator.onMvtSwitchToggled(/* isEnabled= */ true);
         assertTrue(configManager.getPrefIsMvtToggleOn());
         assertTrue(mMediator.isMvtTurnedOn());
+        histogramWatcher.assertExpected();
 
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, /* value= */ false);
         mMediator.onMvtSwitchToggled(/* isEnabled= */ false);
         assertFalse(configManager.getPrefIsMvtToggleOn());
         assertFalse(mMediator.isMvtTurnedOn());
+        histogramWatcher.assertExpected();
     }
 
     @Test
