@@ -20,7 +20,7 @@
   "mime_types": [
     "application/pdf"
   ],
-  "content_security_policy": "script-src 'self' 'wasm-eval' blob: filesystem: chrome://resources chrome://webui-test; object-src * blob: externalfile: file: filesystem: data:",
+  "content_security_policy": "script-src 'self' blob: filesystem: chrome://resources chrome://webui-test; object-src * blob: externalfile: file: filesystem: data:",
   "mime_types_handler": "index.html",
   "web_accessible_resources": [
     "pdf_embedder.css"
