@@ -144,12 +144,7 @@ class FromSourcePromptfooInstallation(PromptfooInstallation):
 
     def run(self, cmd: list[str], cwd: os.PathLike | None = None) -> int:
         node_cmd = [
-            'npm',
-            'run',
-            '--prefix',
-            str(self._directory),
-            'local',
-            '--',
+            str(self._directory / 'dist' / 'src' / 'main.js'),
         ]
         proc = subprocess.run(node_cmd + cmd, cwd=cwd, check=False)
         return proc.returncode
