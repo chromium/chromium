@@ -61,9 +61,10 @@ enum InstallState : int;
 }
 
 class IsolatedWebAppUrlInfo;
-class WebAppRegistrarObserver;
+class ManifestSilentUpdateCommand;
 class WebApp;
 class WebAppProvider;
+class WebAppRegistrarObserver;
 
 using Registry = std::map<webapps::AppId, std::unique_ptr<WebApp>>;
 
@@ -571,6 +572,11 @@ class WebAppRegistrar {
       const webapps::AppId& app_id,
       bool is_preferred);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  void NotifyPendingUpdateInfoChanged(
+      const webapps::AppId& app_id,
+      bool pending_update_available,
+      base::PassKey<ManifestSilentUpdateCommand>);
 
   // A filter must return false to skip the |web_app|.
   using Filter = bool (*)(const WebApp& web_app);

@@ -8,17 +8,24 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class BrowserView;
 
+namespace web_app {
+class WebAppRegistrar;
+}
+
 // The 'app menu' button for a web app window.
-class WebAppMenuButton : public AppMenuButton {
+class WebAppMenuButton : public AppMenuButton,
+                         public web_app::WebAppRegistrarObserver {
   METADATA_HEADER(WebAppMenuButton, AppMenuButton)
 
  public:
@@ -34,6 +41,11 @@ class WebAppMenuButton : public AppMenuButton {
   virtual void ButtonPressed(const ui::Event& event);
 
   bool IsLabelPresentAndVisible() const;
+
+  // WebAppRegistrarObserver:
+  void OnWebAppPendingUpdateChanged(const webapps::AppId& app_id,
+                                    bool has_pending_update) override;
+  void OnAppRegistrarDestroyed() override;
 
   // Causes this button to re-evaluate if a text label should be displayed
   // alongside the three-dot icon. Currently only exposed for tests, but
@@ -59,10 +71,15 @@ class WebAppMenuButton : public AppMenuButton {
  private:
   void FadeHighlightOff();
 
-  void UpdateTextAndHighlightColor();
+  bool HasPendingUpdate();
+
+  void UpdateTextAndHighlightColor(bool is_pending_update);
 
   // The containing browser view.
   raw_ptr<BrowserView> browser_view_;
+  base::ScopedObservation<web_app::WebAppRegistrar,
+                          web_app::WebAppRegistrarObserver>
+      registrar_observation_{this};
 
   base::OneShotTimer highlight_off_timer_;
 };

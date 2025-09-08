@@ -653,6 +653,9 @@ void ManifestSilentUpdateCommand::UpdateFinalizedWritePendingInfoIfNeeded(
     web_app::ScopedRegistryUpdate update =
         app_lock_->sync_bridge().BeginUpdate();
     web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    // Record if we are adding a pending update if there wasn't one before, so
+    // can correctly notify observers only if there was a change.
+    pending_updated_added_ = !app_to_update->pending_update_info().has_value();
     CHECK(app_to_update);
     app_to_update->SetPendingUpdateInfo(std::move(pending_update_info));
   }
@@ -722,6 +725,11 @@ void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
   if (record_update && app_lock_) {
     app_lock_->sync_bridge().SetAppManifestUpdateTime(app_id_,
                                                       app_lock_->clock().Now());
+  }
+  if (pending_updated_added_) {
+    app_lock_->registrar().NotifyPendingUpdateInfoChanged(
+        app_id_, /*pending_update_available=*/true,
+        base::PassKey<ManifestSilentUpdateCommand>());
   }
   CompleteAndSelfDestruct(command_result, check_result);
 }

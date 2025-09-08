@@ -176,6 +176,7 @@ class ManifestSilentUpdateCommand
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
   bool has_icon_url_changed_ = false;
   bool silent_update_required_ = false;
+  bool pending_updated_added_ = false;
 
   // Debug info.
   ManifestSilentUpdateCommandStage stage_ =

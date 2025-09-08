@@ -68,6 +68,10 @@ class WebAppRegistrarObserver : public base::CheckedObserver {
   virtual void OnWebAppUserLinkCapturingPreferencesChanged(
       const webapps::AppId& app_id,
       bool is_preferred) {}
+
+  // Called when a pending update is available.
+  virtual void OnWebAppPendingUpdateChanged(const webapps::AppId& app_id,
+                                            bool has_pending_update) {}
 };
 
 }  // namespace web_app
