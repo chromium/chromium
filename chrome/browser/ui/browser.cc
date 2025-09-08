@@ -2222,6 +2222,10 @@ void Browser::ActivateContents(WebContents* contents) {
   window_->Activate();
 }
 
+bool Browser::IsContentsActive(content::WebContents* contents) {
+  return tab_strip_model_->GetActiveWebContents() == contents;
+}
+
 void Browser::LoadingStateChanged(WebContents* source,
                                   bool should_show_loading_ui) {
   ScheduleUIUpdate(source, content::INVALIDATE_TYPE_LOAD);

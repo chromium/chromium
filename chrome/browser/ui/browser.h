@@ -696,6 +696,7 @@ class Browser : public TabStripModelObserver,
 
   // Overridden from content::WebContentsDelegate:
   void ActivateContents(content::WebContents* contents) override;
+  bool IsContentsActive(content::WebContents* contents) override;
   void SetTopControlsShownRatio(content::WebContents* web_contents,
                                 float ratio) override;
   int GetTopControlsHeight() override;
