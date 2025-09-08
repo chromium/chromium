@@ -56,6 +56,7 @@ class ToolController {
       const ToolRequest& request,
       ResultCallback callback);
   void Invoke(ResultCallback result_callback);
+  void Cancel();
 
   static std::string StateToString(State state);
 

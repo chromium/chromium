@@ -188,6 +188,16 @@ void ToolController::Invoke(ResultCallback result_callback) {
       &ToolController::DidFinishToolInvoke, weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ToolController::Cancel() {
+  // Only cancel callbacks and states if the tool has been created.
+  if (state_ != State::kInit && state_ != State::kReady) {
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    observation_delayer_.reset();
+    active_state_.reset();
+    SetState(State::kReady);
+  }
+}
+
 void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
   CHECK(active_state_);
 

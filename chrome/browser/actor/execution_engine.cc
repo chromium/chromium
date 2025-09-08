@@ -185,6 +185,9 @@ bool ExecutionEngine::ShouldGateNavigation(
 
 void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
   TRACE_EVENT0("actor", "ExecutionEngine::CancelOngoingActions");
+  if (tool_controller_) {
+    tool_controller_->Cancel();
+  }
   if (!action_sequence_.empty()) {
     CompleteActions(MakeResult(reason), /*action_index=*/std::nullopt);
   }
