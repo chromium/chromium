@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -19,6 +21,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -31,9 +35,10 @@ import java.util.Locale;
 import java.util.Set;
 
 /** Utility methods for the Minimized Custom Tab feature. */
+@NullMarked
 public class MinimizedFeatureUtils {
 
-    private static Set<String> sManufacturerExcludeList;
+    private static @Nullable Set<String> sManufacturerExcludeList;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -58,7 +63,7 @@ public class MinimizedFeatureUtils {
         int NUM_ENTRIES = 6;
     }
 
-    private static Boolean sIsDeviceEligibleForMinimizedCustomTab;
+    private static @Nullable Boolean sIsDeviceEligibleForMinimizedCustomTab;
     private static boolean sIsDeviceEligibleForMinimizedCustomTabForTesting;
 
     /**
@@ -155,7 +160,7 @@ public class MinimizedFeatureUtils {
         boolean isFedCmIntent =
                 intentDataProvider.isTrustedIntent()
                         && IntentUtils.safeGetIntExtra(
-                                        intentDataProvider.getIntent(),
+                                        assertNonNull(intentDataProvider.getIntent()),
                                         IntentHandler.EXTRA_FEDCM_ID,
                                         -1)
                                 != -1;

@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
@@ -21,6 +22,8 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -44,6 +47,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /** Handles the Custom Tab specific behaviors of tab persistence. */
+@NullMarked
 public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     private static final String TAG = "tabmodel";
 
@@ -53,13 +57,13 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
      */
     private static final Object CLEAN_UP_TASK_LOCK = new Object();
 
-    private static AsyncTask<Void> sCleanupTask;
+    private static @Nullable AsyncTask<@Nullable Void> sCleanupTask;
 
     private final int mTaskId;
     private final boolean mShouldRestore;
 
-    private AsyncTask<Void> mInitializationTask;
-    private SequencedTaskRunner mTaskRunner;
+    private @Nullable AsyncTask<@Nullable Void> mInitializationTask;
+    private @Nullable SequencedTaskRunner mTaskRunner;
     private boolean mDestroyed;
 
     public CustomTabTabPersistencePolicy(Activity activity, Bundle savedInstanceState) {
@@ -96,17 +100,17 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     }
 
     @Override
-    @Nullable
-    public String getMetadataFileNameToBeMerged() {
+    public @Nullable String getMetadataFileNameToBeMerged() {
         return null;
     }
 
     @Override
+    @SuppressWarnings("NullAway") // executeOnTaskRunner() drops null information.
     public boolean performInitialization(TaskRunner taskRunner) {
         mInitializationTask =
-                new BackgroundOnlyAsyncTask<Void>() {
+                new BackgroundOnlyAsyncTask<@Nullable Void>() {
                     @Override
-                    protected Void doInBackground() {
+                    protected @Nullable Void doInBackground() {
                         File stateDir = getOrCreateStateDirectory();
                         File metadataFile = new File(stateDir, getMetadataFileName());
                         if (metadataFile.exists()) {
@@ -232,19 +236,19 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
         }
     }
 
-    private class CleanUpTabStateDataTask extends AsyncTask<Void> {
+    private class CleanUpTabStateDataTask extends AsyncTask<@Nullable Void> {
         private final Callback<TabPersistenceFileInfo> mTabDataToDeleteCallback;
 
-        private Set<Integer> mUnreferencedTabIds;
-        private List<File> mDeletableMetadataFiles;
-        private Map<File, SparseBooleanArray> mTabIdsByMetadataFile;
+        private @Nullable Set<Integer> mUnreferencedTabIds;
+        private @Nullable List<File> mDeletableMetadataFiles;
+        private @Nullable Map<File, SparseBooleanArray> mTabIdsByMetadataFile;
 
         CleanUpTabStateDataTask(Callback<TabPersistenceFileInfo> storedTabDataToDeleteCallback) {
             mTabDataToDeleteCallback = storedTabDataToDeleteCallback;
         }
 
         @Override
-        protected Void doInBackground() {
+        protected @Nullable Void doInBackground() {
             if (mDestroyed) return null;
 
             mTabIdsByMetadataFile = new HashMap<>();
@@ -285,13 +289,16 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
         }
 
         @Override
-        protected void onPostExecute(Void unused) {
+        protected void onPostExecute(@Nullable Void unused) {
             TabPersistenceFileInfo tabDataToDelete = new TabPersistenceFileInfo();
             if (mDestroyed) {
                 mTabDataToDeleteCallback.onResult(tabDataToDelete);
                 return;
             }
 
+            assumeNonNull(mUnreferencedTabIds);
+            assumeNonNull(mDeletableMetadataFiles);
+            assumeNonNull(mTabIdsByMetadataFile);
             if (mUnreferencedTabIds.isEmpty() && mDeletableMetadataFiles.isEmpty()) {
                 mTabDataToDeleteCallback.onResult(tabDataToDelete);
                 return;
@@ -356,7 +363,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
         }
 
         @Override
-        protected void onCancelled(Void result) {
+        protected void onCancelled(@Nullable Void result) {
             super.onCancelled(null);
             synchronized (CLEAN_UP_TASK_LOCK) {
                 sCleanupTask = null;

@@ -8,8 +8,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.Window;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -22,6 +22,7 @@ import org.chromium.ui.util.ColorUtils;
  *
  * Lifecycle: currently is stateless, so it has only static methods.
  */
+@NullMarked
 public class CustomTabNavigationBarController {
 
     private CustomTabNavigationBarController() {}
@@ -77,7 +78,7 @@ public class CustomTabNavigationBarController {
     /** Sets the navigation bar color according to intent extras. */
     private static void updateBarColor(
             Window window,
-            Integer navigationBarColor,
+            @Nullable Integer navigationBarColor,
             boolean supportsDarkButtons,
             boolean needsDarkButtons) {
         if (navigationBarColor == null) return;
@@ -103,8 +104,8 @@ public class CustomTabNavigationBarController {
      */
     public static @Nullable Integer getDividerColor(
             Context context,
-            Integer navigationBarColor,
-            Integer navigationBarDividerColor,
+            @Nullable Integer navigationBarColor,
+            @Nullable Integer navigationBarDividerColor,
             boolean needsDarkButtons) {
         if (navigationBarDividerColor == null && navigationBarColor != null && needsDarkButtons) {
             // Add grey divider color if the background is light (similar to

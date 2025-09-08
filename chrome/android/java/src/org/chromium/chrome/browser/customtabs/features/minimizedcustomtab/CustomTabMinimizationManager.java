@@ -29,6 +29,8 @@ import androidx.lifecycle.Lifecycle.State;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -53,6 +55,7 @@ import java.lang.ref.WeakReference;
 import java.util.function.Supplier;
 
 /** Class that manages minimizing a Custom Tab into picture-in-picture. */
+@NullMarked
 public class CustomTabMinimizationManager
         implements CustomTabMinimizeDelegate,
                 Consumer<PictureInPictureModeChangedInfo>,
@@ -78,7 +81,8 @@ public class CustomTabMinimizationManager
 
     @VisibleForTesting static final Rational ASPECT_RATIO = new Rational(16, 9);
 
-    @VisibleForTesting static WeakReference<CustomTabMinimizeDelegate> sLastMinimizeDelegate;
+    @VisibleForTesting
+    static @Nullable WeakReference<CustomTabMinimizeDelegate> sLastMinimizeDelegate;
 
     @VisibleForTesting static final String KEY_IS_CCT_MINIMIZED = "isCctMinimized";
 
@@ -101,8 +105,8 @@ public class CustomTabMinimizationManager
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
-    private MinimizedCardCoordinator mCoordinator;
-    private PropertyModel mModel;
+    private @Nullable MinimizedCardCoordinator mCoordinator;
+    private @Nullable PropertyModel mModel;
     private boolean mMinimized;
 
     /**
@@ -352,7 +356,7 @@ public class CustomTabMinimizationManager
         }
     }
 
-    private CustomTabMinimizeDelegate getLastMinimizeDelegate() {
+    private @Nullable CustomTabMinimizeDelegate getLastMinimizeDelegate() {
         if (sLastMinimizeDelegate == null) return null;
 
         return sLastMinimizeDelegate.get();
@@ -393,7 +397,7 @@ public class CustomTabMinimizationManager
         }
     }
 
-    private static void putIntoBundleFromModel(Bundle out, PropertyModel model) {
+    private static void putIntoBundleFromModel(Bundle out, @Nullable PropertyModel model) {
         if (model == null) return;
 
         out.putString(TITLE.toString(), model.get(TITLE));
