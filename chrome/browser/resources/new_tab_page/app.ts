@@ -49,8 +49,11 @@ import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
 import {WindowProxy} from './window_proxy.js';
 
-const MODULE_LOAD_IN_PROGRESS = -2;
-const MODULE_LOAD_NOT_ATTEMPTED = -1;
+enum ModuleLoadStatus {
+  MODULE_LOAD_IN_PROGRESS = 0,
+  MODULE_LOAD_NOT_ATTEMPTED = 1,
+  MODULE_LOAD_COMPLETE = 2,
+}
 
 interface ExecutePromoBrowserCommandData {
   commandId: Command;
@@ -224,6 +227,7 @@ export class AppElement extends AppElementBase {
       browserPromoType_: {type: String},
       browserPromoLimit_: {type: Number},
       browserPromoCompletedLimit_: {type: Number},
+      showBrowserPromo_: {type: Boolean},
 
       realboxShown_: {type: Boolean},
       logoEnabled_: {type: Boolean},
@@ -232,7 +236,10 @@ export class AppElement extends AppElementBase {
       middleSlotPromoEnabled_: {type: Boolean},
       modulesEnabled_: {type: Boolean},
       middleSlotPromoLoaded_: {type: Boolean},
-      modulesLoaded_: {type: Number},
+      modulesLoadedStatus_: {
+        type: Number,
+        reflect: true,
+      },
 
       modulesShownToUser: {
         type: Boolean,
@@ -315,8 +322,10 @@ export class AppElement extends AppElementBase {
       loadTimeData.getInteger('browserPromoLimit');
   protected accessor browserPromoCompletedLimit_: number =
       loadTimeData.getInteger('browserPromoCompletedLimit');
+  protected accessor showBrowserPromo_: boolean = false;
   private accessor middleSlotPromoLoaded_: boolean = false;
-  private accessor modulesLoaded_: number = MODULE_LOAD_IN_PROGRESS;
+  private accessor modulesLoadedStatus_: ModuleLoadStatus =
+      ModuleLoadStatus.MODULE_LOAD_IN_PROGRESS;
   protected accessor modulesShownToUser: boolean = false;
   protected accessor microsoftModuleEnabled_: boolean =
       loadTimeData.getBoolean('microsoftModuleEnabled');
@@ -354,9 +363,6 @@ export class AppElement extends AppElementBase {
   private backgroundImageLoadStartEpoch_: number = 0;
   private backgroundImageLoadStart_: number = 0;
   private showWebstoreToastListenerId_: number|null = null;
-
-  // Protected for testing only.
-  protected browserPromoMetricsRecorded_: boolean = false;
 
   constructor() {
     performance.mark('app-creation-start');
@@ -541,6 +547,10 @@ export class AppElement extends AppElementBase {
     });
     this.printPerformance_();
     performance.measure('app-creation', 'app-creation-start');
+
+    if (!this.modulesEnabled_) {
+      this.recordBrowserPromoMetrics_();
+    }
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -570,7 +580,7 @@ export class AppElement extends AppElementBase {
     // theme_, showLensUploadDialog_
     this.realboxShown_ = this.computeRealboxShown_();
 
-    // middleSlotPromoLoaded_, modulesLoaded_
+    // middleSlotPromoLoaded_, modulesLoadedStatus_
     this.promoAndModulesLoaded_ = this.computePromoAndModulesLoaded_();
 
     // wallpaperSearchButtonEnabled_, showBackgroundImage_, backgroundColor_
@@ -578,6 +588,15 @@ export class AppElement extends AppElementBase {
 
     // showWallpaperSearchButton_, showBackgroundImage_
     this.showCustomizeChromeText_ = this.computeShowCustomizeChromeText_();
+
+    // modulesEnabled_, modulesShownToUser, modulesLoadedStatus_
+    this.showBrowserPromo_ = this.computeShowBrowserPromo_();
+
+    if ((changedPrivateProperties.has('modulesLoadedStatus_') &&
+         this.modulesLoadedStatus_ !==
+             ModuleLoadStatus.MODULE_LOAD_IN_PROGRESS)) {
+      this.recordBrowserPromoMetrics_();
+    }
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -663,7 +682,7 @@ export class AppElement extends AppElementBase {
     return (!loadTimeData.getBoolean('middleSlotPromoEnabled') ||
             this.middleSlotPromoLoaded_) &&
         (!loadTimeData.getBoolean('modulesEnabled') ||
-         this.modulesLoaded_ >= 0);
+         this.modulesLoadedStatus_ === ModuleLoadStatus.MODULE_LOAD_COMPLETE);
   }
 
   private onRealboxCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
@@ -1000,40 +1019,35 @@ export class AppElement extends AppElementBase {
   }
 
   protected onModulesLoaded_(e: CustomEvent<number|null>) {
-    this.modulesLoaded_ =
-        e.detail === null ? MODULE_LOAD_NOT_ATTEMPTED : e.detail;
+    this.modulesLoadedStatus_ = e.detail ?
+        ModuleLoadStatus.MODULE_LOAD_COMPLETE :
+        ModuleLoadStatus.MODULE_LOAD_NOT_ATTEMPTED;
   }
 
-  protected getBrowserPromoType_(): string {
-    let result: string = '';
-    if (!this.modulesEnabled_ ||
-        this.modulesLoaded_ === MODULE_LOAD_NOT_ATTEMPTED ||
-        this.modulesLoaded_ === 0) {
-      // If we know for sure there are no modules to show, the promo can show.
-      result = this.browserPromoType_;
-    } else if (this.modulesLoaded_ > 0) {
-      // If at least one module was loaded, block the promo.
-      result = 'blocked';
+  protected computeShowBrowserPromo_(): boolean {
+    return !this.modulesEnabled_ ||
+        (this.modulesLoadedStatus_ !==
+             ModuleLoadStatus.MODULE_LOAD_IN_PROGRESS &&
+         !this.modulesShownToUser);
+  }
+
+  protected recordBrowserPromoMetrics_() {
+    if (!this.showBrowserPromo_) {
+      recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownDueToPolicy);
+      return;
     }
-    if (result !== '' && !this.browserPromoMetricsRecorded_) {
-      this.browserPromoMetricsRecorded_ = true;
-      switch (result) {
-        case 'blocked':
-          recordShowBrowserPromosResult(
-              ShowNtpPromosResult.kNotShownDueToPolicy);
-          break;
-        case 'empty':
-          recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownNoPromos);
-          break;
-        case 'simple':
-        case 'setuplist':
-          recordShowBrowserPromosResult(ShowNtpPromosResult.kShown);
-          break;
-        default:
-          break;
-      }
+
+    switch (this.browserPromoType_) {
+      case 'empty':
+        recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownNoPromos);
+        break;
+      case 'simple':
+      case 'setuplist':
+        recordShowBrowserPromosResult(ShowNtpPromosResult.kShown);
+        break;
+      default:
+        break;
     }
-    return result;
   }
 
   protected onCustomizeModule_() {

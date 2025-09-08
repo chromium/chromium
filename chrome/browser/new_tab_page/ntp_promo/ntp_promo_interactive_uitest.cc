@@ -216,7 +216,11 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
     StateChange state_change;
     state_change.type = StateChange::Type::kExistsAndConditionTrue;
     state_change.where = kPathToNtp;
-    state_change.test_function = "el => el.browserPromoMetricsRecorded_";
+    state_change.test_function =
+        "el => {"
+        "return el.getAttribute('modules-loaded-status_') !== '0' || "
+        "!el.querySelector('ntp-modules');"
+        "}";
     state_change.event = kMetricsRecordedEvent;
     auto steps = Steps(
         WaitForStateChange(kNtpElementId, std::move(state_change)), Do([]() {

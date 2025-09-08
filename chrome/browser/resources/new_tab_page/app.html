@@ -73,7 +73,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         </ntp-modules>
       `}
     ` : ''}
-    ${ (() => { switch (this.getBrowserPromoType_()) {
+    ${ this.showBrowserPromo_ ? (() => { switch (this.browserPromoType_) {
      case "simple":
       return html`
         <individual-promos maxPromos="${this.browserPromoLimit_}">
@@ -88,7 +88,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
       `;
      default:
       return '';
-    } })() }
+    } })() : '' }
   ${!this.isFooterVisible_ ? html`
       <a id="backgroundImageAttribution"
           href="${this.backgroundImageAttributionUrl_}"
