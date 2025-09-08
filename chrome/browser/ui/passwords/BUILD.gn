@@ -131,7 +131,6 @@ source_set("impl") {
       "//chrome/browser/signin",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",
-      "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/location_bar",

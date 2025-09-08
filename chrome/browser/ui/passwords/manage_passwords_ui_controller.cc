@@ -33,7 +33,6 @@
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -67,7 +66,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -906,14 +904,6 @@ void ManagePasswordsUIController::OnBubbleHidden() {
   if (update_icon) {
     UpdateBubbleAndIconVisibility();
   }
-
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
-    if (auto* manager =
-            autofill::BubbleManager::GetForWebContents(web_contents())) {
-      manager->OnBubbleHiddenByController(*this);
-    }
-  }
 }
 
 void ManagePasswordsUIController::OnNoInteraction() {
@@ -1289,7 +1279,8 @@ void ManagePasswordsUIController::UpdatePasswordIconAndBubbleState(
     PasswordBubbleViewBase::CloseCurrentBubble();
     // This will detach any existing bubble so OnBubbleHidden() isn't called.
     weak_ptr_factory_.InvalidateWeakPtrs();
-    QueueOrShowBubble(/*user_action=*/false);
+    PasswordBubbleViewBase::ShowBubble(
+        web_contents(), LocationBarBubbleDelegateView::AUTOMATIC);
     // If the bubble appeared then the status is updated in OnBubbleShown().
     ClearPopUpFlagForBubble();
   }
@@ -1484,7 +1475,7 @@ bool ManagePasswordsUIController::IsPasswordChangeOngoing() const {
 
 void ManagePasswordsUIController::ShowBubble() {
   if (TabDialogs* tab_dialogs = TabDialogs::FromWebContents(web_contents())) {
-    tab_dialogs->ShowManagePasswordsBubble(user_action_);
+    tab_dialogs->ShowManagePasswordsBubble(!IsAutomaticallyOpeningBubble());
   }
 }
 
@@ -1519,28 +1510,6 @@ void ManagePasswordsUIController::OnMouseExited() {
 
 bool ManagePasswordsUIController::IsMouseHovered() const {
   return is_mouse_hovered_;
-}
-
-void ManagePasswordsUIController::QueueOrShowBubble(bool user_action) {
-  if (PasswordBubbleViewBase::manage_password_bubble()) {
-    PasswordBubbleViewBase::CloseCurrentBubble();
-  }
-
-  user_action_ = user_action;
-
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
-    if (auto* manager =
-            autofill::BubbleManager::GetForWebContents(web_contents())) {
-      if (manager->HasPendingBubble(*this)) {
-        NOTREACHED();
-      }
-      manager->RequestShowController(*this, user_action);
-    }
-    return;
-  }
-
-  ShowBubble();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController);
