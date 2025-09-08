@@ -17,6 +17,8 @@ class Profile;
 namespace glic {
 class GlicCookieSynchronizer;
 
+bool IsPrimaryAccountGoogleInternal(signin::IdentityManager& signin_manager);
+
 // Decides when to refresh sign-in cookies for the webview.
 class AuthController : public signin::IdentityManager::Observer {
  public:

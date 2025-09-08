@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/glic/glic_net_log.h"
+#include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/shared/webui_shared.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -121,6 +123,15 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
     // TODO(crbug.com/396147389): Replace with the correct default.
     allowed_origins = "https://*.google.com/";
   }
+
+  // Allow corp origins for @google accounts.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  if (identity_manager && IsPrimaryAccountGoogleInternal(*identity_manager)) {
+    allowed_origins += " https://*.corp.google.com";
+  }
+
   source->AddString("glicAllowedOrigins", allowed_origins);
 
   bool reload_after_navigation =

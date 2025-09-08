@@ -15,8 +15,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
-#include "base/strings/string_util.h"
 #include "chrome/browser/glic/fre/fre_util.h"
+#include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/multilogin_parameters.h"
@@ -50,11 +50,6 @@ content::StoragePartitionConfig GetGlicStoragePartitionConfig(
     bool use_for_fre) {
   return use_for_fre ? GetFreStoragePartitionConfig(browser_context)
                      : GetGlicMainStoragePartitionConfig(browser_context);
-}
-
-bool IsGoogleEmail(const std::string& email_address) {
-  return base::EndsWith(email_address, "@google.com",
-                        base::CompareCase::INSENSITIVE_ASCII);
 }
 
 }  // namespace
@@ -215,9 +210,7 @@ void GlicCookieSynchronizer::CopyCookiesToWebviewStoragePartition(
 
   if (base::FeatureList::IsEnabled(
           features::kGlicDevelopmentSyncGoogleCookies) &&
-      IsGoogleEmail(identity_manager_
-                        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                        .email)) {
+      IsPrimaryAccountGoogleInternal(*identity_manager_)) {
     sync_cookies_for_development_task_ =
         std::make_unique<SyncCookiesForDevelopmentTask>(
             context_, use_for_fre_,
