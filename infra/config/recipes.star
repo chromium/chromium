@@ -107,7 +107,9 @@ build_recipe(
 
 build_recipe(
     name = "recipe:binary_size_trybot",
-    bootstrappable = True,
+    # Can't be bootstrapped since it interferes with the recipe's custom
+    # bot_update sync'ing behavior.
+    bootstrappable = False,
 )
 
 build_recipe(
