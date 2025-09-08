@@ -91,9 +91,6 @@ const CGFloat kDamping = 0.85;
   }
 
   [self updateAccessibilityVisibility];
-  _contentHeightConstraint = [self.contentScrollView.heightAnchor
-      constraintEqualToConstant:[_currentChildViewController contentHeight]];
-  _contentHeightConstraint.active = YES;
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -114,6 +111,14 @@ const CGFloat kDamping = 0.85;
         [weakSelf.sheetPresentationController invalidateDetents];
       }
                       completion:nil];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  _contentHeightConstraint = [self.contentScrollView.heightAnchor
+      constraintEqualToConstant:[_currentChildViewController contentHeight]];
+  _contentHeightConstraint.active = YES;
+  [self.sheetPresentationController invalidateDetents];
 }
 
 #pragma mark - Private
