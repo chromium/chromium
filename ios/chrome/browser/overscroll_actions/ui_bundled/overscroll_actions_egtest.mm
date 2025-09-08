@@ -86,7 +86,13 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 }
 
 // Tests that a WebView can be closed via Overscroll Actions.
-- (void)testWebViewClose {
+// TODO(crbug.com/443702124): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testWebViewClose DISABLED_testWebViewClose
+#else
+#define MAYBE_testWebViewClose testWebViewClose
+#endif
+- (void)MAYBE_testWebViewClose {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Overscroll Actions are only on iPhone.");
   }
