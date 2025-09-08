@@ -322,16 +322,21 @@ class ParamsJson(dict):
     return f'<{self.path}>'
 
   def build_config_path(self, suffix='.build_config.json'):
-    """Returns the corresponding .build_config.json path."""
+    """Returns the .build_config.json path."""
     return self.path.replace('.params.json', suffix)
 
   def build_config_json(self):
-    """Returns the parsed JSON of the corresponding .build_config.json."""
+    """Returns the parsed JSON of the .build_config.json."""
     return get_build_config(self.build_config_path())
 
   def javac_build_config_json(self):
-    """Returns the parsed JSON of the corresponding .javac.build_config.json."""
+    """Returns the parsed JSON of the .javac.build_config.json."""
     return get_build_config(self.build_config_path('.javac.build_config.json'))
+
+  def manifest_build_config_json(self):
+    """Returns the parsed JSON of the .manifest.build_config.json."""
+    return get_build_config(
+        self.build_config_path('.manifest.build_config.json'))
 
   def is_root_type(self):
     """Returns True if the target type is a "root" type (e.g., an APK)."""

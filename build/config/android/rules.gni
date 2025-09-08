@@ -1121,6 +1121,8 @@ if (!is_robolectric && enable_java_templates) {
     _main_class = "org.chromium.testing.local.JunitTestMain"
     _build_config = "$target_gen_dir/$target_name.build_config.json"
     _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
+    _manifest_build_config =
+        "$target_gen_dir/$target_name.manifest.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
     _java_binary_target_name = "${target_name}__java_binary"
 
@@ -1160,7 +1162,7 @@ if (!is_robolectric && enable_java_templates) {
         manifest_package = _package_name
       }
       output_manifest = _android_manifest
-      build_config = _build_config
+      manifest_build_config = _manifest_build_config
       min_sdk_version = default_min_sdk_version
       target_sdk_version = default_target_sdk_version
       deps = _non_java_deps + _java_assetres_deps +
@@ -2175,6 +2177,8 @@ if (!is_robolectric && enable_java_templates) {
     _base_path = "$target_out_dir/$target_name/$target_name"
     _build_config = "$target_gen_dir/$target_name.build_config.json"
     _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
+    _manifest_build_config =
+        "$target_gen_dir/$target_name.manifest.build_config.json"
     _build_config_target = "$target_name$build_config_target_suffix"
     _java_target_name = "${_template_name}__java"
 
@@ -2368,7 +2372,7 @@ if (!is_robolectric && enable_java_templates) {
                              ])
       input_manifest = invoker.android_manifest
       output_manifest = _android_manifest
-      build_config = _build_config
+      manifest_build_config = _manifest_build_config
       min_sdk_version = _min_sdk_version
       target_sdk_version = _target_sdk_version
 

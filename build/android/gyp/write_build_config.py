@@ -532,7 +532,7 @@ def _ToTraceEventRewrittenPath(jar_dir, path):
   return os.path.join(jar_dir, path)
 
 
-def _WriteLintJson(params, lint_json, javac_config, main_config):
+def _WriteLintJson(params, lint_json, javac_config, manifest_config):
   # Collect all sources and resources at the apk/bundle_module level.
   aars = set()
   srcjars = set()
@@ -569,13 +569,14 @@ def _WriteLintJson(params, lint_json, javac_config, main_config):
     for m in params.module_deps():
       classpath.update(
           m.javac_build_config_json()['javac_full_interface_classpath'])
-      manifests.update(m.build_config_json()['extra_android_manifests'])
+      manifests.update(
+          m.manifest_build_config_json()['extra_android_manifests'])
     classpath = list(classpath)
     manifests = list(manifests)
   else:
     classpath = javac_config['javac_full_interface_classpath']
     manifests = [params['android_manifest']]
-    manifests += main_config['extra_android_manifests']
+    manifests += manifest_config['extra_android_manifests']
 
   config = {}
   config['aars'] = sorted(aars)
@@ -652,6 +653,7 @@ def main():
 
   main_config = {}
   turbine_config = {}
+  manifest_config = {}
   javac_config = {}
   res_config = {}
   rtxt_config = {}
@@ -761,7 +763,7 @@ def main():
             apk_under_test_params.build_config_json()['package_name'])
 
   if params.merges_manifests():
-    main_config['extra_android_manifests'] = list(tv.android_manifests)
+    manifest_config['extra_android_manifests'] = list(tv.android_manifests)
 
   if is_bundle:
     module_deps = params.module_deps()
@@ -905,7 +907,7 @@ def main():
     ]
 
   if path := params.get('lint_json'):
-    _WriteLintJson(params, path, javac_config, main_config)
+    _WriteLintJson(params, path, javac_config, manifest_config)
 
   # Separate to prevent .java changes invalidating compile_resources.py, and
   # new resource targets from invalidating java compiles.
@@ -934,6 +936,13 @@ def main():
     path = build_config_path.replace('.build_config.json',
                                      '.javac.build_config.json')
     build_utils.WriteJson(javac_config, path, only_if_changed=True)
+
+  # Separate to prevent keys other than extra_android_manifests from
+  # invalidating merge_manifest.py.
+  if manifest_config:
+    path = build_config_path.replace('.build_config.json',
+                                     '.manifest.build_config.json')
+    build_utils.WriteJson(manifest_config, path, only_if_changed=True)
 
   build_utils.WriteJson(main_config, build_config_path, only_if_changed=True)
 

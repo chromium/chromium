@@ -130,12 +130,18 @@ template("write_build_config") {
   _deps = []
   _type = invoker.type
 
-  # Targets that run compile_resources.py or dist_aar.py.
-  # Keys are split from the main config to minimize size of .json that the
-  # action needs to parse, and to avoid marking other actions as dirty when
-  # only resource-related keys change.
-  if (_type == "robolectric_binary" || _type == "android_app_bundle_module" ||
-      _type == "android_apk" || _type == "dist_aar") {
+  # ParamsJson.merges_manifests()
+  _merges_manifests =
+      _type == "android_apk" || _type == "android_app_bundle_module" ||
+      _type == "robolectric_binary"
+  if (_merges_manifests) {
+    _outputs += [ string_replace(invoker.build_config,
+                                 ".build_config.json",
+                                 ".manifest.build_config.json") ]
+  }
+
+  # ParamsJson.collects_resources()
+  if (_merges_manifests || _type == "dist_aar") {
     _outputs += [ string_replace(invoker.build_config,
                                  ".build_config.json",
                                  ".res.build_config.json") ]
@@ -1874,13 +1880,14 @@ if (enable_java_templates) {
       depfile = "$target_gen_dir/$target_name.d"
 
       inputs = java_paths_for_inputs + [
-                 invoker.build_config,
+                 invoker.manifest_build_config,
                  invoker.input_manifest,
                  _manifest_merger_jar_path,
                ]
 
       outputs = [ invoker.output_manifest ]
-      _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
+      _rebased_build_config =
+          rebase_path(invoker.manifest_build_config, root_build_dir)
 
       args = [
         "--depfile",
