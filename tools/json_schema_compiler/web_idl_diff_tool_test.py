@@ -22,6 +22,7 @@ class WebIdlDiffToolTest(unittest.TestCase):
     converted_schemas = [
         ('alarms.idl', 'alarms.webidl'),
         ('bluetooth.idl', 'bluetooth.webidl'),
+        ('dns.idl', 'dns.webidl'),
         ('audio.idl', 'audio.webidl'),
         ('cec_private.idl', 'cec_private.webidl'),
         ('diagnostics.idl', 'diagnostics.webidl'),

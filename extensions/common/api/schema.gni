@@ -11,7 +11,7 @@ import("//extensions/buildflags/buildflags.gni")
 extensions_api_schema_files_ = [
   "alarms.webidl",
   "declarative_net_request.idl",
-  "dns.idl",
+  "dns.webidl",
   "events.json",
   "extension_types.json",
   "file_handlers.idl",
