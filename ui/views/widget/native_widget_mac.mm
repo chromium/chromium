@@ -39,6 +39,7 @@
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/gestures/gesture_recognizer_impl_mac.h"
 #include "ui/events/gestures/gesture_types.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/native_ui_types.h"
@@ -574,11 +575,19 @@ void NativeWidgetMac::InitModalType(ui::mojom::ModalType modal_type) {
   // Everything happens upon show.
 }
 
-void NativeWidgetMac::OnWidgetThemeChanged(
-    ui::ColorProviderKey::ColorMode color_mode,
-    std::optional<SkColor> background_color) {
+void NativeWidgetMac::SetBackgroundColor(SkColor background_color) {
   if (ns_window_host_) {
-    ns_window_host_->SetColorMode(color_mode);
+    // The NSAppearance of a NSWindow affects traffic light contrast. The
+    // NSAppearance is determined by the color mode set on the window host. In
+    // macOS 26, if the color mode is light but the window has a dark background
+    // color, traffic lights in inactive windows lose contrast and become
+    // invisible. Therefore, if an explicit `background_color` is available,
+    // override the color mode to match that background's luminance.
+    ui::ColorProviderKey::ColorMode frame_color_mode =
+        color_utils::IsDark(background_color)
+            ? ui::ColorProviderKey::ColorMode::kDark
+            : ui::ColorProviderKey::ColorMode::kLight;
+    ns_window_host_->SetColorMode(frame_color_mode);
   }
 }
 

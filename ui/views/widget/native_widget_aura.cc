@@ -571,12 +571,10 @@ void NativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
   }
 }
 
-void NativeWidgetAura::OnWidgetThemeChanged(
-    ui::ColorProviderKey::ColorMode color_mode,
-    std::optional<SkColor> background_color) {
+void NativeWidgetAura::SetBackgroundColor(SkColor background_color) {
   // Intentional no-op.
-  // The window frame is drawn by views. The OS does not need to know about
-  // which color mode the window is using.
+  // The window is drawn by views. The OS does not need to know about what
+  // background color the window is using.
 }
 
 gfx::Rect NativeWidgetAura::GetWindowBoundsInScreen() const {

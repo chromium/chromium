@@ -75,10 +75,7 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
               InitModalType,
               (ui::mojom::ModalType modal_type),
               (override));
-  MOCK_METHOD(void,
-              OnWidgetThemeChanged,
-              (ui::ColorProviderKey::ColorMode, std::optional<SkColor>),
-              (override));
+  MOCK_METHOD(void, SetBackgroundColor, (SkColor background_color), (override));
   MOCK_METHOD(gfx::Rect, GetWindowBoundsInScreen, (), (const override));
   MOCK_METHOD(gfx::Rect, GetClientAreaBoundsInScreen, (), (const override));
   MOCK_METHOD(gfx::Rect, GetRestoredBounds, (), (const override));

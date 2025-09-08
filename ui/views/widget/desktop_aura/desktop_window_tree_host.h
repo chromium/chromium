@@ -68,10 +68,6 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   // Called from DesktopNativeWidgetAura::OnWidgetInitDone().
   virtual void OnWidgetInitDone() = 0;
 
-  virtual void OnWidgetThemeChanged(
-      ui::ColorProviderKey::ColorMode color_mode,
-      std::optional<SkColor> background_color) = 0;
-
   // Called from DesktopNativeWidgetAura::OnWindowActivated().
   // `active`: if `DesktopNativeWidgetAura::content_window()` contains the
   // `aura::Window` that gains active.
@@ -193,6 +189,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual bool IsFullscreen() const = 0;
 
   virtual void SetOpacity(float opacity) = 0;
+
+  virtual void SetBackgroundColor(SkColor background_color) = 0;
 
   // See NativeWidgetPrivate::SetAspectRatio for more information about what
   // `excluded_margin` does.

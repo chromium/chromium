@@ -1602,6 +1602,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // contents view, possibly removing and destroying that view.
   void SetClientContentsViewInternal(std::unique_ptr<View> view);
 
+  ui::ColorId GetBackgroundColorId() const;
+
   static DisableActivationChangeHandlingType
       g_disable_activation_change_handling_;
 
