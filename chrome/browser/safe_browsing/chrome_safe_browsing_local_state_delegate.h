@@ -7,6 +7,10 @@
 
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_local_state_delegate.h"
 
+namespace content {
+class WebUI;
+}
+
 class ChromeSafeBrowsingLocalStateDelegate
     : public safe_browsing::SafeBrowsingLocalStateDelegate {
  public:

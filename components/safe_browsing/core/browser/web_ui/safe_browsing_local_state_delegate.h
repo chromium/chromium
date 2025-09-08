@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_WEB_UI_SAFE_BROWSING_LOCAL_STATE_DELEGATE_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_WEB_UI_SAFE_BROWSING_LOCAL_STATE_DELEGATE_H_
 
-namespace content {
-class WebUI;
-}
 class PrefService;
 
 namespace safe_browsing {
@@ -21,7 +18,6 @@ class SafeBrowsingLocalStateDelegate {
       delete;
   SafeBrowsingLocalStateDelegate& operator=(
       const SafeBrowsingLocalStateDelegate&) = delete;
-  explicit SafeBrowsingLocalStateDelegate(content::WebUI* web_ui) {}
   // Returns the local state preference service.
   virtual PrefService* GetLocalState() = 0;
 };
