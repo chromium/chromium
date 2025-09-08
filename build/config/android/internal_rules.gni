@@ -3057,11 +3057,7 @@ if (enable_java_templates) {
         }
         inputs += _java_srcjars
       }
-      inputs += invoker.source_files + [
-                  "$android_sdk/optional/android.test.base.jar",
-                  "$android_sdk/optional/org.apache.http.legacy.jar",
-                  _build_config,
-                ] + java_paths_for_inputs
+      inputs += invoker.source_files + [ _build_config ] + java_paths_for_inputs
 
       if (invoker.source_files != []) {
         inputs += [ invoker.target_sources_file ]
