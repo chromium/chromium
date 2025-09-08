@@ -7,6 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#import "base/ios/ios_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -122,6 +123,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 }
 
 - (void)testTwoColorsSnapshot {
+// TODO(crbug.com/443715006): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    if ([ChromeEarlGrey isIPadIdiom]) {
+      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+    }
+  }
+#endif
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
