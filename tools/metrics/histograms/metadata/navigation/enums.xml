@@ -251,6 +251,38 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Http(s) scheme"/>
 </enum>
 
+<!-- LINT.IfChange(CookieChangeCause) -->
+
+<enum name="CookieChangeCause">
+  <summary>The publicly relevant reasons a cookie might be changed.</summary>
+  <int value="0" label="INSERTED">The cookie was inserted.</int>
+  <int value="1" label="EXPLICIT">
+    The cookie was deleted directly by a consumer's action.
+  </int>
+  <int value="2" label="UNKNOWN_DELETION">
+    The cookie was deleted, but no more details are known.
+  </int>
+  <int value="3" label="OVERWRITE">
+    The cookie was automatically removed due to an insert operation that
+    overwrote it.
+  </int>
+  <int value="4" label="EXPIRED">
+    The cookie was automatically removed as it expired.
+  </int>
+  <int value="5" label="EVICTED">
+    The cookie was automatically evicted during garbage collection.
+  </int>
+  <int value="6" label="EXPIRED_OVERWRITE">
+    The cookie was overwritten with an already-expired expiration date.
+  </int>
+  <int value="7" label="INSERTED_NO_CHANGE_OVERWRITE">
+    The newly inserted cookie overwrote a cookie but did not result in any
+    change.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/cookies/cookie_change_dispatcher.h:CookieChangeCause) -->
+
 <!-- LINT.IfChange(DeferSpeculativeRFHAction) -->
 
 <enum name="DeferSpeculativeRFHAction">

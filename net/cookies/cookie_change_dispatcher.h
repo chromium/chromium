@@ -20,6 +20,7 @@ namespace net {
 class CanonicalCookie;
 
 // The publicly relevant reasons a cookie might be changed.
+// LINT.IfChange(CookieChangeCause)
 enum class CookieChangeCause {
   // The cookie was inserted.
   INSERTED,
@@ -39,7 +40,10 @@ enum class CookieChangeCause {
   // The newly inserted cookie overwrote a cookie but did not result in any
   // change.
   INSERTED_NO_CHANGE_OVERWRITE,
+
+  kMaxValue = INSERTED_NO_CHANGE_OVERWRITE,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:CookieChangeCause)
 
 struct NET_EXPORT CookieChangeInfo {
   CookieChangeInfo();
