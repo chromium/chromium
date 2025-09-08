@@ -272,6 +272,10 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
 
   ~AHardwareBufferImageBacking() override;
 
+  AHardwareBuffer* GetAHardwareBuffer() {
+    return hardware_buffer_handle_.get();
+  }
+
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
@@ -311,6 +315,11 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
       wgpu::BackendType backend_type,
       std::vector<wgpu::TextureFormat> view_formats,
       scoped_refptr<SharedContextState> context_state) override;
+
+  std::unique_ptr<VideoImageRepresentation> ProduceVideo(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      VideoDevice device) override;
 
  private:
   const base::android::ScopedHardwareBufferHandle hardware_buffer_handle_;
@@ -382,6 +391,27 @@ class OverlayAHBImageRepresentation : public OverlayImageRepresentation {
   }
 
   raw_ptr<OverlayImage> gl_image_ = nullptr;
+};
+
+class VideoImageAHBRepresentation : public VideoImageRepresentation {
+ public:
+  VideoImageAHBRepresentation(SharedImageManager* manager,
+                              SharedImageBacking* backing,
+                              MemoryTypeTracker* tracker)
+      : VideoImageRepresentation(manager, backing, tracker) {}
+
+  ~VideoImageAHBRepresentation() override = default;
+
+  AHardwareBuffer* GetAHardwareBuffer() const override {
+    return static_cast<AHardwareBufferImageBacking*>(backing())
+        ->GetAHardwareBuffer();
+  }
+
+ private:
+  bool BeginWriteAccess() override { return true; }
+  void EndWriteAccess() override {}
+  bool BeginReadAccess() override { return true; }
+  void EndReadAccess() override {}
 };
 
 AHardwareBufferImageBacking::AHardwareBufferImageBacking(
@@ -649,6 +679,14 @@ AHardwareBufferImageBacking::ProduceDawn(
 #else
   return nullptr;
 #endif  // BUILDFLAG(USE_DAWN)
+}
+
+std::unique_ptr<VideoImageRepresentation>
+AHardwareBufferImageBacking::ProduceVideo(SharedImageManager* manager,
+                                          MemoryTypeTracker* tracker,
+                                          VideoDevice device) {
+  DCHECK(!device);
+  return std::make_unique<VideoImageAHBRepresentation>(manager, this, tracker);
 }
 
 OverlayImage* AHardwareBufferImageBacking::BeginOverlayAccess(
