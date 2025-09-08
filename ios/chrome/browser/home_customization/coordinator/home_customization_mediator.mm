@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "skia/ext/skia_utils_ios.h"
@@ -456,6 +457,10 @@
       break;
     case CustomizationLinkType::kLearnMore:
       URL = GURL(kDiscoverLearnMoreURL);
+      break;
+    case CustomizationLinkType::kEnterpriseLearnMore:
+      URL = GURL(kManagementLearnMoreURL);
+      break;
   }
   [self.navigationDelegate navigateToURL:URL];
 }

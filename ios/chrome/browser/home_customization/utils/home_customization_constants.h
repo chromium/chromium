@@ -13,6 +13,9 @@ typedef NSString CustomizationSection;
 // The section identifier for the main menu's background customizations.
 extern CustomizationSection* const kCustomizationSectionBackground;
 
+// The section identifier for the enterprise message.
+extern CustomizationSection* const kCustomizationSectionEnterprise;
+
 // The section identifier for the main menu's visibility toggles.
 extern CustomizationSection* const kCustomizationSectionMainToggles;
 
@@ -66,6 +69,9 @@ extern NSString* const kBackgroundCellIdentifier;
 // The identifier for the background picker cell.
 extern NSString* const kBackgroundPickerCellIdentifier;
 
+// The identifier for the enterprise message cell.
+extern NSString* const kEnterpriseCellIdentifier;
+
 // The URLs for the links in the Discover submenu.
 extern const char kDiscoverFollowingURL[];
 extern const char kDiscoverHiddenURL[];
@@ -107,6 +113,7 @@ enum class CustomizationLinkType : NSInteger {
   kHidden,
   kActivity,
   kLearnMore,
+  kEnterpriseLearnMore,
 };
 
 // Represents the background style used for home customization.

@@ -208,6 +208,8 @@
       return l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_ACTIVITY_TEXT);
     case CustomizationLinkType::kLearnMore:
       return l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM);
+    case CustomizationLinkType::kEnterpriseLearnMore:
+      return nil;
   }
 }
 
@@ -220,6 +222,8 @@
     case CustomizationLinkType::kActivity:
       return l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_ACTIVITY_DETAIL);
     case CustomizationLinkType::kLearnMore:
+      return nil;
+    case CustomizationLinkType::kEnterpriseLearnMore:
       return nil;
   }
 }
@@ -234,6 +238,8 @@
       return kCustomizationLinkActivityIdentifier;
     case CustomizationLinkType::kLearnMore:
       return kCustomizationLinkLearnMoreIdentifier;
+    case CustomizationLinkType::kEnterpriseLearnMore:
+      return nil;
   }
 }
 
