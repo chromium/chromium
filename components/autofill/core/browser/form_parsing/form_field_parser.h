@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -151,7 +152,10 @@ class FormFieldParser {
     // matched or how well the regex matched to improve match prioritisation.
   };
   struct FieldAndMatchInfo {
-    raw_ptr<const FormFieldData> field = internal::IsRequired();
+    FieldAndMatchInfo(const FormFieldData* field LIFETIME_BOUND,
+                      MatchInfo match_info)
+        : field(*field), match_info(match_info) {}
+    raw_ref<const FormFieldData> field = internal::IsRequired();
     MatchInfo match_info = internal::IsRequired();
   };
 

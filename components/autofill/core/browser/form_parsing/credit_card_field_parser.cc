@@ -118,7 +118,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
       // `LikelyCardTypeSelectField()` decides based on the text/value of select
       // options. Since the value is like a label, label is used.
       credit_card_field->type_ = {
-          scanner->Cursor(),
+          &scanner->Cursor(),
           {.matched_attribute = MatchInfo::MatchAttribute::kHighQualityLabel}};
       scanner->Advance();
       nb_unknown_fields = 0;
@@ -253,14 +253,14 @@ bool CreditCardFieldParser::LikelyCardMonthSelectField(
   if (scanner->IsEnd())
     return false;
 
-  const FormFieldData* field = scanner->Cursor();
+  const FormFieldData& field = scanner->Cursor();
   if (!MatchesFormControlType(
-          field->form_control_type(),
+          field.form_control_type(),
           {FormControlType::kSelectOne, FormControlType::kInputSearch})) {
     return false;
   }
 
-  if (field->options().size() < 12 || field->options().size() > 13) {
+  if (field.options().size() < 12 || field.options().size() > 13) {
     return false;
   }
 
@@ -276,8 +276,8 @@ bool CreditCardFieldParser::LikelyCardMonthSelectField(
            MatchesRegex<kNumericalYearRe>(option.text);
   };
   // If in doubt, return false.
-  return matches_december(field->options().back()) &&
-         std::ranges::none_of(field->options(), matches_year);
+  return matches_december(field.options().back()) &&
+         std::ranges::none_of(field.options(), matches_year);
 }
 
 // static
@@ -287,9 +287,9 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
   if (scanner->IsEnd())
     return false;
 
-  const FormFieldData* field = scanner->Cursor();
+  const FormFieldData& field = scanner->Cursor();
   if (!MatchesFormControlType(
-          field->form_control_type(),
+          field.form_control_type(),
           {FormControlType::kSelectOne, FormControlType::kInputSearch})) {
     return false;
   }
@@ -300,7 +300,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
     static constexpr char16_t kSingleDigitDateRe[] = u"\\b[1-9]\\b";
     return MatchesRegex<kSingleDigitDateRe>(option.text);
   };
-  if (std::ranges::any_of(field->options(), matches_single_digit_date)) {
+  if (std::ranges::any_of(field.options(), matches_single_digit_date)) {
     return false;
   }
 
@@ -315,7 +315,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
     static constexpr char16_t kBirthYearRe[] = u"(1999|99)";
     return MatchesRegex<kBirthYearRe>(option.text);
   };
-  if (std::ranges::any_of(field->options(), matches_birth_year)) {
+  if (std::ranges::any_of(field.options(), matches_birth_year)) {
     return false;
   }
 
@@ -342,16 +342,16 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
     // While 23 is a valid expiration year, the selector is not a expiration
     // year selector. In case we find a single-digit entry, we reject this as
     // an expiration year selector.
-    if (base::Contains(field->options(), u"2", option_projection)) {
+    if (base::Contains(field.options(), u"2", option_projection)) {
       return false;
     }
     auto is_substring = [](std::u16string_view option,
                            std::u16string_view year_needle) {
       return option.find(year_needle) != std::u16string_view::npos;
     };
-    return std::ranges::search(field->options(), year_needles, is_substring,
+    return std::ranges::search(field.options(), year_needles, is_substring,
                                option_projection)
-               .begin() != field->options().end();
+               .begin() != field.options().end();
   };
   return OptionsContain(years_to_check_2_digit, &SelectOption::value) ||
          OptionsContain(years_to_check_2_digit, &SelectOption::text);
@@ -363,10 +363,10 @@ bool CreditCardFieldParser::LikelyCardTypeSelectField(
   if (scanner->IsEnd())
     return false;
 
-  const FormFieldData* field = scanner->Cursor();
+  const FormFieldData& field = scanner->Cursor();
 
   if (!MatchesFormControlType(
-          field->form_control_type(),
+          field.form_control_type(),
           {FormControlType::kSelectOne, FormControlType::kInputSearch})) {
     return false;
   }
@@ -375,11 +375,11 @@ bool CreditCardFieldParser::LikelyCardTypeSelectField(
   // a pretty common mistake; e.g., "Master card" instead of "Mastercard".
   return FindShortestSubstringMatchInSelect(
              l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA), true,
-             field->options())
+             field.options())
              .has_value() ||
          FindShortestSubstringMatchInSelect(
              l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MASTERCARD), true,
-             field->options())
+             field.options())
              .has_value();
 }
 
@@ -469,12 +469,12 @@ void CreditCardFieldParser::AddClassifications(
 bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
                                                 AutofillScanner* scanner) {
   if (!expiration_date_ &&
-      scanner->Cursor()->form_control_type() == FormControlType::kInputMonth) {
+      scanner->Cursor().form_control_type() == FormControlType::kInputMonth) {
     // `MatchAttribute::kName` is not fully accurate, since the match was
     // determined based on the form control type. Since the form control type
     // is not a human visible string, name is preferred here.
     expiration_date_ = {
-        scanner->Cursor(),
+        &scanner->Cursor(),
         {.matched_attribute = MatchInfo::MatchAttribute::kName}};
     expiration_month_.reset();
     expiration_year_.reset();
@@ -534,7 +534,7 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   scanner->RewindTo(month_year_saved_cursor);
 
   // Bail out if the field cannot fit a 2-digit year expiration date.
-  const uint64_t current_field_max_length = scanner->Cursor()->max_length();
+  const uint64_t current_field_max_length = scanner->Cursor().max_length();
   if (!FieldCanFitDataForFieldType(current_field_max_length,
                                    CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR))
     return false;

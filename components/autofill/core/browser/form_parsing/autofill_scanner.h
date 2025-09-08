@@ -32,7 +32,7 @@ class AutofillScanner {
   void Advance();
 
   // Returns the current field in the stream.
-  const FormFieldData* Cursor() const;
+  const FormFieldData& Cursor() const;
 
   // Returns the field before Cursor(), or nullptr if there is none.
   const FormFieldData* Predecessor() const;

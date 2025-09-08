@@ -348,7 +348,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   // `testcase.field_matches_parser`.
   auto Matches = [](AutofillScanner* scanner,
                     const std::vector<bool>& matching_ids) -> bool {
-    return matching_ids[scanner->Cursor()->max_length()];
+    return matching_ids[scanner->Cursor().max_length()];
   };
 
   // Must outlive `scanner`.

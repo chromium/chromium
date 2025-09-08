@@ -316,10 +316,10 @@ std::unique_ptr<FormFieldParser> AddressFieldParserNG::Parse(
       AddressCountryCode(context.client_country.value())));
   address_field->context_ = &context;
   address_field->scanner_ = scanner;
-  address_field->initial_field_ = scanner->Cursor();
+  address_field->initial_field_ = &scanner->Cursor();
 
   DVLOG(1) << "Parse recursively starting at " << saved_cursor << " "
-           << scanner->Cursor()->label();
+           << scanner->Cursor().label();
 
   address_field->ParseRecursively();
 
@@ -351,9 +351,9 @@ void AddressFieldParserNG::AddClassifications(
     // TODO(crbug.com/320965828): Support MatchInfo. The NG parser doesn't track
     // how matches are found. `kHighQualityLabel` is merely a placeholder.
     AddClassification(
-        FieldAndMatchInfo{field_ptr,
+        FieldAndMatchInfo(field_ptr,
                           {.matched_attribute =
-                               MatchInfo::MatchAttribute::kHighQualityLabel}},
+                               MatchInfo::MatchAttribute::kHighQualityLabel}),
         field_type, kBaseAddressParserScore, field_candidates);
   }
 }
@@ -406,7 +406,7 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     // preferred attribute match.
     auto MatchAttribute = [&](bool match_label) -> std::optional<double> {
       if (FieldMatchesMatchPatternRef(
-              *context_, *scanner_->Cursor(), pattern_name,
+              *context_, scanner_->Cursor(), pattern_name,
               {match_label ? MatchOnlyLabel : MatchOnlyName,
                match_pattern_projection})) {
         return score + (match_label == prefer_label ? 0.05 : 0.0);
@@ -746,7 +746,7 @@ void AddressFieldParserNG::ParseRecursively() {
         partial_classification_.last_classified_field_index;
     if (field_type != UNKNOWN_TYPE) {
       partial_classification_.contained_types.insert(field_type);
-      partial_classification_.assignments[field_type] = scanner_->Cursor();
+      partial_classification_.assignments[field_type] = &scanner_->Cursor();
       partial_classification_.last_classified_field_index =
           scanner_->SaveCursor();
     }

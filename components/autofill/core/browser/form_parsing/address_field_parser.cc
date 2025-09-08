@@ -47,8 +47,9 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
     return nullptr;
   }
 
-  std::unique_ptr<AddressFieldParser> address_field(new AddressFieldParser());
-  const FormFieldData* const initial_field = scanner->Cursor();
+  std::unique_ptr<AddressFieldParser> address_field =
+      base::WrapUnique(new AddressFieldParser());
+  const FormFieldData& initial_field = scanner->Cursor();
   size_t saved_cursor = scanner->SaveCursor();
 
   // Allow address fields to appear in any order.
@@ -77,7 +78,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
       // * Attention.
       // * Province/Region/Other.
       continue;
-    } else if (scanner->Cursor() != initial_field &&
+    } else if (&scanner->Cursor() != &initial_field &&
                ParseEmptyLabel(context, scanner, nullptr)) {
       // Ignore non-labeled fields within an address; the page
       // MapQuest Driving Directions North America.html contains such a field.
@@ -1249,7 +1250,7 @@ bool AddressFieldParser::SetFieldAndAdvanceCursor(
         return MatchInfo::MatchAttribute::kName;
     }
   };
-  *match = {scanner->Cursor(),
+  *match = {&scanner->Cursor(),
             {.matched_attribute = match_attribute_of(parse_result)}};
   scanner->Advance();
   return true;

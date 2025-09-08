@@ -25,9 +25,9 @@ void AutofillScanner::Advance() {
   ++cursor_;
 }
 
-const FormFieldData* AutofillScanner::Cursor() const {
+const FormFieldData& AutofillScanner::Cursor() const {
   CHECK(!IsEnd());
-  return *cursor_;
+  return **cursor_;
 }
 
 const FormFieldData* AutofillScanner::Predecessor() const {

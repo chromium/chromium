@@ -41,17 +41,17 @@ std::unique_ptr<FormFieldParser> EmailFieldParser::Parse(
 
   // TODO(crbug.com/361560365): Consider moving this into the JSON files once
   // this is launched and they support placeholders.
-  const FormFieldData* field = scanner->Cursor();
-  if ((IsValidEmailAddress(field->placeholder()) ||
-       IsValidEmailAddress(field->label()))) {
+  const FormFieldData& field = scanner->Cursor();
+  if ((IsValidEmailAddress(field.placeholder()) ||
+       IsValidEmailAddress(field.label()))) {
     scanner->Advance();
     // Since this is either a placeholder or a label match, it's technically not
     // necessarily a high quality label match. However, since this logic
     // predates the low/high quality label distinction, its behavior was kept.
     return std::make_unique<EmailFieldParser>(
-        FieldAndMatchInfo{field,
+        FieldAndMatchInfo(&field,
                           {.matched_attribute =
-                               MatchInfo::MatchAttribute::kHighQualityLabel}},
+                               MatchInfo::MatchAttribute::kHighQualityLabel}),
         EMAIL_ADDRESS);
   }
 

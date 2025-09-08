@@ -532,11 +532,11 @@ bool FormFieldParser::ParseField(
     return false;
   }
 
-  const FormFieldData* field = scanner->Cursor();
+  const FormFieldData& field = scanner->Cursor();
   if (std::optional<MatchInfo> match_info = FieldMatchesMatchPatternRef(
-          context, *field, regex_name, {projection})) {
+          context, field, regex_name, {projection})) {
     if (match) {
-      *match = {.field = field, .match_info = *match_info};
+      *match = {&field, *match_info};
     }
     scanner->Advance();
     return true;
@@ -566,7 +566,7 @@ bool FormFieldParser::ParseInAnyOrder(
     for (int i : p) {
       const auto& [field, parser] = fields_and_parsers[i];
       if (!scanner->IsEnd() && parser.Run()) {
-        *field = scanner->Cursor();
+        *field = &scanner->Cursor();
         scanner->Advance();
       } else {
         matches = false;
@@ -594,9 +594,9 @@ bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
   // Temporarily disable logging of matches for empty labels. They don't contain
   // a lot of insights but occur somewhat often.
   base::AutoReset disable_logging(&context.log_manager, nullptr);
-  const FormFieldData* field = scanner->Cursor();
+  const FormFieldData& field = scanner->Cursor();
   if (!MatchesFormControlType(
-          field->form_control_type(),
+          field.form_control_type(),
           {FormControlType::kInputEmail, FormControlType::kInputNumber,
            FormControlType::kInputPassword, FormControlType::kInputSearch,
            FormControlType::kInputTelephone, FormControlType::kInputText,
@@ -604,9 +604,9 @@ bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
     return false;
   }
   if (std::optional<MatchInfo> match_info =
-          MatchInLabel(context, *field, kEmptyLabelRegex, "kEmptyLabelRegex")) {
+          MatchInLabel(context, field, kEmptyLabelRegex, "kEmptyLabelRegex")) {
     if (match) {
-      *match = {field, *match_info};
+      *match = {&field, *match_info};
     }
     scanner->Advance();
     return true;
