@@ -80,26 +80,6 @@ struct CrossThreadCopier<base::Value::List>
 
 namespace {
 
-String SerializeServers(
-    const std::vector<webrtc::PeerConnectionInterface::IceServer>& servers) {
-  StringBuilder result;
-  result.Append("[");
-
-  bool following = false;
-  for (const auto& server : servers) {
-    for (const auto& url : server.urls) {
-      if (following)
-        result.Append(", ");
-      else
-        following = true;
-
-      result.Append(String::FromUTF8(url));
-    }
-  }
-  result.Append("]");
-  return result.ToString();
-}
-
 String SerializeGetUserMediaMediaConstraints(
     const MediaConstraints& constraints) {
   return String(constraints.ToString());
@@ -329,84 +309,68 @@ String SerializeTransceiver(const RTCRtpTransceiverPlatform& transceiver) {
   return result.ToString();
 }
 
-String SerializeIceTransportType(
-    webrtc::PeerConnectionInterface::IceTransportsType type) {
-  String transport_type("");
-  switch (type) {
-    case webrtc::PeerConnectionInterface::kNone:
-      transport_type = "none";
-      break;
-    case webrtc::PeerConnectionInterface::kRelay:
-      transport_type = "relay";
-      break;
-    case webrtc::PeerConnectionInterface::kAll:
-      transport_type = "all";
-      break;
-    case webrtc::PeerConnectionInterface::kNoHost:
-      transport_type = "noHost";
-      break;
-    default:
-      NOTREACHED();
-  }
-  return transport_type;
-}
-
-String SerializeBundlePolicy(
-    webrtc::PeerConnectionInterface::BundlePolicy policy) {
-  String policy_str("");
-  switch (policy) {
-    case webrtc::PeerConnectionInterface::kBundlePolicyBalanced:
-      policy_str = "balanced";
-      break;
-    case webrtc::PeerConnectionInterface::kBundlePolicyMaxBundle:
-      policy_str = "max-bundle";
-      break;
-    case webrtc::PeerConnectionInterface::kBundlePolicyMaxCompat:
-      policy_str = "max-compat";
-      break;
-    default:
-      NOTREACHED();
-  }
-  return policy_str;
-}
-
-String SerializeRtcpMuxPolicy(
-    webrtc::PeerConnectionInterface::RtcpMuxPolicy policy) {
-  String policy_str("");
-  switch (policy) {
-    case webrtc::PeerConnectionInterface::kRtcpMuxPolicyNegotiate:
-      policy_str = "negotiate";
-      break;
-    case webrtc::PeerConnectionInterface::kRtcpMuxPolicyRequire:
-      policy_str = "require";
-      break;
-    default:
-      NOTREACHED();
-  }
-  return policy_str;
-}
-
 // Serializes things that are of interest from the RTCConfiguration.
 String SerializeConfiguration(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     bool usesInsertableStreams) {
-  StringBuilder result;
-  // TODO(hbos): Add serialization of certificate.
-  result.Append("{ iceServers: ");
-  result.Append(SerializeServers(config.servers));
-  result.Append(", iceTransportPolicy: ");
-  result.Append(SerializeIceTransportType(config.type));
-  result.Append(", bundlePolicy: ");
-  result.Append(SerializeBundlePolicy(config.bundle_policy));
-  result.Append(", rtcpMuxPolicy: ");
-  result.Append(SerializeRtcpMuxPolicy(config.rtcp_mux_policy));
-  result.Append(", iceCandidatePoolSize: ");
-  result.AppendNumber(config.ice_candidate_pool_size);
-  if (usesInsertableStreams) {
-    result.Append(", encodedInsertableStreams: true");
+  auto json = std::make_unique<JSONObject>();
+  // Serialize iceServers (without username and credential).
+  if (!config.servers.empty()) {
+    auto servers = std::make_unique<JSONArray>();
+    for (const auto& ice_server : config.servers) {
+      auto server = std::make_unique<JSONObject>();
+      auto urls = std::make_unique<JSONArray>();
+      for (const auto& url : ice_server.urls) {
+        urls->PushString(String(url));
+      }
+      server->SetArray("urls", std::move(urls));
+      servers->PushObject(std::move(server));
+    }
+    json->SetArray("iceServers", std::move(servers));
   }
-  result.Append(" }");
-  return result.ToString();
+  // Serialize iceTransportPolicy.
+  switch (config.type) {
+    case webrtc::PeerConnectionInterface::kRelay:
+      json->SetString("iceTransportPolicy", "relay");
+      break;
+    default:
+      // The other values are the default or not web-exposed.
+      break;
+  }
+  // Serialize iceCandidatePoolSize.
+  if (config.ice_candidate_pool_size > 0) {
+    json->SetInteger("iceCandidatePoolSize", config.ice_candidate_pool_size);
+  }
+  // Serialize bundlePolicy.
+  switch (config.bundle_policy) {
+    case webrtc::PeerConnectionInterface::kBundlePolicyMaxBundle:
+      json->SetString("bundlePolicy", "max-bundle");
+      break;
+    case webrtc::PeerConnectionInterface::kBundlePolicyMaxCompat:
+      json->SetString("bundlePolicy", "max-compat");
+      break;
+    default:
+      // "balanced" is the default and not serialized.
+      break;
+  }
+  // Serialize rtcpMuxPolicy.
+  switch (config.rtcp_mux_policy) {
+    case webrtc::PeerConnectionInterface::kRtcpMuxPolicyNegotiate:
+      // No longer standard.
+      json->SetString("rtcpMuxPolicy", "negotiate");
+      break;
+    default:
+      // "require" is the default and not serialized.
+      break;
+  }
+  // Serialize (non-standard and obsolete) encodedInsertableStreams.
+  if (usesInsertableStreams) {
+    json->SetBoolean("encodedInsertableStreams", true);
+  }
+  // TODO(hbos): Add serialization of certificate.
+  StringBuilder value;
+  json->WriteJSON(&value);
+  return value.ToString();
 }
 
 const char* GetTransceiverUpdatedReasonString(
