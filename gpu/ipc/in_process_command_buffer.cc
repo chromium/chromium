@@ -380,7 +380,8 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       if (!real_context) {
         real_context = gl::init::CreateGLContext(
             gl_share_group_.get(), surface.get(),
-            GenerateGLContextAttribsForDecoder(*params.attribs,
+            GenerateGLContextAttribsForDecoder(params.attribs->context_type,
+                                               params.attribs->gpu_preference,
                                                context_group_.get()));
         if (!real_context) {
           // TODO(piman): This might not be fatal, we could recurse into
@@ -415,9 +416,11 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
         context_ = base::MakeRefCounted<GLContextVirtual>(
             gl_share_group_.get(), real_context.get(),
             gles2_decoder->AsWeakPtr());
-        if (!context_->Initialize(surface.get(),
-                                  GenerateGLContextAttribsForDecoder(
-                                      *params.attribs, context_group_.get()))) {
+        if (!context_->Initialize(
+                surface.get(),
+                GenerateGLContextAttribsForDecoder(
+                    params.attribs->context_type,
+                    params.attribs->gpu_preference, context_group_.get()))) {
           // TODO(piman): This might not be fatal, we could recurse into
           // CreateGLContext to get more info, tho it should be exceedingly
           // rare and may not be recoverable anyway.

@@ -2305,12 +2305,11 @@ GpuPreferences GenerateGpuPreferencesForPassthroughTests() {
 
 GLES2DecoderPassthroughTestBase::GLES2DecoderPassthroughTestBase(
     ContextType context_type)
-    : gpu_preferences_(GenerateGpuPreferencesForPassthroughTests()),
+    : context_type_(context_type),
+      gpu_preferences_(GenerateGpuPreferencesForPassthroughTests()),
       shader_translator_cache_(gpu_preferences_),
       discardable_manager_(gpu_preferences_),
-      passthrough_discardable_manager_(gpu_preferences_) {
-  context_creation_attribs_.context_type = context_type;
-}
+      passthrough_discardable_manager_(gpu_preferences_) {}
 
 GLES2DecoderPassthroughTestBase::~GLES2DecoderPassthroughTestBase() = default;
 
@@ -2359,10 +2358,10 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
       &passthrough_discardable_manager_, &shared_image_manager_);
 
   surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size(4, 4));
-  context_ =
-      gl::init::CreateGLContext(nullptr, surface_.get(),
-                                GenerateGLContextAttribsForDecoder(
-                                    context_creation_attribs_, group_.get()));
+  context_ = gl::init::CreateGLContext(
+      nullptr, surface_.get(),
+      GenerateGLContextAttribsForDecoder(
+          context_type_, gl::GpuPreference::kLowPower, group_.get()));
   context_->MakeCurrent(surface_.get());
 
   command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
@@ -2375,18 +2374,15 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   decoder_->SetOptionalExtensionsRequestedForTesting(false);
 
   ASSERT_EQ(
-      group_->Initialize(decoder_.get(), context_creation_attribs_.context_type,
-                         DisallowedFeatures()),
+      group_->Initialize(decoder_.get(), context_type_, DisallowedFeatures()),
       gpu::ContextResult::kSuccess);
 
   // We need command buffer to emulate default framebuffer is the GLSurface is
   // surfaceless.
   const bool offscreen = surface_->IsSurfaceless();
-  ASSERT_EQ(
-      decoder_->Initialize(
-          surface_, context_, offscreen, context_creation_attribs_.context_type,
-          context_creation_attribs_.lose_context_when_out_of_memory),
-      gpu::ContextResult::kSuccess);
+  ASSERT_EQ(decoder_->Initialize(surface_, context_, offscreen, context_type_,
+                                 /*lose_context_when_out_of_memory=*/false),
+            gpu::ContextResult::kSuccess);
 
   scoped_refptr<gpu::Buffer> buffer =
       command_buffer_service_->CreateTransferBufferHelper(kSharedBufferSize,

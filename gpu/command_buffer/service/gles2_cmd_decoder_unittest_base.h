@@ -1020,7 +1020,7 @@ class GLES2DecoderPassthroughTestBase : public testing::Test,
   uint32_t immediate_buffer_[64];
 
  private:
-  ContextCreationAttribs context_creation_attribs_;
+  ContextType context_type_;
   GpuPreferences gpu_preferences_;
   ShaderTranslatorCache shader_translator_cache_;
   FramebufferCompletenessCache framebuffer_completeness_cache_;

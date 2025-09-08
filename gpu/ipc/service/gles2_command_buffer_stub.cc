@@ -220,7 +220,8 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     if (!context) {
       context = gl::init::CreateGLContext(
           share_group_.get(), surface_.get(),
-          GenerateGLContextAttribsForDecoder(init_params.attribs,
+          GenerateGLContextAttribsForDecoder(init_params.attribs.context_type,
+                                             init_params.attribs.gpu_preference,
                                              context_group_.get()));
       if (!context) {
         // TODO(piman): This might not be fatal, we could recurse into
@@ -247,9 +248,11 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
            gl::GetGLImplementation() == gl::kGLImplementationStubGL);
     context = base::MakeRefCounted<GLContextVirtual>(
         share_group_.get(), context.get(), gles2_decoder_->AsWeakPtr());
-    if (!context->Initialize(surface_.get(),
-                             GenerateGLContextAttribsForDecoder(
-                                 init_params.attribs, context_group_.get()))) {
+    if (!context->Initialize(
+            surface_.get(),
+            GenerateGLContextAttribsForDecoder(
+                init_params.attribs.context_type,
+                init_params.attribs.gpu_preference, context_group_.get()))) {
       // The real context created above for the default offscreen surface
       // might not be compatible with this surface.
       context = nullptr;
@@ -263,7 +266,8 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   } else {
     context = gl::init::CreateGLContext(
         share_group_.get(), surface_.get(),
-        GenerateGLContextAttribsForDecoder(init_params.attribs,
+        GenerateGLContextAttribsForDecoder(init_params.attribs.context_type,
+                                           init_params.attribs.gpu_preference,
                                            context_group_.get()));
     if (!context) {
       // TODO(piman): This might not be fatal, we could recurse into

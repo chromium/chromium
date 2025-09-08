@@ -130,13 +130,13 @@ WebGPUPowerPreference ParseWebGPUPowerPreference(
 }  // namespace
 
 gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
-    const ContextCreationAttribs& attribs_helper,
+    ContextType context_type,
+    gl::GpuPreference gpu_preference,
     const ContextGroup* context_group) {
   gl::GLContextAttribs attribs;
-  attribs.gpu_preference = attribs_helper.gpu_preference;
+  attribs.gpu_preference = gpu_preference;
   if (context_group->use_passthrough_cmd_decoder()) {
-    attribs.webgl_compatibility_context =
-        IsWebGLContextType(attribs_helper.context_type);
+    attribs.webgl_compatibility_context = IsWebGLContextType(context_type);
 
     // Always use the global texture and semaphore share group for the
     // passthrough command decoder
@@ -148,11 +148,11 @@ gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
     attribs.allow_client_arrays = false;
 
     // Request a specific context version instead of always 3.0
-    if (IsWebGL2OrES3ContextType(attribs_helper.context_type)) {
+    if (IsWebGL2OrES3ContextType(context_type)) {
       attribs.client_major_es_version = 3;
       attribs.client_minor_es_version = 0;
     } else {
-      DCHECK(IsWebGL1OrES2ContextType(attribs_helper.context_type));
+      DCHECK(IsWebGL1OrES2ContextType(context_type));
       attribs.client_major_es_version = 2;
       attribs.client_minor_es_version = 0;
     }
@@ -167,7 +167,7 @@ gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
     attribs.client_minor_es_version = 0;
   }
 
-  if (IsES31ForTestingContextType(attribs_helper.context_type)) {
+  if (IsES31ForTestingContextType(context_type)) {
     // Forcefully disable ES 3.1 contexts. Tests create contexts by initializing
     // the attributes directly.
     attribs.client_major_es_version = 2;
