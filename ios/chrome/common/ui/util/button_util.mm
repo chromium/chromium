@@ -220,7 +220,7 @@ void UpdateButtonToMatchSecondaryAction(ChromeButton* button) {
       NonPrimaryActionConfigurationUpdateHandler();
 }
 
-void UpdateButtonToMatchEqualWeightAction(ChromeButton* button) {
+void UpdateButtonToMatchTertiaryAction(ChromeButton* button) {
   UIButtonConfiguration* configuration = button.configuration;
   UIColor* foregroundColor = [UIColor colorNamed:kBlueColor];
   CommonSetupButtonConfiguration(
@@ -261,10 +261,9 @@ ChromeButton* SecondaryActionButton() {
   return button;
 }
 
-// Returns equal weight button with rounded corners.
-ChromeButton* EqualWeightButton() {
+ChromeButton* TertiaryActionButton() {
   ChromeButton* button = CreateCommonButton();
-  UpdateButtonToMatchEqualWeightAction(button);
+  UpdateButtonToMatchTertiaryAction(button);
   return button;
 }
 

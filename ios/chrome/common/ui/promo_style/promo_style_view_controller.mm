@@ -661,7 +661,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
         (self.actionButtonsVisibility ==
          ActionButtonsVisibility::kEquallyWeightedButtonShown);
     if (equallyWeightedButton) {
-      UpdateButtonToMatchEqualWeightAction(self.primaryActionButton);
+      UpdateButtonToMatchTertiaryAction(self.primaryActionButton);
     } else {
       UpdateButtonToMatchPrimaryAction(self.primaryActionButton);
     }
@@ -1559,7 +1559,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
        ActionButtonsVisibility::kEquallyWeightedButtonShown);
   ChromeButton* button;
   if (equallyWeightedButton) {
-    button = EqualWeightButton();
+    button = TertiaryActionButton();
   } else {
     button = primary ? PrimaryActionButton() : SecondaryActionButton();
   }

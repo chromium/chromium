@@ -25,8 +25,8 @@ void UpdateButtonToMatchPrimaryDestructiveAction(ChromeButton* button);
 // Updates `button` to match a secondary action style.
 void UpdateButtonToMatchSecondaryAction(ChromeButton* button);
 
-// Updates `button` to match a equal weight style.
-void UpdateButtonToMatchEqualWeightAction(ChromeButton* button);
+// Updates `button` to match a tertiary action style.
+void UpdateButtonToMatchTertiaryAction(ChromeButton* button);
 
 // Returns primary action button.
 ChromeButton* PrimaryActionButton();
@@ -37,8 +37,8 @@ ChromeButton* PrimaryDestructiveActionButton();
 // Returns secondary action button.
 ChromeButton* SecondaryActionButton();
 
-// Returns equal weight button.
-ChromeButton* EqualWeightButton();
+// Returns tertiary action button.
+ChromeButton* TertiaryActionButton();
 
 // Sets the title of `button` through `button.configuration`.
 void SetConfigurationTitle(UIButton* button, NSString* newString);
