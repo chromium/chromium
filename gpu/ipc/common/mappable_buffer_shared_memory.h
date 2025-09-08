@@ -16,7 +16,7 @@ namespace gpu {
 
 class ClientSharedImage;
 
-// Implementation of GPU memory buffer based on shared memory.
+// Implementation of MappableBuffer based on shared memory.
 class GPU_IPC_COMMON_EXPORT MappableBufferSharedMemory : public MappableBuffer {
  public:
   MappableBufferSharedMemory(const MappableBufferSharedMemory&) = delete;

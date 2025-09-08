@@ -23,7 +23,7 @@ namespace gpu {
 
 class ClientSharedImage;
 
-// Implementation of GPU memory buffer based on Ozone native pixmap.
+// Implementation of MappableBuffer based on Ozone native pixmap.
 class GPU_IPC_COMMON_EXPORT MappableBufferNativePixmap : public MappableBuffer {
  public:
   MappableBufferNativePixmap(const MappableBufferNativePixmap&) = delete;

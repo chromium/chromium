@@ -28,7 +28,7 @@ namespace gpu {
 
 class ClientSharedImage;
 
-// Implementation of GPU memory buffer based on dxgi textures.
+// Implementation of MappableBuffer based on dxgi textures.
 class GPU_IPC_COMMON_EXPORT MappableBufferDXGI : public MappableBuffer {
  public:
   MappableBufferDXGI(const MappableBufferDXGI&) = delete;

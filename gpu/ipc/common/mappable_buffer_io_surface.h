@@ -20,7 +20,7 @@ namespace gpu {
 
 class ClientSharedImage;
 
-// Implementation of GPU memory buffer based on IO surfaces.
+// Implementation of MappableBuffer based on IO surfaces.
 class GPU_IPC_COMMON_EXPORT MappableBufferIOSurface : public MappableBuffer {
  public:
   MappableBufferIOSurface(const MappableBufferIOSurface&) = delete;
