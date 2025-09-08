@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bookmarks.Android.BackendLoadTime.{JavaBookmarkBackendClients}"
-    units="ms" expires_after="2025-09-14">
+    units="ms" expires_after="2026-09-14">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
