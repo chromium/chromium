@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -140,6 +141,7 @@ public class ReaderModeToolbarButtonControllerTest {
         assertEquals(
                 "Hide Reading Mode",
                 controller.getButtonDataForTesting().getButtonSpec().getContentDescription());
+        assertTrue(controller.getButtonDataForTesting().getButtonSpec().isChecked());
 
         // Simulate the url changing to something else, and verify that the button was swapped back.
         when(mMockTab.getUrl()).thenReturn(new GURL("http://test.com"));
