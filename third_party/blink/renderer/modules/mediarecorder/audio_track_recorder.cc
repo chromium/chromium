@@ -162,13 +162,14 @@ void AudioTrackRecorder::OnData(const media::AudioBus& audio_bus,
   DCHECK(!capture_time.is_null());
   DCHECK_GT(frames_per_chunk_, 0) << "OnSetFormat not called before OnData";
 
+  int chunk_size = 0;
   for (int chunk_start = 0; chunk_start < audio_bus.frames();
-       chunk_start += frames_per_chunk_) {
+       chunk_start += chunk_size) {
+    chunk_size = chunk_start + frames_per_chunk_ >= audio_bus.frames()
+                     ? audio_bus.frames() - chunk_start
+                     : frames_per_chunk_;
     std::unique_ptr<media::AudioBus> audio_data =
-        media::AudioBus::Create(audio_bus.channels(), frames_per_chunk_);
-    int chunk_size = chunk_start + frames_per_chunk_ >= audio_bus.frames()
-                         ? audio_bus.frames() - chunk_start
-                         : frames_per_chunk_;
+        media::AudioBus::Create(audio_bus.channels(), chunk_size);
     audio_bus.CopyPartialFramesTo(chunk_start, chunk_size, 0, audio_data.get());
 
     encoder_.AsyncCall(&AudioTrackEncoder::EncodeAudio)
