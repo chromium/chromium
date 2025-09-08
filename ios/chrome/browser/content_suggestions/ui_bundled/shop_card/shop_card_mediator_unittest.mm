@@ -60,7 +60,7 @@ class ShopCardMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
@@ -74,9 +74,7 @@ class ShopCardMediatorTest : public PlatformTest {
         base::BindRepeating(
             [](PrefService* pref_service,
                bookmarks::BookmarkModel* bookmark_model,
-               web::BrowserState* browser_state)
-                -> std::unique_ptr<KeyedService> {
-              ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+               ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<ImpressionLimitService>(
                   pref_service,
                   ios::HistoryServiceFactory::GetForProfile(
