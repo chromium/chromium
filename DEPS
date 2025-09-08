@@ -267,7 +267,7 @@ vars = {
   # pathname relative to build/config/siso/backend_config, or absolute path.
   'reapi_backend_config_path': Str(''),
   # siso CIPD package version.
-  'siso_version': 'git_revision:8863265a67843154872be2be1fc0c37339691405',
+  'siso_version': 'git_revision:39f570f121d63078bca79de500f4f2a50cb37456',
 
   # reclient options.
   # RBE project to download rewrapper config files for. Only needed if
