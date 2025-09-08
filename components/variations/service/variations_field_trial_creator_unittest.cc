@@ -458,8 +458,6 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
 };
 
-}  // namespace
-
 class FieldTrialCreatorTest : public ::testing::Test {
  public:
   FieldTrialCreatorTest() = default;
@@ -504,8 +502,6 @@ class FieldTrialCreatorTest : public ::testing::Test {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
-namespace {
-
 class FieldTrialCreatorFetchAndLaunchTimeTest
     : public FieldTrialCreatorTest,
       public ::testing::WithParamInterface<FetchAndLaunchTimeTestParams> {};
@@ -518,8 +514,6 @@ constexpr FetchAndLaunchTimeTestParams kAllFetchAndLaunchTimes[] = {
     // seed is applied even though it was downloaded more than 30 days ago.
     {.fetch_time = base::Days(1), .launch_time = base::Days(32)},
 };
-
-}  // namespace
 
 INSTANTIATE_TEST_SUITE_P(All,
                          FieldTrialCreatorFetchAndLaunchTimeTest,
@@ -1651,13 +1645,6 @@ TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsClearsDeletedProfiles) {
   field_trial_creator.GetGoogleGroupsFromPrefs();
 }
 
-namespace {
-
-enum class LimitedModeGate {
-  ENABLED,
-  DISABLED,
-};
-
 struct LimitedEntropyProcessingTestCase {
   std::string test_name;
   VariationsSeed seed;
@@ -1763,8 +1750,6 @@ constexpr char kFormFactorTestSeedData[] =
     "TSjnvoMQEz0f2Ch3Gevro5/AQAA//8RFDdTJQIAAA==";
 constexpr char kFormFactorTestSeedSignature[] = "";  // Deliberately empty.
 
-}  // namespace
-
 INSTANTIATE_TEST_SUITE_P(All,
                          FieldTrialCreatorFormFactorTest,
                          ::testing::ValuesIn(kAllFormFactors));
@@ -1840,4 +1825,5 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
             current_form_factor == Study::AUTOMOTIVE);
 }
 
+}  // namespace
 }  // namespace variations
