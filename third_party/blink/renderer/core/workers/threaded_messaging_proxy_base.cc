@@ -23,7 +23,7 @@ namespace blink {
 
 namespace {
 
-static int g_live_messaging_proxy_count = 0;
+std::atomic<int> g_live_messaging_proxy_count(0);
 
 }  // namespace
 
