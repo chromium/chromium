@@ -38,6 +38,7 @@ dependencies {
     compileLatest 'io.grpc:grpc-api:+'
     compileLatest 'io.grpc:grpc-stub:+'
     compileLatest 'io.grpc:grpc-protobuf-lite:+'
+    androidTestCompileLatest 'io.grpc:grpc-android:+'
     androidTestCompileLatest 'io.grpc:grpc-testing:+'
     androidTestCompileLatest 'io.grpc:grpc-inprocess:+'
     androidTestCompileLatest 'io.grpc:grpc-util:+'
