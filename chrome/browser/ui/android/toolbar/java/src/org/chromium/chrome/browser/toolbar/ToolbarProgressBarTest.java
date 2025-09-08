@@ -135,6 +135,7 @@ public class ToolbarProgressBarTest {
 
     /** Test that the progress bar indeterminate animation completely traverses the screen. */
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER)
     @Feature({"Android-Progress-Bar"})
     @SmallTest
     public void testProgressBarCompletion_indeterminateAnimation() throws TimeoutException {
@@ -216,6 +217,7 @@ public class ToolbarProgressBarTest {
 
     /** Test that the progress bar ends immediately if #finish(...) is called with delay = false. */
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER)
     @Feature({"Android-Progress-Bar"})
     @SmallTest
     public void testProgressBarCompletion_indeterminateAnimation_noDelay() throws TimeoutException {
@@ -253,6 +255,7 @@ public class ToolbarProgressBarTest {
      * animation is running.
      */
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER)
     @Feature({"Android-Progress-Bar"})
     @SmallTest
     public void testProgressBarReset_indeterminateAnimation() throws TimeoutException {

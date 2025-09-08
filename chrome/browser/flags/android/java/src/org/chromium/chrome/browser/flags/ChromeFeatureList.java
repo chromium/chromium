@@ -721,7 +721,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =
-            newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, false);
+            newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, true);
     public static final CachedFlag sAndroidAnimatedProgressBarInViz =
             newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_VIZ, false);
     public static final CachedFlag sAndroidAppIntegration =

@@ -71,13 +71,22 @@ public class ClipDrawableProgressBar extends ImageView {
     protected final int mProgressBarHeight;
     private float mProgress;
     private int mDesiredVisibility;
+
+    // This is only used when {@link #shouldAnimateCompositedLayer()} returns true, in which case
+    // The Android view will remain hidden, and this variable will track the visibility of the
+    // progress bar. This means that all calls to set/getVisibility will use this variable instead
+    // of calling set/getVisibility of the parent Android view.
+    // TODO(peilinwang): If AnimateProgressBarInBrowser is successful, this class should not be
+    // subclassing a View anymore, and the android progress bar animations might need cleaning up.
+    private int mVisibility;
+
     /**
-     * The width of the moving background drawable in pixels.
-     * This is used when {@link #useGradientDrawable()} is true, where the background
-     * drawable scales with the inverse of the progress, leaving a small
-     * gap between the two drawables.
+     * The width of the moving background drawable in pixels. This is used when {@link
+     * #useGradientDrawable()} is true, where the background drawable scales with the inverse of the
+     * progress, leaving a small gap between the two drawables.
      */
     private int mScaledBackgroundWidth;
+
     private int mViewWidth;
 
     /** An observer of updates to the progress bar. */
@@ -91,7 +100,11 @@ public class ClipDrawableProgressBar extends ImageView {
     public ClipDrawableProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mDesiredVisibility = getVisibility();
+        if (shouldAnimateCompositedLayer()) {
+            mVisibility = getVisibility();
+        } else {
+            mDesiredVisibility = getVisibility();
+        }
 
         mForegroundColor = SemanticColorUtils.getProgressBarForeground(getContext());
         mBackgroundColor = getContext().getColor(R.color.progress_bar_bg_color_list);
@@ -261,7 +274,6 @@ public class ClipDrawableProgressBar extends ImageView {
     public void getDrawingInfo(DrawingInfo drawingInfoOut) {
         boolean visible = getVisibility() == VISIBLE;
         if (shouldAnimateCompositedLayer()) {
-            visible = mDesiredVisibility == VISIBLE;
             drawingInfoOut.visible = visible;
         }
         float effectiveAlpha = visible ? getAlpha() : 0.0f;
@@ -339,7 +351,9 @@ public class ClipDrawableProgressBar extends ImageView {
         int newVisibility = mDesiredVisibility;
         if (getAlpha() == 0 && mDesiredVisibility == VISIBLE) newVisibility = INVISIBLE;
         if (oldVisibility != newVisibility) {
-            if (!shouldAnimateCompositedLayer()) {
+            if (shouldAnimateCompositedLayer()) {
+                mVisibility = newVisibility;
+            } else {
                 super.setVisibility(newVisibility);
             }
             if (mProgressBarObserver != null) mProgressBarObserver.onVisibilityChanged();
@@ -432,5 +446,14 @@ public class ClipDrawableProgressBar extends ImageView {
     private boolean shouldAnimateCompositedLayer() {
         return ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()
                 || ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled();
+    }
+
+    @Override
+    public int getVisibility() {
+        if (shouldAnimateCompositedLayer()) {
+            return mVisibility;
+        } else {
+            return super.getVisibility();
+        }
     }
 }

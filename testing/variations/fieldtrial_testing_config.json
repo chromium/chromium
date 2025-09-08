@@ -568,6 +568,21 @@
             ]
         }
     ],
+    "AndroidAnimatedProgressBarInBrowser": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250903",
+                    "enable_features": [
+                        "AndroidAnimatedProgressBarInBrowser"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidAutofillForwardIframeOrigin": [
         {
             "platforms": [
