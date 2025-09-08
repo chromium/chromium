@@ -20,7 +20,7 @@ class AutofillScanner;
 class IbanFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
   explicit IbanFieldParser(FieldAndMatchInfo match);
 

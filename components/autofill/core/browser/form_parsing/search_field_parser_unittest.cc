@@ -20,7 +20,7 @@ class SearchFieldParserTest : public FormFieldParserTestBase,
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                         AutofillScanner* scanner) override {
+                                         AutofillScanner& scanner) override {
     return SearchFieldParser::Parse(context, scanner);
   }
 };

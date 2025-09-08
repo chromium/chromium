@@ -155,9 +155,9 @@ PhoneFieldParser::GetPhoneGrammars() {
 
 // static
 bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
-    AutofillScanner* scanner,
+    AutofillScanner& scanner,
     std::optional<FieldAndMatchInfo>* match) {
-  const FormFieldData& field = scanner->Cursor();
+  const FormFieldData& field = scanner.Cursor();
 
   // Return false if the field is not a selection box.
   if (!MatchesFormControlType(field.form_control_type(),
@@ -205,7 +205,7 @@ bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
         &field,
         {.matched_attribute = MatchInfo::MatchAttribute::kHighQualityLabel}};
   }
-  scanner->Advance();
+  scanner.Advance();
   return true;
 }
 
@@ -213,7 +213,7 @@ bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
 bool PhoneFieldParser::ParseGrammar(ParsingContext& context,
                                     const PhoneGrammar& grammar,
                                     ParsedPhoneFields& parsed_fields,
-                                    AutofillScanner* scanner) {
+                                    AutofillScanner& scanner) {
   for (const auto& rule : grammar) {
     const bool is_country_code_field = rule.phone_part == FIELD_COUNTRY_CODE;
 
@@ -242,11 +242,12 @@ bool PhoneFieldParser::ParseGrammar(ParsingContext& context,
 // static
 std::unique_ptr<FormFieldParser> PhoneFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd())
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return nullptr;
+  }
 
-  size_t start_cursor = scanner->SaveCursor();
+  size_t start_cursor = scanner.SaveCursor();
   ParsedPhoneFields parsed_fields;
 
   // Find the first matching grammar.
@@ -258,7 +259,7 @@ std::unique_ptr<FormFieldParser> PhoneFieldParser::Parse(
       found_matching_grammar = true;
       break;
     }
-    scanner->RewindTo(start_cursor);
+    scanner.RewindTo(start_cursor);
     grammar_id++;
   }
   if (!found_matching_grammar)
@@ -374,7 +375,7 @@ std::string PhoneFieldParser::GetJSONFieldType(RegexType phonetype_id) {
 
 // static
 bool PhoneFieldParser::ParsePhoneField(ParsingContext& context,
-                                       AutofillScanner* scanner,
+                                       AutofillScanner& scanner,
                                        std::optional<FieldAndMatchInfo>* match,
                                        const bool is_country_code_field,
                                        const std::string& json_field_type) {

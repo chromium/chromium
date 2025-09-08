@@ -29,7 +29,7 @@ class AddressFieldParserTest : public FormFieldParserTestBase,
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                         AutofillScanner* scanner) override {
+                                         AutofillScanner& scanner) override {
     return AddressFieldParser::Parse(context, scanner);
   }
 

@@ -14,7 +14,7 @@ namespace autofill {
 // static
 std::unique_ptr<FormFieldParser> IbanFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   std::optional<FieldAndMatchInfo> match;
   if (ParseField(context, scanner, "IBAN_VALUE", &match)) {
     return std::make_unique<IbanFieldParser>(std::move(*match));

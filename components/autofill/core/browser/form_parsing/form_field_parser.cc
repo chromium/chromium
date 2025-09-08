@@ -13,6 +13,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -524,21 +525,21 @@ FormFieldParser::FieldMatchesMatchPatternRef(
 // static
 bool FormFieldParser::ParseField(
     ParsingContext& context,
-    AutofillScanner* scanner,
+    AutofillScanner& scanner,
     std::string_view regex_name,
     std::optional<FieldAndMatchInfo>* match,
     MatchParams (*projection)(const MatchParams&)) {
-  if (scanner->IsEnd()) {
+  if (scanner.IsEnd()) {
     return false;
   }
 
-  const FormFieldData& field = scanner->Cursor();
+  const FormFieldData& field = scanner.Cursor();
   if (std::optional<MatchInfo> match_info = FieldMatchesMatchPatternRef(
           context, field, regex_name, {projection})) {
     if (match) {
       *match = {&field, *match_info};
     }
-    scanner->Advance();
+    scanner.Advance();
     return true;
   }
   return false;
@@ -546,13 +547,13 @@ bool FormFieldParser::ParseField(
 
 // static
 bool FormFieldParser::ParseInAnyOrder(
-    AutofillScanner* scanner,
+    AutofillScanner& scanner,
     base::span<const std::pair<raw_ptr<const FormFieldData>*,
                                base::FunctionRef<bool()>>> fields_and_parsers) {
-  if (scanner->IsEnd()) {
+  if (scanner.IsEnd()) {
     return fields_and_parsers.empty();
   }
-  auto original_pos = scanner->SaveCursor();
+  auto original_pos = scanner.SaveCursor();
   // The implementation tries matching every permutation `p` of parsers with the
   // scanners fields. While this has a terrible runtime for general n, the only
   // planned use cases are dates (2 or 3 components).
@@ -564,9 +565,9 @@ bool FormFieldParser::ParseInAnyOrder(
     bool matches = true;
     for (int i : p) {
       const auto& [field, parser] = fields_and_parsers[i];
-      if (!scanner->IsEnd() && parser()) {
-        *field = &scanner->Cursor();
-        scanner->Advance();
+      if (!scanner.IsEnd() && parser()) {
+        *field = &scanner.Cursor();
+        scanner.Advance();
       } else {
         matches = false;
         break;
@@ -575,7 +576,7 @@ bool FormFieldParser::ParseInAnyOrder(
     if (matches) {
       return true;
     }
-    scanner->RewindTo(original_pos);
+    scanner.RewindTo(original_pos);
   } while (std::next_permutation(p.begin(), p.end()));
   for (const auto& [field, parser] : fields_and_parsers) {
     *field = nullptr;
@@ -585,15 +586,15 @@ bool FormFieldParser::ParseInAnyOrder(
 
 // static
 bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
-                                      AutofillScanner* scanner,
+                                      AutofillScanner& scanner,
                                       std::optional<FieldAndMatchInfo>* match) {
-  if (scanner->IsEnd()) {
+  if (scanner.IsEnd()) {
     return false;
   }
   // Temporarily disable logging of matches for empty labels. They don't contain
   // a lot of insights but occur somewhat often.
   base::AutoReset disable_logging(&context.log_manager, nullptr);
-  const FormFieldData& field = scanner->Cursor();
+  const FormFieldData& field = scanner.Cursor();
   if (!MatchesFormControlType(
           field.form_control_type(),
           {FormControlType::kInputEmail, FormControlType::kInputNumber,
@@ -607,7 +608,7 @@ bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
     if (match) {
       *match = {&field, *match_info};
     }
-    scanner->Advance();
+    scanner.Advance();
     return true;
   }
   return false;
@@ -802,7 +803,7 @@ void FormFieldParser::ParseFormFieldsPass(
     FieldCandidatesMap& field_candidates) {
   AutofillScanner scanner(fields);
   while (!scanner.IsEnd()) {
-    std::unique_ptr<FormFieldParser> form_field = parse(context, &scanner);
+    std::unique_ptr<FormFieldParser> form_field = parse(context, scanner);
     if (form_field == nullptr) {
       scanner.Advance();
     } else {

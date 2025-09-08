@@ -17,7 +17,7 @@ class IbanFieldParserTest : public FormFieldParserTestBase,
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                         AutofillScanner* scanner) override {
+                                         AutofillScanner& scanner) override {
     return IbanFieldParser::Parse(context, scanner);
   }
 };

@@ -28,7 +28,7 @@ class CreditCardFieldParser : public FormFieldParser {
 
   ~CreditCardFieldParser() override;
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
   // Instructions for how to format an expiration date for a text field.
   struct ExpirationDateFormat {
@@ -81,28 +81,28 @@ class CreditCardFieldParser : public FormFieldParser {
 
   // Returns true if |scanner| points to a field that looks like a month
   // <select>.
-  static bool LikelyCardMonthSelectField(AutofillScanner* scanner);
+  static bool LikelyCardMonthSelectField(AutofillScanner& scanner);
 
   // Returns true if |scanner| points to a field that looks like a year
   // <select> for a credit card. i.e. it contains the current year and
   // the next few years.
   static bool LikelyCardYearSelectField(ParsingContext& context,
-                                        AutofillScanner* scanner);
+                                        AutofillScanner& scanner);
 
   // Returns true if |scanner| points to a <select> field that contains credit
   // card type options.
-  static bool LikelyCardTypeSelectField(AutofillScanner* scanner);
+  static bool LikelyCardTypeSelectField(AutofillScanner& scanner);
 
   // Returns true if |scanner| points to a field that is for a gift card number.
   // |scanner| advances if this returns true.
   // Prepaid debit cards do not count as gift cards, since they can be used like
   // a credit card.
   static bool IsGiftCardField(ParsingContext& context,
-                              AutofillScanner* scanner);
+                              AutofillScanner& scanner);
 
   // Parses the expiration month/year/date fields. Returns true if it finds
   // something new.
-  bool ParseExpirationDate(ParsingContext& context, AutofillScanner* scanner);
+  bool ParseExpirationDate(ParsingContext& context, AutofillScanner& scanner);
 
   // For the combined expiration field we return |exp_year_type_|; otherwise if
   // |expiration_year_| is having year with |max_length| of 2-digits we return

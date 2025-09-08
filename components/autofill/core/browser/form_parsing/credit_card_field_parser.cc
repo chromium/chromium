@@ -61,20 +61,20 @@ bool FieldCanFitDataForFieldType(uint64_t max_length, FieldType type) {
 // static
 std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd()) {
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return nullptr;
   }
 
   auto credit_card_field = std::make_unique<CreditCardFieldParser>();
-  size_t saved_cursor = scanner->SaveCursor();
+  size_t saved_cursor = scanner.SaveCursor();
   int nb_unknown_fields = 0;
   bool cardholder_name_match_has_low_confidence = false;
 
   // Credit card fields can appear in many different orders.
   // We loop until no more credit card related fields are found, see |break| at
   // the bottom of the loop.
-  for (int fields = 0; !scanner->IsEnd(); ++fields) {
+  for (int fields = 0; !scanner.IsEnd(); ++fields) {
     // Ignore gift card fields.
     if (IsGiftCardField(context, scanner)) {
       break;
@@ -118,9 +118,9 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
       // `LikelyCardTypeSelectField()` decides based on the text/value of select
       // options. Since the value is like a label, label is used.
       credit_card_field->type_ = {
-          &scanner->Cursor(),
+          &scanner.Cursor(),
           {.matched_attribute = MatchInfo::MatchAttribute::kHighQualityLabel}};
-      scanner->Advance();
+      scanner.Advance();
       nb_unknown_fields = 0;
       continue;
     }
@@ -142,21 +142,21 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
       // started card.
       if (credit_card_field->numbers_.empty() &&
           !credit_card_field->HasExpiration() &&
-          !credit_card_field->cardholder_ && scanner->SaveCursor() > 1) {
+          !credit_card_field->cardholder_ && scanner.SaveCursor() > 1) {
         // Check if the previous field was a verification code.
-        scanner->RewindTo(scanner->SaveCursor() - 2);
+        scanner.RewindTo(scanner.SaveCursor() - 2);
 
         if (ParseField(context, scanner, "CREDIT_CARD_VERIFICATION_CODE",
                        &credit_card_field->verification_)) {
           // Reset the current cvv (The verification parse overwrote it).
           credit_card_field->verification_ = saved_cvv;
           // Put the scanner back to the field right after the current cvv.
-          scanner->Advance();
+          scanner.Advance();
           return std::move(credit_card_field);
         } else {
           // Chances that verification field is the first of a card are really
           // low.
-          scanner->Advance();
+          scanner.Advance();
           credit_card_field->verification_.reset();
         }
       } else {
@@ -184,7 +184,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
         !credit_card_field->expiration_year_ &&
         !credit_card_field->expiration_date_) {
       // Parsed a month but couldn't parse a year; give up.
-      scanner->RewindTo(saved_cursor);
+      scanner.RewindTo(saved_cursor);
       return nullptr;
     }
 
@@ -208,7 +208,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
     if ((has_verification || has_numbers || has_expiration) &&
         (!has_verification || !has_numbers || !has_expiration) &&
         nb_unknown_fields < 4) {
-      scanner->Advance();
+      scanner.Advance();
       fields--;  // We continue searching in the same credit card section, but
                  // no more field is identified.
       continue;
@@ -243,17 +243,18 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
     return std::move(credit_card_field);
   }
 
-  scanner->RewindTo(saved_cursor);
+  scanner.RewindTo(saved_cursor);
   return nullptr;
 }
 
 // static
 bool CreditCardFieldParser::LikelyCardMonthSelectField(
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd())
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return false;
+  }
 
-  const FormFieldData& field = scanner->Cursor();
+  const FormFieldData& field = scanner.Cursor();
   if (!MatchesFormControlType(
           field.form_control_type(),
           {FormControlType::kSelectOne, FormControlType::kInputSearch})) {
@@ -283,11 +284,12 @@ bool CreditCardFieldParser::LikelyCardMonthSelectField(
 // static
 bool CreditCardFieldParser::LikelyCardYearSelectField(
     ParsingContext& context,
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd())
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return false;
+  }
 
-  const FormFieldData& field = scanner->Cursor();
+  const FormFieldData& field = scanner.Cursor();
   if (!MatchesFormControlType(
           field.form_control_type(),
           {FormControlType::kSelectOne, FormControlType::kInputSearch})) {
@@ -359,11 +361,12 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
 
 // static
 bool CreditCardFieldParser::LikelyCardTypeSelectField(
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd())
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return false;
+  }
 
-  const FormFieldData& field = scanner->Cursor();
+  const FormFieldData& field = scanner.Cursor();
 
   if (!MatchesFormControlType(
           field.form_control_type(),
@@ -385,18 +388,19 @@ bool CreditCardFieldParser::LikelyCardTypeSelectField(
 
 // static
 bool CreditCardFieldParser::IsGiftCardField(ParsingContext& context,
-                                            AutofillScanner* scanner) {
-  if (scanner->IsEnd())
+                                            AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return false;
+  }
 
-  size_t saved_cursor = scanner->SaveCursor();
+  size_t saved_cursor = scanner.SaveCursor();
 
   if (ParseField(context, scanner, "DEBIT_CARD")) {
-    scanner->RewindTo(saved_cursor);
+    scanner.RewindTo(saved_cursor);
     return false;
   }
   if (ParseField(context, scanner, "DEBIT_GIFT_CARD")) {
-    scanner->RewindTo(saved_cursor);
+    scanner.RewindTo(saved_cursor);
     return false;
   }
 
@@ -467,18 +471,18 @@ void CreditCardFieldParser::AddClassifications(
 }
 
 bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
-                                                AutofillScanner* scanner) {
+                                                AutofillScanner& scanner) {
   if (!expiration_date_ &&
-      scanner->Cursor().form_control_type() == FormControlType::kInputMonth) {
+      scanner.Cursor().form_control_type() == FormControlType::kInputMonth) {
     // `MatchAttribute::kName` is not fully accurate, since the match was
     // determined based on the form control type. Since the form control type
     // is not a human visible string, name is preferred here.
     expiration_date_ = {
-        &scanner->Cursor(),
+        &scanner.Cursor(),
         {.matched_attribute = MatchInfo::MatchAttribute::kName}};
     expiration_month_.reset();
     expiration_year_.reset();
-    scanner->Advance();
+    scanner.Advance();
     return true;
   }
 
@@ -510,7 +514,7 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   }
 
   // If that fails, do a general regex search.
-  size_t month_year_saved_cursor = scanner->SaveCursor();
+  size_t month_year_saved_cursor = scanner.SaveCursor();
 
   if (ParseField(context, scanner, "CREDIT_CARD_EXP_MONTH",
                  &expiration_month_) &&
@@ -520,7 +524,7 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
 
   // If that fails, look for just MM and/or YY(YY) (or the Spanish/Portuguese
   // MM / AA(AA) version).
-  scanner->RewindTo(month_year_saved_cursor);
+  scanner.RewindTo(month_year_saved_cursor);
 
   const char* year_regex =
       base::FeatureList::IsEnabled(
@@ -535,10 +539,10 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
 
   // If that fails, try to parse a combined expiration field.
   // We allow <select> fields, because they're used e.g. on qvc.com.
-  scanner->RewindTo(month_year_saved_cursor);
+  scanner.RewindTo(month_year_saved_cursor);
 
   // Bail out if the field cannot fit a 2-digit year expiration date.
-  const uint64_t current_field_max_length = scanner->Cursor().max_length();
+  const uint64_t current_field_max_length = scanner.Cursor().max_length();
   if (!FieldCanFitDataForFieldType(current_field_max_length,
                                    CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR))
     return false;

@@ -22,7 +22,7 @@ class AutofillScanner;
 class NameFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
   NameFieldParser(const NameFieldParser&) = delete;
   NameFieldParser& operator=(const NameFieldParser&) = delete;

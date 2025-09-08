@@ -92,7 +92,7 @@ class FormFieldParserTestBase {
 
   // Apply the parsing with a specific parser.
   virtual std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                 AutofillScanner* scanner) = 0;
+                                                 AutofillScanner& scanner) = 0;
 
   FieldRendererId MakeFieldRendererId();
 

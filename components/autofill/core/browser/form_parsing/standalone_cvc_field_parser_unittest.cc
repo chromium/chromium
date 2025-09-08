@@ -20,7 +20,7 @@ class StandaloneCvcFieldParserTest : public FormFieldParserTestBase,
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                         AutofillScanner* scanner) override {
+                                         AutofillScanner& scanner) override {
     return StandaloneCvcFieldParser::Parse(context, scanner);
   }
 

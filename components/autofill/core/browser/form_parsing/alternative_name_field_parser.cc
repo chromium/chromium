@@ -17,7 +17,7 @@ namespace {
 class AlternativeFullNameField : public AlternativeNameFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
   AlternativeFullNameField(const AlternativeFullNameField&) = delete;
   AlternativeFullNameField& operator=(const AlternativeFullNameField&) = delete;
@@ -34,11 +34,11 @@ class AlternativeFullNameField : public AlternativeNameFieldParser {
 // static
 std::unique_ptr<FormFieldParser> AlternativeFullNameField::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   auto v = base::WrapUnique(new AlternativeFullNameField());
-  scanner->SaveCursor();
+  scanner.SaveCursor();
 
-  while (!scanner->IsEnd()) {
+  while (!scanner.IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
     if (ParseField(context, scanner, "ADDRESS_NAME_IGNORED")) {
@@ -55,7 +55,7 @@ std::unique_ptr<FormFieldParser> AlternativeFullNameField::Parse(
     return v;
   }
 
-  scanner->Rewind();
+  scanner.Rewind();
   return nullptr;
 }
 
@@ -70,7 +70,7 @@ void AlternativeFullNameField::AddClassifications(
 class AlternativeFamilyAndGivenNameField : public AlternativeNameFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
   AlternativeFamilyAndGivenNameField(
       const AlternativeFamilyAndGivenNameField&) = delete;
@@ -90,11 +90,11 @@ class AlternativeFamilyAndGivenNameField : public AlternativeNameFieldParser {
 // static
 std::unique_ptr<FormFieldParser> AlternativeFamilyAndGivenNameField::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   auto v = base::WrapUnique(new AlternativeFamilyAndGivenNameField());
-  scanner->SaveCursor();
+  scanner.SaveCursor();
 
-  while (!scanner->IsEnd()) {
+  while (!scanner.IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
     if (ParseField(context, scanner, "ADDRESS_NAME_IGNORED")) {
@@ -117,7 +117,7 @@ std::unique_ptr<FormFieldParser> AlternativeFamilyAndGivenNameField::Parse(
     return v;
   }
 
-  scanner->Rewind();
+  scanner.Rewind();
   return nullptr;
 }
 
@@ -133,8 +133,8 @@ void AlternativeFamilyAndGivenNameField::AddClassifications(
 // static
 std::unique_ptr<FormFieldParser> AlternativeNameFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd()) {
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return nullptr;
   }
 

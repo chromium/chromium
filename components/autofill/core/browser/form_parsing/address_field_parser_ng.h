@@ -53,7 +53,7 @@ class AddressFieldParserNG : public FormFieldParser {
   class FieldTypeInformation;
 
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
   ~AddressFieldParserNG() override;
   AddressFieldParserNG(const AddressFieldParserNG&) = delete;

@@ -91,7 +91,7 @@ void FormFieldParserTestBase::ClassifyAndVerify(
   ParsingContext context(base::ToVector(fields_, &to_form_field_data),
                          client_country, page_language, pattern_file,
                          GetActiveRegexFeatures());
-  std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
+  std::unique_ptr<FormFieldParser> field = Parse(context, scanner);
 
   if (parse_result == ParseResult::kNotParsed) {
     ASSERT_EQ(nullptr, field.get())
@@ -123,7 +123,7 @@ void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
   while (!scanner.IsEnd()) {
     // An empty page_language means the language is unknown and patterns of
     // all languages are used.
-    std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
+    std::unique_ptr<FormFieldParser> field = Parse(context, scanner);
     if (field == nullptr) {
       scanner.Advance();
     } else {

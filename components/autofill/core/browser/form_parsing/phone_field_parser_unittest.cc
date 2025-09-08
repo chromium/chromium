@@ -48,7 +48,7 @@ class PhoneFieldParserTest : public testing::Test {
  protected:
   // Downcast for tests.
   static std::unique_ptr<PhoneFieldParser> Parse(ParsingContext& context,
-                                                 AutofillScanner* scanner) {
+                                                 AutofillScanner& scanner) {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
     std::unique_ptr<FormFieldParser> field =
@@ -143,7 +143,7 @@ void PhoneFieldParserTest::RunParsingTest(
   ParsingContext context(base::ToVector(list_, &to_form_field_data),
                          GeoIpCountryCode(""), LanguageCode(""),
                          *GetActivePatternFile());
-  field_ = Parse(context, &scanner);
+  field_ = Parse(context, scanner);
   ASSERT_EQ(expect_success, field_.get() != nullptr);
 
   // Verify expecations.

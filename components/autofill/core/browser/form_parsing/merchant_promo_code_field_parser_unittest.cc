@@ -22,7 +22,7 @@ class MerchantPromoCodeFieldParserTest : public FormFieldParserTestBase,
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                         AutofillScanner* scanner) override {
+                                         AutofillScanner& scanner) override {
     return MerchantPromoCodeFieldParser::Parse(context, scanner);
   }
 };

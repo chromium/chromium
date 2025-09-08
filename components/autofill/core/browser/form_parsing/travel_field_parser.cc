@@ -19,8 +19,8 @@ TravelFieldParser::~TravelFieldParser() = default;
 // static
 std::unique_ptr<FormFieldParser> TravelFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
-  if (!scanner || scanner->IsEnd()) {
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return nullptr;
   }
 

@@ -20,7 +20,7 @@ class TravelFieldParser : public FormFieldParser {
   ~TravelFieldParser() override;
 
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;

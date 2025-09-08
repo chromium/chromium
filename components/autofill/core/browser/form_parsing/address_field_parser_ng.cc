@@ -306,20 +306,20 @@ AddressFieldParserNG::~AddressFieldParserNG() = default;
 // static
 std::unique_ptr<FormFieldParser> AddressFieldParserNG::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd()) {
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return nullptr;
   }
 
-  size_t saved_cursor = scanner->SaveCursor();
+  size_t saved_cursor = scanner.SaveCursor();
   std::unique_ptr<AddressFieldParserNG> address_field(new AddressFieldParserNG(
       AddressCountryCode(context.client_country.value())));
   address_field->context_ = &context;
-  address_field->scanner_ = scanner;
-  address_field->initial_field_ = &scanner->Cursor();
+  address_field->scanner_ = &scanner;
+  address_field->initial_field_ = &scanner.Cursor();
 
   DVLOG(1) << "Parse recursively starting at " << saved_cursor << " "
-           << scanner->Cursor().label();
+           << scanner.Cursor().label();
 
   address_field->ParseRecursively();
 
@@ -333,12 +333,12 @@ std::unique_ptr<FormFieldParser> AddressFieldParserNG::Parse(
   // found, set the cursor to the last classified field + 1, otherwise return
   // the scanner in the initial state.
   if (!address_field->best_classification_.assignments.empty()) {
-    scanner->RewindTo(
+    scanner.RewindTo(
         address_field->best_classification_.last_classified_field_index);
-    scanner->Advance();
+    scanner.Advance();
     return address_field;
   }
-  scanner->RewindTo(saved_cursor);
+  scanner.RewindTo(saved_cursor);
   return nullptr;
 }
 

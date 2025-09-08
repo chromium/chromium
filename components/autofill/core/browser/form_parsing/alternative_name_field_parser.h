@@ -19,7 +19,7 @@ class AutofillScanner;
 class AlternativeNameFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
   AlternativeNameFieldParser(const AlternativeNameFieldParser&) = delete;
   AlternativeNameFieldParser& operator=(const AlternativeNameFieldParser&) =

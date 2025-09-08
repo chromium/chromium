@@ -42,21 +42,21 @@ MatchParams WithFieldType(MatchParams p, FormControlType field_type) {
 // static
 std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd()) {
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return nullptr;
   }
 
   std::unique_ptr<AddressFieldParser> address_field =
       base::WrapUnique(new AddressFieldParser());
-  const FormFieldData& initial_field = scanner->Cursor();
-  size_t saved_cursor = scanner->SaveCursor();
+  const FormFieldData& initial_field = scanner.Cursor();
+  size_t saved_cursor = scanner.SaveCursor();
 
   // Allow address fields to appear in any order.
   size_t begin_trailing_non_labeled_fields = 0;
   bool has_trailing_non_labeled_fields = false;
-  while (!scanner->IsEnd()) {
-    const size_t cursor = scanner->SaveCursor();
+  while (!scanner.IsEnd()) {
+    const size_t cursor = scanner.SaveCursor();
     // Ignore "Address Lookup" field. http://crbug.com/427622
     if (ParseField(context, scanner, "ADDRESS_LOOKUP") ||
         ParseField(context, scanner, "ADDRESS_NAME_IGNORED")) {
@@ -78,7 +78,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
       // * Attention.
       // * Province/Region/Other.
       continue;
-    } else if (&scanner->Cursor() != &initial_field &&
+    } else if (&scanner.Cursor() != &initial_field &&
                ParseEmptyLabel(context, scanner, nullptr)) {
       // Ignore non-labeled fields within an address; the page
       // MapQuest Driving Directions North America.html contains such a field.
@@ -116,11 +116,11 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
       address_field->street_location_ || address_field->house_number_and_apt_) {
     // Don't slurp non-labeled fields at the end into the address.
     if (has_trailing_non_labeled_fields)
-      scanner->RewindTo(begin_trailing_non_labeled_fields);
+      scanner.RewindTo(begin_trailing_non_labeled_fields);
     return std::move(address_field);
   }
 
-  scanner->RewindTo(saved_cursor);
+  scanner.RewindTo(saved_cursor);
   return nullptr;
 }
 
@@ -134,13 +134,13 @@ bool AddressFieldParser::IsStandaloneZipSupported(
 // static
 std::unique_ptr<FormFieldParser> AddressFieldParser::ParseStandaloneZip(
     ParsingContext& context,
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd()) {
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return nullptr;
   }
 
   std::unique_ptr<AddressFieldParser> address_field(new AddressFieldParser());
-  size_t saved_cursor = scanner->SaveCursor();
+  size_t saved_cursor = scanner.SaveCursor();
 
   address_field->ParseZipCode(context, scanner);
   if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
@@ -150,7 +150,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::ParseStandaloneZip(
     return std::move(address_field);
   }
 
-  scanner->RewindTo(saved_cursor);
+  scanner.RewindTo(saved_cursor);
   return nullptr;
 }
 
@@ -220,7 +220,7 @@ void AddressFieldParser::AddClassifications(
 }
 
 bool AddressFieldParser::ParseCompany(ParsingContext& context,
-                                      AutofillScanner* scanner) {
+                                      AutofillScanner& scanner) {
   if (company_)
     return false;
 
@@ -228,7 +228,7 @@ bool AddressFieldParser::ParseCompany(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
-                                                   AutofillScanner* scanner) {
+                                                   AutofillScanner& scanner) {
   // Search for an uninterrupted sequence of fields that indicate that a form
   // asks for structured information.
   //
@@ -257,7 +257,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   //
   // Only if a house number and one of the extra fields are found in an
   // arbitrary order the parsing is considered successful.
-  const size_t saved_cursor_position = scanner->CursorPosition();
+  const size_t saved_cursor_position = scanner.CursorPosition();
 
   std::optional<FieldAndMatchInfo> old_street_location = street_location_;
   std::optional<FieldAndMatchInfo> old_street_name = street_name_;
@@ -282,7 +282,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
 
   AddressCountryCode country_code(context.client_country.value());
 
-  while (!scanner->IsEnd()) {
+  while (!scanner.IsEnd()) {
     // We look for street location before street name, because the name/label of
     // a street location typically contains strings that match the regular
     // expressions for a street name as well.
@@ -354,7 +354,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   // This is a safety mechanism: If no field was classified, we do not want to
   // return true, because the caller assumes that the cursor position moved.
   // Otherwise, we could end up in an infinite loop.
-  if (scanner->CursorPosition() == saved_cursor_position) {
+  if (scanner.CursorPosition() == saved_cursor_position) {
     return false;
   }
 
@@ -379,12 +379,12 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   dependent_locality_ = old_dependent_locality;
   landmark_ = old_landmark;
 
-  scanner->RewindTo(saved_cursor_position);
+  scanner.RewindTo(saved_cursor_position);
   return false;
 }
 
 bool AddressFieldParser::ParseAddress(ParsingContext& context,
-                                      AutofillScanner* scanner) {
+                                      AutofillScanner& scanner) {
   // The following if-statements ensure in particular that we don't try to parse
   // a form as an address-line 1, 2, 3 form because we have collected enough
   // evidence that the current form is a structured form. If structured form
@@ -407,7 +407,7 @@ bool AddressFieldParser::ParseAddress(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
-                                           AutofillScanner* scanner) {
+                                           AutofillScanner& scanner) {
   // We only match the string "address" in page text, not in element names,
   // because sometimes every element in a group of address fields will have
   // a name containing the string "address"; for example, on the page
@@ -457,7 +457,7 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
 
 bool AddressFieldParser::ParseHouseNumAptNumStreetNameSequence(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   // TODO(crbug.com/383972664) Extend to other countries where prioritizing
   // house number is beneficial.
   // Currently, we only support this sequence in NL.
@@ -470,7 +470,7 @@ bool AddressFieldParser::ParseHouseNumAptNumStreetNameSequence(
     return false;
   }
 
-  const size_t saved_cursor_position = scanner->CursorPosition();
+  const size_t saved_cursor_position = scanner.CursorPosition();
 
   std::optional<FieldAndMatchInfo> old_street_name = street_name_;
   std::optional<FieldAndMatchInfo> old_house_number = house_number_;
@@ -497,12 +497,12 @@ bool AddressFieldParser::ParseHouseNumAptNumStreetNameSequence(
   house_number_ = old_house_number;
   apartment_number_ = old_apartment_number;
 
-  scanner->RewindTo(saved_cursor_position);
+  scanner.RewindTo(saved_cursor_position);
   return false;
 }
 
 bool AddressFieldParser::ParseZipCode(ParsingContext& context,
-                                      AutofillScanner* scanner) {
+                                      AutofillScanner& scanner) {
   if (zip_)
     return false;
 
@@ -521,7 +521,7 @@ bool AddressFieldParser::ParseZipCode(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseZipCodeSuffix(ParsingContext& context,
-                                            AutofillScanner* scanner) {
+                                            AutofillScanner& scanner) {
   if (!zip_ || zip_suffix_) {
     return false;
   }
@@ -530,7 +530,7 @@ bool AddressFieldParser::ParseZipCodeSuffix(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseCity(ParsingContext& context,
-                                   AutofillScanner* scanner) {
+                                   AutofillScanner& scanner) {
   if (city_)
     return false;
 
@@ -538,7 +538,7 @@ bool AddressFieldParser::ParseCity(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseState(ParsingContext& context,
-                                    AutofillScanner* scanner) {
+                                    AutofillScanner& scanner) {
   if (state_)
     return false;
 
@@ -546,7 +546,7 @@ bool AddressFieldParser::ParseState(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseStreetLocation(ParsingContext& context,
-                                             AutofillScanner* scanner) {
+                                             AutofillScanner& scanner) {
   if (street_location_) {
     return false;
   }
@@ -568,7 +568,7 @@ bool AddressFieldParser::ParseStreetLocation(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseDependentLocality(ParsingContext& context,
-                                                AutofillScanner* scanner) {
+                                                AutofillScanner& scanner) {
   if (dependent_locality_) {
     return false;
   }
@@ -583,7 +583,7 @@ bool AddressFieldParser::ParseDependentLocality(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseLandmark(ParsingContext& context,
-                                       AutofillScanner* scanner) {
+                                       AutofillScanner& scanner) {
   if (landmark_) {
     return false;
   }
@@ -598,7 +598,7 @@ bool AddressFieldParser::ParseLandmark(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseStreetName(ParsingContext& context,
-                                         AutofillScanner* scanner) {
+                                         AutofillScanner& scanner) {
   if (street_name_) {
     return false;
   }
@@ -608,7 +608,7 @@ bool AddressFieldParser::ParseStreetName(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseHouseNumber(ParsingContext& context,
-                                          AutofillScanner* scanner) {
+                                          AutofillScanner& scanner) {
   if (house_number_) {
     return false;
   }
@@ -618,7 +618,7 @@ bool AddressFieldParser::ParseHouseNumber(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseApartmentNumber(ParsingContext& context,
-                                              AutofillScanner* scanner) {
+                                              AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   if (apartment_number_ || !i18n_model_definition::IsTypeEnabledForCountry(
                                ADDRESS_HOME_APT_NUM, country_code)) {
@@ -631,7 +631,7 @@ bool AddressFieldParser::ParseApartmentNumber(ParsingContext& context,
 
 bool AddressFieldParser::ParseBetweenStreetsOrLandmark(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   if (between_streets_or_landmark_ ||
       !i18n_model_definition::IsTypeEnabledForCountry(
@@ -644,7 +644,7 @@ bool AddressFieldParser::ParseBetweenStreetsOrLandmark(
 }
 
 bool AddressFieldParser::ParseOverflowAndLandmark(ParsingContext& context,
-                                                  AutofillScanner* scanner) {
+                                                  AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   if (overflow_and_landmark_ ||
       !i18n_model_definition::IsTypeEnabledForCountry(
@@ -657,7 +657,7 @@ bool AddressFieldParser::ParseOverflowAndLandmark(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseOverflow(ParsingContext& context,
-                                       AutofillScanner* scanner) {
+                                       AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   if (overflow_ || !i18n_model_definition::IsTypeEnabledForCountry(
                        ADDRESS_HOME_OVERFLOW, country_code)) {
@@ -668,7 +668,7 @@ bool AddressFieldParser::ParseOverflow(ParsingContext& context,
 }
 
 bool AddressFieldParser::ParseBetweenStreetsFields(ParsingContext& context,
-                                                   AutofillScanner* scanner) {
+                                                   AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   if (!i18n_model_definition::IsTypeEnabledForCountry(
           ADDRESS_HOME_BETWEEN_STREETS, country_code)) {
@@ -699,19 +699,20 @@ bool AddressFieldParser::ParseBetweenStreetsFields(ParsingContext& context,
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelSeparately(
     ParsingContext& context,
-    AutofillScanner* scanner,
+    AutofillScanner& scanner,
     const char* regex_name,
     std::optional<FieldAndMatchInfo>* match) {
-  if (scanner->IsEnd())
+  if (scanner.IsEnd()) {
     return RESULT_MATCH_NONE;
+  }
 
   std::optional<FieldAndMatchInfo> cur_match;
-  size_t saved_cursor = scanner->SaveCursor();
+  size_t saved_cursor = scanner.SaveCursor();
   bool parsed_name = ParseField(
       context, scanner, regex_name, &cur_match, [](const MatchParams& p) {
         return WithoutAttribute(p, MatchAttribute::kLabel);
       });
-  scanner->RewindTo(saved_cursor);
+  scanner.RewindTo(saved_cursor);
   bool parsed_label = ParseField(
       context, scanner, regex_name, &cur_match, [](const MatchParams& p) {
         return WithoutAttribute(p, MatchAttribute::kName);
@@ -727,7 +728,7 @@ AddressFieldParser::ParseNameAndLabelSeparately(
     return RESULT_MATCH_NAME_LABEL;
   }
 
-  scanner->RewindTo(saved_cursor);
+  scanner.RewindTo(saved_cursor);
   if (parsed_name)
     return RESULT_MATCH_NAME;
   if (parsed_label)
@@ -736,10 +737,11 @@ AddressFieldParser::ParseNameAndLabelSeparately(
 }
 
 bool AddressFieldParser::ParseAddressField(ParsingContext& context,
-                                           AutofillScanner* scanner) {
+                                           AutofillScanner& scanner) {
   // The |scanner| is not pointing at a field.
-  if (scanner->IsEnd())
+  if (scanner.IsEnd()) {
     return false;
+  }
 
   // Check for matches to both the name and the label.
   ParseNameLabelResult dependent_locality_result =
@@ -978,7 +980,7 @@ bool AddressFieldParser::ParseAddressField(ParsingContext& context,
 
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForZipCode(ParsingContext& context,
-                                                AutofillScanner* scanner) {
+                                                AutofillScanner& scanner) {
   if (zip_) {
     return RESULT_MATCH_NONE;
   }
@@ -988,23 +990,23 @@ AddressFieldParser::ParseNameAndLabelForZipCode(ParsingContext& context,
 
   // If kAutofillSupportSplitZipCode is enabled,
   // ParseNameAndLabelForZipCodeSuffix takes care of the zip code suffix.
-  if (result != RESULT_MATCH_NAME_LABEL || scanner->IsEnd() ||
+  if (result != RESULT_MATCH_NAME_LABEL || scanner.IsEnd() ||
       base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
     return result;
   }
 
-  size_t saved_cursor = scanner->SaveCursor();
+  size_t saved_cursor = scanner.SaveCursor();
   bool found_non_zip_suffix = ParseCity(context, scanner);
   if (found_non_zip_suffix) {
     city_.reset();
   }
-  scanner->RewindTo(saved_cursor);
+  scanner.RewindTo(saved_cursor);
   if (!found_non_zip_suffix) {
     found_non_zip_suffix = ParseState(context, scanner);
     if (found_non_zip_suffix) {
       state_.reset();
     }
-    scanner->RewindTo(saved_cursor);
+    scanner.RewindTo(saved_cursor);
   }
 
   if (!found_non_zip_suffix) {
@@ -1018,7 +1020,7 @@ AddressFieldParser::ParseNameAndLabelForZipCode(ParsingContext& context,
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForZipCodeSuffix(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   if (!zip_ || zip_suffix_) {
     return RESULT_MATCH_NONE;
   }
@@ -1033,10 +1035,10 @@ AddressFieldParser::ParseNameAndLabelForZipCodeSuffix(
   // At this point either the name or the label matched the ZIP_4 regex but not
   // both.
   std::optional<FieldAndMatchInfo> zip;
-  size_t saved_cursor = scanner->SaveCursor();
+  size_t saved_cursor = scanner.SaveCursor();
   ParseNameLabelResult result_extended =
       ParseNameAndLabelSeparately(context, scanner, "ZIP_CODE", &zip);
-  scanner->RewindTo(saved_cursor);
+  scanner.RewindTo(saved_cursor);
 
   // If at least one field attribute matched the ZIP_4 regex and both the label
   // and name matched the ZIP_CODE regex, there is a high chance that this is a
@@ -1051,7 +1053,7 @@ AddressFieldParser::ParseNameAndLabelForZipCodeSuffix(
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForDependentLocality(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   if (dependent_locality_) {
     return RESULT_MATCH_NONE;
   }
@@ -1069,7 +1071,7 @@ AddressFieldParser::ParseNameAndLabelForDependentLocality(
 
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForCity(ParsingContext& context,
-                                             AutofillScanner* scanner) {
+                                             AutofillScanner& scanner) {
   if (city_)
     return RESULT_MATCH_NONE;
 
@@ -1078,7 +1080,7 @@ AddressFieldParser::ParseNameAndLabelForCity(ParsingContext& context,
 
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForState(ParsingContext& context,
-                                              AutofillScanner* scanner) {
+                                              AutofillScanner& scanner) {
   if (state_)
     return RESULT_MATCH_NONE;
 
@@ -1087,7 +1089,7 @@ AddressFieldParser::ParseNameAndLabelForState(ParsingContext& context,
 
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForCountry(ParsingContext& context,
-                                                AutofillScanner* scanner) {
+                                                AutofillScanner& scanner) {
   if (country_)
     return RESULT_MATCH_NONE;
 
@@ -1105,7 +1107,7 @@ AddressFieldParser::ParseNameAndLabelForCountry(ParsingContext& context,
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForBetweenStreetsOrLandmark(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   if (between_streets_or_landmark_ || landmark_ || between_streets_ ||
       between_streets_line_1_ || between_streets_line_2_ ||
@@ -1124,7 +1126,7 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreetsOrLandmark(
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForOverflowAndLandmark(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   //  TODO(crbug.com/40266693) Remove feature check when launched.
   if (overflow_and_landmark_ || overflow_ ||
@@ -1140,7 +1142,7 @@ AddressFieldParser::ParseNameAndLabelForOverflowAndLandmark(
 
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForOverflow(ParsingContext& context,
-                                                 AutofillScanner* scanner) {
+                                                 AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
   if (overflow_and_landmark_ || overflow_ ||
@@ -1154,7 +1156,7 @@ AddressFieldParser::ParseNameAndLabelForOverflow(ParsingContext& context,
 
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForLandmark(ParsingContext& context,
-                                                 AutofillScanner* scanner) {
+                                                 AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
   if (landmark_ || !i18n_model_definition::IsTypeEnabledForCountry(
@@ -1168,7 +1170,7 @@ AddressFieldParser::ParseNameAndLabelForLandmark(ParsingContext& context,
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForStreetLocation(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   if (street_location_ || context.client_country != GeoIpCountryCode("IN") ||
       !base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
@@ -1181,7 +1183,7 @@ AddressFieldParser::ParseNameAndLabelForStreetLocation(
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForBetweenStreets(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
   if (between_streets_ || between_streets_line_1_ ||
@@ -1197,7 +1199,7 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreets(
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForBetweenStreetsLines12(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
   if (between_streets_line_2_ ||
@@ -1219,7 +1221,7 @@ AddressFieldParser::ParseNameAndLabelForBetweenStreetsLines12(
 
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelForAdminLevel2(ParsingContext& context,
-                                                    AutofillScanner* scanner) {
+                                                    AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   // TODO(crbug.com/40266693) Remove feature check when launched.
   if (admin_level2_ || !i18n_model_definition::IsTypeEnabledForCountry(
@@ -1232,7 +1234,7 @@ AddressFieldParser::ParseNameAndLabelForAdminLevel2(ParsingContext& context,
 }
 
 bool AddressFieldParser::SetFieldAndAdvanceCursor(
-    AutofillScanner* scanner,
+    AutofillScanner& scanner,
     ParseNameLabelResult parse_result,
     std::optional<FormFieldParser::FieldAndMatchInfo>* match) {
   auto match_attribute_of = [](ParseNameLabelResult parse_result) {
@@ -1250,15 +1252,15 @@ bool AddressFieldParser::SetFieldAndAdvanceCursor(
         return MatchInfo::MatchAttribute::kName;
     }
   };
-  *match = {&scanner->Cursor(),
+  *match = {&scanner.Cursor(),
             {.matched_attribute = match_attribute_of(parse_result)}};
-  scanner->Advance();
+  scanner.Advance();
   return true;
 }
 
 bool AddressFieldParser::ParseFieldSpecificsForHouseNumberAndApt(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   AddressCountryCode country_code(context.client_country.value());
   if (house_number_and_apt_ || house_number_ || apartment_number_ ||
       !i18n_model_definition::IsTypeEnabledForCountry(

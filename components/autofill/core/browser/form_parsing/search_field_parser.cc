@@ -14,7 +14,7 @@ namespace autofill {
 // static
 std::unique_ptr<FormFieldParser> SearchFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   std::optional<FieldAndMatchInfo> match;
   if (ParseField(context, scanner, "SEARCH_TERM", &match)) {
     return std::make_unique<SearchFieldParser>(std::move(*match));

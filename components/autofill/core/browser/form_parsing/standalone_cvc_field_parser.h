@@ -20,7 +20,7 @@ class AutofillScanner;
 class StandaloneCvcFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
   explicit StandaloneCvcFieldParser(FieldAndMatchInfo match);
 
@@ -36,7 +36,7 @@ class StandaloneCvcFieldParser : public FormFieldParser {
   FieldAndMatchInfo match_;
 
   // static
-  static bool MatchGiftCard(ParsingContext& context, AutofillScanner* scanner);
+  static bool MatchGiftCard(ParsingContext& context, AutofillScanner& scanner);
 };
 
 }  // namespace autofill

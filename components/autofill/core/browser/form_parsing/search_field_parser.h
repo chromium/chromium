@@ -23,7 +23,7 @@ class AutofillScanner;
 class SearchFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
   explicit SearchFieldParser(FieldAndMatchInfo match);
 
   SearchFieldParser(const SearchFieldParser&) = delete;

@@ -98,7 +98,7 @@ class FormFieldParserTest : public FormFieldParserTestBase,
   // This function is unused in these unit tests, because FormFieldParser is not
   // a parser itself, but the infrastructure combining them.
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                         AutofillScanner* scanner) override {
+                                         AutofillScanner& scanner) override {
     return nullptr;
   }
 };
@@ -346,9 +346,9 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   // Checks if `matching_ids` of the `scanner`'s current position is true.
   // This is used to simulate different parsers, as described by
   // `testcase.field_matches_parser`.
-  auto Matches = [](AutofillScanner* scanner,
+  auto Matches = [](AutofillScanner& scanner,
                     const std::vector<bool>& matching_ids) -> bool {
-    return matching_ids[scanner->Cursor().max_length()];
+    return matching_ids[scanner.Cursor().max_length()];
   };
 
   // Must outlive `scanner`.
@@ -364,13 +364,13 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   CHECK_LE(n, 3u) << "If a test case has size > 3, add a `callbackN` variable "
                      "below and add it to `callbacks`";
   auto callback0 = [&]() {
-    return Matches(&scanner, testcase.field_matches_parser[0]);
+    return Matches(scanner, testcase.field_matches_parser[0]);
   };
   auto callback1 = [&]() {
-    return Matches(&scanner, testcase.field_matches_parser[1]);
+    return Matches(scanner, testcase.field_matches_parser[1]);
   };
   auto callback2 = [&]() {
-    return Matches(&scanner, testcase.field_matches_parser[2]);
+    return Matches(scanner, testcase.field_matches_parser[2]);
   };
   auto callbacks = std::to_array<base::FunctionRef<bool()>>(
       {callback0, callback1, callback2});
@@ -383,7 +383,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   }
 
   EXPECT_EQ(
-      FormFieldParserTestApi::ParseInAnyOrder(&scanner, fields_and_parsers),
+      FormFieldParserTestApi::ParseInAnyOrder(scanner, fields_and_parsers),
       expect_success);
 
   if (expect_success) {
