@@ -2555,6 +2555,35 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Actor.Ui.HandoffButton.GiveControl.Clicked">
+  <owner>chrstne@google.com</owner>
+  <owner>kenok@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when the user clicks the Handoff Button when in an actuating tab to
+    give control from the client to the actor.
+  </description>
+</action>
+
+<action name="Actor.Ui.HandoffButton.TakeControl.Clicked">
+  <owner>chrstne@google.com</owner>
+  <owner>kenok@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when the user clicks the Handoff Button when in an actuating tab to
+    take control from the actor to the client.
+  </description>
+</action>
+
+<action name="Actor.Ui.TaskIcon.Click">
+  <owner>chrstne@google.com</owner>
+  <owner>kenok@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when the user clicks the Task Icon during/after actuation.
+  </description>
+</action>
+
 <action name="AddAddressManually_AddressSaved">
   <owner>sinhasourav@google.com</owner>
   <owner>bling-transactions@google.com</owner>

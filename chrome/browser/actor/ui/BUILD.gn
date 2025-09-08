@@ -26,6 +26,8 @@ source_set("ui") {
     "actor_overlay_view_controller.h",
     "actor_overlay_window_controller.cc",
     "actor_overlay_window_controller.h",
+    "actor_ui_metrics.cc",
+    "actor_ui_metrics.h",
     "actor_ui_state_manager.cc",
     "actor_ui_state_manager.h",
     "actor_ui_state_manager_interface.h",

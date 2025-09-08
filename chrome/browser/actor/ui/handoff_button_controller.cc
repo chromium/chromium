@@ -8,6 +8,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -320,6 +321,7 @@ void HandoffButtonController::OnButtonPressed() {
   } else {
     GetTabController()->SetActorTaskResume();
   }
+  actor::ui::LogHandoffButtonClick(ownership_);
 }
 
 void HandoffButtonController::UpdateBounds() {

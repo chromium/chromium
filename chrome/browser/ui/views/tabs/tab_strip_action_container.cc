@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -591,6 +592,8 @@ void TabStripActionContainer::OnGlicActorTaskIconClicked() {
       tab_strip_model->ActivateTabAt(tab_index);
     }
   }
+
+  actor::ui::LogTaskIconClick();
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)

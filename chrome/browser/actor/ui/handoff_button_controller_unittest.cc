@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -28,6 +29,11 @@ using ::testing::_;
 using ::ui::EventTimeForNow;
 using ::ui::EventType;
 using ::ui::MouseEvent;
+
+constexpr char kActorUiHandoffButtonTakeControlClickedHistogram[] =
+    "Actor.Ui.HandoffButton.TakeControl.Clicked";
+constexpr char kActorUiHandoffButtonGiveControlClickedHistogram[] =
+    "Actor.Ui.HandoffButton.GiveControl.Clicked";
 
 class TestHandoffButtonController : public HandoffButtonController {
  public:
@@ -128,6 +134,7 @@ class HandoffButtonControllerTest : public views::ViewsTestBase {
   MockBrowserWindowInterface mock_browser_window_interface_;
   std::unique_ptr<TestHandoffButtonController> controller_;
   std::optional<MockActorUiTabController> mock_actor_ui_tab_controller_;
+  base::UserActionTester user_action_tester_;
 };
 
 TEST_F(HandoffButtonControllerTest,
@@ -173,7 +180,7 @@ TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
 }
 
 TEST_F(HandoffButtonControllerTest,
-       CallSetActorTaskPausedWhenActorHasControlOnButtonPressed) {
+       CallSetActorTaskPausedAndLogMetricsWhenActorHasControlOnButtonPressed) {
   HandoffButtonState actor_state;
   actor_state.is_active = true;
   actor_state.controller = kActor;
@@ -182,10 +189,16 @@ TEST_F(HandoffButtonControllerTest,
   EXPECT_CALL(*mock_actor_ui_tab_controller(), SetActorTaskPaused());
 
   controller_->PressButton();
+
+  // Check that the correct user action was recorded
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   kActorUiHandoffButtonTakeControlClickedHistogram));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   kActorUiHandoffButtonGiveControlClickedHistogram));
 }
 
 TEST_F(HandoffButtonControllerTest,
-       CallSetActorTaskResumeWhenClientHasControlOnButtonPressed) {
+       CallSetActorTaskResumeAndLogMetricsWhenClientHasControlOnButtonPressed) {
   HandoffButtonState client_state;
   client_state.is_active = true;
   client_state.controller = kClient;
@@ -194,6 +207,12 @@ TEST_F(HandoffButtonControllerTest,
   EXPECT_CALL(*mock_actor_ui_tab_controller(), SetActorTaskResume());
 
   controller_->PressButton();
+
+  // Check that the correct user action was recorded
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   kActorUiHandoffButtonGiveControlClickedHistogram));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   kActorUiHandoffButtonTakeControlClickedHistogram));
 }
 
 TEST_F(HandoffButtonControllerTest,
