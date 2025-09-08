@@ -7,18 +7,9 @@
 #include <string>
 
 #include "base/android/device_info.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge_interface.h"
-#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
 
 namespace password_manager_android_util {
 
@@ -31,47 +22,6 @@ bool HasMinGmsVersionForFullUpmSupport() {
   // have legacy values "3(...)" and those evaluate > "2023(...)".
   return base::StringToInt(gms_version_str, &gms_version) &&
          gms_version >= password_manager::GetSplitStoresUpmMinVersion();
-}
-
-// Called on startup to delete the login data files.
-void DeleteLoginDataFiles(const base::FilePath& login_db_directory) {
-  base::FilePath profile_db_path =
-      login_db_directory.Append(password_manager::kLoginDataForProfileFileName);
-  base::FilePath account_db_path =
-      login_db_directory.Append(password_manager::kLoginDataForAccountFileName);
-  base::FilePath profile_db_journal_path = login_db_directory.Append(
-      password_manager::kLoginDataJournalForProfileFileName);
-  base::FilePath account_db_journal_path = login_db_directory.Append(
-      password_manager::kLoginDataJournalForAccountFileName);
-
-  if (PathExists(profile_db_path)) {
-    bool success = base::DeleteFile(profile_db_path);
-    base::UmaHistogramBoolean("PasswordManager.ProfileLoginData.RemovalStatus",
-                              success);
-  }
-  base::DeleteFile(profile_db_journal_path);
-
-  if (PathExists(account_db_path)) {
-    bool success = base::DeleteFile(account_db_path);
-    base::UmaHistogramBoolean("PasswordManager.AccountLoginData.RemovalStatus",
-                              success);
-  }
-  base::DeleteFile(account_db_journal_path);
-}
-
-void DeleteAutoExportedCsv(PrefService* prefs,
-                           const base::FilePath& login_db_directory) {
-  base::FilePath csv_path =
-      login_db_directory.Append(FILE_PATH_LITERAL(kExportedPasswordsFileName));
-  if (base::PathExists(csv_path)) {
-    bool success = base::DeleteFile(csv_path);
-    if (success) {
-      prefs->SetBoolean(password_manager::prefs::kUpmAutoExportCsvNeedsDeletion,
-                        false);
-    }
-    base::UmaHistogramBoolean(
-        "PasswordManager.UPM.AutoExportedCsvStartupDeletionSuccess", success);
-  }
 }
 
 }  // namespace
@@ -91,17 +41,6 @@ bool IsPasswordManagerAvailable(bool is_internal_backend_present) {
   }
 
   return true;
-}
-
-void MaybeDeleteLoginDatabases(
-    PrefService* pref_service,
-    const base::FilePath& login_db_directory,
-    std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge) {
-  DeleteLoginDataFiles(login_db_directory);
-  if (pref_service->GetBoolean(
-          password_manager::prefs::kUpmAutoExportCsvNeedsDeletion)) {
-    DeleteAutoExportedCsv(pref_service, login_db_directory);
-  }
 }
 
 }  // namespace password_manager_android_util

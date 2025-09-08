@@ -129,12 +129,6 @@ inline constexpr char kLocalPasswordHashDataList[] =
 // in a row. The counter resets when the user applies password generation.
 inline constexpr char kPasswordGenerationBottomSheetDismissCount[] =
     "password_generation_bottom_sheet_dismiss_count";
-
-// Whether the auto-exported CSV should be deleted. Normally, it's deleted
-// immediately after export, but if that fails, this pref is used as a signal
-// that deletion should be retried.
-inline constexpr char kUpmAutoExportCsvNeedsDeletion[] =
-    "profile.upm_auto_export_csv_needs_deletion";
 #endif
 
 #if BUILDFLAG(IS_WIN)

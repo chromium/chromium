@@ -21,12 +21,10 @@ import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwm_disabled.PwmDeprecationDialogsMetricsRecorder.DownloadCsvDialogType;
 import org.chromium.chrome.browser.pwm_disabled.PwmDeprecationDialogsMetricsRecorder.DownloadCsvFlowStep;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.widget.Toast;
 
 import java.io.File;
@@ -177,11 +175,8 @@ public class PasswordCsvDownloadFlowController {
     }
 
     private void deleteOriginalFile(Uri fileUri) {
-        File file = new File(assumeNonNull(fileUri.getPath()));
-        if (!file.delete()) {
-            // The deletion will be re-attempted later.
-            UserPrefs.get(mProfile).setBoolean(Pref.UPM_AUTO_EXPORT_CSV_NEEDS_DELETION, true);
-        }
+        // If deletion fails, it will be re-attempted when the user downloads again.
+        new File(assumeNonNull(fileUri.getPath())).delete();
         endFlow();
     }
 

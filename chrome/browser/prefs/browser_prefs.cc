@@ -9,6 +9,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/android_buildflags.h"
@@ -264,8 +266,6 @@
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
 #include "chrome/browser/partnerbookmarks/partner_bookmarks_shim.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
-#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/readaloud/android/prefs.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
@@ -1151,6 +1151,8 @@ constexpr char kObsoletePasswordsUseUPMLocalAndSeparateStores[] =
     "passwords_use_upm_local_and_separate_stores";
 constexpr char kObsoleteEmptyProfileStoreLoginDatabase[] =
     "password_manager.empty_profile_store_login_database";
+constexpr char kObsoleteUpmAutoExportCsvNeedsDeletion[] =
+    "profile.upm_auto_export_csv_needs_deletion";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1665,6 +1667,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kObsoletePasswordsUseUPMLocalAndSeparateStores,
                                 0);
   registry->RegisterBooleanPref(kObsoleteEmptyProfileStoreLoginDatabase, false);
+  registry->RegisterBooleanPref(kObsoleteUpmAutoExportCsvNeedsDeletion, false);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -2652,16 +2655,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   MigrateDefaultBrowserLastDeclinedPref(profile_prefs);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  // Added 11/2023, but DO NOT REMOVE after the usual year!
-  // TODO(crbug.com/378653046): This call should be removed once enough time
-  // has passed.
-  password_manager_android_util::MaybeDeleteLoginDatabases(
-      profile_prefs, profile_path,
-      std::make_unique<
-          password_manager_android_util::PasswordManagerUtilBridge>());
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
   // Added 07/2024.
   profile_prefs->ClearPref(kNtpRecipesDismissedTasks);
@@ -3016,6 +3009,14 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kObsoleteUpmUnmigratedPasswordsExported);
   profile_prefs->ClearPref(kObsoletePasswordsUseUPMLocalAndSeparateStores);
   profile_prefs->ClearPref(kObsoleteEmptyProfileStoreLoginDatabase);
+  profile_prefs->ClearPref(kObsoleteUpmAutoExportCsvNeedsDeletion);
+  base::DeleteFile(profile_path.Append(FILE_PATH_LITERAL("Login Data")));
+  base::DeleteFile(
+      profile_path.Append(FILE_PATH_LITERAL("Login Data For Account")));
+  base::DeleteFile(
+      profile_path.Append(FILE_PATH_LITERAL("Login Data-journal")));
+  base::DeleteFile(
+      profile_path.Append(FILE_PATH_LITERAL("Login Data For Account-journal")));
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

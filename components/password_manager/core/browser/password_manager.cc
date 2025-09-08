@@ -571,7 +571,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kUPMErrorUIShownTimestamp, "0");
   registry->RegisterIntegerPref(
       prefs::kPasswordGenerationBottomSheetDismissCount, 0);
-  registry->RegisterBooleanPref(prefs::kUpmAutoExportCsvNeedsDeletion, false);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

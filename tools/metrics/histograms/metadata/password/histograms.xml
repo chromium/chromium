@@ -4329,18 +4329,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>Why was the update password UI (bubble or infobar) closed?</summary>
 </histogram>
 
-<histogram name="PasswordManager.UPM.AutoExportedCsvStartupDeletionSuccess"
-    enum="BooleanSuccess" expires_after="2025-10-12">
-  <owner>ioanap@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    If there is an auto-exported CSV that hasn't been deleted immediately after
-    the user downlaoded it (e.g. because the deletion failed), the deletion is
-    re-attempted at startup. This histogram is recorded after that deletion
-    attempt and records whether the attempt was successful or not. Android only.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.UPM.NoGmsNoPasswordsDialogShown"
     enum="BooleanShown" expires_after="2026-02-22">
   <owner>ioanap@chromium.org</owner>
@@ -4513,20 +4501,6 @@ useful for Chirp alerts (go/crca-alerts). -->
         summary="on webpage after selecting a suggestion to fill"/>
     <variant name="Settings"
         summary="in settings when trying to show/copy/edit/export passwords"/>
-  </token>
-</histogram>
-
-<histogram name="PasswordManager.{Scope}LoginData.RemovalStatus"
-    enum="BooleanSuccess" expires_after="2026-01-11">
-  <owner>izuzic@google.com</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Records whether deleting the {Scope} login data file succeeded. Recorded
-    when the removal operation is finished. Android only.
-  </summary>
-  <token key="Scope">
-    <variant name="Account" summary="account-scoped"/>
-    <variant name="Profile" summary="profile-scoped"/>
   </token>
 </histogram>
 

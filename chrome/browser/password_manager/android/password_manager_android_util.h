@@ -6,20 +6,10 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 
 #include <memory>
-#include <string_view>
 
 #include "chrome/browser/password_manager/android/password_manager_util_bridge_interface.h"
 
-class PrefService;
-
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace password_manager_android_util {
-
-inline constexpr std::string_view kExportedPasswordsFileName =
-    "ChromePasswords.csv";
 
 // Checks whether the password manager can be used on Android.
 // The criteria are:
@@ -31,12 +21,6 @@ bool IsPasswordManagerAvailable(
 // As above, except the caller already knows whether the internal backend
 // is present, probably because the call originates in Java.
 bool IsPasswordManagerAvailable(bool is_internal_backend_present);
-
-// The login database is deprecated on Android. This function deletes the data.
-void MaybeDeleteLoginDatabases(
-    PrefService* pref_service,
-    const base::FilePath& login_db_directory,
-    std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge);
 
 }  // namespace password_manager_android_util
 
