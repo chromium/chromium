@@ -42,7 +42,9 @@
 class GURL;
 class PrefRegistrySimple;
 class Profile;
-class PushMessagingAppIdentifier;
+namespace push_messaging {
+class AppIdentifier;
+}  // namespace push_messaging
 class PushMessagingServiceTest;
 class FCMRevocationTest;
 class ScopedKeepAlive;
@@ -189,7 +191,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // whereas |new_subscription| can be either null e.g. when a subscription is
   // lost due to permission changes or a new subscription when it was refreshed.
   void FirePushSubscriptionChangeForAppIdentifier(
-      const PushMessagingAppIdentifier& app_identifier,
+      const push_messaging::AppIdentifier& app_identifier,
       base::OnceClosure completed_closure,
       blink::mojom::PushSubscriptionPtr new_subscription,
       blink::mojom::PushSubscriptionPtr old_subscription);
@@ -207,7 +209,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   void OnOldSubscriptionExpired(const std::string& app_id,
                                 const std::string& sender_id) override;
   void OnRefreshFinished(
-      const PushMessagingAppIdentifier& app_identifier) override;
+      const push_messaging::AppIdentifier& app_identifier) override;
 
   // Sets a callback that can be used to listen for service worker
   // subscription events.
@@ -278,7 +280,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   // Subscribe methods ---------------------------------------------------------
 
-  void DoSubscribe(PushMessagingAppIdentifier app_identifier,
+  void DoSubscribe(push_messaging::AppIdentifier app_identifier,
                    blink::mojom::PushSubscriptionOptionsPtr options,
                    RegisterCallback callback,
                    int render_process_id,
@@ -296,14 +298,14 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   void SubscribeEndWithError(RegisterCallback callback,
                              blink::mojom::PushRegistrationStatus status);
 
-  void DidSubscribe(const PushMessagingAppIdentifier& app_identifier,
+  void DidSubscribe(const push_messaging::AppIdentifier& app_identifier,
                     const std::string& sender_id,
                     RegisterCallback callback,
                     const std::string& subscription_id,
                     instance_id::InstanceID::Result result);
 
   void DidSubscribeWithEncryptionInfo(
-      const PushMessagingAppIdentifier& app_identifier,
+      const push_messaging::AppIdentifier& app_identifier,
       RegisterCallback callback,
       const std::string& subscription_id,
       const GURL& endpoint,
@@ -353,11 +355,11 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // OnContentSettingChanged methods -------------------------------------------
 
   void GetPushSubscriptionFromAppIdentifier(
-      const PushMessagingAppIdentifier& app_identifier,
+      const push_messaging::AppIdentifier& app_identifier,
       base::OnceCallback<void(blink::mojom::PushSubscriptionPtr)> callback);
 
   void DidGetSWData(
-      const PushMessagingAppIdentifier& app_identifier,
+      const push_messaging::AppIdentifier& app_identifier,
       base::OnceCallback<void(blink::mojom::PushSubscriptionPtr)> callback,
       const std::string& sender_id,
       const std::string& subscription_id);
@@ -373,18 +375,18 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   // OnSubscriptionInvalidation methods-----------------------------------------
 
-  void GetOldSubscription(PushMessagingAppIdentifier old_app_identifier,
+  void GetOldSubscription(push_messaging::AppIdentifier old_app_identifier,
                           const std::string& sender_id);
 
   // After gathering all relavent information to start the refresh,
   // generate a new app id and initiate refresh
-  void StartRefresh(PushMessagingAppIdentifier old_app_identifier,
+  void StartRefresh(push_messaging::AppIdentifier old_app_identifier,
                     const std::string& sender_id,
                     blink::mojom::PushSubscriptionPtr old_subscription);
 
   // Makes a new susbcription and replaces the old subscription by new
   // subscription in preferences and service worker database
-  void UpdateSubscription(PushMessagingAppIdentifier app_identifier,
+  void UpdateSubscription(push_messaging::AppIdentifier app_identifier,
                           blink::mojom::PushSubscriptionOptionsPtr options,
                           RegisterCallback callback);
 
@@ -420,16 +422,17 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // The subscription given in |identifier| will be unsubscribed (and a
   // `pushsubscriptionchange` event fires if
   // features::kPushSubscriptionChangeEvent is enabled)
-  void UnexpectedChange(PushMessagingAppIdentifier identifier,
+  void UnexpectedChange(push_messaging::AppIdentifier identifier,
                         blink::mojom::PushUnregistrationReason reason,
                         base::OnceClosure completed_closure);
 
-  void UnexpectedUnsubscribe(const PushMessagingAppIdentifier& app_identifier,
-                             blink::mojom::PushUnregistrationReason reason,
-                             UnregisterCallback unregister_callback);
+  void UnexpectedUnsubscribe(
+      const push_messaging::AppIdentifier& app_identifier,
+      blink::mojom::PushUnregistrationReason reason,
+      UnregisterCallback unregister_callback);
 
   void DidGetSenderIdUnexpectedUnsubscribe(
-      const PushMessagingAppIdentifier& app_identifier,
+      const push_messaging::AppIdentifier& app_identifier,
       blink::mojom::PushUnregistrationReason reason,
       UnregisterCallback callback,
       const std::string& sender_id);

@@ -895,11 +895,11 @@ class ServiceWorkerPushMessagingTest : public ServiceWorkerTest {
         profile(), url.DeprecatedGetOriginAsURL(), CONTENT_SETTING_ALLOW);
   }
 
-  PushMessagingAppIdentifier GetAppIdentifierForServiceWorkerRegistration(
+  push_messaging::AppIdentifier GetAppIdentifierForServiceWorkerRegistration(
       int64_t service_worker_registration_id,
       const GURL& origin) {
-    PushMessagingAppIdentifier app_identifier =
-        PushMessagingAppIdentifier::FindByServiceWorker(
+    push_messaging::AppIdentifier app_identifier =
+        push_messaging::AppIdentifier::FindByServiceWorker(
             profile(), origin, service_worker_registration_id);
 
     EXPECT_FALSE(app_identifier.is_null());
@@ -1914,7 +1914,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPushMessagingTest, OnPush) {
   EXPECT_TRUE(content::ExecJs(web_contents->GetPrimaryMainFrame(), kScript));
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL, extension_url);
   ASSERT_EQ(app_identifier.app_id(), gcm_driver()->last_gettoken_app_id());
   EXPECT_EQ("1234567890", gcm_driver()->last_gettoken_authorized_entity());

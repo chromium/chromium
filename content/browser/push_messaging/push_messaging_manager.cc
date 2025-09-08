@@ -754,8 +754,8 @@ void PushMessagingManager::GetSubscriptionDidGetInfo(
 
     // Uh-oh! Although there was a cached subscription in the Service Worker
     // database, it did not have matching counterparts in the
-    // PushMessagingAppIdentifier map and/or GCM Store. Unsubscribe to fix this
-    // inconsistency.
+    // push_messaging::AppIdentifier map and/or GCM Store. Unsubscribe to fix
+    // this inconsistency.
     blink::mojom::PushGetRegistrationStatus status =
         blink::mojom::PushGetRegistrationStatus::STORAGE_CORRUPT;
 

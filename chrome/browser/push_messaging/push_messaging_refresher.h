@@ -34,7 +34,7 @@ class PushMessagingRefresher {
   size_t GetCount() const;
 
   // Register a new refresh pair with relevant information.
-  void Refresh(PushMessagingAppIdentifier old_app_identifier,
+  void Refresh(push_messaging::AppIdentifier old_app_identifier,
                const std::string& new_app_id,
                const std::string& sender_id);
 
@@ -53,7 +53,7 @@ class PushMessagingRefresher {
 
   // If a subscription was refreshed, we accept the old subscription for
   // a moment after refresh
-  std::optional<PushMessagingAppIdentifier> FindActiveAppIdentifier(
+  std::optional<push_messaging::AppIdentifier> FindActiveAppIdentifier(
       const std::string& app_id);
 
   base::WeakPtr<PushMessagingRefresher> GetWeakPtr();
@@ -64,7 +64,7 @@ class PushMessagingRefresher {
     virtual void OnOldSubscriptionExpired(const std::string& app_id,
                                           const std::string& sender_id) = 0;
     virtual void OnRefreshFinished(
-        const PushMessagingAppIdentifier& app_identifier) = 0;
+        const push_messaging::AppIdentifier& app_identifier) = 0;
   };
 
   void AddObserver(Observer* observer);
@@ -74,7 +74,7 @@ class PushMessagingRefresher {
   // A RefreshObject carries subscription information that is needed to receive
   // messages and to unsubscribe from the old subscription
   struct RefreshObject {
-    PushMessagingAppIdentifier old_identifier;
+    push_messaging::AppIdentifier old_identifier;
     std::string sender_id;
     bool is_valid;
   };

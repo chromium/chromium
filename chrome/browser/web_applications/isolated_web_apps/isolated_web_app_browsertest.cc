@@ -1134,7 +1134,7 @@ class IsolatedWebAppBrowserServiceWorkerPushTest
 
   void SendMessageAndWaitUntilHandled(
       content::BrowserContext* context,
-      const PushMessagingAppIdentifier& app_identifier,
+      const push_messaging::AppIdentifier& app_identifier,
       const gcm::IncomingMessage& message) {
     PushMessagingServiceImpl* push_service =
         PushMessagingServiceFactory::GetForProfile(context);
@@ -1161,10 +1161,10 @@ class IsolatedWebAppBrowserServiceWorkerPushTest
     run_loop.Run();
   }
 
-  PushMessagingAppIdentifier GetAppIdentifierForServiceWorkerRegistration(
+  push_messaging::AppIdentifier GetAppIdentifierForServiceWorkerRegistration(
       int64_t service_worker_registration_id) {
-    PushMessagingAppIdentifier app_identifier =
-        PushMessagingAppIdentifier::FindByServiceWorker(
+    push_messaging::AppIdentifier app_identifier =
+        push_messaging::AppIdentifier::FindByServiceWorker(
             browser()->profile(), app_url(), service_worker_registration_id);
     return app_identifier;
   }
@@ -1234,7 +1234,7 @@ var kApplicationServerKey = new Uint8Array([
                 push_messaging_endpoint_substr == kPushMessagingStagingGcmEndpoint);
   }
 
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
   EXPECT_FALSE(app_identifier.is_null());
 

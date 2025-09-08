@@ -13,8 +13,8 @@
 
 namespace {
 
-void ExpectAppIdentifiersEqual(const PushMessagingAppIdentifier& a,
-                               const PushMessagingAppIdentifier& b) {
+void ExpectAppIdentifiersEqual(const push_messaging::AppIdentifier& a,
+                               const push_messaging::AppIdentifier& b) {
   EXPECT_EQ(a.app_id(), b.app_id());
   EXPECT_EQ(a.origin(), b.origin());
   EXPECT_EQ(a.service_worker_registration_id(),
@@ -27,44 +27,46 @@ base::Time kExpirationTime =
 
 }  // namespace
 
+namespace push_messaging {
+
 class PushMessagingAppIdentifierTest : public testing::Test {
  protected:
-  PushMessagingAppIdentifier GenerateId(
+  push_messaging::AppIdentifier GenerateId(
       const GURL& origin,
       int64_t service_worker_registration_id) {
-    // To bypass DCHECK in PushMessagingAppIdentifier::Generate, we just use it
-    // to generate app_id, and then use private constructor.
-    std::string app_id = PushMessagingAppIdentifier::Generate(
+    // To bypass DCHECK in push_messaging::AppIdentifier::Generate, we just use
+    // it to generate app_id, and then use private constructor.
+    std::string app_id = push_messaging::AppIdentifier::Generate(
                              GURL("https://www.example.com/"), 1)
                              .app_id();
-    return PushMessagingAppIdentifier(app_id, origin,
-                                      service_worker_registration_id);
+    return push_messaging::AppIdentifier(app_id, origin,
+                                         service_worker_registration_id);
   }
 
   void SetUp() override {
-    original_ = PushMessagingAppIdentifier::Generate(
+    original_ = push_messaging::AppIdentifier::Generate(
         GURL("https://www.example.com/"), 1);
-    same_origin_and_sw_ = PushMessagingAppIdentifier::Generate(
+    same_origin_and_sw_ = push_messaging::AppIdentifier::Generate(
         GURL("https://www.example.com"), 1);
-    different_origin_ = PushMessagingAppIdentifier::Generate(
+    different_origin_ = push_messaging::AppIdentifier::Generate(
         GURL("https://foobar.example.com/"), 1);
-    different_sw_ = PushMessagingAppIdentifier::Generate(
+    different_sw_ = push_messaging::AppIdentifier::Generate(
         GURL("https://www.example.com/"), 42);
-    with_et_ = PushMessagingAppIdentifier::Generate(
+    with_et_ = push_messaging::AppIdentifier::Generate(
         GURL("https://www.example.com/"), 1, kExpirationTime);
-    different_et_ = PushMessagingAppIdentifier::Generate(
+    different_et_ = push_messaging::AppIdentifier::Generate(
         GURL("https://www.example.com/"), 1,
         kExpirationTime + base::Seconds(100));
   }
 
   Profile* profile() { return &profile_; }
 
-  PushMessagingAppIdentifier original_;
-  PushMessagingAppIdentifier same_origin_and_sw_;
-  PushMessagingAppIdentifier different_origin_;
-  PushMessagingAppIdentifier different_sw_;
-  PushMessagingAppIdentifier different_et_;
-  PushMessagingAppIdentifier with_et_;
+  push_messaging::AppIdentifier original_;
+  push_messaging::AppIdentifier same_origin_and_sw_;
+  push_messaging::AppIdentifier different_origin_;
+  push_messaging::AppIdentifier different_sw_;
+  push_messaging::AppIdentifier different_et_;
+  push_messaging::AppIdentifier with_et_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -85,27 +87,29 @@ TEST_F(PushMessagingAppIdentifierTest, ConstructorValidity) {
 }
 
 TEST_F(PushMessagingAppIdentifierTest, UniqueGuids) {
-  EXPECT_NE(
-      PushMessagingAppIdentifier::Generate(GURL("https://www.example.com/"), 1)
-          .app_id(),
-      PushMessagingAppIdentifier::Generate(GURL("https://www.example.com/"), 1)
-          .app_id());
+  EXPECT_NE(push_messaging::AppIdentifier::Generate(
+                GURL("https://www.example.com/"), 1)
+                .app_id(),
+            push_messaging::AppIdentifier::Generate(
+                GURL("https://www.example.com/"), 1)
+                .app_id());
 }
 
 TEST_F(PushMessagingAppIdentifierTest, FindInvalidAppId) {
   // These calls to FindByAppId should not DCHECK.
-  EXPECT_TRUE(PushMessagingAppIdentifier::FindByAppId(profile(), "").is_null());
-  EXPECT_TRUE(PushMessagingAppIdentifier::FindByAppId(
+  EXPECT_TRUE(
+      push_messaging::AppIdentifier::FindByAppId(profile(), "").is_null());
+  EXPECT_TRUE(push_messaging::AppIdentifier::FindByAppId(
                   profile(), "amhfneadkjmnlefnpidcijoldiibcdnd")
                   .is_null());
 }
 
 TEST_F(PushMessagingAppIdentifierTest, PersistAndFind) {
   ASSERT_TRUE(
-      PushMessagingAppIdentifier::FindByAppId(profile(), original_.app_id())
+      push_messaging::AppIdentifier::FindByAppId(profile(), original_.app_id())
           .is_null());
 
-  const auto identifier = PushMessagingAppIdentifier::FindByServiceWorker(
+  const auto identifier = push_messaging::AppIdentifier::FindByServiceWorker(
       profile(), original_.origin(),
       original_.service_worker_registration_id());
 
@@ -114,14 +118,15 @@ TEST_F(PushMessagingAppIdentifierTest, PersistAndFind) {
   // Test basic PersistToPrefs round trips.
   original_.PersistToPrefs(profile());
   {
-    PushMessagingAppIdentifier found_by_app_id =
-        PushMessagingAppIdentifier::FindByAppId(profile(), original_.app_id());
+    push_messaging::AppIdentifier found_by_app_id =
+        push_messaging::AppIdentifier::FindByAppId(profile(),
+                                                   original_.app_id());
     EXPECT_FALSE(found_by_app_id.is_null());
     ExpectAppIdentifiersEqual(original_, found_by_app_id);
   }
   {
-    PushMessagingAppIdentifier found_by_origin_and_swr_id =
-        PushMessagingAppIdentifier::FindByServiceWorker(
+    push_messaging::AppIdentifier found_by_origin_and_swr_id =
+        push_messaging::AppIdentifier::FindByServiceWorker(
             profile(), original_.origin(),
             original_.service_worker_registration_id());
     EXPECT_FALSE(found_by_origin_and_swr_id.is_null());
@@ -131,10 +136,11 @@ TEST_F(PushMessagingAppIdentifierTest, PersistAndFind) {
 
 TEST_F(PushMessagingAppIdentifierTest, FindLegacy) {
   const std::string legacy_app_id("wp:9CC55CCE-B8F9-4092-A364-3B0F73A3AB5F");
-  ASSERT_TRUE(PushMessagingAppIdentifier::FindByAppId(profile(), legacy_app_id)
-                  .is_null());
+  ASSERT_TRUE(
+      push_messaging::AppIdentifier::FindByAppId(profile(), legacy_app_id)
+          .is_null());
 
-  const auto identifier = PushMessagingAppIdentifier::FindByServiceWorker(
+  const auto identifier = push_messaging::AppIdentifier::FindByServiceWorker(
       profile(), original_.origin(),
       original_.service_worker_registration_id());
 
@@ -148,14 +154,15 @@ TEST_F(PushMessagingAppIdentifierTest, FindLegacy) {
 
   // Test that legacy entries can be read back from prefs.
   {
-    PushMessagingAppIdentifier found_by_app_id =
-        PushMessagingAppIdentifier::FindByAppId(profile(), original_.app_id());
+    push_messaging::AppIdentifier found_by_app_id =
+        push_messaging::AppIdentifier::FindByAppId(profile(),
+                                                   original_.app_id());
     EXPECT_FALSE(found_by_app_id.is_null());
     ExpectAppIdentifiersEqual(original_, found_by_app_id);
   }
   {
-    PushMessagingAppIdentifier found_by_origin_and_swr_id =
-        PushMessagingAppIdentifier::FindByServiceWorker(
+    push_messaging::AppIdentifier found_by_origin_and_swr_id =
+        push_messaging::AppIdentifier::FindByServiceWorker(
             profile(), original_.origin(),
             original_.service_worker_registration_id());
     EXPECT_FALSE(found_by_origin_and_swr_id.is_null());
@@ -173,20 +180,21 @@ TEST_F(PushMessagingAppIdentifierTest, PersistOverwritesSameOriginAndSW) {
             same_origin_and_sw_.service_worker_registration_id());
   same_origin_and_sw_.PersistToPrefs(profile());
   {
-    PushMessagingAppIdentifier found_by_original_app_id =
-        PushMessagingAppIdentifier::FindByAppId(profile(), original_.app_id());
+    push_messaging::AppIdentifier found_by_original_app_id =
+        push_messaging::AppIdentifier::FindByAppId(profile(),
+                                                   original_.app_id());
     EXPECT_TRUE(found_by_original_app_id.is_null());
   }
   {
-    PushMessagingAppIdentifier found_by_soas_app_id =
-        PushMessagingAppIdentifier::FindByAppId(profile(),
-                                                same_origin_and_sw_.app_id());
+    push_messaging::AppIdentifier found_by_soas_app_id =
+        push_messaging::AppIdentifier::FindByAppId(
+            profile(), same_origin_and_sw_.app_id());
     EXPECT_FALSE(found_by_soas_app_id.is_null());
     ExpectAppIdentifiersEqual(same_origin_and_sw_, found_by_soas_app_id);
   }
   {
-    PushMessagingAppIdentifier found_by_original_origin_and_swr_id =
-        PushMessagingAppIdentifier::FindByServiceWorker(
+    push_messaging::AppIdentifier found_by_original_origin_and_swr_id =
+        push_messaging::AppIdentifier::FindByServiceWorker(
             profile(), original_.origin(),
             original_.service_worker_registration_id());
     EXPECT_FALSE(found_by_original_origin_and_swr_id.is_null());
@@ -204,14 +212,15 @@ TEST_F(PushMessagingAppIdentifierTest, PersistDoesNotOverwriteDifferent) {
   different_origin_.PersistToPrefs(profile());
   different_sw_.PersistToPrefs(profile());
   {
-    PushMessagingAppIdentifier found_by_original_app_id =
-        PushMessagingAppIdentifier::FindByAppId(profile(), original_.app_id());
+    push_messaging::AppIdentifier found_by_original_app_id =
+        push_messaging::AppIdentifier::FindByAppId(profile(),
+                                                   original_.app_id());
     EXPECT_FALSE(found_by_original_app_id.is_null());
     ExpectAppIdentifiersEqual(original_, found_by_original_app_id);
   }
   {
-    PushMessagingAppIdentifier found_by_original_origin_and_swr_id =
-        PushMessagingAppIdentifier::FindByServiceWorker(
+    push_messaging::AppIdentifier found_by_original_origin_and_swr_id =
+        push_messaging::AppIdentifier::FindByServiceWorker(
             profile(), original_.origin(),
             original_.service_worker_registration_id());
     EXPECT_FALSE(found_by_original_origin_and_swr_id.is_null());
@@ -227,13 +236,14 @@ TEST_F(PushMessagingAppIdentifierTest, DeleteFromPrefs) {
   // Test DeleteFromPrefs. Deleted app identifier should be deleted.
   original_.DeleteFromPrefs(profile());
   {
-    PushMessagingAppIdentifier found_by_original_app_id =
-        PushMessagingAppIdentifier::FindByAppId(profile(), original_.app_id());
+    push_messaging::AppIdentifier found_by_original_app_id =
+        push_messaging::AppIdentifier::FindByAppId(profile(),
+                                                   original_.app_id());
     EXPECT_TRUE(found_by_original_app_id.is_null());
   }
   {
-    PushMessagingAppIdentifier found_by_original_origin_and_swr_id =
-        PushMessagingAppIdentifier::FindByServiceWorker(
+    push_messaging::AppIdentifier found_by_original_origin_and_swr_id =
+        push_messaging::AppIdentifier::FindByServiceWorker(
             profile(), original_.origin(),
             original_.service_worker_registration_id());
     EXPECT_TRUE(found_by_original_origin_and_swr_id.is_null());
@@ -248,13 +258,14 @@ TEST_F(PushMessagingAppIdentifierTest, GetAll) {
   original_.DeleteFromPrefs(profile());
 
   // Test GetAll. Non-deleted app identifiers should all be listed.
-  std::vector<PushMessagingAppIdentifier> all_app_identifiers =
-      PushMessagingAppIdentifier::GetAll(profile());
+  std::vector<push_messaging::AppIdentifier> all_app_identifiers =
+      push_messaging::AppIdentifier::GetAll(profile());
   EXPECT_EQ(2u, all_app_identifiers.size());
   // Order is unspecified.
   bool contained_different_origin = false;
   bool contained_different_sw = false;
-  for (const PushMessagingAppIdentifier& app_identifier : all_app_identifiers) {
+  for (const push_messaging::AppIdentifier& app_identifier :
+       all_app_identifiers) {
     if (app_identifier.app_id() == different_origin_.app_id()) {
       ExpectAppIdentifiersEqual(different_origin_, app_identifier);
       contained_different_origin = true;
@@ -279,32 +290,35 @@ TEST_F(PushMessagingAppIdentifierTest, PersistWithExpirationTime) {
 
   // Test PersistToPrefs and FindByAppId, whether expiration time is saved
   // properly
-  std::vector<PushMessagingAppIdentifier> all_app_identifiers =
-      PushMessagingAppIdentifier::GetAll(profile());
+  std::vector<push_messaging::AppIdentifier> all_app_identifiers =
+      push_messaging::AppIdentifier::GetAll(profile());
   EXPECT_EQ(1u, all_app_identifiers.size());
   {
-    PushMessagingAppIdentifier found_by_app_id =
-        PushMessagingAppIdentifier::FindByAppId(profile(),
-                                                different_et_.app_id());
+    push_messaging::AppIdentifier found_by_app_id =
+        push_messaging::AppIdentifier::FindByAppId(profile(),
+                                                   different_et_.app_id());
     // Check whether expiration time was saved
     ExpectAppIdentifiersEqual(found_by_app_id, different_et_);
   }
   with_et_.PersistToPrefs(profile());
   {
-    all_app_identifiers = PushMessagingAppIdentifier::GetAll(profile());
+    all_app_identifiers = push_messaging::AppIdentifier::GetAll(profile());
     EXPECT_EQ(1u, all_app_identifiers.size());
   }
   {
-    PushMessagingAppIdentifier found_by_with_et_app_id =
-        PushMessagingAppIdentifier::FindByAppId(profile(), with_et_.app_id());
+    push_messaging::AppIdentifier found_by_with_et_app_id =
+        push_messaging::AppIdentifier::FindByAppId(profile(),
+                                                   with_et_.app_id());
     EXPECT_FALSE(found_by_with_et_app_id.is_null());
     EXPECT_EQ(found_by_with_et_app_id.expiration_time(), kExpirationTime);
     ExpectAppIdentifiersEqual(found_by_with_et_app_id, with_et_);
   }
   {
-    PushMessagingAppIdentifier found_by_different_et_app_id =
-        PushMessagingAppIdentifier::FindByAppId(profile(),
-                                                different_et_.app_id());
+    push_messaging::AppIdentifier found_by_different_et_app_id =
+        push_messaging::AppIdentifier::FindByAppId(profile(),
+                                                   different_et_.app_id());
     EXPECT_TRUE(found_by_different_et_app_id.is_null());
   }
 }
+
+}  // namespace push_messaging

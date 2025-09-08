@@ -2059,7 +2059,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ProfileImpl::RegisterProfilePrefs(registry);
   ProfileNetworkContextService::RegisterProfilePrefs(registry);
   custom_handlers::ProtocolHandlerRegistry::RegisterProfilePrefs(registry);
-  PushMessagingAppIdentifier::RegisterProfilePrefs(registry);
+  push_messaging::AppIdentifier::RegisterProfilePrefs(registry);
   PushMessagingUnsubscribedEntry::RegisterProfilePrefs(registry);
   QuietNotificationPermissionUiState::RegisterProfilePrefs(registry);
   regional_capabilities::prefs::RegisterProfilePrefs(registry);

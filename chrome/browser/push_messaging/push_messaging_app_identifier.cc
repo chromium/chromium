@@ -19,13 +19,19 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
-constexpr char kPushMessagingAppIdentifierPrefix[] = "wp:";
+namespace push_messaging {
+
+constexpr char kAppIdentifierPrefix[] = "wp:";
+
+}  // namespace push_messaging
+
 constexpr char kInstanceIDGuidSuffix[] = "-V2";
 
 namespace {
 
 // sizeof is strlen + 1 since it's null-terminated.
-constexpr size_t kPrefixLength = sizeof(kPushMessagingAppIdentifierPrefix) - 1;
+constexpr size_t kPrefixLength =
+    sizeof(push_messaging::kAppIdentifierPrefix) - 1;
 constexpr size_t kGuidSuffixLength = sizeof(kInstanceIDGuidSuffix) - 1;
 
 // Ok to use '#' as separator since only the origin of the url is used.
@@ -86,8 +92,10 @@ bool DisassemblePrefValue(const std::string& pref_value,
 
 }  // namespace
 
+namespace push_messaging {
+
 // static
-void PushMessagingAppIdentifier::RegisterProfilePrefs(
+void AppIdentifier::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // TODO(johnme): If push becomes enabled in incognito, be careful that this
   // pref is read from the right profile, as prefs defined in a regular profile
@@ -97,13 +105,13 @@ void PushMessagingAppIdentifier::RegisterProfilePrefs(
 }
 
 // static
-bool PushMessagingAppIdentifier::UseInstanceID(const std::string& app_id) {
+bool AppIdentifier::UseInstanceID(const std::string& app_id) {
   return base::EndsWith(app_id, kInstanceIDGuidSuffix,
                         base::CompareCase::SENSITIVE);
 }
 
 // static
-PushMessagingAppIdentifier PushMessagingAppIdentifier::Generate(
+AppIdentifier AppIdentifier::Generate(
     const GURL& origin,
     int64_t service_worker_registration_id,
     const std::optional<base::Time>& expiration_time) {
@@ -113,7 +121,7 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::Generate(
 }
 
 // static
-PushMessagingAppIdentifier PushMessagingAppIdentifier::LegacyGenerateForTesting(
+AppIdentifier AppIdentifier::LegacyGenerateForTesting(
     const GURL& origin,
     int64_t service_worker_registration_id,
     const std::optional<base::Time>& expiration_time) {
@@ -122,7 +130,7 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::LegacyGenerateForTesting(
 }
 
 // static
-PushMessagingAppIdentifier PushMessagingAppIdentifier::GenerateInternal(
+AppIdentifier AppIdentifier::GenerateInternal(
     const GURL& origin,
     int64_t service_worker_registration_id,
     bool use_instance_id,
@@ -136,26 +144,26 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::GenerateInternal(
                  kInstanceIDGuidSuffix);
   }
   CHECK(!guid.empty());
-  std::string app_id = kPushMessagingAppIdentifierPrefix + origin.spec() +
-                       kPrefValueSeparator + guid;
+  std::string app_id =
+      kAppIdentifierPrefix + origin.spec() + kPrefValueSeparator + guid;
 
-  PushMessagingAppIdentifier app_identifier(
-      app_id, origin, service_worker_registration_id, expiration_time);
+  AppIdentifier app_identifier(app_id, origin, service_worker_registration_id,
+                               expiration_time);
   app_identifier.DCheckValid();
   return app_identifier;
 }
 
 // static
-PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByAppId(
-    Profile* profile, const std::string& app_id) {
-  if (!base::StartsWith(app_id, kPushMessagingAppIdentifierPrefix,
+AppIdentifier AppIdentifier::FindByAppId(Profile* profile,
+                                         const std::string& app_id) {
+  if (!base::StartsWith(app_id, kAppIdentifierPrefix,
                         base::CompareCase::INSENSITIVE_ASCII)) {
-    return PushMessagingAppIdentifier();
+    return AppIdentifier();
   }
 
   // Since we now know this is a Push Messaging app_id, check the case hasn't
   // been mangled (crbug.com/461867).
-  DCHECK_EQ(kPushMessagingAppIdentifierPrefix, app_id.substr(0, kPrefixLength));
+  DCHECK_EQ(kAppIdentifierPrefix, app_id.substr(0, kPrefixLength));
   DCHECK_GE(app_id.size(), kPrefixLength + kGuidLength);
   DCHECK_EQ(app_id.substr(app_id.size() - kGuidLength),
             base::ToUpperASCII(app_id.substr(app_id.size() - kGuidLength)));
@@ -166,7 +174,7 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByAppId(
   const std::string* map_value = map.FindString(app_id);
 
   if (!map_value || map_value->empty())
-    return PushMessagingAppIdentifier();
+    return AppIdentifier();
 
   GURL origin;
   int64_t service_worker_registration_id;
@@ -179,14 +187,14 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByAppId(
     NOTREACHED();
   }
 
-  PushMessagingAppIdentifier app_identifier(
-      app_id, origin, service_worker_registration_id, expiration_time);
+  AppIdentifier app_identifier(app_id, origin, service_worker_registration_id,
+                               expiration_time);
   app_identifier.DCheckValid();
   return app_identifier;
 }
 
 // static
-PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByServiceWorker(
+AppIdentifier AppIdentifier::FindByServiceWorker(
     Profile* profile,
     const GURL& origin,
     int64_t service_worker_registration_id) {
@@ -202,13 +210,12 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByServiceWorker(
       return FindByAppId(profile, entry.first);
     }
   }
-  return PushMessagingAppIdentifier();
+  return AppIdentifier();
 }
 
 // static
-std::vector<PushMessagingAppIdentifier> PushMessagingAppIdentifier::GetAll(
-    Profile* profile) {
-  std::vector<PushMessagingAppIdentifier> result;
+std::vector<AppIdentifier> AppIdentifier::GetAll(Profile* profile) {
+  std::vector<AppIdentifier> result;
 
   const base::Value::Dict& map =
       profile->GetPrefs()->GetDict(prefs::kPushMessagingAppIdentifierMap);
@@ -220,41 +227,39 @@ std::vector<PushMessagingAppIdentifier> PushMessagingAppIdentifier::GetAll(
 }
 
 // static
-void PushMessagingAppIdentifier::DeleteAllFromPrefs(Profile* profile) {
+void AppIdentifier::DeleteAllFromPrefs(Profile* profile) {
   profile->GetPrefs()->SetDict(prefs::kPushMessagingAppIdentifierMap,
                                base::Value::Dict());
 }
 
 // static
-size_t PushMessagingAppIdentifier::GetCount(Profile* profile) {
+size_t AppIdentifier::GetCount(Profile* profile) {
   return profile->GetPrefs()
       ->GetDict(prefs::kPushMessagingAppIdentifierMap)
       .size();
 }
 
-PushMessagingAppIdentifier::PushMessagingAppIdentifier(
-    const PushMessagingAppIdentifier& other) = default;
+AppIdentifier::AppIdentifier(const AppIdentifier& other) = default;
 
-PushMessagingAppIdentifier::PushMessagingAppIdentifier()
-    : origin_(GURL()), service_worker_registration_id_(-1) {}
+AppIdentifier::AppIdentifier()
+    : service_worker_registration_id_(-1) {}
 
-PushMessagingAppIdentifier::PushMessagingAppIdentifier(
-    const std::string& app_id,
-    const GURL& origin,
-    int64_t service_worker_registration_id,
-    const std::optional<base::Time>& expiration_time)
+AppIdentifier::AppIdentifier(const std::string& app_id,
+                             const GURL& origin,
+                             int64_t service_worker_registration_id,
+                             const std::optional<base::Time>& expiration_time)
     : app_id_(app_id),
       origin_(origin),
       service_worker_registration_id_(service_worker_registration_id),
       expiration_time_(expiration_time) {}
 
-PushMessagingAppIdentifier::~PushMessagingAppIdentifier() = default;
+AppIdentifier::~AppIdentifier() = default;
 
-bool PushMessagingAppIdentifier::IsExpired() const {
+bool AppIdentifier::IsExpired() const {
   return (expiration_time_) ? *expiration_time_ < base::Time::Now() : false;
 }
 
-void PushMessagingAppIdentifier::PersistToPrefs(Profile* profile) const {
+void AppIdentifier::PersistToPrefs(Profile* profile) const {
   DCheckValid();
 
   ScopedDictPrefUpdate update(profile->GetPrefs(),
@@ -263,7 +268,7 @@ void PushMessagingAppIdentifier::PersistToPrefs(Profile* profile) const {
 
   // Delete any stale entry with the same origin and Service Worker
   // registration id (hence we ensure there is a 1:1 not 1:many mapping).
-  PushMessagingAppIdentifier old =
+  AppIdentifier old =
       FindByServiceWorker(profile, origin_, service_worker_registration_id_);
   if (!old.is_null())
     map.Remove(old.app_id_);
@@ -272,7 +277,7 @@ void PushMessagingAppIdentifier::PersistToPrefs(Profile* profile) const {
                                  expiration_time_));
 }
 
-void PushMessagingAppIdentifier::DeleteFromPrefs(Profile* profile) const {
+void AppIdentifier::DeleteFromPrefs(Profile* profile) const {
   DCheckValid();
 
   ScopedDictPrefUpdate update(profile->GetPrefs(),
@@ -281,7 +286,7 @@ void PushMessagingAppIdentifier::DeleteFromPrefs(Profile* profile) const {
   map.Remove(app_id_);
 }
 
-void PushMessagingAppIdentifier::DCheckValid() const {
+void AppIdentifier::DCheckValid() const {
 #if DCHECK_IS_ON()
   DCHECK_GE(service_worker_registration_id_, 0);
 
@@ -289,8 +294,7 @@ void PushMessagingAppIdentifier::DCheckValid() const {
   DCHECK_EQ(origin_.DeprecatedGetOriginAsURL(), origin_);
 
   // "wp:"
-  DCHECK_EQ(kPushMessagingAppIdentifierPrefix,
-            app_id_.substr(0, kPrefixLength));
+  DCHECK_EQ(kAppIdentifierPrefix, app_id_.substr(0, kPrefixLength));
 
   // Optional (origin.spec() + '#')
   if (app_id_.size() != kPrefixLength + kGuidLength) {
@@ -317,3 +321,5 @@ void PushMessagingAppIdentifier::DCheckValid() const {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
 #endif  // DCHECK_IS_ON()
 }
+
+}  // namespace push_messaging
