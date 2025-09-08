@@ -325,9 +325,8 @@ net::Error IpProtectionProxyDelegate::OnTunnelHeadersReceived(
       }
       continue;
     }
-    // TODO(crbug.com/435524190): We can enforce that the value is a string
-    // type once all proxy B providers adhere to the spec for this.
-    if (name == "rcode" && (item.is_token() || item.is_string())) {
+
+    if (name == "rcode" && item.is_string()) {
       const std::string& rcode_val = item.GetString();
       if (rcode_val == "NXDOMAIN" || rcode_val == "NODATA") {
         rcode_is_nxdomain_or_nodata = true;

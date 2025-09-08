@@ -1697,30 +1697,6 @@ TEST_F(IpProtectionProxyDelegateTest,
               IsError(net::ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION));
 }
 
-// TODO(crbug.com/435524190): Can remove this test once we remove the
-// corresponding logic in `OnTunnelHeadersReceived()`.
-TEST_F(
-    IpProtectionProxyDelegateTest,
-    OnTunnelHeadersReceivedReturnsTunnelConnectionFailedForDnsNxdomainToken) {
-  auto masked_domain_list_manager = CreateMdlManager({});
-  auto ipp_core =
-      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
-  auto delegate = CreateDelegate(ipp_core.get());
-  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
-  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-      net::HttpUtil::AssembleRawHeaders(
-          "HTTP/1.1 502 Bad Gateway\nProxy-Status: proxy; "
-          "error=dns_error;rcode=NXDOMAIN\n"));
-
-  // An NXDOMAIN rcode should not trigger fallback even if the value is a token
-  // instead of a string (by returning OK so that the standard proxy fallback
-  // logic is used).
-  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers,
-                                                base::DoNothing()),
-              IsError(net::ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION));
-}
-
 TEST_F(IpProtectionProxyDelegateTest,
        OnTunnelHeadersReceivedReturnsTunnelConnectionFailedForDnsNodata) {
   auto masked_domain_list_manager = CreateMdlManager({});
