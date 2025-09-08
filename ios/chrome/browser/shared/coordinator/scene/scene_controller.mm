@@ -683,15 +683,27 @@ void OnListFamilyMembersResponse(
   UserActivityBrowserAgent* userActivityBrowserAgent =
       UserActivityBrowserAgent::FromBrowser(self.currentInterface.browser);
 
-  NSSet<UIOpenURLContext*>* contexts =
-      self.sceneState.connectionOptions.URLContexts;
+  NSMutableSet<UIOpenURLContext*>* contexts =
+      [NSMutableSet setWithSet:self.sceneState.connectionOptions.URLContexts];
+  [contexts unionSet:self.sceneState.URLContextsToOpen];
+  self.sceneState.URLContextsToOpen = nil;
+
+  if ([self multipleAccountSwitchesRequired:contexts]) {
+    // If more than one context require a potental account change only open the
+    // first context and discard the others to avoid looping between acocunt
+    // changes.
+    NSEnumerator<UIOpenURLContext*>* enumerator = [contexts objectEnumerator];
+    contexts = [NSMutableSet setWithObject:[enumerator nextObject]];
+    base::UmaHistogramEnumeration(
+        kContextsToOpen, ContextsToOpen::kMoreThanOneContextWithAccountChange);
+  }
 
   BOOL widgetsForMIMEnabled = BUILDFLAG(ENABLE_WIDGETS_FOR_MIM);
   if (widgetsForMIMEnabled || IsShareExtensionForMultiprofileEnabled()) {
     // Find the first context that requires an account change.
     WidgetContext* context = [self findContextRequiringAccountChange:contexts];
     // Perform profile switching if needed.
-    if ([self changeProfileForContext:context contexts:contexts]) {
+    if ([self changeProfileForContext:context contexts:contexts openURL:NO]) {
       return;
     }
   }
@@ -705,6 +717,7 @@ void OnListFamilyMembersResponse(
                    startupInformation:self.sceneState.profileState.appState
                                           .startupInformation];
   }
+
   if (self.sceneState.connectionOptions.shortcutItem) {
     userActivityBrowserAgent->Handle3DTouchApplicationShortcuts(
         self.sceneState.connectionOptions.shortcutItem);
@@ -963,7 +976,7 @@ void OnListFamilyMembersResponse(
     // Find the first context that requires an account change.
     WidgetContext* context = [self findContextRequiringAccountChange:contexts];
     // Perform profile switching if needed.
-    if ([self changeProfileForContext:context contexts:contexts]) {
+    if ([self changeProfileForContext:context contexts:contexts openURL:YES]) {
       // Don't open the URLs if the profile was changed.
       return;
     }
@@ -974,7 +987,8 @@ void OnListFamilyMembersResponse(
 
 // Returns YES if a profile change was triggered.
 - (BOOL)changeProfileForContext:(WidgetContext*)context
-                       contexts:(NSSet<UIOpenURLContext*>*)contexts {
+                       contexts:(NSSet<UIOpenURLContext*>*)contexts
+                        openURL:(BOOL)openURL {
   if (!context) {
     return NO;
   }
@@ -1002,12 +1016,21 @@ void OnListFamilyMembersResponse(
   if (!profileName.has_value()) {
     return NO;
   }
+
+  const std::string& oldProfileName =
+      self.sceneState.profileState.profile->GetProfileName();
+  if (oldProfileName == profileName) {
+    // In this case there will be no profile change, just an account change,
+    // always open the URL in the continuation in this scenario.
+    openURL = YES;
+  }
+
   [changeProfileHandler
       changeProfile:*profileName
            forScene:self.sceneState
              reason:ChangeProfileReason::kSwitchAccountsFromWidget
-       continuation:CreateChangeProfileAuthenticationContinuation(context,
-                                                                  contexts)];
+       continuation:CreateChangeProfileAuthenticationContinuation(
+                        context, contexts, openURL)];
   return YES;
 }
 
@@ -1227,10 +1250,9 @@ void OnListFamilyMembersResponse(
       [self tryPresentSigninUpgradePromo];
     }
 
+    // TODO(crbug.com/443728200): handleExternalIntents may change profile, code
+    // below should not be executed if profile was changed.
     [self handleExternalIntents];
-    if (self.sceneState.URLContextsToOpen.count != 0) {
-      [self handleURLContextsToOpen];
-    }
 
     if (!initializingUIInColdStart &&
         transitionedToForegroundActiveFromBackground &&

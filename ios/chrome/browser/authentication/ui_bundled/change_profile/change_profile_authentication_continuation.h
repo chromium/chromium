@@ -11,6 +11,7 @@
 // Returns a ChangeProfileContinuation that starts the sign-in or sign-out flow.
 ChangeProfileContinuation CreateChangeProfileAuthenticationContinuation(
     WidgetContext* context,
-    NSSet<UIOpenURLContext*>* contexts);
+    NSSet<UIOpenURLContext*>* contexts,
+    BOOL openURL);
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_CHANGE_PROFILE_CHANGE_PROFILE_AUTHENTICATION_CONTINUATION_H_
