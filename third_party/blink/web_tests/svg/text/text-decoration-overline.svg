@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg idth="800" height="600"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:h="http://www.w3.org/1999/xhtml">
+  <title>SVG Text CSS Decoration Test: Overline Text Decoration</title>
+  <h:link rel="help" ref="https://drafts.csswg.org/css-text-decor-3/#text-decoration-style-property"/>
+  <style>
+    text {
+      font-family: Arial;
+      font-size: 40px;
+      text-decoration-line: overline;
+      text-decoration-color: green;
+    }
+    .solid {
+      text-decoration-style: solid;
+    }
+    .double {
+      text-decoration-style: double;
+    }
+    .dotted {
+      text-decoration-style: dotted;
+    }
+    .dashed {
+      text-decoration-style: dashed;
+    }
+    .wavy {
+      text-decoration-style: wavy;
+    }
+    .fill {
+      fill: blue;
+    }
+    .stroke {
+      stroke: red;
+      stroke-width: 1px;
+    }
+  </style>
+
+  <!-- Solid -->
+  <g transform="translate(10, 50)">
+    <text x="0" y="0" class="solid fill">lorem ipsum</text>
+    <text x="260" y="0" class="solid stroke">lorem ipsum</text>
+    <text x="520" y="0" class="solid fill stroke">lorem ipsum</text>
+  </g>
+
+  <!-- Double -->
+  <g transform="translate(10, 150)">
+    <text x="0" y="0" class="double fill">lorem ipsum</text>
+    <text x="260" y="0" class="double stroke">lorem ipsum</text>
+    <text x="520" y="0" class="double fill stroke">lorem ipsum</text>
+  </g>
+
+  <!-- Dashed -->
+  <g transform="translate(10, 250)">
+    <text x="0" y="0" class="dashed fill">lorem ipsum</text>
+    <text x="260" y="0" class="dashed stroke">lorem ipsum</text>
+    <text x="520" y="0" class="dashed fill stroke">lorem ipsum</text>
+  </g>
+
+  <!-- Dotted -->
+  <g transform="translate(10, 350)">
+    <text x="0" y="0" class="dotted fill">lorem ipsum</text>
+    <text x="260" y="0" class="dotted stroke">lorem ipsum</text>
+    <text x="520" y="0" class="dotted fill stroke">lorem ipsum</text>
+  </g>
+
+  <!-- Wavy -->
+  <g transform="translate(10, 450)">
+    <text x="0" y="0" class="wavy fill">lorem ipsum</text>
+    <text x="260" y="0" class="wavy stroke">lorem ipsum</text>
+    <text x="520" y="0" class="wavy fill stroke">lorem ipsum</text>
+  </g>
+</svg>

@@ -180,8 +180,10 @@ void StyleAdjuster::AdjustStyleForSvgElement(
     // Note that SetFooBar() is more efficient than ResetFooBar() if the current
     // value is same as the reset value.
     builder.SetTextDecorationSkipInk(ETextDecorationSkipInk::kAuto);
-    builder.SetTextDecorationStyle(
-        ETextDecorationStyle::kSolid);  // crbug.com/1246719
+    if (!RuntimeEnabledFeatures::SvgEnableTextDecorationCssStylingEnabled()) {
+      builder.SetTextDecorationStyle(
+          ETextDecorationStyle::kSolid);  // crbug.com/1246719
+    }
     builder.SetTextDecorationThickness(TextDecorationThickness(Length::Auto()));
     builder.SetTextEmphasisMark(TextEmphasisMark::kNone);
     builder.SetTextUnderlineOffset(Length());  // crbug.com/1247912
