@@ -67,30 +67,21 @@ class FakePdfListener : public pdf::mojom::PdfListener {
 class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {
  public:
   TestPDFDocumentHelperClient() = default;
-  ~TestPDFDocumentHelperClient() override = default;
   TestPDFDocumentHelperClient(const TestPDFDocumentHelperClient&) = delete;
   TestPDFDocumentHelperClient& operator=(const TestPDFDocumentHelperClient&) =
       delete;
+  ~TestPDFDocumentHelperClient() override = default;
 
   const gfx::SelectionBound& GetSelectionBoundStart() const { return start_; }
   const gfx::SelectionBound& GetSelectionBoundEnd() const { return end_; }
 
  private:
   // PDFDocumentHelperClient:
-  void UpdateContentRestrictions(content::RenderFrameHost* render_frame_host,
-                                 int content_restrictions) override {}
-  void OnSaveURL(content::WebContents* contents) override {}
-  void SetPluginCanSave(content::RenderFrameHost* render_frame_host,
-                        bool can_save) override {}
   void OnDidScroll(const gfx::SelectionBound& start,
                    const gfx::SelectionBound& end) override {
     start_ = start;
     end_ = end;
   }
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void OnSearchifyStarted(
-      content::RenderFrameHost* render_frame_host) override {}
-#endif
 
  private:
   // The last bounds reported by PDFDocumentHelper.
