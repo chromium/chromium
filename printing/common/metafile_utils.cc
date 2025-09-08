@@ -57,28 +57,41 @@
 
 namespace {
 
-// Table 333 in PDF 32000-1:2008 spec, section 14.8.4.2
+// Table 364 in PDF 32000-2:2020 spec, section 14.8.4.3
 const char kPDFStructureTypeDocument[] = "Document";
-const char kPDFStructureTypeParagraph[] = "P";
+
+// Table 365 in PDF 32000-2:2020 spec, section 14.8.4.4
 const char kPDFStructureTypeDiv[] = "Div";
+const char kPDFStructureTypeNonStruct[] = "NonStruct";
+
+// Table 366 in PDF 32000-2:2020 spec, section 14.8.4.5
+const char kPDFStructureTypeParagraph[] = "P";
 const char kPDFStructureTypeHeading[] = "H";
-const char kPDFStructureTypeLink[] = "Link";
-const char kPDFStructureTypeList[] = "L";
+
+// Table 368 in PDF 32000-2:2020 spec, section 14.8.4.7.2
 const char kPDFStructureTypeListItemLabel[] = "Lbl";
+const char kPDFStructureTypeLink[] = "Link";
+
+// Table 370 in PDF 32000-2:2020 spec, section 14.8.4.8.2
+const char kPDFStructureTypeList[] = "L";
 const char kPDFStructureTypeListItemBody[] = "LI";
+
+// Table 371 in PDF 32000-2:2020 spec, section 14.8.4.8.3
 const char kPDFStructureTypeTable[] = "Table";
 const char kPDFStructureTypeTableRow[] = "TR";
 const char kPDFStructureTypeTableHeader[] = "TH";
 const char kPDFStructureTypeTableCell[] = "TD";
-const char kPDFStructureTypeFigure[] = "Figure";
-const char kPDFStructureTypeNonStruct[] = "NonStruct";
 
-// Standard attribute owners from PDF 32000-1:2008 spec, section 14.8.5.2
-// (Attribute owners are kind of like "categories" for structure node
-// attributes.)
+// Table 373 in PDF 32000-2:2020 spec, section 14.8.4.8.5
+const char kPDFStructureTypeFigure[] = "Figure";
+
+// Standard attribute owners from Table 376 PDF 32000-2:2020 spec,
+// section 14.8.5.2 (Attribute owners are kind of like "categories"
+// for structure node attributes.)
 const char kPDFTableAttributeOwner[] = "Table";
 
-// Table Attributes from PDF 32000-1:2008 spec, section 14.8.5.7
+// Table Attributes from tabl 384 in PDF 32000-2:2020 spec,
+// section 14.8.5.7
 const char kPDFTableCellColSpanAttribute[] = "ColSpan";
 const char kPDFTableCellHeadersAttribute[] = "Headers";
 const char kPDFTableCellRowSpanAttribute[] = "RowSpan";
@@ -87,7 +100,7 @@ const char kPDFTableHeaderScopeColumn[] = "Column";
 const char kPDFTableHeaderScopeRow[] = "Row";
 
 SkString GetHeadingStructureType(int heading_level) {
-  // From Table 333 in PDF 32000-1:2008 spec, section 14.8.4.2,
+  // From Table 366 in PDF 32000-2:2020 spec, section 14.8.4.5,
   // "H1"..."H6" are valid structure types.
   if (heading_level >= 1 && heading_level <= 6)
     return SkString(base::StringPrintf("H%d", heading_level).c_str());
