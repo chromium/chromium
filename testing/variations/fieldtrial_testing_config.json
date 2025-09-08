@@ -8405,21 +8405,6 @@
             ]
         }
     ],
-    "DescribeIt": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240924",
-                    "enable_features": [
-                        "ReadAloudServerExperiments"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeskButton": [
         {
             "platforms": [
@@ -20278,10 +20263,15 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Dogfood",
+                    "name": "Enabled_2025_09_09",
+                    "params": {
+                        "read_aloud_audio_overviews_speed_addition_percentage": "10"
+                    },
                     "enable_features": [
                         "ReadAloudAudioOverviews",
-                        "ReadAloudAudioOverviewsFeedback"
+                        "ReadAloudAudioOverviewsFeedback",
+                        "ReadAloudAudioOverviewsSkipDisclaimerWhenPossible",
+                        "ReadAloudServerExperiments"
                     ]
                 }
             ]
