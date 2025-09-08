@@ -92,12 +92,15 @@ enum class FeatureState {
 };
 
 struct RunExpectations {
-  // Whether the dialog service is expected to have been created
+  // Whether the dialog service is expected to have been created. Being created
+  // indicates that the profile was evaluated as eligible at profile init time.
   bool has_dialog_service;
 
-  // Whether the choice is considered completed after the services are done
-  // initializing and processed the prefs.
-  bool has_completed_choice;
+  // Evaluation of the static eligibility conditions, done in the test body.
+  // Does not map to prod behaviour, which is more accurately described by the
+  // `has_dialog_service` bool, but refers to how eligibility could have been
+  // affected by a different clone detection timing.
+  SearchEngineChoiceScreenConditions expected_delayed_static_conditions;
 
   ChoiceStatus choice_status;
 };
@@ -108,7 +111,8 @@ struct RestoreTestParam {
   const RunExpectations run_0 = {
       // Run 0 expectations are hardcoded since the feature has no effect on it.
       .has_dialog_service = true,
-      .has_completed_choice = true,
+      .expected_delayed_static_conditions =
+          SearchEngineChoiceScreenConditions::kAlreadyCompleted,
       .choice_status = ChoiceStatus::kValid,
   };
   RunExpectations run_1_expectations;
@@ -160,43 +164,60 @@ class SearchEngineChoiceServiceRestoreBrowserTest
 };
 
 const RestoreTestParam kTestParams[] = {
-    {.test_name = "FeatureDisabled",
-     .feature_state = FeatureState::kDisabled,
-     .run_1_expectations = {.has_dialog_service = false,
-                            .has_completed_choice = true,
-                            .choice_status = ChoiceStatus::kValid},
-     .run_2_expectations = {.has_dialog_service = false,
-                            .has_completed_choice = true,
-                            .choice_status = ChoiceStatus::kValid}},
-    {.test_name = "FeatureEnabledJustInTime",
-     .feature_state = FeatureState::kEnabledJustInTime,
-     // Run 1: Ideally the search engine choice should be shown here, but it is
-     // technically infeasible on Desktop platforms.
-     // The clone detection happens on a low-priority background task, and it
-     // completes after we are done checking the choice screen eligibility
-     // status and declined initializing the dialog service.
-     .run_1_expectations = {.has_dialog_service = false,
-                            .has_completed_choice = true,
-                            .choice_status = ChoiceStatus::kFromRestoredDevice},
-     // Run 2:  Since the choice was not flagged as imported in the session
-     // where the clone was detected, for the "JustInTime" mode, we don't wipe
-     // the choice timestamp later either. this makes this mode very limited
-     // on Desktop.
-     .run_2_expectations = {.has_dialog_service = false,
-                            .has_completed_choice = true,
-                            .choice_status = ChoiceStatus::kValid}},
-    {.test_name = "FeatureEnabledRetroactive",
-     .feature_state = FeatureState::kEnabledRetroactive,
-     // Run 1: Same as the "JustInTime" version.
-     .run_1_expectations = {.has_dialog_service = false,
-                            .has_completed_choice = true,
-                            .choice_status = ChoiceStatus::kFromRestoredDevice},
-     // Run 2: We are able to wipe the choice timestamp and make remake the
-     // profile eligible to get the choice dialog.
-     .run_2_expectations = {.has_dialog_service = true,
-                            .has_completed_choice = false,
-                            .choice_status =
-                                ChoiceStatus::kFromRestoredDevice}},
+    {
+        .test_name = "FeatureDisabled",
+        .feature_state = FeatureState::kDisabled,
+        .run_1_expectations =
+            {.has_dialog_service = false,
+             .expected_delayed_static_conditions =
+                 SearchEngineChoiceScreenConditions::kAlreadyCompleted,
+             .choice_status = ChoiceStatus::kValid},
+        .run_2_expectations =
+            {.has_dialog_service = false,
+             .expected_delayed_static_conditions =
+                 SearchEngineChoiceScreenConditions::kAlreadyCompleted,
+             .choice_status = ChoiceStatus::kValid},
+    },
+    {
+        .test_name = "FeatureEnabledJustInTime",
+        .feature_state = FeatureState::kEnabledJustInTime,
+        // Run 1: Ideally the search engine choice should be shown here, but it
+        // is technically infeasible on Desktop platforms. The clone detection
+        // happens on a low-priority background task, and it completes after we
+        // are done checking the choice screen eligibility status and declined
+        // initializing the dialog service.
+        .run_1_expectations =
+            {.has_dialog_service = false,
+             .expected_delayed_static_conditions =
+                 SearchEngineChoiceScreenConditions::kEligible,
+             .choice_status = ChoiceStatus::kFromRestoredDevice},
+        // Run 2:  Since the choice was not flagged as imported in the session
+        // where the clone was detected, for the "JustInTime" mode, we don't
+        // wipe the choice timestamp later either. this makes this mode very
+        // limited on Desktop.
+        .run_2_expectations =
+            {.has_dialog_service = false,
+             .expected_delayed_static_conditions =
+                 SearchEngineChoiceScreenConditions::kAlreadyCompleted,
+             .choice_status = ChoiceStatus::kValid},
+    },
+    {
+        .test_name = "FeatureEnabledRetroactive",
+        .feature_state = FeatureState::kEnabledRetroactive,
+        // Run 1: Same as the "JustInTime" version.
+        .run_1_expectations =
+            {.has_dialog_service = false,
+             .expected_delayed_static_conditions =
+                 SearchEngineChoiceScreenConditions::kEligible,
+             .choice_status = ChoiceStatus::kFromRestoredDevice},
+        // Run 2: We are able to wipe the choice timestamp and make remake the
+        // profile eligible to get the choice dialog.
+        .run_2_expectations =
+            {.has_dialog_service = true,
+             .expected_delayed_static_conditions =
+                 SearchEngineChoiceScreenConditions::kEligible,
+             .choice_status = ChoiceStatus::kFromRestoredDevice},
+    },
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -229,11 +250,10 @@ IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
       search_engines::ChoiceMadeLocation::kChoiceScreen,
       TemplateURLServiceFactory::GetForProfile(profile));
   ASSERT_TRUE(HasChoiceTimestamp(profile));
+  ASSERT_TRUE(GetChoiceCompletionMetadata(*profile->GetPrefs()).has_value());
 
-  ASSERT_EQ(GetRunExpectations().has_completed_choice,
-            GetChoiceCompletionMetadata(*profile->GetPrefs()).has_value());
   ASSERT_EQ(GetStaticConditions(profile),
-            SearchEngineChoiceScreenConditions::kAlreadyCompleted);
+            GetRunExpectations().expected_delayed_static_conditions);
 }
 
 // Run 1, the first one happening after a device restore.
@@ -258,13 +278,14 @@ IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
 
   EXPECT_EQ(GetRunExpectations().has_dialog_service,
             !!SearchEngineChoiceDialogServiceFactory::GetForProfile(profile));
-  EXPECT_EQ(GetRunExpectations().has_completed_choice,
-            choice_completion_metadata.has_value());
+  EXPECT_TRUE(choice_completion_metadata.has_value());
   EXPECT_TRUE(HasChoiceTimestamp(profile));
   EXPECT_TRUE(
       search_engine_choice_service->GetClientForTesting()
           .DoesChoicePredateDeviceRestore(choice_completion_metadata.value()));
 
+  EXPECT_EQ(GetStaticConditions(profile),
+            GetRunExpectations().expected_delayed_static_conditions);
   EXPECT_EQ(GetChoiceStatus(profile), GetRunExpectations().choice_status);
 }
 
@@ -299,10 +320,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
           .DoesChoicePredateDeviceRestore(choice_completion_metadata.value()));
 
   EXPECT_EQ(GetStaticConditions(profile),
-            GetRunExpectations().has_completed_choice
-                ? SearchEngineChoiceScreenConditions::kAlreadyCompleted
-                : SearchEngineChoiceScreenConditions::kEligible);
-
+            GetRunExpectations().expected_delayed_static_conditions);
   EXPECT_EQ(GetChoiceStatus(profile), GetRunExpectations().choice_status);
 }
 
