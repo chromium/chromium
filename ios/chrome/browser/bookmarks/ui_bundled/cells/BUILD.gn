@@ -27,7 +27,6 @@ source_set("cells") {
     "//ios/chrome/browser/bookmarks/ui_bundled:constants",
     "//ios/chrome/browser/bookmarks/ui_bundled:utils",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/symbols:icons",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/common/ui/util",

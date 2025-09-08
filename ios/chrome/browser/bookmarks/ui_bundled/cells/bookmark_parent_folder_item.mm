@@ -8,7 +8,6 @@
 #import "base/i18n/rtl.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
-#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

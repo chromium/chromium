@@ -481,7 +481,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/shared/ui/chrome_overlay_window:unit_tests",
     "//ios/chrome/browser/shared/ui/elements:unit_tests",
     "//ios/chrome/browser/shared/ui/list_model:unit_tests",
-    "//ios/chrome/browser/shared/ui/symbols:unit_tests",
     "//ios/chrome/browser/shared/ui/table_view:unit_tests",
     "//ios/chrome/browser/shared/ui/table_view/cells:unit_tests",
     "//ios/chrome/browser/shared/ui/util:unit_tests",

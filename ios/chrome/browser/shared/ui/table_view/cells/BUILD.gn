@@ -106,7 +106,6 @@ source_set("unit_tests") {
     "//components/url_formatter",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/symbols:icons",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",

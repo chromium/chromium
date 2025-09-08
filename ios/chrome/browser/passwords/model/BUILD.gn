@@ -100,6 +100,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ssl/model",
@@ -113,7 +114,6 @@ source_set("model") {
     "//ios/web/common",
     "//ios/web/public/js_messaging",
     "//net",
-    "//third_party/material_design_icons:ic_account_circle",
     "//ui/base",
     "//url",
   ]

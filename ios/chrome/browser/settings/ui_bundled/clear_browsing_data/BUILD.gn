@@ -82,7 +82,6 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/shared/ui/elements:elements_internal",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/symbols:icons",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:utils",

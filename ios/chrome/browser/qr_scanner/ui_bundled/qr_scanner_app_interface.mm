@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -39,7 +39,7 @@ using scanner::CameraState;
 }
 
 + (NSString*)closeIconAccessibilityLabel {
-  return [ChromeIcon closeIcon].accessibilityLabel;
+  return l10n_util::GetNSString(IDS_IOS_ICON_CLOSE);
 }
 
 #pragma mark Swizzling

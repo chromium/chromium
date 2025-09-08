@@ -27,7 +27,7 @@ source_set("ui_bundled") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/scanner/ui_bundled/resources",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/ui/symbols:icons",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
     "//ios/chrome/common/ui/util",

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -15,6 +14,7 @@
 #import "testing/platform_test.h"
 
 namespace {
+constexpr CGFloat kTestIconPointSize = 18;
 using TableViewDetailIconItemTest = PlatformTest;
 
 // Returns the UIImageView containing the icon within the cell.
@@ -40,7 +40,8 @@ TEST_F(TableViewDetailIconItemTest, ItemProperties) {
       [[TableViewDetailIconItem alloc] initWithType:0];
   item.text = text;
   item.detailText = detail_text;
-  item.iconImage = [UIImage imageNamed:@"ic_search"];
+  item.iconImage =
+      DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize);
   item.iconTintColor = UIColor.whiteColor;
   item.iconBackgroundColor = UIColor.blackColor;
   item.iconCornerRadius = 8;
@@ -66,9 +67,10 @@ TEST_F(TableViewDetailIconItemTest, ItemProperties) {
   // Check image-based property.
   UIImageView* image_view = GetImageView(detail_cell);
   UIView* image_background = GetImageBackgroundView(detail_cell);
-  EXPECT_NSEQ([[ChromeIcon searchIcon]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],
-              image_view.image);
+  EXPECT_NSEQ(
+      [DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize)
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],
+      image_view.image);
   EXPECT_EQ(UIColor.whiteColor, image_view.tintColor);
   EXPECT_EQ(UIColor.blackColor, image_background.backgroundColor);
   EXPECT_EQ(8, image_background.layer.cornerRadius);
@@ -78,7 +80,8 @@ TEST_F(TableViewDetailIconItemTest, ItemProperties) {
 TEST_F(TableViewDetailIconItemTest, iconImageUpdate) {
   TableViewDetailIconItem* item =
       [[TableViewDetailIconItem alloc] initWithType:0];
-  item.iconImage = [UIImage imageNamed:@"ic_search"];
+  item.iconImage =
+      DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize);
 
   id cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[TableViewDetailIconCell class]]);
@@ -92,18 +95,21 @@ TEST_F(TableViewDetailIconItemTest, iconImageUpdate) {
   // Check original image is set.
   UIImageView* image_view = GetImageView(detail_cell);
   UIView* image_background = GetImageBackgroundView(detail_cell);
-  EXPECT_NSEQ([ChromeIcon searchIcon], image_view.image);
+  EXPECT_NSEQ(
+      DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize),
+      image_view.image);
   EXPECT_NE(UIColor.whiteColor, image_view.tintColor);
   EXPECT_EQ(nil, image_background.backgroundColor);
   EXPECT_EQ(0, image_background.layer.cornerRadius);
 
-  [detail_cell setIconImage:[ChromeIcon infoIcon]
+  [detail_cell setIconImage:DefaultSymbolWithPointSize(kInfoCircleSymbol,
+                                                       kTestIconPointSize)
                   tintColor:UIColor.whiteColor
             backgroundColor:UIColor.blackColor
                cornerRadius:8];
 
   // Check new image is set.
-  EXPECT_NSEQ([[ChromeIcon infoIcon]
+  EXPECT_NSEQ([DefaultSymbolWithPointSize(kInfoCircleSymbol, kTestIconPointSize)
                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],
               image_view.image);
   EXPECT_EQ(UIColor.whiteColor, image_view.tintColor);
@@ -115,7 +121,8 @@ TEST_F(TableViewDetailIconItemTest, iconImageUpdate) {
 TEST_F(TableViewDetailIconItemTest, iconImageNilUpdate) {
   TableViewDetailIconItem* item =
       [[TableViewDetailIconItem alloc] initWithType:0];
-  item.iconImage = [UIImage imageNamed:@"ic_search"];
+  item.iconImage =
+      DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize);
   item.iconTintColor = UIColor.whiteColor;
   item.iconBackgroundColor = UIColor.blackColor;
   item.iconCornerRadius = 8;
@@ -132,9 +139,10 @@ TEST_F(TableViewDetailIconItemTest, iconImageNilUpdate) {
   // Check original image is set.
   UIImageView* image_view = GetImageView(detail_cell);
   UIView* image_background = GetImageBackgroundView(detail_cell);
-  EXPECT_NSEQ([[ChromeIcon searchIcon]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],
-              image_view.image);
+  EXPECT_NSEQ(
+      [DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize)
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],
+      image_view.image);
   EXPECT_EQ(UIColor.whiteColor, image_view.tintColor);
   EXPECT_EQ(UIColor.blackColor, image_background.backgroundColor);
   EXPECT_EQ(8, image_background.layer.cornerRadius);

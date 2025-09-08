@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -464,8 +463,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   imageDetailTextItem.text = @"This is an error description about sync";
   imageDetailTextItem.detailText =
       @"This is more detail about the sync error description";
-  imageDetailTextItem.image = [[ChromeIcon infoIcon]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  imageDetailTextItem.image = DefaultSymbolTemplateWithPointSize(
+      kInfoCircleSymbol, kSymbolActionPointSize);
   [model addItem:imageDetailTextItem
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -499,8 +498,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   checkFinishedWithLeadingImage.detailText =
       @"This is very long description of check item. Another line of "
       @"description.";
-  checkFinishedWithLeadingImage.leadingIcon = [[ChromeIcon infoIcon]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  checkFinishedWithLeadingImage.leadingIcon =
+      DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
+                                         kSymbolActionPointSize);
   checkFinishedWithLeadingImage.enabled = YES;
   checkFinishedWithLeadingImage.indicatorHidden = YES;
   checkFinishedWithLeadingImage.trailingImage =
@@ -524,8 +524,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   checkDisabledWithLeadingImage.detailText =
       @"This is very long description of check item. Another line of "
       @"description.";
-  checkDisabledWithLeadingImage.leadingIcon = [[ChromeIcon infoIcon]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  checkDisabledWithLeadingImage.leadingIcon =
+      DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
+                                         kSymbolActionPointSize);
   checkDisabledWithLeadingImage.enabled = NO;
   [model addItem:checkDisabledWithLeadingImage
       toSectionWithIdentifier:SectionIdentifierSettings];
