@@ -34,11 +34,14 @@ namespace remote_cocoa {
 static char kNSNextStepFrameHitTestTargetViewKey;
 
 // Stores the hit test target view as an associated object on the window.
-void SetNSNextStepFrameHitTestTargetView(NSView* ns_view) {
-  NSWindow* fullscreen_window = ns_view.window;
+void SetNSNextStepFrameHitTestTargetView(NSWindow* fullscreen_window,
+                                         NSView* target_view) {
   CHECK(IsNSToolbarFullScreenWindow(fullscreen_window));
+  if (target_view) {
+    CHECK_EQ(fullscreen_window, target_view.window);
+  }
   objc_setAssociatedObject(fullscreen_window,
-                           &kNSNextStepFrameHitTestTargetViewKey, ns_view,
+                           &kNSNextStepFrameHitTestTargetViewKey, target_view,
                            OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 

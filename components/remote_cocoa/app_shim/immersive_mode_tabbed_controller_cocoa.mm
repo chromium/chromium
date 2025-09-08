@@ -19,12 +19,26 @@
 @end
 
 @implementation TabTitlebarView
+- (NSView*)tabContentView {
+  CHECK(self.subviews.count > 0);
+  return base::apple::ObjCCastStrict<BridgedContentView>(self.subviews[0]);
+}
+
 - (void)viewDidMoveToWindow {
+  // During transition from regular to fullscreen, the TabTitlebarView is first
+  // added to the main browser's NSWindow, then moved to
+  // NSToolbarFullscreenWindow. Only NSToolbarFullscreenWindow needs hit test
+  // overriding.
   if (remote_cocoa::IsNSToolbarFullScreenWindow(self.window)) {
-    CHECK(self.subviews.count > 0);
-    NSView* tab_content_view =
-        base::apple::ObjCCastStrict<BridgedContentView>(self.subviews[0]);
-    remote_cocoa::SetNSNextStepFrameHitTestTargetView(tab_content_view);
+    remote_cocoa::SetNSNextStepFrameHitTestTargetView(self.window,
+                                                      self.tabContentView);
+  }
+}
+
+- (void)viewWillMoveToWindow:(NSWindow*)newWindow {
+  // Removing from NSToolbarFullscreenWindow, hence reset hit test overriding.
+  if (!newWindow && remote_cocoa::IsNSToolbarFullScreenWindow(self.window)) {
+    remote_cocoa::SetNSNextStepFrameHitTestTargetView(self.window, nil);
   }
 }
 @end
