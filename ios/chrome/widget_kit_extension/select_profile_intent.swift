@@ -107,10 +107,7 @@ struct SelectAccountIntent: WidgetConfigurationIntent {
 
   // Returns the gaiaID linked to the account.
   func gaia() -> String? {
-    guard let gaia = account?.id
-    else { return nil }
-
-    return gaia
+    return account?.id
   }
 
   // Returns the email linked to the account.
