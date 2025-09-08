@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Intent;
@@ -930,7 +931,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 getProfile(),
                 getActivity().getSupportFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                assumeNonNull(mSnackbarManagerSupplier).get(),
+                assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                 /* showConfirmDialog= */ false,
                 CallbackUtils.emptyRunnable(),
@@ -947,7 +948,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 getProfile(),
                 getActivity().getSupportFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                assumeNonNull(mSnackbarManagerSupplier).get(),
+                assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
                 SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
                 /* showConfirmDialog= */ false,
                 CallbackUtils.emptyRunnable());
@@ -1174,7 +1175,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         profile,
                         getActivity().getSupportFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                        assumeNonNull(mSnackbarManagerSupplier).get(),
+                        assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
                         profile.isChild()
                                 ? SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS
                                 : SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,

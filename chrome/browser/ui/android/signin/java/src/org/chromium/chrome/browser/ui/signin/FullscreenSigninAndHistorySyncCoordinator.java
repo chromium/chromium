@@ -210,9 +210,9 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         switch (mCurrentView) {
             case ChildView.SIGNIN:
                 if (isSignedIn()) {
+                    Profile profile = assumeNonNull(mProfileSupplier.get()).getOriginalProfile();
                     SigninManager signinManager =
-                            IdentityServicesProvider.get()
-                                    .getSigninManager(mProfileSupplier.get().getOriginalProfile());
+                            IdentityServicesProvider.get().getSigninManager(profile);
                     assumeNonNull(signinManager);
                     signinManager.signOut(SignoutReason.ABORT_SIGNIN);
                 }
@@ -243,7 +243,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
             mDelegate.onFlowComplete(SigninAndHistorySyncCoordinator.Result.INTERRUPTED);
             return;
         }
-        Profile profile = mProfileSupplier.get().getOriginalProfile();
+        Profile profile = assumeNonNull(mProfileSupplier.get()).getOriginalProfile();
         if (!SigninAndHistorySyncCoordinator.shouldShowHistorySync(
                 profile, mConfig.historyOptInMode)) {
             HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
@@ -388,9 +388,9 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     }
 
     private boolean isSignedIn() {
+        Profile profile = assumeNonNull(mProfileSupplier.get()).getOriginalProfile();
         IdentityManager identityManager =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(mProfileSupplier.get().getOriginalProfile());
+                IdentityServicesProvider.get().getIdentityManager(profile);
         assumeNonNull(identityManager);
         return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
@@ -445,11 +445,12 @@ public final class FullscreenSigninAndHistorySyncCoordinator
 
         boolean shouldSignOutOnDecline =
                 mDidShowSignin && mConfig.historyOptInMode == HistorySyncConfig.OptInMode.REQUIRED;
+        Profile profile = assumeNonNull(mProfileSupplier.get()).getOriginalProfile();
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
                         mActivity,
                         this,
-                        mProfileSupplier.get().getOriginalProfile(),
+                        profile,
                         mConfig.historySyncConfig,
                         mSigninAccessPoint,
                         /* showEmailInFooter= */ !mDidShowSignin,

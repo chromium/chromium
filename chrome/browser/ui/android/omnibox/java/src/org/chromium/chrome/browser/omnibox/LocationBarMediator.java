@@ -368,9 +368,11 @@ class LocationBarMediator
         mTemplateUrlServiceSupplier.onAvailable(
                 mCallbackController.makeCancelable(
                         (templateUrlService) -> {
+                            Profile profile = mProfileSupplier.get();
+                            assert profile != null;
                             templateUrlService.addObserver(this);
                             GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
-                                    mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
+                                    profile, templateUrlService);
                         }));
 
         mLocationBarLayout.onFinishNativeInitialization();
@@ -1614,8 +1616,9 @@ class LocationBarMediator
     public void performSearchQuery(String query, List<String> searchParams) {
         if (TextUtils.isEmpty(query)) return;
 
-        String queryUrl =
-                mTemplateUrlServiceSupplier.get().getUrlForSearchQuery(query, searchParams);
+        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
+        assert templateUrlService != null;
+        String queryUrl = templateUrlService.getUrlForSearchQuery(query, searchParams);
 
         if (!TextUtils.isEmpty(queryUrl)) {
             loadUrl(

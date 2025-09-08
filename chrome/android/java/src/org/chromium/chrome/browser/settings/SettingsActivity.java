@@ -503,12 +503,14 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         BackPressHelper.create(
                 this,
                 getOnBackPressedDispatcher(),
-                mBottomSheetControllerSupplier.get().getBottomSheetBackPressHandler());
+                mManagedBottomSheetController.getBottomSheetBackPressHandler());
     }
 
     @Override
     public SnackbarManager getSnackbarManager() {
-        return mSnackbarManagerSupplier.get();
+        SnackbarManager ret = mSnackbarManagerSupplier.get();
+        assert ret != null;
+        return ret;
     }
 
     private void ensureActivityNotExported() {

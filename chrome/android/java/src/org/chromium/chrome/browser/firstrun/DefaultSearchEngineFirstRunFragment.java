@@ -55,7 +55,8 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         button.setText(R.string.search_engine_dialog_confirm_button_title);
 
         FirstRunPageDelegate delegate = assumeNonNull(getPageDelegate());
-        Profile profile = delegate.getProfileProviderSupplier().get().getOriginalProfile();
+        Profile profile =
+                assumeNonNull(delegate.getProfileProviderSupplier().get()).getOriginalProfile();
 
         assert TemplateUrlServiceFactory.getForProfile(profile).isLoaded();
         mSearchEnginePromoDialogType = LocaleManager.getInstance().getSearchEnginePromoShowType();

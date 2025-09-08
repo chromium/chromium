@@ -6,7 +6,6 @@ package org.chromium.base.supplier;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.function.Supplier;
@@ -68,8 +67,4 @@ public interface OneshotSupplier<T> extends Supplier<@Nullable T> {
             onAvailable(callback);
         }
     }
-
-    @Override
-    @NullUnmarked // TODO(430320400): Introduces a lot of warnings.
-    T get();
 }

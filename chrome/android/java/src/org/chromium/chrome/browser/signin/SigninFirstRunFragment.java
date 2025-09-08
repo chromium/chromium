@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.accounts.Account;
@@ -318,7 +319,9 @@ public class SigninFirstRunFragment extends Fragment
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
     public void displayDeviceLockPage(Account selectedAccount) {
-        Profile profile = ProfileProvider.getOrCreateProfile(getProfileSupplier().get(), false);
+        Profile profile =
+                ProfileProvider.getOrCreateProfile(
+                        assertNonNull(getProfileSupplier().get()), false);
         mDeviceLockCoordinator =
                 new DeviceLockCoordinator(
                         this,

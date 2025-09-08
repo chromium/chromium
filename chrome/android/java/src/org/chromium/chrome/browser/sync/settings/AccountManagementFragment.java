@@ -243,7 +243,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                 getProfile(),
                                 getActivity().getSupportFragmentManager(),
                                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                                assumeNonNull(mSnackbarManagerSupplier).get(),
+                                assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
                                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                                 /* showConfirmDialog= */ false,
                                 CallbackUtils.emptyRunnable());

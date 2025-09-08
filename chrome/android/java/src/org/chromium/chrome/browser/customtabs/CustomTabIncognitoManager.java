@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
 
 import android.app.Activity;
@@ -65,7 +66,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
             IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
         }
 
-        Profile otrProfile = mProfileProviderSupplier.get().getOffTheRecordProfile();
+        Profile otrProfile = assumeNonNull(mProfileProviderSupplier.get()).getOffTheRecordProfile();
         if (otrProfile != null) {
             ProfileManager.destroyWhenAppropriate(otrProfile);
         }

@@ -11,6 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Helper class that coordinates whether to apply the color changes to system window, or external
@@ -142,7 +143,7 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
         mWindowColorHelper = helper;
     }
 
-    SystemBarColorHelper getEdgeToEdgeDelegateHelperForTesting() {
+    @Nullable SystemBarColorHelper getEdgeToEdgeDelegateHelperForTesting() {
         return mEdgeToEdgeDelegateHelperSupplier.get();
     }
 

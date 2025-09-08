@@ -194,7 +194,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
 
         profileProvider.onAvailable(
                 (provider) -> {
-                    mProfileSupplier.set(profileProvider.get().getOriginalProfile());
+                    mProfileSupplier.set(assumeNonNull(profileProvider.get()).getOriginalProfile());
                 });
         return profileProvider;
     }

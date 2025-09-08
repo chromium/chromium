@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -229,7 +230,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
                 && mSigninAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
             Profile profile = mProfileSupplier.get();
-            SyncService syncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
+            SyncService syncService =
+                    assumeNonNull(SyncServiceFactory.getForProfile(assertNonNull(profile)));
             syncService.setSelectedType(UserSelectableType.BOOKMARKS, true);
             syncService.setSelectedType(UserSelectableType.READING_LIST, true);
         }
@@ -325,7 +327,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         // become available to avoid showing additional loading UI after history
         // opt-in screen is shown.
         IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfileSupplier.get());
+                IdentityServicesProvider.get()
+                        .getIdentityManager(assertNonNull(mProfileSupplier.get()));
         assumeNonNull(identityManager);
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             maybeShowHistoryOptInDialog();
@@ -357,7 +360,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
     private void showSigninBottomSheet() {
         SigninManager signinManager =
-                IdentityServicesProvider.get().getSigninManager(mProfileSupplier.get());
+                IdentityServicesProvider.get()
+                        .getSigninManager(assertNonNull(mProfileSupplier.get()));
         assumeNonNull(signinManager);
         @AccountPickerLaunchMode int accountPickerMode = AccountPickerLaunchMode.DEFAULT;
         switch (mConfig.withAccountSigninMode) {

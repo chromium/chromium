@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -87,7 +88,7 @@ public class SignoutButtonPreference extends Preference implements CustomStyledP
                             mProfile,
                             mFragmentManager,
                             mDialogManager,
-                            mSnackbarManagerSupplier.get(),
+                            assertNonNull(mSnackbarManagerSupplier.get()),
                             SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                             /* showConfirmDialog= */ false,
                             () -> {});

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.activity_recreation;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -112,7 +114,10 @@ public class ActivityRecreationController {
             return;
         }
         restoreOmniboxState(
-                uiState, mToolbarManagerSupplier.get(), layoutManager, mLayoutStateHandler);
+                uiState,
+                assertNonNull(mToolbarManagerSupplier.get()),
+                layoutManager,
+                mLayoutStateHandler);
         restoreKeyboardState(uiState, mActivityTabProvider, layoutManager, mLayoutStateHandler);
         restoreTabSwitcherState(uiState, layoutManager);
     }

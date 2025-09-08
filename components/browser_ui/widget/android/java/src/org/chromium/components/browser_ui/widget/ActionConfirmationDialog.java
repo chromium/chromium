@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -383,6 +385,7 @@ public class ActionConfirmationDialog {
                             // model will always be readily available since the use of a {@link
                             // OneshotSupplier} is to resolve a dependency ordering issue.
                             PropertyModel model = modelSupplier.get();
+                            assumeNonNull(model);
                             model.get(ModalDialogProperties.CONTROLLER)
                                     .onClick(model, dialogButtonType);
                         });

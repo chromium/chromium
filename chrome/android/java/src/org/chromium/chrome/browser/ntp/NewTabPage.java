@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
@@ -1405,7 +1406,7 @@ public class NewTabPage
                         mNewTabPageLayout,
                         HomeModulesConfigManager.getInstance(),
                         profileSupplier,
-                        assumeNonNull(mModuleRegistrySupplier).get());
+                        assertNonNull(assumeNonNull(mModuleRegistrySupplier).get()));
     }
 
     private void onMagicStackShown(boolean isVisible) {

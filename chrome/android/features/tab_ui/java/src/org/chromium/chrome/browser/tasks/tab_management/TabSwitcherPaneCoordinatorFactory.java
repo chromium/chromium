@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -191,7 +192,7 @@ public class TabSwitcherPaneCoordinatorFactory {
 
         return new TabSwitcherPaneCoordinator(
                 mActivity,
-                mProfileProviderSupplier,
+                assertNonNull(mProfileProviderSupplier.get()),
                 createTabGroupModelFilterSupplier(isIncognito),
                 mTabContentManager,
                 mBrowserControlsStateProvider,
@@ -287,7 +288,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                             mLayoutStateProviderSupplier);
             if (mLifecycleDispatcher.isNativeInitializationFinished()) {
                 mMessageManager.initWithNative(
-                        mProfileProviderSupplier.get().getOriginalProfile(), getTabListMode());
+                        assumeNonNull(mProfileProviderSupplier.get()).getOriginalProfile(),
+                        getTabListMode());
             } else {
                 mLifecycleDispatcher.register(
                         new NativeInitObserver() {
@@ -295,7 +297,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                             public void onFinishNativeInitialization() {
                                 if (mMessageManager != null) {
                                     mMessageManager.initWithNative(
-                                            mProfileProviderSupplier.get().getOriginalProfile(),
+                                            assumeNonNull(mProfileProviderSupplier.get())
+                                                    .getOriginalProfile(),
                                             getTabListMode());
                                 }
                                 mLifecycleDispatcher.unregister(this);

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Bundle;
@@ -208,7 +209,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                     getProfile(),
                     getActivity().getSupportFragmentManager(),
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                    assumeNonNull(mSnackbarManagerSupplier).get(),
+                    assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
                     SignoutReason.USER_DISABLED_ALLOW_CHROME_SIGN_IN,
                     /* showConfirmDialog= */ true,
                     () -> {

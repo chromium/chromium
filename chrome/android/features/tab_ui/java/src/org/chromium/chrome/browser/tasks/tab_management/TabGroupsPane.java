@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
 
@@ -171,7 +172,7 @@ public class TabGroupsPane implements Pane {
                     new TabGroupListCoordinator(
                             mContext,
                             assumeNonNull(mTabGroupModelFilterSupplier.get()),
-                            mProfileProviderSupplier.get(),
+                            assertNonNull(mProfileProviderSupplier.get()),
                             mPaneManagerSupplier.get(),
                             mTabGroupUiActionHandlerSupplier.get(),
                             mModalDialogManagerSupplier.get(),

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.creator;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 
@@ -219,7 +220,8 @@ public class CreatorActivity extends SnackbarActivity {
 
     // This implements the CreatorWebContents interface.
     public WebContents createWebContents() {
-        return WebContentsFactory.createWebContents(getProfileSupplier().get(), true, false);
+        return WebContentsFactory.createWebContents(
+                assertNonNull(getProfileSupplier().get()), true, false);
     }
 
     // This implements the CreatorOpenTab interface.

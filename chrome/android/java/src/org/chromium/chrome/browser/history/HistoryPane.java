@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
 
 import android.app.Activity;
@@ -138,7 +139,7 @@ public class HistoryPane implements Pane {
                             mActivity,
                             /* isSeparateActivity= */ false,
                             mSnackbarManager,
-                            mProfileProviderSupplier.get().getOriginalProfile(),
+                            assumeNonNull(mProfileProviderSupplier.get()).getOriginalProfile(),
                             mBottomSheetController,
                             mTabSupplier,
                             new BrowsingHistoryBridge(

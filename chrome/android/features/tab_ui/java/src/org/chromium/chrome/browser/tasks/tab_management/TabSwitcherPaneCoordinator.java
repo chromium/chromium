@@ -141,7 +141,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener
             mLongPressItemEventListener = this::onLongPressOnTabCard;
     private final Activity mActivity;
-    private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
+    private final ProfileProvider mProfileProvider;
     private final Callback<Boolean> mOnVisibilityChanged = this::onVisibilityChanged;
     private final ObservableSupplier<Boolean> mIsVisibleSupplier;
     private final ObservableSupplier<Boolean> mIsAnimatingSupplier;
@@ -194,7 +194,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     /**
      * @param activity The {@link Activity} that hosts the pane.
-     * @param profileProviderSupplier The supplier for profiles.
+     * @param profileProvider The provider for profiles.
      * @param tabGroupModelFilterSupplier The supplier of the tab model filter fo rthis pane.
      * @param tabContentManager For management of thumbnails.
      * @param browserControlsStateProvider For determining thumbnail size.
@@ -225,7 +225,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      */
     public TabSwitcherPaneCoordinator(
             Activity activity,
-            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            ProfileProvider profileProvider,
             ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -252,7 +252,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             Callback<@Nullable View> setOverlayViewCallback,
             @Nullable TabSwitcherDragHandler tabSwitcherDragHandler) {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.constructor")) {
-            mProfileProviderSupplier = profileProviderSupplier;
+            mProfileProvider = profileProvider;
             mIsVisibleSupplier = isVisibleSupplier;
             mIsAnimatingSupplier = isAnimatingSupplier;
             mActivity = activity;
@@ -290,7 +290,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             .build();
 
             mContainerViewModel = containerViewModel;
-            Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
+            Profile profile = profileProvider.getOriginalProfile();
             mDialogControllerSupplier =
                     LazyOneshotSupplier.fromSupplier(
                             () -> {
@@ -536,9 +536,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     /** Post native initialization. */
     public void initWithNative() {
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherPaneCoordinator.initWithNative")) {
-            ProfileProvider profileProvider = mProfileProviderSupplier.get();
-            assert profileProvider != null;
-            Profile originalProfile = profileProvider.getOriginalProfile();
+            Profile originalProfile = mProfileProvider.getOriginalProfile();
             mTabListCoordinator.initWithNative(originalProfile);
             mMultiThumbnailCardProvider.initWithNative(originalProfile);
         }

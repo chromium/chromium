@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_FADE_DURATION_MS;
 
 import android.app.Activity;
@@ -127,7 +128,8 @@ public class BookmarkPane implements Pane {
     public void notifyLoadHint(@LoadHint int loadHint) {
         if (loadHint == LoadHint.HOT && mBookmarkManager == null) {
             ComponentName componentName = mActivity.getComponentName();
-            Profile originalProfile = mProfileProviderSupplier.get().getOriginalProfile();
+            Profile originalProfile =
+                    assumeNonNull(mProfileProviderSupplier.get()).getOriginalProfile();
             mBookmarkOpener =
                     new BookmarkOpenerImpl(
                             () -> BookmarkModel.getForProfile(originalProfile),

@@ -78,7 +78,8 @@ public class HistorySyncFirstRunFragment extends Fragment
         if (mHistorySyncCoordinator != null) return;
 
         FirstRunPageDelegate delegate = assumeNonNull(getPageDelegate());
-        Profile profile = delegate.getProfileProviderSupplier().get().getOriginalProfile();
+        Profile profile =
+                assumeNonNull(delegate.getProfileProviderSupplier().get()).getOriginalProfile();
         SigninManager signinManager =
                 assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile));
         if (signinManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) {

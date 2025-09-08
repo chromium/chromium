@@ -257,7 +257,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         //
         // TODO(b/245912657): explicitly sign in supervised users in {@link
         // FullscreenSigninMediator#handleContinueWithNative} rather than relying on SigninChecker.
-        SigninCheckerProvider.get(getProfileProviderSupplier().get().getOriginalProfile());
+        Profile originalProfile =
+                assumeNonNull(getProfileProviderSupplier().get()).getOriginalProfile();
+        SigninCheckerProvider.get(originalProfile);
 
         assumeNonNull(mFreProperties);
         mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
@@ -277,9 +279,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // fly according to the situation.
         BooleanSupplier showHistorySync = () -> mFreProperties.getBoolean(SHOW_HISTORY_SYNC_PAGE);
         if (!showHistorySync.getAsBoolean()) {
-            HistorySyncHelper historySyncHelper =
-                    HistorySyncHelper.getForProfile(
-                            getProfileProviderSupplier().get().getOriginalProfile());
+            HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(originalProfile);
             historySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.START_PAGE);
         }
         mPages.add(new FirstRunPage<>(HistorySyncFirstRunFragment.class, showHistorySync));
@@ -428,7 +428,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
                     onNativeDependenciesFullyInitialized();
                 };
-        Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
+        Profile profile = assumeNonNull(getProfileProviderSupplier().get()).getOriginalProfile();
         TemplateUrlServiceFactory.getForProfile(profile).runWhenLoaded(onNativeFinished);
         // Notify feature engagement that FRE occurred.
         TrackerFactory.getTrackerForProfile(profile)

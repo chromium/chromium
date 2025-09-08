@@ -8,7 +8,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
@@ -39,8 +38,7 @@ public class OneshotSupplierImpl<T> implements OneshotSupplier<T> {
     }
 
     @Override
-    @NullUnmarked // TODO(430320400): Introduces a lot of warnings.
-    public T get() {
+    public @Nullable T get() {
         mThreadChecker.assertOnValidThread();
         return mPromise.isFulfilled() ? mPromise.getResult() : null;
     }
