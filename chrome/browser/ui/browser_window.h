@@ -246,6 +246,9 @@ class BrowserWindow : public ui::BaseWindow {
   // changed.
   virtual void UpdateDevTools(content::WebContents* inspected_web_contents) = 0;
 
+  // Returns true if the browser window can dock a DevTools panel.
+  virtual bool CanDockDevTools() const = 0;
+
   // Update any loading animations running in the window. |is_visible| is true
   // if the window is visible.
   virtual void UpdateLoadingAnimations(bool is_visible) = 0;

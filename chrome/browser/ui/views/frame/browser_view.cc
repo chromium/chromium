@@ -1708,6 +1708,10 @@ void BrowserView::UpdateDevTools(content::WebContents* inspected_web_contents) {
   DeprecatedLayoutImmediately();
 }
 
+bool BrowserView::CanDockDevTools() const {
+  return browser_->is_type_normal();
+}
+
 void BrowserView::UpdateLoadingAnimations(bool is_visible) {
   const bool should_animate =
       is_visible && browser_->tab_strip_model()->TabsNeedLoadingUI();

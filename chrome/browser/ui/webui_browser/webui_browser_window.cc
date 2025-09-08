@@ -550,6 +550,13 @@ void WebUIBrowserWindow::UpdateDevTools(
   NOTIMPLEMENTED();
 }
 
+bool WebUIBrowserWindow::CanDockDevTools() const {
+  // This forces DevTools to open in a new window, which is currently necessary
+  // because the code path for a launching docked DevTools requires BrowserView,
+  // ContentsContainerView, etc.
+  return false;
+}
+
 void WebUIBrowserWindow::UpdateLoadingAnimations(bool is_visible) {
   NOTIMPLEMENTED();
 }

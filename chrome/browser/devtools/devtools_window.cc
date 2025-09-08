@@ -1254,7 +1254,7 @@ DevToolsWindow* DevToolsWindow::Create(
   if (inspected_web_contents) {
     // Check for a place to dock.
     Browser* browser = chrome::FindBrowserWithTab(inspected_web_contents);
-    if (!browser || !browser->is_type_normal()) {
+    if (!browser || !browser->window()->CanDockDevTools()) {
       can_dock = false;
     }
   }
