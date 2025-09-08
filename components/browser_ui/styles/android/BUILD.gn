@@ -263,6 +263,7 @@ android_resources("java_resources") {
     "java/res/values-night/values.xml",
     "java/res/values-sw600dp/styles.xml",
     "java/res/values-v31/colors.xml",
+    "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/drawables.xml",

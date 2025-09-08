@@ -13,6 +13,7 @@ found in the LICENSE file.
         <!-- android:windowContentTransitions is set to true in Theme.Chromium.WithWindowAnimation,
              which causes a cryptic crash in EditorDialog. See: https://crbug.com/1254821. -->
         <item name="android:windowContentTransitions">false</item>
+        <item name="isDialogFullscreen">true</item>
     </style>
     <style name="ThemeOverlay.BrowserUI.Fullscreen" parent="Base.ThemeOverlay.BrowserUI.Fullscreen">
         <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
