@@ -877,15 +877,21 @@ void PeerConnectionTracker::TrackIceCandidateError(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  String address_string =
-      address ? StrCat({"address: ", address, "\n"}) : String();
-  String port_string =
-      port.has_value() ? String::Format("port: %d\n", port.value()) : "";
-  String value = StrCat({"url: ", url, "\n", address_string, port_string,
-                         "host_candidate: ", host_candidate, "\n",
-                         "error_text: ", error_text, "\n",
-                         "error_code: ", String::Number(error_code)});
-  SendPeerConnectionUpdate(id, "icecandidateerror", value);
+
+  auto json = std::make_unique<JSONObject>();
+  json->SetString("url", url);
+  if (address) {
+    json->SetString("address", address);
+  }
+  if (port.has_value()) {
+    json->SetInteger("port", *port);
+  }
+  json->SetString("host_candidate", host_candidate);
+  json->SetString("error_text", error_text);
+  json->SetInteger("error_code", error_code);
+  StringBuilder value;
+  json->WriteJSON(&value);
+  SendPeerConnectionUpdate(id, "icecandidateerror", value.ToString());
 }
 
 void PeerConnectionTracker::TrackAddTransceiver(

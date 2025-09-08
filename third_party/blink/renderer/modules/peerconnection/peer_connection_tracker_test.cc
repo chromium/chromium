@@ -480,12 +480,14 @@ TEST_F(PeerConnectionTrackerTest, IceCandidateError) {
                                    "test url", 404, "test error");
   base::RunLoop().RunUntilIdle();
   String expected_value(
-      "url: test url\n"
-      "address: 1.1.1.1\n"
-      "port: 15\n"
-      "host_candidate: [::1]\n"
-      "error_text: test error\n"
-      "error_code: 404");
+      "{"
+      "\"url\":\"test url\","
+      "\"address\":\"1.1.1.1\","
+      "\"port\":15,"
+      "\"host_candidate\":\"[::1]\","
+      "\"error_text\":\"test error\","
+      "\"error_code\":404"
+      "}");
   EXPECT_EQ(expected_value, update_value);
 }
 
