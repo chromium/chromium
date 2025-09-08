@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/history/model/domain_diversity_reporter_factory.h"
 
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/time/default_clock.h"
 #import "build/build_config.h"
@@ -29,7 +30,7 @@ DomainDiversityReporterFactory* DomainDiversityReporterFactory::GetInstance() {
 
 DomainDiversityReporterFactory::DomainDiversityReporterFactory()
     : ProfileKeyedServiceFactoryIOS("DomainDiversityReporter",
-                                    ProfileSelection::kRedirectedInIncognito,
+                                    ProfileSelection::kNoInstanceInIncognito,
                                     ServiceCreation::kCreateWithProfile,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(ios::HistoryServiceFactory::GetInstance());
@@ -39,12 +40,8 @@ DomainDiversityReporterFactory::~DomainDiversityReporterFactory() = default;
 
 std::unique_ptr<KeyedService>
 DomainDiversityReporterFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
-  if (profile->IsOffTheRecord()) {
-    return nullptr;
-  }
-
+    ProfileIOS* profile) const {
+  CHECK(!profile->IsOffTheRecord());
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);

@@ -29,15 +29,11 @@ namespace {
 // data.
 constexpr int kMaxSyncedNewTabPageDisplays = 5;
 
-std::unique_ptr<HistoryClientImpl> BuildHistoryClient(ProfileIOS* profile) {
-  return std::make_unique<HistoryClientImpl>(
-      BookmarkModelFactory::GetForProfile(profile));
-}
-
-std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  std::unique_ptr<history::HistoryService> history_service(
-      new history::HistoryService(BuildHistoryClient(profile), nullptr));
+std::unique_ptr<KeyedService> BuildHistoryService(ProfileIOS* profile) {
+  auto history_service = std::make_unique<history::HistoryService>(
+      std::make_unique<HistoryClientImpl>(
+          BookmarkModelFactory::GetForProfile(profile)),
+      nullptr);
   if (!history_service->Init(history::HistoryDatabaseParamsForPath(
           profile->GetStatePath(), GetChannel()))) {
     return nullptr;
@@ -85,9 +81,9 @@ HistoryServiceFactory* HistoryServiceFactory::GetInstance() {
 }
 
 // static
-HistoryServiceFactory::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 HistoryServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildHistoryService);
+  return base::BindOnce(&BuildHistoryService);
 }
 
 HistoryServiceFactory::HistoryServiceFactory()
@@ -101,8 +97,8 @@ HistoryServiceFactory::HistoryServiceFactory()
 HistoryServiceFactory::~HistoryServiceFactory() = default;
 
 std::unique_ptr<KeyedService> HistoryServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildHistoryService(context);
+    ProfileIOS* profile) const {
+  return BuildHistoryService(profile);
 }
 
 }  // namespace ios

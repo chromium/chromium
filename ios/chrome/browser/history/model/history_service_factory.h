@@ -24,7 +24,7 @@ class HistoryServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static HistoryServiceFactory* GetInstance();
 
   // Returns the default factory, useful in tests where it's null by default.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<HistoryServiceFactory>;
@@ -32,9 +32,9 @@ class HistoryServiceFactory : public ProfileKeyedServiceFactoryIOS {
   HistoryServiceFactory();
   ~HistoryServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

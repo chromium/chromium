@@ -28,12 +28,11 @@ class DomainDiversityReporterFactory : public ProfileKeyedServiceFactoryIOS {
   DomainDiversityReporterFactory();
   ~DomainDiversityReporterFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation
+  // ProfileKeyedServiceFactoryIOS implementation
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_MODEL_DOMAIN_DIVERSITY_REPORTER_FACTORY_H_
