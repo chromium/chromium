@@ -38,6 +38,7 @@ source_set("gbm") {
     ":drm",
     "//base",
     "//build/config/linux/libdrm",
+    "//components/viz/common:shared_image_format",
     "//skia",
     "//third_party/minigbm",
     "//ui/gfx:buffer_types",

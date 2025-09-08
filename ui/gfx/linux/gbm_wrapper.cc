@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -111,13 +112,12 @@ size_t GetSizeOfPlane(gbm_bo* bo,
 
   // Get row size of the plane, stride and subsampled height to finally get the
   // size of a plane in bytes.
-  const gfx::BufferFormat buffer_format =
-      ui::GetBufferFormatFromFourCCFormat(format);
+  const viz::SharedImageFormat si_format =
+      ui::GetSharedImageFormatFromFourCCFormat(format);
   const base::CheckedNumeric<size_t> stride_for_plane =
       GetStrideForPlane(bo, plane);
   const base::CheckedNumeric<size_t> subsampled_height =
-      size.height() /
-      gfx::SubsamplingFactorForBufferFormat(buffer_format, plane);
+      si_format.GetPlaneSize(plane, size).height();
 
   // Apply subsampling factor to get size in bytes.
   const base::CheckedNumeric<size_t> checked_plane_size =

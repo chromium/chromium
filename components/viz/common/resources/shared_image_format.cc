@@ -16,6 +16,8 @@
 namespace viz {
 namespace {
 
+using PlaneConfig = SharedImageFormat::PlaneConfig;
+
 static size_t ConvertBitsToBytes(size_t bits) {
   size_t bytes = bits / 8;
   // Don't add anything to `bits` to avoid potential overflow.
@@ -118,6 +120,24 @@ const char* ChannelFormatToString(SharedImageFormat::ChannelFormat channel) {
 
 const char* PrefersExternalSamplerToString(SharedImageFormat format) {
   return format.PrefersExternalSampler() ? "ExtSamplerOn" : "ExtSamplerOff";
+}
+
+bool IsUVPlane(SharedImageFormat format, int plane) {
+  DCHECK(format.IsValidPlaneIndex(plane));
+  if (format.is_single_plane()) {
+    return false;
+  }
+
+  switch (format.plane_config()) {
+    case PlaneConfig::kY_U_V:
+    case PlaneConfig::kY_V_U:
+      return plane != 0;
+    case PlaneConfig::kY_UV:
+    case PlaneConfig::kY_UV_A:
+      return plane == 1;
+    case PlaneConfig::kY_U_V_A:
+      return plane == 1 || plane == 2;
+  }
 }
 
 }  // namespace
@@ -248,24 +268,13 @@ std::pair<int, int> SharedImageFormat::GetSubsamplingScale() const {
 gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
                                           const gfx::Size& size) const {
   DCHECK(IsValidPlaneIndex(plane_index));
-  if (is_single_plane()) {
-    return size;
+  if (IsUVPlane(*this, plane_index)) {
+    auto [width_scale, height_scale] = GetSubsamplingScale();
+    return gfx::ScaleToCeiledSize(size, 1.0 / width_scale, 1.0 / height_scale);
   }
 
-  // First plane is always Y plane and it is always size (not subsampled).
-  if (plane_index == 0) {
-    return size;
-  }
-  // A plane is always size
-  if (plane_config() == PlaneConfig::kY_UV_A && plane_index == 2) {
-    return size;
-  }
-  if (plane_config() == PlaneConfig::kY_U_V_A && plane_index == 3) {
-    return size;
-  }
-
-  auto [width_scale, height_scale] = GetSubsamplingScale();
-  return gfx::ScaleToCeiledSize(size, 1.0 / width_scale, 1.0 / height_scale);
+  // Single-planar and Planes Y, A are always size.
+  return size;
 }
 
 // For multiplanar formats.
