@@ -96,8 +96,6 @@ CSSValueID InterpolableLength::LengthTypeToCSSValueID(Length::Type lt) {
       return CSSValueID::kFitContent;
     case Length::Type::kStretch:
       return CSSValueID::kStretch;
-    case Length::Type::kFillAvailable:
-      return CSSValueID::kWebkitFillAvailable;
     case Length::Type::kContent:  // only valid for flex-basis.
       return CSSValueID::kContent;
     default:
@@ -118,12 +116,9 @@ Length::Type InterpolableLength::CSSValueIDToLengthType(CSSValueID id) {
     case CSSValueID::kFitContent:
     case CSSValueID::kWebkitFitContent:
       return Length::Type::kFitContent;
+    case CSSValueID::kWebkitFillAvailable:
     case CSSValueID::kStretch:
       return Length::Type::kStretch;
-    case CSSValueID::kWebkitFillAvailable:
-      return RuntimeEnabledFeatures::AliasWebkitFillAvailableEnabled()
-                 ? Length::Type::kStretch
-                 : Length::Type::kFillAvailable;
     case CSSValueID::kContent:  // only valid for flex-basis.
       return Length::Type::kContent;
     default:

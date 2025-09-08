@@ -42,7 +42,6 @@ LayoutUnit ResolveInlineLengthInternal(
   const Length& length =
       original_length.IsAuto() && auto_length ? *auto_length : original_length;
   switch (length.GetType()) {
-    case Length::kFillAvailable:
     case Length::kStretch: {
       const LayoutUnit available_size =
           override_available_size == kIndefiniteSize
@@ -53,20 +52,15 @@ LayoutUnit ResolveInlineLengthInternal(
       }
       DCHECK_GE(available_size, LayoutUnit());
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
-      LayoutUnit margins_to_subtract = margins.InlineSum();
-      if (length.GetType() == Length::kStretch) {
-        const LogicalBoxSides& ignore_margin_sides =
-            constraint_space.IgnoreMarginsForStretch();
-        margins_to_subtract = ignore_margin_sides.inline_start
-                                  ? LayoutUnit()
-                                  : margins.inline_start;
-        margins_to_subtract +=
-            ignore_margin_sides.inline_end ? LayoutUnit() : margins.inline_end;
-      } else {
-        DCHECK(!RuntimeEnabledFeatures::AliasWebkitFillAvailableEnabled());
-      }
-      return std::max(border_padding.InlineSum(),
-                      available_size - margins_to_subtract);
+      const LogicalBoxSides& ignore_margin_sides =
+          constraint_space.IgnoreMarginsForStretch();
+      return std::max(
+          border_padding.InlineSum(),
+          available_size -
+              (ignore_margin_sides.inline_start ? LayoutUnit()
+                                                : margins.inline_start) -
+              (ignore_margin_sides.inline_end ? LayoutUnit()
+                                              : margins.inline_end));
     }
     case Length::kPercent:
     case Length::kFixed:
@@ -183,7 +177,6 @@ LayoutUnit ResolveBlockLengthInternal(
   const Length& length =
       original_length.IsAuto() && auto_length ? *auto_length : original_length;
   switch (length.GetType()) {
-    case Length::kFillAvailable:
     case Length::kStretch: {
       const LayoutUnit available_size =
           override_available_size == kIndefiniteSize
@@ -196,20 +189,15 @@ LayoutUnit ResolveBlockLengthInternal(
       }
       DCHECK_GE(available_size, LayoutUnit());
       const BoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
-      LayoutUnit margins_to_subtract = margins.BlockSum();
-      if (length.GetType() == Length::kStretch) {
-        const LogicalBoxSides& ignore_margin_sides =
-            constraint_space.IgnoreMarginsForStretch();
-        margins_to_subtract = ignore_margin_sides.block_start
-                                  ? LayoutUnit()
-                                  : margins.block_start;
-        margins_to_subtract +=
-            ignore_margin_sides.block_end ? LayoutUnit() : margins.block_end;
-      } else {
-        DCHECK(!RuntimeEnabledFeatures::AliasWebkitFillAvailableEnabled());
-      }
-      return std::max(border_padding.BlockSum(),
-                      available_size - margins_to_subtract);
+      const LogicalBoxSides& ignore_margin_sides =
+          constraint_space.IgnoreMarginsForStretch();
+      return std::max(
+          border_padding.BlockSum(),
+          available_size -
+              (ignore_margin_sides.block_start ? LayoutUnit()
+                                               : margins.block_start) -
+              (ignore_margin_sides.block_end ? LayoutUnit()
+                                             : margins.block_end));
     }
     case Length::kPercent:
     case Length::kFixed:
