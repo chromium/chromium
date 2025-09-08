@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
@@ -38,14 +40,14 @@ class GroupMapAccessor {
   GroupMapAccessor(const GroupMapAccessor&) = delete;
   GroupMapAccessor& operator=(const GroupMapAccessor&) = delete;
 
-  // Ensures that `group_identifier` is associated with only one non-trigger,
-  // trigger, or signed-in key.
-  void ValidateID(IDCollectionKey key,
+  // Validates the specified mapping. A `group_identifier` is allowed to only
+  // have one `key`, except in the case of `GOOGLE_APP`. A `GOOGLE_APP` key may
+  // coexist with another provided they have the same `id` value.
+  bool ValidateID(IDCollectionKey key,
                   ActiveGroupId group_identifier,
                   VariationID id) {
     static_assert(ID_COLLECTION_COUNT == 6,
                   "If you add a new collection key, add handling code here!");
-#if DCHECK_IS_ON()
     for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
       IDCollectionKey other_key = static_cast<IDCollectionKey>(i);
       if (key == other_key) {
@@ -53,28 +55,38 @@ class GroupMapAccessor {
       }
 
       VariationID other_id = GetID(other_key, group_identifier);
-
-      // For a GOOGLE_APP key, validate that all other collections with this
-      // `group_identifier` have the same associated ID.
-      if (key == GOOGLE_APP) {
-        DCHECK(other_id == EMPTY_ID || other_id == id);
+      if (other_id == EMPTY_ID) {
         continue;
       }
 
-      // The ID should not be registered under a different non-GOOGLE_APP
-      // IDCollectionKey.
-      if (other_key != GOOGLE_APP) {
-        DCHECK_EQ(EMPTY_ID, other_id);
+      // In the case of a GOOGLE_APP key, another entry is allowed provided that
+      // the IDs match.
+      if (key == GOOGLE_APP || other_key == GOOGLE_APP) {
+        if (other_id != id) {
+          return false;
+        }
+        continue;
       }
+
+      // `group_identifier` may not be registered under multiple non-GOOGLE_APP
+      // IDCollectionKey values.
+      return false;
     }
-#endif  // DCHECK_IS_ON()
+    return true;
   }
 
   void AssociateID(IDCollectionKey key,
                    ActiveGroupId group_identifier,
                    VariationID id,
                    TimeWindow time_window) {
-    ValidateID(key, group_identifier, id);
+    if (!ValidateID(key, group_identifier, id)) {
+      // In the case of a validation failure, omit the association and instead
+      // report the issue via a crash dump, to notify us of a problem with the
+      // server-side configs.
+      SCOPED_CRASH_KEY_NUMBER("InvalidVariationsID", "id", id);
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
 
     base::AutoLock scoped_lock(lock_);
 
