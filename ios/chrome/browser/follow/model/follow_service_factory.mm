@@ -32,9 +32,7 @@ FollowServiceFactory::FollowServiceFactory()
 FollowServiceFactory::~FollowServiceFactory() = default;
 
 std::unique_ptr<KeyedService> FollowServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   FollowConfiguration* configuration = [[FollowConfiguration alloc] init];
   configuration.feedService =
       DiscoverFeedServiceFactory::GetForProfile(profile);
