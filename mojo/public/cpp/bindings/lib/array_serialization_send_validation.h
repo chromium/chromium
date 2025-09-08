@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_ARRAY_SERIALIZATION_SEND_VALIDATION_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_ARRAY_SERIALIZATION_SEND_VALIDATION_H_
 
@@ -324,7 +319,7 @@ struct SendValidationArraySerializer<
     size_t size = input->GetSize();
     for (size_t i = 0; i < size; ++i) {
       MessageFragment<DataElement> inlined_union_element(fragment.message());
-      inlined_union_element.Claim(fragment->storage() + i);
+      inlined_union_element.Claim(&fragment->at(i));
       decltype(auto) next = input->GetNext();
       Serialize<Element, send_validation>(next, inlined_union_element, true);
 
