@@ -144,7 +144,10 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION,
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    })
     public void testBuildMenuItems_NormalMode_NoIncognitoTabs_NoGroups() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
@@ -162,6 +165,28 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testBuildMenuItems_NormalMode_NoIncognitoTabs_NoGroups_incognitoWindowEnabled() {
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
+
+        ModelList items = mCoordinator.buildMenuItems();
+        assertEquals(5, items.size());
+
+        // Close, Divider, New Tab, New Window, New Incognito Window
+        assertEquals(R.id.close_tab, getMenuItemId(items, 0));
+        assertEquals(TabSwitcherActionMenuCoordinator.MenuItemType.DIVIDER, items.get(1).type);
+        assertEquals(R.id.new_tab_menu_id, getMenuItemId(items, 2));
+        assertEquals(R.id.new_window_menu_id, getMenuItemId(items, 3));
+        assertEquals(R.id.new_incognito_window_menu_id, getMenuItemId(items, 4));
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION,
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    })
     public void testBuildMenuItems_NormalMode_WithIncognitoTabs_NoGroups_MigrationOff() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
         when(mIncognitoTabModel.getCount()).thenReturn(1);
@@ -219,6 +244,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
         ChromeFeatureList.TAB_MODEL_INIT_FIXES
     })
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testBuildMenuItems_NormalMode_TabGroupsExist() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
@@ -238,6 +264,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
         ChromeFeatureList.TAB_MODEL_INIT_FIXES
     })
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testBuildMenuItems_NormalMode_NoTabGroups() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
@@ -254,7 +281,10 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
-    @DisableFeatures(ChromeFeatureList.TAB_MODEL_INIT_FIXES)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_MODEL_INIT_FIXES,
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
+    })
     public void testBuildMenuItems_NormalMode_WithoutInitFixes() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
@@ -277,6 +307,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
         ChromeFeatureList.TAB_MODEL_INIT_FIXES
     })
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testBuildMenuItems_NormalMode_BeforeTabModelInit() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);

@@ -148,6 +148,7 @@ android_library("java") {
     "//base:service_loader_java",
     "//build/android:build_java",
     "//cc:cc_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/android/features/tab_ui/public:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/back_press/android:java",

@@ -62,6 +62,8 @@ public class TabSwitcherActionMenuCoordinator {
         MenuItemType.CLOSE_ALL_INCOGNITO_TABS,
         MenuItemType.ADD_TAB_TO_GROUP,
         MenuItemType.ADD_TAB_TO_NEW_GROUP,
+        MenuItemType.NEW_WINDOW,
+        MenuItemType.NEW_INCOGNITO_WINDOW,
     })
     public @interface MenuItemType {
         int DIVIDER = 0;
@@ -73,6 +75,8 @@ public class TabSwitcherActionMenuCoordinator {
         int CLOSE_ALL_INCOGNITO_TABS = 6;
         int ADD_TAB_TO_GROUP = 7;
         int ADD_TAB_TO_NEW_GROUP = 8;
+        int NEW_WINDOW = 9;
+        int NEW_INCOGNITO_WINDOW = 10;
     }
 
     /**
@@ -213,8 +217,16 @@ public class TabSwitcherActionMenuCoordinator {
             itemList.add(buildListItemByMenuItemType(MenuItemType.CLOSE_ALL_INCOGNITO_TABS));
         }
         itemList.add(buildListItemByMenuItemType(MenuItemType.DIVIDER));
-        itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_TAB));
-        itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_INCOGNITO_TAB));
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isCurrentModelIncognito) {
+            itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_TAB));
+        }
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || isCurrentModelIncognito) {
+            itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_INCOGNITO_TAB));
+        }
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_WINDOW));
+            itemList.add(buildListItemByMenuItemType(MenuItemType.NEW_INCOGNITO_WINDOW));
+        }
         maybeBuildAddToGroup(itemList);
         if (incognitoMigrationFFEnabled && supportedMixedWindows) {
             if (isCurrentModelIncognito) {
@@ -246,6 +258,7 @@ public class TabSwitcherActionMenuCoordinator {
     }
 
     protected ListItem buildListItemByMenuItemType(@MenuItemType int type) {
+        boolean enabled = IncognitoUtils.isIncognitoModeEnabled(mProfile);
         switch (type) {
             case MenuItemType.CLOSE_TAB:
                 return new ListItemBuilder()
@@ -257,14 +270,19 @@ public class TabSwitcherActionMenuCoordinator {
                 return new ListItemBuilder()
                         .withTitleRes(R.string.menu_new_tab)
                         .withMenuId(R.id.new_tab_menu_id)
-                        .withStartIconRes(R.drawable.new_tab_icon)
+                        .withStartIconRes(
+                                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                                        ? R.drawable.ic_add_box_rounded_corner
+                                        : R.drawable.new_tab_icon)
                         .build();
             case MenuItemType.NEW_INCOGNITO_TAB:
-                boolean enabled = IncognitoUtils.isIncognitoModeEnabled(mProfile);
                 return new ListItemBuilder()
                         .withTitleRes(R.string.menu_new_incognito_tab)
                         .withMenuId(R.id.new_incognito_tab_menu_id)
-                        .withStartIconRes(R.drawable.incognito_simple)
+                        .withStartIconRes(
+                                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                                        ? R.drawable.ic_add_box_rounded_corner
+                                        : R.drawable.incognito_simple)
                         .withEnabled(enabled)
                         .build();
             case MenuItemType.CLOSE_ALL_INCOGNITO_TABS:
@@ -299,6 +317,19 @@ public class TabSwitcherActionMenuCoordinator {
                         .withTitleRes(R.string.menu_add_tab_to_new_group)
                         .withMenuId(R.id.add_tab_to_new_group_menu_id)
                         .withStartIconRes(R.drawable.ic_widgets)
+                        .build();
+            case MenuItemType.NEW_WINDOW:
+                return new ListItemBuilder()
+                        .withTitleRes(R.string.menu_new_window)
+                        .withMenuId(R.id.new_window_menu_id)
+                        .withStartIconRes(R.drawable.ic_new_window)
+                        .build();
+            case MenuItemType.NEW_INCOGNITO_WINDOW:
+                return new ListItemBuilder()
+                        .withTitleRes(R.string.menu_new_incognito_window)
+                        .withMenuId(R.id.new_incognito_window_menu_id)
+                        .withStartIconRes(R.drawable.ic_incognito)
+                        .withEnabled(enabled)
                         .build();
             case MenuItemType.DIVIDER:
             default:
