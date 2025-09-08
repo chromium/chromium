@@ -281,6 +281,9 @@ CGFloat const kSheetCornerRadius = 30;
   }
   presentationController.detents = detents;
 
+  presentationController.largestUndimmedDetentIdentifier =
+      kBottomSheetDetentIdentifier;
+
   [self.baseViewController presentViewController:navigationController
                                         animated:YES
                                       completion:nil];
