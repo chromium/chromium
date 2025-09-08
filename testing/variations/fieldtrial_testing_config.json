@@ -23824,23 +23824,6 @@
             ]
         }
     ],
-    "SignInPromoMaterialNextUI": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SignInPromoMaterialNextUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "SimpleCachePrioritizedCaching": [
         {
             "platforms": [

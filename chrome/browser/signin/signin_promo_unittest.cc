@@ -78,17 +78,18 @@ TEST(SigninPromoTest, TestReauthURL) {
 TEST(SigninPromoTest, SigninURLForDice) {
   EXPECT_EQ(
       "https://accounts.google.com/signin/chrome/sync?ssp=1&"
-      "color_scheme=dark&flow=promo",
+      "color_scheme=dark&flow=promo&theme=mn",
       GetChromeSyncURLForDice(
           {.request_dark_scheme = true, .flow = Flow::PROMO}));
   EXPECT_EQ(
       "https://accounts.google.com/signin/chrome/sync?ssp=1&"
-      "email_hint=email%40gmail.com&continue=https%3A%2F%2Fcontinue_url%2F",
+      "email_hint=email%40gmail.com&continue=https%3A%2F%2Fcontinue_url%2F&"
+      "theme=mn",
       GetChromeSyncURLForDice(
           {"email@gmail.com", GURL("https://continue_url/")}));
   EXPECT_EQ(
       "https://accounts.google.com/signin/chrome/"
-      "sync?ssp=1&flow=embedded_promo",
+      "sync?ssp=1&flow=embedded_promo&theme=mn",
       GetChromeSyncURLForDice({.flow = Flow::EMBEDDED_PROMO}));
   EXPECT_EQ(
       "https://accounts.google.com/AddSession?"
@@ -97,12 +98,10 @@ TEST(SigninPromoTest, SigninURLForDice) {
                               GURL("https://continue_url/")));
 }
 
-TEST(SigninPromoTest,
-     SigninURLForDiceWithMaterialNextThemeAndHistorySyncOptin) {
+TEST(SigninPromoTest, SigninURLForDiceWithHistorySyncOptin) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{switches::kSignInPromoMaterialNextUI,
-                            switches::kEnableHistorySyncOptin},
+      /*enabled_features=*/{switches::kEnableHistorySyncOptin},
       /*disabled_features=*/{});
   EXPECT_EQ(
       "https://accounts.google.com/signin/chrome/sync?ssp=1&"
