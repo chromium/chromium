@@ -10,6 +10,7 @@
 #import <memory>
 #import <string_view>
 
+#import "base/ios/ios_util.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -836,6 +837,15 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
   }
+
+  // TODO(crbug.com/443713676): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    if (![ChromeEarlGrey isIPadIdiom]) {
+      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+    }
+  }
+#endif
 
   // Fill and submit the form.
   [self fillPresidentProfileAndShowSaveModal];
