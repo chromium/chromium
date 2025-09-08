@@ -100,7 +100,7 @@ void UserTiming::AddMarkToPerformanceTimeline(
       // Emit the dynamic name as debug annotation instead.
       ctx.AddDebugAnnotation("markName", mark.name().Utf8());
     } else {
-      ctx.event()->set_name(mark.name().Utf8().c_str());
+      ctx.event()->set_name(mark.name().Utf8());
     }
     ctx.AddDebugAnnotation("data", [&](perfetto::TracedValue trace_context) {
       auto dict = std::move(trace_context).WriteDictionary();
@@ -287,7 +287,7 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
             // Emit the dynamic name as debug annotation instead.
             ctx.AddDebugAnnotation("measureName", measure_name.Utf8());
           } else {
-            ctx.event()->set_name(measure_name.Utf8().c_str());
+            ctx.event()->set_name(measure_name.Utf8());
           }
           if (serialized_detail.length()) {
             ctx.AddDebugAnnotation("detail", serialized_detail);

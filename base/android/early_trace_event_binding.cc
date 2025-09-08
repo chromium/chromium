@@ -76,12 +76,11 @@ static void JNI_EarlyTraceEvent_RecordEarlyAsyncBeginEvent(JNIEnv* env,
                                                            std::string& name,
                                                            jlong id,
                                                            jlong time_ns) {
-  TRACE_EVENT_BEGIN(internal::kJavaTraceCategory, nullptr,
-                    perfetto::Track(static_cast<uint64_t>(id)),
-                    TimeTicks::FromJavaNanoTime(time_ns),
-                    [&](::perfetto::EventContext& ctx) {
-                      ctx.event()->set_name(name.c_str());
-                    });
+  TRACE_EVENT_BEGIN(
+      internal::kJavaTraceCategory, nullptr,
+      perfetto::Track(static_cast<uint64_t>(id)),
+      TimeTicks::FromJavaNanoTime(time_ns),
+      [&](::perfetto::EventContext& ctx) { ctx.event()->set_name(name); });
 }
 
 static void JNI_EarlyTraceEvent_RecordEarlyAsyncEndEvent(JNIEnv* env,
