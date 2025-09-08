@@ -120,7 +120,15 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
 
 // Verifies identity confirmation snackbar shows on startup with multiple
 // identities on device after 1 day.
-- (void)testMultipleIdentities_IdentityConfirmationToast {
+// TODO(crbug.com/443199219): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testMultipleIdentities_IdentityConfirmationToast \
+  DISABLED_testMultipleIdentities_IdentityConfirmationToast
+#else
+#define MAYBE_testMultipleIdentities_IdentityConfirmationToast \
+  testMultipleIdentities_IdentityConfirmationToast
+#endif
+- (void)MAYBE_testMultipleIdentities_IdentityConfirmationToast {
   // TODO(crbug.com/433726717): Test disabled on iPhones.
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPhones.");
@@ -144,7 +152,15 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
 
 // Verifies no identity confirmation snackbar shows on startup with only one
 // identity on device.
-- (void)testSingleIdentity_IdentityConfirmationToast {
+// TODO(crbug.com/443199219): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSingleIdentity_IdentityConfirmationToast \
+  DISABLED_testSingleIdentity_IdentityConfirmationToast
+#else
+#define MAYBE_testSingleIdentity_IdentityConfirmationToast \
+  testSingleIdentity_IdentityConfirmationToast
+#endif
+- (void)MAYBE_testSingleIdentity_IdentityConfirmationToast {
   [self prepareStartSurface];
   // Add multiple identities and sign in with one of them.
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
@@ -179,7 +195,15 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
 
 // Verifies identity confirmation snackbar on startup does not show after a
 // recent sign-in.
-- (void)testRecentSignin_IdentityConfirmationToast {
+// TODO(crbug.com/443199219): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRecentSignin_IdentityConfirmationToast \
+  DISABLED_testRecentSignin_IdentityConfirmationToast
+#else
+#define MAYBE_testRecentSignin_IdentityConfirmationToast \
+  testRecentSignin_IdentityConfirmationToast
+#endif
+- (void)MAYBE_testRecentSignin_IdentityConfirmationToast {
   [self prepareStartSurface];
   // Add multiple identities and sign in with one of them.
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
