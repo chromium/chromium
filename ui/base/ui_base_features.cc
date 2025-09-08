@@ -26,6 +26,11 @@ namespace features {
 BASE_FEATURE(kSendEmptyGestureScrollUpdate,
              "SendEmptyGestureScrollUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kSendEmptyGestureScrollUpdateFilterOutEmptyUpdates,
+                   &kSendEmptyGestureScrollUpdate,
+                   "filter_out_empty_updates",
+                   false);
 
 #if BUILDFLAG(IS_WIN)
 // If enabled, calculate native window occlusion - Windows-only.
