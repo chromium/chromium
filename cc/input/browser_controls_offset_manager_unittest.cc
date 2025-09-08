@@ -928,6 +928,74 @@ TEST(BrowserControlsOffsetManagerTest,
   EXPECT_FLOAT_EQ(0.f, manager->TopControlsMinHeightOffset());
 }
 
+TEST(BrowserControlsOffsetManagerTest,
+     MinHeightChangeInHiddenStateSnapsToNewMinHeight) {
+  MockBrowserControlsOffsetManagerClient client(100.f, 0.5f, 0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  // Set min_height == height, so controls are fully visible but at min height.
+  client.SetBrowserControlsParams({100, 100, 0, 0, false, false});
+  EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
+  EXPECT_FLOAT_EQ(0.f, manager->ControlsTopOffset());
+
+  // Set the state to hidden. Since min_height is 100, this does nothing.
+  manager->UpdateBrowserControlsState(BrowserControlsState::kHidden,
+                                      BrowserControlsState::kBoth, false,
+                                      std::nullopt);
+  EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
+  EXPECT_FLOAT_EQ(0.f, manager->ControlsTopOffset());
+
+  // Now, change the min_height to 0. Because the state is kHidden, the
+  // controls should snap to their new minimum shown ratio (0).
+  client.SetBrowserControlsParams({100, 0, 0, 0, false, false});
+  EXPECT_FALSE(manager->HasAnimation());
+  EXPECT_FLOAT_EQ(0.f, manager->TopControlsMinHeight());
+  EXPECT_FLOAT_EQ(0.f, manager->TopControlsShownRatio());
+  EXPECT_FLOAT_EQ(-100.f, manager->ControlsTopOffset());
+}
+
+TEST(BrowserControlsOffsetManagerTest,
+     MinHeightChangeInHiddenStateAnimatesToNewMinHeight) {
+  MockBrowserControlsOffsetManagerClient client(100.f, 0.5f, 0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  // Set min_height == height, so controls are fully visible but at min height.
+  client.SetBrowserControlsParams({100, 100, 0, 0, false, false});
+  EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
+  EXPECT_FLOAT_EQ(0.f, manager->ControlsTopOffset());
+
+  // Set the state to hidden. Since min_height is 100, this does nothing.
+  manager->UpdateBrowserControlsState(BrowserControlsState::kHidden,
+                                      BrowserControlsState::kBoth, false,
+                                      std::nullopt);
+  EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
+  EXPECT_FLOAT_EQ(0.f, manager->ControlsTopOffset());
+
+  // Now, change the min_height to 0 with animation.
+  client.SetBrowserControlsParams({100, 0, 0, 0, true, false});
+  EXPECT_TRUE(manager->HasAnimation());
+  EXPECT_FLOAT_EQ(0.f, manager->TopControlsMinHeight());
+  // The ratio should not have changed yet.
+  EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
+
+  base::TimeTicks time = base::TimeTicks::Now();
+  // First animate will establish the animation.
+  float previous_ratio = manager->TopControlsShownRatio();
+  manager->Animate(time);
+  EXPECT_EQ(manager->TopControlsShownRatio(), previous_ratio);
+
+  while (manager->HasAnimation()) {
+    previous_ratio = manager->TopControlsShownRatio();
+    time = base::Microseconds(100) + time;
+    manager->Animate(time);
+    EXPECT_LT(manager->TopControlsShownRatio(), previous_ratio);
+  }
+
+  EXPECT_FALSE(manager->HasAnimation());
+  EXPECT_FLOAT_EQ(0.f, manager->TopControlsShownRatio());
+  EXPECT_FLOAT_EQ(-100.f, manager->ControlsTopOffset());
+}
+
 TEST(BrowserControlsOffsetManagerTest, ControlsStayAtMinHeightOnHeightChange) {
   MockBrowserControlsOffsetManagerClient client(100.f, 0.5f, 0.5f);
   BrowserControlsOffsetManager* manager = client.manager();
