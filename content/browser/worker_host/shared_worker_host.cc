@@ -295,6 +295,10 @@ void SharedWorkerHost::Start(
     if (!creator_policy_container_host_->policies().is_web_secure_context) {
       policies.is_web_secure_context = false;
     }
+    // Allow LNA access on non secure contexts if the creator did as well.
+    policies.allow_non_secure_local_network_access =
+        creator_policy_container_host_->policies()
+            .allow_non_secure_local_network_access;
 
     worker_client_security_state_ = DeriveClientSecurityState(
         policies, PrivateNetworkRequestContext::kWorker);
