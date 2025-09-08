@@ -4291,7 +4291,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3930968231047618417">Bakgrundsfärg</translation>
 <translation id="3932356525934356570">Fäst <ph name="EXTENSION_NAME" /></translation>
 <translation id="3932477678113677556">Högst <ph name="MAX" /> tecken</translation>
-<translation id="3933121352599513978">Komprimera oönskade förfrågningar (rekommenderas)</translation>
+<translation id="3933121352599513978">Komprimera oönskade begäranden (rekommenderas)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> delar ett wifi-nätverk med dig</translation>
 <translation id="3936390757709632190">&amp;Öppna ljud i ny flik</translation>
 <translation id="3937640725563832867">Certifikatutfärdarens alternativa namn</translation>
@@ -7261,7 +7261,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6077189836672154517">Tips och uppdateringar om <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Diktamen</translation>
 <translation id="6078121669093215958">{0,plural, =1{Gäst}other{# öppna gästfönster}}</translation>
-<translation id="6078323886959318429">Lägg till genväg</translation>
+<translation id="6078323886959318429">Genväg</translation>
 <translation id="6078752646384677957">Kontrollera mikrofonen och ljudnivåerna.</translation>
 <translation id="608029822688206592">Inga nätverk hittades. Sätt i SIM-kortet och försök igen.</translation>
 <translation id="6080689532560039067">Kontrollera systemtiden</translation>

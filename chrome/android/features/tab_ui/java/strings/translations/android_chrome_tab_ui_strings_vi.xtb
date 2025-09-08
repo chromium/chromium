@@ -148,7 +148,7 @@
 <translation id="6589356853295569750">Thông báo về các thay đổi trong Nhóm thẻ được chia sẻ đã mở trên toàn màn hình</translation>
 <translation id="6590332670428149473">Mở trình đơn thao tác đối với nhóm thẻ cho nhóm thẻ <ph name="TITLE_OF_GROUP" /> được chia sẻ, màu <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Hiển thị cho tôi</translation>
-<translation id="6694634756612002311">Quản lý hoạt động chia sẻ</translation>
+<translation id="6694634756612002311">Quản lý việc chia sẻ</translation>
 <translation id="6709297274997495821">Chọn thẻ</translation>
 <translation id="6744956528665271406">Chỉnh sửa màu cho nhóm</translation>
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{Thêm vào nhóm <ph name="TITLE_OF_GROUP" /> có <ph name="TAB_COUNT1" /> thẻ}other{Thêm vào nhóm <ph name="TITLE_OF_GROUP" /> có <ph name="TAB_COUNT1" /> thẻ}}</translation>

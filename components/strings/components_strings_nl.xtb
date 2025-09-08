@@ -6,7 +6,7 @@
 <translation id="1008557486741366299">Niet nu</translation>
 <translation id="100957008357583611">Je locatie gebruiken?</translation>
 <translation id="1010200102790553230">Pagina later laden</translation>
-<translation id="1010225406377140704">Je kunt contact opnemen met de afzender om een nieuwe link te vragen</translation>
+<translation id="1010225406377140704">Neem contact op met de afzender om een nieuwe link te vragen</translation>
 <translation id="1011206368273183593">Bestanden voorbereiden</translation>
 <translation id="1012264210825687872">Nadat je je bestelling hebt gecontroleerd, moet je inloggen op je <ph name="BNPL_ISSUER_NAME" />-account of een account maken. Dit account wordt automatisch aan Google Pay gekoppeld.</translation>
 <translation id="1014509239502131234">Resultaat ongedaan maken</translation>
@@ -380,7 +380,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="161612500287664753">Google Zoeken vragen stellen over deze pagina</translation>
 <translation id="1617276713587758852">Crossovers</translation>
 <translation id="1619007254056372606">Sitegegevens op het apparaat beheren</translation>
-<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> heeft een tabblad verwijderd</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> verwijderde een tabblad</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622966923835127638">Bedrijfsfinanciering</translation>
 <translation id="1623104350909869708">Voorkomen dat deze pagina extra dialoogvensters toont</translation>
@@ -2635,7 +2635,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5363309033720083897">Seriële poort toegestaan door je beheerder</translation>
 <translation id="5363532265530011914">Sokken en panty's</translation>
 <translation id="5371425731340848620">Pas updaten</translation>
-<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> heeft een tabblad gewijzigd</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> wijzigde een tabblad</translation>
 <translation id="5374324662289354619">Interne foutopsporingspagina's staan op dit moment uit.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">'Je klok loopt achter', 'Je klok loopt voor' of '&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;'</translation>

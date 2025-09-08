@@ -3803,7 +3803,7 @@
 <translation id="364100968401221170">同期しているすべてのデバイスと Google アカウントから閲覧履歴データを削除するには、<ph name="BEGIN_LINK" />ログイン<ph name="END_LINK" />してください。</translation>
 <translation id="3641070112313110357">Chromebook 向け Steam（ベータ版）を更新する必要があります。Chromebook を再起動してもう一度お試しください。</translation>
 <translation id="3641299252000913351">モデムのファームウェアの更新が進行中です。デバイスの電源を切らないでください。</translation>
-<translation id="3641456520301071208">位置情報へのアクセス権限がサイトからリクエストされる場合があります</translation>
+<translation id="3641456520301071208">サイトが位置情報を要求できるようにする</translation>
 <translation id="3642064270296434810">Google レンズを使用して、画面上のあらゆるコンテンツを検索できるようになりました</translation>
 <translation id="3642070413432681490">円カーソル</translation>
 <translation id="3642699533549879077">誰かに画面を見られたときには、アラートが表示され、通知コンテンツは表示されなくなります。</translation>

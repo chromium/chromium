@@ -7688,7 +7688,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6385382178401976503">카드: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">경고 - 자세한 로깅이 사용 설정되었으며 아래의 로그에 URL 또는 기타 민감한 정보가 포함될 수 있습니다. 정보를 제출해도 되는지 검토하고 확인하시기 바랍니다.</translation>
 <translation id="6387674443318562538">수직 분할</translation>
-<translation id="6388152137132427505">항상 현명하게 공유하세요. 링크는 48시간 후에 만료됩니다.</translation>
+<translation id="6388152137132427505">항상 신중하게 공유하세요. 링크는 48시간 후에 만료됩니다.</translation>
 <translation id="6388429472088318283">언어 검색</translation>
 <translation id="6388577073199278153">모바일 계정에 액세스할 수 없음</translation>
 <translation id="6390020764191254941">탭을 새 창으로 이동</translation>
@@ -9515,7 +9515,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="767381852303199643">기존 프로필 데이터를 어떻게 처리하고 싶으신가요?</translation>
 <translation id="7674416868315480713">Linux에서 전달되는 모든 포트 비활성화</translation>
 <translation id="7674537509496907005">앱 <ph name="APP_COUNT" />개</translation>
-<translation id="7674542105240814168">위치 액세스 거부됨</translation>
+<translation id="7674542105240814168">위치 정보 액세스 거부됨</translation>
 <translation id="7675175806582227035">MIDI 기기를 제어하고 다시 프로그래밍할 수 있음</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' 검색결과로 탭 <ph name="NUM" />개 찾음</translation>
 <translation id="7676867886086876795">모든 텍스트 입력란에서 음성기록 기능을 지원하기 위해 Google에 음성이 전송됩니다.</translation>
@@ -10853,7 +10853,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8590375307970699841">자동 업데이트 설정</translation>
 <translation id="8591783563402255548">1초</translation>
 <translation id="8592141010104017453">알림 표시 안 함</translation>
-<translation id="859246725979739260">이 사이트는 위치에 액세스할 수 없도록 차단되었습니다.</translation>
+<translation id="859246725979739260">이 사이트는 위치 정보에 액세스할 수 없도록 차단되었습니다.</translation>
 <translation id="8593450223647418235">설정이 완료될 때까지 Microsoft 365에서 파일을 열 수 없습니다.</translation>
 <translation id="8593686980889923154"><ph name="DEVICE_TYPE" />에서 <ph name="APP_NAME" /> 앱이 차단되었습니다</translation>
 <translation id="8596400097994526901"><ph name="SEARCH_ENGINE_NAME" />의 작업 더보기</translation>

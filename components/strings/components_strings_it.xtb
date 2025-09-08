@@ -380,7 +380,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="161612500287664753">Chiedi alla Ricerca Google informazioni su questa pagina</translation>
 <translation id="1617276713587758852">Crossover</translation>
 <translation id="1619007254056372606">Gestisci i dati dei siti sul dispositivo</translation>
-<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ha rimosso una scheda</translation>
+<translation id="1619648179761984213">Chi ha rimosso una scheda: <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="1622966923835127638">Finanza aziendale</translation>
 <translation id="1623104350909869708">Impedisci la creazione di altre finestre di dialogo in questa pagina</translation>
@@ -1414,7 +1414,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3360103848165129075">Foglio per la gestione dei pagamenti</translation>
 <translation id="3360306038446926262">Finestre</translation>
 <translation id="3362968246557010467">Questa norma è stata copiata automaticamente dalla norma obsoleta <ph name="OLD_POLICY" />. Dovresti usare invece questa norma.</translation>
-<translation id="3364869320075768271"><ph name="URL" /> vorrebbe usare i dati e dispositivi per realtà virtuale</translation>
+<translation id="3364869320075768271"><ph name="URL" /> vorrebbe usare i tuoi dati e dispositivi per realtà virtuale</translation>
 <translation id="3369192424181595722">Errore dell'orologio</translation>
 <translation id="3370855919511944393">Impostazioni di Wallet</translation>
 <translation id="3371064404604898522">Imposta Chrome come browser predefinito</translation>
@@ -2638,7 +2638,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5363309033720083897">Porta seriale consentita dal tuo amministratore</translation>
 <translation id="5363532265530011914">Calze e collant</translation>
 <translation id="5371425731340848620">Aggiorna carta</translation>
-<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ha modificato una scheda</translation>
+<translation id="537425196847960924">Chi ha modificato una scheda: <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="5374324662289354619">Le pagine di debug interno sono attualmente disattivate.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"L'orologio è indietro", "L'orologio è avanti" oppure "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>

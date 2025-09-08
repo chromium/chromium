@@ -1372,7 +1372,7 @@
 <translation id="1932098463447129402">此日期之後：</translation>
 <translation id="1933070475689690969">Gemini 系列應用程式活動記錄</translation>
 <translation id="1933489278505808700">可以讀取及變更</translation>
-<translation id="1935303383381416800">可以查看你的位置資訊</translation>
+<translation id="1935303383381416800">允許以下網站查看你的位置資訊</translation>
 <translation id="193565226207940518">Support Tool</translation>
 <translation id="1935995810530254458">仍要複製</translation>
 <translation id="1936157145127842922">在資料夾中顯示</translation>
@@ -5300,7 +5300,7 @@
 <translation id="4676543021048806071">輸入 Google 密碼管理工具的 6 位數 PIN 碼</translation>
 <translation id="4676595058027112862">Phone Hub，瞭解詳情</translation>
 <translation id="4676616966096505747">部分資料尚未儲存到你的帳戶</translation>
-<translation id="4677772697204437347">GPU 記憶體</translation>
+<translation id="4677772697204437347">GPU 記憶體使用量</translation>
 <translation id="467809019005607715">Google 簡報</translation>
 <translation id="4678848110205818817">信用卡/簽帳金融卡</translation>
 <translation id="4679018849559620189">這樣就能在所有裝置上使用復原 PIN 碼存取已儲存的密碼金鑰</translation>
@@ -9106,7 +9106,7 @@
 <translation id="7410421966064092098">網站無法協助確認你不是機器人</translation>
 <translation id="7410852728357935715">投放到裝置</translation>
 <translation id="741204030948306876">是，我要啟用</translation>
-<translation id="7412226954991670867">GPU 記憶體</translation>
+<translation id="7412226954991670867">GPU 記憶體使用量</translation>
 <translation id="741370456693729525">以日常用語搜尋瀏覽記錄，找出造訪過的網站</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7415454883318062233">設定完成</translation>
@@ -10552,7 +10552,7 @@
     <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8383614331548401927">歡迎頁面要事回顧</translation>
 <translation id="8386091599636877289">找不到政策。</translation>
-<translation id="8387361103813440603">不得查看你的位置資訊</translation>
+<translation id="8387361103813440603">禁止以下網站查看你的位置資訊</translation>
 <translation id="8387617938027387193">驗證你的身分</translation>
 <translation id="8388770971141403598">不支援次要設定檔</translation>
 <translation id="8389492867173948260">允許這個擴充功能讀取及變更已造訪網站的所有相關資料：</translation>

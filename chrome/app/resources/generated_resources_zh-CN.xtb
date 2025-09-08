@@ -501,7 +501,7 @@
 <translation id="1331065030686329928">管理标签页分组“<ph name="GROUP_NAME" />”</translation>
 <translation id="1331977651797684645">是我本人。</translation>
 <translation id="1333489022424033687">请清除您设备上存储的其他网站的数据，否则 <ph name="ORIGIN" /> 上的某些功能可能无法正常运行</translation>
-<translation id="1333965224356556482">不允许网站查看您所在的位置</translation>
+<translation id="1333965224356556482">不允许网站查看您的位置信息</translation>
 <translation id="1335282218035876586">您的 Chromebook 将不会再收到安全更新和软件更新。请升级您的 Chromebook 以获得最佳体验。</translation>
 <translation id="133535873114485416">首选输入模式</translation>
 <translation id="1335929031622236846">注册您的设备</translation>
@@ -2579,7 +2579,7 @@
 <translation id="2755367719610958252">管理无障碍功能</translation>
 <translation id="2755485474385016903">分组中的所有人都会看到所做的更改</translation>
 <translation id="275662540872599901">已关闭屏幕</translation>
-<translation id="2756754491396884324">屏蔽并退出分组？</translation>
+<translation id="2756754491396884324">要屏蔽并退出分组吗？</translation>
 <translation id="2756936198272359372">不允许使用 JavaScript</translation>
 <translation id="2757161511365746634">查看打印机</translation>
 <translation id="2757338480560142065">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
@@ -3134,7 +3134,7 @@
 <translation id="3163085718713826852">输入证书密码</translation>
 <translation id="3163201441334626963">来自供应商 <ph name="VENDOR_ID" /> 的未知产品 <ph name="PRODUCT_ID" /></translation>
 <translation id="3163511056918491211">随时轻松恢复数据或更换设备。您的备份内容将上传到 Google 并使用您的 Google 账号密码进行加密。</translation>
-<translation id="3164329792803560526">与 <ph name="APP_NAME" /> 分享此标签页</translation>
+<translation id="3164329792803560526">正在与 <ph name="APP_NAME" /> 共享此标签页</translation>
 <translation id="3165390001037658081">有些运营商可能会屏蔽此功能。</translation>
 <translation id="316542773973815724">导航</translation>
 <translation id="3165734944977250074">此文件不存在，无法移动</translation>
@@ -3802,7 +3802,7 @@
 <translation id="364100968401221170">若要从所有同步的设备和您的 Google 账号中删除浏览数据，请<ph name="BEGIN_LINK" />登录<ph name="END_LINK" />。</translation>
 <translation id="3641070112313110357">需要更新 Chromebook 版 Steam（Beta 版）。请重启 Chromebook，然后重试。</translation>
 <translation id="3641299252000913351">正在更新调制解调器固件。请勿关闭设备。</translation>
-<translation id="3641456520301071208">网站可以请求取得您的位置信息</translation>
+<translation id="3641456520301071208">网站可以请求获取您的位置信息</translation>
 <translation id="3642064270296434810">您现在可以使用 Google 智能镜头搜索屏幕上显示的任何内容</translation>
 <translation id="3642070413432681490">圆圈光标</translation>
 <translation id="3642699533549879077">当有其他人注视您的屏幕时，系统会发出提醒并隐藏通知内容。</translation>
@@ -5238,7 +5238,7 @@
 <translation id="4637083375689622795">更多操作，<ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">再次使用摄像头</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
-<translation id="4638568775382459156">共享标签页分组活动记录</translation>
+<translation id="4638568775382459156">分享的标签页分组活动记录</translation>
 <translation id="4638930039313743000">启用 ADB 调试</translation>
 <translation id="4639390152280993480">若要查看此页面的简化视图，请前往“更多工具”&gt;“朗读模式”</translation>
 <translation id="4641539339823703554">Chrome无法设置系统时间。请检查下面的时间，并在必要时进行更正。</translation>
@@ -5693,7 +5693,7 @@
 <translation id="4954652437333037880">文件</translation>
 <translation id="4955707703665801001">“<ph name="FEATURE_NAME" />”功能的设备公开范围</translation>
 <translation id="4955710816792587366">选择 PIN 码</translation>
-<translation id="4956593309300508411">停止分享？</translation>
+<translation id="4956593309300508411">要停止分享吗？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要保存到仅位于此设备上的某个文件夹吗？</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用密码</translation>
@@ -6911,7 +6911,7 @@
 <translation id="5848054741303781539">手动设置，未使用位置信息</translation>
 <translation id="5848319660029558352">大声朗读和文本格式</translation>
 <translation id="5849212445710944278">此前已添加</translation>
-<translation id="5849288995120328556">停止分享？</translation>
+<translation id="5849288995120328556">要停止分享吗？</translation>
 <translation id="584945105664698226">语速</translation>
 <translation id="5851461096964823885">当 Google 云端硬盘不可用时，无法打开 <ph name="FILE_NAMES" /></translation>
 <translation id="5851868085455377790">颁发者</translation>
@@ -7241,7 +7241,7 @@
 <translation id="6086004606538989567">您已验证的账号无权访问此设备。</translation>
 <translation id="6086418630711763366">您可以使用文本光标浏览网页。按 Ctrl + <ph name="KEY" />即可关闭。</translation>
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
-<translation id="6087286598828478206">屏蔽并退出分组？</translation>
+<translation id="6087286598828478206">要屏蔽并退出分组吗？</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
 <translation id="6088475950266477163">设置(&amp;G)</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
@@ -8610,7 +8610,7 @@
 <translation id="7052147783849658969">目前没有闲置标签页</translation>
 <translation id="7052762602787632571">删除浏览数据(&amp;D)…</translation>
 <translation id="705352103640172578">瀑布</translation>
-<translation id="7053983685419859001">禁止</translation>
+<translation id="7053983685419859001">屏蔽</translation>
 <translation id="7055152154916055070">已禁止重定向：</translation>
 <translation id="7055451306017383754">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Parallels Desktop 时停止共享此文件夹。</translation>
 <translation id="7056418393177503237">{0,plural, =1{无痕模式}other{# 个已打开的无痕式窗口}}</translation>
@@ -8955,7 +8955,7 @@
 <translation id="7317831949569936035">学校注册</translation>
 <translation id="731827437403763009">AI 创新</translation>
 <translation id="7319320447721994672">如果您访问的网站使用 Cookie，您可能需要暂时启用 Cookie，才能确保所有的网站功能均正常运行。</translation>
-<translation id="7319983568955948908">停止共享</translation>
+<translation id="7319983568955948908">停止分享</translation>
 <translation id="7320213904474460808">设置默认网络</translation>
 <translation id="7321545336522791733">无法连接到服务器</translation>
 <translation id="7322515217754205362">网站权限</translation>
@@ -9667,7 +9667,7 @@
 <translation id="7791543448312431591">添加</translation>
 <translation id="7792012425874949788">登录时出了点问题</translation>
 <translation id="7792336732117553384">管理 Chrome 个人资料(&amp;M)</translation>
-<translation id="7792388396321542707">停止共享</translation>
+<translation id="7792388396321542707">停止分享</translation>
 <translation id="779308894558717334">浅绿色</translation>
 <translation id="7793098747275782155">深蓝色</translation>
 <translation id="7796453472368605346">变音符号</translation>
@@ -10315,7 +10315,7 @@
 <translation id="8235418492073272647">从“<ph name="DEVICE_NAME" />”分享的页面</translation>
 <translation id="8236802542508794819">此标签页与其他标签页共享资源，这可能会干扰调试。</translation>
 <translation id="8236911020904880539">退出</translation>
-<translation id="8236917170563564587">改为分享此标签页</translation>
+<translation id="8236917170563564587">改为共享此标签页</translation>
 <translation id="8237647586961940482">深粉色和红色</translation>
 <translation id="8239032431519548577">企业注册已完成</translation>
 <translation id="8239932336306009582">不允许发送通知</translation>
@@ -10791,7 +10791,7 @@
 <translation id="8562115322675481339">创建新标签页分组</translation>
 <translation id="8563043098557365232">只能用于系统服务</translation>
 <translation id="8564220755011656606">无法使用麦克风</translation>
-<translation id="8565021320663436446">移除<ph name="MEMBER_FULL_NAME" />？</translation>
+<translation id="8565021320663436446">要移除<ph name="MEMBER_FULL_NAME" />吗？</translation>
 <translation id="8565650234829130278">已尝试降低应用版本。</translation>
 <translation id="8566916288687510520">收到了新密码</translation>
 <translation id="8569673829373920831">关于“<ph name="APP_NAME" />”的更多内容</translation>
@@ -11233,7 +11233,7 @@
 <translation id="8861568709166518036">使用屏幕按钮转到主屏幕、返回以及切换应用。如果开启了 ChromeVox 或自动点击功能，系统会自动开启此设置。</translation>
 <translation id="8862171793076850931">投放权限遭拒。在新标签页中打开帮助中心文章，了解详情。</translation>
 <translation id="8863753581171631212">在<ph name="APP" />的新窗口中打开链接</translation>
-<translation id="8864055848767439877">正在将“<ph name="TAB_NAME" />”分享到 <ph name="APP_NAME" /></translation>
+<translation id="8864055848767439877">正在与 <ph name="APP_NAME" /> 共享“<ph name="TAB_NAME" />”</translation>
 <translation id="8864104359314908853">您的密码已保存</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> 已从此设备中移除</translation>
 <translation id="8865112428068029930">使用的是共用计算机？请尝试打开一个无痕式窗口。</translation>

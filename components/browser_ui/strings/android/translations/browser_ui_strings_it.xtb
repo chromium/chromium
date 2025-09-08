@@ -44,7 +44,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="1500473259453106018">Nascondi scheda Cali di prezzo nelle schede</translation>
 <translation id="1508931164824684991">I siti possono utilizzare JavaScript</translation>
 <translation id="1510341833810331442">I siti non sono autorizzati a salvare dati sul dispositivo</translation>
-<translation id="1538031354170655462">I siti in genere utilizzano la tecnologia Near Field Communication (NFC) per interagire con tag o dispositivi nelle vicinanze, ad esempio per scansionare badge o effettuare pagamenti contactless</translation>
+<translation id="1538031354170655462">In genere, i siti utilizzano la tecnologia Near Field Communication (NFC) per interagire con tag o dispositivi nelle vicinanze, ad esempio per scansionare badge o effettuare pagamenti contactless</translation>
 <translation id="1547123415014299762">Sono consentiti i cookie di terze parti</translation>
 <translation id="1569054338208717605">Accelera i siti con il motore V8 di Chrome, ma rendi Chrome leggermente meno resistente agli attacchi</translation>
 <translation id="1593426485665524382">Nuove azioni disponibili vicino alla parte superiore dello schermo</translation>
@@ -57,10 +57,10 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="1660204651932907780">Consenti ai siti di riprodurre l'audio (opzione consigliata)</translation>
 <translation id="1677097821151855053">I cookie e altri dati dei siti vengono utilizzati per ricordare attività e informazioni dell'utente, ad esempio per eseguire l'accesso o per personalizzare gli annunci. Per gestire i cookie per tutti i siti, consulta le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="1679305402657584804">I siti possono chiedere di utilizzare i dispositivi NFC</translation>
-<translation id="1686785653877010442">In genere, i siti inviano delle notifiche per comunicarti le ultime notizie o se hai ricevuto nuovi messaggi di chat.</translation>
+<translation id="1686785653877010442">In genere, i siti inviano delle notifiche per comunicarti le ultime notizie o se hai ricevuto nuovi messaggi di chat</translation>
 <translation id="169515064810179024">Impedisci ai siti di accedere ai sensori di movimento</translation>
-<translation id="1703666494654169921">Non consentire ai siti di usare i dati o dispositivi per realtà virtuale</translation>
-<translation id="1704230497453185209">Non consentire ai siti di riprodurre l'audio</translation>
+<translation id="1703666494654169921">Non consentire ai siti di usare dati o dispositivi per realtà virtuale</translation>
+<translation id="1704230497453185209">Non consentire ai siti di riprodurre audio</translation>
 <translation id="1717218214683051432">Sensori di movimento</translation>
 <translation id="1717996979683942279">Quando l'opzione è attiva, i siti possono chiedere di gestire le finestre su tutti i tuoi schermi. Quando l'opzione è disattivata, i siti non possono gestire le finestre su tutti i tuoi schermi.</translation>
 <translation id="1738912554587725807">Riquadro inferiore di Raccolte di temi per l'aspetto della pagina Nuova scheda</translation>
@@ -151,7 +151,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2682367912565197520">Elimina il livello di zoom salvato</translation>
 <translation id="2683434792633810741">Vuoi eliminare e reimpostare?</translation>
-<translation id="2685514716378236873">Autorizzazione negata</translation>
+<translation id="2685514716378236873">Autorizzazione non concessa</translation>
 <translation id="2713106313042589954">Disattiva fotocamera</translation>
 <translation id="2717722538473713889">Indirizzi email</translation>
 <translation id="2726059656860238749">Avvia Chrome con l'omnibox in primo piano per ridurre i tempi di avvio sui dispositivi di fascia bassa.</translation>
@@ -161,7 +161,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="2790501146643349491">Quando l'opzione è attiva, i siti chiusi di recente possono terminare l'invio e la ricezione di dati. Quando l'opzione è disattivata, i siti chiusi di recente non possono terminare l'invio o la ricezione di dati.</translation>
 <translation id="2795716239552913152">In genere, i siti usano la tua posizione per funzionalità o informazioni pertinenti come notizie locali o negozi nelle vicinanze</translation>
 <translation id="2800760947029405028">Carica un'immagine</translation>
-<translation id="2802908157808345702">Non consentire ai siti di inviare popup e utilizzare reindirizzamenti</translation>
+<translation id="2802908157808345702">Non consentire ai siti di inviare popup e usare reindirizzamenti</translation>
 <translation id="2814830417943086299">Ora Chrome mostra le schede recenti nell'elenco di app e nei risultati di ricerca del dispositivo. Puoi disattivare questa funzionalità in qualsiasi momento nelle impostazioni di Chrome.</translation>
 <translation id="2822354292072154809">Vuoi reimpostare tutte le autorizzazioni del sito per <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Richiedi visualizzazione mobile</translation>
@@ -511,7 +511,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="6818926723028410516">Seleziona elementi</translation>
 <translation id="6838525730752203626">Usa Chrome per impostazione predefinita</translation>
 <translation id="6840760312327750441">Per raggruppare le schede, tocca e tienine premuta una. Poi trascinala su un'altra scheda.</translation>
-<translation id="6842868554183332230">In genere i siti rilevano quando stai utilizzando attivamente il tuo dispositivo per impostare la tua disponibilità nelle app di chat</translation>
+<translation id="6842868554183332230">In genere, i siti rilevano quando stai utilizzando attivamente il tuo dispositivo per impostare la tua disponibilità nelle app di chat</translation>
 <translation id="6864395892908308021">Questo dispositivo non può leggere la tecnologia NFC</translation>
 <translation id="6870169401250095575">Nascondi scheda Controllo di sicurezza</translation>
 <translation id="6900883974539674431">Crea gruppi di schede che vengono salvati e aggiornati automaticamente su tutti i tuoi dispositivi</translation>
@@ -697,7 +697,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="9011903857143958461">Autorizzazione <ph name="SITE_NAME" /> consentita</translation>
 <translation id="9017522656123387064">Modalità selezione terminata</translation>
 <translation id="9019902583201351841">Gestito dai genitori</translation>
-<translation id="902236149563113779">In genere, i siti monitorano la posizione della videocamera per funzionalità AR come i giochi o le indicazioni fornite con la posizione della testa</translation>
+<translation id="902236149563113779">In genere, i siti monitorano la posizione della fotocamera per funzionalità AR come i giochi o le indicazioni fornite con la posizione della testa</translation>
 <translation id="9039697262778250930">Il tuo account potrebbe essere disconnesso da questi siti</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Vuoi eliminare i cookie?</translation>

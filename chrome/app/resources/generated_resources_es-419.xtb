@@ -3092,7 +3092,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Se ha producido un error al crear el directorio de datos.</translation>
 <translation id="3122883569442693641">Más detalles</translation>
-<translation id="3124111068741548686">A cargo del USUARIO</translation>
+<translation id="3124111068741548686">Objetos USER</translation>
 <translation id="3124332159330678621">Personaliza Chrome para darle un nuevo aspecto a tu navegador</translation>
 <translation id="3125816458150005808">Puedes desfijarla y abrirla desde el menú</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -3320,7 +3320,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="32991397311664836">Dispositivos:</translation>
 <translation id="3301554464236215299">Este archivo no se descarga con frecuencia y podría ser peligroso</translation>
 <translation id="3301996560342889673">¿Quieres sincronizar el historial?</translation>
-<translation id="33022249435934718">A cargo de GDI</translation>
+<translation id="33022249435934718">Objetos GDI</translation>
 <translation id="3302388252085547855">Escribir justificación…</translation>
 <translation id="3303795387212510132">¿Deseas permitir que la app abra vínculos de <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Copias</translation>
@@ -7492,7 +7492,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6249200942125593849">Administrar la accesibilidad</translation>
 <translation id="6250186368828697007">Cuando compartes la pantalla, se ocultan los detalles.</translation>
 <translation id="6250887692313997958">Elige una pestaña para agregarla a la vista dividida</translation>
-<translation id="6251870443722440887">A cargo de GDI</translation>
+<translation id="6251870443722440887">Objetos GDI</translation>
 <translation id="6251924700383757765">Política de Privacidad</translation>
 <translation id="625369703868467034">Calidad de la red</translation>
 <translation id="6253801023880399036">Las contraseñas se guardan en <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
@@ -8017,7 +8017,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6635944431854494329">El propietario puede controlar esta función desde Configuración &gt; Configuración avanzada &gt; Enviar automáticamente datos de uso y diagnóstico a Google.</translation>
 <translation id="6636258750460740634">Historial</translation>
 <translation id="6636623428211296678">Explora más parámetros de configuración a continuación o finaliza ahora.</translation>
-<translation id="6639554308659482635">Memoria SQLite</translation>
+<translation id="6639554308659482635">Memoria usada por SQLite</translation>
 <translation id="6640268266988685324">Abrir pestaña</translation>
 <translation id="6642720633335369752">Para ver todas las ventanas de las apps abiertas, desliza el dedo hacia arriba desde la parte inferior y mantén presionada la pantalla.</translation>
 <translation id="664290675870910564">Selección de red</translation>
@@ -9519,7 +9519,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="7684718995427157417">Si quieres crear y probar apps, habilita Android Debug Bridge (ADB). Ten en cuenta que esta acción permite la instalación de apps para Android que Google no verificó. Si quieres inhabilitar ADB, deberás restablecer la configuración de fábrica.</translation>
 <translation id="7684913007876670600">Para mostrar una vista simplificada de esta página, abre el panel lateral y selecciona Modo de lectura</translation>
 <translation id="7685038817958445325">No es posible transmitir contenido</translation>
-<translation id="7685049629764448582">Memoria de JavaScript</translation>
+<translation id="7685049629764448582">Memoria usada por JavaScript</translation>
 <translation id="7685087414635069102">Se requiere el PIN</translation>
 <translation id="7685351732518564314">Presiona un botón en tu <ph name="DEVICE_NAME" />.</translation>
 <translation id="7686086654630106285">Obtén más información sobre los anuncios sugeridos por sitios</translation>
@@ -9540,7 +9540,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="7700516433658473670">Impresoras y escáneres</translation>
 <translation id="7700873336634517379">No, seguir usando este perfil para la institución educativa</translation>
 <translation id="7701040980221191251">No hay</translation>
-<translation id="7701869757853594372">A cargo del USUARIO</translation>
+<translation id="7701869757853594372">Objetos USER</translation>
 <translation id="7702463352133825032">Detener la transmisión a <ph name="DEVICE_NAME" /></translation>
 <translation id="7704305437604973648">Tarea</translation>
 <translation id="7704521324619958564">Abrir Play Store</translation>
@@ -10328,7 +10328,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8235418492073272647">Página compartida desde <ph name="DEVICE_NAME" /></translation>
 <translation id="8236802542508794819">Esta pestaña comparte recursos con otras pestañas, lo que podría interferir con la depuración.</translation>
 <translation id="8236911020904880539">salir</translation>
-<translation id="8236917170563564587">Compartir esta pestaña en su lugar</translation>
+<translation id="8236917170563564587">Compartir esta pestaña</translation>
 <translation id="8237647586961940482">Rosa oscuro y rojo</translation>
 <translation id="8239032431519548577">Se completó la inscripción empresarial</translation>
 <translation id="8239932336306009582">No pueden enviar notificaciones</translation>
@@ -10850,7 +10850,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8601206103050338563">Autenticación de cliente TLS WWW</translation>
 <translation id="8602674530529411098">Apps (beta)</translation>
 <translation id="8602851771975208551">Otro programa en tu computadora agregó una app que puede cambiar el funcionamiento de Chrome.</translation>
-<translation id="8605428685123651449">Memoria SQLite</translation>
+<translation id="8605428685123651449">Memoria usada por SQLite</translation>
 <translation id="8607171490667464784">Mientras esté inactivo y usando la batería</translation>
 <translation id="8607661817136110841">Tus grupos de pestañas</translation>
 <translation id="8607828412110648570">Asegúrate de que tu dispositivo Bluetooth esté cerca y tenga el modo de vinculación activado. Vincúlate solo con dispositivos de confianza. Todas las cuentas de esta Chromebook pueden ver los dispositivos vinculados. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -11382,7 +11382,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8957656266859671822">Selecciona tu cuenta</translation>
 <translation id="8957757410289731985">Personalizar el perfil</translation>
 <translation id="8959144235813727886">Sitios y apps</translation>
-<translation id="895944840846194039">Memoria de JavaScript</translation>
+<translation id="895944840846194039">Memoria usada por JavaScript</translation>
 <translation id="8960208913905765425">Conversión de unidades de Respuestas rápidas</translation>
 <translation id="8960638196855923532">Ahora puedes ver las notificaciones y apps de tu teléfono</translation>
 <translation id="8962051932294470566">Puedes compartir solo un archivo a la vez. Vuelve a intentarlo cuando se complete la transferencia actual.</translation>

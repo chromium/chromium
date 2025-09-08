@@ -5,7 +5,7 @@
 <translation id="1140871961407805696">מצלמה אחורית</translation>
 <translation id="1196338895211115272">ייצוא המפתח הפרטי נכשל.</translation>
 <translation id="132960226125594336">לא ניתן לטעון את הקובץ '<ph name="RELATIVE_PATH" />' עבור סקריפט התוכן כי הוא יחרוג מגודל הסקריפט המקסימלי או מהגודל הכולל המקסימלי של סקריפט התוכן לתוסף.</translation>
-<translation id="1445572445564823378">תוסף זה מאט את <ph name="PRODUCT_NAME" />. עליך להשבית אותו כדי לשחזר את הביצועים של <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1445572445564823378">התוסף הזה מאט את <ph name="PRODUCT_NAME" />. כדאי להשבית אותו כדי לשחזר את הביצועים של <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL אינו נתמך.</translation>
 <translation id="1610570795592207282">‏לא ניתן לטעון את ה-CSS‏ '<ph name="RELATIVE_PATH" />' לסקריפט.</translation>
 <translation id="1803557475693955505">לא היתה אפשרות לטעון את דף הרקע '<ph name="BACKGROUND_PAGE" />'.</translation>

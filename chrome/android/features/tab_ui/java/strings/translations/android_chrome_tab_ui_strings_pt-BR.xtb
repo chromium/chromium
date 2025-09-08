@@ -12,7 +12,7 @@
 <translation id="1273910660700874265">Opções do grupo de guias <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">Escolha quando as guias e os grupos de guias são movidos automaticamente para a seção de inativos.</translation>
 <translation id="1321004960118052490">Seus itens inativos não vão se acumular</translation>
-<translation id="1329584516321524826">Atualizada agora</translation>
+<translation id="1329584516321524826">Atualizado agora</translation>
 <translation id="1340839264183302272">Sair do grupo</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" /> e o rótulo <ph name="CARD_LABEL" />.}one{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" /> e o rótulo <ph name="CARD_LABEL" />.}other{Abrir o grupo de guias compartilhado <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" /> e o rótulo <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Todos os seus grupos de guias vão aparecer aqui</translation>
