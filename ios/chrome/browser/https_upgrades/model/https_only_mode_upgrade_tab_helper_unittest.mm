@@ -41,7 +41,7 @@ enum class HttpsUpgradesTestType {
 }
 
 std::unique_ptr<KeyedService> BuildFakeHttpsUpgradeService(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   return std::make_unique<FakeHttpsUpgradeService>();
 }
 
