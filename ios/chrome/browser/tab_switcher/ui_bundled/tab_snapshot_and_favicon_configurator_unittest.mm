@@ -30,8 +30,7 @@
 namespace {
 
 // Builds a `TestFaviconLoader`.
-std::unique_ptr<KeyedService> BuildTestFaviconLoader(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildTestFaviconLoader(ProfileIOS* profile) {
   return std::make_unique<TestFaviconLoader>();
 }
 

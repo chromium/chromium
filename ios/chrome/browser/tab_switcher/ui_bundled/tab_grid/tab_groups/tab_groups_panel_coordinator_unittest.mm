@@ -33,8 +33,7 @@ namespace {
 // Creates a nice mock of TabGroupSyncService. It's "nice" since these tests
 // don't really care what is called on the service, they just need to pass it
 // down to the coordinator's mediator.
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
   return std::make_unique<
       ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
 }
