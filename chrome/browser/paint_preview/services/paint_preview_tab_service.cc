@@ -134,9 +134,11 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
   // If the system is under memory pressure don't try to capture.
   auto* memory_monitor = base::MemoryPressureMonitor::Get();
   if (memory_monitor &&
-      memory_monitor->GetCurrentPressureLevel() >=
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE)
+      memory_monitor->GetCurrentPressureLevel(
+          base::MemoryPressureMonitorTag::kPaintPreviewTabService) >=
+          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
     return;
+  }
 
   // Mark |contents| as being captured so that the renderer doesn't go away
   // until the capture is finished. This is done even before a file is created

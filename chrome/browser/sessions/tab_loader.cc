@@ -391,7 +391,8 @@ bool TabLoader::ShouldStopLoadingTabs() const {
   if (g_browser_process->IsShuttingDown())
     return true;
   if (base::MemoryPressureMonitor::Get()) {
-    return base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel() !=
+    return base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel(
+               base::MemoryPressureMonitorTag::kTabLoader) !=
            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
   }
   return false;

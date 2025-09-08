@@ -612,7 +612,8 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
   // that generating the image is a more deliberate choice from the user. The
   // memory pressure monitor is disabled in tests.
   if (const auto* const monitor = base::MemoryPressureMonitor::Get()) {
-    switch (monitor->GetCurrentPressureLevel()) {
+    switch (monitor->GetCurrentPressureLevel(
+        base::MemoryPressureMonitorTag::kTabHoverCardController)) {
       case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
         capture_delay = base::TimeDelta::Max();
         break;
@@ -672,7 +673,8 @@ void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
   // Do not capture thumbnails during critical memory pressure.
   const auto* const monitor = base::MemoryPressureMonitor::Get();
   if (monitor &&
-      monitor->GetCurrentPressureLevel() ==
+      monitor->GetCurrentPressureLevel(
+          base::MemoryPressureMonitorTag::kTabHoverCardController) ==
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     // Because we're blocked, we'll show a placeholder instead of nothing or
     // the wrong image.

@@ -321,7 +321,8 @@ bool GlicProfileManager::IsUnderMemoryPressure() const {
   if (g_forced_memory_pressure_level_) {
     memory_pressure = *g_forced_memory_pressure_level_;
   } else if (const auto* memory_monitor = base::MemoryPressureMonitor::Get()) {
-    memory_pressure = memory_monitor->GetCurrentPressureLevel();
+    memory_pressure = memory_monitor->GetCurrentPressureLevel(
+        base::MemoryPressureMonitorTag::kGlicProfileManager);
   }
   return memory_pressure >= base::MemoryPressureMonitor::MemoryPressureLevel::
                                 MEMORY_PRESSURE_LEVEL_MODERATE;

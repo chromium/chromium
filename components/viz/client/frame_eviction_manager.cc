@@ -108,7 +108,8 @@ size_t FrameEvictionManager::GetMaxNumberOfSavedFrames() const {
 
   // Until we have a global OnMemoryPressureChanged event we need to query the
   // value from our specific pressure monitor.
-  switch (monitor->GetCurrentPressureLevel()) {
+  switch (monitor->GetCurrentPressureLevel(
+      base::MemoryPressureMonitorTag::kFrameEvictionManager)) {
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
       percentage = 100;
       break;

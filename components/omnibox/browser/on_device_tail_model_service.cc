@@ -203,7 +203,8 @@ void OnDeviceTailModelService::GetPredictionsForInput(
     base::MemoryPressureMonitor* monitor = base::MemoryPressureMonitor::Get();
     // Do not call the model if memory pressure level is too high.
     if (!monitor ||
-        monitor->GetCurrentPressureLevel() !=
+        monitor->GetCurrentPressureLevel(
+            base::MemoryPressureMonitorTag::kOnDeviceTailModelService) !=
             base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
       model_executor_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,

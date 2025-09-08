@@ -20,7 +20,8 @@ void FakeMemoryPressureMonitor::SetAndNotifyMemoryPressure(
 }
 
 base::MemoryPressureMonitor::MemoryPressureLevel
-FakeMemoryPressureMonitor::GetCurrentPressureLevel() const {
+FakeMemoryPressureMonitor::GetCurrentPressureLevel(
+    base::MemoryPressureMonitorTag tag) const {
   return memory_pressure_level_;
 }
 

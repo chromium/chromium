@@ -194,7 +194,8 @@ bool IsCurrentlyUnderMemoryPressure() {
     return false;
   }
 
-  return memory_pressure_monitor->GetCurrentPressureLevel() !=
+  return memory_pressure_monitor->GetCurrentPressureLevel(
+             base::MemoryPressureMonitorTag::kSpareRendererHostManager) !=
          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 }
 
@@ -489,8 +490,10 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
   // currently approximated by only looking at the memory pressure.  See also
   // https://crbug.com/852905.
   auto* memory_monitor = base::MemoryPressureMonitor::Get();
-  if (memory_monitor && memory_monitor->GetCurrentPressureLevel() >=
-                            GetMemoryPressureLevelThreshold()) {
+  if (memory_monitor &&
+      memory_monitor->GetCurrentPressureLevel(
+          base::MemoryPressureMonitorTag::kSpareRendererHostManager) >=
+          GetMemoryPressureLevelThreshold()) {
     no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
     return nullptr;
   }

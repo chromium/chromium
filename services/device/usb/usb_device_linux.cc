@@ -75,7 +75,8 @@ void UsbDeviceLinux::Open(OpenCallback callback) {
     auto* memory_pressure_monitor = base::MemoryPressureMonitor::Get();
     if (memory_pressure_monitor) {
       memory_pressure_critical.Set(
-          (memory_pressure_monitor->GetCurrentPressureLevel() ==
+          (memory_pressure_monitor->GetCurrentPressureLevel(
+               base::MemoryPressureMonitorTag::kUsbDeviceLinux) ==
            base::MemoryPressureMonitor::MemoryPressureLevel::
                MEMORY_PRESSURE_LEVEL_CRITICAL)
               ? "true"

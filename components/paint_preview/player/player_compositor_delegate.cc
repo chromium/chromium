@@ -124,7 +124,8 @@ void PlayerCompositorDelegate::Initialize(
   auto* memory_monitor = memory_pressure_monitor();
   // If the device is already under moderate memory pressure abort right away.
   if (memory_monitor &&
-      memory_monitor->GetCurrentPressureLevel() >=
+      memory_monitor->GetCurrentPressureLevel(
+          base::MemoryPressureMonitorTag::kPlayerCompositorDelegate) >=
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

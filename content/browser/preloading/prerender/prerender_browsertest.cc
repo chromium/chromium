@@ -184,7 +184,8 @@ class FakeMemoryPressureMonitor : public base::MemoryPressureMonitor {
   explicit FakeMemoryPressureMonitor(MemoryPressureLevel level)
       : level_(level) {}
 
-  MemoryPressureLevel GetCurrentPressureLevel() const override {
+  MemoryPressureLevel GetCurrentPressureLevel(
+      base::MemoryPressureMonitorTag tag) const override {
     return level_;
   }
 
@@ -11801,7 +11802,8 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
   // Emulate moderate-level memory pressure state.
   FakeMemoryPressureMonitor memory_pressure_monitor(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ASSERT_EQ(base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel(),
+  ASSERT_EQ(base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel(
+                base::MemoryPressureMonitorTag::kTest),
             base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Triggering prerendering should not be canceled due to the moderate level
@@ -11824,7 +11826,8 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
   // Emulate critical-level memory pressure state.
   FakeMemoryPressureMonitor memory_pressure_monitor(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  ASSERT_EQ(base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel(),
+  ASSERT_EQ(base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel(
+                base::MemoryPressureMonitorTag::kTest),
             base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   // Triggering prerendering should be canceled due to the critical level memory

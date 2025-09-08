@@ -12,6 +12,24 @@
 
 namespace base {
 
+enum class MemoryPressureMonitorTag {
+  kTest = 0,
+  kGlicProfileManager = 1,
+  kLongScreenshotsTabService = 2,
+  kPaintPreviewTabService = 3,
+  kTabLoader = 4,
+  kTabHoverCardController = 5,
+  kWebUIContentsPreloadManager = 6,
+  kOnDeviceTailModelService = 7,
+  kPlayerCompositorDelegate = 8,
+  kFrameEvictionManager = 9,
+  kPrerenderHostRegistry = 10,
+  kSubframeShutdownDelay = 11,
+  kSpareRendererHostManager = 12,
+  kUsbDeviceLinux = 13,
+  kMax,
+};
+
 // TODO(chrisha): Make this a concrete class with per-OS implementations rather
 // than an abstract base class.
 
@@ -36,7 +54,8 @@ class BASE_EXPORT MemoryPressureMonitor {
   static MemoryPressureMonitor* Get();
 
   // Returns the currently observed memory pressure.
-  virtual MemoryPressureLevel GetCurrentPressureLevel() const = 0;
+  virtual MemoryPressureLevel GetCurrentPressureLevel(
+      base::MemoryPressureMonitorTag tag) const = 0;
 
  protected:
   MemoryPressureMonitor();
