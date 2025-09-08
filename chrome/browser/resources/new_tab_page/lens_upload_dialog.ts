@@ -77,6 +77,7 @@ export enum LensUploadDialogAction {
   DIALOG_OPENED = 3,
   DIALOG_CLOSED = 4,
   ERROR_SHOWN = 5,
+  MAX_VALUE = ERROR_SHOWN,
 }
 
 /**
@@ -94,18 +95,19 @@ export enum LensUploadDialogError {
   INVALID_SCHEME = 5,
   INVALID_URL = 6,
   NETWORK_ERROR = 7,
+  MAX_VALUE = NETWORK_ERROR,
 }
 
 export function recordLensUploadDialogAction(action: LensUploadDialogAction) {
   recordEnumeration(
       'NewTabPage.Lens.UploadDialog.DialogAction', action,
-      Object.keys(LensUploadDialogAction).length);
+      LensUploadDialogAction.MAX_VALUE + 1);
 }
 
 export function recordLensUploadDialogError(action: LensUploadDialogError) {
   recordEnumeration(
       'NewTabPage.Lens.UploadDialog.DialogError', action,
-      Object.keys(LensUploadDialogError).length);
+      LensUploadDialogError.MAX_VALUE + 1);
 }
 
 const LensUploadDialogElementBase = I18nMixinLit(CrLitElement);

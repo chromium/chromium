@@ -92,6 +92,7 @@ export enum Action {
   SUPPORT_LINK_CLICKED = 4,
   TRY_AGAIN_LINK = 5,
   TRY_AGAIN_MIC_BUTTON = 6,  // Deprecated.
+  MAX_VALUE = TRY_AGAIN_MIC_BUTTON,
 }
 
 /**
@@ -110,11 +111,11 @@ export enum Error {
   NOT_ALLOWED = 7,
   OTHER = 8,
   SERVICE_NOT_ALLOWED = 9,
+  MAX_VALUE = SERVICE_NOT_ALLOWED,
 }
 
 export function recordVoiceAction(action: Action) {
-  recordEnumeration(
-      'NewTabPage.VoiceActions', action, Object.keys(Action).length);
+  recordEnumeration('NewTabPage.VoiceActions', action, Action.MAX_VALUE + 1);
 }
 
 /**
@@ -431,8 +432,7 @@ export class VoiceSearchOverlayElement extends CrLitElement {
   }
 
   private onError_(error: Error) {
-    recordEnumeration(
-        'NewTabPage.VoiceErrors', error, Object.keys(Error).length);
+    recordEnumeration('NewTabPage.VoiceErrors', error, Error.MAX_VALUE + 1);
     if (error === Error.ABORTED) {
       // We are in the process of closing voice search.
       return;

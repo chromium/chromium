@@ -28,12 +28,13 @@ import {WindowProxy} from './window_proxy.js';
 export enum PromoDismissAction {
   DISMISS = 0,
   RESTORE = 1,
+  MAX_VALUE = RESTORE,
 }
 
 export function recordPromoDismissAction(action: PromoDismissAction) {
   recordEnumeration(
       'NewTabPage.Promos.DismissAction', action,
-      Object.keys(PromoDismissAction).length);
+      PromoDismissAction.MAX_VALUE + 1);
 }
 
 /**

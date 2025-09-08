@@ -172,7 +172,7 @@ export class ModuleElement extends I18nMixinLit
     recordSmallCount('NewTabPage.TabResumption.ClickIndex', index);
     recordEnumeration(
         'NewTabPage.TabResumption.Visit.ClickSource', urlVisit.source,
-        VisitSource.MAX_VALUE);
+        VisitSource.MAX_VALUE + 1);
 
     // Calculate the number of milliseconds in the difference. Max is 4 days.
     recordLogValue(
