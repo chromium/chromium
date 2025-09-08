@@ -26,9 +26,9 @@ class PageImageServiceFactory : public ProfileKeyedServiceFactoryIOS {
   PageImageServiceFactory();
   ~PageImageServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PAGE_IMAGE_MODEL_PAGE_IMAGE_SERVICE_FACTORY_H_

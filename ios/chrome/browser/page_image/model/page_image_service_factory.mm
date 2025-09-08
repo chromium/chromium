@@ -39,9 +39,7 @@ PageImageServiceFactory* PageImageServiceFactory::GetInstance() {
 PageImageServiceFactory::~PageImageServiceFactory() {}
 
 std::unique_ptr<KeyedService> PageImageServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   TemplateURLService* template_url_service =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
   RemoteSuggestionsService* remote_suggestions_service =
