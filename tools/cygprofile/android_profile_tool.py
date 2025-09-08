@@ -40,6 +40,32 @@ class NoProfileDataError(Exception):
     return repr(self.value)
 
 
+def GetBrowserFromApk(apk: str):
+  browser = 'android-webview'
+  apk_name = os.path.basename(apk)
+  if 'TrichromeWebView' in apk_name:
+    browser = browser + '-trichrome'
+  if 'Monochrome.apk' in apk_name or 'Google' in apk_name:
+    browser = browser + '-google'
+  return browser
+
+
+def RunCommand(command: List[str]):
+  """Run a command from current build directory root.
+
+  Args:
+    command: A list of command strings.
+
+  Returns:
+    The process's return code.
+  """
+  root = constants.DIR_SOURCE_ROOT
+  logging.info('Executing %s in %s', ' '.join(command), root)
+  process = subprocess.Popen(command, cwd=root, env=os.environ)
+  process.wait()
+  return process.returncode
+
+
 class AndroidProfileTool:
   """A utility for generating orderfile profile data for Chrome on Android.
 
@@ -118,7 +144,7 @@ class AndroidProfileTool:
       cmd += ['--chromium-output-directory', out_dir]
     cmd += [profile_benchmark] + ['-v'] * self._verbosity
     logging.debug('Running telemetry command: %s', cmd)
-    self._RunCommand(cmd)
+    RunCommand(cmd)
     data = self._PullProfileData(profile_benchmark)
     self._DeleteDeviceData()
     return data
@@ -151,7 +177,7 @@ class AndroidProfileTool:
       cmd += ['--chromium-output-directory', out_dir]
     cmd += [profile_benchmark] + ['-v'] * self._verbosity
     logging.debug('Running telemetry command: %s', cmd)
-    self._RunCommand(cmd)
+    RunCommand(cmd)
     data = self._PullProfileData(profile_benchmark)
     self._DeleteDeviceData()
     return data
@@ -176,13 +202,13 @@ class AndroidProfileTool:
     changer = self._SetCommandLineFlags(package_info)
 
     chromium_out_dir = os.path.abspath(os.path.join(os.path.dirname(apk), '..'))
-    browser = self._GetBrowserFromApk(apk)
+    browser = GetBrowserFromApk(apk)
 
     profile_benchmark = 'orderfile_generation.webview_startup'
     if self._debug:
       logging.info('Using reduced debugging profile')
       profile_benchmark = 'orderfile_generation.webview_startup_debugging'
-    self._RunCommand([
+    RunCommand([
         'tools/perf/run_benchmark', '--device', self._device.serial,
         '--browser', browser, '--chromium-output-directory', chromium_out_dir,
         profile_benchmark
@@ -200,39 +226,14 @@ class AndroidProfileTool:
     """
     # Uninstall the existing WebView package to avoid signatures issues.
     self._device.Uninstall('com.google.android.webview.debug')
-    self._RunCommand([installer_path, 'install'])
-    self._RunCommand([installer_path, 'set-webview-provider'])
-
-  @staticmethod
-  def _GetBrowserFromApk(apk: str):
-    browser = 'android-webview'
-    apk_name = os.path.basename(apk)
-    if 'TrichromeWebView' in apk_name:
-      browser = browser + '-trichrome'
-    if 'Monochrome.apk' in apk_name or 'Google' in apk_name:
-      browser = browser + '-google'
-    return browser
-
-  @classmethod
-  def _RunCommand(cls, command: List[str]):
-    """Run a command from current build directory root.
-
-    Args:
-      command: A list of command strings.
-
-    Returns:
-      The process's return code.
-    """
-    root = constants.DIR_SOURCE_ROOT
-    logging.info('Executing %s in %s', ' '.join(command), root)
-    process = subprocess.Popen(command, cwd=root, env=os.environ)
-    process.wait()
-    return process.returncode
+    RunCommand([installer_path, 'install'])
+    RunCommand([installer_path, 'set-webview-provider'])
 
   def Cleanup(self):
     """Delete all local and device files left over from profiling. """
     self._DeleteDeviceData()
     self._DeleteHostData(self._host_profile_root)
+
 
   def _SetUpDevice(self):
     """When profiling, files are output to the disk by every process.  This

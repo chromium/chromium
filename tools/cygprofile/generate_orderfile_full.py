@@ -452,9 +452,9 @@ class OrderfileGenerator:
     try:
       chromium_out_dir = os.path.abspath(
           os.path.join(os.path.dirname(apk), '..'))
-      browser = self._profiler._GetBrowserFromApk(apk)
+      browser = android_profile_tool.GetBrowserFromApk(apk)
       out_dir = tempfile.mkdtemp()
-      self._profiler._RunCommand([
+      android_profile_tool.RunCommand([
           'tools/perf/run_benchmark', '--device', self._profiler._device.serial,
           '--browser', browser, '--output-format=csv', '--output-dir', out_dir,
           '--chromium-output-directory', chromium_out_dir, '--reset-results',
@@ -502,7 +502,7 @@ class OrderfileGenerator:
           '--reset-results', '--browser-executable', apk,
           'orderfile.memory_mobile'
       ] + ['-v'] * self._options.verbosity
-      self._profiler._RunCommand(cmd)
+      android_profile_tool.RunCommand(cmd)
 
       out_file_path = os.path.join(out_dir, 'results.csv')
       if not os.path.exists(out_file_path):
@@ -551,7 +551,7 @@ class OrderfileGenerator:
           'speedometer2'
       ] + ['-v'] * self._options.verbosity
 
-      self._profiler._RunCommand(cmd)
+      android_profile_tool.RunCommand(cmd)
       out_file_path = os.path.join(out_dir, 'histograms.json')
       if not os.path.exists(out_file_path):
         raise Exception('Results file not found!')
