@@ -572,6 +572,7 @@ void AutofillManager::ParseFormsAsync(
 
   // To be run on the main thread (accesses member variables).
   std::vector<FormData> parsed_forms;
+  parsed_forms.reserve(forms.size());
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   for (const FormData& form_data : forms) {
     bool is_new_form = !base::Contains(form_structures_, form_data.global_id());
@@ -582,15 +583,15 @@ void AutofillManager::ParseFormsAsync(
       continue;
     }
 
-    auto form_structure = std::make_unique<FormStructure>(form_data);
-    if (!ShouldBeParsed(*form_structure, log_manager())) {
-      LogCurrentFieldTypes(form_structure.get());
+    if (!ShouldBeParsed(form_data, log_manager())) {
+      LogCurrentFieldTypes(&form_data);
       continue;
     }
 
     num_managed_forms += is_new_form;
     DCHECK_LE(num_managed_forms, kAutofillManagerMaxFormCacheSize);
 
+    auto form_structure = std::make_unique<FormStructure>(form_data);
     if (FormStructure* cached_form_structure =
             FindCachedFormById(form_data.global_id())) {
       // We need to keep the server data if available. We need to use them while
@@ -641,15 +642,15 @@ void AutofillManager::ParseFormAsync(
     return;
   }
 
-  auto form_structure = std::make_unique<FormStructure>(form_data);
-  if (!ShouldBeParsed(*form_structure, log_manager())) {
-    LogCurrentFieldTypes(form_structure.get());
+  if (!ShouldBeParsed(form_data, log_manager())) {
+    LogCurrentFieldTypes(&form_data);
     // For Autocomplete, events need to be handled even for forms that cannot be
     // parsed.
     std::move(callback).Run(*this, form_data);
     return;
   }
 
+  auto form_structure = std::make_unique<FormStructure>(form_data);
   if (FormStructure* cached_form_structure =
           FindCachedFormById(form_data.global_id())) {
     if (!CachedFormNeedsUpdate(form_data, *cached_form_structure)) {
@@ -714,26 +715,28 @@ void AutofillManager::ParseFormsAsyncCommon(
         CHECK_EQ(context.regex_predictions.size(),
                  context.form_structures.size());
         for (size_t i = 0; i < context.form_structures.size(); ++i) {
-          FormStructure& f = *context.form_structures[i];
-          self->form_structures_[f.global_id()] =
+          FormStructure* form = context.form_structures[i].get();
+          self->form_structures_[form->global_id()] =
               std::move(context.form_structures[i]);
 
           if (!context.autofill_predictions.empty()) {
-            context.autofill_predictions[i].ApplyTo(f.fields());
+            context.autofill_predictions[i].ApplyTo(form->fields());
           }
           if (!context.password_manager_predictions.empty()) {
-            context.password_manager_predictions[i].ApplyTo(f.fields());
+            context.password_manager_predictions[i].ApplyTo(form->fields());
           }
           if (!context.regex_predictions.empty()) {
-            context.regex_predictions[i].ApplyTo(f.fields());
+            context.regex_predictions[i].ApplyTo(form->fields());
           }
-          f.RationalizeAndAssignSections(context.country_code,
-                                         context.current_page_language,
-                                         context.log_manager.get());
+          form->RationalizeAndAssignSections(context.country_code,
+                                             context.current_page_language,
+                                             context.log_manager.get());
 
-          self->LogCurrentFieldTypes(&f);
+          const FormStructure& raw_form = *form;
+
+          self->LogCurrentFieldTypes(&raw_form);
           self->NotifyObservers(
-              &Observer::OnFieldTypesDetermined, f.global_id(),
+              &Observer::OnFieldTypesDetermined, raw_form.global_id(),
               Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
         }
 
@@ -812,12 +815,12 @@ void AutofillManager::RunMlModels(
         << LoggingScope::kParsing << LogMessage::kTriggeringClientsideModelFor
         << HeuristicSourceToString(source);
     manager->SubscribeToMlModelChanges(*ml_handler);
-    std::vector<FormData> form_datas = base::ToVector(
+    GeoIpCountryCode country_code = context.country_code;
+    const std::vector<FormData>& forms = base::ToVector(
         context.form_structures,
         [](auto& form_structure) { return form_structure->ToFormData(); });
-    GeoIpCountryCode country_code = context.country_code;
     ml_handler->GetModelPredictionsForForms(
-        std::move(form_datas), country_code,
+        forms, country_code,
         base::BindOnce(std::move(receive_predictions), std::move(context)));
   };
 
