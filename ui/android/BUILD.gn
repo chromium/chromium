@@ -561,6 +561,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/xr/scenecore/XrSceneCoreSessionManager.java",
   ]
   deps = [
+    ":menu_model_bridge_jni_headers_java",
     ":ui_android_features_java",
     ":ui_java_resources",
     ":ui_utils_java",

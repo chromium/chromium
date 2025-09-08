@@ -50,10 +50,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
             attribution_src_token);
   }
 
-  ui::MenuModelBridge* menu_model_bridge = new ui::MenuModelBridge();
-  if (menu_model != nullptr) {
-    menu_model_bridge->AddExtensionItems(menu_model);
-  }
+  ui::MenuModelBridge* menu_model_bridge =
+      new ui::MenuModelBridge(menu_model ? menu_model->AsWeakPtr() : nullptr);
 
   return base::android::ScopedJavaGlobalRef<jobject>(
       Java_ContextMenuParams_create(

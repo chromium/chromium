@@ -605,7 +605,7 @@ public class ContextMenuTest extends AwParameterizedTest {
         final ContextMenuParams params =
                 new ContextMenuParams(
                         /* nativePtr= */ 0,
-                        new MenuModelBridge(),
+                        new MenuModelBridge(0L),
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
                         /* pageUrl= */ GURL.emptyGURL(),
@@ -896,7 +896,7 @@ public class ContextMenuTest extends AwParameterizedTest {
 
         return new ContextMenuParams(
                 0,
-                new MenuModelBridge(),
+                new MenuModelBridge(0L),
                 mediaType,
                 ContextMenuDataMediaFlags.MEDIA_NONE,
                 mPageUrl,

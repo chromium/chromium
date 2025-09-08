@@ -308,27 +308,26 @@ bool SelectionPopupController::ShowSelectionMenu(
       params.source_type == ui::mojom::MenuSourceType::kTouch ||
       params.source_type == ui::mojom::MenuSourceType::kLongPress;
 
-  menu_model_bridge_ = std::make_unique<ui::MenuModelBridge>();
-  if (selection_popup_delegate_) {
     extra_items_menu_model_.reset();
     extra_items_menu_model_ =
-        selection_popup_delegate_->GetSelectionPopupExtraItems(
-            *render_frame_host, params);
-    if (extra_items_menu_model_) {
-      menu_model_bridge_->AddExtensionItems(extra_items_menu_model_.get());
-    }
-  }
+        selection_popup_delegate_
+            ? selection_popup_delegate_->GetSelectionPopupExtraItems(
+                  *render_frame_host, params)
+            : nullptr;
+    ui::MenuModel* menu_model = extra_items_menu_model_.get();
+    menu_model_bridge_ = std::make_unique<ui::MenuModelBridge>(
+        menu_model ? menu_model->AsWeakPtr() : nullptr);
 
-  Java_SelectionPopupControllerImpl_showSelectionMenu(
-      env, obj, params.x, params.y, params.selection_rect.x(),
-      params.selection_rect.y(), params.selection_rect.right(),
-      params.selection_rect.bottom(), handle_height, params.is_editable,
-      is_password_type, jselected_text, params.selection_start_offset,
-      can_select_all, can_edit_richly, should_suggest,
-      static_cast<int>(params.source_type),
-      render_frame_host->GetJavaRenderFrameHost(),
-      menu_model_bridge_->GetJavaObject());
-  return true;
+    Java_SelectionPopupControllerImpl_showSelectionMenu(
+        env, obj, params.x, params.y, params.selection_rect.x(),
+        params.selection_rect.y(), params.selection_rect.right(),
+        params.selection_rect.bottom(), handle_height, params.is_editable,
+        is_password_type, jselected_text, params.selection_start_offset,
+        can_select_all, can_edit_richly, should_suggest,
+        static_cast<int>(params.source_type),
+        render_frame_host->GetJavaRenderFrameHost(),
+        menu_model_bridge_->GetJavaObject());
+    return true;
 }
 
 void SelectionPopupController::OnSelectAroundCaretAck(

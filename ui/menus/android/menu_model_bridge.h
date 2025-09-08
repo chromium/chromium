@@ -5,7 +5,9 @@
 #ifndef UI_MENUS_ANDROID_MENU_MODEL_BRIDGE_H_
 #define UI_MENUS_ANDROID_MENU_MODEL_BRIDGE_H_
 
+#include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -21,20 +23,19 @@
 namespace ui {
 class COMPONENT_EXPORT(UI_MENUS) MenuModelBridge {
  public:
-  MenuModelBridge();
+  explicit MenuModelBridge(base::WeakPtr<ui::MenuModel> menu_model);
   MenuModelBridge(const MenuModelBridge&) = delete;
   MenuModelBridge& operator=(const MenuModelBridge&) = delete;
   virtual ~MenuModelBridge();
 
-  void AddExtensionItems(ui::MenuModel* menu_model);
-
+  void ActivatedAt(JNIEnv* env, size_t i);
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObject();
 
  private:
+  void AddExtensionItems();
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-  base::WeakPtrFactory<MenuModelBridge> weak_ptr_factory_{this};
-
-  void ActivatedAt(base::WeakPtr<ui::MenuModel> menu_model, size_t i);
+  base::WeakPtr<ui::MenuModel> menu_model_;
+  std::vector<std::unique_ptr<MenuModelBridge>> submenu_model_bridges_;
 };
 
 }  // namespace ui
