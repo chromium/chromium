@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/image-decoders/png/skia_png_rust_image_decoder.h"
+#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/experimental/rust_png/decoder/SkPngRustDecoder.h"
@@ -10,18 +10,18 @@
 
 namespace blink {
 
-SkiaPngRustImageDecoder::~SkiaPngRustImageDecoder() = default;
+PngImageDecoder::~PngImageDecoder() = default;
 
-String SkiaPngRustImageDecoder::FilenameExtension() const {
+String PngImageDecoder::FilenameExtension() const {
   return "png";
 }
 
-const AtomicString& SkiaPngRustImageDecoder::MimeType() const {
+const AtomicString& PngImageDecoder::MimeType() const {
   DEFINE_STATIC_LOCAL(const AtomicString, png_mime_type, ("image/png"));
   return png_mime_type;
 }
 
-std::unique_ptr<SkCodec> SkiaPngRustImageDecoder::OnCreateSkCodec(
+std::unique_ptr<SkCodec> PngImageDecoder::OnCreateSkCodec(
     std::unique_ptr<SkStream> stream,
     SkCodec::Result* result) {
   std::unique_ptr<SkCodec> codec =

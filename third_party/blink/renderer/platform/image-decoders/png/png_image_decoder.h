@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_PNG_SKIA_PNG_RUST_IMAGE_DECODER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_PNG_SKIA_PNG_RUST_IMAGE_DECODER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_PNG_PNG_IMAGE_DECODER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_PNG_PNG_IMAGE_DECODER_H_
 
 #include <memory>
 
@@ -12,15 +12,14 @@
 namespace blink {
 
 // This class decodes the PNG image format using `SkPngRustCodec`.
-class PLATFORM_EXPORT SkiaPngRustImageDecoder final
-    : public SkiaImageDecoderBase {
+class PLATFORM_EXPORT PngImageDecoder final : public SkiaImageDecoderBase {
  public:
   // Exposing the same constructor as the base class:
   using SkiaImageDecoderBase::SkiaImageDecoderBase;
 
-  SkiaPngRustImageDecoder(const SkiaPngRustImageDecoder&) = delete;
-  SkiaPngRustImageDecoder& operator=(const SkiaPngRustImageDecoder&) = delete;
-  ~SkiaPngRustImageDecoder() override;
+  PngImageDecoder(const PngImageDecoder&) = delete;
+  PngImageDecoder& operator=(const PngImageDecoder&) = delete;
+  ~PngImageDecoder() override;
 
   // ImageDecoder:
   String FilenameExtension() const override;
@@ -34,4 +33,4 @@ class PLATFORM_EXPORT SkiaPngRustImageDecoder final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_PNG_SKIA_PNG_RUST_IMAGE_DECODER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_PNG_PNG_IMAGE_DECODER_H_
