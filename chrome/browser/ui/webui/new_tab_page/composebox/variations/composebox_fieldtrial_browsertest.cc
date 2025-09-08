@@ -31,7 +31,7 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
       bool is_server_eligible,
       bool server_eligibility_enabled,
       PrefService& pref_service,
-      TemplateURLService& template_url_service)
+      TemplateURLService* template_url_service)
       : ChromeAimEligibilityService(pref_service,
                                     template_url_service,
                                     /*url_loader_factory=*/nullptr),
@@ -105,7 +105,7 @@ class NtpComposeboxFieldTrialBrowserTest
                   std::make_unique<TestingAimEligibilityService>(
                       is_locally_eligible, is_server_eligible,
                       server_eligibility_enabled, *profile->GetPrefs(),
-                      *TemplateURLServiceFactory::GetForProfile(profile)));
+                      TemplateURLServiceFactory::GetForProfile(profile)));
             }));
 
     InProcessBrowserTest::SetUpOnMainThread();

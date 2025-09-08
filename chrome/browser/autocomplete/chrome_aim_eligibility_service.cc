@@ -19,7 +19,7 @@
 
 ChromeAimEligibilityService::ChromeAimEligibilityService(
     PrefService& pref_service,
-    TemplateURLService& template_url_service,
+    TemplateURLService* template_url_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : AimEligibilityService(pref_service,
                             template_url_service,

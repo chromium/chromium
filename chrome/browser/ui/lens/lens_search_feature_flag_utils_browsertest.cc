@@ -37,7 +37,7 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
       PrefService& pref_service,
       TemplateURLService* template_url_service)
       : ChromeAimEligibilityService(pref_service,
-                                    *template_url_service,
+                                    template_url_service,
                                     /*url_loader_factory=*/nullptr),
         is_locally_eligible_(is_locally_eligible),
         is_server_eligible_(is_server_eligible),

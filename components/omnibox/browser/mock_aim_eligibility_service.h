@@ -12,7 +12,7 @@ class MockAimEligibilityService : public AimEligibilityService {
  public:
   MockAimEligibilityService(
       PrefService& pref_service,
-      TemplateURLService& template_url_service,
+      TemplateURLService* template_url_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~MockAimEligibilityService() override;
 

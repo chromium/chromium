@@ -22,7 +22,8 @@ KeywordEditorController::KeywordEditorController(Profile* profile)
   AimEligibilityService* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   table_model_ = std::make_unique<TemplateURLTableModel>(
-      url_model_, aim_eligibility_service->IsAimEligible());
+      url_model_,
+      aim_eligibility_service && aim_eligibility_service->IsAimEligible());
 }
 
 KeywordEditorController::~KeywordEditorController() = default;

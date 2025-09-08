@@ -8,6 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
+#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -25,6 +28,9 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
+// If enabled, uses the server response for AIM eligibility for all locales.
+BASE_DECLARE_FEATURE(kAimServerEligibilityEnabled);
+
 // Utility service to check if the profile is eligible for AI mode features.
 class AimEligibilityService : public KeyedService {
  public:
@@ -35,7 +41,7 @@ class AimEligibilityService : public KeyedService {
 
   AimEligibilityService(
       PrefService& pref_service,
-      TemplateURLService& template_url_service,
+      TemplateURLService* template_url_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~AimEligibilityService() override;
 
@@ -71,17 +77,31 @@ class AimEligibilityService : public KeyedService {
   virtual std::string GetLocale() const = 0;
 
  private:
+  friend class AimEligibilityServiceFriend;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ServerAimEligibilityRequestStatus)
+  enum class ServerRequestStatus {
+    kSent = 0,
+    kErrorResponse = 1,
+    kFailedToParse = 2,
+    kSuccess = 3,
+    kMaxValue = kSuccess,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:ServerAimEligibilityRequestStatus)
+
+  // Initializes the service.
+  void Initialize();
+
   // Notify `observers_` ineligibles may have changed.
   void NotifyObservers() const;
 
-  // Parses `response_string` into `most_recent_response_`. Does not modify
-  // `most_recent_response_` if parsing fails.
-  bool ParseResponseString(const std::string& response_string);
-
-  // Write and read `most_recent_response_` to pref so it can be used when the
-  // server is unavailable.
-  void WriteToPref(const std::string& response_string) const;
-  void ReadFromPref();
+  // Updates `most_recent_response_` and the prefs with `response_proto`.
+  void UpdateMostRecentResponse(
+      const omnibox::AimEligibilityResponse& response_proto);
+  // Loads `most_recent_response_` from the prefs, if valid.
+  void LoadMostRecentResponse();
 
   // Fetch eligibility from the server.
   void StartServerEligibilityRequest();
@@ -94,12 +114,15 @@ class AimEligibilityService : public KeyedService {
 
   base::ObserverList<AimEligibilityServiceObserver> observers_;
   const raw_ref<PrefService> pref_service_;
-  // Guaranteed not-null because this server `DependsOn` `TemplateURLService`.
-  const raw_ref<TemplateURLService> template_url_service_;
+  // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
+  const raw_ptr<TemplateURLService> template_url_service_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  base::CallbackListSubscription template_url_service_subscription_;
 
   // Update on each successfully server response.
   omnibox::AimEligibilityResponse most_recent_response_;
+  // Tracks whether the service has been initialized.
+  bool initialized_ = false;
 
   // For binding the `OnServerEligibilityResponse()` callback.
   base::WeakPtrFactory<AimEligibilityService> weak_factory_{this};

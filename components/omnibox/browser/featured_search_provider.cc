@@ -303,6 +303,7 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
       // Skip @aimode if feature disabled.
       if (turl->starter_pack_id() == template_url_starter_pack_data::kAiMode &&
           (!omnibox_feature_configs::Toolbelt::Get().enabled ||
+           !client_->GetAimEligibilityService() ||
            !client_->GetAimEligibilityService()->IsAimEligible())) {
         continue;
       }
