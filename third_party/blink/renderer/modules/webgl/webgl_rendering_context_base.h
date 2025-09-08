@@ -722,7 +722,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool CanUseDrawingBufferSIWithoutCopyForLowLatency();
   void PageVisibilityChanged() override;
   void SizeChanged() override;
-  std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider();
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;

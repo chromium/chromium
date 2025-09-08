@@ -2026,49 +2026,6 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
   return nullptr;
 }
 
-std::unique_ptr<CanvasResourceProvider>
-WebGLRenderingContextBase::CreateCanvasResourceProvider() {
-  base::WeakPtr<CanvasResourceDispatcher> dispatcher =
-      Host()->GetOrCreateResourceDispatcher()
-          ? Host()->GetOrCreateResourceDispatcher()->GetWeakPtr()
-          : nullptr;
-
-  std::unique_ptr<CanvasResourceProvider> provider;
-  const SkAlphaType alpha_type = GetAlphaType();
-  const viz::SharedImageFormat format = GetSharedImageFormat();
-  const gfx::ColorSpace color_space = GetColorSpace();
-  // Do not initialize the CRP using Skia. The CRP can have bottom left origin
-  // in which case Skia Graphite won't be able to render into it, and WebGL is
-  // responsible for clearing the CRP when it renders anyway and we have clear
-  // rect tracking in the shared image system to enforce this.
-  constexpr auto kShouldInitialize =
-      CanvasResourceProvider::ShouldInitialize::kNo;
-  CHECK(!CanUseDrawingBufferSIWithoutCopyForLowLatency());
-  if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    gpu::SharedImageUsageSet shared_image_usage_flags =
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-
-    // TODO(crbug.com/391648152): Remove the guard on LowLatencyEnabled() being
-    // false; it is present for historical reasons but in reality if
-    // CanUseDrawingBufferSIWithoutCopyForLatency() is false then either (a)
-    // the checks here will fail or (b) CRP::CreateSharedImageProvider() will
-    // itself strip off the SCANOUT usage due to its own internal checks.
-    if (!Host()->LowLatencyEnabled() &&
-        SharedGpuContext::MaySupportImageChromium() &&
-        RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
-      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-    }
-    return CanvasResourceProvider::CreateSharedImageProvider(
-        Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
-        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        shared_image_usage_flags, Host());
-  }
-
-  return CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
-      Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
-      SharedGpuContext::SharedImageInterfaceProvider(), Host());
-}
-
 CanvasResourceProvider*
 WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
   // If `cached_snapshot_` is non-null, it means that
@@ -2083,7 +2040,47 @@ WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
   auto* provider = resource_provider_.get();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (Host()->IsValidImageSize()) {
-      resource_provider_ = CreateCanvasResourceProvider();
+      base::WeakPtr<CanvasResourceDispatcher> dispatcher =
+          Host()->GetOrCreateResourceDispatcher()
+              ? Host()->GetOrCreateResourceDispatcher()->GetWeakPtr()
+              : nullptr;
+
+      const SkAlphaType alpha_type = GetAlphaType();
+      const viz::SharedImageFormat format = GetSharedImageFormat();
+      const gfx::ColorSpace color_space = GetColorSpace();
+      // Do not initialize the CRP using Skia. The CRP can have bottom left
+      // origin in which case Skia Graphite won't be able to render into it, and
+      // WebGL is responsible for clearing the CRP when it renders anyway and we
+      // have clear rect tracking in the shared image system to enforce this.
+      constexpr auto kShouldInitialize =
+          CanvasResourceProvider::ShouldInitialize::kNo;
+      CHECK(!CanUseDrawingBufferSIWithoutCopyForLowLatency());
+      if (SharedGpuContext::IsGpuCompositingEnabled()) {
+        gpu::SharedImageUsageSet shared_image_usage_flags =
+            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+        // TODO(crbug.com/391648152): Remove the guard on LowLatencyEnabled()
+        // being false; it is present for historical reasons but in reality if
+        // CanUseDrawingBufferSIWithoutCopyForLatency() is false then either (a)
+        // the checks here will fail or (b) CRP::CreateSharedImageProvider()
+        // will itself strip off the SCANOUT usage due to its own internal
+        // checks.
+        if (!Host()->LowLatencyEnabled() &&
+            SharedGpuContext::MaySupportImageChromium() &&
+            RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
+          shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+        }
+        resource_provider_ = CanvasResourceProvider::CreateSharedImageProvider(
+            Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
+            SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+            shared_image_usage_flags, Host());
+      } else {
+        resource_provider_ = CanvasResourceProvider::
+            CreateSharedImageProviderForSoftwareCompositor(
+                Host()->Size(), format, alpha_type, color_space,
+                kShouldInitialize,
+                SharedGpuContext::SharedImageInterfaceProvider(), Host());
+      }
       Host()->UpdateMemoryUsage();
       provider = resource_provider_.get();
     }
