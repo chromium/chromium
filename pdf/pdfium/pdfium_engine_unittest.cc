@@ -72,7 +72,6 @@ using ::testing::_;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Pair;
@@ -2079,12 +2078,12 @@ TEST_P(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
     static constexpr gfx::Point kScrollValue = {510, 478};
     EXPECT_CALL(client,
                 ScrollToY(kScrollValue.y(), /*force_smooth_scroll=*/false))
-        .WillOnce(Invoke(
-            [&engine]() { engine->ScrolledToYPosition(kScrollValue.y()); }));
+        .WillOnce(
+            [&engine]() { engine->ScrolledToYPosition(kScrollValue.y()); });
     EXPECT_CALL(client,
                 ScrollToX(kScrollValue.x(), /*force_smooth_scroll=*/false))
-        .WillOnce(Invoke(
-            [&engine]() { engine->ScrolledToXPosition(kScrollValue.x()); }));
+        .WillOnce(
+            [&engine]() { engine->ScrolledToXPosition(kScrollValue.x()); });
   }
 
   EXPECT_EQ(PDFiumEngine::FocusElementType::kNone,
@@ -2136,14 +2135,14 @@ TEST_P(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
     for (const auto& scroll_value : kScrollValues) {
       EXPECT_CALL(client,
                   ScrollToY(scroll_value.y(), /*force_smooth_scroll=*/false))
-          .WillOnce(Invoke([&engine, &scroll_value]() {
+          .WillOnce([&engine, &scroll_value]() {
             engine->ScrolledToYPosition(scroll_value.y());
-          }));
+          });
       EXPECT_CALL(client,
                   ScrollToX(scroll_value.x(), /*force_smooth_scroll=*/false))
-          .WillOnce(Invoke([&engine, &scroll_value]() {
+          .WillOnce([&engine, &scroll_value]() {
             engine->ScrolledToXPosition(scroll_value.x());
-          }));
+          });
     }
   }
 

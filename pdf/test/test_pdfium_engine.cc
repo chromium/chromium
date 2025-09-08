@@ -37,12 +37,11 @@ TestPDFiumEngine::TestPDFiumEngine(PDFiumEngineClient* client)
           std::vector<uint8_t>(std::begin(kSaveData), std::end(kSaveData))));
 
   ON_CALL(*this, ReadLoadedBytes)
-      .WillByDefault(
-          testing::Invoke([](uint32_t offset, base::span<uint8_t> buffer) {
-            buffer.copy_from(
-                base::span(kLoadedData).subspan(offset, buffer.size()));
-            return true;
-          }));
+      .WillByDefault([](uint32_t offset, base::span<uint8_t> buffer) {
+        buffer.copy_from(
+            base::span(kLoadedData).subspan(offset, buffer.size()));
+        return true;
+      });
 }
 
 TestPDFiumEngine::~TestPDFiumEngine() = default;
