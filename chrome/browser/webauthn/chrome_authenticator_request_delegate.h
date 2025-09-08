@@ -219,8 +219,6 @@ class ChromeAuthenticatorRequestDelegate
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
                            ShouldCreateInICloudKeychain);
 
-  class EnclaveManagerObserver;
-
   content::BrowserContext* GetBrowserContext() const;
   Profile* profile() const;
 
