@@ -10,6 +10,7 @@
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -40,10 +41,12 @@ class AlertIndicatorButtonBrowserTest
                   CONTENT_SETTING_ALLOW);
 
     // Assign the alert_indicator_button_.
-    auto* tabstrip = static_cast<BrowserView*>(browser()->window())->tabstrip();
-    alert_indicator_button_ =
-        tabstrip->tab_at(tabstrip->GetActiveIndex().value())
-            ->alert_indicator_button_for_testing();
+    TabStripViewInterface* tab_strip_view =
+        browser()->window()->AsBrowserView()->tab_strip_view();
+    Tab* tab = tab_strip_view->GetTabAnchorViewAt(
+        browser()->tab_strip_model()->active_index());
+    alert_indicator_button_ = views::AsViewClass<AlertIndicatorButton>(
+        tab->GetViewByElementId(kTabAlertIndicatorButtonElementId));
   }
 
   content::WebContents* web_contents() { return web_contents_; }

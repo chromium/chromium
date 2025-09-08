@@ -218,9 +218,15 @@ class GlicTabUnderlineViewUiTest : public test::InteractiveGlicTest {
   GURL Title2() const { return embedded_test_server()->GetURL("/title2.html"); }
 
   GlicTabUnderlineView* GetUnderlineOfActiveTab() {
-    auto* tabstrip = static_cast<BrowserView*>(browser()->window())->tabstrip();
-    return tabstrip->tab_at(tabstrip->GetActiveIndex().value())
-        ->glic_underline();
+    TabStripViewInterface* tab_strip_view =
+        browser()->window()->AsBrowserView()->tab_strip_view();
+    views::View* underline =
+        tab_strip_view
+            ->GetTabAnchorViewAt(browser()->tab_strip_model()->active_index())
+            ->GetViewByElementId(
+                GlicTabUnderlineView::kGlicTabUnderlineElementId);
+    CHECK(underline);
+    return views::AsViewClass<GlicTabUnderlineView>(underline);
   }
 
   content::WebContents* GetActiveWebContents() {

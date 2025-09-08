@@ -9,6 +9,7 @@
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/glic/browser_ui/glic_animated_effect_view.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/compositor_observer.h"
@@ -53,6 +54,8 @@ class GlicTabUnderlineView : public GlicAnimatedEffectView {
   GlicTabUnderlineView(const GlicTabUnderlineView&) = delete;
   GlicTabUnderlineView& operator=(const GlicTabUnderlineView&) = delete;
   ~GlicTabUnderlineView() override;
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicTabUnderlineElementId);
 
  protected:
   friend class Factory;

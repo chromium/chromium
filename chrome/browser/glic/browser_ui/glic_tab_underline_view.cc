@@ -13,9 +13,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/views/view_class_properties.h"
 
 namespace glic {
 namespace {
@@ -40,6 +42,9 @@ constexpr static int kEffectHeight = 2;
 constexpr static float kCornerRadius = kEffectHeight / 2.0f;
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GlicTabUnderlineView,
+                                      kGlicTabUnderlineElementId);
 
 GlicTabUnderlineView::Factory* GlicTabUnderlineView::Factory::factory_ =
     nullptr;
@@ -502,6 +507,7 @@ GlicTabUnderlineView::GlicTabUnderlineView(Browser* browser,
     : GlicAnimatedEffectView(browser, std::move(tester)),
       updater_(std::make_unique<UnderlineViewUpdater>(browser, this)),
       tab_(tab) {
+  SetProperty(views::kElementIdentifierKey, kGlicTabUnderlineElementId);
   auto* glic_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile());
   // Post-initialization updates. Don't do the update in the updater's ctor
