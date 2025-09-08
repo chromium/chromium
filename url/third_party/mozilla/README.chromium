@@ -1,7 +1,7 @@
 Name: url_parse
 Version: unknown
 URL: https://hg.mozilla.org/mozilla-central/file/tip/netwerk/base/nsURLParsers.cpp
-License: MPLv2
+License: MPL-2
 License File: LICENSE.txt
 Shipped: yes
 Security Critical: yes

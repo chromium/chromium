@@ -6,7 +6,7 @@ Revision: 71ba7e7b1b328fe0de6cfbd3e94e5e0ddd4b4073
 Update Mechanism: Manual
 License: MIT
 License File: cpp-httplib/LICENSE
-Security Critical: no (test only)
+Security Critical: no
 Shipped: no
 CPEPrefix: cpe:/a:cpp-httplib_project:cpp-httplib
 

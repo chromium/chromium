@@ -6,9 +6,10 @@ Shipped: yes
 License: BSD-2-Clause
 License File: LICENSE
 Date: 2024-02-26
-Update Mechanism: Static
+Update Mechanism: Static (https://crbug.com/422063622)
 
 Description:
+Pending ATL review for Static exception.
 This directory contains the files that complement the Fuchsia SDK
 for projects that use the GN build tool. The files in src/ were originally
 copied from
