@@ -60,7 +60,7 @@ class SearchEngineTabHelperTest : public PlatformTest {
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         base::BindLambdaForTesting(
-            [this](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+            [this](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               std::unique_ptr<TemplateURLService> model =
                   search_engines_test_environment_.ReleaseTemplateURLService();
               return model;
