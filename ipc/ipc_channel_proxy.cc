@@ -348,7 +348,6 @@ void ChannelProxy::Init(std::unique_ptr<ChannelFactory> factory,
       FROM_HERE, base::BindOnce(&Context::OnChannelOpened, context_));
 
   did_init_ = true;
-  OnChannelInit();
 }
 
 void ChannelProxy::Pause() {
@@ -410,9 +409,6 @@ void ChannelProxy::GetRemoteAssociatedInterface(
 void ChannelProxy::ClearIPCTaskRunner() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   context()->ClearIPCTaskRunner();
-}
-
-void ChannelProxy::OnChannelInit() {
 }
 
 void ChannelProxy::SetUrgentMessageObserver(UrgentMessageObserver* observer) {

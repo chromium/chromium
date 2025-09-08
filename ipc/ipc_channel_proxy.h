@@ -353,9 +353,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
     factory.Run(mojo::PendingAssociatedReceiver<Interface>(std::move(handle)));
   }
 
-  // Always called once immediately after Init.
-  virtual void OnChannelInit();
-
   // By maintaining this indirection (ref-counted) to our internal state, we
   // can safely be destroyed while the background thread continues to do stuff
   // that involves this data.

@@ -568,6 +568,4 @@ void SyncChannel::StartWatching() {
       sync_context()->listener_task_runner());
 }
 
-void SyncChannel::OnChannelInit() {}
-
 }  // namespace IPC

@@ -202,9 +202,6 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
   // Starts the dispatch watcher.
   void StartWatching();
 
-  // ChannelProxy overrides:
-  void OnChannelInit() override;
-
   scoped_refptr<mojo::SyncHandleRegistry> sync_handle_registry_;
 
   // Used to signal events between the IPC and listener threads.
