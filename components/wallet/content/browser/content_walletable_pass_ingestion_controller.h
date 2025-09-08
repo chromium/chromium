@@ -7,7 +7,6 @@
 
 #include "components/wallet/core/browser/walletable_pass_ingestion_controller.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
 class RenderFrameHost;
@@ -22,10 +21,11 @@ namespace wallet {
 // observing the `WebContents` it is attached to.
 class ContentWalletablePassIngestionController
     : public WalletablePassIngestionController,
-      public content::WebContentsObserver,
-      public content::WebContentsUserData<
-          ContentWalletablePassIngestionController> {
+      public content::WebContentsObserver {
  public:
+  ContentWalletablePassIngestionController(content::WebContents* web_contents,
+                                           WalletablePassClient* client);
+
   ContentWalletablePassIngestionController(
       const ContentWalletablePassIngestionController&) = delete;
   ContentWalletablePassIngestionController& operator=(
@@ -36,15 +36,6 @@ class ContentWalletablePassIngestionController
   // content::WebContentsObserver:
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
-
- private:
-  friend class content::WebContentsUserData<
-      ContentWalletablePassIngestionController>;
-  ContentWalletablePassIngestionController(
-      content::WebContents* web_contents,
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace wallet

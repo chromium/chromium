@@ -10,14 +10,10 @@
 namespace wallet {
 
 ContentWalletablePassIngestionController::
-    ContentWalletablePassIngestionController(
-        content::WebContents* web_contents,
-        optimization_guide::OptimizationGuideDecider*
-            optimization_guide_decider)
-    : WalletablePassIngestionController(optimization_guide_decider),
-      content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<ContentWalletablePassIngestionController>(
-          *web_contents) {}
+    ContentWalletablePassIngestionController(content::WebContents* web_contents,
+                                             WalletablePassClient* client)
+    : WalletablePassIngestionController(client),
+      content::WebContentsObserver(web_contents) {}
 
 ContentWalletablePassIngestionController::
     ~ContentWalletablePassIngestionController() = default;
@@ -31,7 +27,5 @@ void ContentWalletablePassIngestionController::DidFinishLoad(
   }
   // TODO(crbug.com/422366321): Add walletable pass detection logic here.
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentWalletablePassIngestionController);
 
 }  // namespace wallet
