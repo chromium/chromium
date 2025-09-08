@@ -351,8 +351,8 @@ void PageTool::Invoke(InvokeCallback callback) {
   // `this` Unretained because the observer is owned by this class and thus
   // removed on destruction.
   frame_change_observer_ = std::make_unique<RenderFrameChangeObserver>(
-      frame, base::BindOnce(&PageTool::FinishInvoke, base::Unretained(this),
-                            MakeOkResult()));
+      frame, base::BindOnce(&PageTool::OnRenderFrameHostChanged,
+                            base::Unretained(this)));
 
   // `this` Unretained because this class owns the mojo pipe that invokes the
   // callbacks.
@@ -362,7 +362,7 @@ void PageTool::Invoke(InvokeCallback callback) {
   // invocation as successful but might be worth better understanding how this
   // can happen.
   chrome_render_frame_.set_disconnect_handler(base::BindOnce(
-      &PageTool::FinishInvoke, base::Unretained(this), MakeOkResult()));
+      &PageTool::OnRenderFrameHostChanged, base::Unretained(this)));
   chrome_render_frame_->InvokeTool(
       std::move(invocation),
       base::BindOnce(&PageTool::FinishInvoke, base::Unretained(this)));
@@ -404,6 +404,21 @@ std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer()
 void PageTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                       InvokeCallback callback) const {
   task.AddTab(request_->GetTabHandle(), std::move(callback));
+}
+
+void PageTool::OnRenderFrameHostChanged() {
+  // Return error if tab itself is closed or the WebContents hosted in the tab
+  // is being destroyed.
+  if (!request_->GetTabHandle().Get() ||
+      request_->GetTabHandle().Get()->GetContents()->IsBeingDestroyed()) {
+    FinishInvoke(MakeResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
+
+  // The RenderFrameHost has been swapped out. This is likely due to a
+  // navigation. Finish the invocation successfully as the ToolController will
+  // wait on the new page to load if needed.
+  FinishInvoke(MakeOkResult());
 }
 
 void PageTool::FinishInvoke(mojom::ActionResultPtr result) {

@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -276,5 +280,54 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest, OffscreenFixedElement) {
 
   EXPECT_EQ(EvalJs(web_contents(), "window.scrollY"), 0);
 }
+
+class ActorToolAgnosticBrowserTestWithCustomDelay
+    : public ActorToolAgnosticBrowserTest {
+ public:
+  void SetUp() override {
+    // Ensure tool doesn't finish before the tab is closed.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{"glic-actor-page-stability-invoke-callback-delay", "500ms"}});
+    ActorToolAgnosticBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Closing a tab before tool finishes should cancel callbacks and not crash.
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTestWithCustomDelay,
+                       CloseTabBeforeToolFinishes) {
+  // Use a new tab so closing it later won't trigger destruction of browser
+  // (needed for proper test teardown).
+  AddBlankTabAndShow(browser());
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> button_id =
+      GetDOMNodeId(*main_frame(), "button#clickable");
+  ASSERT_TRUE(button_id);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), button_id.value());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  web_contents()->Close();
+  // ActorTask::OnTabWillDetach will return kError before renderer tool
+  // completes.
+  ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
+
+  // Continue running so tool finish callback from ToolController can proceed
+  // after WebContents closed, it should not crash.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
+    run_loop.Run();
+  }
+}
+
 }  // namespace
 }  // namespace actor

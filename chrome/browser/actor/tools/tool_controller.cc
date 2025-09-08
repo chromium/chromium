@@ -196,13 +196,23 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
     result->execution_end_time = base::TimeTicks::Now();
   }
 
-  if (observation_delayer_ && IsOk(*result)) {
+  if (!IsOk(*result) || !observation_delayer_) {
+    PostInvokeTool(std::move(result));
+    return;
+  }
+
+  if (observation_delayer_->web_contents()) {
     observation_delayer_->Wait(
         *active_state_->journal_entry,
         base::BindOnce(&ToolController::PostInvokeTool,
                        weak_ptr_factory_.GetWeakPtr(), std::move(result)));
   } else {
+    journal().Log(active_state_->tool->JournalURL(), task_->id(),
+                  mojom::JournalTrack::kActor,
+                  "ToolController DidFinishToolInvoke",
+                  "WebContents is gone when tool finishes successfully");
     PostInvokeTool(std::move(result));
+    return;
   }
 }
 
