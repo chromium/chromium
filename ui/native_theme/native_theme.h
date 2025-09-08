@@ -472,7 +472,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Returns whether we are in forced colors mode, controlled by system
   // accessibility settings. Currently, Windows high contrast is the only system
   // setting that triggers forced colors mode.
-  bool InForcedColorsMode() const;
+  bool forced_colors() const { return forced_colors_; }
 
   // Returns true when the NativeTheme uses a light-on-dark color scheme. If
   // you're considering using this function to choose between two hard-coded
@@ -480,7 +480,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   virtual bool ShouldUseDarkColors() const;
 
   // Returns the user's current page colors.
-  virtual PageColors GetPageColors() const;
+  PageColors page_colors() const { return page_colors_; }
 
   // Calculates and returns the current user preferred color scheme. The
   // base behavior is to set preferred color scheme to light or dark depending
@@ -490,17 +490,21 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Returns the OS-level user preferred color scheme. See the comment for
   // CalculatePreferredColorScheme() for details on how preferred color scheme
   // is calculated.
-  virtual PreferredColorScheme GetPreferredColorScheme() const;
+  PreferredColorScheme preferred_color_scheme() const {
+    return preferred_color_scheme_;
+  }
 
   // Returns the OS-level user preferred contrast.
-  virtual PreferredContrast GetPreferredContrast() const;
+  PreferredContrast preferred_contrast() const { return preferred_contrast_; }
 
   // Returns the OS-level user preferred transparency.
-  virtual bool GetPrefersReducedTransparency() const;
+  bool prefers_reduced_transparency() const {
+    return prefers_reduced_transparency_;
+  }
 
   // Returns the OS-level inverted colors setting. (Classic invert NOT smart
   // invert)
-  virtual bool GetInvertedColors() const;
+  bool inverted_colors() const { return inverted_colors_; }
 
   // Updates contrast-related theme states such as `forced_colors_`,
   // `page_colors_`, `preferred_contrast_` and `prefers_reduced_transparency_`
@@ -508,7 +512,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // these states.
   bool UpdateContrastRelatedStates(const NativeTheme& observed_theme);
 
-  virtual const std::map<SystemThemeColor, SkColor>& GetSystemColors() const;
+  const std::map<SystemThemeColor, SkColor>& system_colors() const {
+    return system_colors_;
+  }
 
   std::optional<SkColor> GetSystemThemeColor(
       SystemThemeColor theme_color) const;

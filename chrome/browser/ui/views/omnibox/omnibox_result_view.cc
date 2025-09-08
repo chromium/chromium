@@ -82,7 +82,7 @@ namespace {
 
 bool PrefersHighContrast(const views::View* view) {
   const ui::NativeTheme* const native_theme = view->GetNativeTheme();
-  return native_theme && native_theme->GetPreferredContrast() ==
+  return native_theme && native_theme->preferred_contrast() ==
                              ui::NativeTheme::PreferredContrast::kMore;
 }
 

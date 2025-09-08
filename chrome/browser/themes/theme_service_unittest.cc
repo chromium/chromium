@@ -215,7 +215,7 @@ class ColorProviderTest : public ThemeServiceTest,
                        ui::NativeTheme::ColorScheme::kDark)
                           ? "Dark"
                           : "Light";
-    if (GetPreferredContrast(param_info.param) ==
+    if (preferred_contrast(param_info.param) ==
         ui::NativeTheme::PreferredContrast::kMore) {
       str += "HighContrast";
     }
@@ -262,21 +262,21 @@ class ColorProviderTest : public ThemeServiceTest,
       native_theme_ = ui::GetDefaultLinuxUiTheme()->GetNativeTheme();
     }
 #endif
-    original_forced_colors_ = native_theme_->InForcedColorsMode();
-    original_preferred_contrast_ = native_theme_->GetPreferredContrast();
+    original_forced_colors_ = native_theme_->forced_colors();
+    original_preferred_contrast_ = native_theme_->preferred_contrast();
     original_should_use_dark_colors_ = native_theme_->ShouldUseDarkColors();
 
     bool use_dark_colors =
         GetColorScheme() == ui::NativeTheme::ColorScheme::kDark;
 #if BUILDFLAG(IS_WIN)
     const bool high_contrast =
-        GetPreferredContrast() == ui::NativeTheme::PreferredContrast::kMore;
+        preferred_contrast() == ui::NativeTheme::PreferredContrast::kMore;
     if (high_contrast) {
       use_dark_colors = false;
     }
     native_theme_->set_forced_colors(high_contrast);
 #endif  // BUILDFLAG(IS_WIN)
-    native_theme_->SetPreferredContrast(GetPreferredContrast());
+    native_theme_->SetPreferredContrast(preferred_contrast());
     native_theme_->set_use_dark_colors(use_dark_colors);
 
     // If native_theme_ has changed, call
@@ -284,8 +284,8 @@ class ColorProviderTest : public ThemeServiceTest,
     // NativeTheme has been updated so that the ThemeService will know to update
     // its ThemeSupplier to match the NativeTheme. The ColorProvider cache will
     // also be reset.
-    if (original_forced_colors_ != native_theme_->InForcedColorsMode() ||
-        original_preferred_contrast_ != native_theme_->GetPreferredContrast() ||
+    if (original_forced_colors_ != native_theme_->forced_colors() ||
+        original_preferred_contrast_ != native_theme_->preferred_contrast() ||
         original_should_use_dark_colors_ !=
             native_theme_->ShouldUseDarkColors()) {
       native_theme_->NotifyOnNativeThemeUpdated();
@@ -314,7 +314,7 @@ class ColorProviderTest : public ThemeServiceTest,
     return std::get<ui::NativeTheme::ColorScheme>(param);
   }
 
-  static ui::NativeTheme::PreferredContrast GetPreferredContrast(
+  static ui::NativeTheme::PreferredContrast preferred_contrast(
       const ParamType& param = GetParam()) {
     return std::get<ui::NativeTheme::PreferredContrast>(param);
   }
@@ -601,7 +601,7 @@ TEST_P(ColorProviderTest, OmniboxContrast) {
   // TODO(crbug.com/40847629): Windows platform high contrast colors are
   // not sufficiently high-contrast to pass this test.
 #if BUILDFLAG(IS_WIN)
-  if (GetPreferredContrast() == ui::NativeTheme::PreferredContrast::kMore) {
+  if (preferred_contrast() == ui::NativeTheme::PreferredContrast::kMore) {
     return;
   }
 #endif
@@ -682,7 +682,7 @@ TEST_P(ColorProviderTest, OmniboxContrast) {
 #if !BUILDFLAG(USE_GTK)
   // TODO(crbug.com/40847971): GTK does not have a sufficiently
   // high-contrast selected row color to pass this test.
-  if (GetPreferredContrast() == ui::NativeTheme::PreferredContrast::kMore) {
+  if (preferred_contrast() == ui::NativeTheme::PreferredContrast::kMore) {
     check_sufficient_contrast(kColorOmniboxResultsBackgroundSelected,
                               kColorOmniboxResultsBackground,
                               color_utils::kMinimumVisibleContrastRatio);

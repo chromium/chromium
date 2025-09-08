@@ -325,9 +325,9 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
     kMaxValue = kLight,
   };
   auto color_scheme = HighContrastColorScheme::kNone;
-  if (InForcedColorsMode()) {
+  if (forced_colors()) {
     color_scheme =
-        (GetPreferredColorScheme() == NativeTheme::PreferredColorScheme::kDark)
+        (preferred_color_scheme() == NativeTheme::PreferredColorScheme::kDark)
             ? HighContrastColorScheme::kDark
             : HighContrastColorScheme::kLight;
   }
@@ -347,12 +347,12 @@ void NativeThemeWin::ConfigureWebInstance() {
   // Initialize the native theme web instance with the system color info.
   NativeTheme* web_instance = NativeTheme::GetInstanceForWeb();
   web_instance->set_use_dark_colors(ShouldUseDarkColors());
-  web_instance->set_forced_colors(InForcedColorsMode());
-  web_instance->set_preferred_color_scheme(GetPreferredColorScheme());
-  web_instance->SetPreferredContrast(GetPreferredContrast());
+  web_instance->set_forced_colors(forced_colors());
+  web_instance->set_preferred_color_scheme(preferred_color_scheme());
+  web_instance->SetPreferredContrast(preferred_contrast());
   web_instance->set_prefers_reduced_transparency(
-      GetPrefersReducedTransparency());
-  web_instance->set_system_colors(GetSystemColors());
+      prefers_reduced_transparency());
+  web_instance->set_system_colors(system_colors());
   web_instance->set_should_use_system_accent_color(
       should_use_system_accent_color());
 }
@@ -688,7 +688,7 @@ bool NativeThemeWin::ShouldUseDarkColors() const {
   // Windows high contrast modes are entirely different themes,
   // so let them take priority over dark mode.
   // ...unless --force-dark-mode was specified in which case caveat emptor.
-  if (InForcedColorsMode() && !IsForcedDarkMode()) {
+  if (forced_colors() && !IsForcedDarkMode()) {
     return false;
   }
   return NativeTheme::ShouldUseDarkColors();
@@ -696,7 +696,7 @@ bool NativeThemeWin::ShouldUseDarkColors() const {
 
 NativeTheme::PreferredColorScheme
 NativeThemeWin::CalculatePreferredColorScheme() const {
-  if (!InForcedColorsMode()) {
+  if (!forced_colors()) {
     return NativeTheme::CalculatePreferredColorScheme();
   }
 
@@ -715,7 +715,7 @@ NativeThemeWin::CalculatePreferredColorScheme() const {
 
 NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
     const {
-  if (!InForcedColorsMode()) {
+  if (!forced_colors()) {
     return NativeTheme::CalculatePreferredContrast();
   }
 

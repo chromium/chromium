@@ -140,7 +140,7 @@ Color LayoutThemeMac::FocusRingColor(
                : kDefaultFocusRingColorForTestsLight;
   }
 
-  if (ui::NativeTheme::GetInstanceForWeb()->GetPreferredContrast() ==
+  if (ui::NativeTheme::GetInstanceForWeb()->preferred_contrast() ==
       ui::NativeTheme::PreferredContrast::kMore) {
     // When high contrast is enabled, #101010 should be used.
     return Color::FromRGBA(0x10, 0x10, 0x10, 0xFF);

@@ -112,7 +112,7 @@ void PageColorsController::RecomputePageColors() {
   auto* native_theme = GetNativeTheme();
 
   ui::NativeTheme::PageColors previous_page_colors =
-      native_theme->GetPageColors();
+      native_theme->page_colors();
   ui::NativeTheme::PageColors current_page_colors =
       CalculatePageColors(*native_theme);
 
@@ -141,7 +141,7 @@ ui::NativeTheme::PageColors PageColorsController::CalculatePageColors(
   // kApplyPageColorsOnlyOnIncreasedContrast is true and the OS is not in an
   // increased contrast mode.
   if (only_on_increased_contrast &&
-      native_theme.GetPreferredContrast() !=
+      native_theme.preferred_contrast() !=
           ui::NativeTheme::PreferredContrast::kMore) {
     page_colors = PageColors::kNoPreference;
   }
@@ -157,7 +157,7 @@ ui::NativeTheme::PageColors PageColorsController::CalculatePageColors(
              {PageColors::kAquatic, ui::NativeTheme::PageColors::kAquatic},
              {PageColors::kWhite, ui::NativeTheme::PageColors::kWhite}});
     used_page_colors = kColorMap.at(page_colors);
-  } else if (native_theme.InForcedColorsMode()) {
+  } else if (native_theme.forced_colors()) {
     used_page_colors = ui::NativeTheme::PageColors::kHighContrast;
   }
   return used_page_colors;

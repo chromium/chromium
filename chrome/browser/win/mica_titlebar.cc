@@ -19,7 +19,7 @@ BASE_FEATURE(kWindows11MicaTitlebar,
 bool ShouldDefaultThemeUseMicaTitlebar() {
   return SystemTitlebarCanUseMicaMaterial() &&
          !ui::AccentColorObserver::Get()->accent_color().has_value() &&
-         ui::NativeTheme::GetInstanceForNativeUi()->GetPreferredContrast() ==
+         ui::NativeTheme::GetInstanceForNativeUi()->preferred_contrast() ==
              ui::NativeTheme::PreferredContrast::kNoPreference;
 }
 

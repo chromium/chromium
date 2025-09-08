@@ -45,7 +45,7 @@ class PageColorsControllerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest, PageColorsChange) {
   PageColorsControllerFactory::GetForProfile(browser()->profile())
       ->SetRequestedPageColors(PageColors::kDusk);
-  EXPECT_EQ(ui::NativeTheme::GetInstanceForWeb()->GetPageColors(),
+  EXPECT_EQ(ui::NativeTheme::GetInstanceForWeb()->page_colors(),
             ui::NativeTheme::PageColors::kDusk);
 }
 
@@ -59,25 +59,25 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
       prefs::kApplyPageColorsOnlyOnIncreasedContrast, true);
   PageColorsControllerFactory::GetForProfile(browser()->profile())
       ->SetRequestedPageColors(PageColors::kDusk);
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kOff);
+  EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kOff);
 
   // Once the OS is in increased contrast mode, the requested page colors should
   // be honored.
   ui_native_theme().SetPreferredContrast(
       ui::NativeTheme::PreferredContrast::kMore);
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kDusk);
+  EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kDusk);
 
   // Switching increased contrast back off should turn forced colors back off
   // since `kApplyPageColorsOnlyOnIncreasedContrast` is still true.
   ui_native_theme().SetPreferredContrast(
       ui::NativeTheme::PreferredContrast::kNoPreference);
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kOff);
+  EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kOff);
 
   // Setting `kApplyPageColorsOnlyOnIncreasedContrast` to false should lead to
   // honoring the requested page colors.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kApplyPageColorsOnlyOnIncreasedContrast, false);
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kDusk);
+  EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kDusk);
 }
 
 // When page colors change, not only the web theme's forced colors, but also its
@@ -89,27 +89,27 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
       PageColorsControllerFactory::GetForProfile(browser()->profile());
 
   // The web theme should be in a default state.
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kOff);
-  EXPECT_EQ(native_theme->GetPreferredColorScheme(),
+  EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kOff);
+  EXPECT_EQ(native_theme->preferred_color_scheme(),
             ui::NativeTheme::PreferredColorScheme::kLight);
-  EXPECT_EQ(native_theme->GetPreferredContrast(),
+  EXPECT_EQ(native_theme->preferred_contrast(),
             ui::NativeTheme::PreferredContrast::kNoPreference);
 
   // Changing page colors to White should be reflected in the web theme's
   // contrast and color scheme.
   page_colors->SetRequestedPageColors(PageColors::kWhite);
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kWhite);
-  EXPECT_EQ(native_theme->GetPreferredColorScheme(),
+  EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kWhite);
+  EXPECT_EQ(native_theme->preferred_color_scheme(),
             ui::NativeTheme::PreferredColorScheme::kLight);
-  EXPECT_EQ(native_theme->GetPreferredContrast(),
+  EXPECT_EQ(native_theme->preferred_contrast(),
             ui::NativeTheme::PreferredContrast::kMore);
 
   // Changing page colors to Dusk should similarly be reflected.
   page_colors->SetRequestedPageColors(PageColors::kDusk);
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kDusk);
-  EXPECT_EQ(native_theme->GetPreferredColorScheme(),
+  EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kDusk);
+  EXPECT_EQ(native_theme->preferred_color_scheme(),
             ui::NativeTheme::PreferredColorScheme::kDark);
-  EXPECT_EQ(native_theme->GetPreferredContrast(),
+  EXPECT_EQ(native_theme->preferred_contrast(),
             ui::NativeTheme::PreferredContrast::kMore);
 
   // Changing the UI theme to high contrast should not overwrite the web theme
@@ -124,19 +124,19 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
   // unsetting of this lower down can also be removed.
   ui_native_theme().set_forced_colors(true);
   ui_native_theme().NotifyOnNativeThemeUpdated();
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kDusk);
-  EXPECT_EQ(native_theme->GetPreferredColorScheme(),
+  EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kDusk);
+  EXPECT_EQ(native_theme->preferred_color_scheme(),
             ui::NativeTheme::PreferredColorScheme::kDark);
-  EXPECT_EQ(native_theme->GetPreferredContrast(),
+  EXPECT_EQ(native_theme->preferred_contrast(),
             ui::NativeTheme::PreferredContrast::kMore);
 
   // Changing the page colors to Off should reduce the web theme's preferred
   // contrast.
   page_colors->SetRequestedPageColors(PageColors::kOff);
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kOff);
-  EXPECT_EQ(native_theme->GetPreferredColorScheme(),
+  EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kOff);
+  EXPECT_EQ(native_theme->preferred_color_scheme(),
             ui::NativeTheme::PreferredColorScheme::kLight);
-  EXPECT_EQ(native_theme->GetPreferredContrast(),
+  EXPECT_EQ(native_theme->preferred_contrast(),
             ui::NativeTheme::PreferredContrast::kNoPreference);
 
   // Changing the UI color scheme should be reflected in the web theme while
@@ -144,10 +144,10 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
   ui_native_theme().set_preferred_color_scheme(
       ui::NativeTheme::PreferredColorScheme::kDark);
   ui_native_theme().NotifyOnNativeThemeUpdated();
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kOff);
-  EXPECT_EQ(native_theme->GetPreferredColorScheme(),
+  EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kOff);
+  EXPECT_EQ(native_theme->preferred_color_scheme(),
             ui::NativeTheme::PreferredColorScheme::kDark);
-  EXPECT_EQ(native_theme->GetPreferredContrast(),
+  EXPECT_EQ(native_theme->preferred_contrast(),
             ui::NativeTheme::PreferredContrast::kNoPreference);
 
   // Unsetting the preferred page colors should cause the web theme to reflect
@@ -155,9 +155,9 @@ IN_PROC_BROWSER_TEST_F(PageColorsControllerBrowserTest,
   ui_native_theme().set_forced_colors(false);
   ui_native_theme().NotifyOnNativeThemeUpdated();
   page_colors->SetRequestedPageColors(PageColors::kNoPreference);
-  EXPECT_EQ(native_theme->GetPageColors(), ui::NativeTheme::PageColors::kOff);
-  EXPECT_EQ(native_theme->GetPreferredColorScheme(),
+  EXPECT_EQ(native_theme->page_colors(), ui::NativeTheme::PageColors::kOff);
+  EXPECT_EQ(native_theme->preferred_color_scheme(),
             ui::NativeTheme::PreferredColorScheme::kDark);
-  EXPECT_EQ(native_theme->GetPreferredContrast(),
+  EXPECT_EQ(native_theme->preferred_contrast(),
             ui::NativeTheme::PreferredContrast::kMore);
 }

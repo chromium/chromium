@@ -942,8 +942,8 @@ void NativeThemeBase::PaintSliderTrack(
   flags.setStrokeWidth(border_width);
   SkColor border_color =
       ControlsBorderColorForState(state, color_scheme, color_provider);
-  if (GetPreferredContrast() != PreferredContrast::kMore &&
-      state != kDisabled && color_scheme != ColorScheme::kDark) {
+  if (preferred_contrast() != PreferredContrast::kMore && state != kDisabled &&
+      color_scheme != ColorScheme::kDark) {
     border_color = SkColorSetA(border_color, 0x80);
   }
   flags.setColor(border_color);
@@ -1096,7 +1096,7 @@ void NativeThemeBase::PaintProgressBar(
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(border_width);
   SkColor border_color = GetControlColor(kBorder, color_scheme, color_provider);
-  if (GetPreferredContrast() != PreferredContrast::kMore &&
+  if (preferred_contrast() != PreferredContrast::kMore &&
       color_scheme != ColorScheme::kDark) {
     border_color = SkColorSetA(border_color, 0x80);
   }

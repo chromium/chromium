@@ -35,9 +35,8 @@ class TestNativeTheme : public NativeTheme {
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
   bool ShouldUseDarkColors() const override;
-  PreferredColorScheme GetPreferredColorScheme() const override;
 
-  void SetDarkMode(bool dark_mode) { dark_mode_ = dark_mode; }
+  void SetDarkMode(bool dark_mode);
   void AddColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
 
  private:

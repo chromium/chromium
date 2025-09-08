@@ -41,9 +41,9 @@ bool TestNativeTheme::ShouldUseDarkColors() const {
   return dark_mode_;
 }
 
-NativeTheme::PreferredColorScheme TestNativeTheme::GetPreferredColorScheme()
-    const {
-  return CalculatePreferredColorScheme();
+void TestNativeTheme::SetDarkMode(bool dark_mode) {
+  dark_mode_ = dark_mode;
+  set_preferred_color_scheme(CalculatePreferredColorScheme());
 }
 
 void TestNativeTheme::AddColorSchemeNativeThemeObserver(

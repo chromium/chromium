@@ -95,8 +95,8 @@ SkColor GetThemeColor(const ui::NativeTheme* native_theme,
   // If web contents are being inverted because the system is in high-contrast
   // mode, any system theme colors we use must be inverted too to cancel out.
   // TODO(pkasting): I'm not sure this conditional is correct anymore.
-  return (native_theme->InForcedColorsMode() &&
-          native_theme->GetPreferredColorScheme() ==
+  return (native_theme->forced_colors() &&
+          native_theme->preferred_color_scheme() ==
               ui::NativeTheme::PreferredColorScheme::kDark)
              ? color_utils::InvertColor(color)
              : color;

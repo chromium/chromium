@@ -546,7 +546,7 @@ void AppBrowserController::PrimaryPageChanged(content::Page& page) {
 
 std::optional<SkColor> AppBrowserController::GetThemeColor() const {
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  if (native_theme->InForcedColorsMode()) {
+  if (native_theme->forced_colors()) {
     // use system [Window ThemeColor] when enable high contrast
     return native_theme->GetSystemThemeColor(
         ui::NativeTheme::SystemThemeColor::kWindow);

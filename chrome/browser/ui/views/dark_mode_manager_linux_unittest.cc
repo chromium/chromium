@@ -194,7 +194,7 @@ class DarkModeManagerLinuxTest : public testing::Test {
 
     EXPECT_FALSE(manager_->prefer_dark_theme());
     EXPECT_FALSE(mock_native_theme_->ShouldUseDarkColors());
-    EXPECT_EQ(mock_native_theme_->GetPreferredColorScheme(),
+    EXPECT_EQ(mock_native_theme_->preferred_color_scheme(),
               NativeTheme::PreferredColorScheme::kLight);
     EXPECT_FALSE(mock_native_theme_->user_color().has_value());
   }
@@ -265,7 +265,7 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
   std::move(color_scheme_callback()).Run(response.get(), nullptr);
   EXPECT_TRUE(ManagerPrefersDarkTheme());
   EXPECT_TRUE(mock_native_theme()->ShouldUseDarkColors());
-  EXPECT_EQ(mock_native_theme()->GetPreferredColorScheme(),
+  EXPECT_EQ(mock_native_theme()->preferred_color_scheme(),
             NativeTheme::PreferredColorScheme::kDark);
 
   // Changes in the portal preference should be processed by the manager and the
@@ -280,7 +280,7 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
   std::move(setting_changed_callback()).Run(&signal);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
   EXPECT_FALSE(mock_native_theme()->ShouldUseDarkColors());
-  EXPECT_EQ(mock_native_theme()->GetPreferredColorScheme(),
+  EXPECT_EQ(mock_native_theme()->preferred_color_scheme(),
             NativeTheme::PreferredColorScheme::kLight);
 
   // The native theme preference should have no effect when the portal

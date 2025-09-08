@@ -3708,8 +3708,8 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
   prefs.prefers_reduced_motion = gfx::Animation::PrefersReducedMotion();
 
   const auto* const theme = ui::NativeTheme::GetInstanceForWeb();
-  prefers_reduced_transparency_ = theme->GetPrefersReducedTransparency();
-  inverted_colors_ = theme->GetInvertedColors();
+  prefers_reduced_transparency_ = theme->prefers_reduced_transparency();
+  inverted_colors_ = theme->inverted_colors();
   prefs.prefers_reduced_transparency = prefers_reduced_transparency_;
   prefs.inverted_colors = inverted_colors_;
 
@@ -11627,8 +11627,8 @@ void WebContentsImpl::HandleColorRelatedStateChanges() {
   }
 
   if (const auto* const theme = ui::NativeTheme::GetInstanceForWeb();
-      prefers_reduced_transparency_ != theme->GetPrefersReducedTransparency() ||
-      inverted_colors_ != theme->GetInvertedColors() ||
+      prefers_reduced_transparency_ != theme->prefers_reduced_transparency() ||
+      inverted_colors_ != theme->inverted_colors() ||
       GetContentClient()
           ->browser()
           ->WebPreferencesNeedUpdateForColorRelatedStateChanges(
