@@ -9,7 +9,6 @@
 
 namespace content {
 class RenderFrameHost;
-class WebContents;
 }  // namespace content
 
 namespace gfx {
@@ -26,7 +25,7 @@ class PDFDocumentHelperClient {
       content::RenderFrameHost* render_frame_host,
       int content_restrictions) {}
 
-  virtual void OnSaveURL(content::WebContents* contents) {}
+  virtual void OnSaveURL() {}
 
   // Sets whether the PDF plugin can handle file saving internally.
   virtual void SetPluginCanSave(content::RenderFrameHost* render_frame_host,

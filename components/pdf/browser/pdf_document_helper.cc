@@ -421,7 +421,7 @@ void PDFDocumentHelper::OnDocumentLoadComplete() {
 
 void PDFDocumentHelper::SaveUrlAs(const GURL& url,
                                   network::mojom::ReferrerPolicy policy) {
-  client_->OnSaveURL(&GetWebContents());
+  client_->OnSaveURL();
 
   // Save using the PDF embedder host.
   content::RenderFrameHost* rfh =

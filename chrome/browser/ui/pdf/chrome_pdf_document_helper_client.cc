@@ -77,7 +77,7 @@ void ChromePDFDocumentHelperClient::UpdateContentRestrictions(
   }
 }
 
-void ChromePDFDocumentHelperClient::OnSaveURL(content::WebContents* contents) {
+void ChromePDFDocumentHelperClient::OnSaveURL() {
   RecordDownloadSource(DOWNLOAD_INITIATED_BY_PDF_SAVE);
 }
 
