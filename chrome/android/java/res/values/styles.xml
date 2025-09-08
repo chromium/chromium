@@ -175,11 +175,7 @@ found in the LICENSE file.
     </style>
     <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge" />
     <style name="DimmingDialog" parent="Base.Theme.Chromium.DialogWhenLarge">
-        <item name="isDialogFullscreen">true</item>
-        <item name="android:statusBarColor">@color/modal_dialog_scrim_color</item>
-        <item name="android:navigationBarColor">@macro/sheet_bg_color</item>
-        <item name="android:navigationBarDividerColor">@null</item>
-        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="28">false</item>
     </style>
 
     <!-- Theme variation for low-end devices.

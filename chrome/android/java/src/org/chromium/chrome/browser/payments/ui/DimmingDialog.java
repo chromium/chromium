@@ -59,7 +59,7 @@ import java.util.Collection;
     /** Length of the animation to hide the bottom sheet UI. */
     private static final int DIALOG_EXIT_ANIMATION_MS = 195;
 
-    private final AlwaysDismissedDialog mDialog;
+    private final Dialog mDialog;
     private final ViewGroup mFullContainer;
     private final int mAnimatorTranslation;
     private @Nullable OnDismissListener mDismissListener;
@@ -123,9 +123,6 @@ import java.util.Collection;
         bottomSheetParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         mFullContainer.addView(bottomSheetView, bottomSheetParams);
         bottomSheetView.addOnLayoutChangeListener(new FadeInAnimator());
-
-        // Since the color for the request sheet view can be different
-        mDialog.setNavBarColor(((ColorDrawable) bottomSheetView.getBackground()).getColor());
     }
 
     /**
