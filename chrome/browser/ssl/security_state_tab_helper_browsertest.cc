@@ -24,6 +24,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
@@ -81,7 +82,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
@@ -991,12 +991,13 @@ class PKPModelClientTest : public SecurityStateTabHelperTest {
   }
 
   void TearDownOnMainThread() override {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
     content::GetNetworkService()->BindTestInterfaceForTesting(
         network_service_test.BindNewPipeAndPassReceiver());
-    network_service_test->SetTransportSecurityStateSource(0);
+    base::test::TestFuture<void> future;
+    network_service_test->SetTransportSecurityStateTestSource(
+        false, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
 
     // This test class intentionally does not call the parent
     // TearDownOnMainThread.
@@ -1004,17 +1005,25 @@ class PKPModelClientTest : public SecurityStateTabHelperTest {
 
  private:
   void EnableStaticPins() {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
     content::GetNetworkService()->BindTestInterfaceForTesting(
         network_service_test.BindNewPipeAndPassReceiver());
     // The tests don't depend on reporting, so the port doesn't matter.
-    network_service_test->SetTransportSecurityStateSource(80);
+    {
+      base::test::TestFuture<void> future;
+      network_service_test->SetTransportSecurityStateTestSource(
+          true, future.GetCallback());
+      EXPECT_TRUE(future.Wait());
+    }
 
     content::StoragePartition* partition =
         browser()->profile()->GetDefaultStoragePartition();
-    partition->GetNetworkContext()->EnableStaticKeyPinningForTesting();
+    {
+      base::test::TestFuture<void> future;
+      partition->GetNetworkContext()->EnableStaticKeyPinningForTesting(
+          future.GetCallback());
+      EXPECT_TRUE(future.Wait());
+    }
   }
 };
 

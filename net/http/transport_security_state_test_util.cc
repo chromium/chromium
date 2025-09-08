@@ -17,11 +17,6 @@ ScopedTransportSecurityStateSource::ScopedTransportSecurityStateSource() {
   SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
 }
 
-ScopedTransportSecurityStateSource::ScopedTransportSecurityStateSource(
-    uint16_t reporting_port) {
-  SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
-}
-
 ScopedTransportSecurityStateSource::~ScopedTransportSecurityStateSource() {
   SetTransportSecurityStateSourceForTesting(nullptr);
 }

@@ -1710,7 +1710,6 @@ interface NetworkContext {
       => (AuthCredentials? credentials);
 
   // Enables the checking of static PKP records.
-  [Sync]
   EnableStaticKeyPinningForTesting() => ();
 
   // Verifies the given certificate using the context's CertVerifier.

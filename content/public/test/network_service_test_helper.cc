@@ -559,13 +559,12 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run();
   }
 
-  void SetTransportSecurityStateSource(
-      uint16_t reporting_port,
-      SetTransportSecurityStateSourceCallback callback) override {
-    if (reporting_port) {
+  void SetTransportSecurityStateTestSource(
+      bool enable_unittest_source,
+      SetTransportSecurityStateTestSourceCallback callback) override {
+    if (enable_unittest_source) {
       transport_security_state_source_ =
-          std::make_unique<net::ScopedTransportSecurityStateSource>(
-              reporting_port);
+          std::make_unique<net::ScopedTransportSecurityStateSource>();
     } else {
       transport_security_state_source_.reset();
     }

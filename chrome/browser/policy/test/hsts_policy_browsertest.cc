@@ -16,7 +16,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/http/transport_security_state_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -77,10 +76,10 @@ IN_PROC_BROWSER_TEST_P(HSTSPolicyTest, HSTSPolicyBypassList) {
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
     content::GetNetworkService()->BindTestInterfaceForTesting(
         network_service_test.BindNewPipeAndPassReceiver());
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    // The port number 1234 here doesn't matter - it just needs to be a non-zero
-    // value so that we use the unittest_default preload list.
-    network_service_test->SetTransportSecurityStateSource(1234);
+    base::test::TestFuture<void> future;
+    network_service_test->SetTransportSecurityStateTestSource(
+        true, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   } else {
     base::test::TestFuture<void> future;
     content::GetNetworkTaskRunner()->PostTaskAndReply(

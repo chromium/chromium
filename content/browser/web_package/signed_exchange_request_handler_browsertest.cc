@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -61,7 +62,6 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "media/media_buildflags.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/ct_policy_status.h"
@@ -1665,12 +1665,13 @@ class SignedExchangePKPBrowserTest
 
   void TearDownOnMainThread() override {
     if (IsOutOfProcessNetworkService()) {
-      mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-
       mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
       GetNetworkService()->BindTestInterfaceForTesting(
           network_service_test.BindNewPipeAndPassReceiver());
-      network_service_test->SetTransportSecurityStateSource(0);
+      base::test::TestFuture<void> future;
+      network_service_test->SetTransportSecurityStateTestSource(
+          false, future.GetCallback());
+      EXPECT_TRUE(future.Wait());
     } else {
       RunOnIOThreadBlocking(
           base::BindOnce(&SignedExchangePKPBrowserTest::CleanUpOnIOThread,
@@ -1680,19 +1681,28 @@ class SignedExchangePKPBrowserTest
   }
 
   void EnableStaticPins(int reporting_port) {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     StoragePartition* partition = shell()
                                       ->web_contents()
                                       ->GetBrowserContext()
                                       ->GetDefaultStoragePartition();
-    partition->GetNetworkContext()->EnableStaticKeyPinningForTesting();
+    {
+      base::test::TestFuture<void> future;
+      partition->GetNetworkContext()->EnableStaticKeyPinningForTesting(
+          future.GetCallback());
+      EXPECT_TRUE(future.Wait());
+    }
     partition->FlushNetworkInterfaceForTesting();
 
     if (IsOutOfProcessNetworkService()) {
       mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
       GetNetworkService()->BindTestInterfaceForTesting(
           network_service_test.BindNewPipeAndPassReceiver());
-      network_service_test->SetTransportSecurityStateSource(reporting_port);
+      {
+        base::test::TestFuture<void> future;
+        network_service_test->SetTransportSecurityStateTestSource(
+            true, future.GetCallback());
+        EXPECT_TRUE(future.Wait());
+      }
     } else {
       // TODO(crbug.com/40649862):  This code is not threadsafe, as the
       // network stack does not run on the IO thread. Ideally, the
@@ -1714,8 +1724,7 @@ class SignedExchangePKPBrowserTest
 
   void SetTransportSecurityStateSourceOnIO(int reporting_port) {
     transport_security_state_source_ =
-        std::make_unique<net::ScopedTransportSecurityStateSource>(
-            reporting_port);
+        std::make_unique<net::ScopedTransportSecurityStateSource>();
   }
 
   void CleanUpOnIOThread() { transport_security_state_source_.reset(); }

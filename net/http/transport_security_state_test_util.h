@@ -15,10 +15,6 @@ class ScopedTransportSecurityStateSource {
   // the transport_security_state_static_unittest_default source.
   ScopedTransportSecurityStateSource();
 
-  // Deprecated interface, now does the same as the default constructor.
-  // TODO(crbug.com/41485778): remove this.
-  explicit ScopedTransportSecurityStateSource(uint16_t reporting_port);
-
   ScopedTransportSecurityStateSource(
       const ScopedTransportSecurityStateSource&) = delete;
   ScopedTransportSecurityStateSource& operator=(
