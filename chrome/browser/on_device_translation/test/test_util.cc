@@ -18,7 +18,6 @@
 #include "content/public/test/browser_test_utils.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 
 namespace on_device_translation {
 
@@ -32,8 +31,9 @@ void MockComponentManager::DoNotExpectCallRegisterTranslateKitComponent() {
 }
 
 void MockComponentManager::ExpectCallRegisterTranslateKitComponentAndInstall() {
-  EXPECT_CALL(*this, RegisterTranslateKitComponentImpl())
-      .WillOnce(Invoke([&]() { InstallMockTranslateKitComponentLater(); }));
+  EXPECT_CALL(*this, RegisterTranslateKitComponentImpl()).WillOnce([&]() {
+    InstallMockTranslateKitComponentLater();
+  });
 }
 
 void MockComponentManager::DoNotExpectCallRegisterLanguagePackComponent() {
@@ -45,10 +45,10 @@ void MockComponentManager::ExpectCallRegisterLanguagePackComponentAndInstall(
   auto& expectation =
       EXPECT_CALL(*this, RegisterTranslateKitLanguagePackComponent(_));
   for (const auto expected_key : language_pack_keys) {
-    expectation.WillOnce(Invoke([&, expected_key](LanguagePackKey key) {
+    expectation.WillOnce([&, expected_key](LanguagePackKey key) {
       EXPECT_EQ(key, expected_key);
       InstallMockLanguagePackLater(key);
-    }));
+    });
   }
 }
 

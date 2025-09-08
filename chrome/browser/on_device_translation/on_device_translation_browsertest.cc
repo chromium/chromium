@@ -62,7 +62,6 @@ using ::blink::mojom::CanCreateTranslatorResult;
 using ::blink::mojom::TranslatorLanguageCode;
 using ::content::JsReplace;
 using ::testing::_;
-using ::testing::Invoke;
 
 namespace on_device_translation {
 
@@ -403,15 +402,15 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   base::RunLoop run_loop_for_register_translate_kit;
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .WillOnce(Invoke([&]() { run_loop_for_register_translate_kit.Quit(); }));
+      .WillOnce([&]() { run_loop_for_register_translate_kit.Quit(); });
 
   base::RunLoop run_loop_for_register_language_pack;
   EXPECT_CALL(mock_component_manager,
               RegisterTranslateKitLanguagePackComponent(_))
-      .WillOnce(Invoke([&](LanguagePackKey key) {
+      .WillOnce([&](LanguagePackKey key) {
         EXPECT_EQ(key, LanguagePackKey::kEn_Ja);
         run_loop_for_register_language_pack.Quit();
-      }));
+      });
 
   // Create a translator.
   EXPECT_EQ(EvalJsCatchingError(R"(
@@ -458,15 +457,15 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   base::RunLoop run_loop_for_register_translate_kit;
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .WillOnce(Invoke([&]() { run_loop_for_register_translate_kit.Quit(); }));
+      .WillOnce([&]() { run_loop_for_register_translate_kit.Quit(); });
 
   base::RunLoop run_loop_for_register_language_pack;
   EXPECT_CALL(mock_component_manager,
               RegisterTranslateKitLanguagePackComponent(_))
-      .WillOnce(Invoke([&](LanguagePackKey key) {
+      .WillOnce([&](LanguagePackKey key) {
         EXPECT_EQ(key, LanguagePackKey::kEn_Ja);
         run_loop_for_register_language_pack.Quit();
-      }));
+      });
 
   // Create a translator.
   EXPECT_EQ(EvalJsCatchingError(R"(
@@ -513,24 +512,24 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   base::RunLoop run_loop_for_register_translate_kit;
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .WillOnce(Invoke([&]() { run_loop_for_register_translate_kit.Quit(); }));
+      .WillOnce([&]() { run_loop_for_register_translate_kit.Quit(); });
 
   base::RunLoop run_loop_for_register_en_ja_language_pack;
   base::RunLoop run_loop_for_register_en_es_language_pack;
   EXPECT_CALL(mock_component_manager,
               RegisterTranslateKitLanguagePackComponent(_))
-      .WillOnce(Invoke([&](LanguagePackKey key) {
+      .WillOnce([&](LanguagePackKey key) {
         EXPECT_EQ(key, LanguagePackKey::kEn_Ja);
         // Call RegisterLanguagePack() to avoid redundant calls of
         // RegisterTranslateKitLanguagePackComponent().
         mock_component_manager.RegisterLanguagePack(key);
         run_loop_for_register_en_ja_language_pack.Quit();
-      }))
-      .WillOnce(Invoke([&](LanguagePackKey key) {
+      })
+      .WillOnce([&](LanguagePackKey key) {
         EXPECT_EQ(key, LanguagePackKey::kEn_Es);
         mock_component_manager.RegisterLanguagePack(key);
         run_loop_for_register_en_es_language_pack.Quit();
-      }));
+      });
 
   // Helper function to get the state of a promise at the moment the helper
   // function is called.
@@ -622,18 +621,18 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   base::RunLoop run_loop_for_register_translate_kit;
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .WillOnce(Invoke([&]() { run_loop_for_register_translate_kit.Quit(); }));
+      .WillOnce([&]() { run_loop_for_register_translate_kit.Quit(); });
 
   base::RunLoop run_loop_for_register_language_pack;
   EXPECT_CALL(mock_component_manager,
               RegisterTranslateKitLanguagePackComponent(_))
-      .WillOnce(Invoke([&](LanguagePackKey key) {
+      .WillOnce([&](LanguagePackKey key) {
         EXPECT_EQ(key, LanguagePackKey::kEn_Ja);
         // Call RegisterLanguagePack() to avoid redundant calls of
         // RegisterTranslateKitLanguagePackComponent().
         mock_component_manager.RegisterLanguagePack(key);
         run_loop_for_register_language_pack.Quit();
-      }));
+      });
 
   // TODO(crbug.com/421947718): Each `Translator.create` call should be in it's
   // own `EvalJs` call like
@@ -1417,15 +1416,15 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   base::RunLoop run_loop_for_register_translate_kit;
   EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
-      .WillOnce(Invoke([&]() { run_loop_for_register_translate_kit.Quit(); }));
+      .WillOnce([&]() { run_loop_for_register_translate_kit.Quit(); });
 
   base::RunLoop run_loop_for_register_language_pack;
   EXPECT_CALL(mock_component_manager,
               RegisterTranslateKitLanguagePackComponent(_))
-      .WillOnce(Invoke([&](LanguagePackKey key) {
+      .WillOnce([&](LanguagePackKey key) {
         EXPECT_EQ(key, LanguagePackKey::kEn_Ja);
         run_loop_for_register_language_pack.Quit();
-      }));
+      });
 
   NavigateToEmptyPage();
 
