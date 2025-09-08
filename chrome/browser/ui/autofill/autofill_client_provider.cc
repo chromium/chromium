@@ -14,10 +14,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/autofill/android/android_autofill_availability_status.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/android_autofill/browser/android_autofill_client.h"
 #include "components/prefs/android/pref_service_android.h"
 
@@ -43,14 +40,6 @@ void RecordWhetherAndroidPrefResets(PrefService& prefs,
       !uses_platform_autofill;
   base::UmaHistogramBoolean("Autofill.ResetAutofillPrefToChrome",
                             will_reset_pref);
-}
-
-// Retrieves the group for a synthetic trial. The group depends on whether the
-// app package is in a server-provided allowlist for a11y compatibility filling.
-std::string GetTrialGroupForPackage() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return base::android::ConvertJavaStringToUTF8(
-      env, Java_AutofillClientProviderUtils_getTrialGroupForPackage(env));
 }
 
 // Sets a ahread pref that allows to learn whether deep-links into Chrome's
@@ -101,7 +90,6 @@ AutofillClientProvider::AutofillClientProvider(PrefService* prefs)
     : uses_platform_autofill_(
           UsesVirtualViewStructureForAutofill(CHECK_DEREF(prefs))) {
 #if BUILDFLAG(IS_ANDROID)
-  DelayRegisteringFieldTrialForA11yDeprecation();
   RecordWhetherAndroidPrefResets(*prefs, uses_platform_autofill_);
   // Ensure the pref is reset if platform autofill is restricted.
   prefs->SetBoolean(prefs::kAutofillUsingVirtualViewStructure,
@@ -125,23 +113,5 @@ void AutofillClientProvider::CreateClientForWebContents(
     ChromeAutofillClient::CreateForWebContents(web_contents);
   }
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void AutofillClientProvider::RegisterSyntheticFieldTrialForPackage(
-    const std::string& package) {
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "SyntheticAutofillViaA11yDeprecated", package,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
-}
-
-void AutofillClientProvider::DelayRegisteringFieldTrialForA11yDeprecation() {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::LOWEST},
-      base::BindOnce(&GetTrialGroupForPackage),
-      base::BindOnce(
-          &AutofillClientProvider::RegisterSyntheticFieldTrialForPackage,
-          weak_ptr_factory_.GetWeakPtr()));
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill
