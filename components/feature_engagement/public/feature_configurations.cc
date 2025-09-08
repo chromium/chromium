@@ -2247,6 +2247,34 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSReaderModeOptionsFeature.name == feature->name) {
+    // A config that shows the IPH on the Reading mode entrypoint in the
+    // omnibox. Aligns with the contextual panel IPH entrypoint defaults, ie.
+    // shows the IPH 3 times every 6 months (max 1 per day), for a maximum of 6
+    // times lifetime. Stops showing the IPH if Reading Mode options
+    // configuration is used.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.used = EventConfig(
+        feature_engagement::events::kIOSIPHReaderModeOptionsUsed,
+        Comparator(LESS_THAN, 1), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod);
+    config.trigger = EventConfig(
+        feature_engagement::events::kIOSIPHReaderModeOptionsTriggered,
+        Comparator(LESS_THAN, 3), 182, feature_engagement::kMaxStoragePeriod);
+    config.event_configs.insert(EventConfig(
+        feature_engagement::events::kIOSIPHReaderModeOptionsTriggered,
+        Comparator(LESS_THAN, 1), 1, feature_engagement::kMaxStoragePeriod));
+    config.event_configs.insert(EventConfig(
+        feature_engagement::events::kIOSIPHReaderModeOptionsTriggered,
+        Comparator(LESS_THAN, 6), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
+    return config;
+  }
+
   if (kIPHiOSContextualPanelSampleModelFeature.name == feature->name) {
     // The contextual panel's sample model entrypoint IPH config to control the
     // impressions of the IPH for this infoblock. Shows the IPH up to 3 times

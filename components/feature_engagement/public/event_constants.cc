@@ -184,6 +184,9 @@ const char kIOSAIHubNewBadgeTriggered[] = "ios_new_ai_hub_badge_triggered";
 const char kIOSAIHubNewBadgeUsed[] = "ios_new_ai_hub_badge_used";
 const char kIOSGeminiPromoFirstCompletion[] =
     "ios_gemini_promo_first_completion";
+const char kIOSIPHReaderModeOptionsUsed[] = "ios_iph_reader_mode_options_used";
+const char kIOSIPHReaderModeOptionsTriggered[] =
+    "ios_iph_reader_mode_options_triggered";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

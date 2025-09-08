@@ -156,6 +156,9 @@ class DeviceSwitcherResultDispatcher;
 // dismissed.
 - (void)presentPageActionMenuBubble;
 
+// Optionally presents a bubble associated with the reader mode options.
+- (void)presentReaderModeOptionsBubble;
+
 // Delegate method to be invoked when the user has performed a swipe on the
 // toolbar to switch tabs. Remove `toolbarSwipeGestureIPH` if visible.
 - (void)handleToolbarSwipeGesture;

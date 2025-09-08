@@ -805,6 +805,10 @@ BASE_FEATURE(kIPHIOSPageActionMenu,
              "IPH_iOSPageActionMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIPHiOSReaderModeOptionsFeature,
+             "IPH_iOSReaderModeOptions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIPHiOSHomepageLensNewBadge,
              "IPH_iOSHomepageLensNewBadge",
              base::FEATURE_ENABLED_BY_DEFAULT);

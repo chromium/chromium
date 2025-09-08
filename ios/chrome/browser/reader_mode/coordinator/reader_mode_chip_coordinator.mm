@@ -12,12 +12,15 @@
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 
 @implementation ReaderModeChipCoordinator {
   // Observer that updates ReaderModeChipViewController for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _readerModeChipFullscreenUIUpdater;
+  // Handler for Reading Mode options IPH.
+  id<HelpCommands> _helpCommandsHandler;
 }
 
 - (void)start {
@@ -29,6 +32,8 @@
                    forProtocol:@protocol(ReaderModeChipCommands)];
   _readerModeChipFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       FullscreenController::FromBrowser(self.browser), self.viewController);
+  _helpCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
 }
 
 - (void)stop {
@@ -37,6 +42,7 @@
   [_viewController willMoveToParentViewController:nil];
   [_viewController removeFromParentViewController];
   _viewController = nil;
+  _helpCommandsHandler = nil;
 }
 
 #pragma mark - ReaderModeChipCommands
@@ -50,6 +56,9 @@
     _viewController.readerModeOptionsHandler =
         HandlerForProtocol(dispatcher, ReaderModeOptionsCommands);
   }
+
+  [_helpCommandsHandler
+      presentInProductHelpWithType:InProductHelpType::kReaderModeOptions];
 }
 
 - (void)hideReaderModeChip {

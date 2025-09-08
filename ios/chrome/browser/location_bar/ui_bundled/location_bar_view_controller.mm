@@ -294,6 +294,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   [self.locationBarSteadyView setBadgeView:self.badgeView];
   if (self.readerModeChipView) {
     [self.locationBarSteadyView setReaderModeChipView:self.readerModeChipView];
+    [self.layoutGuideCenter referenceView:self.readerModeChipView
+                                underName:kReaderModeOptionsEntrypointGuide];
   }
 
   if (IsPageActionMenuEnabled()) {

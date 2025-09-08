@@ -34,5 +34,7 @@ GuideName* const kFakeboxLensIconGuide = @"kFakeboxLensIconGuide";
 GuideName* const kLensOverlayEntrypointGuide = @"kLensOverlayEntrypointGuide";
 GuideName* const kPageActionMenuEntrypointGuide =
     @"kPageActionMenuEntrypointGuide";
+GuideName* const kReaderModeOptionsEntrypointGuide =
+    @"kReaderModeOptionsEntrypointGuide";
 GuideName* const kNTPIdentityDiscButtonGuide = @"kNTPIdentityDiscButtonGuide";
 GuideName* const kSelectedRegularCellGuide = @"kSelectedRegularCellGuide";

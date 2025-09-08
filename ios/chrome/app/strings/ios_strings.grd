@@ -5132,6 +5132,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_READER_MODE_OPTIONS_HIDE_BUTTON_LABEL" desc="Label of a Reading mode options button which closes Reading mode.">
         Turn Off
       </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_IPH_DESCRIPTION" desc="In-product help bubble for reader mode options.">
+        Choose your font, text size, and more here
+      </message>
       <message name="IDS_IOS_READER_MODE_OPTIONS_TITLE" desc="Title of the Reading mode options UI which gives user control over the Reading mode font family, font size, color scheme.">
         Reading Mode
       </message>

@@ -121,6 +121,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       _switchAccountWithNTPIdentityDiscBubblePresenter;
   BubbleViewControllerPresenter* _feedSwipeBubblePresenter;
   BubbleViewControllerPresenter* _pageActionMenuBubblePresenter;
+  BubbleViewControllerPresenter* _readerModeOptionsBubblePresenter;
 
   // List of existing gestural IPH views.
   GestureInProductHelpView* _pullToRefreshGestureIPH;
@@ -193,6 +194,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   [_defaultPageModeTipBubblePresenter dismissAnimated:NO];
   [_lensOverlayEntrypointBubblePresenter dismissAnimated:NO];
   [_pageActionMenuBubblePresenter dismissAnimated:NO];
+  [_readerModeOptionsBubblePresenter dismissAnimated:NO];
   [self hideAllGestureInProductHelpViewsForReason:IPHDismissalReasonType::
                                                       kUnknown];
 }
@@ -795,6 +797,46 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   if (presenter) {
     _pageActionMenuBubblePresenter = presenter;
+  }
+}
+
+- (void)presentReaderModeOptionsBubble {
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
+    return;
+  }
+
+  web::WebState* currentWebState = _webStateList->GetActiveWebState();
+  if (!currentWebState || IsUrlNtp(currentWebState->GetVisibleURL())) {
+    return;
+  }
+
+  BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
+                         GetApplicationContext()->GetLocalState()->GetBoolean(
+                             prefs::kBottomOmnibox);
+  BubbleArrowDirection arrowDirection =
+      isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_READER_MODE_OPTIONS_IPH_DESCRIPTION);
+
+  CGPoint readerModeOptionsAnchor =
+      [self anchorPointToGuide:kReaderModeOptionsEntrypointGuide
+                     direction:arrowDirection];
+
+  // An adjusted x offset to ensure that the bubble frame is on-screen.
+  CGFloat anchorXOffset = UseRTLLayout() ? -38 : 38;
+
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::
+                                  kIPHiOSReaderModeOptionsFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentTopOrLeading
+                         text:text
+        voiceOverAnnouncement:text
+                  anchorPoint:CGPoint(readerModeOptionsAnchor.x + anchorXOffset,
+                                      readerModeOptionsAnchor.y)];
+
+  if (presenter) {
+    _readerModeOptionsBubblePresenter = presenter;
   }
 }
 

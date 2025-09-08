@@ -50556,6 +50556,8 @@ should be able to be added at any place in this file.
   <suffix name="iOSPromoWhatsNew" label="For iOSPromoWhatsNew feature"/>
   <suffix name="iOSPullToRefreshFeature"
       label="For iOSPullToRefreshFeature feature"/>
+  <suffix name="iOSReaderModeOptionsFeature"
+      label="For Reader Mode options IPH."/>
   <suffix name="iOSReminderNotificationsOverflowMenuBubbleFeature"
       label="For iOSReminderNotificationsOverflowMenuBubbleFeature feature"/>
   <suffix name="iOSReminderNotificationsOverflowMenuNewBadgeFeature"

@@ -78,6 +78,8 @@ extern GuideName* const kLensOverlayEntrypointGuide;
 // A guide that is constrained to match the frame of the PageActionMenu
 // entrypoint.
 extern GuideName* const kPageActionMenuEntrypointGuide;
+// A guide that is constrained to match the frame of the Reader Mode options.
+extern GuideName* const kReaderModeOptionsEntrypointGuide;
 // A guide that is constrained to match the frame of the identity disc button on
 // the New Tab page.
 extern GuideName* const kNTPIdentityDiscButtonGuide;

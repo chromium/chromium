@@ -359,6 +359,12 @@ extern const char kIOSAIHubNewBadgeUsed[];
 // Event fired when the Gemini Promo is completed for the first time on iOS.
 extern const char kIOSGeminiPromoFirstCompletion[];
 
+// The user has tapped on the Reader Mode options in-product help.
+extern const char kIOSIPHReaderModeOptionsUsed[];
+
+// The Reader Mode options entrypoint in-product help was triggered.
+extern const char kIOSIPHReaderModeOptionsTriggered[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

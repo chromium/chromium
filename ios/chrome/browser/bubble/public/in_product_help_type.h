@@ -47,6 +47,8 @@ enum class InProductHelpType : NSInteger {
   kSwitchAccountsWithNTPAccountParticleDisc,
   /// Help bubble for page action menu.
   kPageActionMenu,
+  /// Help bubble for Reader Mode options menu.
+  kReaderModeOptions,
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_PUBLIC_IN_PRODUCT_HELP_TYPE_H_
