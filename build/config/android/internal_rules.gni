@@ -170,6 +170,14 @@ template("write_build_config") {
     ]
   }
 
+  _enable_bytecode_checks =
+      defined(invoker.enable_bytecode_checks) && invoker.enable_bytecode_checks
+  if (_enable_bytecode_checks) {
+    _outputs += [ string_replace(invoker.build_config,
+                                 ".build_config.json",
+                                 ".targets.build_config.json") ]
+  }
+
   if (current_toolchain == default_toolchain) {
     # Ensure targets match naming patterns so that __assetres, __header, __host,
     # and __validate targets work properly.
@@ -400,6 +408,7 @@ template("write_build_config") {
                                "dex_needs_classpath",
                                "direct_deps_only",
                                "disable_asset_compression",
+                               "enable_bytecode_checks",
                                "gradle_treat_as_prebuilt",
                                "is_prebuilt",
                                "library_always_compress",
@@ -1821,18 +1830,19 @@ if (enable_java_templates) {
                                  ])
       script = "//build/android/gyp/check_for_missing_direct_deps.py"
       inputs = java_paths_for_inputs + [
-                 invoker.build_config,
                  invoker.input_jar,
                  invoker.javac_build_config,
+                 invoker.targets_build_config,
                  invoker.turbine_build_config,
                ]
       depfile = "$target_gen_dir/$target_name.d"
       outputs = [ "$target_out_dir/$target_name.bytecode.stamp" ]
-      _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       _rebased_turbine_build_config =
           rebase_path(invoker.turbine_build_config, root_build_dir)
       _rebased_javac_build_config =
           rebase_path(invoker.javac_build_config, root_build_dir)
+      _rebased_targets_build_config =
+          rebase_path(invoker.targets_build_config, root_build_dir)
       args = [
         "--depfile",
         rebase_path(depfile, root_build_dir),
@@ -1847,7 +1857,7 @@ if (enable_java_templates) {
         rebase_path(root_build_dir, root_build_dir),
         "--direct-classpath-jars=@FileArg($_rebased_turbine_build_config:interface_classpath)",
         "--full-classpath-jars=@FileArg($_rebased_javac_build_config:javac_full_interface_classpath)",
-        "--full-classpath-gn-targets=@FileArg($_rebased_build_config:javac_full_classpath_targets)",
+        "--full-classpath-gn-targets=@FileArg($_rebased_targets_build_config:javac_full_classpath_targets)",
       ]
       if (defined(invoker.header_jar_path)) {
         _rebased_header_jar_path =
@@ -1861,8 +1871,7 @@ if (enable_java_templates) {
         args += [ "--use-build-server" ]
       }
       if (invoker.include_android_sdk) {
-        args +=
-            [ "--sdk-classpath-jars=@FileArg($_rebased_build_config:sdk_jars)" ]
+        args += [ "--sdk-classpath-jars=@FileArg($_rebased_turbine_build_config:sdk_interface_jars)" ]
       }
       if (treat_warnings_as_errors) {
         args += [ "--warnings-as-errors" ]
@@ -3557,6 +3566,13 @@ if (enable_java_templates) {
                         _type == "java_library" || _type == "dist_jar"
       _build_device_jar = _type != "system_java_library" && _supports_android
 
+      if (_build_host_jar || _build_device_jar) {
+        _enable_bytecode_checks =
+            (!defined(invoker.enable_bytecode_checks) ||
+             invoker.enable_bytecode_checks) && !_is_prebuilt &&
+            android_static_analysis != "off" && !_skip_header_jar
+      }
+
       _jacoco_instrument =
           use_jacoco_coverage && _chromium_code && _source_files != [] &&
           _build_device_jar && (!defined(invoker.testonly) || !invoker.testonly)
@@ -3814,6 +3830,9 @@ if (enable_java_templates) {
       is_prebuilt = _is_prebuilt
       if (defined(_dex_needs_classpath)) {
         dex_needs_classpath = _dex_needs_classpath
+      }
+      if (defined(_enable_bytecode_checks) && _enable_bytecode_checks) {
+        enable_bytecode_checks = _enable_bytecode_checks
       }
 
       # Specifically avoid passing in invoker.base_module_target as one of the
@@ -4164,13 +4183,13 @@ if (enable_java_templates) {
     }
 
     if (_build_host_jar || _build_device_jar) {
-      _enable_bytecode_checks = !defined(invoker.enable_bytecode_checks) ||
-                                invoker.enable_bytecode_checks
       _enable_bytecode_checks =
-          _enable_bytecode_checks && !_is_prebuilt &&
+          (!defined(invoker.enable_bytecode_checks) ||
+           invoker.enable_bytecode_checks) && !_is_prebuilt &&
           android_static_analysis != "off" && !_skip_header_jar
       if (_enable_bytecode_checks) {
         _validate_target_name = "${target_name}__validate"
+
         check_for_missing_direct_deps(_validate_target_name) {
           forward_variables_from(invoker, [ "missing_classes_allowlist" ])
           deps = _unprocessed_jar_deps + _header_classpath_deps +
@@ -4189,9 +4208,11 @@ if (enable_java_templates) {
           target_label =
               get_label_info(":${invoker.target_name}", "label_no_toolchain")
           input_jar = _unprocessed_jar_path
-          build_config = _build_config
           javac_build_config = _javac_build_config
           turbine_build_config = _turbine_build_config
+          targets_build_config = string_replace(_build_config,
+                                                ".build_config.json",
+                                                ".targets.build_config.json")
         }
       } else {
         not_needed(invoker, [ "missing_classes_allowlist" ])

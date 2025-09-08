@@ -657,6 +657,7 @@ def main():
   javac_config = {}
   res_config = {}
   rtxt_config = {}
+  targets_config = {}
 
   if is_apk:
     main_config['apk_path'] = params['apk_path']
@@ -890,7 +891,7 @@ def main():
         target_config = params_json_util.get_build_config(path)
       _SuffixAssets(main_config, target_config)
 
-  if has_classpath:
+  if params.get('enable_bytecode_checks'):
     jar_to_target = {}
     all_params = params.deps() + [params]
     if apk_under_test_params:
@@ -902,7 +903,7 @@ def main():
     # when missing deps are found. Both javac_full_classpath_targets and
     # javac_full_classpath must be in identical orders, as they get passed as
     # separate arrays and then paired up based on index.
-    main_config['javac_full_classpath_targets'] = [
+    targets_config['javac_full_classpath_targets'] = [
         jar_to_target[x] for x in main_config['javac_full_classpath']
     ]
 
@@ -943,6 +944,12 @@ def main():
     path = build_config_path.replace('.build_config.json',
                                      '.manifest.build_config.json')
     build_utils.WriteJson(manifest_config, path, only_if_changed=True)
+
+  # Separate to save targets that don't need it from having to parse it.
+  if targets_config:
+    path = build_config_path.replace('.build_config.json',
+                                     '.targets.build_config.json')
+    build_utils.WriteJson(targets_config, path, only_if_changed=True)
 
   build_utils.WriteJson(main_config, build_config_path, only_if_changed=True)
 
