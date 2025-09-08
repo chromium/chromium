@@ -2058,23 +2058,15 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
         RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
-    provider = CanvasResourceProvider::CreateSharedImageProvider(
+    return CanvasResourceProvider::CreateSharedImageProvider(
         Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         shared_image_usage_flags, Host());
   }
 
-  // If either of the other modes failed and / or it was not possible to do, we
-  // will backup with a software SharedImage, and if that was not possible with
-  // a Bitmap provider.
-  if (!provider && !SharedGpuContext::IsGpuCompositingEnabled()) {
-    provider =
-        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
-            Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
-            SharedGpuContext::SharedImageInterfaceProvider(), Host());
-  }
-
-  return provider;
+  return CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
+      Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
+      SharedGpuContext::SharedImageInterfaceProvider(), Host());
 }
 
 CanvasResourceProvider*
