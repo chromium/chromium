@@ -115,8 +115,8 @@ public class UmaSessionStats {
      */
     public void startNewSession(
             @ActivityType int activityType,
-            @Nullable TabModelSelector tabModelSelector,
-            @Nullable AndroidPermissionDelegate permissionDelegate) {
+            TabModelSelector tabModelSelector,
+            AndroidPermissionDelegate permissionDelegate) {
         ensureNativeInitialized();
         mTabbedSessionContainedGoogleSearch = false;
         mCurrentActivityType = activityType;

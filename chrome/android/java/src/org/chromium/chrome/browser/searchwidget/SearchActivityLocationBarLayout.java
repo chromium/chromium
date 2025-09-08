@@ -125,7 +125,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             @IntentOrigin int origin,
             @SearchType int searchType,
             @Nullable String optionalText,
-            @Nullable WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid) {
 
         // TODO(crbug.com/372036449): Move setting the hint text from the layout to using the URL
         // bar view binder and model properties.
@@ -158,13 +158,11 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         beginQueryInternal(searchType, windowAndroid);
     }
 
-    private void beginQueryInternal(
-            @SearchType int searchType, @Nullable WindowAndroid windowAndroid) {
+    private void beginQueryInternal(@SearchType int searchType, WindowAndroid windowAndroid) {
         assert !mPendingSearchPromoDecision;
 
         // Update voice and lens eligibility in case anything changed in the process.
         if (mNativeInitialized) {
-            assert windowAndroid != null;
             SearchActivityPreferencesManager.updateFeatureAvailability(getContext(), windowAndroid);
         }
 

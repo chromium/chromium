@@ -171,12 +171,12 @@ public class LocationBarCoordinator
             View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider,
-            ActionMode.@Nullable Callback actionModeCallback,
+            ActionMode.Callback actionModeCallback,
             WindowAndroid windowAndroid,
             Supplier<@Nullable Tab> activityTabSupplier,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
-            @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
-            @Nullable IncognitoStateProvider incognitoStateProvider,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<ShareDelegate> shareDelegateSupplier,
+            IncognitoStateProvider incognitoStateProvider,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             BackKeyBehaviorDelegate backKeyBehavior,
@@ -190,8 +190,7 @@ public class LocationBarCoordinator
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
             OmniboxActionDelegate omniboxActionDelegate,
-            @Nullable BrowserStateBrowserControlsVisibilityDelegate
-                    browserControlsVisibilityDelegate,
+            BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             @Nullable BackPressManager backPressManager,
             @Nullable OmniboxSuggestionsDropdownScrollListener
                     omniboxSuggestionsDropdownScrollListener,

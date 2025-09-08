@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
@@ -221,7 +220,7 @@ class LocationBarMediator
     private final @Nullable ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable AddToHomescreenCoordinator mAddToHomescreenCoordinatorForTesting;
-    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     /*package */ LocationBarMediator(
             Context context,
@@ -241,7 +240,7 @@ class LocationBarMediator
             OmniboxSuggestionsDropdownEmbedderImpl dropdownEmbedder,
             @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -804,10 +803,7 @@ class LocationBarMediator
         if (webContents == null) return null;
 
         return new AddToHomescreenCoordinator(
-                webContents,
-                mContext,
-                mWindowAndroid,
-                assertNonNull(mModalDialogManagerSupplier.get()));
+                webContents, mContext, mWindowAndroid, mModalDialogManagerSupplier.get());
     }
 
     /* package */ void installButtonClicked(View view) {

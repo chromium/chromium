@@ -535,8 +535,7 @@ public class StatusView extends LinearLayout {
     }
 
     void setBrowserControlsVisibilityDelegate(
-            @Nullable BrowserStateBrowserControlsVisibilityDelegate
-                    browserControlsVisibilityDelegate) {
+            BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate) {
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
     }
 

@@ -11,13 +11,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
@@ -29,7 +29,6 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 
 /** Class facilitating interactions with the SearchActivity and the Omnibox. */
-@NullMarked
 public class SearchActivityUtils {
     private static final String TAG = "SAUtils";
 
@@ -39,7 +38,7 @@ public class SearchActivityUtils {
      * @param intent intent received by SearchActivity
      * @return the origin of an intent
      */
-    /* package */ static @IntentOrigin int getIntentOrigin(Intent intent) {
+    /* package */ static @IntentOrigin int getIntentOrigin(@NonNull Intent intent) {
         if (Intent.ACTION_WEB_SEARCH.equals(intent.getAction())) {
             return IntentOrigin.WEB_SEARCH;
         }
@@ -56,7 +55,7 @@ public class SearchActivityUtils {
      * Returns the document url associated with the intent, if the intent is trusted and carries
      * valid URL.
      */
-    /* package */ static @Nullable GURL getIntentUrl(Intent intent) {
+    /* package */ static @Nullable GURL getIntentUrl(@NonNull Intent intent) {
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
             var gurl =
                     new GURL(
@@ -68,7 +67,7 @@ public class SearchActivityUtils {
     }
 
     /** Returns the package name on behalf of which the intent was issued. */
-    /* package */ static @Nullable String getReferrer(Intent intent) {
+    /* package */ static @Nullable String getReferrer(@NonNull Intent intent) {
         String referrer = null;
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
             referrer = IntentUtils.safeGetStringExtra(intent, SearchActivityExtras.EXTRA_REFERRER);
@@ -86,7 +85,7 @@ public class SearchActivityUtils {
     }
 
     /** Returns whether intent requests a response (true) or action (false). */
-    /* package */ static @ResolutionType int getResolutionType(Intent intent) {
+    /* package */ static @ResolutionType int getResolutionType(@NonNull Intent intent) {
         return IntentUtils.isTrustedIntentFromSelf(intent)
                 ? IntentUtils.safeGetIntExtra(
                         intent,
@@ -96,14 +95,14 @@ public class SearchActivityUtils {
     }
 
     /** Returns the incognito status of the associated launching activity. */
-    /* package */ static boolean getIntentIncognitoStatus(Intent intent) {
+    /* package */ static boolean getIntentIncognitoStatus(@NonNull Intent intent) {
         return IntentUtils.isTrustedIntentFromSelf(intent)
                 && IntentUtils.safeGetBooleanExtra(
                         intent, SearchActivityExtras.EXTRA_IS_INCOGNITO, false);
     }
 
     /** Returns the caller-supplied initial search query. */
-    /* package */ static @Nullable String getIntentQuery(Intent intent) {
+    /* package */ static @Nullable String getIntentQuery(@NonNull Intent intent) {
         if (getIntentOrigin(intent) == IntentOrigin.WEB_SEARCH) {
             return IntentUtils.safeGetStringExtra(intent, SearchManager.QUERY);
         }
@@ -119,7 +118,7 @@ public class SearchActivityUtils {
      * @return the requested search type
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static @SearchType int getIntentSearchType(Intent intent) {
+    public static @SearchType int getIntentSearchType(@NonNull Intent intent) {
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
             return IntentUtils.safeGetIntExtra(
                     intent, SearchActivityExtras.EXTRA_SEARCH_TYPE, SearchType.TEXT);
@@ -136,7 +135,7 @@ public class SearchActivityUtils {
      *     results with canceled request; anything else resolves request successfully
      */
     /* package */ static void resolveOmniboxRequestForResult(
-            Activity activity, @Nullable OmniboxLoadUrlParams params) {
+            @NonNull Activity activity, @NonNull OmniboxLoadUrlParams params) {
         var intent = createLoadUrlIntent(activity.getCallingActivity(), params);
         if (intent != null) {
             activity.setResult(Activity.RESULT_OK, intent);
@@ -176,7 +175,7 @@ public class SearchActivityUtils {
      */
     @VisibleForTesting
     /* package */ static @Nullable Intent createLoadUrlIntent(
-            @Nullable ComponentName recipient, @Nullable OmniboxLoadUrlParams params) {
+            ComponentName recipient, @Nullable OmniboxLoadUrlParams params) {
         var intent =
                 new Intent()
                         .putExtra(SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, true)

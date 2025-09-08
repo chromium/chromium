@@ -32,8 +32,8 @@ public class UmaActivityObserver implements DestroyObserver {
 
     private final UmaSessionStats mUmaSessionStats;
     private final @ActivityType int mActivityType;
-    private @Nullable TabModelSelector mLatestTabModelSelector;
-    private @Nullable AndroidPermissionDelegate mLatestAndroidPermissionDelegate;
+    private TabModelSelector mLatestTabModelSelector;
+    private AndroidPermissionDelegate mLatestAndroidPermissionDelegate;
 
     /** Activities that implement this interface manage their own UMA Session starting/ending. */
     public interface UmaSessionAwareActivity {}
@@ -91,8 +91,7 @@ public class UmaActivityObserver implements DestroyObserver {
      */
     @Initializer
     public void startUmaSession(
-            @Nullable TabModelSelector tabModelSelector,
-            @Nullable AndroidPermissionDelegate permissionDelegate) {
+            TabModelSelector tabModelSelector, AndroidPermissionDelegate permissionDelegate) {
         mLatestTabModelSelector = tabModelSelector;
         mLatestAndroidPermissionDelegate = permissionDelegate;
 

@@ -72,7 +72,7 @@ public class UrlBarCoordinator
     public UrlBarCoordinator(
             Context context,
             UrlBar urlBar,
-            ActionMode.@Nullable Callback actionModeCallback,
+            ActionMode.Callback actionModeCallback,
             Callback<Boolean> focusChangeCallback,
             UrlBarDelegate delegate,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
