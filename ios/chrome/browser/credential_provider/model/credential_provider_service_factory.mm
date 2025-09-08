@@ -49,8 +49,7 @@ CredentialProviderServiceFactory::~CredentialProviderServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 CredentialProviderServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store =
           IOSChromeProfilePasswordStoreFactory::GetForProfile(
