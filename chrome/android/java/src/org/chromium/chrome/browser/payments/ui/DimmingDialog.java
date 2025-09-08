@@ -42,9 +42,9 @@ import java.util.Collection;
  * the web contents of a payment handler CCT to also dim on some versions of Android (e.g., Nougat).
  *
  * <p>Note: Do not use this class outside of the payments.ui package!
- * TODO(crbug.com/40560343): Revert the visibility to package default again when it is no longer
+ *
+ * <p>TODO(crbug.com/40560343): Revert the visibility to package default again when it is no longer
  * used by Autofill Assistant.
- * Revert the visibility to package default again when it is no longer used by Autofill Assistant.
  */
 @NullMarked
 /* package */ class DimmingDialog {

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -33,6 +35,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.gridlayout.widget.GridLayout;
 
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
@@ -73,6 +78,7 @@ import java.util.List;
  * <p>There are three states that the UI may flip between; see {@link #DISPLAY_MODE_NORMAL}, {@link
  * #DISPLAY_MODE_EXPANDABLE}, and {@link #DISPLAY_MODE_FOCUSED} for details.
  */
+@NullMarked
 public abstract class PaymentRequestSection extends LinearLayout implements View.OnClickListener {
     public static final String TAG = "PaymentRequestUi";
 
@@ -191,7 +197,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
     protected void setLogoDrawable(@Nullable Drawable logo) {
         assert isLogoNecessary();
         mLogo = logo;
-        mLogoView.setBackgroundResource(0);
+        assumeNonNull(mLogoView).setBackgroundResource(0);
         mLogoView.setImageDrawable(mLogo);
     }
 
@@ -347,11 +353,12 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
     }
 
     /**
-     * Creates the main section.  Subclasses must call super#createMainSection() immediately to
+     * Creates the main section. Subclasses must call super#createMainSection() immediately to
      * guarantee that Views are added in the correct order.
      *
      * @param sectionName Title to display for the section.
      */
+    @Initializer
     private LinearLayout prepareMainSection(String sectionName) {
         // The main section is a vertical linear layout that subclasses can append to.
         LinearLayout mainSectionLayout = new LinearLayout(getContext());
@@ -573,6 +580,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
 
         // This method is called in PaymentRequestSection's constructor.
         @Override
+        @Initializer
         protected void createMainSectionContent(LinearLayout mainSectionLayout) {
             Context context = mainSectionLayout.getContext();
 
@@ -873,7 +881,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
 
             private final int mRowType;
             private final @Nullable EditableOption mOption;
-            private final View mButton;
+            private final @Nullable View mButton;
             private final TextView mLabel;
             private final @Nullable View mOptionIcon;
             private final @Nullable View mEditIcon;
@@ -903,7 +911,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             public void setChecked(boolean isChecked) {
                 if (mOption == null) return;
 
-                ((RadioButton) mButton).setChecked(isChecked);
+                assumeNonNull((RadioButton) mButton).setChecked(isChecked);
                 if (isChecked) {
                     updateSelectedItem(mOption);
                     mDelegate.onEditableOptionChanged(OptionSection.this, mOption);
@@ -912,7 +920,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
 
             /** Returns whether this OptionRow's RadioButton is checked. */
             public boolean isChecked() {
-                return ((RadioButton) mButton).isChecked();
+                return assumeNonNull((RadioButton) mButton).isChecked();
             }
 
             /** Change the label for the row. */
@@ -927,7 +935,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
 
             /** Set the button identifier for the option. */
             public void setButtonId(int id) {
-                mButton.setId(id);
+                assumeNonNull(mButton).setId(id);
             }
 
             /** @return the label for the row. */
@@ -943,7 +951,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 Context context = parent.getContext();
                 View view;
 
-                if (mRowType == OPTION_ROW_TYPE_OPTION) {
+                if (isRowTypeOption()) {
                     // Show a radio button indicating whether the EditableOption is selected.
                     RadioButton button = new RadioButton(context);
                     button.setChecked(isSelected && isEnabled);
@@ -1005,7 +1013,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 if (!editIconExists) columnSpan++;
 
                 TextView labelView = new TextView(context);
-                if (mRowType == OPTION_ROW_TYPE_OPTION) {
+                if (isRowTypeOption()) {
                     // Show the string representing the EditableOption.
                     labelView.setText(
                             convertOptionToString(
@@ -1065,7 +1073,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 // The icon has a pre-defined width.
                 ImageView optionIcon = new ImageView(parent.getContext());
                 optionIcon.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-                if (mOption.isEditable()) {
+                if (assumeNonNull(mOption).isEditable()) {
                     optionIcon.setMaxWidth(mEditableOptionIconMaxWidth);
                 } else {
                     optionIcon.setMaxWidth(mNonEditableOptionIconMaxWidth);
@@ -1107,6 +1115,15 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             public @Nullable View getEditIconForTest() {
                 return mEditIcon;
             }
+
+            @EnsuresNonNullIf("mOption")
+            private boolean isRowTypeOption() {
+                if (mRowType == OPTION_ROW_TYPE_OPTION) {
+                    assert mOption != null;
+                    return true;
+                }
+                return false;
+            }
         }
 
         /** Top and bottom margins for each item. */
@@ -1128,7 +1145,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         private View mCheckingProgress;
 
         /** SectionInformation that is used to populate the views in this section. */
-        private SectionInformation mSectionInformation;
+        private @Nullable SectionInformation mSectionInformation;
 
         /** Indicates whether the summary is displayed in a single line. */
         private boolean mSummaryInSingleLine;
@@ -1213,7 +1230,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             // Notify the observer that the focus is going to change.
             if (mFocusChangedObserver != null) {
                 mFocusChangedObserver.onFocusChanged(
-                        mSectionInformation.getDataType(), shouldFocus);
+                        assumeNonNull(mSectionInformation).getDataType(), shouldFocus);
             }
 
             int previousDisplayMode = mDisplayMode;
@@ -1231,6 +1248,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         }
 
         @Override
+        @Initializer
         protected void createMainSectionContent(LinearLayout mainSectionLayout) {
             Context context = mainSectionLayout.getContext();
             mCheckingProgress = createLoadingSpinner();
@@ -1389,7 +1407,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                     mSummaryInDescriptiveText = true;
                 }
                 SectionUiUtils.showSectionSummaryInTextViewInSingeLine(
-                        getContext(), mSectionInformation, getSummaryLeftTextView());
+                        getContext(), assumeNonNull(mSectionInformation), getSummaryLeftTextView());
             } else {
                 setLogoDrawable(selectedItem.getDrawableIcon());
                 // Selected item summary should be displayed as
