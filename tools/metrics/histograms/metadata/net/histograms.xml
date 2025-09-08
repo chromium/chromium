@@ -7680,6 +7680,36 @@ chromium-metrics-reviews@google.com.
   <summary>The number of streams issued over a single session.</summary>
 </histogram>
 
+<histogram name="Net.SqlDiskCache.Backend.DatabaseSize" units="MB"
+    expires_after="2025-12-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the size of the database file of the SQL-based disk cache. This is
+    recorded when the backend is initialized.
+  </summary>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.Backend.EntryCount" units="entries"
+    expires_after="2025-12-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the number of entries in the SQL-based disk cache. This is recorded
+    when the backend is initialized.
+  </summary>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.Backend.MaxSize" units="MB"
+    expires_after="2025-12-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the configured maximum size of the SQL-based disk cache. This is
+    recorded when the backend is initialized.
+  </summary>
+</histogram>
+
 <histogram name="Net.SqlDiskCache.Backend.SqliteError"
     enum="SqliteLoggedResultCode" expires_after="2025-12-09">
   <owner>horo@chromium.org</owner>
@@ -7687,6 +7717,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Errors reported by SQLite while initializing or using the SQL-based disk
     cache backend database.
+  </summary>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.Backend.TotalSize" units="MB"
+    expires_after="2025-12-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the total size of entries in the SQL-based disk cache. This is
+    recorded when the backend is initialized.
   </summary>
 </histogram>
 

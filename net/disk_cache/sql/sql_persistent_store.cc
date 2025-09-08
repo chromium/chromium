@@ -530,6 +530,22 @@ InitResultOrError Backend::Initialize() {
                                           dict);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
+
+  if (*db_init_status_ == Error::kOk) {
+    base::UmaHistogramMemoryLargeMB(
+        base::StrCat({kHistogramPrefix, "DatabaseSize"}),
+        base::GetFileSize(path_.Append(kSqlBackendDatabaseFileName))
+                .value_or(0) /
+            1024 / 1024);
+    base::UmaHistogramCounts1M(base::StrCat({kHistogramPrefix, "EntryCount"}),
+                               store_status_.entry_count);
+    base::UmaHistogramMemoryLargeMB(
+        base::StrCat({kHistogramPrefix, "TotalSize"}),
+        store_status_.total_size / 1024 / 1024);
+    base::UmaHistogramMemoryLargeMB(base::StrCat({kHistogramPrefix, "MaxSize"}),
+                                    max_bytes_ / 1024 / 1024);
+  }
+
   return *db_init_status_ == Error::kOk
              ? InitResultOrError(InitResult(max_bytes_))
              : base::unexpected(*db_init_status_);
