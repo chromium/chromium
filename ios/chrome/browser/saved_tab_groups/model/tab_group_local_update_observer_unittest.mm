@@ -53,8 +53,7 @@ namespace {
 
 const char kTestURL[] = "https://chromium.org";
 
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
   return std::make_unique<MockTabGroupSyncService>();
 }
 
