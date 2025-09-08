@@ -428,7 +428,6 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
                  base::TimeTicks,
                  base::TimeTicks) override;
   void DidCommitAndDrawFrame(int source_frame_number) override {}
-  void DidReceiveCompositorFrameAckDeprecatedForCompositor() override;
   void DidCompletePageScaleAnimation(int source_frame_number) override {}
   void DidPresentCompositorFrame(
       uint32_t frame_token,

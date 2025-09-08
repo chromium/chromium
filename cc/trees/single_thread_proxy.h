@@ -212,8 +212,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void ScheduleRequestNewLayerTreeFrameSink();
   void IssueImageDecodeFinishedCallbacks();
 
-  void DidReceiveCompositorFrameAck();
-
   // Accessed on main thread only.
   raw_ptr<LayerTreeHost> layer_tree_host_;
   raw_ptr<LayerTreeHostSingleThreadClient> single_thread_client_;
