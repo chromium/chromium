@@ -81,8 +81,7 @@ class DefaultBrowserPromptManagerTest : public BrowserWithTestWindowTest {
     base::RunLoop run_loop;
     if (expect_infobar_exists) {
       EXPECT_CALL(infobar_manager_observer_, OnInfoBarAdded)
-          .WillOnce(testing::Invoke(
-              [&](infobars::InfoBar* infobar) { run_loop.Quit(); }));
+          .WillOnce([&](infobars::InfoBar* infobar) { run_loop.Quit(); });
     } else {
       EXPECT_CALL(infobar_manager_observer_, OnInfoBarAdded).Times(0);
     }

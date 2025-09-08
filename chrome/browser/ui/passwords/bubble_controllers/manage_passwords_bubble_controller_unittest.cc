@@ -302,14 +302,14 @@ TEST_F(ManagePasswordsBubbleControllerTest,
   password_manager::PasswordForm details_bubble_form = CreateTestForm();
 
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](PasswordsModelDelegate::AvailabilityCallback callback) {
             // Waiting for kTimeToAuth seconds to simulate the time user will
             // need to authenticate
             task_environment().FastForwardBy(base::Seconds(kTimeToAuth));
             // Respond with true to simulate a successful user reauth.
             std::move(callback).Run(true);
-          })));
+          }));
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
   EXPECT_CALL(mock_callback, Run(true));
   controller()->AuthenticateUserAndDisplayDetailsOf(details_bubble_form,
@@ -326,11 +326,11 @@ TEST_F(ManagePasswordsBubbleControllerTest,
   password_manager::PasswordForm details_bubble_form = CreateTestForm();
 
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](PasswordsModelDelegate::AvailabilityCallback callback) {
             // Respond with false to simulate a failed user reauth.
             std::move(callback).Run(false);
-          })));
+          }));
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
   EXPECT_CALL(mock_callback, Run(false));
   controller()->AuthenticateUserAndDisplayDetailsOf(details_bubble_form,
@@ -352,11 +352,11 @@ TEST_F(ManagePasswordsBubbleControllerTest, OpenMoveBubble) {
   // Used to mock displaying the details view. This is needed to set the
   // selected_form value to the one that we expect.
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](PasswordsModelDelegate::AvailabilityCallback callback) {
             // Respond with true to simulate a successful user reauth.
             std::move(callback).Run(true);
-          })));
+          }));
   base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
   EXPECT_CALL(mock_callback, Run(true));
   controller()->AuthenticateUserAndDisplayDetailsOf(details_bubble_form,

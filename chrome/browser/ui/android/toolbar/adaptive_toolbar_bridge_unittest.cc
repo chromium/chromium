@@ -74,7 +74,7 @@ TEST_F(AdaptiveToolbarBridgeTest, GetRankedButtons) {
   Profile* profile = profile_.get();
 
   ON_CALL(GetSegmentationPlatformService(), GetClassificationResult(_, _, _, _))
-      .WillByDefault(testing::WithArg<3>(testing::Invoke(
+      .WillByDefault(testing::WithArg<3>(
           [](segmentation_platform::ClassificationResultCallback callback) {
             auto result = segmentation_platform::ClassificationResult(
                 segmentation_platform::PredictionStatus::kSucceeded);
@@ -85,7 +85,7 @@ TEST_F(AdaptiveToolbarBridgeTest, GetRankedButtons) {
                 segmentation_platform::kAdaptiveToolbarModelLabelTranslate};
             base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), result));
-          })));
+          }));
 
   adaptive_toolbar::GetRankedSessionVariantButtons(
       profile, /* use_raw_results= */ false,
@@ -106,14 +106,14 @@ TEST_F(AdaptiveToolbarBridgeTest, GetRankedButtons_NotReady) {
   Profile* profile = profile_.get();
 
   ON_CALL(GetSegmentationPlatformService(), GetClassificationResult(_, _, _, _))
-      .WillByDefault(testing::WithArg<3>(testing::Invoke(
+      .WillByDefault(testing::WithArg<3>(
           [](segmentation_platform::ClassificationResultCallback callback) {
             // Set segmentation to return kNotReady.
             auto result = segmentation_platform::ClassificationResult(
                 segmentation_platform::PredictionStatus::kNotReady);
             base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), result));
-          })));
+          }));
 
   adaptive_toolbar::GetRankedSessionVariantButtons(
       profile, /* use_raw_results= */ false,
@@ -133,7 +133,7 @@ TEST_F(AdaptiveToolbarBridgeTest, GetRankedButtons_RawResults) {
 
   ON_CALL(GetSegmentationPlatformService(),
           GetAnnotatedNumericResult(_, _, _, _))
-      .WillByDefault(testing::WithArg<3>(testing::Invoke(
+      .WillByDefault(testing::WithArg<3>(
           [](segmentation_platform::AnnotatedNumericResultCallback callback) {
             segmentation_platform::AnnotatedNumericResult result(
                 segmentation_platform::PredictionStatus::kSucceeded);
@@ -165,7 +165,7 @@ TEST_F(AdaptiveToolbarBridgeTest, GetRankedButtons_RawResults) {
 
             base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), result));
-          })));
+          }));
 
   adaptive_toolbar::GetRankedSessionVariantButtons(
       profile, /* use_raw_results= */ true,
@@ -190,14 +190,14 @@ TEST_F(AdaptiveToolbarBridgeTest, GetRankedButtons_RawResults_NotReady) {
 
   ON_CALL(GetSegmentationPlatformService(),
           GetAnnotatedNumericResult(_, _, _, _))
-      .WillByDefault(testing::WithArg<3>(testing::Invoke(
+      .WillByDefault(testing::WithArg<3>(
           [](segmentation_platform::AnnotatedNumericResultCallback callback) {
             segmentation_platform::AnnotatedNumericResult result(
                 segmentation_platform::PredictionStatus::kNotReady);
 
             base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), result));
-          })));
+          }));
 
   adaptive_toolbar::GetRankedSessionVariantButtons(
       profile, /* use_raw_results= */ true,

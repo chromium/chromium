@@ -37,7 +37,6 @@ namespace {
 using ::device::BluetoothUUID;
 using ::device::MockBluetoothAdapter;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 constexpr char kBluetoothDevice1Address[] = "00:11:22:33:44:55";
@@ -163,9 +162,7 @@ TEST_F(SerialChooserControllerTest, PortsAddedAndRemoved) {
 
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
-      run_loop.Quit();
-    }));
+    EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] { run_loop.Quit(); });
     run_loop.Run();
   }
   EXPECT_EQ(0u, controller->NumOptions());
@@ -183,10 +180,10 @@ TEST_F(SerialChooserControllerTest, PortsAddedAndRemoved) {
   port_manager().AddPort(std::move(port));
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionAdded(_)).WillOnce(Invoke([&](size_t index) {
+    EXPECT_CALL(view, OnOptionAdded(_)).WillOnce([&](size_t index) {
       EXPECT_EQ(0u, index);
       run_loop.Quit();
-    }));
+    });
     run_loop.Run();
   }
   EXPECT_EQ(1u, controller->NumOptions());
@@ -195,10 +192,10 @@ TEST_F(SerialChooserControllerTest, PortsAddedAndRemoved) {
   AddPort("Test Port 2", base::FilePath(FILE_PATH_LITERAL("/dev/ttyS1")));
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionAdded(_)).WillOnce(Invoke([&](size_t index) {
+    EXPECT_CALL(view, OnOptionAdded(_)).WillOnce([&](size_t index) {
       EXPECT_EQ(1u, index);
       run_loop.Quit();
-    }));
+    });
     run_loop.Run();
   }
   EXPECT_EQ(2u, controller->NumOptions());
@@ -208,10 +205,10 @@ TEST_F(SerialChooserControllerTest, PortsAddedAndRemoved) {
   port_manager().RemovePort(port1_token);
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionRemoved(_)).WillOnce(Invoke([&](size_t index) {
+    EXPECT_CALL(view, OnOptionRemoved(_)).WillOnce([&](size_t index) {
       EXPECT_EQ(0u, index);
       run_loop.Quit();
-    }));
+    });
     run_loop.Run();
   }
   EXPECT_EQ(1u, controller->NumOptions());
@@ -240,23 +237,23 @@ TEST_F(SerialChooserControllerTest, PortSelected) {
 
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+    EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
       EXPECT_EQ(1u, controller->NumOptions());
       EXPECT_EQ(u"Test Port (ttyS0)", controller->GetOption(0));
       run_loop.Quit();
-    }));
+    });
     run_loop.Run();
   }
 
   EXPECT_CALL(callback, Run(_))
-      .WillOnce(Invoke([&](device::mojom::SerialPortInfoPtr port) {
+      .WillOnce([&](device::mojom::SerialPortInfoPtr port) {
         EXPECT_EQ(port_token, port->token);
 
         // Regression test for https://crbug.com/1069057. Ensure that the set of
         // options is still valid after the callback is run.
         EXPECT_EQ(1u, controller->NumOptions());
         EXPECT_EQ(u"Test Port (ttyS0)", controller->GetOption(0));
-      }));
+      });
   controller->Select({0});
   histogram_tester.ExpectUniqueSample(
       "Permissions.Serial.ChooserClosed",
@@ -296,12 +293,12 @@ TEST_F(SerialChooserControllerTest, PortFiltered) {
 
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+    EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
       // Expect that only the first port is shown thanks to the filter.
       EXPECT_EQ(1u, controller->NumOptions());
       EXPECT_EQ(u"Test Port 1 (ttyS0)", controller->GetOption(0));
       run_loop.Quit();
-    }));
+    });
     run_loop.Run();
   }
 
@@ -321,9 +318,7 @@ TEST_F(SerialChooserControllerTest, PortFiltered) {
   // processed.
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionRemoved(0)).WillOnce(Invoke([&]() {
-      run_loop.Quit();
-    }));
+    EXPECT_CALL(view, OnOptionRemoved(0)).WillOnce([&]() { run_loop.Quit(); });
     port_manager().RemovePort(port_1);
     run_loop.Run();
   }
@@ -358,9 +353,7 @@ TEST_F(SerialChooserControllerTest, BluetoothPortFiltered) {
     const std::u16string expected_name = kBluetoothDevice1Name;
 
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
-      run_loop.Quit();
-    }));
+    EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] { run_loop.Quit(); });
     run_loop.Run();
     // Expect that only the Bluetooth port is shown thanks to the filter.
     ASSERT_EQ(1u, controller->NumOptions());
@@ -419,11 +412,11 @@ TEST_F(SerialChooserControllerTest, BluetoothPortFilteredButNotAllowed) {
     const std::u16string expected_name = kBluetoothDevice1Name;
 
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+    EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
       // Expect that only the Bluetooth port is not shown as it is not allowed.
       EXPECT_EQ(0u, controller->NumOptions());
       run_loop.Quit();
-    }));
+    });
     run_loop.Run();
   }
 
@@ -490,7 +483,7 @@ TEST_F(SerialChooserControllerTest, DeviceNameDisambiguation) {
 
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+    EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
       EXPECT_EQ(3u, controller->NumOptions());
       for (size_t idx = 0; idx < controller->NumOptions(); idx++) {
         const device::mojom::SerialPortInfo& port_info =
@@ -512,7 +505,7 @@ TEST_F(SerialChooserControllerTest, DeviceNameDisambiguation) {
             << "incorrect name for index " << idx;
       }
       run_loop.Quit();
-    }));
+    });
     run_loop.Run();
   }
 }
@@ -569,12 +562,12 @@ TEST_F(SerialChooserControllerTestWithBlockedPorts, Blocklist) {
 
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+    EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
       // Expect that only the first port is shown thanks to the filter.
       EXPECT_EQ(1u, controller->NumOptions());
       EXPECT_EQ(u"Test Port 1 (ttyS0)", controller->GetOption(0));
       run_loop.Quit();
-    }));
+    });
     run_loop.Run();
   }
 
@@ -599,9 +592,7 @@ TEST_F(SerialChooserControllerTestWithBlockedPorts, Blocklist) {
   // processed.
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionRemoved(0)).WillOnce(Invoke([&]() {
-      run_loop.Quit();
-    }));
+    EXPECT_CALL(view, OnOptionRemoved(0)).WillOnce([&]() { run_loop.Quit(); });
     port_manager().RemovePort(port_1);
     run_loop.Run();
   }
@@ -618,10 +609,10 @@ TEST_F(SerialChooserControllerTest,
   base::RunLoop run_loop;
   // Check that there is no interaction with the bluetooth adapter.
   EXPECT_CALL(*adapter(), GetOsPermissionStatus).Times(0);
-  EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+  EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
     EXPECT_EQ(0u, controller->NumOptions());
     run_loop.Quit();
-  }));
+  });
   run_loop.Run();
 }
 
@@ -637,10 +628,10 @@ TEST_F(SerialChooserControllerTest,
   base::RunLoop run_loop;
   // Check that there is no interaction with the bluetooth adapter.
   EXPECT_CALL(*adapter(), GetOsPermissionStatus).Times(0);
-  EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+  EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
     EXPECT_EQ(0u, controller->NumOptions());
     run_loop.Quit();
-  }));
+  });
   run_loop.Run();
 }
 
@@ -668,10 +659,10 @@ TEST_F(SerialChooserControllerTest,
   base::RunLoop run_loop;
   // Check that there is no interaction with the bluetooth adapter.
   EXPECT_CALL(*adapter(), GetOsPermissionStatus).Times(0);
-  EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+  EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
     EXPECT_EQ(0u, controller->NumOptions());
     run_loop.Quit();
-  }));
+  });
   run_loop.Run();
 }
 
@@ -695,10 +686,10 @@ TEST_F(SerialChooserControllerTest, MAYBE_BluetoothAdapterNotPresent) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*adapter(), IsPresent).WillOnce(Return(false));
-  EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+  EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
     EXPECT_EQ(0u, controller->NumOptions());
     run_loop.Quit();
-  }));
+  });
   run_loop.Run();
 }
 
@@ -718,10 +709,10 @@ TEST_F(SerialChooserControllerTest, SystemBluetoothPermissionDenied) {
   base::RunLoop run_loop;
   EXPECT_CALL(*adapter(), GetOsPermissionStatus)
       .WillOnce(Return(device::BluetoothAdapter::PermissionStatus::kDenied));
-  EXPECT_CALL(view, OnAdapterAuthorizationChanged(false)).WillOnce(Invoke([&] {
+  EXPECT_CALL(view, OnAdapterAuthorizationChanged(false)).WillOnce([&] {
     EXPECT_EQ(0u, controller->NumOptions());
     run_loop.Quit();
-  }));
+  });
   run_loop.Run();
 }
 
@@ -742,10 +733,10 @@ TEST_F(SerialChooserControllerTest, SystemBluetoothPermissionUndetermined) {
   EXPECT_CALL(*adapter(), GetOsPermissionStatus)
       .WillOnce(
           Return(device::BluetoothAdapter::PermissionStatus::kUndetermined));
-  EXPECT_CALL(view, OnAdapterAuthorizationChanged(false)).WillOnce(Invoke([&] {
+  EXPECT_CALL(view, OnAdapterAuthorizationChanged(false)).WillOnce([&] {
     EXPECT_EQ(0u, controller->NumOptions());
     run_loop.Quit();
-  }));
+  });
   run_loop.Run();
 }
 
@@ -765,16 +756,16 @@ TEST_F(SerialChooserControllerTest, RefreshOptionsAfterSystemBluetoothPermission
   base::RunLoop run_loop;
   EXPECT_CALL(*adapter(), GetOsPermissionStatus)
       .WillOnce(Return(device::BluetoothAdapter::PermissionStatus::kDenied));
-  EXPECT_CALL(view, OnAdapterAuthorizationChanged(false)).WillOnce(Invoke([&] {
+  EXPECT_CALL(view, OnAdapterAuthorizationChanged(false)).WillOnce([&] {
     EXPECT_CALL(*adapter(), GetOsPermissionStatus)
         .WillOnce(Return(device::BluetoothAdapter::PermissionStatus::kAllowed));
     controller->RefreshOptions();
-  }));
+  });
 
-  EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+  EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
     EXPECT_EQ(0u, controller->NumOptions());
     run_loop.Quit();
-  }));
+  });
   run_loop.Run();
 }
 
@@ -797,10 +788,10 @@ TEST_F(SerialChooserControllerTest, AdapterPowerOffThenPowerOn) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*adapter(), IsPowered).WillOnce(Return(false));
-    EXPECT_CALL(view, OnAdapterEnabledChanged(false)).WillOnce(Invoke([&] {
+    EXPECT_CALL(view, OnAdapterEnabledChanged(false)).WillOnce([&] {
       EXPECT_EQ(0u, controller->NumOptions());
       run_loop.Quit();
-    }));
+    });
     run_loop.Run();
   }
 
@@ -810,11 +801,11 @@ TEST_F(SerialChooserControllerTest, AdapterPowerOffThenPowerOn) {
   adapter()->NotifyAdapterPoweredChanged(true);
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+    EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
       ASSERT_EQ(1u, controller->NumOptions());
       EXPECT_EQ(kBluetoothDevice1Name, controller->GetOption(0));
       run_loop.Quit();
-    }));
+    });
     run_loop.Run();
   }
 }
@@ -838,20 +829,20 @@ TEST_F(SerialChooserControllerTest, AdapterPowerOffAfterOptionsInitialized) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*adapter(), IsPowered).WillOnce(Return(true));
-    EXPECT_CALL(view, OnOptionsInitialized).WillOnce(Invoke([&] {
+    EXPECT_CALL(view, OnOptionsInitialized).WillOnce([&] {
       ASSERT_EQ(1u, controller->NumOptions());
       EXPECT_EQ(kBluetoothDevice1Name, controller->GetOption(0));
       run_loop.Quit();
-    }));
+    });
     run_loop.Run();
   }
 
   // Then adapter power off.
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(view, OnAdapterEnabledChanged(false)).WillOnce(Invoke([&] {
+    EXPECT_CALL(view, OnAdapterEnabledChanged(false)).WillOnce([&] {
       run_loop.Quit();
-    }));
+    });
     adapter()->NotifyAdapterPoweredChanged(false);
     run_loop.Run();
   }

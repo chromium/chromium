@@ -58,7 +58,7 @@ class ExclusiveAccessPermissionManagerTest : public BrowserWithTestWindowTest {
       std::optional<content::PermissionResult> pointer_lock_response,
       std::optional<content::PermissionResult> keyboard_lock_response) {
     EXPECT_CALL(permission_controller_, RequestPermissionsFromCurrentDocument)
-        .WillRepeatedly(testing::WithArgs<1, 2>(testing::Invoke(
+        .WillRepeatedly(testing::WithArgs<1, 2>(
             [&](content::PermissionRequestDescription description,
                 base::OnceCallback<void(
                     const std::vector<content::PermissionResult>&)> callback) {
@@ -77,7 +77,7 @@ class ExclusiveAccessPermissionManagerTest : public BrowserWithTestWindowTest {
                 default:
                   NOTREACHED();
               }
-            })));
+            }));
     task_environment()->FastForwardBy(base::Milliseconds(200));
   }
 

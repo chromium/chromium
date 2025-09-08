@@ -71,7 +71,6 @@ using base::WeakPtr;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::Optional;
 using ::testing::Return;

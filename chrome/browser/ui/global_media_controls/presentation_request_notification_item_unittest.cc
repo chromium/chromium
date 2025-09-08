@@ -61,11 +61,10 @@ TEST_F(PresentationRequestNotificationItemTest, MediaSessionMetadataChanged) {
   // The item should prioritize Media Session metadata except for
   // `source_title`, which should come from the Presentation Request.
   EXPECT_CALL(*provider_, OnMetadataChanged)
-      .WillOnce(testing::Invoke(
-          [metadata](const media_session::MediaMetadata& metadata_arg) {
-            EXPECT_EQ(u"example.com", metadata_arg.source_title);
-            EXPECT_EQ(metadata.artist, metadata_arg.artist);
-          }));
+      .WillOnce([metadata](const media_session::MediaMetadata& metadata_arg) {
+        EXPECT_EQ(u"example.com", metadata_arg.source_title);
+        EXPECT_EQ(metadata.artist, metadata_arg.artist);
+      });
   item_->MediaSessionMetadataChanged(metadata);
 }
 

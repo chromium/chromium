@@ -90,7 +90,6 @@ using content::SSLStatus;
 using content_settings::SettingSource;
 using testing::_;
 using testing::AnyNumber;
-using testing::Invoke;
 using testing::Mock;
 using testing::NiceMock;
 using testing::Return;
