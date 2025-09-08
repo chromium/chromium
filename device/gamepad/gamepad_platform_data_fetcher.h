@@ -14,6 +14,7 @@
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_data_fetcher_manager.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
+#include "device/gamepad/simulated_gamepad_data_fetcher.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "device/gamepad/gamepad_platform_data_fetcher_android.h"
@@ -69,6 +70,11 @@ void AddGamepadPlatformDataFetchers(GamepadDataFetcherManager* manager) {
   manager->AddFactory(new NintendoDataFetcher::Factory());
 
 #endif
+
+  if (base::FeatureList::IsEnabled(
+          features::kEnableSimulatedGamepadDataFetcher)) {
+    manager->AddFactory(new SimulatedGamepadDataFetcher::Factory());
+  }
 }
 
 }  // namespace device

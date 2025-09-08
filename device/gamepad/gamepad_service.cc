@@ -63,13 +63,18 @@ void GamepadService::StartUp(
   GamepadDataFetcherManager::GetInstance();
 }
 
+void GamepadService::EnsureProvider() {
+  if (provider_) {
+    return;
+  }
+  provider_ = std::make_unique<GamepadProvider>(
+      /*connection_change_client=*/this);
+}
+
 bool GamepadService::ConsumerBecameActive(GamepadConsumer* consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!provider_) {
-    provider_ = std::make_unique<GamepadProvider>(
-        /*connection_change_client=*/this);
-  }
+  EnsureProvider();
 
   std::pair<ConsumerSet::iterator, bool> insert_result =
       consumers_.insert(consumer);
@@ -148,6 +153,71 @@ void GamepadService::RegisterForUserGesture(base::OnceClosure closure) {
   DCHECK(consumers_.size() > 0);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   provider_->RegisterForUserGesture(std::move(closure));
+}
+
+base::UnguessableToken GamepadService::AddSimulatedGamepad(
+    SimulatedGamepadParams params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureProvider();
+  auto token = base::UnguessableToken::Create();
+  provider_->AddSimulatedGamepad(token, std::move(params));
+  return token;
+}
+
+void GamepadService::RemoveSimulatedGamepad(base::UnguessableToken token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(provider_);
+  provider_->RemoveSimulatedGamepad(token);
+}
+
+void GamepadService::SimulateAxisInput(base::UnguessableToken token,
+                                       uint32_t index,
+                                       double value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(provider_);
+  provider_->SimulateAxisInput(token, index, value);
+}
+
+void GamepadService::SimulateButtonInput(base::UnguessableToken token,
+                                         uint32_t index,
+                                         double value,
+                                         std::optional<bool> pressed,
+                                         std::optional<bool> touched) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(provider_);
+  provider_->SimulateButtonInput(token, index, value, pressed, touched);
+}
+
+std::optional<uint32_t> GamepadService::SimulateTouchInput(
+    base::UnguessableToken token,
+    uint32_t surface_id,
+    double x,
+    double y) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(provider_);
+  return provider_->SimulateTouchInput(token, surface_id, x, y);
+}
+
+void GamepadService::SimulateTouchMove(base::UnguessableToken token,
+                                       uint32_t touch_id,
+                                       double x,
+                                       double y) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(provider_);
+  provider_->SimulateTouchMove(token, touch_id, x, y);
+}
+
+void GamepadService::SimulateTouchEnd(base::UnguessableToken token,
+                                      uint32_t touch_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(provider_);
+  provider_->SimulateTouchEnd(token, touch_id);
+}
+
+void GamepadService::SimulateInputFrame(base::UnguessableToken token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(provider_);
+  provider_->SimulateInputFrame(token);
 }
 
 void GamepadService::Terminate() {

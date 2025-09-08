@@ -5061,6 +5061,7 @@ shown properly on the user-facing crash UI.
   <int value="14" label="GamepadSource::kWinMr"/>
   <int value="15" label="GamepadSource::kOpenxr"/>
   <int value="16" label="GamepadSource::kWinWgi"/>
+  <int value="17" label="GamepadSource::kSimulated"/>
 </enum>
 
 <enum name="GamepadVendorProduct">

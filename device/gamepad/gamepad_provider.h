@@ -17,11 +17,15 @@
 #include "base/system/system_monitor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/gamepad_pad_state_provider.h"
 #include "device/gamepad/gamepad_shared_buffer.h"
+#include "device/gamepad/normalization.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
+#include "device/gamepad/simulated_gamepad_inputs.h"
+#include "device/gamepad/simulated_gamepad_params.h"
 #include "mojo/public/cpp/system/buffer.h"
 
 namespace base {
@@ -32,6 +36,7 @@ class Thread;
 namespace device {
 
 class GamepadDataFetcher;
+class SimulatedGamepadDataFetcher;
 
 class DEVICE_GAMEPAD_EXPORT GamepadChangeClient {
  public:
@@ -90,6 +95,50 @@ class DEVICE_GAMEPAD_EXPORT GamepadProvider
 
   void SetSanitizationEnabled(bool sanitize) { sanitize_ = sanitize; }
 
+  // Adds a simulated gamepad identified by `token` and described by `params`.
+  void AddSimulatedGamepad(base::UnguessableToken token,
+                           SimulatedGamepadParams params);
+
+  // Removes the simulated gamepad identified by `token`.
+  void RemoveSimulatedGamepad(base::UnguessableToken token);
+
+  // Updates the `logical_value` of the axis at `index` on the simulated gamepad
+  // identified by `token`.
+  void SimulateAxisInput(base::UnguessableToken token,
+                         uint32_t index,
+                         double logical_value);
+
+  // Updates the `logical_value`, `pressed`, and `touched` of the button at
+  // `index` on the simulated gamepad identified by `token`.
+  void SimulateButtonInput(base::UnguessableToken token,
+                           uint32_t index,
+                           double logical_value,
+                           std::optional<bool> pressed,
+                           std::optional<bool> touched);
+
+  // Adds a new touch point on the simulated gamepad identified by `token`.
+  // Returns the touch point identifier, or `nullopt` if the simulated gamepad
+  // is not found.
+  std::optional<uint32_t> SimulateTouchInput(base::UnguessableToken token,
+                                             uint32_t surface_id,
+                                             double logical_x,
+                                             double logical_y);
+
+  // Updates the coordinates of the touch point identified by `touch_id` on the
+  // simulated gamepad identified by `token`.
+  void SimulateTouchMove(base::UnguessableToken token,
+                         uint32_t touch_id,
+                         double logical_x,
+                         double logical_y);
+
+  // Remove the touch point identified by `touch_id` on the simulated gamepad
+  // identified by `token`.
+  void SimulateTouchEnd(base::UnguessableToken token, uint32_t touch_id);
+
+  // Signals that the simulated gamepad identified by `token` has updated
+  // inputs.
+  void SimulateInputFrame(base::UnguessableToken token);
+
  private:
   void Initialize(std::unique_ptr<GamepadDataFetcher> fetcher);
 
@@ -97,6 +146,14 @@ class DEVICE_GAMEPAD_EXPORT GamepadProvider
   // of |fetcher|.
   void DoAddGamepadDataFetcher(std::unique_ptr<GamepadDataFetcher> fetcher);
   void DoRemoveSourceGamepadDataFetcher(GamepadSource source);
+
+  // Methods for interacting with the `simulated_gamepad_data_fetcher_` on the
+  // `polling_thread_`.
+  void DoAddSimulatedGamepad(base::UnguessableToken token,
+                             SimulatedGamepadParams params);
+  void DoRemoveSimulatedGamepad(base::UnguessableToken token);
+  void DoSimulateInputFrame(base::UnguessableToken token,
+                            SimulatedGamepadInputs inputs);
 
   GamepadDataFetcher* GetSourceGamepadDataFetcher(GamepadSource source);
 
@@ -167,9 +224,29 @@ class DEVICE_GAMEPAD_EXPORT GamepadProvider
   bool ever_had_user_gesture_ = false;
   bool sanitize_ = true;
 
+  // Internal state for a simulated gamepad.
+  struct SimulatedGamepadState {
+   public:
+    SimulatedGamepadState();
+    ~SimulatedGamepadState();
+
+    // Pending input values for this gamepad.
+    SimulatedGamepadInputs inputs;
+
+    // The number of touch surfaces on this gamepad.
+    size_t touch_surface_count = 0;
+
+    // The next touch point identifier for this gamepad.
+    uint32_t next_touch_id = 0;
+  };
+  std::map<base::UnguessableToken, SimulatedGamepadState>
+      simulated_gamepad_state_;
+
   // Only used on the polling thread.
   using GamepadFetcherVector = std::vector<std::unique_ptr<GamepadDataFetcher>>;
   GamepadFetcherVector data_fetchers_;
+  raw_ptr<SimulatedGamepadDataFetcher> simulated_gamepad_data_fetcher_ =
+      nullptr;
 
   base::Lock shared_memory_lock_;
   std::unique_ptr<GamepadSharedBuffer> gamepad_shared_buffer_;
