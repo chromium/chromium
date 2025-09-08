@@ -23,8 +23,7 @@ namespace {
 
 std::unique_ptr<KeyedService> BuildServiceWithFakeClient(
     country_codes::CountryId country_id,
-    web::BrowserState* browser_state) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+    ProfileIOS* profile) {
   return CreateServiceWithFakeClient(*profile->GetPrefs(), country_id);
 }
 
@@ -39,7 +38,7 @@ class IOSRegionalCapabilitiesMetricsProviderTest : public PlatformTest {
     test_profile_builder
         .AddTestingFactory(
             ios::RegionalCapabilitiesServiceFactory::GetInstance(),
-            base::BindRepeating(&BuildServiceWithFakeClient, country_id))
+            base::BindOnce(&BuildServiceWithFakeClient, country_id))
         .SetName(name);
     profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));
   }
