@@ -550,21 +550,6 @@ ElementRareDataVector::EnsureAnimationTriggerData() {
       FieldId::kAnimationTriggerData);
 }
 
-void ElementRareDataVector::IncrementImplicitlyAnchoredElementCount() {
-  EnsureWrappedField<wtf_size_t>(FieldId::kImplicitlyAnchoredElementCount)++;
-}
-void ElementRareDataVector::DecrementImplicitlyAnchoredElementCount() {
-  wtf_size_t& anchored_element_count =
-      EnsureWrappedField<wtf_size_t>(FieldId::kImplicitlyAnchoredElementCount);
-  DCHECK(anchored_element_count);
-  anchored_element_count--;
-}
-bool ElementRareDataVector::HasImplicitlyAnchoredElement() const {
-  wtf_size_t* anchored_element_count =
-      GetWrappedField<wtf_size_t>(FieldId::kImplicitlyAnchoredElementCount);
-  return anchored_element_count && *anchored_element_count;
-}
-
 void ElementRareDataVector::Trace(blink::Visitor* visitor) const {
   visitor->Trace(fields_);
   NodeRareData::Trace(visitor);

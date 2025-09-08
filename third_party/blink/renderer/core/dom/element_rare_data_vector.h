@@ -82,7 +82,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kSavedLayerScrollOffset = 22,
     kAnchorPositionScrollData = 23,
     kAnchorElementObserver = 24,
-    kImplicitlyAnchoredElementCount = 25,
+    kMayBeImplicitAnchor = 25,
     kLastRememberedBlockSize = 26,
     kLastRememberedInlineSize = 27,
     kRestrictionTargetId = 28,
@@ -331,10 +331,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   ElementAnimationTriggerData* AnimationTriggerData();
   ElementAnimationTriggerData& EnsureAnimationTriggerData();
 
-  void IncrementImplicitlyAnchoredElementCount();
-  void DecrementImplicitlyAnchoredElementCount();
-  bool HasImplicitlyAnchoredElement() const;
-
   void SetDidAttachInternals() { fields_.did_attach_internals = true; }
   bool DidAttachInternals() const { return fields_.did_attach_internals; }
   bool HasUndoStack() const { return fields_.has_undo_stack; }
@@ -357,6 +353,8 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   bool HasBeenExplicitlyScrolled() const {
     return fields_.has_been_explicitly_scrolled;
   }
+  bool MayBeImplicitAnchor() const { return fields_.may_be_implicit_anchor; }
+  void SetMayBeImplicitAnchor() { fields_.may_be_implicit_anchor = true; }
 
   FocusgroupFlags GetFocusgroupFlags() const {
     return fields_.focusgroup_flags;
@@ -465,6 +463,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     // it doesn't hurt performance much.
     unsigned has_counters_styles : 1 = false;
     unsigned has_been_explicitly_scrolled : 1 = false;
+    unsigned may_be_implicit_anchor : 1 = false;
     HasInvalidationFlags has_invalidation_flags;
     FocusgroupFlags focusgroup_flags = FocusgroupFlags::kNone;
   };

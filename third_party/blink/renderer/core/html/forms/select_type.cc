@@ -249,7 +249,6 @@ class MenuListSelectType final : public SelectType {
   explicit MenuListSelectType(HTMLSelectElement& select);
   void Trace(Visitor* visitor) const override;
 
-  void WillBeDestroyed() override;
   bool DefaultEventHandler(const Event& event) override;
   void DidSelectOption(HTMLOptionElement* element,
                        HTMLSelectElement::SelectOptionFlags flags,
@@ -324,16 +323,8 @@ class MenuListSelectType final : public SelectType {
 MenuListSelectType::MenuListSelectType(HTMLSelectElement& select)
     : SelectType(select) {
   // MenuList selects always have two implicitly anchored elements: the
-  // ::picker and the autofill popover. We only need to tell the select element
-  // that there is one of them, and we can just decrement by one if the select
-  // switches from MenuList to ListBox, which happens in
-  // MenuListSelectType::WillBeDestroyed.
-  select_->IncrementImplicitlyAnchoredElementCount();
-}
-
-void MenuListSelectType::WillBeDestroyed() {
-  SelectType::WillBeDestroyed();
-  select_->DecrementImplicitlyAnchoredElementCount();
+  // ::picker and the autofill popover.
+  select_->SetMayBeImplicitAnchor();
 }
 
 void MenuListSelectType::Trace(Visitor* visitor) const {

@@ -1177,10 +1177,7 @@ crbug.com/1375884 external/wpt/css/css-fonts/rlh-in-monospace.html [ Failure ]
 crbug.com/1356336 fast/block/float/shrink-to-avoid-float-complexity.html [ Failure Pass ]
 
 crbug.com/431611648 external/wpt/css/css-anchor-position/position-area-percents-001.html [ Failure ]
-crbug.com/408223892 external/wpt/css/css-anchor-position/position-area-pseudo-element-implicit-anchor.html [ Failure ]
-crbug.com/408223892 external/wpt/css/css-anchor-position/position-area-pseudo-element-implicit-anchor-dynamic.html [ Failure ]
 crbug.com/332933527 external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure ]
-crbug.com/408223892 external/wpt/css/css-anchor-position/pseudo-element-implicit-anchor.html [ Failure ]
 
 # ====== Layout team owned tests to here ======
 

@@ -6261,6 +6261,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5658" label="MulticastControllerJoinedGroupsAttribute"/>
   <int value="5659" label="ContainerNameQueryFailedTreeScope"/>
   <int value="5660" label="LocalNetworkAccessWebSocketResourceNotKnownPrivate"/>
+  <int value="5661" label="CSSPseudoElementUsesImplicitAnchor"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

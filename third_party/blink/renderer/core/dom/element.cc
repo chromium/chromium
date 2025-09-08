@@ -5243,6 +5243,13 @@ StyleRecalcChange Element::RecalcOwnStyle(
             diff != ComputedStyle::Difference::kEqual);
       }
     }
+    if (IsPseudoElement() && new_style->MayUseImplicitAnchor()) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kCSSPseudoElementUsesImplicitAnchor);
+      if (RuntimeEnabledFeatures::OriginatingElementIsImplicitAnchorEnabled()) {
+        parentElement()->SetMayBeImplicitAnchor();
+      }
+    }
   }
 
   if (child_change.ReattachLayoutTree()) {
@@ -9627,6 +9634,13 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
   }
 
   pseudo_element->SetComputedStyle(pseudo_style);
+  if (pseudo_style->MayUseImplicitAnchor()) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kCSSPseudoElementUsesImplicitAnchor);
+    if (RuntimeEnabledFeatures::OriginatingElementIsImplicitAnchorEnabled()) {
+      SetMayBeImplicitAnchor();
+    }
+  }
 
   probe::PseudoElementCreated(pseudo_element);
 
@@ -12421,10 +12435,10 @@ ScrollMarkerGroupData* Element::GetScrollTargetGroupContainerData() const {
   return nullptr;
 }
 
-void Element::IncrementImplicitlyAnchoredElementCount() {
-  bool had_implicitly_anchored_element = HasImplicitlyAnchoredElement();
-  EnsureElementRareData().IncrementImplicitlyAnchoredElementCount();
-  if (!had_implicitly_anchored_element && GetLayoutObject()) {
+void Element::SetMayBeImplicitAnchor() {
+  bool was_implicit_anchor = MayBeImplicitAnchor();
+  EnsureElementRareData().SetMayBeImplicitAnchor();
+  if (!was_implicit_anchor && GetLayoutObject()) {
     // Invalidate layout to populate itself into Physical/LogicalAnchorQuery.
     GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kAnchorPositioning);
@@ -12432,14 +12446,9 @@ void Element::IncrementImplicitlyAnchoredElementCount() {
   }
 }
 
-void Element::DecrementImplicitlyAnchoredElementCount() {
-  DCHECK(GetElementRareData());
-  GetElementRareData()->DecrementImplicitlyAnchoredElementCount();
-}
-
-bool Element::HasImplicitlyAnchoredElement() const {
+bool Element::MayBeImplicitAnchor() const {
   if (const ElementRareDataVector* data = GetElementRareData()) {
-    return data->HasImplicitlyAnchoredElement();
+    return data->MayBeImplicitAnchor();
   }
   return false;
 }
@@ -12481,6 +12490,10 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdScrollButtonInlineStart:
       case kPseudoIdScrollButtonInlineEnd:
       case kPseudoIdScrollButtonBlockEnd:
+        if (RuntimeEnabledFeatures::
+                OriginatingElementIsImplicitAnchorEnabled()) {
+          return parentElement();
+        }
         return pseudo_element->UltimateOriginatingElement()
             .ImplicitAnchorElement();
       default:

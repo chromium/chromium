@@ -21,7 +21,7 @@ class SelectType : public GarbageCollected<SelectType> {
   // Creates an instance of a SelectType subclass depending on the current mode
   // of |select|.
   static SelectType* Create(HTMLSelectElement& select);
-  virtual void WillBeDestroyed();
+  void WillBeDestroyed();
   virtual void Trace(Visitor* visitor) const;
 
   // Returns true if the event is handled.

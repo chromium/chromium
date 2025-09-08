@@ -446,7 +446,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   // is concerned.
   bool IsMonolithic() const;
 
-  // Returns true this fragment is used as the implicit anchor for another
+  // Returns true this fragment might be used as the implicit anchor for another
   // element in CSS anchor positioning.
   // Should only be called during layout as it inspects DOM.
   bool IsImplicitAnchor() const;

@@ -2460,13 +2460,9 @@ void HTMLElement::InvokePopover(Element& invoker) {
 
 void HTMLElement::SetImplicitAnchor(Element* element) {
   CHECK(IsPopover());
-  if (auto* old_implicit_anchor =
-          GetPopoverData() ? GetPopoverData()->implicitAnchor() : nullptr) {
-    old_implicit_anchor->DecrementImplicitlyAnchoredElementCount();
-  }
   GetPopoverData()->setImplicitAnchor(element);
   if (element) {
-    element->IncrementImplicitlyAnchoredElementCount();
+    element->SetMayBeImplicitAnchor();
   }
 }
 

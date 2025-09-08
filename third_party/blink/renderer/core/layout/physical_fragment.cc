@@ -603,7 +603,7 @@ bool PhysicalFragment::IsMonolithic() const {
 
 bool PhysicalFragment::IsImplicitAnchor() const {
   if (Element* element = DynamicTo<Element>(GetNode())) {
-    return element->HasImplicitlyAnchoredElement();
+    return element->MayBeImplicitAnchor();
   }
   return false;
 }

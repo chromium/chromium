@@ -3856,7 +3856,7 @@ void LayoutObject::InsertedIntoTree() {
     Parent()->DirtyLinesFromChangedChild(this);
 
   if (const Element* element = DynamicTo<Element>(GetNode());
-      element && element->HasImplicitlyAnchoredElement()) {
+      element && element->MayBeImplicitAnchor()) {
     MarkMayHaveAnchorQuery();
   } else if (MayHaveAnchorQuery()) {
     Parent()->MarkMayHaveAnchorQuery();
