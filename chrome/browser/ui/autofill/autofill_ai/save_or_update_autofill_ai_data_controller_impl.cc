@@ -8,6 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/types/optional_ref.h"
@@ -71,6 +72,8 @@ void EmitBubbleFunnelMetrics(
         return "Passport";
       case EntityTypeName::kRedressNumber:
         return "RedressNumber";
+      case EntityTypeName::kFlightReservation:
+        return "FlightReservation";
     }
     NOTREACHED();
   };
@@ -233,6 +236,8 @@ std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
       case EntityTypeName::kVehicle:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE);
+      case EntityTypeName::kFlightReservation:
+        NOTREACHED() << "Entity is read only and doesn't support save prompts.";
     }
   } else {
     switch (new_entity_->type().name()) {
@@ -254,6 +259,9 @@ std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
       case EntityTypeName::kVehicle:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE);
+      case EntityTypeName::kFlightReservation:
+        NOTREACHED()
+            << "Entity is read only and doesn't support update prompts.";
     }
   }
   NOTREACHED();
@@ -318,6 +326,9 @@ int SaveOrUpdateAutofillAiDataControllerImpl::GetTitleImagesResourceId() const {
       return IDR_AUTOFILL_SAVE_KNOWN_TRAVELER_NUMBER_AND_REDRESS_NUMBER_LOTTIE;
     case EntityTypeName::kVehicle:
       return IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE;
+    case EntityTypeName::kFlightReservation:
+      NOTREACHED()
+          << "Entity is read only and doesn't support saving/updating.";
   }
   NOTREACHED();
 }

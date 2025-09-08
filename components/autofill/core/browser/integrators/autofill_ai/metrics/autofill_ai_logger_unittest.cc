@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
@@ -56,7 +57,6 @@ using ::testing::ReturnRef;
 constexpr auto kVehicle = EntityType(EntityTypeName::kVehicle);
 constexpr auto kDriversLicense = EntityType(EntityTypeName::kDriversLicense);
 constexpr auto kPassport = EntityType(EntityTypeName::kPassport);
-constexpr auto kNationalIdCard = EntityType(EntityTypeName::kNationalIdCard);
 constexpr char kDefaultUrl[] = "https://example.com";
 constexpr uint64_t kFormSession = 123456UL;
 
@@ -80,7 +80,8 @@ class BaseAutofillAiTest : public testing::Test {
         /*enabled_features=*/{features::kAutofillAiWithDataSchema,
                               features::kAutofillAiNationalIdCard,
                               features::kAutofillAiKnownTravelerNumber,
-                              features::kAutofillAiRedressNumber},
+                              features::kAutofillAiRedressNumber,
+                              features::kAutofillAiFlightReservation},
         /*disabled_features=*/{});
     autofill_client().set_entity_data_manager(
         std::make_unique<EntityDataManager>(
@@ -161,6 +162,16 @@ class BaseAutofillAiTest : public testing::Test {
     return CreateFormStructure(
         {NATIONAL_ID_CARD_NUMBER, NATIONAL_ID_CARD_ISSUING_COUNTRY,
          NATIONAL_ID_CARD_ISSUE_DATE, NATIONAL_ID_CARD_EXPIRATION_DATE},
+        std::move(url));
+  }
+
+  [[nodiscard]] std::unique_ptr<FormStructure> CreateFlightReservationForm(
+      std::string url = std::string(kDefaultUrl)) {
+    return CreateFormStructure(
+        {NAME_FULL, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+         FLIGHT_RESERVATION_TICKET_NUMBER, FLIGHT_RESERVATION_CONFIRMATION_CODE,
+         FLIGHT_RESERVATION_ARRIVAL_AIRPORT,
+         FLIGHT_RESERVATION_DEPARTURE_AIRPORT},
         std::move(url));
   }
 
@@ -282,6 +293,8 @@ class AutofillAiFunnelMetricsTest
         return CreateVehicleForm();
       case EntityTypeName::kNationalIdCard:
         return CreateNationalIdCardForm();
+      case EntityTypeName::kFlightReservation:
+        return CreateFlightReservationForm();
     }
     NOTREACHED();
   }
@@ -300,6 +313,8 @@ class AutofillAiFunnelMetricsTest
         return test::GetVehicleEntityInstance();
       case EntityTypeName::kNationalIdCard:
         return test::GetNationalIdCardEntityInstance();
+      case EntityTypeName::kFlightReservation:
+        return test::GetFlightReservationEntityInstance();
     }
     NOTREACHED();
   }
@@ -426,6 +441,8 @@ class AutofillAiFunnelMetricsTest
         return "Vehicle";
       case EntityTypeName::kNationalIdCard:
         return "NationalIdCard";
+      case EntityTypeName::kFlightReservation:
+        return "FlightReservation";
     }
     NOTREACHED();
   }
@@ -476,14 +493,12 @@ class AutofillAiFunnelMetricsTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(AutofillAiTest,
-                         AutofillAiFunnelMetricsTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Values(kPassport,
-                                                          kDriversLicense,
-                                                          kVehicle,
-                                                          kNationalIdCard),
-                                          testing::Values(0, 1, 2, 3, 4, 5)));
+INSTANTIATE_TEST_SUITE_P(
+    AutofillAiTest,
+    AutofillAiFunnelMetricsTest,
+    testing::Combine(testing::Bool(),
+                     testing::ValuesIn(DenseSet<EntityType>::all()),
+                     testing::Values(0, 1, 2, 3, 4, 5)));
 
 // Tests that appropriate calls in `AutofillAiManager`
 // result in correct metric logging.

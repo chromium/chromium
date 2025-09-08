@@ -1136,6 +1136,62 @@ EntityInstance GetNationalIdCardEntityInstance(NationalIdCardOptions options) {
       options.are_attributes_read_only);
 }
 
+EntityInstance GetFlightReservationEntityInstance(
+    FlightReservationOptions options) {
+  using enum AttributeTypeName;
+  std::vector<AttributeInstance> attributes;
+  if (options.name) {
+    attributes.emplace_back(AttributeType(kFlightReservationPassengerName));
+    attributes.back().SetInfo(
+        NAME_FULL, options.name, std::string(options.app_locale),
+        /*format_string=*/u"", VerificationStatus::kNoStatus);
+    attributes.back().FinalizeInfo();
+  }
+  if (options.flight_number) {
+    attributes.emplace_back(AttributeType(kFlightReservationFlightNumber));
+    attributes.back().SetInfo(
+        FLIGHT_RESERVATION_FLIGHT_NUMBER, options.flight_number,
+        std::string(options.app_locale),
+        /*format_string=*/u"", VerificationStatus::kNoStatus);
+  }
+  if (options.ticket_number) {
+    attributes.emplace_back(AttributeType(kFlightReservationTicketNumber));
+    attributes.back().SetInfo(
+        FLIGHT_RESERVATION_TICKET_NUMBER, options.ticket_number,
+        std::string(options.app_locale),
+        /*format_string=*/u"", VerificationStatus::kNoStatus);
+  }
+  if (options.confirmation_code) {
+    attributes.emplace_back(AttributeType(kFlightReservationConfirmationCode));
+    attributes.back().SetInfo(
+        FLIGHT_RESERVATION_CONFIRMATION_CODE, options.confirmation_code,
+        std::string(options.app_locale),
+        /*format_string=*/u"", VerificationStatus::kNoStatus);
+  }
+  if (options.departure_airport) {
+    attributes.emplace_back(AttributeType(kFlightReservationDepartureAirport));
+    attributes.back().SetInfo(
+        FLIGHT_RESERVATION_DEPARTURE_AIRPORT, options.departure_airport,
+        std::string(options.app_locale),
+        /*format_string=*/u"", VerificationStatus::kNoStatus);
+  }
+  if (options.arrival_airport) {
+    attributes.emplace_back(AttributeType(kFlightReservationArrivalAirport));
+    attributes.back().SetInfo(
+        FLIGHT_RESERVATION_ARRIVAL_AIRPORT, options.arrival_airport,
+        std::string(options.app_locale),
+        /*format_string=*/u"", VerificationStatus::kNoStatus);
+  }
+
+  return EntityInstance(
+      EntityType(EntityTypeName::kFlightReservation), std::move(attributes),
+      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
+      std::string(options.nickname), base::Time::FromTimeT(kJune2017.ToTimeT()),
+      options.use_count,
+      /*use_date=*/base::Time::FromTimeT(0), options.record_type,
+      options.are_attributes_read_only);
+}
+
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
                              const std::vector<FieldType>& possible_types) {
   possible_field_types.emplace_back();

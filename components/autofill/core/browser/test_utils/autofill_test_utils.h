@@ -454,6 +454,27 @@ using RedressNumberOptions = RedressNumberOptionsT<>;
 EntityInstance GetRedressNumberEntityInstance(
     RedressNumberOptions options = {});
 
+template <typename = void>
+struct FlightReservationOptionsT {
+  const char16_t* flight_number = u"987654321";
+  const char16_t* ticket_number = u"123123456";
+  const char16_t* confirmation_code = u"0123";
+  const char16_t* name = u"John Doe";
+  const char16_t* departure_airport = u"MUC";
+  const char16_t* arrival_airport = u"BEY";
+  std::string_view guid = "00000000-0000-4000-8000-500000000000";
+  std::string_view nickname = "FlightReservation";
+  std::string_view app_locale = "en-US";
+  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+      EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
+};
+using FlightReservationOptions = FlightReservationOptionsT<>;
+
+EntityInstance GetFlightReservationEntityInstance(
+    FlightReservationOptions options = {});
+
 // Adds `possible_types` at the end of `possible_field_types`.
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
                              const std::vector<FieldType>& possible_types);

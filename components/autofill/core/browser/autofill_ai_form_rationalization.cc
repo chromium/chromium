@@ -15,7 +15,7 @@ namespace autofill {
 
 namespace {
 
-// Checks whether `fields` matches `entity_of_interst`'s required fields,
+// Checks whether `fields` matches `entity_of_interest`'s required fields,
 // returns an empty vector if not.
 void EnforceRequiredFieldsConstraints(
     std::vector<AutofillFieldWithAttributeType>& fields,

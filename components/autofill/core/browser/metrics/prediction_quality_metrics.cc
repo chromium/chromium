@@ -420,6 +420,11 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case REDRESS_NUMBER:
         case KNOWN_TRAVELER_NUMBER:
         case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+        case FLIGHT_RESERVATION_FLIGHT_NUMBER:
+        case FLIGHT_RESERVATION_TICKET_NUMBER:
+        case FLIGHT_RESERVATION_CONFIRMATION_CODE:
+        case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+        case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
           NOTREACHED() << field_type << " type is not in that group.";
       }
       break;

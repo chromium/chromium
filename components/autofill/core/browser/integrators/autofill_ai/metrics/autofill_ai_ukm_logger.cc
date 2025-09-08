@@ -38,6 +38,8 @@ optimization_guide::proto::AutofillAiEntityType GetEntityType(
   switch (entity_type.name()) {
     case EntityTypeName::kDriversLicense:
       return ProtoType::AUTOFILL_AI_ENTITY_TYPE_DRIVERS_LICENSE;
+    case EntityTypeName::kFlightReservation:
+      return ProtoType::AUTOFILL_AI_ENTITY_TYPE_FLIGHT_RESERVATION;
     case EntityTypeName::kKnownTravelerNumber:
       return ProtoType::AUTOFILL_AI_ENTITY_TYPE_KNOWN_TRAVELER_NUMBER;
     case EntityTypeName::kNationalIdCard:

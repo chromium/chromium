@@ -37,6 +37,18 @@ std::u16string AttributeType::GetNameForI18n() const {
         return IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME;
       case AttributeTypeName::kDriversLicenseIssueDate:
         return IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME;
+      case AttributeTypeName::kFlightReservationFlightNumber:
+        return IDS_AUTOFILL_AI_FLIGHT_RESERVATION_FLIGHT_NUMBER_ATTRIBUTE_NAME;
+      case AttributeTypeName::kFlightReservationTicketNumber:
+        return IDS_AUTOFILL_AI_FLIGHT_RESERVATION_TICKET_NUMBER_ATTRIBUTE_NAME;
+      case AttributeTypeName::kFlightReservationConfirmationCode:
+        return IDS_AUTOFILL_AI_FLIGHT_RESERVATION_CONFIRMATION_CODE_ATTRIBUTE_NAME;
+      case AttributeTypeName::kFlightReservationPassengerName:
+        return IDS_AUTOFILL_AI_FLIGHT_RESERVATION_PASSENGER_NAME_ATTRIBUTE_NAME;
+      case AttributeTypeName::kFlightReservationDepartureAirport:
+        return IDS_AUTOFILL_AI_FLIGHT_RESERVATION_DEPARTURE_AIRPORT_ATTRIBUTE_NAME;
+      case AttributeTypeName::kFlightReservationArrivalAirport:
+        return IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ARRIVAL_AIRPORT_ATTRIBUTE_NAME;
       case AttributeTypeName::kKnownTravelerNumberName:
         return IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_NAME_ATTRIBUTE_NAME;
       case AttributeTypeName::kKnownTravelerNumberNumber:
@@ -93,6 +105,8 @@ bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
     switch (t.name()) {
       case EntityTypeName::kDriversLicense:
         return 4;
+      case EntityTypeName::kFlightReservation:
+        return 7;
       case EntityTypeName::kKnownTravelerNumber:
         return 5;
       case EntityTypeName::kNationalIdCard:
@@ -121,6 +135,9 @@ std::u16string EntityType::GetNameForI18n() const {
     case EntityTypeName::kDriversLicense:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME);
+    case EntityTypeName::kFlightReservation:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ENTITY_NAME);
     case EntityTypeName::kKnownTravelerNumber:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME);

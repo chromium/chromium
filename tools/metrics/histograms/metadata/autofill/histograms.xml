@@ -500,12 +500,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="DELIVERY_INSTRUCTIONS"/>
   <variant name="DRIVERS_LICENSE_EXPIRATION_DATE"/>
   <variant name="DRIVERS_LICENSE_ISSUE_DATE"/>
-  <variant name="DRIVERS_LICENSE_NAME_TAG"/>
   <variant name="DRIVERS_LICENSE_NUMBER"/>
   <variant name="DRIVERS_LICENSE_REGION"/>
   <variant name="EMAIL_ADDRESS"/>
   <variant name="EMAIL_OR_LOYALTY_MEMBERSHIP_ID"/>
   <variant name="EMPTY_TYPE"/>
+  <variant name="FLIGHT_RESERVATION_ARRIVAL_AIRPORT"/>
+  <variant name="FLIGHT_RESERVATION_CONFIRMATION_CODE"/>
+  <variant name="FLIGHT_RESERVATION_DEPARTURE_AIRPORT"/>
+  <variant name="FLIGHT_RESERVATION_FLIGHT_NUMBER"/>
+  <variant name="FLIGHT_RESERVATION_TICKET_NUMBER"/>
   <variant name="IBAN_VALUE"/>
   <variant name="KNOWN_TRAVELER_NUMBER"/>
   <variant name="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE"/>
@@ -541,7 +545,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="PASSPORT_EXPIRATION_DATE"/>
   <variant name="PASSPORT_ISSUE_DATE"/>
   <variant name="PASSPORT_ISSUING_COUNTRY"/>
-  <variant name="PASSPORT_NAME_TAG"/>
   <variant name="PASSPORT_NUMBER"/>
   <variant name="PASSWORD"/>
   <variant name="PHONE_HOME_CITY_AND_NUMBER"/>
@@ -567,7 +570,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="VEHICLE_LICENSE_PLATE"/>
   <variant name="VEHICLE_MAKE"/>
   <variant name="VEHICLE_MODEL"/>
-  <variant name="VEHICLE_OWNER_TAG"/>
   <variant name="VEHICLE_PLATE_STATE"/>
   <variant name="VEHICLE_VIN"/>
   <variant name="VEHICLE_YEAR"/>

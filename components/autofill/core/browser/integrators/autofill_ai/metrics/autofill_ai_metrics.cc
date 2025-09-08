@@ -30,6 +30,8 @@ std::string_view EntityTypeToMetricsString(EntityType type) {
       return "KnownTravelerNumber";
     case EntityTypeName::kRedressNumber:
       return "RedressNumber";
+    case EntityTypeName::kFlightReservation:
+      return "FlightReservation";
   }
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiEntityType)

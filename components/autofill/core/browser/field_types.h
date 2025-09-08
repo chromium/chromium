@@ -532,7 +532,8 @@ enum FieldType {
   // Types corresponding to the "Redress number" entity from
   // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
   REDRESS_NUMBER = 195,
-  // Types 195 to 200 are not used on the client yet, but will likely be added
+
+  // Types 196 and 197 are not used on the client yet, but will likely be added
   // in the future.
 
   // ADDRESS_HOME_ZIP = ADDRESS_HOME_ZIP_PREFIX + separator +
@@ -540,6 +541,14 @@ enum FieldType {
   // For the US zip code 94043-4100 the types correspond to 94043 and 4100.
   ADDRESS_HOME_ZIP_PREFIX = 201,
   ADDRESS_HOME_ZIP_SUFFIX = 202,
+
+  // Types corresponding to the "Flight reservation" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  FLIGHT_RESERVATION_FLIGHT_NUMBER = 198,
+  FLIGHT_RESERVATION_CONFIRMATION_CODE = 199,
+  FLIGHT_RESERVATION_TICKET_NUMBER = 200,
+  FLIGHT_RESERVATION_DEPARTURE_AIRPORT = 204,
+  FLIGHT_RESERVATION_ARRIVAL_AIRPORT = 205,
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
@@ -551,7 +560,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 204,
+  MAX_VALID_FIELD_TYPE = 206,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -658,9 +667,9 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // Types for the country for driver's license and vehicle are not
            // used yet, but will likely be added in the future.
            (187 <= t && t <= 188) ||
-           // Types for date of birth, gender, and flight reservation are not
-           // used yet, but will likely be added in the future.
-           (196 <= t && t <= 200);
+           // Types for date of birth and gender are not used yet, but will
+           // likely be added in the future.
+           (196 <= t && t <= 197);
   };
   return is_invalid(raw_value) ? fallback_value
                                : static_cast<FieldType>(raw_value);  // nocheck
@@ -823,6 +832,11 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case REDRESS_NUMBER:
     case KNOWN_TRAVELER_NUMBER:
     case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+    case FLIGHT_RESERVATION_FLIGHT_NUMBER:
+    case FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
       return FieldTypeGroup::kAutofillAi;
 
     case PASSWORD:

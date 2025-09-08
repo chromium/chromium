@@ -121,6 +121,7 @@ class AttributeType final {
 constexpr AttributeType::DataType AttributeType::data_type() const {
   switch (name_) {
     case AttributeTypeName::kDriversLicenseName:
+    case AttributeTypeName::kFlightReservationPassengerName:
     case AttributeTypeName::kKnownTravelerNumberName:
     case AttributeTypeName::kNationalIdCardName:
     case AttributeTypeName::kPassportName:
@@ -142,6 +143,11 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kVehiclePlateState:
       return DataType::kState;
     case AttributeTypeName::kDriversLicenseNumber:
+    case AttributeTypeName::kFlightReservationFlightNumber:
+    case AttributeTypeName::kFlightReservationTicketNumber:
+    case AttributeTypeName::kFlightReservationConfirmationCode:
+    case AttributeTypeName::kFlightReservationDepartureAirport:
+    case AttributeTypeName::kFlightReservationArrivalAirport:
     case AttributeTypeName::kKnownTravelerNumberNumber:
     case AttributeTypeName::kNationalIdCardNumber:
     case AttributeTypeName::kPassportNumber:
@@ -152,7 +158,6 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kVehicleModel:
     case AttributeTypeName::kVehicleYear:
       return DataType::kString;
-      break;
   }
   NOTREACHED();
 }
@@ -169,6 +174,19 @@ constexpr FieldType AttributeType::field_type() const {
       return DRIVERS_LICENSE_EXPIRATION_DATE;
     case AttributeTypeName::kDriversLicenseIssueDate:
       return DRIVERS_LICENSE_ISSUE_DATE;
+
+    case AttributeTypeName::kFlightReservationPassengerName:
+      return NAME_FULL;
+    case AttributeTypeName::kFlightReservationFlightNumber:
+      return FLIGHT_RESERVATION_FLIGHT_NUMBER;
+    case AttributeTypeName::kFlightReservationTicketNumber:
+      return FLIGHT_RESERVATION_TICKET_NUMBER;
+    case AttributeTypeName::kFlightReservationConfirmationCode:
+      return FLIGHT_RESERVATION_CONFIRMATION_CODE;
+    case AttributeTypeName::kFlightReservationDepartureAirport:
+      return FLIGHT_RESERVATION_DEPARTURE_AIRPORT;
+    case AttributeTypeName::kFlightReservationArrivalAirport:
+      return FLIGHT_RESERVATION_ARRIVAL_AIRPORT;
 
     case AttributeTypeName::kKnownTravelerNumberNumber:
       return KNOWN_TRAVELER_NUMBER;

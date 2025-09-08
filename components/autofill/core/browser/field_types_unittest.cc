@@ -149,7 +149,14 @@ TEST(FieldTypesTest, IsValidFieldType) {
       KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE,
       ADDRESS_HOME_ZIP_PREFIX,
       ADDRESS_HOME_ZIP_SUFFIX,
+      FLIGHT_RESERVATION_FLIGHT_NUMBER,
+      FLIGHT_RESERVATION_CONFIRMATION_CODE,
+      FLIGHT_RESERVATION_TICKET_NUMBER,
+      FLIGHT_RESERVATION_DEPARTURE_AIRPORT,
+      FLIGHT_RESERVATION_ARRIVAL_AIRPORT,
   };
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 206,
+                "New field type needs to be added to kValidFieldTypes.");
   FieldType kInvalidValue = static_cast<FieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));
   for (int i = -10; i < MAX_VALID_FIELD_TYPE + 10; ++i) {

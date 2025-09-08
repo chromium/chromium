@@ -171,6 +171,9 @@ GetVehicleAttributesFromSpecifics(
 sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
     const EntityInstance& entity) {
   switch (entity.type().name()) {
+    case EntityTypeName::kFlightReservation:
+      // TODO(crbug.com/436175248): Add support for flight reservations.
+      return sync_pb::AutofillValuableSpecifics();
     case EntityTypeName::kVehicle:
       return GetVehicleInformationSpecifics(entity);
     case EntityTypeName::kPassport:

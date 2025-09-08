@@ -174,6 +174,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="National ID Card"/>
   <int value="4" label="Known Traveler Number"/>
   <int value="5" label="Redress Number"/>
+  <int value="6" label="Flight Reservation"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/autofill/core/browser/data_model/autofill_ai/entity_type.cc:EntityType) -->
@@ -921,6 +922,21 @@ Called by update_autofill_enums.py.-->
   <int value="12480"
       label="REDRESS_NUMBER: Not autofilled or autofilled value edited"/>
   <int value="12481" label="REDRESS_NUMBER: Autofilled value accepted"/>
+  <int value="12672"
+      label="FLIGHT_RESERVATION_FLIGHT_NUMBER: Not autofilled or autofilled
+             value edited"/>
+  <int value="12673"
+      label="FLIGHT_RESERVATION_FLIGHT_NUMBER: Autofilled value accepted"/>
+  <int value="12736"
+      label="FLIGHT_RESERVATION_CONFIRMATION_CODE: Not autofilled or
+             autofilled value edited"/>
+  <int value="12737"
+      label="FLIGHT_RESERVATION_CONFIRMATION_CODE: Autofilled value accepted"/>
+  <int value="12800"
+      label="FLIGHT_RESERVATION_TICKET_NUMBER: Not autofilled or autofilled
+             value edited"/>
+  <int value="12801"
+      label="FLIGHT_RESERVATION_TICKET_NUMBER: Autofilled value accepted"/>
   <int value="12864"
       label="ADDRESS_HOME_ZIP_PREFIX: Not autofilled or autofilled value
              edited"/>
@@ -936,6 +952,16 @@ Called by update_autofill_enums.py.-->
              autofilled value edited"/>
   <int value="12993"
       label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: Autofilled value accepted"/>
+  <int value="13056"
+      label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: Not autofilled or
+             autofilled value edited"/>
+  <int value="13057"
+      label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: Autofilled value accepted"/>
+  <int value="13120"
+      label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: Not autofilled or autofilled
+             value edited"/>
+  <int value="13121"
+      label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofillDeveloperEngagement">
@@ -1257,12 +1283,22 @@ Called by update_autofill_enums.py.-->
   <int value="3105" label="KNOWN_TRAVELER_NUMBER: accepted"/>
   <int value="3120" label="REDRESS_NUMBER: edited"/>
   <int value="3121" label="REDRESS_NUMBER: accepted"/>
+  <int value="3168" label="FLIGHT_RESERVATION_FLIGHT_NUMBER: edited"/>
+  <int value="3169" label="FLIGHT_RESERVATION_FLIGHT_NUMBER: accepted"/>
+  <int value="3184" label="FLIGHT_RESERVATION_CONFIRMATION_CODE: edited"/>
+  <int value="3185" label="FLIGHT_RESERVATION_CONFIRMATION_CODE: accepted"/>
+  <int value="3200" label="FLIGHT_RESERVATION_TICKET_NUMBER: edited"/>
+  <int value="3201" label="FLIGHT_RESERVATION_TICKET_NUMBER: accepted"/>
   <int value="3216" label="ADDRESS_HOME_ZIP_PREFIX: edited"/>
   <int value="3217" label="ADDRESS_HOME_ZIP_PREFIX: accepted"/>
   <int value="3232" label="ADDRESS_HOME_ZIP_SUFFIX: edited"/>
   <int value="3233" label="ADDRESS_HOME_ZIP_SUFFIX: accepted"/>
   <int value="3248" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: edited"/>
   <int value="3249" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: accepted"/>
+  <int value="3264" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: edited"/>
+  <int value="3265" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: accepted"/>
+  <int value="3280" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: edited"/>
+  <int value="3281" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: accepted"/>
 </enum>
 
 <enum name="AutofillEmailOrLoyaltyCardAcceptanceMetricValue">
@@ -2127,9 +2163,14 @@ Called by update_autofill_enums.py.-->
   <int value="193" label="NATIONAL_ID_CARD_ISSUING_COUNTRY"/>
   <int value="194" label="KNOWN_TRAVELER_NUMBER"/>
   <int value="195" label="REDRESS_NUMBER"/>
+  <int value="198" label="FLIGHT_RESERVATION_FLIGHT_NUMBER"/>
+  <int value="199" label="FLIGHT_RESERVATION_CONFIRMATION_CODE"/>
+  <int value="200" label="FLIGHT_RESERVATION_TICKET_NUMBER"/>
   <int value="201" label="ADDRESS_HOME_ZIP_PREFIX"/>
   <int value="202" label="ADDRESS_HOME_ZIP_SUFFIX"/>
   <int value="203" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE"/>
+  <int value="204" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT"/>
+  <int value="205" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -3835,12 +3876,22 @@ Called by update_autofill_enums.py.-->
   <int value="777" label="KNOWN_TRAVELER_NUMBER: Accepted"/>
   <int value="780" label="REDRESS_NUMBER: Ignored"/>
   <int value="781" label="REDRESS_NUMBER: Accepted"/>
+  <int value="792" label="FLIGHT_RESERVATION_FLIGHT_NUMBER: Ignored"/>
+  <int value="793" label="FLIGHT_RESERVATION_FLIGHT_NUMBER: Accepted"/>
+  <int value="796" label="FLIGHT_RESERVATION_CONFIRMATION_CODE: Ignored"/>
+  <int value="797" label="FLIGHT_RESERVATION_CONFIRMATION_CODE: Accepted"/>
+  <int value="800" label="FLIGHT_RESERVATION_TICKET_NUMBER: Ignored"/>
+  <int value="801" label="FLIGHT_RESERVATION_TICKET_NUMBER: Accepted"/>
   <int value="804" label="ADDRESS_HOME_ZIP_PREFIX: Ignored"/>
   <int value="805" label="ADDRESS_HOME_ZIP_PREFIX: Accepted"/>
   <int value="808" label="ADDRESS_HOME_ZIP_SUFFIX: Ignored"/>
   <int value="809" label="ADDRESS_HOME_ZIP_SUFFIX: Accepted"/>
   <int value="812" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: Ignored"/>
   <int value="813" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: Accepted"/>
+  <int value="816" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: Ignored"/>
+  <int value="817" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: Accepted"/>
+  <int value="820" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: Ignored"/>
+  <int value="821" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: Accepted"/>
 </enum>
 
 <!-- LINT.IfChange(FormSubmissionOutcomeIOS) -->

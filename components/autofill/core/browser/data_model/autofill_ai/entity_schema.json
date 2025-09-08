@@ -85,5 +85,17 @@
     "disambiguation order": [ "Name" ],
     "syncable": false,
     "experiment feature": "AutofillAiRedressNumber"
+  },
+  {
+    "name": "Flight Reservation",
+    "attributes": [ "Flight number", "Ticket number", "Confirmation code", "Passenger name", "Departure airport", "Arrival airport"],
+    "obfuscated attributes": [],
+    "required fields": "any",
+    "import constraints": [],
+    "merge constraints": [],
+    "strike keys": [],
+    "disambiguation order": [ "Departure airport", "Arrival airport" ],
+    "syncable": true,
+    "experiment feature": "AutofillAiFlightReservation"
   }
 ]
