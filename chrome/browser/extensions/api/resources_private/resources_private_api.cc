@@ -22,18 +22,20 @@
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 // To add a new component to this API, simply:
+//
 // 1. Add your component to the Component enum in
-//      chrome/common/extensions/api/resources_private.idl
-// 2. Create an AddStringsForMyComponent(base::Value::Dict * dict) method.
-// 3. Tie in that method to the switch statement in Run()
+//    chrome/common/extensions/api/resources_private.idl
+// 2. Create a `base::Value::Dict GetStringsForMyComponent()` method.
+// 3. Tie in that method to the switch statement in `Run()`.
 
 namespace extensions {
 
 namespace {
 
-void AddStringsForIdentity(base::Value::Dict* dict) {
-  dict->Set("window-title",
-            l10n_util::GetStringUTF16(IDS_EXTENSION_CONFIRM_PERMISSIONS));
+base::Value::Dict GetStringsForIdentity() {
+  return base::Value::Dict().Set(
+      "window-title",
+      l10n_util::GetStringUTF16(IDS_EXTENSION_CONFIRM_PERMISSIONS));
 }
 
 }  // namespace
@@ -47,21 +49,18 @@ ResourcesPrivateGetStringsFunction::~ResourcesPrivateGetStringsFunction() =
     default;
 
 ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
-  std::optional<get_strings::Params> params =
-      get_strings::Params::Create(args());
+  get_strings::Params params = get_strings::Params::Create(args()).value();
   base::Value::Dict dict;
 
-  api::resources_private::Component component = params->component;
-
-  switch (component) {
+  switch (params.component) {
     case api::resources_private::Component::kIdentity:
-      AddStringsForIdentity(&dict);
+      dict = GetStringsForIdentity();
       break;
     case api::resources_private::Component::kPdf: {
 #if BUILDFLAG(ENABLE_PDF)
-      pdf_extension_util::AddStrings(pdf_extension_util::PdfViewerContext::kAll,
-                                     &dict);
-      pdf_extension_util::AddAdditionalData(browser_context(), &dict);
+      dict = pdf_extension_util::GetStrings(
+          pdf_extension_util::PdfViewerContext::kAll);
+      dict.Merge(pdf_extension_util::GetAdditionalData(browser_context()));
 #endif  // BUILDFLAG(ENABLE_PDF)
       break;
     }
@@ -69,10 +68,8 @@ ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
       NOTREACHED();
   }
 
-  std::string app_locale =
-      ExtensionsBrowserClient::Get()->GetApplicationLocale();
-  webui::SetLoadTimeDataDefaults(app_locale, &dict);
-
+  webui::SetLoadTimeDataDefaults(
+      ExtensionsBrowserClient::Get()->GetApplicationLocale(), &dict);
   return RespondNow(WithArguments(std::move(dict)));
 }
 
