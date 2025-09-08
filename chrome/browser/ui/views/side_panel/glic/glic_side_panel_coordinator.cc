@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/actions/actions.h"
 
 namespace glic {
@@ -113,7 +114,8 @@ std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateGlicWebView(
   if (!glic_service_) {
     return nullptr;
   }
-  return glic_service_->window_controller().CreateGlicViewForSidePanel(browser);
+  return glic_service_->window_controller().CreateViewForSidePanel(
+      scope.GetBrowserWindowInterface().GetActiveTabInterface());
 }
 
 }  // namespace glic

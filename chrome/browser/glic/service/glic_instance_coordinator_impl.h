@@ -114,8 +114,8 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
   gfx::Rect GetInitialBounds(Browser* browser) override;
   void ShowDetachedForTesting() override;
   void SetPreviousPositionForTesting(gfx::Point position) override;
-  std::unique_ptr<GlicView> CreateGlicViewForSidePanel(
-      Browser* browser) override;
+  std::unique_ptr<views::View> CreateViewForSidePanel(
+      tabs::TabInterface* tab) override;
   void SidePanelShown(Browser* browser) override;
 
   base::CallbackListSubscription RegisterFloatyStateChange(

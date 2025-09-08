@@ -114,8 +114,8 @@ class GlicWindowControllerImpl
   gfx::Rect GetInitialBounds(Browser* browser) override;
   void ShowDetachedForTesting() override;
   void SetPreviousPositionForTesting(gfx::Point position) override;
-  std::unique_ptr<GlicView> CreateGlicViewForSidePanel(
-      Browser* browser) override;
+  std::unique_ptr<views::View> CreateViewForSidePanel(
+      tabs::TabInterface* tab) override;
   void SidePanelShown(Browser* browser) override;
   base::CallbackListSubscription RegisterFloatyStateChange(
       FloatyStateChangeCallback callback) override;
@@ -150,7 +150,6 @@ class GlicWindowControllerImpl
   Host* GetHostForTab(tabs::TabInterface* tab) override;
 
  private:
-
   // Sets the floating attributes of the glic window.
   //
   // When set to true, the glic window is set to have a `kFloatingWindow`

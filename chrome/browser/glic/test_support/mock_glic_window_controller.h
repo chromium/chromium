@@ -77,9 +77,9 @@ class MockGlicWindowController
   MOCK_METHOD(gfx::Rect, GetInitialBounds, (Browser*), (override));
   MOCK_METHOD(void, ShowDetachedForTesting, (), (override));
   MOCK_METHOD(void, SetPreviousPositionForTesting, (gfx::Point), (override));
-  MOCK_METHOD(std::unique_ptr<GlicView>,
-              CreateGlicViewForSidePanel,
-              (Browser*),
+  MOCK_METHOD(std::unique_ptr<views::View>,
+              CreateViewForSidePanel,
+              (tabs::TabInterface*),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterFloatyStateChange,

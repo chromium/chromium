@@ -704,8 +704,13 @@ void GlicWindowControllerImpl::Show(Browser* browser,
   }
 }
 
-std::unique_ptr<GlicView> GlicWindowControllerImpl::CreateGlicViewForSidePanel(
-    Browser* browser) {
+std::unique_ptr<views::View> GlicWindowControllerImpl::CreateViewForSidePanel(
+    tabs::TabInterface* tab) {
+  // GetBrowserForMigrationOnly() is a stop-gap until the rest of the code in
+  // GlicWindowController is updated to use BrowserWindowInterface instead of
+  // Browser
+  auto* browser =
+      tab->GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
   // TODO: Add Invocation source for toolbar button
   if (BeforeViewCreated(browser, mojom::InvocationSource::kThreeDotsMenu) &&
       browser) {

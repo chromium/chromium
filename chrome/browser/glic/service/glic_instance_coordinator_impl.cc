@@ -319,9 +319,8 @@ void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
   NOTIMPLEMENTED();
 }
 
-std::unique_ptr<GlicView>
-GlicInstanceCoordinatorImpl::CreateGlicViewForSidePanel(Browser* browser) {
-  auto* tab = browser->GetActiveTabInterface();
+std::unique_ptr<views::View>
+GlicInstanceCoordinatorImpl::CreateViewForSidePanel(tabs::TabInterface* tab) {
   if (!tab) {
     return nullptr;
   }

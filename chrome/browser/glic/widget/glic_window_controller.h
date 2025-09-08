@@ -21,7 +21,6 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -211,8 +210,8 @@ class GlicWindowController {
 
   virtual void ShowDetachedForTesting() = 0;
   virtual void SetPreviousPositionForTesting(gfx::Point position) = 0;
-  virtual std::unique_ptr<GlicView> CreateGlicViewForSidePanel(
-      Browser* browser) = 0;
+  virtual std::unique_ptr<views::View> CreateViewForSidePanel(
+      tabs::TabInterface* tab) = 0;
 
   virtual void SidePanelShown(Browser* browser) = 0;
   // Helper function to get the always detached flag.
