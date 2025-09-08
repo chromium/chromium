@@ -34,8 +34,7 @@ MiniMapServiceFactory::MiniMapServiceFactory()
 MiniMapServiceFactory::~MiniMapServiceFactory() = default;
 
 std::unique_ptr<KeyedService> MiniMapServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   CHECK(!profile->IsOffTheRecord());
   CHECK(base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink));
 
