@@ -13293,6 +13293,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+    {"verify-qwacs", flag_descriptions::kVerifyQWACsName,
+     flag_descriptions::kVerifyQWACsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kVerifyQWACs)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

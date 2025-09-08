@@ -4354,6 +4354,11 @@ const char kVcWebApiName[] = "VC web API";
 const char kVcWebApiDescription[] =
     "Allows web API support for video conferencing on Chromebooks.";
 
+const char kVerifyQWACsName[] = "Verify QWACs";
+const char kVerifyQWACsDescription[] =
+    "Enables verification of qualified certificates for website authentication "
+    "as described in ETSI TS 119 411-5 V2.1.1 (2025-02).";
+
 const char kVideoPictureInPictureControlsUpdate2024Name[] =
     "Video picture-in-picture controls update 2024";
 const char kVideoPictureInPictureControlsUpdate2024Description[] =

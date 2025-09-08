@@ -2495,6 +2495,9 @@ extern const char kVcLightIntensityDescription[];
 extern const char kVcWebApiName[];
 extern const char kVcWebApiDescription[];
 
+extern const char kVerifyQWACsName[];
+extern const char kVerifyQWACsDescription[];
+
 extern const char kVideoPictureInPictureControlsUpdate2024Name[];
 extern const char kVideoPictureInPictureControlsUpdate2024Description[];
 

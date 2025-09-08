@@ -16331,6 +16331,7 @@ from previous Chrome versions.
   <int value="752194066" label="enable-app-window-cycling"/>
   <int value="752416911" label="FastPair:disabled"/>
   <int value="752939691" label="disable-tab-for-desktop-share"/>
+  <int value="752977335" label="VerifyQWACs:enabled"/>
   <int value="753258862" label="ReloadTabUiResourcesIfChanged:disabled"/>
   <int value="753375390" label="ThrottleMainFrameTo60Hz:disabled"/>
   <int value="753474609" label="CanvasNoise:disabled"/>
@@ -17101,6 +17102,7 @@ from previous Chrome versions.
       label="SecurePaymentConfirmationBrowserBoundKeys:disabled"/>
   <int value="1042202617" label="RemoteCopyReceiver:enabled"/>
   <int value="1042684294" label="PrintPreviewCrosApp:enabled"/>
+  <int value="1042884453" label="VerifyQWACs:disabled"/>
   <int value="1043291220" label="OverviewSwipeToClose:disabled"/>
   <int value="1043334401" label="disable-slimming-paint-invalidation"/>
   <int value="1043511715" label="CategoricalSearch:enabled"/>
