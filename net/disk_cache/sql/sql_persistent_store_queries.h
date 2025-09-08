@@ -138,9 +138,8 @@ inline constexpr const char kDoomEntry_MarkDoomedResources[] =
     "SET "
         "doomed=1 "
     "WHERE "
-        "cache_key=? AND "   // 0
-        "token_high=? AND "  // 1
-        "token_low=? AND "   // 2
+        "token_high=? AND "  // 0
+        "token_low=? AND "   // 1
         "doomed=0 "
     "RETURNING "
         "bytes_usage";       // 0
@@ -150,9 +149,8 @@ inline constexpr const char kDeleteDoomedEntry_DeleteFromResources[] =
     // clang-format off
     "DELETE FROM resources "
     "WHERE "
-        "cache_key=? AND "   // 0
-        "token_high=? AND "  // 1
-        "token_low=? AND "   // 2
+        "token_high=? AND "  // 0
+        "token_low=? AND "   // 1
         "doomed=1";
 // clang-format on
 
@@ -222,9 +220,8 @@ inline constexpr const char kUpdateEntryHeaderAndLastUsed_UpdateResource[] =
         "bytes_usage=bytes_usage+?, "  // 1
         "head=? "                      // 2
     "WHERE "
-        "cache_key=? AND "             // 3
-        "token_high=? AND "            // 4
-        "token_low=? AND "             // 5
+        "token_high=? AND "            // 3
+        "token_low=? AND "             // 4
         "doomed=0 "
     "RETURNING "
         "bytes_usage";                 // 0
@@ -237,9 +234,8 @@ inline constexpr const char kWriteEntryData_UpdateResource[] =
         "body_end=body_end+?, "       // 0
         "bytes_usage=bytes_usage+? "  // 1
     "WHERE "
-        "cache_key=? AND "            // 2
-        "token_high=? AND "           // 3
-        "token_low=? "                // 4
+        "token_high=? AND "           // 2
+        "token_low=? "                // 3
     "RETURNING "
         "body_end,"                   // 0
         "doomed";                     // 1

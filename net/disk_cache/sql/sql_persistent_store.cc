@@ -366,11 +366,9 @@ class Backend {
   EntryInfoOrError CreateEntryInternal(const CacheEntryKey& key,
                                        bool run_existance_check,
                                        bool& corruption_detected);
-  Error DoomEntryInternal(const CacheEntryKey& key,
-                          const base::UnguessableToken& token,
+  Error DoomEntryInternal(const base::UnguessableToken& token,
                           bool& corruption_detected);
-  Error DeleteDoomedEntryInternal(const CacheEntryKey& key,
-                                  const base::UnguessableToken& token,
+  Error DeleteDoomedEntryInternal(const base::UnguessableToken& token,
                                   bool& corruption_detected);
   Error DeleteDoomedEntriesInternal(
       const base::flat_set<base::UnguessableToken>& excluded_tokens,
@@ -393,8 +391,7 @@ class Backend {
       scoped_refptr<net::IOBuffer> buffer,
       int64_t header_size_delta,
       bool& corruption_detected);
-  Error WriteEntryDataInternal(const CacheEntryKey& key,
-                               const base::UnguessableToken& token,
+  Error WriteEntryDataInternal(const base::UnguessableToken& token,
                                int64_t old_body_end,
                                int64_t offset,
                                scoped_refptr<net::IOBuffer> buffer,
@@ -835,7 +832,7 @@ ErrorAndEvictionRequested Backend::DoomEntry(
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  auto result = DoomEntryInternal(key, token, corruption_detected);
+  auto result = DoomEntryInternal(token, corruption_detected);
   RecordTimeAndErrorResultHistogram("DoomEntry", timer.Elapsed(), result,
                                     corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.DoomEntry", "result",
@@ -848,8 +845,7 @@ ErrorAndEvictionRequested Backend::DoomEntry(
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
-Error Backend::DoomEntryInternal(const CacheEntryKey& key,
-                                 const base::UnguessableToken& token,
+Error Backend::DoomEntryInternal(const base::UnguessableToken& token,
                                  bool& corruption_detected) {
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
@@ -864,9 +860,8 @@ Error Backend::DoomEntryInternal(const CacheEntryKey& key,
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kDoomEntry_MarkDoomedResources)));
-    statement.BindString(0, key.string());
-    statement.BindInt64(1, TokenHigh(token));
-    statement.BindInt64(2, TokenLow(token));
+    statement.BindInt64(0, TokenHigh(token));
+    statement.BindInt64(1, TokenLow(token));
     // Iterate through the rows returned by the RETURNING clause.
     while (statement.Step()) {
       // Since we're dooming an entry, its size is subtracted from the total.
@@ -918,7 +913,7 @@ ErrorAndEvictionRequested Backend::DeleteDoomedEntry(
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  auto result = DeleteDoomedEntryInternal(key, token, corruption_detected);
+  auto result = DeleteDoomedEntryInternal(token, corruption_detected);
   RecordTimeAndErrorResultHistogram("DeleteDoomedEntry", timer.Elapsed(),
                                     result, corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.DeleteDoomedEntry", "result",
@@ -930,8 +925,7 @@ ErrorAndEvictionRequested Backend::DeleteDoomedEntry(
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
-Error Backend::DeleteDoomedEntryInternal(const CacheEntryKey& key,
-                                         const base::UnguessableToken& token,
+Error Backend::DeleteDoomedEntryInternal(const base::UnguessableToken& token,
                                          bool& corruption_detected) {
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
@@ -944,9 +938,8 @@ Error Backend::DeleteDoomedEntryInternal(const CacheEntryKey& key,
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE,
         GetQuery(Query::kDeleteDoomedEntry_DeleteFromResources)));
-    statement.BindString(0, key.string());
-    statement.BindInt64(1, TokenHigh(token));
-    statement.BindInt64(2, TokenLow(token));
+    statement.BindInt64(0, TokenHigh(token));
+    statement.BindInt64(1, TokenLow(token));
     if (!statement.Run()) {
       return Error::kFailedToExecute;
     }
@@ -961,7 +954,7 @@ Error Backend::DeleteDoomedEntryInternal(const CacheEntryKey& key,
     corruption_detected = true;
   }
 
-  // If we didn't find any doomed entry matching the key and token, report it.
+  // If we didn't find any doomed entry matching the token, report it.
   if (deleted_count == 0) {
     return transaction.Commit() ? Error::kNotFound
                                 : Error::kFailedToCommitTransaction;
@@ -1383,9 +1376,8 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
     statement.BindTime(0, last_used);
     statement.BindInt64(1, header_size_delta);
     statement.BindBlob(2, buffer->span());
-    statement.BindString(3, key.string());
-    statement.BindInt64(4, TokenHigh(token));
-    statement.BindInt64(5, TokenLow(token));
+    statement.BindInt64(3, TokenHigh(token));
+    statement.BindInt64(4, TokenLow(token));
     if (statement.Step()) {
       const int64_t bytes_usage = statement.ColumnInt64(0);
       if (bytes_usage < static_cast<int64_t>(buffer->size()) +
@@ -1427,9 +1419,9 @@ ErrorAndEvictionRequested Backend::WriteEntryData(
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  auto result = WriteEntryDataInternal(key, token, old_body_end, offset,
-                                       std::move(buffer), buf_len, truncate,
-                                       corruption_detected);
+  auto result =
+      WriteEntryDataInternal(token, old_body_end, offset, std::move(buffer),
+                             buf_len, truncate, corruption_detected);
   RecordTimeAndErrorResultHistogram("WriteEntryData", timer.Elapsed(), result,
                                     corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.WriteEntryData", "result",
@@ -1441,8 +1433,7 @@ ErrorAndEvictionRequested Backend::WriteEntryData(
   return ErrorAndEvictionRequested(result, ShouldStartEviction());
 }
 
-Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
-                                      const base::UnguessableToken& token,
+Error Backend::WriteEntryDataInternal(const base::UnguessableToken& token,
                                       int64_t old_body_end,
                                       int64_t offset,
                                       scoped_refptr<net::IOBuffer> buffer,
@@ -1516,9 +1507,8 @@ Error Backend::WriteEntryDataInternal(const CacheEntryKey& key,
         SQL_FROM_HERE, GetQuery(Query::kWriteEntryData_UpdateResource)));
     statement.BindInt64(0, body_end_delta);
     statement.BindInt64(1, total_size_delta);
-    statement.BindString(2, key.string());
-    statement.BindInt64(3, TokenHigh(token));
-    statement.BindInt64(4, TokenLow(token));
+    statement.BindInt64(2, TokenHigh(token));
+    statement.BindInt64(3, TokenLow(token));
     if (statement.Step()) {
       // Consistency check: The `RETURNING` clause gives us the `body_end` value
       // after the update. If this doesn't match our calculated `new_body_end`,
