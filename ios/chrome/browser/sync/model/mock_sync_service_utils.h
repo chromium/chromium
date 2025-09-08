@@ -9,6 +9,6 @@
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // Returns a basic MockSyncService.
-std::unique_ptr<KeyedService> CreateMockSyncService(web::BrowserState* context);
+std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile);
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_MOCK_SYNC_SERVICE_UTILS_H_

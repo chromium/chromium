@@ -6,7 +6,6 @@
 
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
   return std::make_unique<testing::NiceMock<syncer::MockSyncService>>();
 }
