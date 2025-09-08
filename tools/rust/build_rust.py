@@ -395,12 +395,6 @@ class XPy:
             self._env['CFLAGS'] += f' {sysroot_cflag}'
             self._env['CXXFLAGS'] += f' {sysroot_cflag}'
             self._env['LDFLAGS'] += f' {sysroot_cflag}'
-            # TODO(https://crbug.com/395891130): remove
-            # C/CXXFLAGS_x86_64_unknown_linux_gnu workaround after upstream
-            # issue is properly fixed.
-            self._env['CFLAGS_x86_64_unknown_linux_gnu'] += f' {sysroot_cflag}'
-            self._env[
-                'CXXFLAGS_x86_64_unknown_linux_gnu'] += f' {sysroot_cflag}'
 
             self._env['RUSTFLAGS_BOOTSTRAP'] += f' -Clink-arg={sysroot_cflag}'
             self._env[
