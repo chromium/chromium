@@ -65,8 +65,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
 }
 
 std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* state) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(state);
+    ProfileIOS* profile) const {
   PrefService* pref_service = profile->GetPrefs();
 
   return std::make_unique<ShoppingService>(

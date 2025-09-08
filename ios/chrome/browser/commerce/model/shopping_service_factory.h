@@ -28,9 +28,9 @@ class ShoppingServiceFactory : public ProfileKeyedServiceFactoryIOS {
   ShoppingServiceFactory();
   ~ShoppingServiceFactory() override = default;
 
-  // BrowserContextKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* state) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace commerce

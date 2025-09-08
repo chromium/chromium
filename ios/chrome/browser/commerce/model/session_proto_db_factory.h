@@ -23,15 +23,15 @@ const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
 const char kParcelTrackingDBFolder[] = "parcel_tracking_db";
 
 template <typename T>
-std::unique_ptr<KeyedService> BuildSessionProtoDB(web::BrowserState* state) {
-  DCHECK(!state->IsOffTheRecord());
+std::unique_ptr<KeyedService> BuildSessionProtoDB(ProfileIOS* profile) {
+  DCHECK(!profile->IsOffTheRecord());
 
   if constexpr (std::is_base_of<
                     commerce_subscription_db::CommerceSubscriptionContentProto,
                     T>::value) {
     return std::make_unique<SessionProtoDB<T>>(
-        state->GetProtoDatabaseProvider(),
-        state->GetStatePath().AppendASCII(kCommerceSubscriptionDBFolder),
+        profile->GetProtoDatabaseProvider(),
+        profile->GetStatePath().AppendASCII(kCommerceSubscriptionDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE,
         web::GetUIThreadTaskRunner({}));
   }
@@ -39,8 +39,8 @@ std::unique_ptr<KeyedService> BuildSessionProtoDB(web::BrowserState* state) {
   if constexpr (std::is_base_of<parcel_tracking_db::ParcelTrackingContent,
                                 T>::value) {
     return std::make_unique<SessionProtoDB<T>>(
-        state->GetProtoDatabaseProvider(),
-        state->GetStatePath().AppendASCII(kParcelTrackingDBFolder),
+        profile->GetProtoDatabaseProvider(),
+        profile->GetStatePath().AppendASCII(kParcelTrackingDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_PARCEL_TRACKING_DATABASE,
         web::GetUIThreadTaskRunner({}));
   }
@@ -60,7 +60,7 @@ class SessionProtoDBFactory : public ProfileKeyedServiceFactoryIOS {
   static SessionProtoDBFactory<T>* GetInstance();
   static SessionProtoDB<T>* GetForProfile(ProfileIOS* profile);
 
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<SessionProtoDBFactory<T>>;
@@ -69,7 +69,7 @@ class SessionProtoDBFactory : public ProfileKeyedServiceFactoryIOS {
   ~SessionProtoDBFactory() override = default;
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* state) const override;
+      ProfileIOS* profile) const override;
 };
 
 // static
@@ -81,10 +81,9 @@ SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForProfile(
 }
 
 template <typename T>
-ProfileKeyedServiceFactoryIOS::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 SessionProtoDBFactory<T>::GetDefaultFactory() {
-  return base::BindRepeating(
-      &session_proto_db::internal::BuildSessionProtoDB<T>);
+  return base::BindOnce(&session_proto_db::internal::BuildSessionProtoDB<T>);
 }
 
 template <typename T>
@@ -93,8 +92,8 @@ SessionProtoDBFactory<T>::SessionProtoDBFactory()
 
 template <typename T>
 std::unique_ptr<KeyedService> SessionProtoDBFactory<T>::BuildServiceInstanceFor(
-    web::BrowserState* state) const {
-  return session_proto_db::internal::BuildSessionProtoDB<T>(state);
+    ProfileIOS* profile) const {
+  return session_proto_db::internal::BuildSessionProtoDB<T>(profile);
 }
 
 // Ensure all SessionProtoDB<T> factories are built for all values of T.
