@@ -9,8 +9,8 @@ source_set("timestamped_pref_value") {
   deps = [ "//base" ]
   if (is_android) {
     sources += [
-      "timestamped_pref_value/timestamped_pref_value_bridge_android.cc",
-      "timestamped_pref_value/timestamped_pref_value_bridge_android.h",
+      "timestamped_pref_value/android/timestamped_pref_value_bridge_android.cc",
+      "timestamped_pref_value/android/timestamped_pref_value_bridge_android.h",
     ]
     deps += [ "timestamped_pref_value/android:jni_headers" ]
   }

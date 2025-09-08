@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value/timestamped_pref_value_bridge_android.h"
+#include "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value/android/timestamped_pref_value_bridge_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
