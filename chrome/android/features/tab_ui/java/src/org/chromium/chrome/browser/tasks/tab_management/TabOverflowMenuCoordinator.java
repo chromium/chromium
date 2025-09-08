@@ -26,6 +26,7 @@ import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -140,6 +141,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
             mContext.registerComponentCallbacks(mComponentCallbacks);
 
             mContentView = LayoutInflater.from(mContext).inflate(menuLayout, null);
+            clipContentViewOutline();
 
             TouchTrackingListView touchTrackingListView =
                     mContentView.findViewById(R.id.tab_group_action_menu_list);
@@ -179,9 +181,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
             mMenuWindow.setVerticalOverlapAnchor(verticalOverlapAnchor);
             mMenuWindow.setPreferredHorizontalOrientation(horizontalOrientation);
             mMenuWindow.setElevation(
-                    mContentView
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.tab_overflow_menu_elevation));
+                    mContentView.getResources().getDimension(R.dimen.tab_overflow_menu_elevation));
             // Override animation style or animate from anchor as default.
             if (animStyle == Resources.ID_NULL) {
                 mMenuWindow.setAnimateFromAnchor(true);
@@ -230,6 +230,15 @@ public abstract class TabOverflowMenuCoordinator<T> {
             // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
             // with a stack trace showing the stack during LifetimeAssert.create().
             LifetimeAssert.destroy(mLifetimeAssert);
+        }
+
+        private void clipContentViewOutline() {
+            GradientDrawable outlineDrawable = new GradientDrawable();
+            outlineDrawable.setShape(GradientDrawable.RECTANGLE);
+            outlineDrawable.setCornerRadius(
+                    mContentView.getResources().getDimension(R.dimen.popup_bg_corner_radius_24dp));
+            mContentView.setBackground(outlineDrawable);
+            mContentView.setClipToOutline(true);
         }
     }
 
@@ -539,6 +548,11 @@ public abstract class TabOverflowMenuCoordinator<T> {
     public @Nullable ModelList getModelListForTesting() {
         if (mMenuHolder == null) return null;
         return mMenuHolder.mModelList;
+    }
+
+    public @Nullable View getContentViewForTesting() {
+        if (mMenuHolder == null) return null;
+        return mMenuHolder.getContentView();
     }
 
     /**
