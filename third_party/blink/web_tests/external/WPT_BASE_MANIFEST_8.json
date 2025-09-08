@@ -281363,6 +281363,19 @@
        {}
       ]
      ],
+     "scrollIntoView-should-treat-slot-as-scroll-container.html": [
+      "a5211cc1095b82101a22300bcf4d1d233ccdf41a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scrollTo-zoom.html": [
       "49ec49325034f9d2e10cf9b5f52add24bbcc57f6",
       [
@@ -421737,7 +421750,7 @@
      []
     ],
     "web-animations-2.idl": [
-     "af9f16bef359f63a2f411d47b60ecc4aa75f418e",
+     "f18cdd4f4583d959119a07e4248e94210fad1036",
      []
     ],
     "web-animations.idl": [
