@@ -84,7 +84,14 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile.
-- (void)testColdStartOpenStartSurface {
+// TODO(crbug.com/443695878): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testColdStartOpenStartSurface \
+  DISABLED_testColdStartOpenStartSurface
+#else
+#define MAYBE_testColdStartOpenStartSurface testColdStartOpenStartSurface
+#endif
+- (void)MAYBE_testColdStartOpenStartSurface {
 // TODO(crbug.com/40262902): Test is flaky on iPad device. Re-enable the test.
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -108,7 +115,14 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
 // Tests that navigating to a page and then backgrounding and foregrounding, an
 // NTP page is opened.
-- (void)testWarmStartOpenStartSurface {
+// TODO(crbug.com/443695878): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testWarmStartOpenStartSurface \
+  DISABLED_testWarmStartOpenStartSurface
+#else
+#define MAYBE_testWarmStartOpenStartSurface testWarmStartOpenStartSurface
+#endif
+- (void)MAYBE_testWarmStartOpenStartSurface {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
@@ -128,7 +142,15 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile. Then, removing that last tab
 // also removes the tile while that NTP is still being shown.
-- (void)testRemoveRecentTabRemovesReturnToRecentTabTile {
+// TODO(crbug.com/443695878): Test disabled on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRemoveRecentTabRemovesReturnToRecentTabTile \
+  DISABLED_testRemoveRecentTabRemovesReturnToRecentTabTile
+#else
+#define MAYBE_testRemoveRecentTabRemovesReturnToRecentTabTile \
+  testRemoveRecentTabRemovesReturnToRecentTabTile
+#endif
+- (void)MAYBE_testRemoveRecentTabRemovesReturnToRecentTabTile {
   // TODO(crbug.com/441260657): Re-enable the test on iOS26.
   if (base::ios::IsRunningOnIOS26OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
