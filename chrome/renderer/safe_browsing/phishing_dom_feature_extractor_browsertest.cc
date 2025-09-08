@@ -28,7 +28,7 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
-#include "ui/native_theme/native_theme_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 using blink::WebRuntimeFeatures;
 using ::testing::DoAll;
@@ -206,7 +206,7 @@ class PhishingDOMFeatureExtractorTest : public ChromeRenderViewTest {
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
     WebRuntimeFeatures::EnableOverlayScrollbars(
-        ui::IsOverlayScrollbarEnabled());
+        ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar());
     extractor_ = std::make_unique<TestPhishingDOMFeatureExtractor>();
   }
 

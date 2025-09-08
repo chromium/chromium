@@ -81,7 +81,6 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
 
   // Overlay scrollbar-related variables.
   int scrollbar_track_inset_ = 0;
-  bool is_fluent_overlay_scrollbar_enabled_ = false;
   WebThemeEngine::ScrollbarStyle style_;
 };
 

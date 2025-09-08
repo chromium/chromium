@@ -41,7 +41,7 @@ namespace ui {
 
 NativeThemeFluent::NativeThemeFluent(bool should_only_use_dark_colors)
     : NativeThemeBase(should_only_use_dark_colors) {
-  set_use_overlay_scrollbar(CalculateUseOverlayScrollbar());
+  set_use_overlay_scrollbar(IsFluentOverlayScrollbarEnabled());
   scrollbar_width_ = kScrollbarThickness;
 }
 
@@ -250,7 +250,7 @@ void NativeThemeFluent::PaintButton(
     outline_flags.setStyle(cc::PaintFlags::kStroke_Style);
     outline_flags.setStrokeWidth(kFluentScrollbarTrackOutlineWidth);
 
-    if (IsFluentOverlayScrollbarEnabled()) {
+    if (use_overlay_scrollbar()) {
       PaintRoundedButton(canvas, gfx::RectFToSkRect(outline_rect),
                          outline_flags, direction);
     } else {
@@ -262,7 +262,7 @@ void NativeThemeFluent::PaintButton(
     button_fill_rect.Inset(fill_insets + edge_insets);
   }
 
-  if (IsFluentOverlayScrollbarEnabled()) {
+  if (use_overlay_scrollbar()) {
     PaintRoundedButton(canvas, gfx::RectToSkRect(button_fill_rect), flags,
                        direction);
   } else {

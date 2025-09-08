@@ -219,7 +219,6 @@ TEST_P(OverlayScrollbarThemeFluentTest, OverlaySetsCorrectTrackAndInsetSize) {
   // Some OSes keep fluent scrollbars disabled even if the feature flag is set
   // to enable them.
   if (!ui::IsFluentScrollbarEnabled()) {
-    EXPECT_FALSE(theme_->UsesOverlayScrollbars());
     return;
   }
 

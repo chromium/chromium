@@ -593,9 +593,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   // Whether dark mode is forced via command-line flag.
   static bool IsForcedDarkMode();
 
-  // Calculates and returns the use overlay scrollbar setting.
-  static bool CalculateUseOverlayScrollbar();
-
  protected:
   explicit NativeTheme(
       bool should_only_use_dark_colors,

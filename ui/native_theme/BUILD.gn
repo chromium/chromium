@@ -18,8 +18,6 @@ component("native_theme") {
     "native_theme_fluent.h",
     "native_theme_observer.cc",
     "native_theme_observer.h",
-    "native_theme_utils.cc",
-    "native_theme_utils.h",
     "overlay_scrollbar_constants.cc",
     "overlay_scrollbar_constants.h",
   ]

@@ -304,14 +304,6 @@ gfx::Rect WebThemeEngineDefault::NinePatchAperture(Part part) const {
       NativeThemePart(part));
 }
 
-bool WebThemeEngineDefault::IsFluentScrollbarEnabled() const {
-  return ui::IsFluentScrollbarEnabled();
-}
-
-bool WebThemeEngineDefault::IsFluentOverlayScrollbarEnabled() const {
-  return ui::IsFluentOverlayScrollbarEnabled();
-}
-
 int WebThemeEngineDefault::GetPaintedScrollbarTrackInset() const {
   return ui::NativeTheme::GetInstanceForWeb()->GetPaintedScrollbarTrackInset();
 }

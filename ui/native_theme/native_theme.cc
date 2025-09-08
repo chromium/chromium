@@ -35,7 +35,6 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme_observer.h"
-#include "ui/native_theme/native_theme_utils.h"
 
 namespace ui {
 
@@ -252,15 +251,6 @@ NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
     const {
   return ShouldUseDarkColors() ? NativeTheme::PreferredColorScheme::kDark
                                : NativeTheme::PreferredColorScheme::kLight;
-}
-
-// static
-bool NativeTheme::CalculateUseOverlayScrollbar() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return true;
-#else
-  return IsOverlayScrollbarEnabledByFeatureFlag();
-#endif
 }
 
 std::optional<base::TimeDelta> NativeTheme::GetPlatformCaretBlinkInterval()

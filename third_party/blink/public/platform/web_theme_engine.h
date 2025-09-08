@@ -256,8 +256,6 @@ class WebThemeEngine {
     // NativeTheme so these fields are unused in non-Android WebThemeEngines.
   }
 
-  virtual bool IsFluentScrollbarEnabled() const { return false; }
-  virtual bool IsFluentOverlayScrollbarEnabled() const { return false; }
   virtual int GetPaintedScrollbarTrackInset() const { return 0; }
   virtual gfx::Insets GetScrollbarSolidColorThumbInsets(Part) const {
     return gfx::Insets();

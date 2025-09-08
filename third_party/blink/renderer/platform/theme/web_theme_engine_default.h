@@ -48,8 +48,6 @@ class WebThemeEngineDefault : public WebThemeEngine {
                                     int32_t vertical_arrow_bitmap_height,
                                     int32_t horizontal_arrow_bitmap_width);
 #endif
-  bool IsFluentScrollbarEnabled() const override;
-  bool IsFluentOverlayScrollbarEnabled() const override;
   int GetPaintedScrollbarTrackInset() const override;
 };
 

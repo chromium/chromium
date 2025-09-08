@@ -30,7 +30,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/native_theme/features/native_theme_features.h"
-#include "ui/native_theme/native_theme_utils.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/overlay_scrollbar_constants.h"
 
 namespace blink {
@@ -56,7 +56,7 @@ void InitializeScrollbarFadeAndDelay(cc::LayerTreeSettings& settings) {
   settings.scrollbar_fade_duration = base::Milliseconds(300);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (ui::IsOverlayScrollbarEnabled()) {
+  if (ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar()) {
     settings.idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
     settings.scrollbar_fade_delay = ui::GetOverlayScrollbarFadeDelay();
     settings.scrollbar_fade_duration = ui::GetOverlayScrollbarFadeDuration();
@@ -477,7 +477,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_fluent_overlay_scrollbar =
       ui::IsFluentOverlayScrollbarEnabled();
 
-  if (ui::IsOverlayScrollbarEnabled()) {
+  if (ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar()) {
     settings.scrollbar_animator = cc::LayerTreeSettings::AURA_OVERLAY;
     settings.scrollbar_thinning_duration =
         settings.enable_fluent_overlay_scrollbar

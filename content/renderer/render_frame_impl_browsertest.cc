@@ -73,7 +73,7 @@
 #include "ui/display/screen_info.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/native_theme/native_theme_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 using blink::WebURLRequest;
 
@@ -107,7 +107,7 @@ class RenderFrameImplTest : public RenderViewTest {
 
   void SetUp() override {
     blink::WebRuntimeFeatures::EnableOverlayScrollbars(
-        ui::IsOverlayScrollbarEnabled());
+        ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar());
     RenderViewTest::SetUp();
     EXPECT_TRUE(GetMainRenderFrame()->is_main_frame_);
 

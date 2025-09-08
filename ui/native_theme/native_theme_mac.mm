@@ -34,7 +34,6 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
-#include "ui/native_theme/native_theme_utils.h"
 
 namespace {
 
@@ -668,7 +667,7 @@ void NativeThemeMac::ConfigureWebInstance() {
 
 NativeThemeMacWeb::NativeThemeMacWeb()
     : NativeThemeAura(
-          /*use_overlay_scrollbars=*/CalculateUseOverlayScrollbar(),
+          /*use_overlay_scrollbars=*/false,
           /*should_only_use_dark_colors=*/false) {}
 
 // static

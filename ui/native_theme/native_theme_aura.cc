@@ -118,7 +118,11 @@ NativeThemeAura::~NativeThemeAura() = default;
 // static
 NativeThemeAura* NativeThemeAura::web_instance() {
   static base::NoDestructor<NativeThemeAura> s_native_theme_for_web(
-      /*use_overlay_scrollbars=*/CalculateUseOverlayScrollbar(),
+#if BUILDFLAG(IS_CHROMEOS)
+      true,
+#else
+      IsOverlayScrollbarEnabledByFeatureFlag(),
+#endif
       /*should_only_use_dark_colors=*/false);
   return s_native_theme_for_web.get();
 }
