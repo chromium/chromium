@@ -45,7 +45,6 @@ class GlicInstance : public GlicInstanceDelegate {
   };
 
   GlicInstance(Profile* profile,
-               BrowserWindowInterface* bwi,
                std::unique_ptr<Host> host,
                ConversationId conversation_id,
                base::WeakPtr<AttachmentDelegate> attachment_delegate);

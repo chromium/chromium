@@ -15,17 +15,16 @@
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace glic {
 
 GlicInstance::GlicInstance(
     Profile* profile,
-    BrowserWindowInterface* bwi,
     std::unique_ptr<Host> host,
     ConversationId conversation_id,
     base::WeakPtr<AttachmentDelegate> attachment_delegate)
     : profile_(profile),
-      associated_bwi_(bwi),
       attachment_delegate_(attachment_delegate),
       conversation_id_(conversation_id),
       host_(std::move(host)) {}
@@ -70,8 +69,8 @@ void GlicInstance::Show(tabs::TabInterface* tab) {
   if (!embedder_) {
     switch (embedder_type_) {
       case EmbedderType::kSidePanel:
-        CHECK(associated_bwi_);
-        embedder_ = std::make_unique<GlicSidePanelUi>(associated_bwi_, *this);
+        CHECK(tab);
+        embedder_ = std::make_unique<GlicSidePanelUi>(tab->GetWeakPtr(), *this);
         break;
       case EmbedderType::kFloating:
         embedder_ = std::make_unique<GlicFloatingUi>();
@@ -80,7 +79,7 @@ void GlicInstance::Show(tabs::TabInterface* tab) {
   }
   host_->Initialize(embedder_.get());
 
-  // Create the WebContents if it doesn't exist.
+  // Create the WebContents if it's not already created.
   host_->CreateContents(/*initially_hidden=*/false);
   host_->NotifyWindowIntentToShow();
 
@@ -108,10 +107,6 @@ void GlicInstance::Toggle() {
     // Show();
     NOTIMPLEMENTED();
   }
-}
-
-void GlicInstance::DisassociateWindow() {
-  associated_bwi_ = nullptr;
 }
 
 void GlicInstance::CloseInstanceAndShutdown() {

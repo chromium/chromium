@@ -12,12 +12,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace glic {
 
-GlicSidePanelUi::GlicSidePanelUi(BrowserWindowInterface* associated_bwi,
+GlicSidePanelUi::GlicSidePanelUi(base::WeakPtr<tabs::TabInterface> tab,
                                  GlicInstance& instance)
-    : associated_bwi_(associated_bwi), instance_(instance) {}
+    : tab_(tab), instance_(instance) {}
 GlicSidePanelUi::~GlicSidePanelUi() = default;
 
 const mojom::PanelState& GlicSidePanelUi::GetPanelState() const {
@@ -59,9 +60,11 @@ bool GlicSidePanelUi::IsShowing() const {
 }
 
 void GlicSidePanelUi::Show() {
-  CHECK(associated_bwi_);
+  if (!tab_) {
+    return;
+  }
   auto* side_panel_coordinator =
-      associated_bwi_->GetFeatures().side_panel_coordinator();
+      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
 }
 

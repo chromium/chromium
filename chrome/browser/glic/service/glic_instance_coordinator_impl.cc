@@ -389,7 +389,7 @@ GlicInstance* GlicInstanceCoordinatorImpl::CreateGlicInstance(
   // TODO: Sync this id with the web client.
   ConversationId new_conversation_id = base::Uuid::GenerateRandomV4();
   auto new_instance = std::make_unique<GlicInstance>(
-      profile_, bwi, CreateHost(), new_conversation_id,
+      profile_, CreateHost(), new_conversation_id,
       weak_ptr_factory_.GetWeakPtr());
   if (bwi) {
     browser_to_conversation_map_[bwi] = new_conversation_id;
