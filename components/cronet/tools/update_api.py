@@ -161,11 +161,13 @@ def main(args):
                       help='Path to API jar (i.e. cronet_api.jar)',
                       required=True,
                       metavar='path/to/cronet_api.jar')
-  parser.add_argument('--ignore_check_errors',
-                      help='If true, ignore errors from verification checks',
-                      required=False,
-                      default=False,
-                      action='store_true')
+  parser.add_argument(
+      '--allow_breaking_api_changes',
+      help=
+      'If true, allows changing the API surface in a non-backward compatible manner (e.g., deleting existing APIs)',
+      required=False,
+      default=False,
+      action='store_true')
   opts = parser.parse_args(args)
 
   if check_up_to_date(opts.api_jar):
@@ -173,7 +175,8 @@ def main(args):
 
   with tempfile.NamedTemporaryFile() as temp:
     _generate_api(opts.api_jar, temp.name)
-    if _check_api_update(API_FILENAME, temp.name):
+    if opts.allow_breaking_api_changes or _check_api_update(
+        API_FILENAME, temp.name):
       # Update API version number to new version number
       with open(API_VERSION_FILENAME, 'r+') as f:
         version = int(f.read())
