@@ -65,7 +65,7 @@ public class AutocompleteCoordinator
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileChangeCallback;
     private final AutocompleteMediator mMediator;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final OmniboxSuggestionsDropdownAdapter mAdapter;
     private final Optional<PreWarmingRecycledViewPool> mRecycledViewPool;
     private @Nullable OmniboxSuggestionsContainer mContainer;
@@ -87,9 +87,9 @@ public class AutocompleteCoordinator
             AutocompleteDelegate delegate,
             OmniboxSuggestionsDropdownEmbedder dropdownEmbedder,
             UrlBarEditingTextStateProvider urlBarEditingTextProvider,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Supplier<@Nullable Tab> activityTabSupplier,
-            Supplier<ShareDelegate> shareDelegateSupplier,
+            @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
             LocationBarDataProvider locationBarDataProvider,
             ObservableSupplier<Profile> profileObservableSupplier,
             Callback<Tab> bringToForegroundCallback,
@@ -467,7 +467,7 @@ public class AutocompleteCoordinator
         return mMediator.getSuggestionModelListForTest();
     }
 
-    public ModalDialogManager getModalDialogManagerForTest() {
+    public @Nullable ModalDialogManager getModalDialogManagerForTest() {
         return mModalDialogManagerSupplier.get();
     }
 

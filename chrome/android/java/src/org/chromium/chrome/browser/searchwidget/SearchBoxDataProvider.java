@@ -149,7 +149,7 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
         mPageClassification = pageClassification;
     }
 
-    void setCurrentUrl(GURL url) {
+    void setCurrentUrl(@Nullable GURL url) {
         mGurl = url;
     }
 

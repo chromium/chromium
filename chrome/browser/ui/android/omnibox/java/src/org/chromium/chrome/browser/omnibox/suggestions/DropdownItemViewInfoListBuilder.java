@@ -167,7 +167,7 @@ class DropdownItemViewInfoListBuilder {
      *
      * @param shareDelegateSupplier Share facility supplier.
      */
-    void setShareDelegateSupplier(Supplier<ShareDelegate> shareDelegateSupplier) {
+    void setShareDelegateSupplier(@Nullable Supplier<ShareDelegate> shareDelegateSupplier) {
         mShareDelegateSupplier = shareDelegateSupplier;
     }
 

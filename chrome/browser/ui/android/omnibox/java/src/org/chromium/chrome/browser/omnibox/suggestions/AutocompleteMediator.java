@@ -101,7 +101,7 @@ class AutocompleteMediator
     private final ModelList mSuggestionModels;
     private final Handler mHandler;
     private final LocationBarDataProvider mDataProvider;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final DropdownItemViewInfoListBuilder mDropdownViewInfoListBuilder;
     private final DropdownItemViewInfoListManager mDropdownViewInfoListManager;
     private final Callback<Tab> mBringTabToFrontCallback;
@@ -183,9 +183,9 @@ class AutocompleteMediator
             UrlBarEditingTextStateProvider textProvider,
             PropertyModel listPropertyModel,
             Handler handler,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Supplier<@Nullable Tab> activityTabSupplier,
-            Supplier<ShareDelegate> shareDelegateSupplier,
+            @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
             LocationBarDataProvider locationBarDataProvider,
             Callback<Tab> bringTabToFrontCallback,
             Callback<String> bringTabGroupToFrontCallback,
@@ -818,7 +818,7 @@ class AutocompleteMediator
      */
     private void dismissDeleteDialog(@DialogDismissalCause int cause) {
         var manager = mModalDialogManagerSupplier.get();
-        mDeleteDialogModel.ifPresent(model -> manager.dismissDialog(model, cause));
+        mDeleteDialogModel.ifPresent(model -> assumeNonNull(manager).dismissDialog(model, cause));
     }
 
     /**

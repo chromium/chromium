@@ -27,6 +27,7 @@ import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -843,6 +844,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      * Extending classes should implement this, inflate the layout, set the content view and then
      * call {@link #onInitialLayoutInflationComplete}.
      */
+    @Initializer
     protected abstract void triggerLayoutInflation();
 
     /**
