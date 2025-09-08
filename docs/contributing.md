@@ -379,7 +379,8 @@ When a new patch set is uploaded, approvals may be removed (in order to prevent
 someone from landing significantly different unreviewed code after getting
 approval in a previous patch set).
 
-Approvals may be copied between patch sets in some situations.
+Approvals may be copied between patch sets in some situations. These can also
+be referred to as "sticky" votes or approvals.
 * Code-Review approvals will be copied between patch sets if:
   * It is a trivial rebase (as detected by Gerrit),
   * It is a commit message change, or
