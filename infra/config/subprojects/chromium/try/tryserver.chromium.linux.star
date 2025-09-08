@@ -241,14 +241,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-blink-wpt-3pcd-fyi-rel",
-    mirrors = ["ci/linux-blink-wpt-3pcd-fyi-rel"],
-    gn_args = "ci/linux-blink-wpt-3pcd-fyi-rel",
-    contact_team_email = "potassium-engprod-team@twosync.google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "linux-centipede-asan-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
