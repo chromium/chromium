@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <CoreText/CoreText.h>

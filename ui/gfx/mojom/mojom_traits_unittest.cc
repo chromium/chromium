@@ -23,7 +23,7 @@
 #include "ui/gfx/mojom/presentation_feedback.mojom.h"
 #include "ui/gfx/mojom/presentation_feedback_mojom_traits.h"
 #include "ui/gfx/mojom/traits_test_service.mojom.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/selection_bound.h"
 
 #if BUILDFLAG(IS_FUCHSIA)

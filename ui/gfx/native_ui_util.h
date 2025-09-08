@@ -6,7 +6,7 @@
 #define UI_GFX_NATIVE_UI_UTIL_H_
 
 #include "base/component_export.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 

@@ -29,7 +29,7 @@
 #include "base/memory/scoped_policy.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_MAC)
 typedef struct CGColorSpace* CGColorSpaceRef;
