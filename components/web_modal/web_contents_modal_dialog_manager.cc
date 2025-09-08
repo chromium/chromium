@@ -27,12 +27,7 @@ WebContentsModalDialogManager::~WebContentsModalDialogManager() {
 void WebContentsModalDialogManager::SetDelegate(
     WebContentsModalDialogManagerDelegate* d) {
   delegate_ = d;
-
-  for (const auto& dialog : child_dialogs_) {
-    // Delegate can be null on Views/Win32 during tab drag.
-    dialog.manager->HostChanged(
-        d ? d->GetWebContentsModalDialogHost(web_contents()) : nullptr);
-  }
+  UpdateDialogHost();
 }
 
 // TODO(gbillock): Maybe "ShowBubbleWithManager"?
@@ -59,6 +54,15 @@ bool WebContentsModalDialogManager::IsDialogActive() const {
 void WebContentsModalDialogManager::FocusTopmostDialog() const {
   DCHECK(!child_dialogs_.empty());
   child_dialogs_.front().manager->Focus();
+}
+
+void WebContentsModalDialogManager::UpdateDialogHost() {
+  for (const auto& dialog : child_dialogs_) {
+    // Delegate can be null on Views/Win32 during tab drag.
+    dialog.manager->HostChanged(
+        delegate_ ? delegate_->GetWebContentsModalDialogHost(web_contents())
+                  : nullptr);
+  }
 }
 
 void WebContentsModalDialogManager::AddObserver(Observer* observer) {

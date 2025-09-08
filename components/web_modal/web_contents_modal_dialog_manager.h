@@ -70,6 +70,9 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   // this function.
   void FocusTopmostDialog() const;
 
+  // Updates all child dialog's position to use the latest delegate host.
+  void UpdateDialogHost();
+
   // Manages observer for when dialogs are closed as a result of page
   // navigation.
   void AddObserver(Observer* observer);
