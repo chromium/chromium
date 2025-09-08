@@ -192,6 +192,8 @@ void ActorKeyedService::RequestTabObservation(
           /* on_critical_path =*/true);
   page_content_annotations::FetchPageContext(
       *tab.GetContents(), options,
+      CreateActorJournalFetchPageProgressListener(journal_.GetSafeRef(),
+                                                  last_committed_url, task_id),
       base::BindOnce(
           [](base::WeakPtr<tabs::TabInterface> tab,
              base::OnceCallback<void(TabObservationResult)> callback,

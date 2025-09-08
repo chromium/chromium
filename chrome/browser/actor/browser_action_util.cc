@@ -483,6 +483,43 @@ std::unique_ptr<ToolRequest> CreateScriptToolRequest(
       action.tool_name(), action.input_arguments());
 }
 
+class ActorJournalFetchPageProgressListener
+    : public page_content_annotations::FetchPageProgressListener {
+ public:
+  ActorJournalFetchPageProgressListener(
+      base::SafeRef<AggregatedJournal> journal,
+      const GURL& url,
+      TaskId task_id)
+      : journal_(journal), url_(url), task_id_(task_id) {}
+
+  ~ActorJournalFetchPageProgressListener() override = default;
+
+  void BeginScreenshot() override {
+    screenshot_entry_ = journal_->CreatePendingAsyncEntry(
+        url_, task_id_, mojom::JournalTrack::kActor, "GrabScreenshot", "");
+  }
+
+  void EndScreenshot(std::optional<std::string> error) override {
+    screenshot_entry_->EndEntry(error.value_or(""));
+  }
+
+  void BeginAPC() override {
+    apc_entry_ = journal_->CreatePendingAsyncEntry(
+        url_, task_id_, mojom::JournalTrack::kActor, "GrabAPC", "");
+  }
+
+  void EndAPC(std::optional<std::string> error) override {
+    apc_entry_->EndEntry(error.value_or(""));
+  }
+
+ private:
+  base::SafeRef<AggregatedJournal> journal_;
+  GURL url_;
+  TaskId task_id_;
+  std::unique_ptr<AggregatedJournal::PendingAsyncEntry> screenshot_entry_;
+  std::unique_ptr<AggregatedJournal::PendingAsyncEntry> apc_entry_;
+};
+
 }  // namespace
 
 std::unique_ptr<ToolRequest> CreateToolRequest(
@@ -862,6 +899,15 @@ std::string ToBase64(const optimization_guide::proto::Actions& actions) {
   std::vector<uint8_t> buffer(size);
   actions.SerializeToArray(buffer.data(), size);
   return base::Base64Encode(buffer);
+}
+
+std::unique_ptr<page_content_annotations::FetchPageProgressListener>
+CreateActorJournalFetchPageProgressListener(
+    base::SafeRef<AggregatedJournal> journal,
+    const GURL& url,
+    TaskId task_id) {
+  return std::make_unique<ActorJournalFetchPageProgressListener>(journal, url,
+                                                                 task_id);
 }
 
 }  // namespace actor

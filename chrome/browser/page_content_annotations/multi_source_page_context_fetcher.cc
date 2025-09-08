@@ -170,7 +170,9 @@ void RecordPdfRequestState(bool is_pdf_document, bool pdf_found) {
 // Coordinates fetching multiple types of page context.
 class PageContextFetcher : public content::WebContentsObserver {
  public:
-  PageContextFetcher() = default;
+  PageContextFetcher(
+      std::unique_ptr<FetchPageProgressListener> progress_listener)
+      : progress_listener_(std::move(progress_listener)) {}
   ~PageContextFetcher() override = default;
 
   void FetchStart(content::WebContents& aweb_contents,
@@ -230,6 +232,9 @@ class PageContextFetcher : public content::WebContentsObserver {
       blink::mojom::AIPageContentOptionsPtr ai_page_content_options =
           options.annotated_page_content_options.Clone();
       ai_page_content_options->on_critical_path = true;
+      if (progress_listener_) {
+        progress_listener_->BeginAPC();
+      }
       optimization_guide::GetAIPageContent(
           web_contents(), std::move(ai_page_content_options),
           base::BindOnce(&PageContextFetcher::ReceivedAnnotatedPageContent,
@@ -269,9 +274,12 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   void GetTabScreenshot(content::WebContents& web_contents) {
     auto* view = web_contents.GetRenderWidgetHostView();
+    if (progress_listener_) {
+      progress_listener_->BeginScreenshot();
+    }
 
     if (!view || !view->IsSurfaceAvailableForCopy()) {
-      RecievedJpegScreenshot(
+      ReceivedJpegScreenshot(
           base::unexpected("Could not retrieve RenderWidgetHostView."));
       return;
     }
@@ -283,7 +291,7 @@ class PageContextFetcher : public content::WebContentsObserver {
           PageContentScreenshotServiceFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents.GetBrowserContext()));
       if (!service) {
-        RecievedJpegScreenshot(
+        ReceivedJpegScreenshot(
             base::unexpected("Could not get PageContentScreenshotService."));
         return;
       }
@@ -291,7 +299,7 @@ class PageContextFetcher : public content::WebContentsObserver {
       ASSIGN_OR_RETURN(
           paint_preview::RedactionParams redaction_params,
           GetRedactionParams(web_contents), [&](std::string error) {
-            RecievedJpegScreenshot(base::unexpected(std::move(error)));
+            ReceivedJpegScreenshot(base::unexpected(std::move(error)));
             return;
           });
 
@@ -344,7 +352,7 @@ class PageContextFetcher : public content::WebContentsObserver {
     // long. b/431837630.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&PageContextFetcher::RecievedJpegScreenshot,
+        base::BindOnce(&PageContextFetcher::ReceivedJpegScreenshot,
                        GetWeakPtr(), base::unexpected("ScreenshotTimeout")),
         kScreenshotTimeout.Get());
   }
@@ -384,10 +392,10 @@ class PageContextFetcher : public content::WebContentsObserver {
               EmitTimingHistogram<std::vector<uint8_t>, std::string>,
               "Glic.PageContextFetcher.GetEncodedScreenshot.TimeoutAgnostic",
               elapsed_timer_.start_time())
-              .Then(base::BindOnce(&PageContextFetcher::RecievedJpegScreenshot,
+              .Then(base::BindOnce(&PageContextFetcher::ReceivedJpegScreenshot,
                                    GetWeakPtr())));
     } else {
-      RecievedJpegScreenshot(base::unexpected(bitmap_result.error()));
+      ReceivedJpegScreenshot(base::unexpected(bitmap_result.error()));
     }
   }
 
@@ -397,7 +405,7 @@ class PageContextFetcher : public content::WebContentsObserver {
     RunCallbackIfComplete();
   }
 
-  void RecievedJpegScreenshot(
+  void ReceivedJpegScreenshot(
       base::expected<std::vector<uint8_t>, std::string> screenshot_jpeg_data) {
     // This function can be called multiple times, for timeout behavior. Early
     // exit if it's already been called.
@@ -412,11 +420,17 @@ class PageContextFetcher : public content::WebContentsObserver {
           std::move(screenshot_jpeg_data.value());
       base::UmaHistogramTimes("Glic.PageContextFetcher.GetEncodedScreenshot",
                               elapsed);
+      if (progress_listener_) {
+        progress_listener_->EndScreenshot(std::nullopt);
+      }
     } else {
       pending_result_->screenshot_result =
           base::unexpected(screenshot_jpeg_data.error());
       base::UmaHistogramTimes(
           "Glic.PageContextFetcher.GetEncodedScreenshot.Failure", elapsed);
+      if (progress_listener_) {
+        progress_listener_->EndScreenshot(screenshot_jpeg_data.error());
+      }
     }
     if (pending_result_->screenshot_result.has_value()) {
       pending_result_->screenshot_result.value().end_time =
@@ -448,13 +462,22 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   void ReceivedAnnotatedPageContent(
       std::optional<optimization_guide::AIPageContentResult> content) {
-    if (content.has_value()) {
+    const bool has_result = content.has_value();
+    if (has_result) {
       pending_result_->annotated_page_content_result.emplace(
           std::move(*content));
     }
     annotated_page_content_done_ = true;
     base::UmaHistogramTimes("Glic.PageContextFetcher.GetAnnotatedPageContent",
                             elapsed_timer_.Elapsed());
+    if (progress_listener_) {
+      if (has_result) {
+        progress_listener_->EndAPC(std::nullopt);
+      } else {
+        progress_listener_->EndAPC("Error");
+      }
+    }
+
     RunCallbackIfComplete();
   }
 
@@ -505,6 +528,8 @@ class PageContextFetcher : public content::WebContentsObserver {
   std::unique_ptr<FetchPageContextResult> pending_result_;
   base::ElapsedTimer elapsed_timer_;
   base::ScopedClosureRunner capture_count_lock_;
+
+  std::unique_ptr<FetchPageProgressListener> progress_listener_;
 
   base::WeakPtrFactory<PageContextFetcher> weak_ptr_factory_{this};
 };
@@ -592,11 +617,14 @@ PageContentResultWithEndTime::PageContentResultWithEndTime(
     : optimization_guide::AIPageContentResult(std::move(result)),
       end_time(base::TimeTicks::Now()) {}
 
-void FetchPageContext(content::WebContents& web_contents,
-                      const FetchPageContextOptions& options,
-                      FetchPageContextResultCallback callback) {
+void FetchPageContext(
+    content::WebContents& web_contents,
+    const FetchPageContextOptions& options,
+    std::unique_ptr<FetchPageProgressListener> progress_listener,
+    FetchPageContextResultCallback callback) {
   CHECK(callback);
-  auto self = std::make_unique<PageContextFetcher>();
+  auto self =
+      std::make_unique<PageContextFetcher>(std::move(progress_listener));
   auto* raw_self = self.get();
   raw_self->FetchStart(web_contents, options,
                        base::BindOnce(

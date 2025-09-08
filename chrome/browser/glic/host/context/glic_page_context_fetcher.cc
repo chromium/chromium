@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/media/glic_media_integration.h"
@@ -154,11 +155,16 @@ void FetchPageContext(
   auto* web_contents = tab->GetContents();
 
   std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry;
+  std::unique_ptr<page_content_annotations::FetchPageProgressListener>
+      progress_listener;
   if (auto* actor_keyed_service =
           actor::ActorKeyedService::Get(web_contents->GetBrowserContext())) {
+    const GURL& url = web_contents->GetLastCommittedURL();
     journal_entry = actor_keyed_service->GetJournal().CreatePendingAsyncEntry(
-        web_contents->GetLastCommittedURL(), actor::TaskId(),
-        actor::mojom::JournalTrack::kActor, "GlicFetchPageContext", "");
+        url, actor::TaskId(), actor::mojom::JournalTrack::kActor,
+        "GlicFetchPageContext", "");
+    progress_listener = actor::CreateActorJournalFetchPageProgressListener(
+        actor_keyed_service->GetJournal().GetSafeRef(), url, actor::TaskId());
   }
 
   page_content_annotations::FetchPageContextOptions options;
@@ -194,7 +200,7 @@ void FetchPageContext(
   }
 
   page_content_annotations::FetchPageContext(
-      *web_contents, options,
+      *web_contents, options, std::move(progress_listener),
       base::BindOnce(
           &HandleFetchPageResult, tab->GetWeakPtr(),
           CreateTabData(web_contents),

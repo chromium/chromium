@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_P(
 
   FetchPageContextOptions options;
   options.include_viewport_screenshot = true;
-  FetchPageContext(*web_contents(), options, future.GetCallback());
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
                        future.Take());
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
   options.include_viewport_screenshot = true;
-  FetchPageContext(*web_contents(), options, future.GetCallback());
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
                        future.Take());
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
   options.include_viewport_screenshot = true;
-  FetchPageContext(*web_contents(), options, future.GetCallback());
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
                        future.Take());
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(RedactingMultiSourcePageContextFetcherBrowserTest,
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
   options.include_viewport_screenshot = true;
-  FetchPageContext(*web_contents(), options, future.GetCallback());
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
 
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
                        future.Take());

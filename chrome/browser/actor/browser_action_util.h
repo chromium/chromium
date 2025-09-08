@@ -8,8 +8,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/safe_ref.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -123,6 +125,13 @@ void CopyScriptToolResults(
     }
   }
 }
+
+// Creates a FetchPageProgressListener that logs events to the journal.
+std::unique_ptr<page_content_annotations::FetchPageProgressListener>
+CreateActorJournalFetchPageProgressListener(
+    base::SafeRef<AggregatedJournal> journal,
+    const GURL& url,
+    TaskId task_id);
 
 std::string ToBase64(const optimization_guide::proto::BrowserAction& actions);
 std::string ToBase64(const optimization_guide::proto::Actions& actions);
