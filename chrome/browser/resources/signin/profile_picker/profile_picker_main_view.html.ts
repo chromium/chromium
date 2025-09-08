@@ -58,7 +58,7 @@ ${function() {
       @click="${this.onLaunchGuestProfileClick_}"
       ?hidden="${!this.guestModeEnabled_}"
       ?disabled="${this.pickerButtonsDisabled_}">
-    <cr-icon icon="profiles:account-circle" slot="prefix-icon"></cr-icon>
+    <cr-icon icon="profiles:account-box" slot="prefix-icon"></cr-icon>
     $i18n{browseAsGuestButton}
   </cr-button>
   <cr-checkbox id="askOnStartup" ?checked="${this.askOnStartup_}"

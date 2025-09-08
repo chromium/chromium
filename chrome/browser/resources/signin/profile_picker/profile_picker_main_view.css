@@ -144,8 +144,8 @@ cr-icon[icon='profiles:add'] {
 
 #browseAsGuestButton > cr-icon {
   margin-inline-end: 0;
-  --iron-icon-height: 24px;
-  --iron-icon-width: 24px;
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
 }
 
 cr-checkbox {
