@@ -82,9 +82,9 @@ def _GenerateValueList(histograms, tag, allow_list_name):
     raise Error("AllowListName is missing in variants list")
 
   if tag == "variant":
-    return [value["name"] for value in values[allow_list_name]]
-  else:
-    return list(values[allow_list_name]["values"].keys())
+    return [value.get("name") for value in values[allow_list_name]]
+
+  return [b.get('key') for b in values[allow_list_name].get('buckets', [{}])]
 
 
 def _GenerateFile(arguments):
@@ -114,8 +114,7 @@ def _GenerateFile(arguments):
 def _ParseArguments():
   """Defines and parses arguments from the command line."""
   arg_parser = argparse.ArgumentParser(
-      description="Generate an array of allowlist from a histograms.xml file."
-  )
+      description="Generate an array of allowlist from a histograms.xml file.")
   arg_parser.add_argument("--output_dir",
                           required=True,
                           help="Base directory to for generated files.")
