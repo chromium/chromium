@@ -8,11 +8,11 @@ This is a testharness.js-based test.
 [FAIL] [required] dequantizeLinear uint8 1D constant tensor with negative float32 1D scale
   assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -1084 should be close enough to expected -1083.798828125 by ULP distance: expected a number less than or equal to 1n but got 1648n
 [FAIL] [required] dequantizeLinear uint8 1D constant tensor with float32 1D scale, implicit block_size = 2
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -1084 should be close enough to expected -1083.798828125 by ULP distance: expected a number less than or equal to 1n but got 1648n
 [FAIL] [required] dequantizeLinear int8 4D constant tensor broadcasting float32 4D scale and int8 4D zeroPoint
   assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -38.09375 should be close enough to expected -38.08934783935547 by ULP distance: expected a number less than or equal to 1n but got 1154n
 [FAIL] [required] dequantizeLinear int8 2D constant tensor with float32 2D scale, block_size = [3, 2]
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -35 should be close enough to expected -35.00859069824219 by ULP distance: expected a number less than or equal to 1n but got 2252n
 [FAIL] [optional] dequantizeLinear int4 1D tensor of even size with float32 1D scale
   assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -8.9609375 should be close enough to expected -8.962198257446289 by ULP distance: expected a number less than or equal to 1n but got 1322n
 [FAIL] [optional] dequantizeLinear int4 1D tensor of odd size with float32 1D scale
@@ -27,10 +27,6 @@ This is a testharness.js-based test.
   assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float16 actual -972 should be close enough to expected -29.125 by ULP distance: expected a number less than or equal to 1 but got 5200
 [FAIL] [optional] dequantizeLinear uint8 1D constant tensor with negative float16 1D scale
   assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float16 actual -972 should be close enough to expected -29.125 by ULP distance: expected a number less than or equal to 1 but got 5200
-[FAIL] [optional] dequantizeLinear uint8 1D constant tensor with float16 1D scale, implicit block_size = 2
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
-[FAIL] [optional] dequantizeLinear int8 2D constant tensor with float16 2D scale, block_size = [3, 2]
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
 [FAIL] [optional] dequantizeLinear int32 1D tensor with float16 1D scale
   assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float16 actual Infinity should be close enough to expected 18336 by ULP distance: expected a number less than or equal to 1 but got 1926
 [FAIL] [optional] quantizeLinear then dequantizeLinear with different float16 scale and int8 zeroPoint

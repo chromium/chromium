@@ -25,6 +25,4 @@ virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pow.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/quantizeLinear.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_l2.https.any.html?gpu [ Failure ]
-virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reshape.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/softsign.https.any.html?gpu [ Failure ]
-virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/tan.https.any.html?gpu [ Failure ]
