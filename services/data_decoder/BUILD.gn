@@ -75,7 +75,6 @@ source_set("tests") {
     "cbor_parser_unittest.cc",
     "gzipper_unittest.cc",
     "public/cpp/data_decoder_unittest.cc",
-    "public/cpp/json_sanitizer_unittest.cc",
     "public/cpp/safe_web_bundle_parser_unittest.cc",
     "public/cpp/safe_xml_parser_unittest.cc",
     "xml_parser_unittest.cc",
@@ -120,22 +119,6 @@ source_set("tests") {
     ]
     data_deps = [ "//tools/v8_context_snapshot" ]
     configs += [ "//v8:external_startup_data" ]
-  }
-}
-
-if (use_blink) {
-  test("json_sanitizer_fuzztests") {
-    sources = [ "public/cpp/json_sanitizer_fuzztests.cc" ]
-
-    fuzztests =
-        [ "JsonSanitizerFuzzTest.SanitizerAndBaseJsonReaderDecoderMatch" ]
-
-    deps = [
-      "//base",
-      "//base/test:test_support",
-      "//services/data_decoder/public/cpp",
-      "//third_party/fuzztest:fuzztest_gtest_main",
-    ]
   }
 }
 

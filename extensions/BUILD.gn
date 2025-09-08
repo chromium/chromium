@@ -315,7 +315,6 @@ test("extensions_unittests") {
     deps += [
       "//content/public/android:content_full_java",
       "//gin:v8_snapshot_assets",
-      "//services/data_decoder/public/cpp/android:safe_json_java",
       "//ui/android:ui_full_java",
     ]
   }

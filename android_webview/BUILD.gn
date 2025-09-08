@@ -676,7 +676,6 @@ if (_is_default_toolchain) {
       "//mojo/public/java:system_java",
       "//mojo/public/java/system:system_impl_java",
       "//net/android:net_java",
-      "//services/data_decoder/public/cpp/android:safe_json_java",
       "//services/network/public/mojom:mojom_java",
       "//services/network/public/mojom:url_loader_base_java",
       "//services/service_manager/public/java:service_manager_java",

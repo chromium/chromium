@@ -711,7 +711,6 @@ test("components_unittests") {
       "//content/public/browser",
       "//gin:v8_snapshot_assets",
       "//net",
-      "//services/data_decoder/public/cpp/android:safe_json_java",
       "//ui/android:ui_java",
       "//ui/base",
       "//ui/gfx",
