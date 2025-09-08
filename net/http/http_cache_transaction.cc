@@ -1196,8 +1196,14 @@ int HttpCache::Transaction::DoOpenOrCreateEntry() {
       cache_->GetCurrentBackend()->GetEntryInMemoryData(cache_key_);
   bool entry_not_suitable = false;
   if (MaybeRejectBasedOnEntryInMemoryData(in_memory_info)) {
-    cache_->GetCurrentBackend()->DoomEntry(cache_key_, priority_,
-                                           base::DoNothing());
+    // If the URL was rewritten by the NoVarySearchCache we may want to use it
+    // again. The transaction will be restarted with the unmodified URL, so we
+    // don't need to delete the entry for correctness.
+    if (!(features::kHttpCacheNoVarySearchKeepNotSuitable.Get() &&
+          IsUsingURLFromNoVarySearchCache())) {
+      cache_->GetCurrentBackend()->DoomEntry(cache_key_, priority_,
+                                             base::DoNothing());
+    }
     entry_not_suitable = true;
     // Documents the case this applies in
     DCHECK_EQ(mode_, READ_WRITE);
@@ -1311,11 +1317,16 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
   // This handles the case where opening the disk cache entry failed, or it was
   // found to be unusable due to in-memory flags.
   if (IsUsingURLFromNoVarySearchCache()) {
-    return RestartWithoutNoVarySearchCache(
-        RestartCacheEntryAction::kErase,
-        result == ERR_CACHE_ENTRY_NOT_SUITABLE
-            ? NoVarySearchUseResult::kNotSuitable
-            : NoVarySearchUseResult::kNotOpenable);
+    if (result == ERR_CACHE_ENTRY_NOT_SUITABLE) {
+      return RestartWithoutNoVarySearchCache(
+          features::kHttpCacheNoVarySearchKeepNotSuitable.Get()
+              ? RestartCacheEntryAction::kDontErase
+              : RestartCacheEntryAction::kErase,
+          NoVarySearchUseResult::kNotSuitable);
+    }
+
+    return RestartWithoutNoVarySearchCache(RestartCacheEntryAction::kErase,
+                                           NoVarySearchUseResult::kNotOpenable);
   }
 
   if (ShouldOpenOnlyMethods() || result == ERR_CACHE_ENTRY_NOT_SUITABLE) {
