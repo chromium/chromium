@@ -1,0 +1,51 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// This file should not be changed upstream.
+//
+// This file provides a way for downstream forks to customize
+// _api_features.json. Downstream forks are able to modify
+// this file to add new extension API feature or modify existing ones.
+//
+// See chrome/common/extensions/api/_features.md to understand this file.
+//
+// Examples:
+//
+// Adding a new feature:
+//   "myCoolFeature": {
+//     "dependencies": ["permission:myCoolFeature"],
+//     "contexts": ["privileged_extension"]
+//   }
+//
+// Modifying an existing feature that was only available on chromeos:
+//   "existingFeature": {
+//     "channel": "stable",
+//     "contexts": ["webui"],
+//     "platforms": ["chromeos", "linux", "mac", "win"]
+//     ]
+//   }
+//
+// Making an existing simple feature a complex feature:
+//   "existingFeature": {
+//     "dependencies": ["permission:existingFeature"],
+//     "contexts": ["privileged_extension"]
+//    }
+// becomes:
+//   "existingFeature": [{
+//     "dependencies": ["permission:existingFeature"],
+//     "contexts": ["privileged_extension"]
+//   }, {
+//     "dependencies": ["permission:otherPermission"],
+//     "contexts": ["privileged_extension", "unprivileged_extension"]
+//   }]
+//
+// Modifying an existing feature so that it's not available in
+// official channels:
+//   "existingFeature": {
+//     "channel": "trunk",
+//   }
+
+{
+  // Entries go here.
+}

@@ -89,6 +89,7 @@ json_features("api_features") {
   feature_type = "APIFeature"
   method_name = "AddChromeAPIFeatures"
   sources = [ "_api_features.json" ]
+  inputs = [ "_api_features.override.json" ]
   visibility = [ ":extensions_features" ]
 }
 
@@ -96,6 +97,7 @@ json_features("permission_features") {
   feature_type = "PermissionFeature"
   method_name = "AddChromePermissionFeatures"
   sources = [ "_permission_features.json" ]
+  inputs = [ "_permission_features.override.json" ]
   visibility = [ ":extensions_features" ]
 }
 
@@ -103,5 +105,6 @@ json_features("manifest_features") {
   feature_type = "ManifestFeature"
   method_name = "AddChromeManifestFeatures"
   sources = [ "_manifest_features.json" ]
+  inputs = [ "_manifest_features.override.json" ]
   visibility = [ ":extensions_features" ]
 }

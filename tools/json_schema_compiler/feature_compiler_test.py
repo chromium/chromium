@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
+
 import copy
 import feature_compiler
 import unittest
@@ -547,6 +549,27 @@ class FeatureCompilerTest(unittest.TestCase):
     provider->AddFeature("feature_cups", feature);
     #endif
   }''')
+
+  def testOverrideFeature(self):
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    source_files = ['test/_test_api_features.json']
+    compiler = feature_compiler.FeatureCompiler(current_directory, source_files,
+                                                'APIFeature', 'provider_class',
+                                                'out_root', 'gen',
+                                                'out_base_filename')
+
+    compiler.Load()
+    compiler.Compile()
+
+    # The original _test_api_features.json file defines this feature as
+    # available on beta, but it's overridden by the
+    # _test_api_features.override.json file to be available only on trunk. The
+    # override takes precedence in the compiled feature.
+    feature = compiler._features.get('feature')
+    self.assertTrue(feature)
+    self.assertFalse(feature.GetErrors())
+    self.assertEqual('version_info::Channel::UNKNOWN',
+                     feature.GetValue('channel'))
 
 
 if __name__ == '__main__':
