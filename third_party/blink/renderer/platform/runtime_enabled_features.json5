@@ -5140,10 +5140,6 @@
       status: "stable",
     },
     {
-      name: "TrustedTypeBeforePolicyCreationEvent",
-      status: "experimental",
-    },
-    {
       name: "TrustedTypesFromLiteral",
       status: "experimental",
       base_feature: "none",

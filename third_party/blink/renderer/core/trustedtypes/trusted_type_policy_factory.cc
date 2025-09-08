@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
-#include "third_party/blink/renderer/core/events/before_create_policy_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -228,16 +227,6 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
     const String& policy_name,
     const TrustedTypePolicyOptions* policy_options,
     ExceptionState& exception_state) {
-  if (RuntimeEnabledFeatures::TrustedTypeBeforePolicyCreationEventEnabled()) {
-    DispatchEventResult result =
-        DispatchEvent(*BeforeCreatePolicyEvent::Create(policy_name));
-    if (result != DispatchEventResult::kNotCanceled) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotAllowedError,
-          "The policy creation has been canceled.");
-      return nullptr;
-    }
-  }
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The document is detached.");

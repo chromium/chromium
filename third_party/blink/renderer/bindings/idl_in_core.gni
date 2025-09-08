@@ -225,7 +225,6 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/events/animation_event_init.idl",
   "//third_party/blink/renderer/core/events/animation_playback_event.idl",
   "//third_party/blink/renderer/core/events/animation_playback_event_init.idl",
-  "//third_party/blink/renderer/core/events/before_create_policy_event.idl",
   "//third_party/blink/renderer/core/events/before_unload_event.idl",
   "//third_party/blink/renderer/core/events/clipboard_event.idl",
   "//third_party/blink/renderer/core/events/clipboard_event_init.idl",

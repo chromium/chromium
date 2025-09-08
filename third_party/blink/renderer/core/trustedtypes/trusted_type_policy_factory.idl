@@ -26,6 +26,4 @@
     readonly attribute TrustedTypePolicy defaultPolicy;
 
     [CallWith=ScriptState, MeasureAs=TrustedTypesIntrospectionTypeMapping] object? getTypeMapping(optional DOMString ns);
-
-    [RuntimeEnabled=TrustedTypeBeforePolicyCreationEvent] attribute EventHandler onbeforecreatepolicy;
 };
