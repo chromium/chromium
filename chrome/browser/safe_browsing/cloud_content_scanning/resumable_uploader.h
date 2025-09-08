@@ -70,12 +70,36 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload);
 
+  // Creates a ResumableUploadRequest, which will upload the `metadata` of a
+  // pasted image to the given `base_url`, and then the `data` if necessary.
+  ResumableUploadRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      const std::string& data,
+      const std::string& histogram_suffix,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      VerdictReceivedCallback verdict_received_callback,
+      ContentUploadedCallback content_uploaded_callback,
+      bool force_sync_upload);
+
   ResumableUploadRequest(const ResumableUploadRequest&) = delete;
   ResumableUploadRequest& operator=(const ResumableUploadRequest&) = delete;
   ResumableUploadRequest(ResumableUploadRequest&&) = delete;
   ResumableUploadRequest& operator=(ResumableUploadRequest&&) = delete;
 
   ~ResumableUploadRequest() override;
+
+  static std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      const std::string& data,
+      const std::string& histogram_suffix,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      VerdictReceivedCallback verdict_received_callback,
+      ContentUploadedCallback content_uploaded_callback,
+      bool force_sync_upload);
 
   static std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

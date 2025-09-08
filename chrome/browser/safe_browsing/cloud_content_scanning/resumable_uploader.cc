@@ -122,12 +122,37 @@ ResumableUploadRequest::ResumableUploadRequest(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
+ResumableUploadRequest::ResumableUploadRequest(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& base_url,
+    const std::string& metadata,
+    const std::string& data,
+    const std::string& histogram_suffix,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    VerdictReceivedCallback verdict_received_callback,
+    ContentUploadedCallback content_uploaded_callback,
+    bool force_sync_upload)
+    : ConnectorUploadRequest(std::move(url_loader_factory),
+                             base_url,
+                             metadata,
+                             data,
+                             histogram_suffix,
+                             traffic_annotation,
+                             base::DoNothing()),
+      verdict_received_callback_(std::move(verdict_received_callback)),
+      get_data_result_(BinaryUploadService::Result::SUCCESS),
+      content_uploaded_callback_(std::move(content_uploaded_callback)),
+      force_sync_upload_(force_sync_upload) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
 ResumableUploadRequest::~ResumableUploadRequest() = default;
 
 void ResumableUploadRequest::SetMetadataRequestHeaders(
     network::ResourceRequest* request) {
   CHECK(request);
-  // Both page and file requests should have non-zero `data_size_`.
+
+  // Page, string and file requests should have non-zero `data_size_`.
   DCHECK_GT(data_size_, (uint64_t)0);
 
   request->headers.SetHeader(kUploadProtocolHeader, "resumable");
@@ -171,6 +196,30 @@ std::string ResumableUploadRequest::GetUploadInfo() {
 }
 
 // static
+std::unique_ptr<ConnectorUploadRequest>
+ResumableUploadRequest::CreateStringRequest(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& base_url,
+    const std::string& metadata,
+    const std::string& data,
+    const std::string& histogram_suffix,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    VerdictReceivedCallback verdict_received_callback,
+    ContentUploadedCallback content_uploaded_callback,
+    bool force_sync_upload) {
+  if (factory_) {
+    return factory_->CreateStringRequest(
+        url_loader_factory, base_url, metadata, data, histogram_suffix,
+        traffic_annotation,
+        std::move(verdict_received_callback)
+            .Then(std::move(content_uploaded_callback)));
+  }
+  return std::make_unique<ResumableUploadRequest>(
+      url_loader_factory, base_url, metadata, data, histogram_suffix,
+      traffic_annotation, std::move(verdict_received_callback),
+      std::move(content_uploaded_callback), force_sync_upload);
+}
+
 std::unique_ptr<ConnectorUploadRequest>
 ResumableUploadRequest::CreateFileRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -333,9 +382,13 @@ void ResumableUploadRequest::SendContentSoon(const std::string& upload_url) {
                         ConnectorDataPipeGetter::CreateResumablePipeGetter(
                             std::move(page_region_)));
       break;
-    // Resumable upload currently does not support paste.
+    // Resumable uploads are used for pasted images, which are handled as string
+    // data. Using resumable uploads for pasted images is enabled by the
+    // `enterprise_connectors::kDlpScanPastedImages` feature flag. Text pastes
+    // use multipart uploads.
     case STRING:
-      NOTREACHED();
+      SendContentNow(std::move(request));
+      break;
     default:
       NOTREACHED();
   }
@@ -372,14 +425,24 @@ void ResumableUploadRequest::OnDataPipeCreated(
 
 void ResumableUploadRequest::SendContentNow(
     std::unique_ptr<network::ResourceRequest> request) {
-  mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter;
-  data_pipe_getter_->Clone(data_pipe_getter.InitWithNewPipeAndPassReceiver());
-  request->request_body = new network::ResourceRequestBody();
-  request->request_body->AppendDataPipe(std::move(data_pipe_getter));
+  // `data_pipe_getter_` is null for STRING requests, which are handled by
+  // attaching the string data directly to the URL loader. For FILE and PAGE
+  // requests, `data_pipe_getter_` will be non-null.
+  if (data_pipe_getter_) {
+    mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter;
+    data_pipe_getter_->Clone(data_pipe_getter.InitWithNewPipeAndPassReceiver());
+    request->request_body = new network::ResourceRequestBody();
+    request->request_body->AppendDataPipe(std::move(data_pipe_getter));
+  }
 
   url_loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation_);
   url_loader_->SetAllowHttpErrorResults(true);
+
+  if (!data_pipe_getter_) {
+    url_loader_->AttachStringForUpload(data_, kUploadContentType);
+  }
+
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&ResumableUploadRequest::OnSendContentCompleted,

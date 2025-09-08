@@ -28,6 +28,7 @@ ConnectorUploadRequest::ConnectorUploadRequest(
       metadata_(metadata),
       data_source_(STRING),
       data_(data),
+      data_size_(data.size()),
       histogram_suffix_(histogram_suffix),
       callback_(std::move(callback)),
       url_loader_factory_(url_loader_factory),

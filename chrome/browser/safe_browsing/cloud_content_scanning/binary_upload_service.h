@@ -238,6 +238,9 @@ class BinaryUploadService : public KeyedService {
     const std::string& access_token() const;
     void set_access_token(const std::string& access_token);
 
+    void set_image_paste(bool image_paste);
+    bool image_paste() const;
+
    private:
     Id id_;
     enterprise_connectors::ContentAnalysisRequest content_analysis_request_;
@@ -254,6 +257,8 @@ class BinaryUploadService : public KeyedService {
 
     // Access token to be attached in the request headers.
     std::string access_token_;
+
+    bool image_paste_ = false;
   };
 
   // A class to encapsulate the a request acknowledgement. This class will

@@ -373,6 +373,14 @@ bool BinaryUploadService::Request::blocking() const {
   return content_analysis_request_.blocking();
 }
 
+bool BinaryUploadService::Request::image_paste() const {
+  return image_paste_;
+}
+
+void BinaryUploadService::Request::set_image_paste(bool image_paste) {
+  image_paste_ = image_paste;
+}
+
 void BinaryUploadService::Request::StartRequest() {
   if (!request_start_callback_.is_null()) {
     std::move(request_start_callback_).Run(*this);
@@ -382,7 +390,9 @@ void BinaryUploadService::Request::StartRequest() {
 void BinaryUploadService::Request::FinishRequest(
     Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
-  std::move(content_analysis_callback_).Run(result, response);
+  if (content_analysis_callback_) {
+    std::move(content_analysis_callback_).Run(result, response);
+  }
 }
 
 void BinaryUploadService::Request::SerializeToString(

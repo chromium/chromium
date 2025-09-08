@@ -347,12 +347,15 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 bool IsResumableUpload(
     const safe_browsing::BinaryUploadService::Request& request) {
-  // Currently resumable upload doesn't support paste or LBUS. If one day we do,
-  // we should update the logic here as well.
-  return !safe_browsing::IsConsumerScanRequest(request) &&
-         request.cloud_or_local_settings().is_cloud_analysis() &&
-         request.content_analysis_request().analysis_connector() !=
-             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY;
+  if (safe_browsing::IsConsumerScanRequest(request) ||
+      !request.cloud_or_local_settings().is_cloud_analysis()) {
+    return false;
+  }
+  // Use the Resumable request protocol only for image pastes and
+  // non-paste requests.
+  return request.content_analysis_request().analysis_connector() !=
+             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY ||
+         request.image_paste();
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 

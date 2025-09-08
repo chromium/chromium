@@ -471,10 +471,24 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
   // upload behaviour.
   bool force_sync_upload =
       request->analysis_connector() == enterprise_connectors::FILE_DOWNLOADED;
-  if (request->IsAuthRequest() || !data.contents.empty()) {
+  if (request->IsAuthRequest()) {
     upload_request = MultipartUploadRequest::CreateStringRequest(
         url_loader_factory_, url, metadata, data.contents, histogram_suffix,
         std::move(traffic_annotation), std::move(callback));
+  } else if (!data.contents.empty()) {
+    upload_request =
+        (enterprise_connectors::IsResumableUpload(*request) &&
+         base::FeatureList::IsEnabled(
+             enterprise_connectors::kDlpScanPastedImages))
+            ? ResumableUploadRequest::CreateStringRequest(
+                  url_loader_factory_, url, metadata, data.contents,
+                  histogram_suffix, std::move(traffic_annotation),
+                  std::move(verdict_received_callback),
+                  std::move(content_uploaded_callback), force_sync_upload)
+            : MultipartUploadRequest::CreateStringRequest(
+                  url_loader_factory_, url, metadata, data.contents,
+                  histogram_suffix, std::move(traffic_annotation),
+                  std::move(callback));
   } else if (!data.path.empty()) {
     upload_request =
         enterprise_connectors::IsResumableUpload(*request)

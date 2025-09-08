@@ -117,6 +117,9 @@ bool ClipboardRequestHandler::UploadDataImpl() {
 
   content_analysis_info_->InitializeRequest(request.get());
   request->set_analysis_connector(BULK_DATA_ENTRY);
+  if (type_ == Type::kImage) {
+    request->set_image_paste(true);
+  }
   if (type_ == Type::kText) {
     request->set_destination(url_.spec());
     std::string source_string =
