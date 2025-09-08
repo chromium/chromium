@@ -133,20 +133,25 @@ bool IsUrlInUrlSet(const GURL& url,
 std::vector<mojom::SiteEngagementDetails> GetAllDetailsImpl(
     base::Clock* clock,
     HostContentSettingsMap* map,
-    SiteEngagementService::URLSets::Type url_set) {
+    SiteEngagementService::URLSets::Type url_set,
+    blink::mojom::EngagementLevel minimum_engagement_level) {
   std::set<GURL> origins = GetEngagementOriginsFromContentSettings(map);
 
   std::vector<mojom::SiteEngagementDetails> details;
-  details.reserve(origins.size());
-
+  if (url_set & SiteEngagementService::URLSets::HTTP &&
+      minimum_engagement_level == blink::mojom::EngagementLevel::NONE) {
+    details.reserve(origins.size());
+  }
   for (const GURL& origin : origins) {
-    if (!origin.is_valid())
+    if (!IsUrlInUrlSet(origin, url_set)) {
       continue;
-    if (IsUrlInUrlSet(origin, url_set)) {
-      details.push_back(GetDetailsImpl(clock, origin, map));
+    }
+    SiteEngagementScore score(CreateEngagementScoreImpl(clock, origin, map));
+    if (SiteEngagementService::IsEngagementAtLeast(score.GetTotalScore(),
+                                                   minimum_engagement_level)) {
+      details.push_back(score.GetDetails());
     }
   }
-
   return details;
 }
 
@@ -228,10 +233,11 @@ std::vector<mojom::SiteEngagementDetails>
 SiteEngagementService::GetAllDetailsInBackground(
     base::Time now,
     scoped_refptr<HostContentSettingsMap> map,
-    URLSets::Type url_set) {
+    URLSets::Type url_set,
+    blink::mojom::EngagementLevel minimum_engagement) {
   StoppedClock clock(now);
   base::AssertLongCPUWorkAllowed();
-  return GetAllDetailsImpl(&clock, map.get(), url_set);
+  return GetAllDetailsImpl(&clock, map.get(), url_set, minimum_engagement);
 }
 
 // static
@@ -291,7 +297,7 @@ std::vector<mojom::SiteEngagementDetails> SiteEngagementService::GetAllDetails(
   return GetAllDetailsImpl(
       clock_,
       permissions::PermissionsClient::Get()->GetSettingsMap(browser_context_),
-      url_set);
+      url_set, blink::mojom::EngagementLevel::NONE);
 }
 
 void SiteEngagementService::HandleNotificationInteraction(const GURL& url) {
@@ -526,7 +532,7 @@ void SiteEngagementService::MaybeRecordMetrics() {
                      base::WrapRefCounted(
                          permissions::PermissionsClient::Get()->GetSettingsMap(
                              browser_context_)),
-                     URLSets::HTTP),
+                     URLSets::HTTP, blink::mojom::EngagementLevel::NONE),
       base::BindOnce(&SiteEngagementService::RecordMetrics,
                      weak_factory_.GetWeakPtr()));
 }

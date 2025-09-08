@@ -32,6 +32,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -482,7 +483,8 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
           clock_->Now(),
           base::WrapRefCounted(
               HostContentSettingsMapFactory::GetForProfile(profile_)),
-          site_engagement::SiteEngagementService::URLSets::HTTP),
+          site_engagement::SiteEngagementService::URLSets::HTTP,
+          blink::mojom::EngagementLevel::NONE),
       base::BindOnce(&HttpsFirstModeService::ProcessEngagedSitesList,
                      weak_factory_.GetWeakPtr(), std::move(done_callback)));
 }

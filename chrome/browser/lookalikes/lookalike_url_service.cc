@@ -43,22 +43,19 @@ std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
     scoped_refptr<HostContentSettingsMap> map) {
   TRACE_EVENT0("navigation",
                "LookalikeUrlService UpdateEngagedSitesOnWorkerThread");
-  std::vector<DomainInfo> new_engaged_sites;
 
   auto details =
-      site_engagement::SiteEngagementService::GetAllDetailsInBackground(now,
-                                                                        map);
+      site_engagement::SiteEngagementService::GetAllDetailsInBackground(
+          now, map, site_engagement::SiteEngagementService::URLSets::HTTP,
+          blink::mojom::EngagementLevel::MEDIUM);
   TRACE_EVENT1("navigation", "LookalikeUrlService SiteEngagementService",
                "site_count", details.size());
+  std::vector<DomainInfo> new_engaged_sites;
+  new_engaged_sites.reserve(details.size());
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
-    if (!detail.origin.SchemeIsHTTPOrHTTPS()) {
-      continue;
-    }
-    // Ignore sites with an engagement score below threshold.
-    if (!site_engagement::SiteEngagementService::IsEngagementAtLeast(
-            detail.total_score, blink::mojom::EngagementLevel::MEDIUM)) {
-      continue;
-    }
+    DCHECK(detail.origin.SchemeIsHTTPOrHTTPS());
+    DCHECK(site_engagement::SiteEngagementService::IsEngagementAtLeast(
+        detail.total_score, blink::mojom::EngagementLevel::MEDIUM));
     const DomainInfo domain_info = lookalikes::GetDomainInfo(detail.origin);
     if (domain_info.domain_and_registry.empty()) {
       continue;
