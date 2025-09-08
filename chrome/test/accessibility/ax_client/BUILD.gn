@@ -37,6 +37,8 @@ executable("client_exe") {
   sources = [
     "ax_client.cc",
     "ax_client.h",
+    "ax_client_ia2.cc",
+    "ax_client_ia2.h",
     "ax_client_impl.h",
     "ax_client_main.cc",
     "ax_client_uia.cc",
@@ -50,5 +52,7 @@ executable("client_exe") {
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//third_party/abseil-cpp:absl",
+    "//third_party/iaccessible2",
   ]
+  libs = [ "oleacc.lib" ]
 }

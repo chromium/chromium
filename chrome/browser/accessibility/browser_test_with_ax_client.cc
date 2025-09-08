@@ -31,6 +31,8 @@ ax_client::Launcher::ClientApi ToLauncherClientApi(
   switch (client_api) {
     case BrowserTestWithAxClient::ClientApi::kUiAutomation:
       return ax_client::Launcher::ClientApi::kUiAutomation;
+    case BrowserTestWithAxClient::ClientApi::kIAccessible2:
+      return ax_client::Launcher::ClientApi::kIAccessible2;
   }
 }
 

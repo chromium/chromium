@@ -28,7 +28,7 @@ class BrowserTestWithAxClient : public InProcessBrowserTest {
     kUiAutomation,
 
     // Use the IAccessible2 w/ Microsoft Active Accessibility client APIs.
-    // kIAccessible2,
+    kIAccessible2,
   };
 
  protected:

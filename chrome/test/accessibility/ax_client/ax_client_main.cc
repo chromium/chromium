@@ -39,6 +39,8 @@ ax_client::AxClient::ClientApi GetClientApi(
     switch (value) {
       case static_cast<int>(ax_client::AxClient::ClientApi::kUiAutomation):
         return ax_client::AxClient::ClientApi::kUiAutomation;
+      case static_cast<int>(ax_client::AxClient::ClientApi::kIAccessible2):
+        return ax_client::AxClient::ClientApi::kIAccessible2;
       default:
         NOTREACHED() << "--client-api=" << value << " out of bounds";
     }
@@ -93,14 +95,21 @@ extern "C" int wmain(int argc, const wchar_t* const argv) {
       // MTA for UI Automation.
       com_initializer.emplace(base::win::ScopedCOMInitializer::kMTA);
       break;
+    case ax_client::AxClient::ClientApi::kIAccessible2:
+      // STA for MSAA/IA2.
+      com_initializer.emplace();
+      break;
   }
   CHECK(com_initializer->Succeeded());
 
   // Run a task executor on this main thread -- it will host the AxClient.
   // MSAA/IA2 requires a UI message pump since this thread hosts the client's
   // WinEvent hook.
-  base::SingleThreadTaskExecutor task_executor(base::MessagePumpType::DEFAULT,
-                                               /*is_main_thread=*/true);
+  base::SingleThreadTaskExecutor task_executor(
+      client_api == ax_client::AxClient::ClientApi::kIAccessible2
+          ? base::MessagePumpType::UI
+          : base::MessagePumpType::DEFAULT,
+      /*is_main_thread=*/true);
 
   base::RunLoop run_loop;
 

@@ -9,6 +9,7 @@
 #include "base/notimplemented.h"
 #include "base/process/process.h"
 #include "base/win/windows_handle_util.h"
+#include "chrome/test/accessibility/ax_client/ax_client_ia2.h"
 #include "chrome/test/accessibility/ax_client/ax_client_uia.h"
 
 namespace ax_client {
@@ -20,6 +21,8 @@ std::unique_ptr<AxClientImpl> CreateImpl(AxClient::ClientApi client_api) {
   switch (client_api) {
     case AxClient::ClientApi::kUiAutomation:
       return std::make_unique<AxClientUia>();
+    case AxClient::ClientApi::kIAccessible2:
+      return std::make_unique<AxClientIa2>();
   }
 }
 

@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "ax_client_ia2.cc": [
+    "+third_party/iaccessible2",
+  ],
+}

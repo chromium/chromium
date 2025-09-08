@@ -22,7 +22,7 @@ class AxClient : public mojom::AxClient {
     kUiAutomation,
 
     // Use the IAccessible2 w/ Microsoft Active Accessibility client APIs.
-    // kIAccessible2,
+    kIAccessible2,
   };
 
   // `on_destroyed` is a callback to be run when the instance is destroyed due
