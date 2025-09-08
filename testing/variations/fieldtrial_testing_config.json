@@ -13293,6 +13293,24 @@
             ]
         }
     ],
+    "IOSHelios": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiCrossTab",
+                        "GeminiForManagedAccounts",
+                        "PageActionMenu",
+                        "PageContextAnchorTags"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSHomeMemoryImprovements": [
         {
             "platforms": [
