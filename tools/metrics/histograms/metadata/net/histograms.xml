@@ -3020,22 +3020,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpJob.IpProtection.AllowListMatch.BytesSent"
-    units="bytes" expires_after="2025-01-02">
-  <owner>aakallam@chromium.org</owner>
-  <owner>abhijithnair@chromium.org</owner>
-  <owner>ashleynewson@chromium.org</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    Total bytes sent over the network for an HttpJob request that would be
-    covered by IP Protection based on match with respect to the masked domain
-    list alone. This is irrespective of token and proxy availability. Any bypass
-    logic (e.g. first party to top level frame) will be considered, if set.
-    These bytes will be recorded even if `EnableIpPrivacyProxy` is `false`. This
-    is measured when the HttpJob is completed.
-  </summary>
-</histogram>
-
 <histogram name="Net.HttpJob.IpProtection.AllowListMatch.BytesSent2"
     units="bytes" expires_after="2026-01-07">
   <owner>aakallam@chromium.org</owner>

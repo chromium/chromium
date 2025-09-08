@@ -2027,10 +2027,6 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
       base::UmaHistogramTimes("Net.HttpJob.TotalTimeNotCached", total_time);
       if (response_info_->was_mdl_match) {
         base::UmaHistogramCustomCounts(
-            "Net.HttpJob.IpProtection.AllowListMatch.BytesSent",
-            GetTotalSentBytes(), 1, 50000000, 50);
-
-        base::UmaHistogramCustomCounts(
             "Net.HttpJob.IpProtection.AllowListMatch.PrefilterBytesRead.Net",
             prefilter_bytes_read(), 1, 50000000, 50);
       }
