@@ -196,6 +196,9 @@ class ProfileImportProcess {
   // If no decision is available yet, return false.
   bool UserAccepted() const;
 
+  // Returns true if the import process requires a user prompt.
+  bool requires_user_prompt() const;
+
   const GURL& form_source_url() const { return form_source_url_; }
 
   // Adds and updates all profiles affected by the import process in the

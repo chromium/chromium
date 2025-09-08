@@ -89,40 +89,16 @@ void AddressProfileSaveManager::ImportProfileFromForm(
 
 void AddressProfileSaveManager::MaybeOfferSavePrompt(
     std::unique_ptr<ProfileImportProcess> import_process) {
-  switch (import_process->import_type()) {
-    // If the import was a duplicate, only results in silent updates or if the
-    // import of a new profile or a profile update is blocked, finish the
-    // process without initiating a user prompt
-    case AutofillProfileImportType::kDuplicateImport:
-    case AutofillProfileImportType::kSilentUpdate:
-    case AutofillProfileImportType::kSuppressedNewProfile:
-    case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
-    case AutofillProfileImportType::kSuppressedConfirmableMerge:
-      import_process->AcceptWithoutPrompt();
+  if (import_process->requires_user_prompt()) {
+    if (address_data_manager().auto_accept_address_imports_for_testing()) {
+      import_process->AcceptWithoutEdits();
       FinalizeProfileImport(std::move(import_process));
       return;
-
-    // The import of a new profile, a merge with an existing profile that
-    // changes a settings-visible value of an existing profile, or a profile
-    // migration triggers a user prompt.
-    case AutofillProfileImportType::kNewProfile:
-    case AutofillProfileImportType::kConfirmableMerge:
-    case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
-    case AutofillProfileImportType::kProfileMigration:
-    case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
-    case AutofillProfileImportType::kHomeAndWorkSuperset:
-    case AutofillProfileImportType::kNameEmailSuperset:
-    case AutofillProfileImportType::kHomeWorkNameEmailMerge:
-      if (address_data_manager().auto_accept_address_imports_for_testing()) {
-        import_process->AcceptWithoutEdits();
-        FinalizeProfileImport(std::move(import_process));
-        return;
-      }
-      OfferSavePrompt(std::move(import_process));
-      return;
-
-    case AutofillProfileImportType::kImportTypeUnspecified:
-      NOTREACHED();
+    }
+    OfferSavePrompt(std::move(import_process));
+  } else {
+    import_process->AcceptWithoutPrompt();
+    FinalizeProfileImport(std::move(import_process));
   }
 }
 

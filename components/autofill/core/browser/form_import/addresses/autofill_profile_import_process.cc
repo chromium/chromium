@@ -365,6 +365,28 @@ void ProfileImportProcess::DetermineSourceOfImportCandidate() {
   }
 }
 
+bool ProfileImportProcess::requires_user_prompt() const {
+  switch (import_type_) {
+    case AutofillProfileImportType::kNewProfile:
+    case AutofillProfileImportType::kConfirmableMerge:
+    case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
+    case AutofillProfileImportType::kProfileMigration:
+    case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
+    case AutofillProfileImportType::kHomeAndWorkSuperset:
+    case AutofillProfileImportType::kNameEmailSuperset:
+    case AutofillProfileImportType::kHomeWorkNameEmailMerge:
+      return true;
+    case AutofillProfileImportType::kDuplicateImport:
+    case AutofillProfileImportType::kSilentUpdate:
+    case AutofillProfileImportType::kSuppressedNewProfile:
+    case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
+    case AutofillProfileImportType::kSuppressedConfirmableMerge:
+      return false;
+    case AutofillProfileImportType::kImportTypeUnspecified:
+      NOTREACHED();
+  }
+}
+
 void ProfileImportProcess::MaybeSetMigrationCandidate(
     std::optional<AutofillProfile>& migration_candidate,
     const AutofillProfile& profile) const {
