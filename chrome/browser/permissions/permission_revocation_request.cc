@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/permission_revocation_request.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
@@ -19,6 +20,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -254,6 +256,10 @@ void PermissionRevocationRequest::OnSafeBrowsingVerdictReceived(
                CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR) {
       NotifyCallback(Outcome::PERMISSION_REVOKED_DUE_TO_DISRUPTIVE_BEHAVIOR);
     }
+
+    base::UmaHistogramEnumeration("SafeBrowsing.NotificationRevocationSource",
+                                  safe_browsing::NotificationRevocationSource::
+                                      kManualSafeBrowsingRevocation);
   } else {
     NotifyCallback(Outcome::PERMISSION_NOT_REVOKED);
   }
