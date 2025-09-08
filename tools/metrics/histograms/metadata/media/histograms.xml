@@ -5628,6 +5628,12 @@ chromium-metrics-reviews@google.com.
         summary="RendererImpl with software decoder and
                  DecryptingDemuxerStream"/>
     <variant name="DVD" summary="RendererImpl with DecryptingVideoDecoder"/>
+    <variant name="HardwareSecure.DDS.HW"
+        summary="RendererImpl with hardware decoder and
+                 DecryptingDemuxerStream, using hardware secure decryption"/>
+    <variant name="HardwareSecure.DDS.SW"
+        summary="RendererImpl with software decoder and
+                 DecryptingDemuxerStream, using hardware secure decryption"/>
     <variant name="HardwareSecure.HW"
         summary="RendererImpl with hardware decoder and hardware secure
                  decryption"/>
@@ -5639,6 +5645,12 @@ chromium-metrics-reviews@google.com.
         summary="RendererImpl with requested software secure decryption and
                  MediaCodecVideoDecoder"/>
     <variant name="MediaFoundationRenderer"/>
+    <variant name="SoftwareSecure.DDS.HW"
+        summary="RendererImpl with hardware decoder and
+                 DecryptingDemuxerStream, using software secure decryption"/>
+    <variant name="SoftwareSecure.DDS.SW"
+        summary="RendererImpl with software decoder and
+                 DecryptingDemuxerStream, using software secure decryption"/>
     <variant name="SW" summary="RendererImpl with software decoder"/>
     <variant name="UnknownRenderer" summary="an unknown Renderer"/>
   </token>
