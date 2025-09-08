@@ -45,10 +45,8 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   ~IpProtectionTokenManagerImpl() override;
 
   // IpProtectionTokenManager implementation.
-  bool IsAuthTokenAvailable() override;
   bool IsAuthTokenAvailable(const std::string& geo_id) override;
   bool WasTokenCacheEverFilled() override;
-  std::optional<BlindSignedAuthToken> GetAuthToken() override;
   std::optional<BlindSignedAuthToken> GetAuthToken(
       const std::string& geo_id) override;
   std::string CurrentGeo() const override;

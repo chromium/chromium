@@ -127,10 +127,6 @@ void IpProtectionTokenManagerImpl::ProcessInitialTokens(
   }
 }
 
-bool IpProtectionTokenManagerImpl::IsAuthTokenAvailable() {
-  return IsAuthTokenAvailable(current_geo_id_);
-}
-
 bool IpProtectionTokenManagerImpl::IsAuthTokenAvailable(
     const std::string& geo_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -405,11 +401,6 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
   }
 
   ScheduleMaybeRefillCache();
-}
-
-std::optional<BlindSignedAuthToken>
-IpProtectionTokenManagerImpl::GetAuthToken() {
-  return GetAuthToken(current_geo_id_);
 }
 
 std::optional<BlindSignedAuthToken> IpProtectionTokenManagerImpl::GetAuthToken(

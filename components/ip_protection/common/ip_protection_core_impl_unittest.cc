@@ -58,9 +58,6 @@ constexpr char kSunnyvaleGeoId[] = "US,US-CA,SUNNYVALE";
 
 class MockIpProtectionTokenManager : public IpProtectionTokenManager {
  public:
-  bool IsAuthTokenAvailable() override {
-    return IsAuthTokenAvailable(current_geo_id_);
-  }
 
   bool IsAuthTokenAvailable(const std::string& geo_id) override {
     return auth_tokens_.contains(geo_id);
@@ -76,10 +73,6 @@ class MockIpProtectionTokenManager : public IpProtectionTokenManager {
 
   void SetCurrentGeo(const std::string& geo_id) override {
     current_geo_id_ = geo_id;
-  }
-
-  std::optional<BlindSignedAuthToken> GetAuthToken() override {
-    return GetAuthToken(current_geo_id_);
   }
 
   std::optional<BlindSignedAuthToken> GetAuthToken(

@@ -20,24 +20,12 @@ class IpProtectionTokenManager {
  public:
   virtual ~IpProtectionTokenManager() = default;
 
-  // Check whether tokens are available for the current geo id.
-  //
-  // This function is called on every URL load, so it should complete quickly.
-  virtual bool IsAuthTokenAvailable() = 0;
-
   // Check whether tokens are available for a particular geo id.
   //
   // This function is called on every URL load, so it should complete quickly.
   // If a geo_id is not provided and token caching by geo is not enabled, this
   // will return false.
   virtual bool IsAuthTokenAvailable(const std::string& geo_id) = 0;
-
-  // Get a token, if one is available for the current geo.
-  //
-  // Returns `nullopt` if no token is available, whether for a transient or
-  // permanent reason. This method may return `nullopt` even if
-  // `IsAuthTokenAvailable()` recently returned `true`.
-  virtual std::optional<BlindSignedAuthToken> GetAuthToken() = 0;
 
   // Get a token, if one is available.
   //
