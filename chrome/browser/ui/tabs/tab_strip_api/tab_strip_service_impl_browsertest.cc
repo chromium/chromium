@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
@@ -117,7 +118,8 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
   using TabStripExperimentService = tabs_api::mojom::TabStripExperimentService;
 
   TabStripServiceImplBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kTabStripBrowserApi);
+    feature_list_.InitWithFeatures(
+        {features::kTabStripBrowserApi, features::kSideBySide}, {});
   }
 
   void SetUpOnMainThread() override {
@@ -130,6 +132,19 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     tab_strip_service_mojo_handler_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void FindNodeId(tabs_api::mojom::Data::Tag target_tag,
+                  tabs_api::NodeId* out_node_id,
+                  base::RunLoop* run_loop,
+                  TabStripService::GetTabsResult result) {
+    const auto& root_container = result.value()->tab_strip;
+
+    if (auto found_id = FindContainer(*root_container, target_tag);
+        found_id.has_value()) {
+      *out_node_id = found_id.value();
+    }
+    run_loop->Quit();
   }
 
  protected:
@@ -157,6 +172,36 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
 
     return observation;
+  }
+
+  std::optional<tabs_api::NodeId> FindContainer(
+      const tabs_api::mojom::Container& container,
+      tabs_api::mojom::Data::Tag target_tag) {
+    const auto& data = container.data;
+    if (data->which() == target_tag) {
+      switch (data->which()) {
+        case tabs_api::mojom::Data::Tag::kTab:
+          return data->get_tab()->id;
+        case tabs_api::mojom::Data::Tag::kTabStrip:
+          return data->get_tab_strip()->id;
+        case tabs_api::mojom::Data::Tag::kPinnedTabs:
+          return data->get_pinned_tabs()->id;
+        case tabs_api::mojom::Data::Tag::kUnpinnedTabs:
+          return data->get_unpinned_tabs()->id;
+        case tabs_api::mojom::Data::Tag::kTabGroup:
+          return data->get_tab_group()->id;
+        case tabs_api::mojom::Data::Tag::kSplitTab:
+          return data->get_split_tab()->id;
+      }
+    }
+
+    for (const auto& child : container.children) {
+      if (auto found_id = FindContainer(*child, target_tag);
+          found_id.has_value()) {
+        return found_id;
+      }
+    }
+    return std::nullopt;
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -505,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
   EXPECT_EQ(to_group_collection_id, move_event->to.parent_id().value());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveCollection) {
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveGroupCollection) {
   mojo::Remote<TabStripService> remote;
   tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
 
@@ -547,6 +592,53 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveCollection) {
   const TabGroup* moved_tab_group =
       model->group_model()->GetTabGroup(moved_tab_group_id.value());
   EXPECT_EQ(moved_tab_group->tab_count(), 2);
+  EXPECT_EQ(model->count(), 4);
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveSplitCollection) {
+  mojo::Remote<TabStripService> remote;
+  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+
+  TabStripModel* model = GetTabStripModel();
+  for (int i = 0; i < 3; i++) {
+    base::RunLoop create_loop;
+    remote->CreateTabAt(std::nullopt,
+                        std::make_optional(GURL("http://somwewhere.nowhere")),
+                        base::BindLambdaForTesting(
+                            [&](TabStripService::CreateTabAtResult result) {
+                              ASSERT_TRUE(result.has_value());
+                              create_loop.Quit();
+                            }));
+    create_loop.Run();
+  }
+  ASSERT_EQ(model->count(), 4);
+
+  model->ActivateTabAt(2);
+  const split_tabs::SplitTabId split_id =
+      model->AddToNewSplit({3}, split_tabs::SplitTabVisualData(),
+                           split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Unlike TabGroup, find the split node id by iterating through the TabStrip
+  // through the GetTabs api.
+  tabs_api::NodeId split_node_id;
+  base::RunLoop get_tabs_loop;
+  remote->GetTabs(base::BindOnce(
+      &TabStripServiceImplBrowserTest::FindNodeId, base::Unretained(this),
+      tabs_api::mojom::Data::Tag::kSplitTab, &split_node_id, &get_tabs_loop));
+  get_tabs_loop.Run();
+  ASSERT_FALSE(split_node_id.Id().empty());
+
+  base::RunLoop move_loop;
+  remote->MoveTab(
+      split_node_id, tabs_api::Position(0),
+      base::BindLambdaForTesting([&](TabStripService::MoveTabResult result) {
+        ASSERT_TRUE(result.has_value());
+        move_loop.Quit();
+      }));
+  move_loop.Run();
+
+  EXPECT_EQ(model->GetSplitForTab(0).value(), split_id);
+  EXPECT_EQ(model->GetSplitForTab(1).value(), split_id);
   EXPECT_EQ(model->count(), 4);
 }
 

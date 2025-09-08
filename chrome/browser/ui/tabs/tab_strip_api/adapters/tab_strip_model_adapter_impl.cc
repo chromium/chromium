@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tree_builder/mojo_tree_builder.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -148,11 +149,21 @@ void TabStripModelAdapterImpl::MoveCollection(const NodeId& id,
       tab_strip_model_->MoveGroupTo(group_id.value(), to_position);
       break;
     }
+    case tabs::TabCollection::Type::SPLIT: {
+      const tabs::SplitTabCollection* split_collection =
+          static_cast<const tabs::SplitTabCollection*>(collection);
+      const split_tabs::SplitTabId split_id = split_collection->GetSplitTabId();
+      const int to_position =
+          tab_strip_model_->IndexOfFirstNonPinnedTab() + position.index();
+      // TODO(crbug.com/412709271): Currently only moves within the unpinned
+      // collection.
+      tab_strip_model_->MoveSplitTo(split_id, to_position, false /* pinned */,
+                                    std::nullopt);
+      break;
+    }
     case tabs::TabCollection::Type::PINNED:
     case tabs::TabCollection::Type::UNPINNED:
     case tabs::TabCollection::Type::TABSTRIP:
-    // TODO(412709271). Implement moving a SplitTab collection.
-    case tabs::TabCollection::Type::SPLIT:
       NOTIMPLEMENTED();
       return;
   }
