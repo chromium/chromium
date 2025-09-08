@@ -143,12 +143,6 @@ class MultiContentsView : public views::View,
 
   MultiContentsViewDropTargetController& drop_target_controller() const;
 
-  gfx::Insets& start_contents_view_inset() {
-    return start_contents_view_inset_;
-  }
-
-  gfx::Insets& end_contents_view_inset() { return end_contents_view_inset_; }
-
   bool IsDragAndDropEnabled() const;
   void OnDragAndDropPrefStateChange();
 

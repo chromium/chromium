@@ -562,6 +562,22 @@ gfx::Rect MultiContentsView::CalculateDropTargetLayout(
 gfx::Rect MultiContentsView::CalculateSeparatorLayouts(
     const gfx::Rect& available_space,
     std::vector<views::ChildLayout>& child_layouts) const {
+  if (IsInSplitView()) {
+    child_layouts.emplace_back(contents_separators_.top_separator.get(), false,
+                               gfx::Rect());
+    child_layouts.emplace_back(contents_separators_.leading_separator.get(),
+                               false, gfx::Rect());
+    child_layouts.emplace_back(contents_separators_.trailing_separator.get(),
+                               false, gfx::Rect());
+    child_layouts.emplace_back(
+        contents_separators_.top_leading_rounded_corner.get(), false,
+        gfx::Rect());
+    child_layouts.emplace_back(
+        contents_separators_.top_trailing_rounded_corner.get(), false,
+        gfx::Rect());
+    return available_space;
+  }
+
   const int width = available_space.width();
   const int height = available_space.height();
 
@@ -706,6 +722,10 @@ void MultiContentsView::SetShouldShowTopSeparator(bool should_show) {
     return;
   }
   contents_separators_.should_show_top = should_show;
+  start_contents_view_inset_.set_top(
+      should_show ? 0 : MultiContentsView::kSplitViewContentInset);
+  end_contents_view_inset_.set_top(
+      should_show ? 0 : MultiContentsView::kSplitViewContentInset);
 
   InvalidateLayout();
 }
@@ -715,6 +735,8 @@ void MultiContentsView::SetShouldShowLeadingSeparator(bool should_show) {
     return;
   }
   contents_separators_.should_show_leading = should_show;
+  start_contents_view_inset_.set_left(
+      should_show ? 0 : MultiContentsView::kSplitViewContentInset);
 
   InvalidateLayout();
 }
@@ -724,6 +746,8 @@ void MultiContentsView::SetShouldShowTrailingSeparator(bool should_show) {
     return;
   }
   contents_separators_.should_show_trailing = should_show;
+  end_contents_view_inset_.set_right(
+      should_show ? 0 : MultiContentsView::kSplitViewContentInset);
 
   InvalidateLayout();
 }
