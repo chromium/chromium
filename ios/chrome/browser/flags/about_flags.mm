@@ -102,6 +102,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public/features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/download/ui/features.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
@@ -1894,6 +1895,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          feature_engagement::kDefaultBrowserTriggerCriteriaExperiment)},
+    {"persistent-default-browser-promo",
+     flag_descriptions::kPersistentDefaultBrowserPromoName,
+     flag_descriptions::kPersistentDefaultBrowserPromoDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kPersistentDefaultBrowserPromo)},
     {"blue-dot-on-tools-menu-button",
      flag_descriptions::kBlueDotOnToolsMenuButtonName,
      flag_descriptions::kBlueDotOnToolsMenuButtonDescription, flags_ui::kOsIos,

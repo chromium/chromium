@@ -135,6 +135,7 @@ enum class DefaultBrowserSettingsPageUsage {
   _instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
               initWithDismissButton:NO
+                     hasCloseButton:NO
                    hasRemindMeLater:NO
           useDefaultAppsDestination:_useDefaultAppsDestination
                            hasSteps:YES

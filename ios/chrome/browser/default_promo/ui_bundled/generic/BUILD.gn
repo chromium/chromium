@@ -14,6 +14,7 @@ source_set("generic") {
   deps = [
     "//components/feature_engagement/public",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/default_promo/ui_bundled:coordinator",
     "//ios/chrome/browser/feature_engagement/model",
@@ -44,6 +45,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/public:test_support",
     "//components/sync_device_info:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/default_promo/ui_bundled:coordinator",
     "//ios/chrome/browser/feature_engagement/model",

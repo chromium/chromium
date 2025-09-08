@@ -485,6 +485,13 @@ const char kDefaultBrowserTriggerCriteriaExperimentDescription[] =
     "When enabled, default browser promo will be displayed to user without "
     "matching all the trigger criteria.";
 
+const char kPersistentDefaultBrowserPromoName[] =
+    "Persist default browser promo through app backgrounding";
+const char kPersistentDefaultBrowserPromoDescription[] =
+    "When enabled, the default browser promo will persist through "
+    "backgrounding the app so the instructions remain visible when coming "
+    "back.";
+
 const char kDeprecateFeedHeaderExperimentName[] =
     "Deprecate feed header toggle experiment";
 const char kDeprecateFeedHeaderExperimentDescription[] =

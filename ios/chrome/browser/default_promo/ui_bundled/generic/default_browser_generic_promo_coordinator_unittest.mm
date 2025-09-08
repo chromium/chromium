@@ -12,7 +12,9 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/promo_statistics.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -243,8 +245,7 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
   base::HistogramTester histogram_tester;
   [coordinator_ start];
 
-  // Check that histograms for appear action are recorded, but for other actions
-  // there are not.
+  // Check that only histograms for appear action are recorded.
   ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Appear", 1);
   ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "PrimaryAction",
                                             0);
@@ -289,8 +290,7 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
   id mock_mediator = OCMClassMock([DefaultBrowserGenericPromoMediator class]);
   coordinator_.mediator = mock_mediator;
 
-  // Check that histograms for appear action are recorded, but for other actions
-  // there are not.
+  // Check that only histograms for appear action are recorded.
   ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Appear", 1);
   ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "PrimaryAction",
                                             0);
@@ -317,4 +317,78 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
                                             1);
   ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Cancel", 0);
   ExpectMetricsForTriggerCriteriaExperiment(&histogram_tester, "Dismiss", 0);
+}
+
+// Tests that when the promo is persistent (doesn't dismiss on primary button
+// tap), only the first action causes metrics to be recorded.
+TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
+       TestPersistentPromoOnlyRecordsOutcomeOnce) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPersistentDefaultBrowserPromo);
+  base::HistogramTester histogram_tester;
+
+  [coordinator_ start];
+
+  // Mock the mediator which otherwise will open the iOS settings on primary
+  // action. This can be a problem for next tests.
+  id mock_mediator = OCMClassMock([DefaultBrowserGenericPromoMediator class]);
+  coordinator_.mediator = mock_mediator;
+
+  // Check that only histograms for appear action are recorded.
+  histogram_tester.ExpectTotalCount("IOS.DefaultBrowserPromo.Shown", 1);
+  histogram_tester.ExpectBucketCount("IOS.DefaultBrowserPromo.Shown",
+                                     DefaultPromoTypeForUMA::kGeneral, 1);
+  histogram_tester.ExpectTotalCount("IOS.DefaultBrowserVideoPromo.Fullscreen",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "IOS.DefaultBrowserVideoPromo.PersistedDuration", 0);
+
+  // Tap the primary button.
+  DefaultBrowserInstructionsViewController* promo_view_controller =
+      base::apple::ObjCCastStrict<DefaultBrowserInstructionsViewController>(
+          view_controller_.presentedViewController);
+  UIView* primary_button_view =
+      FindByID(promo_view_controller.view,
+               kConfirmationAlertPrimaryActionAccessibilityIdentifier);
+  EXPECT_NSNE(nil, primary_button_view);
+  ASSERT_TRUE([primary_button_view isKindOfClass:[UIButton class]]);
+
+  UIButton* primary_button =
+      base::apple::ObjCCastStrict<UIButton>(primary_button_view);
+  [primary_button sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  // Check that the primary button tap has been recorded.
+  histogram_tester.ExpectTotalCount("IOS.DefaultBrowserPromo.Shown", 1);
+  histogram_tester.ExpectBucketCount("IOS.DefaultBrowserPromo.Shown",
+                                     DefaultPromoTypeForUMA::kGeneral, 1);
+  histogram_tester.ExpectTotalCount("IOS.DefaultBrowserVideoPromo.Fullscreen",
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserPromo.Shown",
+      IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped, 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.DefaultBrowserVideoPromo.PersistedDuration", 0);
+
+  // Tap the secondary button to dismiss the promo.
+  UIView* secondary_button_view =
+      FindByID(promo_view_controller.view,
+               kConfirmationAlertSecondaryActionAccessibilityIdentifier);
+  EXPECT_NSNE(nil, secondary_button_view);
+  ASSERT_TRUE([secondary_button_view isKindOfClass:[UIButton class]]);
+
+  UIButton* secondary_button =
+      base::apple::ObjCCastStrict<UIButton>(secondary_button_view);
+  [secondary_button sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  // Check that the metrics didn't change.
+  histogram_tester.ExpectTotalCount("IOS.DefaultBrowserPromo.Shown", 1);
+  histogram_tester.ExpectBucketCount("IOS.DefaultBrowserPromo.Shown",
+                                     DefaultPromoTypeForUMA::kGeneral, 1);
+  histogram_tester.ExpectTotalCount("IOS.DefaultBrowserVideoPromo.Fullscreen",
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserPromo.Shown",
+      IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped, 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.DefaultBrowserVideoPromo.PersistedDuration", 1);
 }

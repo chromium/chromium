@@ -7,8 +7,10 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/promo_statistics.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
@@ -40,6 +42,10 @@ using base::UserMetricsAction;
   raw_ptr<feature_engagement::Tracker> _tracker;
   // Contains all the stats that needs to be recorded for all promo actions.
   PromoStatistics* _promoStats;
+  // Only the first interaction is recorded to metrics.
+  BOOL _firstInteractionRecorded;
+  // The timestamp of the first primary button tap.
+  base::Time _acceptanceTimestamp;
 }
 
 #pragma mark - ChromeCoordinator
@@ -83,42 +89,54 @@ using base::UserMetricsAction;
 - (void)confirmationAlertPrimaryAction {
   [_mediator didTapPrimaryActionButton:
                  /*useDefaultAppsDestination=*/_promoWasFromOffCycleTrigger];
-  RecordDefaultBrowserPromoLastAction(
-      IOSDefaultBrowserPromoAction::kActionButton);
-  base::UmaHistogramEnumeration(
-      "IOS.DefaultBrowserVideoPromo.Fullscreen",
-      IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped);
-  RecordAction(UserMetricsAction(
-      "IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped"));
-  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    RecordPromoStatsToUMAForAction(_promoStats,
-                                   IOSDefaultBrowserPromoAction::kActionButton);
+  if (!_firstInteractionRecorded) {
+    _firstInteractionRecorded = YES;
+    _acceptanceTimestamp = base::Time::Now();
+    RecordDefaultBrowserPromoLastAction(
+        IOSDefaultBrowserPromoAction::kActionButton);
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserVideoPromo.Fullscreen",
+        IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped);
+    RecordAction(UserMetricsAction(
+        "IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped"));
+    if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+      RecordPromoStatsToUMAForAction(
+          _promoStats, IOSDefaultBrowserPromoAction::kActionButton);
+    }
   }
-  [_handler hidePromo];
+  if (!IsPersistentDefaultBrowserPromoEnabled()) {
+    [_handler hidePromo];
+  }
 }
 
 - (void)confirmationAlertSecondaryAction {
-  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
-  base::UmaHistogramEnumeration(
-      "IOS.DefaultBrowserVideoPromo.Fullscreen",
-      IOSDefaultBrowserVideoPromoAction::kSecondaryActionTapped);
-  RecordAction(
-      UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
-  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    RecordPromoStatsToUMAForAction(_promoStats,
-                                   IOSDefaultBrowserPromoAction::kCancel);
+  if (!_firstInteractionRecorded) {
+    _firstInteractionRecorded = YES;
+    RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserVideoPromo.Fullscreen",
+        IOSDefaultBrowserVideoPromoAction::kSecondaryActionTapped);
+    RecordAction(
+        UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
+    if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+      RecordPromoStatsToUMAForAction(_promoStats,
+                                     IOSDefaultBrowserPromoAction::kCancel);
+    }
   }
-  [_handler hidePromo];
+  [self hidePromoAndRecordDismissal];
 }
 
 - (void)confirmationAlertTertiaryAction {
-  RecordDefaultBrowserPromoLastAction(
-      IOSDefaultBrowserPromoAction::kRemindMeLater);
-  base::UmaHistogramEnumeration(
-      "IOS.DefaultBrowserVideoPromo.Fullscreen",
-      IOSDefaultBrowserVideoPromoAction::kTertiaryActionTapped);
-  RecordAction(UserMetricsAction(
-      "IOS.DefaultBrowserVideoPromo.Fullscreen.RemindMeLater"));
+  if (!_firstInteractionRecorded) {
+    _firstInteractionRecorded = YES;
+    RecordDefaultBrowserPromoLastAction(
+        IOSDefaultBrowserPromoAction::kRemindMeLater);
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserVideoPromo.Fullscreen",
+        IOSDefaultBrowserVideoPromoAction::kTertiaryActionTapped);
+    RecordAction(UserMetricsAction(
+        "IOS.DefaultBrowserVideoPromo.Fullscreen.RemindMeLater"));
+  }
   if (_tracker) {
     _tracker->NotifyEvent(
         feature_engagement::events::kDefaultBrowserPromoRemindMeLater);
@@ -131,20 +149,43 @@ using base::UserMetricsAction;
   [_handler hidePromo];
 }
 
+- (void)confirmationAlertDismissAction {
+  if (!_firstInteractionRecorded) {
+    _firstInteractionRecorded = YES;
+    RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
+    // TODO(crbug.com/443766830): Instead of kSwipeDown, use a dedicated value
+    // for the close button.
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserVideoPromo.Fullscreen",
+        IOSDefaultBrowserVideoPromoAction::kSwipeDown);
+    RecordAction(
+        UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
+    if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+      RecordPromoStatsToUMAForAction(_promoStats,
+                                     IOSDefaultBrowserPromoAction::kDismiss);
+    }
+  }
+  [self hidePromoAndRecordDismissal];
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
-  base::UmaHistogramEnumeration("IOS.DefaultBrowserVideoPromo.Fullscreen",
-                                IOSDefaultBrowserVideoPromoAction::kSwipeDown);
-  RecordAction(
-      UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
-  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    RecordPromoStatsToUMAForAction(_promoStats,
-                                   IOSDefaultBrowserPromoAction::kDismiss);
+  if (!_firstInteractionRecorded) {
+    _firstInteractionRecorded = YES;
+    RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserVideoPromo.Fullscreen",
+        IOSDefaultBrowserVideoPromoAction::kSwipeDown);
+    RecordAction(
+        UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
+    if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+      RecordPromoStatsToUMAForAction(_promoStats,
+                                     IOSDefaultBrowserPromoAction::kDismiss);
+    }
   }
-  [_handler hidePromo];
+  [self hidePromoAndRecordDismissal];
 }
 
 #pragma mark - Public
@@ -163,8 +204,10 @@ using base::UserMetricsAction;
       base::FeatureList::IsEnabled(
           feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
       !_promoWasFromRemindMeLater;
+  BOOL hasCloseButton = IsPersistentDefaultBrowserPromoEnabled();
   _viewController = [[DefaultBrowserInstructionsViewController alloc]
           initWithDismissButton:YES
+                 hasCloseButton:hasCloseButton
                hasRemindMeLater:hasRemindMeLater
       useDefaultAppsDestination:_promoWasFromOffCycleTrigger
                        hasSteps:NO
@@ -201,6 +244,19 @@ using base::UserMetricsAction;
   RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
   base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
                                 DefaultPromoTypeForUMA::kGeneral);
+}
+
+// Records the dismissal of the promo if necessary and hides the promo.
+- (void)hidePromoAndRecordDismissal {
+  if (_firstInteractionRecorded) {
+    base::TimeDelta elapsedSinceAcceptance =
+        base::Time::Now() - _acceptanceTimestamp;
+    // 120 buckets up to 4 hours means 2 minutes per bucket.
+    UmaHistogramCustomTimes("IOS.DefaultBrowserVideoPromo.PersistedDuration",
+                            elapsedSinceAcceptance, base::Minutes(0),
+                            base::Hours(4), 120);
+  }
+  [_handler hidePromo];
 }
 
 - (void)setPromoStatisticsForTesting:(PromoStatistics*)testPromoStats {

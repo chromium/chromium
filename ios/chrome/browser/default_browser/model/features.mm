@@ -17,3 +17,9 @@ BASE_FEATURE(ShareDefaultBrowserStatus, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsShareDefaultBrowserStatusEnabled() {
   return base::FeatureList::IsEnabled(kShareDefaultBrowserStatus);
 }
+
+BASE_FEATURE(PersistentDefaultBrowserPromo, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPersistentDefaultBrowserPromoEnabled() {
+  return base::FeatureList::IsEnabled(kPersistentDefaultBrowserPromo);
+}
