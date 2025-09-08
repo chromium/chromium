@@ -16244,21 +16244,6 @@
             ]
         }
     ],
-    "NonModalSignInPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NonModalSignInPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "NonStandardAppearanceValueSliderVertical": [
         {
             "platforms": [
