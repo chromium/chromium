@@ -319,11 +319,13 @@ TEST_F(WmGestureHandlerTest, EnterOverviewWithPopupCaptureWindow) {
   // event as entering overview mode.
   std::unique_ptr<aura::Window> normal_window =
       CreateTestWindow(gfx::Rect(100, 100));
-  std::unique_ptr<aura::Window> popup_window =
-      base::WrapUnique(aura::test::CreateTestWindowWithDelegateAndType(
-          aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
-          aura::client::WINDOW_TYPE_POPUP, /*id=*/1, gfx::Rect(100, 100),
-          normal_window.get(), /*show_on_creation=*/true));
+  std::unique_ptr<aura::Window> popup_window = aura::test::CreateTestWindow(
+      {.delegate =
+           aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+       .bounds = gfx::Rect(100, 100),
+       .window_type = aura::client::WINDOW_TYPE_POPUP,
+       .window_id = 1},
+      normal_window.get());
   popup_window->SetCapture();
 
   ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel, gfx::Point(),

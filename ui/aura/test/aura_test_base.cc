@@ -82,11 +82,15 @@ void AuraTestBase::TearDown() {
 
 Window* AuraTestBase::CreateNormalWindow(int id, Window* parent,
                                          WindowDelegate* delegate) {
-  return CreateTestWindowWithDelegateAndType(
-      delegate ? delegate
-               : test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
-      client::WINDOW_TYPE_UNKNOWN, id, gfx::Rect(0, 0, 100, 100), parent,
-      /* show_on_creation */ true);
+  return CreateTestWindow(
+             {.delegate = delegate ? delegate
+                                   : test::TestWindowDelegate::
+                                         CreateSelfDestroyingDelegate(),
+              .bounds = gfx::Rect(0, 0, 100, 100),
+              .window_type = client::WINDOW_TYPE_UNKNOWN,
+              .window_id = id},
+             parent)
+      .release();
 }
 
 void AuraTestBase::RunAllPendingInMessageLoop() {

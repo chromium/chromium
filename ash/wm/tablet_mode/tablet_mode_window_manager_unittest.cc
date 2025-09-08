@@ -171,8 +171,12 @@ class TabletModeWindowManagerTest : public AshTestBase {
       if (!params.max_size.IsEmpty())
         delegate->set_maximum_size(params.max_size);
     }
-    aura::Window* window = aura::test::CreateTestWindowWithDelegateAndType(
-        delegate, params.type, 0, params.bounds, NULL, params.show_on_creation);
+    aura::Window* window =
+        aura::test::CreateTestWindow({.delegate = delegate,
+                                      .bounds = params.bounds,
+                                      .window_type = params.type,
+                                      .show = params.show_on_creation})
+            .release();
     int32_t behavior = aura::client::kResizeBehaviorNone |
                        aura::client::kResizeBehaviorCanFullscreen;
     behavior |= params.can_resize ? aura::client::kResizeBehaviorCanResize : 0;
