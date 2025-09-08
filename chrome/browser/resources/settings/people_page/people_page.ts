@@ -504,15 +504,11 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         break;
       case 'account':
         assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
-        // TODO(crbug.com/429139804): Replace with actual entry point once
-        // implemented.
-        triggerId = 'sync-setup';
+        triggerId = 'account-subpage-row';
         break;
       case 'googleServices':
         assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
-        // TODO(crbug.com/429139804): Replace with actual entry point once
-        // implemented.
-        triggerId = 'sync-setup';
+        triggerId = 'google-services';
         break;
         // </if>
     }
