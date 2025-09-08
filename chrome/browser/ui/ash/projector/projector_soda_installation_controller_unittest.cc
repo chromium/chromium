@@ -81,7 +81,7 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
 
     ON_CALL(*mock_client_, GetSpeechRecognitionAvailability)
         .WillByDefault(
-            testing::Invoke([&]() -> ash::SpeechRecognitionAvailability {
+            [&]() -> ash::SpeechRecognitionAvailability {
               SpeechRecognitionAvailability availability;
               availability.on_device_availability =
                   SpeechRecognitionRecognizerClientImpl::
@@ -91,7 +91,7 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
                               ->application_locale_storage()
                               ->Get());
               return availability;
-            }));
+            });
 
     projector_controller().SetClient(mock_client_.get());
     mock_app_client_ = std::make_unique<MockAppClient>();

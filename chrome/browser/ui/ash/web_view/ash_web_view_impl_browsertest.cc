@@ -45,7 +45,7 @@ using ash::AshWebViewFactory;
     int change_count = 0;                                                  \
     base::RunLoop run_loop;                                                \
     EXPECT_CALL(mock, OnViewPreferredSizeChanged)                          \
-        .WillRepeatedly(testing::Invoke([&](views::View* view) {           \
+        .WillRepeatedly([&](views::View* view) {                           \
           if (expected_preferred_size_ != view->GetPreferredSize()) {      \
             ++change_count;                                                \
             if (change_count <= max_change_count) {                        \
@@ -54,21 +54,21 @@ using ash::AshWebViewFactory;
           }                                                                \
           EXPECT_EQ(expected_preferred_size_, view->GetPreferredSize());   \
           run_loop.QuitClosure().Run();                                    \
-        }));                                                               \
+        });                                                                \
     run_loop.Run();                                                        \
   }
 
-#define EXPECT_DID_STOP_LOADING(web_view_)                                     \
-  {                                                                            \
-    MockAshWebViewObserver mock;                                               \
-    base::ScopedObservation<AshWebView, AshWebView::Observer> obs{&mock};      \
-    obs.Observe(web_view_);                                                    \
-                                                                               \
-    base::RunLoop run_loop;                                                    \
-    EXPECT_CALL(mock, DidStopLoading).WillOnce(testing::Invoke([&run_loop]() { \
-      run_loop.QuitClosure().Run();                                            \
-    }));                                                                       \
-    run_loop.Run();                                                            \
+#define EXPECT_DID_STOP_LOADING(web_view_)                                \
+  {                                                                       \
+    MockAshWebViewObserver mock;                                          \
+    base::ScopedObservation<AshWebView, AshWebView::Observer> obs{&mock}; \
+    obs.Observe(web_view_);                                               \
+                                                                          \
+    base::RunLoop run_loop;                                               \
+    EXPECT_CALL(mock, DidStopLoading).WillOnce([&run_loop]() {            \
+      run_loop.QuitClosure().Run();                                       \
+    });                                                                   \
+    run_loop.Run();                                                       \
   }
 
 #define EXPECT_DID_SUPPRESS_NAVIGATION(web_view_, expected_url_,          \
@@ -81,30 +81,28 @@ using ash::AshWebViewFactory;
                                                                           \
     base::RunLoop run_loop;                                               \
     EXPECT_CALL(mock, DidSuppressNavigation)                              \
-        .WillOnce(testing::Invoke([&](const GURL& url,                    \
-                                      WindowOpenDisposition disposition,  \
-                                      bool from_user_gesture) {           \
+        .WillOnce([&](const GURL& url, WindowOpenDisposition disposition, \
+                      bool from_user_gesture) {                           \
           EXPECT_EQ(expected_url_, url);                                  \
           EXPECT_EQ(expected_disposition_, disposition);                  \
           EXPECT_EQ(expected_from_user_gesture_, from_user_gesture);      \
           run_loop.QuitClosure().Run();                                   \
-        }));                                                              \
+        });                                                               \
     run_loop.Run();                                                       \
   }
 
-#define EXPECT_DID_CHANGE_CAN_GO_BACK(web_view_, expected_can_go_back_)   \
-  {                                                                       \
-    MockAshWebViewObserver mock;                                          \
-    base::ScopedObservation<AshWebView, AshWebView::Observer> obs{&mock}; \
-    obs.Observe(web_view_);                                               \
-                                                                          \
-    base::RunLoop run_loop;                                               \
-    EXPECT_CALL(mock, DidChangeCanGoBack)                                 \
-        .WillOnce(testing::Invoke([&](bool can_go_back) {                 \
-          EXPECT_EQ(expected_can_go_back_, can_go_back);                  \
-          run_loop.QuitClosure().Run();                                   \
-        }));                                                              \
-    run_loop.Run();                                                       \
+#define EXPECT_DID_CHANGE_CAN_GO_BACK(web_view_, expected_can_go_back_)    \
+  {                                                                        \
+    MockAshWebViewObserver mock;                                           \
+    base::ScopedObservation<AshWebView, AshWebView::Observer> obs{&mock};  \
+    obs.Observe(web_view_);                                                \
+                                                                           \
+    base::RunLoop run_loop;                                                \
+    EXPECT_CALL(mock, DidChangeCanGoBack).WillOnce([&](bool can_go_back) { \
+      EXPECT_EQ(expected_can_go_back_, can_go_back);                       \
+      run_loop.QuitClosure().Run();                                        \
+    });                                                                    \
+    run_loop.Run();                                                        \
   }
 
 // Helpers ---------------------------------------------------------------------

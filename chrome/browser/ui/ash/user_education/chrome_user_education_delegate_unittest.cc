@@ -54,7 +54,6 @@
 namespace {
 
 // Aliases.
-using ::testing::Invoke;
 using ::testing::NiceMock;
 
 // Element identifiers.
@@ -284,12 +283,12 @@ class ChromeUserEducationDelegateNewUserTest
           // the first app list sync in the session has been completed.
           ON_CALL(*app_list_syncable_service, OnFirstSync)
               .WillByDefault(
-                  Invoke([&](base::OnceCallback<void(bool was_first_sync_ever)>
-                                 callback) {
+                  [&](base::OnceCallback<void(bool was_first_sync_ever)>
+                          callback) {
                     on_first_sync_.Post(FROM_HERE,
                                         base::BindOnce(std::move(callback),
                                                        was_first_sync_ever()));
-                  }));
+                  });
 
           return app_list_syncable_service;
         })}};
