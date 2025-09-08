@@ -2044,23 +2044,17 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   CHECK(!CanUseDrawingBufferSIWithoutCopyForLowLatency());
-  if (SharedGpuContext::IsGpuCompositingEnabled() &&
-      Host()->LowLatencyEnabled()) {
-    // If LowLatency is enabled, we need a resource that is able to perform
-    // well in such mode. Try a SharedImage with the appropriate flags.
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
     gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    provider = CanvasResourceProvider::CreateSharedImageProvider(
-        Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
-        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        shared_image_usage_flags, Host());
-  } else if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    // If there is no LowLatency mode, and GPU is enabled, will try a GPU
-    // SharedImage that should support Usage Display and probably Usage Scanout
-    // if WebGLImageChromium is enabled.
-    gpu::SharedImageUsageSet shared_image_usage_flags =
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    if (SharedGpuContext::MaySupportImageChromium() &&
+
+    // TODO(crbug.com/391648152): Remove the guard on LowLatencyEnabled() being
+    // false; it is present for historical reasons but in reality if
+    // CanUseDrawingBufferSIWithoutCopyForLatency() is false then either (a)
+    // the checks here will fail or (b) CRP::CreateSharedImageProvider() will
+    // itself strip off the SCANOUT usage due to its own internal checks.
+    if (!Host()->LowLatencyEnabled() &&
+        SharedGpuContext::MaySupportImageChromium() &&
         RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
