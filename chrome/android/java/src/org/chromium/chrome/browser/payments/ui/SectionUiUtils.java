@@ -10,15 +10,11 @@ import android.text.TextPaint;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.EditableOption;
 
-/**
- * Utility functions for PaymentRequestSection.
- * This class is not supposed to be instantiated.
- */
+/** Utility functions for PaymentRequestSection. This class is not supposed to be instantiated. */
 public class SectionUiUtils {
     /** Avoid instantiation by accident. */
     private SectionUiUtils() {}

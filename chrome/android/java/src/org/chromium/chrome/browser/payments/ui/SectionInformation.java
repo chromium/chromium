@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.payments.ui;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.EditableOption;
 
@@ -17,9 +17,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * The data to show in a single section where the user can select something, e.g., their
- * shipping address or payment method.
+ * The data to show in a single section where the user can select something, e.g., their shipping
+ * address or payment method.
  */
+@NullMarked
 public class SectionInformation {
     /** This value indicates that the user has not made a selection in this section. */
     public static final int NO_SELECTION = -1;
@@ -33,8 +34,8 @@ public class SectionInformation {
 
     private int mSelectedItem;
     private boolean mDisplayInSingleLineInNormalMode = true;
-    public String mErrorMessage;
-    @Nullable public String mAddditionalText;
+    public @Nullable String mErrorMessage;
+    public @Nullable String mAddditionalText;
 
     /** Builds an empty section without selection. */
     public SectionInformation(@PaymentRequestUi.DataType int sectionType) {
@@ -61,7 +62,7 @@ public class SectionInformation {
     public SectionInformation(
             @PaymentRequestUi.DataType int sectionType,
             int selection,
-            Collection<? extends EditableOption> itemCollection) {
+            @Nullable Collection<? extends EditableOption> itemCollection) {
         mDataType = sectionType;
         updateItemsWithCollection(selection, itemCollection);
     }
@@ -248,13 +249,17 @@ public class SectionInformation {
         }
     }
 
-    /** @param msg The optional error message to display when the selection is invalid. */
-    public void setErrorMessage(String msg) {
+    /**
+     * @param msg The optional error message to display when the selection is invalid.
+     */
+    public void setErrorMessage(@Nullable String msg) {
         mErrorMessage = msg;
     }
 
-    /** @return The optional error message to display when the selection is invalid. */
-    public String getErrorMessage() {
+    /**
+     * @return The optional error message to display when the selection is invalid.
+     */
+    public @Nullable String getErrorMessage() {
         return mErrorMessage;
     }
 

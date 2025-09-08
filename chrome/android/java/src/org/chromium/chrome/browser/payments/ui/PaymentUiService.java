@@ -10,10 +10,10 @@ import android.os.Handler;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AddressNormalizerFactory;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
@@ -129,8 +129,8 @@ public class PaymentUiService
     private final Callback<TabModel> mCurrentTabModelObserver = this::onTabModelSelected;
     private final TabModelObserver mTabModelObserver;
     private ContactEditor mContactEditor;
-    private PaymentHandlerCoordinator mPaymentHandlerUi;
-    private Callback<PaymentInformation> mPaymentInformationCallback;
+    private @Nullable PaymentHandlerCoordinator mPaymentHandlerUi;
+    private @Nullable Callback<PaymentInformation> mPaymentInformationCallback;
     private SectionInformation mUiShippingOptions;
     private final Delegate mDelegate;
     private final WebContents mWebContents;
@@ -150,9 +150,9 @@ public class PaymentUiService
     private SectionInformation mShippingAddressesSection;
     private ContactDetailsSection mContactSection;
     private List<AutofillProfile> mAutofillProfiles;
-    private TabModelSelector mObservedTabModelSelector;
-    private TabModel mObservedTabModel;
-    private LayoutStateProvider mLayoutStateProvider;
+    private @Nullable TabModelSelector mObservedTabModelSelector;
+    private @Nullable TabModel mObservedTabModel;
+    private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     /** The delegate of this class. */
     public interface Delegate {
@@ -222,14 +222,14 @@ public class PaymentUiService
 
         /**
          * @return The context of the current activity, can be null when WebContents has been
-         *         destroyed, the activity is gone, the window is closed, etc.
+         *     destroyed, the activity is gone, the window is closed, etc.
          */
-        @Nullable
-        Context getContext();
+        @Nullable Context getContext();
 
-        /** @return The ActivityLifecycleDispatcher of the current ChromeActivity. */
-        @Nullable
-        ActivityLifecycleDispatcher getActivityLifecycleDispatcher();
+        /**
+         * @return The ActivityLifecycleDispatcher of the current ChromeActivity.
+         */
+        @Nullable ActivityLifecycleDispatcher getActivityLifecycleDispatcher();
     }
 
     /**
@@ -606,7 +606,9 @@ public class PaymentUiService
         }
     }
 
-    /** @return The first modifier that matches the given app, or null. */
+    /**
+     * @return The first modifier that matches the given app, or null.
+     */
     private @Nullable PaymentDetailsModifier getModifier(@Nullable PaymentApp app) {
         if (mParams.hasClosed()) return null;
         Map<String, PaymentDetailsModifier> modifiers = mParams.getUnmodifiableModifiers();
@@ -730,7 +732,7 @@ public class PaymentUiService
      * @param options The raw shipping options to parse. Can be null.
      * @return The UI representation of the shipping options.
      */
-    private SectionInformation getShippingOptions(@Nullable PaymentShippingOption[] options) {
+    private SectionInformation getShippingOptions(PaymentShippingOption @Nullable [] options) {
         // Shipping options are optional.
         if (options == null || options.length == 0) {
             return new SectionInformation(PaymentRequestUi.DataType.SHIPPING_OPTIONS);
@@ -880,7 +882,7 @@ public class PaymentUiService
 
     // Implements PaymentUiServiceTestInterface:
     @Override
-    public WebContents getPaymentHandlerWebContentsForTest() {
+    public @Nullable WebContents getPaymentHandlerWebContentsForTest() {
         if (mPaymentHandlerUi == null) return null;
         return mPaymentHandlerUi.getWebContentsForTest();
     }
@@ -1298,9 +1300,9 @@ public class PaymentUiService
     // Implements PaymentRequestUi.Delegate:
     @Override
     public boolean onPayClicked(
-            EditableOption selectedShippingAddress,
-            EditableOption selectedShippingOption,
-            EditableOption selectedPaymentMethod) {
+            @Nullable EditableOption selectedShippingAddress,
+            @Nullable EditableOption selectedShippingOption,
+            @Nullable EditableOption selectedPaymentMethod) {
         return mDelegate.invokePaymentApp(
                 selectedShippingAddress,
                 selectedShippingOption,
@@ -1310,7 +1312,8 @@ public class PaymentUiService
     // Implements PaymentRequestUi.Delegate:
     @Override
     public int onSectionAddOption(
-            @PaymentRequestUi.DataType int optionType, Callback<PaymentInformation> callback) {
+            @PaymentRequestUi.DataType int optionType,
+            @Nullable Callback<PaymentInformation> callback) {
         if (optionType == PaymentRequestUi.DataType.SHIPPING_ADDRESSES) {
             editAddress(null);
             mPaymentInformationCallback = callback;
@@ -1334,7 +1337,7 @@ public class PaymentUiService
     public int onSectionEditOption(
             @PaymentRequestUi.DataType int optionType,
             EditableOption option,
-            Callback<PaymentInformation> callback) {
+            @Nullable Callback<PaymentInformation> callback) {
         if (optionType == PaymentRequestUi.DataType.SHIPPING_ADDRESSES) {
             editAddress((AutofillAddress) option);
             mPaymentInformationCallback = callback;
@@ -1442,7 +1445,7 @@ public class PaymentUiService
     public int onSectionOptionSelected(
             @PaymentRequestUi.DataType int optionType,
             EditableOption option,
-            Callback<PaymentInformation> callback) {
+            @Nullable Callback<PaymentInformation> callback) {
         Context context = mDelegate.getContext();
         if (context == null) return PaymentRequestUi.SelectionResult.NONE;
 

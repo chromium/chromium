@@ -29,11 +29,11 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.gridlayout.widget.GridLayout;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.autofill.EditableOption;
@@ -99,8 +99,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         boolean isAcceptingUserInput();
 
         /** Returns any additional text that needs to be displayed. */
-        @Nullable
-        String getAdditionalText(PaymentRequestSection section);
+        @Nullable String getAdditionalText(PaymentRequestSection section);
 
         /** Returns true if the additional text should be stylized as a warning instead of info. */
         boolean isAdditionalTextDisplayingWarning(PaymentRequestSection section);
@@ -141,7 +140,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
     private final @ColorInt int mUnfocusedBackgroundColor;
     private final int mFocusedBackgroundColor;
     private final LinearLayout mMainSection;
-    private final ImageView mLogoView;
+    private final @Nullable ImageView mLogoView;
     private final ImageView mChevronView;
 
     private TextView mTitleView;
@@ -149,7 +148,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
     private TextView mSummaryLeftTextView;
     private TextView mSummaryRightTextView;
 
-    private Drawable mLogo;
+    private @Nullable Drawable mLogo;
     private boolean mIsSummaryAllowed = true;
 
     /**
@@ -187,9 +186,9 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
     /**
      * Sets what logo should be displayed.
      *
-     * @param logo       The logo to display.
+     * @param logo The logo to display.
      */
-    protected void setLogoDrawable(Drawable logo) {
+    protected void setLogoDrawable(@Nullable Drawable logo) {
         assert isLogoNecessary();
         mLogo = logo;
         mLogoView.setBackgroundResource(0);
@@ -873,11 +872,11 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             private static final int OPTION_ROW_TYPE_WARNING = 3;
 
             private final int mRowType;
-            @Nullable private final EditableOption mOption;
+            private final @Nullable EditableOption mOption;
             private final View mButton;
             private final TextView mLabel;
-            private final View mOptionIcon;
-            private final View mEditIcon;
+            private final @Nullable View mOptionIcon;
+            private final @Nullable View mEditIcon;
 
             public OptionRow(
                     GridLayout parent,
@@ -937,7 +936,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 return mLabel.getText();
             }
 
-            private View createButton(
+            private @Nullable View createButton(
                     GridLayout parent, int rowIndex, boolean isSelected, boolean isEnabled) {
                 if (mRowType == OPTION_ROW_TYPE_DESCRIPTION) return null;
 
@@ -1105,7 +1104,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             }
 
             /** Returns the edit icon for the option row. */
-            public View getEditIconForTest() {
+            public @Nullable View getEditIconForTest() {
                 return mEditIcon;
             }
         }
@@ -1149,14 +1148,14 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         /** Indicates whether the summary is set to descriptive or title text style. */
         private boolean mSummaryInDescriptiveText;
 
-        private FocusChangedObserver mFocusChangedObserver;
+        private @Nullable FocusChangedObserver mFocusChangedObserver;
 
         /**
          * Constructs an OptionSection.
          *
-         * @param context     Context to pull resources from.
+         * @param context Context to pull resources from.
          * @param sectionName Title of the section to display.
-         * @param delegate    Delegate to alert when something changes in the dialog.
+         * @param delegate Delegate to alert when something changes in the dialog.
          */
         public OptionSection(Context context, String sectionName, SectionDelegate delegate) {
             super(context, sectionName, delegate);
@@ -1355,7 +1354,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             }
         }
 
-        private void updateSelectedItem(EditableOption selectedItem) {
+        private void updateSelectedItem(@Nullable EditableOption selectedItem) {
             // Only left TextView in the summary section is used in this section.
             // Summary is displayed in multiple lines by default unless:
             // 1. nothing is selected or
@@ -1427,7 +1426,8 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             updateControlLayout();
         }
 
-        private void updateOptionList(SectionInformation information, EditableOption selectedItem) {
+        private void updateOptionList(
+                SectionInformation information, @Nullable EditableOption selectedItem) {
             mOptionLayout.removeAllViews();
             mOptionRows.clear();
             mLabelsForTest.clear();

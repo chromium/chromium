@@ -30,10 +30,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
@@ -146,7 +146,7 @@ public class PaymentRequestUi
         int onSectionOptionSelected(
                 @DataType int optionType,
                 EditableOption option,
-                Callback<PaymentInformation> checkedCallback);
+                @Nullable Callback<PaymentInformation> checkedCallback);
 
         /**
          * Called when the user clicks edit icon (pencil icon) on the payment option in a section.
@@ -168,7 +168,7 @@ public class PaymentRequestUi
         int onSectionEditOption(
                 @DataType int optionType,
                 EditableOption option,
-                Callback<PaymentInformation> checkedCallback);
+                @Nullable Callback<PaymentInformation> checkedCallback);
 
         /**
          * Called when the user clicks on the "Add" button for a section.
@@ -187,16 +187,16 @@ public class PaymentRequestUi
          */
         @SelectionResult
         int onSectionAddOption(
-                @DataType int optionType, Callback<PaymentInformation> checkedCallback);
+                @DataType int optionType, @Nullable Callback<PaymentInformation> checkedCallback);
 
         /**
          * Called when the user clicks on the “Pay” button. If this method returns true, the UI is
          * disabled and is showing a spinner. Otherwise, the UI is hidden.
          */
         boolean onPayClicked(
-                EditableOption selectedShippingAddress,
-                EditableOption selectedShippingOption,
-                EditableOption selectedPaymentMethod);
+                @Nullable EditableOption selectedShippingAddress,
+                @Nullable EditableOption selectedShippingOption,
+                @Nullable EditableOption selectedPaymentMethod);
 
         /**
          * Called when the user dismisses the UI via the “back” button on their phone or the “X”
@@ -277,8 +277,8 @@ public class PaymentRequestUi
      */
     private static final int DIALOG_ENTER_ANIMATION_MS = 225;
 
-    private static PaymentRequestObserverForTest sPaymentRequestObserverForTest;
-    private static EditorObserverForTest sEditorObserverForTest;
+    private static @Nullable PaymentRequestObserverForTest sPaymentRequestObserverForTest;
+    private static @Nullable EditorObserverForTest sEditorObserverForTest;
 
     /** Notifies tests that the [PAY] button can be clicked. */
     private final NotifierForTest mReadyToPayNotifierForTest;
@@ -318,7 +318,7 @@ public class PaymentRequestUi
     private OptionSection mPaymentMethodSection;
     private List<SectionSeparator> mSectionSeparators;
 
-    private PaymentRequestSection mSelectedSection;
+    private @Nullable PaymentRequestSection mSelectedSection;
     private boolean mIsExpandedToFullHeight;
     private boolean mIsProcessingPayClicked;
     private boolean mIsClientClosing;
@@ -332,8 +332,8 @@ public class PaymentRequestUi
     private SectionInformation mShippingOptionsSectionInformation;
     private SectionInformation mContactDetailsSectionInformation;
 
-    private Animator mSheetAnimator;
-    private FocusAnimator mSectionAnimator;
+    private @Nullable Animator mSheetAnimator;
+    private @Nullable FocusAnimator mSectionAnimator;
 
     private InputProtector mInputProtector = new InputProtector();
 
@@ -638,7 +638,7 @@ public class PaymentRequestUi
      *
      * @param error The error message to display on the header.
      */
-    public void setRetryErrorMessage(String error) {
+    public void setRetryErrorMessage(@Nullable String error) {
         if (mRetryErrorView == null) return;
 
         mRetryErrorView.setText(error);
@@ -1086,7 +1086,7 @@ public class PaymentRequestUi
         mShippingAddressSection.setOptionSectionFocusChangedObserver(observer);
     }
 
-    private void expand(PaymentRequestSection section) {
+    private void expand(@Nullable PaymentRequestSection section) {
         if (!mIsExpandedToFullHeight) {
             // Container now takes the full height of the screen, animating towards it.
             mRequestView.getLayoutParams().height = LayoutParams.MATCH_PARENT;
@@ -1269,7 +1269,7 @@ public class PaymentRequestUi
     }
 
     @Override
-    public String getAdditionalText(PaymentRequestSection section) {
+    public @Nullable String getAdditionalText(PaymentRequestSection section) {
         if (section == mShippingAddressSection) {
             int selectedItemIndex = mShippingAddressSectionInformation.getSelectedItemIndex();
             if (selectedItemIndex != SectionInformation.NO_SELECTION
