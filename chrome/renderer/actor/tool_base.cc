@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/renderer/actor/tool_utils.h"
@@ -125,7 +126,8 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
                         base::NumberToString(
                             *observed_target_->node_attribute->dom_node_id),
                         " Hit Test Node:",
-                        base::NumberToString(target_node.GetDomNodeId())}));
+                        base::NumberToString(target_node.GetDomNodeId()),
+                        NodeToDebugSring(target_node)}));
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kObservedTargetElementChanged,
                      "The element at the target location is not the same as "
@@ -143,11 +145,13 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
     if (!target_node.Contains(&hit_element)) {
       journal_->Log(
           task_id_, "TimeOfUseValidation",
-          base::StrCat({"Target Node:",
-                        base::NumberToString(
-                            *observed_target_->node_attribute->dom_node_id),
-                        " interaction point occluded by Hit Test Node:",
-                        base::NumberToString(target_node.GetDomNodeId())}));
+          base::StrCat(
+              {"Target Node:", base::NumberToString(target_node.GetDomNodeId()),
+               NodeToDebugSring(target_node),
+               " interaction point occluded by "
+               "Hit Test Node:",
+               base::NumberToString(hit_element.GetDomNodeId()),
+               NodeToDebugSring(hit_element)}));
       // TODO(crbug.com/418280472): return error after retry for failed task is
       // landed.
       return resolved_target;

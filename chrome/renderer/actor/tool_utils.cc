@@ -6,6 +6,7 @@
 
 #include <sstream>
 
+#include "base/strings/strcat.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "content/public/renderer/render_frame.h"
@@ -153,6 +154,23 @@ mojom::ActionResultPtr CreateAndDispatchClick(WebMouseEvent::Button button,
   }
 
   return MakeOkResult();
+}
+
+std::string NodeToDebugSring(const blink::WebNode& node) {
+  if (node.IsTextNode()) {
+    // Truncate it to 100 characters, enough for debugging.
+    return base::StrCat({"text=", node.NodeValue().Substring(0u, 100u).Utf8()});
+  }
+  if (node.IsElementNode()) {
+    const blink::WebElement element = node.DynamicTo<blink::WebElement>();
+    return base::StrCat({element.TagName().Utf8(),
+                         " id=", element.GetIdAttribute().Utf8(),
+                         " class=", element.GetAttribute("class").Utf8()});
+  }
+  if (node.IsDocumentNode()) {
+    return "document";
+  }
+  return "";
 }
 
 }  // namespace actor

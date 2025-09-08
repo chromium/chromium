@@ -60,6 +60,9 @@ mojom::ActionResultPtr CreateAndDispatchClick(
     const gfx::PointF& click_point,
     blink::WebFrameWidget* widget);
 
+// Converts Node to a debug string of tag name, id and class.
+std::string NodeToDebugSring(const blink::WebNode& node);
+
 }  // namespace actor
 
 #endif  // CHROME_RENDERER_ACTOR_TOOL_UTILS_H_
