@@ -13,6 +13,17 @@ namespace {
 constexpr base::TimeDelta kMinTimeSinceLastLogBufferSend =
     base::Milliseconds(100);
 constexpr base::TimeDelta kSendLogBufferDelay = base::Milliseconds(200);
+
+std::vector<mojom::JournalDetailsPtr> MakeDetails(std::string_view details,
+                                                  bool is_begin) {
+  std::vector<mojom::JournalDetailsPtr> details_mojo;
+  if (!details.empty()) {
+    details_mojo.push_back(mojom::JournalDetails::New(
+        is_begin ? "begin_details" : "details", std::string(details)));
+  }
+  return details_mojo;
+}
+
 }  // namespace
 
 Journal::PendingAsyncEntry::PendingAsyncEntry(base::PassKey<Journal> pass_key,
@@ -69,7 +80,8 @@ void Journal::Log(int32_t task_id,
 
   auto journal_entry = mojom::JournalEntry::New(
       mojom::JournalEntryType::kInstant, task_id, mojom::JournalTrack::kActor,
-      base::Time::Now(), std::string(event), std::string(details));
+      base::Time::Now(), std::string(event),
+      MakeDetails(details, /*is_begin=*/false));
 
   AddJournalEntry(std::move(journal_entry));
 }
@@ -82,7 +94,8 @@ std::unique_ptr<Journal::PendingAsyncEntry> Journal::CreatePendingAsyncEntry(
 
   AddJournalEntry(mojom::JournalEntry::New(
       mojom::JournalEntryType::kBegin, task_id, mojom::JournalTrack::kActor,
-      base::Time::Now(), std::string(event_name), std::string(details)));
+      base::Time::Now(), std::string(event_name),
+      MakeDetails(details, /*is_begin=*/true)));
   return base::WrapUnique(new PendingAsyncEntry(base::PassKey<Journal>(),
                                                 weak_factory_.GetSafeRef(),
                                                 task_id, event_name));
@@ -112,7 +125,7 @@ void Journal::AddEndEvent(base::PassKey<Journal> pass_key,
                           std::string_view details) {
   AddJournalEntry(mojom::JournalEntry::New(
       mojom::JournalEntryType::kEnd, task_id, mojom::JournalTrack::kActor,
-      base::Time::Now(), event_name, std::string(details)));
+      base::Time::Now(), event_name, MakeDetails(details, /*is_begin=*/false)));
 }
 
 void Journal::SendLogBuffer() {

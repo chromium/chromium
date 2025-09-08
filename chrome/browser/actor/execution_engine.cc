@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -123,8 +124,10 @@ void ExecutionEngine::SetState(State state) {
   TRACE_EVENT0("actor", "ExecutionEngine::SetState");
   journal_->Log(GURL(), task_->id(), mojom::JournalTrack::kActor,
                 "ExecutionEngine::StateChange",
-                absl::StrFormat("State %s -> %s", StateToString(state_),
-                                StateToString(state)));
+                JournalDetailsBuilder()
+                    .Add("current_state", StateToString(state_))
+                    .Add("new_state", StateToString(state))
+                    .Build());
 
 #if DCHECK_IS_ON()
   static const base::NoDestructor<base::StateTransitions<State>> transitions(

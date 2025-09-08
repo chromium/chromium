@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -58,9 +59,12 @@ ActorInternalsUIHandler::~ActorInternalsUIHandler() {
 
 void ActorInternalsUIHandler::WillAddJournalEntry(
     const actor::AggregatedJournal::Entry& entry) {
+  std::stringstream ss;
+  ss << entry.data->details;
+
   remote_->JournalEntryAdded(actor_internals::mojom::JournalEntry::New(
-      entry.url, entry.data->event, ToString(entry.data->type),
-      entry.data->details, entry.data->timestamp, entry.data->task_id));
+      entry.url, entry.data->event, ToString(entry.data->type), ss.str(),
+      entry.data->timestamp, entry.data->task_id));
 }
 
 void ActorInternalsUIHandler::StartLogging() {

@@ -132,13 +132,11 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
   // https://github.com/google/perfetto/blob/891351c7233523c01dc0e58ac8650df47fad9ab5/src/trace_processor/perfetto_sql/stdlib/android/screenshots.sql#L37
   track_event->add_categories(
       entry.jpg_screenshot.has_value() ? "android_screenshot" : "actor");
-  auto* annotation = track_event->add_debug_annotations();
-  if (!entry.data->details.empty()) {
-    annotation->set_name(
-        pb_type == perfetto::protos::pbzero::TrackEvent::TYPE_SLICE_BEGIN
-            ? "begin_details"
-            : "details");
-    annotation->set_string_value(entry.data->details);
+
+  for (auto& details_entry : entry.data->details) {
+    auto* annotation = track_event->add_debug_annotations();
+    annotation->set_name(details_entry->key);
+    annotation->set_string_value(details_entry->value);
   }
 
   // If we have an annontated page content we encde it into screenshot
@@ -158,7 +156,7 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
   }
 
   if (!entry.url.empty()) {
-    annotation = track_event->add_debug_annotations();
+    auto* annotation = track_event->add_debug_annotations();
     annotation->set_name("url");
     annotation->set_string_value(entry.url);
   }
