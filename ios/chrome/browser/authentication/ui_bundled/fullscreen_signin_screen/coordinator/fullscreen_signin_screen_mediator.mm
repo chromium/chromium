@@ -414,7 +414,10 @@ enum class SigninScreenState {
   }
   CoreAccountInfo primaryAccount =
       _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  CHECK(primaryAccount.IsEmpty(), base::NotFatalUntil::M145);
+  if (!primaryAccount.IsEmpty()) {
+    // Signed in from a different surface, dismiss the current dialog.
+    [self.delegate fullscreenSigninScreenMediatorWantsToBeDismissed:self];
+  }
 }
 
 #pragma mark - AuthenticationServiceObserving
@@ -424,7 +427,7 @@ enum class SigninScreenState {
       AuthenticationService::ServiceStatus::SigninForcedByPolicy) {
     // Signin is now disabled, so the consistency default account must be
     // stopped.
-    [self.delegate fullscreenSigninScreenMediatorSigninIsNotForced:self];
+    [self.delegate fullscreenSigninScreenMediatorWantsToBeDismissed:self];
   }
 }
 
