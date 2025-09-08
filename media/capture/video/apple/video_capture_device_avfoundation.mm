@@ -133,24 +133,35 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
     // If the pixel format is unsupported by our code, then it is not useful.
     if (pixelFormat == VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
+      VLOG(1) << "Ignoring device supported format, unknown FourCC: "
+              << media::MacFourCCToString(fourcc);
       continue;
     }
 
     // If our CMSampleBuffers will have a different size than the native
     // capture, then we will not be the fast path.
     if (dimensions.width != width || dimensions.height != height) {
+      VLOG(1) << "Ignoring device supported format, wrong resolution: "
+              << VideoPixelFormatToString(pixelFormat) << " "
+              << dimensions.width << "x" << dimensions.height;
       continue;
     }
 
     Float64 maxFrameRate = 0;
     bool matchesFrameRate = false;
+    std::stringstream ssFrameRateRanges;
     for (AVFrameRateRange* frameRateRange in captureFormat
              .videoSupportedFrameRateRanges) {
+      ssFrameRateRanges << ", " << frameRateRange.minFrameRate << "-"
+                        << frameRateRange.maxFrameRate;
       maxFrameRate = std::max(maxFrameRate, frameRateRange.maxFrameRate);
       matchesFrameRate |=
           frameRateRange.minFrameRate <= frame_rate + kFrameRateEpsilon &&
           frame_rate - kFrameRateEpsilon <= frameRateRange.maxFrameRate;
     }
+    VLOG(1) << "Available device supported format: "
+            << VideoPixelFormatToString(pixelFormat) << " " << width << "x"
+            << height << ssFrameRateRanges.str();
     // Prefer a capture format that handles the requested framerate to one
     // that doesn't.
     if (bestCaptureFormat) {
@@ -188,7 +199,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
 
   VLOG(1) << "Selecting AVCaptureDevice format "
-          << VideoPixelFormatToString(bestPixelFormat);
+          << VideoPixelFormatToString(bestPixelFormat) << " " << width << "x"
+          << height << "@" << bestMaxFrameRate;
   return bestCaptureFormat;
 }
 
@@ -508,9 +520,12 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     }
   }
 
+  // TODO(crbug.com/439372638): Log a more trustworthy FPS than frameRate here,
+  // it may not be what was selected by FindBestCaptureFormat() or if MJPEG
+  // workaround was activated then FPS could also be different.
   VLOG(2) << __func__ << ": configuring '"
           << media::MacFourCCToString(best_fourcc) << "' " << width << "x"
-          << height << "@" << frameRate;
+          << height << "@" << frameRate << " (FPS not trusted)";
 
   // The capture output has to be configured, despite Mac documentation
   // detailing that setting the sessionPreset would be enough. The reason for
