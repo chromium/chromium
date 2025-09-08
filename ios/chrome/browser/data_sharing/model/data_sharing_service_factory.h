@@ -23,7 +23,7 @@ class DataSharingServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the default factory used to build DataSharingService. Can be
   // registered with AddTestingFactory to use real instances during testing.
-  static TestingFactory GetDefaultFactory();
+  static ProfileTestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<DataSharingServiceFactory>;
@@ -31,9 +31,9 @@ class DataSharingServiceFactory : public ProfileKeyedServiceFactoryIOS {
   DataSharingServiceFactory();
   ~DataSharingServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace data_sharing

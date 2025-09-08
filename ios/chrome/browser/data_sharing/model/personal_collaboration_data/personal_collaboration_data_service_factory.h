@@ -31,9 +31,9 @@ class PersonalCollaborationDataServiceFactory
   PersonalCollaborationDataServiceFactory();
   ~PersonalCollaborationDataServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace data_sharing::personal_collaboration_data

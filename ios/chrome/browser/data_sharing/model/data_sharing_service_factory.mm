@@ -22,10 +22,7 @@ namespace data_sharing {
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildDataSharingService(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+std::unique_ptr<KeyedService> BuildDataSharingService(ProfileIOS* profile) {
   if (!features::IsDataSharingFunctionalityEnabled() ||
       profile->IsOffTheRecord()) {
     return std::make_unique<EmptyDataSharingService>();
@@ -68,15 +65,14 @@ DataSharingServiceFactory::DataSharingServiceFactory()
 DataSharingServiceFactory::~DataSharingServiceFactory() = default;
 
 // static
-ProfileKeyedServiceFactoryIOS::TestingFactory
+ProfileKeyedServiceFactoryIOS::ProfileTestingFactory
 DataSharingServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildDataSharingService);
 }
 
 std::unique_ptr<KeyedService>
-DataSharingServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildDataSharingService(context);
+DataSharingServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+  return BuildDataSharingService(profile);
 }
 
 }  // namespace data_sharing
