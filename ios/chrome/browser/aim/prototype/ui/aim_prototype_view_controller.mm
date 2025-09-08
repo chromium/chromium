@@ -424,6 +424,22 @@ const CGFloat kGlowEffectWidth = 4.0f;
 
 #pragma mark - UITextViewDelegate
 
+// The final implementation in the omnibox is expected to use a UIKeyCommand
+// override to handle the return key. This delegate method is a temporary
+// solution for this prototype.
+- (BOOL)textView:(UITextView*)textView
+    shouldChangeTextInRange:(NSRange)range
+            replacementText:(NSString*)text {
+  if ([text isEqualToString:@"\n"]) {
+    [self.mutator sendText:textView.text];
+    textView.text = @"";
+    // Manually trigger textViewDidChange to update placeholder and layout.
+    [self textViewDidChange:textView];
+    return NO;
+  }
+  return YES;
+}
+
 - (void)textViewDidChange:(UITextView*)textView {
   _placeholderLabel.hidden = textView.hasText;
 
