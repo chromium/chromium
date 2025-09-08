@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/to_vector.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -39,6 +40,7 @@
 namespace autofill {
 namespace {
 
+using ::base::test::RunClosure;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::ElementsAre;
@@ -384,79 +386,135 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // Test that not changing the LifecycleState does not fire events.
   test_api(*driver_).SetLifecycleStateAndNotifyObservers(kActive);
 
-  // Test that even if the vector of new forms is too large, events are still
-  // fired for the removed form.
-  EXPECT_CALL(observer,
-              OnBeforeFormsSeen(m, IsEmpty(), ElementsAre(id_to_remove)));
-  EXPECT_CALL(observer,
-              OnAfterFormsSeen(m, IsEmpty(), ElementsAre(id_to_remove)));
-  manager().OnFormsSeen(std::vector<FormData>(kMaxListSize + 10),
-                        {id_to_remove});
+  {
+    // Test that even if the vector of new forms is too large, events are still
+    // fired for the removed form.
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer,
+                OnBeforeFormsSeen(m, IsEmpty(), ElementsAre(id_to_remove)));
+    EXPECT_CALL(observer,
+                OnAfterFormsSeen(m, IsEmpty(), ElementsAre(id_to_remove)))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    manager().OnFormsSeen(std::vector<FormData>(kMaxListSize + 10),
+                          {id_to_remove});
+    std::move(run_loop).Run();
+  }
 
   // Test that seeing a normal amount of new forms triggers all events. Parsing
   // is asynchronous, so the OnAfterFoo() events are asynchronous, too.
-  EXPECT_CALL(observer, OnBeforeFormsSeen(m, ElementsAre(f, g),
-                                          ElementsAre(id_to_remove)));
-  EXPECT_CALL(observer, OnBeforeLoadedServerPredictions(m));
-  manager().OnFormsSeen(forms, {id_to_remove});
-  EXPECT_CALL(observer, OnAfterLoadedServerPredictions(m));
-  EXPECT_CALL(observer, OnAfterFormsSeen(m, ElementsAre(f, g),
-                                         ElementsAre(id_to_remove)));
-  EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
-  EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
-  task_environment_.RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnBeforeFormsSeen(m, ElementsAre(f, g),
+                                            ElementsAre(id_to_remove)));
+    EXPECT_CALL(observer, OnBeforeLoadedServerPredictions(m));
+    manager().OnFormsSeen(forms, {id_to_remove});
+    EXPECT_CALL(observer, OnAfterLoadedServerPredictions(m));
+    EXPECT_CALL(observer, OnAfterFormsSeen(m, ElementsAre(f, g),
+                                           ElementsAre(id_to_remove)))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
+    EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
+    std::move(run_loop).Run();
+  }
 
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined(m));
-  manager().OnLanguageDetermined([] {
-    translate::LanguageDetectionDetails details;
-    details.adopted_language = "en";
-    return details;
-  }());
-  EXPECT_CALL(observer, OnAfterLanguageDetermined(m));
-  EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
-  EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
-  task_environment_.RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnBeforeLanguageDetermined(m));
+    manager().OnLanguageDetermined([] {
+      translate::LanguageDetectionDetails details;
+      details.adopted_language = "en";
+      return details;
+    }());
+    EXPECT_CALL(observer, OnAfterLanguageDetermined(m))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
+    EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
+    std::move(run_loop).Run();
+  }
 
   test_api(form).Append(form.fields().back());
   test_api(form).field(-1).set_renderer_id(test::MakeFieldRendererId());
 
-  // The form was just changed, which causes a reparse. The reparse is
-  // asynchronous, so OnAfterTextFieldValueChanged() is asynchronous, too.
-  EXPECT_CALL(observer, OnBeforeTextFieldValueChanged(m, f, ff));
-  manager().OnTextFieldValueChanged(form, field.global_id(), {});
-  EXPECT_CALL(observer,
-              OnAfterTextFieldValueChanged(m, f, ff, std::u16string()));
-  EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
-  task_environment_.RunUntilIdle();
+  {
+    // The form was just changed, which causes a reparse. The reparse is
+    // asynchronous, so OnAfterTextFieldValueChanged() is asynchronous, too.
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnBeforeTextFieldValueChanged(m, f, ff));
+    manager().OnTextFieldValueChanged(form, field.global_id(), {});
+    EXPECT_CALL(observer,
+                OnAfterTextFieldValueChanged(m, f, ff, std::u16string()))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
+    std::move(run_loop).Run();
+  }
 
-  EXPECT_CALL(observer, OnBeforeTextFieldDidScroll(m, f, ff));
-  EXPECT_CALL(observer, OnAfterTextFieldDidScroll(m, f, ff));
-  manager().OnTextFieldDidScroll(form, field.global_id());
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnBeforeTextFieldDidScroll(m, f, ff));
+    EXPECT_CALL(observer, OnAfterTextFieldDidScroll(m, f, ff))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    manager().OnTextFieldDidScroll(form, field.global_id());
+    std::move(run_loop).Run();
+  }
 
-  EXPECT_CALL(observer, OnBeforeDidFillAutofillFormData(m, f));
-  EXPECT_CALL(observer, OnAfterDidFillAutofillFormData(m, f));
-  manager().OnDidFillAutofillFormData(form, {});
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnBeforeSelectControlSelectionChanged(m, f, ff));
+    EXPECT_CALL(observer, OnAfterSelectControlSelectionChanged(m, f, ff))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    manager().OnSelectControlSelectionChanged(form, field.global_id());
+    std::move(run_loop).Run();
+  }
 
-  EXPECT_CALL(observer, OnBeforeAskForValuesToFill(m, f, ff, Ref(form)));
-  EXPECT_CALL(observer, OnAfterAskForValuesToFill(m, f, ff));
-  manager().OnAskForValuesToFill(form, field.global_id(), gfx::Rect(),
-                                 AutofillSuggestionTriggerSource::kUnspecified,
-                                 std::nullopt);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnBeforeDidFillAutofillFormData(m, f));
+    EXPECT_CALL(observer, OnAfterDidFillAutofillFormData(m, f))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    manager().OnDidFillAutofillFormData(form, {});
+    std::move(run_loop).Run();
+  }
 
-  EXPECT_CALL(observer, OnBeforeFocusOnFormField(m, f, ff));
-  EXPECT_CALL(observer, OnAfterFocusOnFormField(m, f, ff));
-  manager().OnFocusOnFormField(form, field.global_id());
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnBeforeAskForValuesToFill(m, f, ff, Ref(form)));
+    EXPECT_CALL(observer, OnAfterAskForValuesToFill(m, f, ff))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    manager().OnAskForValuesToFill(
+        form, field.global_id(), gfx::Rect(),
+        AutofillSuggestionTriggerSource::kUnspecified, std::nullopt);
+    std::move(run_loop).Run();
+  }
 
-  EXPECT_CALL(observer, OnBeforeJavaScriptChangedAutofilledValue(m, f, ff));
-  EXPECT_CALL(observer, OnAfterJavaScriptChangedAutofilledValue(m, f, ff));
-  manager().OnJavaScriptChangedAutofilledValue(form, field.global_id(), {});
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnBeforeFocusOnFormField(m, f, ff));
+    EXPECT_CALL(observer, OnAfterFocusOnFormField(m, f, ff))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    manager().OnFocusOnFormField(form, field.global_id());
+    std::move(run_loop).Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnBeforeJavaScriptChangedAutofilledValue(m, f, ff));
+    EXPECT_CALL(observer, OnAfterJavaScriptChangedAutofilledValue(m, f, ff))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    manager().OnJavaScriptChangedAutofilledValue(form, field.global_id(), {});
+    std::move(run_loop).Run();
+  }
 
   // TODO(crbug.com/) Test in browser_autofill_manager_unittest.cc that
   // FillOrPreviewForm() triggers OnFillOrPreviewForm().
 
-  EXPECT_CALL(observer, OnBeforeFormSubmitted(m, Ref(form)));
-  EXPECT_CALL(observer, OnAfterFormSubmitted(m, Ref(form)));
-  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnBeforeFormSubmitted(m, Ref(form)));
+    EXPECT_CALL(observer, OnAfterFormSubmitted(m, Ref(form)))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+    std::move(run_loop).Run();
+  }
 
   // Reset the manager, the observers should stick around.
   EXPECT_CALL(observer,
@@ -583,6 +641,7 @@ TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnFormsSeen_SuccessfulQueryRequest_NotifiesBeforeLoadedServerPredictionsObserver) {
   std::vector<FormData> forms = CreateTestForms(1);
+  base::RunLoop run_loop;
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
@@ -595,15 +654,17 @@ TEST_F(
             std::move(callback).Run(QueryResponse("", {}));
             return true;
           });
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
-  task_environment_.RunUntilIdle();
+  std::move(run_loop).Run();
 }
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnFormsSeen_FailedQueryRequest_NotifiesBothLoadedServerPredictionsObservers) {
   std::vector<FormData> forms = CreateTestForms(1);
+  base::RunLoop run_loop;
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
@@ -616,15 +677,17 @@ TEST_F(
             std::move(callback).Run(std::nullopt);
             return true;
           });
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
-  task_environment_.RunUntilIdle();
+  std::move(run_loop).Run();
 }
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnLoadedServerPredictions_EmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
   std::vector<FormData> forms = CreateTestForms(1);
+  base::RunLoop run_loop;
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
@@ -637,15 +700,17 @@ TEST_F(
             std::move(callback).Run(QueryResponse("", {}));
             return true;
           });
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
-  task_environment_.RunUntilIdle();
+  std::move(run_loop).Run();
 }
 
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnLoadedServerPredictions_NonEmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
   std::vector<FormData> forms = CreateTestForms(1);
+  base::RunLoop run_loop;
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
@@ -664,9 +729,10 @@ TEST_F(
                                        ->form_signature()}));
             return true;
           });
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())));
+  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
   OnFormsSeenWithExpectations(manager(), forms, {}, forms);
-  task_environment_.RunUntilIdle();
+  std::move(run_loop).Run();
 }
 
 TEST_F(AutofillManagerTest, GetHeursticPredictionForForm) {
