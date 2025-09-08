@@ -95,7 +95,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             PageInfoAction pageInfoAction,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
                     merchantTrustSignalsCoordinatorSupplier,
-            BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate) {
+            @Nullable BrowserStateBrowserControlsVisibilityDelegate
+                    browserControlsVisibilityDelegate) {
         mIsTablet = isTablet;
         mStatusView = statusView;
         mLocationBarDataProvider = locationBarDataProvider;

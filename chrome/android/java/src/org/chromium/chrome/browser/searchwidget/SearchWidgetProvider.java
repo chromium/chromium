@@ -16,7 +16,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
 
@@ -24,6 +23,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -51,13 +52,14 @@ import java.util.function.Consumer;
  * to get a crash stack. This is done to prevent Android from labeling the whole process as "bad"
  * and blocking taps on the widget. See http://crbug.com/712061.
  */
+@NullMarked
 public class SearchWidgetProvider extends AppWidgetProvider {
     /** Wraps up all things that a {@link SearchWidgetProvider} can request things from. */
     static class SearchWidgetProviderDelegate implements Consumer<SearchActivityPreferences> {
         private final Context mContext;
         private final @Nullable AppWidgetManager mManager;
 
-        public SearchWidgetProviderDelegate(Context context) {
+        public SearchWidgetProviderDelegate(@Nullable Context context) {
             mContext = context == null ? ContextUtils.getApplicationContext() : context;
             mManager = AppWidgetManager.getInstance(mContext);
         }
@@ -97,7 +99,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     private static final Object DELEGATE_LOCK = new Object();
 
     @SuppressLint("StaticFieldLeak")
-    private static SearchWidgetProviderDelegate sDelegate;
+    private static @Nullable SearchWidgetProviderDelegate sDelegate;
 
     public static void initialize() {
         SearchActivityPreferencesManager.addObserver(getDelegate());
@@ -144,7 +146,8 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     }
 
     @VisibleForTesting
-    public static void performUpdate(int[] ids, SearchActivityPreferences prefs) {
+    public static void performUpdate(
+            int @Nullable [] ids, @Nullable SearchActivityPreferences prefs) {
         SearchWidgetProviderDelegate delegate = getDelegate();
         if (ids == null) ids = delegate.getAllSearchWidgetIds();
         if (prefs == null) prefs = SearchActivityPreferencesManager.getCurrent();
@@ -160,7 +163,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     }
 
     private static RemoteViews createWidgetViews(
-            Context context, String engineName, boolean isVoiceSearchAvailable) {
+            Context context, @Nullable String engineName, boolean isVoiceSearchAvailable) {
         RemoteViews views =
                 new RemoteViews(context.getPackageName(), R.layout.search_widget_template);
 

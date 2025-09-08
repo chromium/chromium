@@ -11,12 +11,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -31,6 +31,7 @@ import org.chromium.url.GURL;
 import java.util.Locale;
 
 /** Class with logic enabling clients to interact with SearchActivity. */
+@NullMarked
 public class SearchActivityClientImpl implements SearchActivityClient {
     private static final String TAG = "SAClient";
 
@@ -47,7 +48,7 @@ public class SearchActivityClientImpl implements SearchActivityClient {
     /* package */ static final String ACTION_SEARCH_FORMAT =
             "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_SEARCH:%d:%d";
 
-    private final @Nullable Context mContext;
+    private final Context mContext;
     private final @IntentOrigin int mOrigin;
 
     private static class IntentBuilderImpl implements IntentBuilder {
@@ -163,7 +164,7 @@ public class SearchActivityClientImpl implements SearchActivityClient {
     }
 
     @Override
-    public boolean isOmniboxResult(int requestCode, @NonNull Intent intent) {
+    public boolean isOmniboxResult(int requestCode, Intent intent) {
         return requestCode == getClientUniqueRequestCode()
                 && IntentUtils.isTrustedIntentFromSelf(intent)
                 && !TextUtils.isEmpty(intent.getDataString());
@@ -171,7 +172,7 @@ public class SearchActivityClientImpl implements SearchActivityClient {
 
     @Override
     public @Nullable LoadUrlParams getOmniboxResult(
-            int requestCode, int resultCode, @NonNull Intent intent) {
+            int requestCode, int resultCode, Intent intent) {
         if (!isOmniboxResult(requestCode, intent)) return null;
         if (resultCode != Activity.RESULT_OK) return null;
         var url = new GURL(intent.getDataString());
