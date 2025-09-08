@@ -12,6 +12,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
@@ -210,6 +211,8 @@ const CGFloat kPromoMaxImpressionCount = 3;
       self.browser->GetCommandDispatcher(), ApplicationCommands);
 
   _mediator.delegate = self;
+
+  [self prepareAIHubIPH];
   [_mediator presentBWGFlow];
 
   [super start];
@@ -296,6 +299,21 @@ const CGFloat kPromoMaxImpressionCount = 3;
     [BWGCommandsHandler dismissBWGFlowWithCompletion:^() {
       barrier.Run();
     }];
+  }
+}
+
+// Prepares UI for AI Hub In-Product Help (IPH) bubble.
+- (void)prepareAIHubIPH {
+  BOOL wouldTriggerIPH =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile)
+          ->WouldTriggerHelpUI(feature_engagement::kIPHIOSPageActionMenu);
+
+  if (_entryPoint != bwg::EntryPoint::AIHub && [self shouldShowBWGPromo] &&
+      wouldTriggerIPH) {
+    // Ensures toolbar is expanded. If the toolbar is not fully expanded, the AI
+    // Hub In-Product Help (IPH) bubble will be misaligned from using anchor
+    // points relative to a partially expanded toolbar.
+    FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
   }
 }
 

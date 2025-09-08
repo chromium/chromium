@@ -17,6 +17,7 @@ source_set("coordinator") {
     "//components/feature_engagement/public",
     "//components/prefs",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/model:browser_agent",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
