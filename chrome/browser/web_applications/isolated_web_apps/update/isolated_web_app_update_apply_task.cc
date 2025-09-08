@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
 
 #include <memory>
 #include <optional>
