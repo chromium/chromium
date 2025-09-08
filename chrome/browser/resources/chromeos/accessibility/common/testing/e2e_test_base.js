@@ -295,12 +295,77 @@ E2ETestBase = class extends AccessibilityTestBase {
   }
 
   /**
-   * Async function to set a preference value in Settings.
+   * A simple deep equality test of two values by comparing their JSON
+   * representation.
+   */
+  deepEqual_(val1, val2) {
+    return JSON.stringify(val1) === JSON.stringify(val2);
+  }
+
+  /**
+   * Async function to set a preference value in Settings. It ensures that the
+   * new pref value is persisted and `settingsPrivate.onPrefsChanged` event is
+   * fired if the value is changed.
+   *
+   * Waiting for `settingsPrivate.onPrefsChanged` event is needed because the
+   * event is not guaranteed to happen after a `settingsPrivate.setPref` call
+   * and a `settingsPrivate.getPref` call. When it happens, it breaks the test
+   * code like the following pattern:
+   *
+   * ```
+   *   await this.setPref(somePref, someValue);
+   *   assertEquals(class.memberBoundToPref, someValue);
+   * ```
+   *
+   * `assertEquals` depends on `settingsPrivate.onPrefsChanged` event to update
+   *  `class.memberBoundToPref` to pass. If the event does not happen, it fails.
+   *
+   *
+   * See https://crbug.com/439995191#comment7
+   *
    * @param {string} name
    * @return {!Promise}
    */
   async setPref(name, value) {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
+      // If the pref value is not changed, early out.
+      const existing = await (this.getPref(name));
+      if (this.deepEqual_(existing.value, value)) {
+        assertEquals(existing.key, name);
+        if (typeof (value) === 'object') {
+          assertObjectEquals(value, existing.value);
+        } else {
+          assertEquals(value, existing.value);
+        }
+        resolve();
+        return;
+      }
+
+      // Otherwise, `resolve()` after `onPrefsChanged` event has fired and
+      // setPref callback has been invoked.
+      let onPrefsChangedFired = false;
+      let setPrefCallbackCalled = false;
+
+      const maybeResolve = function() {
+        if (!onPrefsChangedFired || !setPrefCallbackCalled) {
+          return;
+        }
+
+        resolve();
+      };
+
+      const onPrefChanged = function(prefs) {
+        prefs.forEach(pref => {
+          if (pref.key === name) {
+            onPrefsChangedFired = true;
+            chrome.settingsPrivate.onPrefsChanged.removeListener(onPrefChanged);
+            maybeResolve();
+            return;
+          }
+        });
+      };
+      chrome.settingsPrivate.onPrefsChanged.addListener(onPrefChanged);
+
       chrome.settingsPrivate.setPref(name, value, undefined, async () => {
         // Wait for changes to fully propagate.
         const result = await (this.getPref(name));
@@ -310,7 +375,9 @@ E2ETestBase = class extends AccessibilityTestBase {
         } else {
           assertEquals(value, result.value);
         }
-        resolve();
+
+        setPrefCallbackCalled = true;
+        maybeResolve();
       });
     });
   }

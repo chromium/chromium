@@ -70,24 +70,19 @@ AX_TEST_F('FaceGazeScrollModeControllerTest', 'Active', function() {
   assertNullOrUndefined(controller.screenBounds_);
 });
 
-// TODO(crbug.com/40276609): Reenable this test once the
-// OptimizeServiceWorkerStartRequests feature is re-enabled.
-AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'DISABLED_ScreenBounds', function() {
-      const controller = this.getScrollModeController();
-      this.toggleScrollMode();
-      const bounds = this.mockAccessibilityPrivate.displayBounds_[0];
-      // Ensure the controller's screen bounds are properly initialized.
-      assertEquals(bounds.left, controller.screenBounds_.left);
-      assertEquals(bounds.top, controller.screenBounds_.top);
-      assertEquals(bounds.width, controller.screenBounds_.width);
-      assertEquals(bounds.height, controller.screenBounds_.height);
-    });
+AX_TEST_F('FaceGazeScrollModeControllerTest', 'ScreenBounds', function() {
+  const controller = this.getScrollModeController();
+  this.toggleScrollMode();
+  const bounds = this.mockAccessibilityPrivate.displayBounds_[0];
+  // Ensure the controller's screen bounds are properly initialized.
+  assertEquals(bounds.left, controller.screenBounds_.left);
+  assertEquals(bounds.top, controller.screenBounds_.top);
+  assertEquals(bounds.width, controller.screenBounds_.width);
+  assertEquals(bounds.height, controller.screenBounds_.height);
+});
 
-// TODO(crbug.com/40276609): Reenable this test once the
-// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'DISABLED_CallsApiOnValidPoint', function() {
+    'FaceGazeScrollModeControllerTest', 'CallsApiOnValidPoint', function() {
       const controller = this.getScrollModeController();
       this.toggleScrollMode();
 
@@ -139,11 +134,8 @@ AX_TEST_F(
       assertEquals(6, mockApi.getScrollAtPointCount());
     });
 
-// TODO(crbug.com/40276609): Reenable this test once the
-// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'DISABLED_SkipsApiOnInvalidPoint',
-    function() {
+    'FaceGazeScrollModeControllerTest', 'SkipsApiOnInvalidPoint', function() {
       const controller = this.getScrollModeController();
       this.toggleScrollMode();
       controller.scroll({x: 600, y: 400});
@@ -154,10 +146,8 @@ AX_TEST_F(
       assertNullOrUndefined(mockApi.getScrollAtPointDirection());
     });
 
-// TODO(crbug.com/40276609): Reenable this test once the
-// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'DISABLED_RespectsPhysicalMouseEvents',
+    'FaceGazeScrollModeControllerTest', 'RespectsPhysicalMouseEvents',
     function() {
       const controller = this.getScrollModeController();
       const mockApi = this.mockAccessibilityPrivate;
@@ -184,10 +174,8 @@ AX_TEST_F(
       assertEquals(250, mockApi.getScrollAtPointTarget().y);
     });
 
-// TODO(crbug.com/40276609): Reenable this test once the
-// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'DISABLED_CursorControlOriginallyOff',
+    'FaceGazeScrollModeControllerTest', 'CursorControlOriginallyOff',
     async function() {
       // Force cursor control off.
       await this.setPref(PrefNames.CURSOR_CONTROL_ENABLED, false);
@@ -202,10 +190,8 @@ AX_TEST_F(
       await this.waitForCursorControlPref(false);
     });
 
-// TODO(crbug.com/40276609): Reenable this test once the
-// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
-    'FaceGazeScrollModeControllerTest', 'DISABLED_CursorControlOriginallyOn',
+    'FaceGazeScrollModeControllerTest', 'CursorControlOriginallyOn',
     async function() {
       await this.waitForCursorControlPref(true);
 
@@ -218,11 +204,9 @@ AX_TEST_F(
       await this.waitForCursorControlPref(true);
     });
 
-// TODO(crbug.com/40276609): Reenable this test once the
-// OptimizeServiceWorkerStartRequests feature is re-enabled.
 AX_TEST_F(
     'FaceGazeScrollModeControllerTest',
-    'DISABLED_AutoTogglesCursorControlIfCursorControlModifiedDuringScrollMode',
+    'AutoTogglesCursorControlIfCursorControlModifiedDuringScrollMode',
     async function() {
       await this.waitForCursorControlPref(true);
 
