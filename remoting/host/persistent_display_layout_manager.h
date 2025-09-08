@@ -9,7 +9,9 @@
 #include <optional>
 #include <string>
 
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -46,10 +48,11 @@ class PersistentDisplayLayoutManager {
  private:
   void OnDisplayLayoutFileLoaded(
       std::unique_ptr<protocol::VideoLayout> default_layout,
-      std::optional<std::string> load_file_result);
+      base::FileErrorOr<std::string> load_file_result);
   void OnDisplayInfoReceived(const DesktopDisplayInfo& display_info);
-  void ApplyDisplayLayout(std::unique_ptr<protocol::VideoLayout> default_layout,
-                          const std::optional<std::string>& load_file_result);
+  void ApplyDisplayLayout(
+      std::unique_ptr<protocol::VideoLayout> default_layout,
+      const base::FileErrorOr<std::string>& load_file_result);
   void WriteDisplayLayout();
 
   base::FilePath display_layout_file_path_

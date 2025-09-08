@@ -8,21 +8,26 @@
 #include <string>
 #include <string_view>
 
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 
 namespace remoting {
 
-// TODO: yuweih - Update remoting/host/chromeos/file_session_storage.cc to use
-// this file.
-
 void WriteFileAsync(const base::FilePath& file,
                     std::string_view content,
-                    base::OnceCallback<void(bool)> on_done);
+                    base::OnceCallback<void(base::FileErrorOr<void>)> on_done);
 
 void ReadFileAsync(
     const base::FilePath& file,
-    base::OnceCallback<void(std::optional<std::string>)> on_done);
+    base::OnceCallback<void(base::FileErrorOr<std::string>)> on_done);
+
+void DeleteFileAsync(const base::FilePath& file,
+                     base::OnceCallback<void(base::FileErrorOr<void>)> on_done);
+
+void FileExistsAsync(const base::FilePath& file,
+                     base::OnceCallback<void(bool)> on_done);
 
 }  // namespace remoting
 

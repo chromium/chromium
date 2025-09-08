@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -55,7 +57,7 @@ void PersistentDisplayLayoutManager::Start(
 
 void PersistentDisplayLayoutManager::OnDisplayLayoutFileLoaded(
     std::unique_ptr<protocol::VideoLayout> default_layout,
-    std::optional<std::string> load_file_result) {
+    base::FileErrorOr<std::string> load_file_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ApplyDisplayLayout(std::move(default_layout), load_file_result);
@@ -76,7 +78,7 @@ void PersistentDisplayLayoutManager::OnDisplayInfoReceived(
 
 void PersistentDisplayLayoutManager::ApplyDisplayLayout(
     std::unique_ptr<protocol::VideoLayout> default_layout,
-    const std::optional<std::string>& load_file_result) {
+    const base::FileErrorOr<std::string>& load_file_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<protocol::VideoLayout> display_layout;
@@ -93,6 +95,10 @@ void PersistentDisplayLayoutManager::ApplyDisplayLayout(
     } else {
       LOG(ERROR) << "Failed to parse display layout.";
     }
+  } else if (load_file_result.error() !=
+             base::File::Error::FILE_ERROR_NOT_FOUND) {
+    LOG(ERROR) << "Failed to read file " << display_layout_file_path_ << ": "
+               << base::File::ErrorToString(load_file_result.error());
   }
   if (!display_layout) {
     HOST_LOG << "Using default display layout.";
@@ -109,10 +115,12 @@ void PersistentDisplayLayoutManager::WriteDisplayLayout() {
   WriteFileAsync(
       display_layout_file_path_, latest_display_layout_->SerializeAsString(),
       base::BindOnce(
-          [](const base::FilePath& display_layout_file_path, bool success) {
-            if (!success) {
+          [](const base::FilePath& display_layout_file_path,
+             base::FileErrorOr<void> result) {
+            if (!result.has_value()) {
               LOG(ERROR) << "Failed to write display layout to file "
-                         << display_layout_file_path;
+                         << display_layout_file_path << ": "
+                         << base::File::ErrorToString(result.error());
             }
           },
           display_layout_file_path_));
