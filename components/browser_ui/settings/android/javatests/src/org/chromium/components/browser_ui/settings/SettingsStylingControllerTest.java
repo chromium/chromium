@@ -12,10 +12,8 @@ import static org.chromium.components.browser_ui.settings.CustomStyledPreference
 import static org.chromium.components.browser_ui.settings.CustomStyledPreference.DEFAULT_MARGIN;
 
 import android.content.Context;
-import android.graphics.Color;
 
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.SmallTest;
 
@@ -48,9 +46,15 @@ public class SettingsStylingControllerTest {
     private int mHorizontalMargin;
     private int mBackgroundColor;
 
+    private static final int CUSTOM_TOP_MARGIN = 100;
+    private static final int CUSTOM_BOTTOM_MARGIN = 200;
+    private static final int CUSTOM_HORIZONTAL_MARGIN = 50;
+
     private Context mContext;
     private SettingsStylingController mController;
     private PreferenceScreen mPreferenceScreen;
+    private List<Preference> mVisiblePreferences;
+    private ArrayList<PreferenceStyle> mPreferenceStyles;
 
     @Before
     public void setUp() {
@@ -74,24 +78,163 @@ public class SettingsStylingControllerTest {
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.settings_item_horizontal_margin);
         mBackgroundColor = SemanticColorUtils.getColorSurfaceContainerLowest(mContext);
+
+        mSettingsRule
+                .getPreferenceFragment()
+                .addPreferencesFromResource(R.xml.test_settings_custom_preference_screen);
+
+        // Manually add preferences with custom margins
+        addPreferencesWithCustomMargins();
+
+        mVisiblePreferences = new ArrayList<>();
+        for (int i = 0; i < mPreferenceScreen.getPreferenceCount(); i++) {
+            Preference p = mPreferenceScreen.getPreference(i);
+            if (p.isVisible()) {
+                mVisiblePreferences.add(p);
+            }
+        }
+        mPreferenceStyles = mController.generatePreferenceStyles();
     }
 
-    private Preference createPreference(boolean visible) {
-        Preference preference = new Preference(mContext);
-        preference.setVisible(visible);
-        return preference;
+    @Test
+    @SmallTest
+    public void testPreferenceStyleCount() {
+        assertEquals(
+                "The number of styles should match the number of visible preferences.",
+                mVisiblePreferences.size(),
+                mPreferenceStyles.size());
     }
 
-    private PreferenceCategory createPreferenceCategory(boolean visible) {
-        PreferenceCategory preference = new PreferenceCategory(mContext);
-        preference.setVisible(visible);
-        return preference;
+    @Test
+    @SmallTest
+    public void testPreferenceCategoryStyle() {
+        PreferenceStyle preferenceCategoryStyle = getPreferenceStyle("preference_category");
+        assertSame(PreferenceStyle.EMPTY, preferenceCategoryStyle);
     }
 
-    private TextMessagePreference createTextMessagePreference(boolean visible) {
-        TextMessagePreference textMessagePreference = new TextMessagePreference(mContext, null);
-        textMessagePreference.setVisible(visible);
-        return textMessagePreference;
+    @Test
+    @SmallTest
+    public void testTextMessagePreferenceStyle() {
+        PreferenceStyle textMessagePreferencestyle = getPreferenceStyle("text_message_preference");
+        assertSame(PreferenceStyle.EMPTY, textMessagePreferencestyle);
+    }
+
+    @Test
+    @SmallTest
+    public void testPreferenceStyle_PreferenceTop() {
+        PreferenceStyle preferenceTopStyle = getPreferenceStyle("preference_top");
+        assertEquals(mDefaultRadius, preferenceTopStyle.getTopRadius(), 0);
+        assertEquals(mInnerRadius, preferenceTopStyle.getBottomRadius(), 0);
+        assertEquals(mVerticalMargin, preferenceTopStyle.getTopMargin());
+        assertEquals(mVerticalMargin, preferenceTopStyle.getBottomMargin());
+    }
+
+    @Test
+    @SmallTest
+    public void testPreferenceStyle_PreferenceMiddle() {
+        PreferenceStyle preferenceMiddleStyle = getPreferenceStyle("preference_middle");
+        assertEquals(mInnerRadius, preferenceMiddleStyle.getTopRadius(), 0);
+        assertEquals(mInnerRadius, preferenceMiddleStyle.getBottomRadius(), 0);
+        assertEquals(mVerticalMargin, preferenceMiddleStyle.getTopMargin());
+        assertEquals(mVerticalMargin, preferenceMiddleStyle.getBottomMargin());
+    }
+
+    @Test
+    @SmallTest
+    public void testPreferenceStyle_PreferenceBottom() {
+        PreferenceStyle preferenceBottomStyle = getPreferenceStyle("preference_bottom");
+        assertEquals(mInnerRadius, preferenceBottomStyle.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, preferenceBottomStyle.getBottomRadius(), 0);
+        assertEquals(mVerticalMargin, preferenceBottomStyle.getTopMargin());
+        assertEquals(
+                mVerticalMargin + mSectionBottomMargin, preferenceBottomStyle.getBottomMargin());
+    }
+
+    @Test
+    @SmallTest
+    public void testCardBackgroundStyle() {
+        PreferenceStyle styleCard = getPreferenceStyle("preference_card");
+        assertEquals(mDefaultRadius, styleCard.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, styleCard.getBottomRadius(), 0);
+        assertEquals(mVerticalMargin, styleCard.getTopMargin());
+        assertEquals(mVerticalMargin + mSectionBottomMargin, styleCard.getBottomMargin());
+        assertEquals(mBackgroundColor, styleCard.getBackgroundColor());
+    }
+
+    @Test
+    @SmallTest
+    public void testCustomColorBackgroundStyle() {
+        PreferenceStyle styleCustomColor = getPreferenceStyle("preference_color");
+        assertEquals(mDefaultRadius, styleCustomColor.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, styleCustomColor.getBottomRadius(), 0);
+        assertEquals(mVerticalMargin, styleCustomColor.getTopMargin());
+        assertEquals(mVerticalMargin + mSectionBottomMargin, styleCustomColor.getBottomMargin());
+        assertEquals(
+                mContext.getColor(android.R.color.holo_blue_light),
+                styleCustomColor.getBackgroundColor());
+    }
+
+    @Test
+    @SmallTest
+    public void testStandardBackgroundStyle() {
+        PreferenceStyle styleStandard = getPreferenceStyle("preference_standard");
+        assertEquals(mDefaultRadius, styleStandard.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, styleStandard.getBottomRadius(), 0);
+        assertEquals(mVerticalMargin, styleStandard.getTopMargin());
+        assertEquals(mVerticalMargin + mSectionBottomMargin, styleStandard.getBottomMargin());
+        assertEquals(mBackgroundColor, styleStandard.getBackgroundColor());
+    }
+
+    @Test
+    @SmallTest
+    public void testNoneBackgroundStyle() {
+        PreferenceStyle styleNone = getPreferenceStyle("preference_none");
+        assertSame(PreferenceStyle.EMPTY, styleNone);
+    }
+
+    @Test
+    @SmallTest
+    public void testCustomStyledPreference_WithCustomMargins() {
+        PreferenceStyle customMarginPreferenceStyle =
+                getPreferenceStyle("preference_with_custom_margins");
+        assertEquals(CUSTOM_TOP_MARGIN, customMarginPreferenceStyle.getTopMargin());
+        assertEquals(CUSTOM_BOTTOM_MARGIN, customMarginPreferenceStyle.getBottomMargin());
+        assertEquals(mHorizontalMargin, customMarginPreferenceStyle.getHorizontalMargin());
+    }
+
+    @Test
+    @SmallTest
+    public void testCustomStyledPreference_WithTopMarginOnly() {
+        PreferenceStyle topMarginOnlyPreferenceStyle =
+                getPreferenceStyle("preference_with_top_margin_only");
+        assertEquals(CUSTOM_TOP_MARGIN, topMarginOnlyPreferenceStyle.getTopMargin());
+        assertEquals(
+                mVerticalMargin + mSectionBottomMargin,
+                topMarginOnlyPreferenceStyle.getBottomMargin());
+        assertEquals(mHorizontalMargin, topMarginOnlyPreferenceStyle.getHorizontalMargin());
+    }
+
+    @Test
+    @SmallTest
+    public void testCustomStyledPreference_WithBottomMarginOnly() {
+        PreferenceStyle bottomMarginOnlyPreferenceStyle =
+                getPreferenceStyle("preference_with_bottom_margin_only");
+        assertEquals(mVerticalMargin, bottomMarginOnlyPreferenceStyle.getTopMargin());
+        assertEquals(CUSTOM_BOTTOM_MARGIN, bottomMarginOnlyPreferenceStyle.getBottomMargin());
+        assertEquals(mHorizontalMargin, bottomMarginOnlyPreferenceStyle.getHorizontalMargin());
+    }
+
+    @Test
+    @SmallTest
+    public void testCustomStyledPreference_WithBottomAndHorizontalMargin() {
+        PreferenceStyle bottomAndHorizontalMarginsPreferenceStyle =
+                getPreferenceStyle("preference_with_bottom_and_horizontal_margins");
+        assertEquals(mVerticalMargin, bottomAndHorizontalMarginsPreferenceStyle.getTopMargin());
+        assertEquals(
+                CUSTOM_BOTTOM_MARGIN, bottomAndHorizontalMarginsPreferenceStyle.getBottomMargin());
+        assertEquals(
+                CUSTOM_HORIZONTAL_MARGIN,
+                bottomAndHorizontalMarginsPreferenceStyle.getHorizontalMargin());
     }
 
     private ChromeBasePreference createCustomPreference(
@@ -128,345 +271,58 @@ public class SettingsStylingControllerTest {
         };
     }
 
-    @Test
-    @SmallTest
-    public void testBackgroundStyle_WithSingleItem() {
-        mPreferenceScreen.addPreference(createPreference(true));
-
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-        assertEquals(1, styles.size());
-        assertEquals(mDefaultRadius, styles.get(0).getTopRadius(), 0);
-        assertEquals(mDefaultRadius, styles.get(0).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(0).getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styles.get(0).getBottomMargin());
-        assertEquals(mBackgroundColor, styles.get(0).getBackgroundColor());
-    }
-
-    @Test
-    @SmallTest
-    public void testBackgroundStyle_WithCategorySeparator() {
-        mPreferenceScreen.addPreference(createPreference(true));
-        mPreferenceScreen.addPreference(createPreferenceCategory(true));
-        mPreferenceScreen.addPreference(createPreference(true));
-
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-        assertEquals(3, styles.size());
-        assertEquals(mDefaultRadius, styles.get(0).getTopRadius(), 0);
-        assertEquals(mDefaultRadius, styles.get(0).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(0).getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styles.get(0).getBottomMargin());
-
-        assertSame(PreferenceStyle.EMPTY, styles.get(1));
-
-        assertEquals(mDefaultRadius, styles.get(2).getTopRadius(), 0);
-        assertEquals(mDefaultRadius, styles.get(2).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(2).getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styles.get(2).getBottomMargin());
-    }
-
-    @Test
-    @SmallTest
-    public void testBackgroundStyle_WithTextMessagePreference() {
-        mPreferenceScreen.addPreference(createPreference(true));
-        mPreferenceScreen.addPreference(createTextMessagePreference(true));
-
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-        assertEquals(2, styles.size());
-        assertEquals(mDefaultRadius, styles.get(0).getTopRadius(), 0);
-        assertEquals(mDefaultRadius, styles.get(0).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(0).getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styles.get(0).getBottomMargin());
-
-        assertSame(PreferenceStyle.EMPTY, styles.get(1));
-    }
-
-    @Test
-    @SmallTest
-    public void testBackgroundStyle_WithComplexLayout() {
-        mPreferenceScreen.addPreference(createPreference(true));
-        mPreferenceScreen.addPreference(createPreference(true));
-        mPreferenceScreen.addPreference(createPreferenceCategory(true));
-        mPreferenceScreen.addPreference(createPreference(true));
-        mPreferenceScreen.addPreference(createPreferenceCategory(true));
-        mPreferenceScreen.addPreference(createPreference(true));
-        mPreferenceScreen.addPreference(createPreference(true));
-        mPreferenceScreen.addPreference(createPreference(true));
-        mPreferenceScreen.addPreference(createTextMessagePreference(true));
-
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-
-        // PrefA, PrefB
-        assertEquals(mDefaultRadius, styles.get(0).getTopRadius(), 0);
-        assertEquals(mInnerRadius, styles.get(0).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(0).getTopMargin());
-        assertEquals(mVerticalMargin, styles.get(0).getBottomMargin());
-
-        assertEquals(mInnerRadius, styles.get(1).getTopRadius(), 0);
-        assertEquals(mDefaultRadius, styles.get(1).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(1).getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styles.get(1).getBottomMargin());
-
-        // Category1
-        assertSame(PreferenceStyle.EMPTY, styles.get(2));
-
-        // PrefC
-        assertEquals(mDefaultRadius, styles.get(3).getTopRadius(), 0);
-        assertEquals(mDefaultRadius, styles.get(3).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(3).getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styles.get(3).getBottomMargin());
-
-        // Category2
-        assertSame(PreferenceStyle.EMPTY, styles.get(4));
-
-        // PrefD, PrefE, PrefF
-        assertEquals(mDefaultRadius, styles.get(5).getTopRadius(), 0);
-        assertEquals(mInnerRadius, styles.get(5).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(5).getTopMargin());
-        assertEquals(mVerticalMargin, styles.get(5).getBottomMargin());
-
-        assertEquals(mInnerRadius, styles.get(6).getTopRadius(), 0);
-        assertEquals(mInnerRadius, styles.get(6).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(6).getTopMargin());
-        assertEquals(mVerticalMargin, styles.get(6).getBottomMargin());
-
-        assertEquals(mInnerRadius, styles.get(7).getTopRadius(), 0);
-        assertEquals(mDefaultRadius, styles.get(7).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(7).getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styles.get(7).getBottomMargin());
-
-        // Text Preference
-        assertSame(PreferenceStyle.EMPTY, styles.get(8));
-    }
-
-    @Test
-    @SmallTest
-    public void testBackgroundStyle_WithInvisibleItems() {
-        mPreferenceScreen.addPreference(createPreference(true));
-        mPreferenceScreen.addPreference(createPreference(false));
-        mPreferenceScreen.addPreference(createPreference(true));
-
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-        assertEquals(2, styles.size());
-        assertEquals(mDefaultRadius, styles.get(0).getTopRadius(), 0);
-        assertEquals(mInnerRadius, styles.get(0).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(0).getTopMargin());
-        assertEquals(mVerticalMargin, styles.get(0).getBottomMargin());
-
-        assertEquals(mInnerRadius, styles.get(1).getTopRadius(), 0);
-        assertEquals(mDefaultRadius, styles.get(1).getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styles.get(1).getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styles.get(1).getBottomMargin());
-    }
-
-    @Test
-    @SmallTest
-    public void testDefaultMargins() {
-        mPreferenceScreen.addPreference(createPreference(true));
-
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-        assertEquals(1, styles.size());
-        assertEquals(mVerticalMargin, styles.get(0).getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styles.get(0).getBottomMargin());
-        assertEquals(mHorizontalMargin, styles.get(0).getHorizontalMargin());
-        assertEquals(mBackgroundColor, styles.get(0).getBackgroundColor());
-    }
-
-    @Test
-    @SmallTest
-    public void testCustomStyledPreference_WithCustomMargins() {
-        final int topMargin = 100;
-        final int bottomMargin = 200;
-        mPreferenceScreen.addPreference(
+    private void addPreferencesWithCustomMargins() {
+        // Scenario 1: Custom top and bottom margins
+        ChromeBasePreference customMarginsPreference =
                 createCustomPreference(
                         BackgroundStyle.CARD,
-                        topMargin,
-                        bottomMargin,
+                        CUSTOM_TOP_MARGIN,
+                        CUSTOM_BOTTOM_MARGIN,
                         DEFAULT_MARGIN,
-                        DEFAULT_COLOR));
+                        DEFAULT_COLOR);
+        customMarginsPreference.setKey("preference_with_custom_margins");
+        mPreferenceScreen.addPreference(customMarginsPreference);
 
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-        assertEquals(1, styles.size());
-        assertEquals(topMargin, styles.get(0).getTopMargin());
-        assertEquals(bottomMargin, styles.get(0).getBottomMargin());
-        assertEquals(mHorizontalMargin, styles.get(0).getHorizontalMargin());
-    }
-
-    @Test
-    @SmallTest
-    public void testCustomStyledPreference_WithTopMarginOnly() {
-        final int topMargin = 100;
-        mPreferenceScreen.addPreference(
+        // Scenario 2: Custom top margin only
+        ChromeBasePreference topMarginOnlyPreference =
                 createCustomPreference(
                         BackgroundStyle.CARD,
-                        topMargin,
+                        CUSTOM_TOP_MARGIN,
                         DEFAULT_MARGIN,
                         DEFAULT_MARGIN,
-                        DEFAULT_COLOR));
+                        DEFAULT_COLOR);
+        topMarginOnlyPreference.setKey("preference_with_top_margin_only");
+        mPreferenceScreen.addPreference(topMarginOnlyPreference);
 
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-        assertEquals(1, styles.size());
-        assertEquals(topMargin, styles.get(0).getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styles.get(0).getBottomMargin());
-        assertEquals(mHorizontalMargin, styles.get(0).getHorizontalMargin());
-    }
-
-    @Test
-    @SmallTest
-    public void testCustomStyledPreference_WithBottomMarginOnly() {
-        final int bottomMargin = 200;
-        mPreferenceScreen.addPreference(
+        // Scenario 3: Custom bottom margin only
+        ChromeBasePreference bottomMarginOnlyPreference =
                 createCustomPreference(
                         BackgroundStyle.CARD,
                         DEFAULT_MARGIN,
-                        bottomMargin,
+                        CUSTOM_BOTTOM_MARGIN,
                         DEFAULT_MARGIN,
-                        DEFAULT_COLOR));
+                        DEFAULT_COLOR);
+        bottomMarginOnlyPreference.setKey("preference_with_bottom_margin_only");
+        mPreferenceScreen.addPreference(bottomMarginOnlyPreference);
 
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-        assertEquals(1, styles.size());
-        assertEquals(mVerticalMargin, styles.get(0).getTopMargin());
-        assertEquals(bottomMargin, styles.get(0).getBottomMargin());
-        assertEquals(mHorizontalMargin, styles.get(0).getHorizontalMargin());
-    }
-
-    @Test
-    @SmallTest
-    public void testCustomStyledPreference_WithBottomAndHorizontalMargin() {
-        final int bottomMargin = 200;
-        final int horizontalMargin = 50;
-        mPreferenceScreen.addPreference(
+        // Scenario 4: Custom bottom and horizontal margins
+        ChromeBasePreference bottomAndHorizontalMarginsPreference =
                 createCustomPreference(
                         BackgroundStyle.CARD,
                         DEFAULT_MARGIN,
-                        bottomMargin,
-                        horizontalMargin,
-                        DEFAULT_COLOR));
-
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-        assertEquals(1, styles.size());
-        assertEquals(mVerticalMargin, styles.get(0).getTopMargin());
-        assertEquals(bottomMargin, styles.get(0).getBottomMargin());
-        assertEquals(horizontalMargin, styles.get(0).getHorizontalMargin());
+                        CUSTOM_BOTTOM_MARGIN,
+                        CUSTOM_HORIZONTAL_MARGIN,
+                        DEFAULT_COLOR);
+        bottomAndHorizontalMarginsPreference.setKey(
+                "preference_with_bottom_and_horizontal_margins");
+        mPreferenceScreen.addPreference(bottomAndHorizontalMarginsPreference);
     }
 
-    @Test
-    @SmallTest
-    public void testCustomStyledPreference_WithBackgroundNone() {
-        final int topMargin = 100;
-        final int bottomMargin = 200;
-        mPreferenceScreen.addPreference(
-                createCustomPreference(
-                        BackgroundStyle.NONE,
-                        topMargin,
-                        bottomMargin,
-                        DEFAULT_MARGIN,
-                        DEFAULT_COLOR));
-
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-        assertEquals(1, styles.size());
-        assertSame(PreferenceStyle.EMPTY, styles.get(0));
-        assertEquals(DEFAULT_MARGIN, styles.get(0).getTopMargin());
-        assertEquals(DEFAULT_MARGIN, styles.get(0).getBottomMargin());
-        assertEquals(DEFAULT_MARGIN, styles.get(0).getHorizontalMargin());
-    }
-
-    @Test
-    @SmallTest
-    public void testCustomStyledPreference_WithCustomBackgroundColor() {
-        final int backgroundColor = Color.BLUE;
-        mPreferenceScreen.addPreference(
-                createCustomPreference(
-                        BackgroundStyle.CARD,
-                        DEFAULT_MARGIN,
-                        DEFAULT_MARGIN,
-                        DEFAULT_MARGIN,
-                        backgroundColor));
-
-        ArrayList<PreferenceStyle> styles = mController.generatePreferenceStyles();
-        assertEquals(1, styles.size());
-        assertEquals(backgroundColor, (int) styles.get(0).getBackgroundColor());
-    }
-
-    @Test
-    @SmallTest
-    public void testCustomBackgroundStyleFromXml() {
-        mSettingsRule
-                .getPreferenceFragment()
-                .addPreferencesFromResource(R.xml.test_settings_custom_preference_screen);
-
-        ArrayList<PreferenceStyle> preferenceStyles = mController.generatePreferenceStyles();
-
-        List<Preference> visiblePreferences = new ArrayList<>();
-        for (int i = 0; i < mPreferenceScreen.getPreferenceCount(); i++) {
-            Preference p = mPreferenceScreen.getPreference(i);
-            if (p.isVisible()) {
-                visiblePreferences.add(p);
-            }
-        }
-        assertEquals(
-                "The number of preferenceStyles should match the number of visible preferences.",
-                visiblePreferences.size(),
-                preferenceStyles.size());
-
-        Preference preferenceWithCardStyle =
-                mPreferenceScreen.findPreference("test_preference_card");
-        int preferenceCardIndex = visiblePreferences.indexOf(preferenceWithCardStyle);
+    private PreferenceStyle getPreferenceStyle(String key) {
+        Preference preference = mPreferenceScreen.findPreference(key);
+        int preferenceIndex = mVisiblePreferences.indexOf(preference);
         assertNotEquals(
-                "Preference 'test_preference_card' not found in visible preferences.",
-                -1,
-                preferenceCardIndex);
-
-        // Check the preference with a backgroundStyle card.
-        PreferenceStyle styleCard = preferenceStyles.get(preferenceCardIndex);
-        assertEquals(mDefaultRadius, styleCard.getTopRadius(), 0);
-        assertEquals(mDefaultRadius, styleCard.getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styleCard.getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styleCard.getBottomMargin());
-        assertEquals(mBackgroundColor, styleCard.getBackgroundColor());
-
-        Preference prefWithCustomColor = mPreferenceScreen.findPreference("test_preference_color");
-        int pref2Index = visiblePreferences.indexOf(prefWithCustomColor);
-        assertNotEquals(
-                "Preference 'test_preference_color' not found in visible preferences.",
-                -1,
-                pref2Index);
-
-        // Check the preference with a custom color.
-        PreferenceStyle styleCustomColor = preferenceStyles.get(pref2Index);
-        assertEquals(mDefaultRadius, styleCustomColor.getTopRadius(), 0);
-        assertEquals(mDefaultRadius, styleCustomColor.getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styleCustomColor.getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styleCustomColor.getBottomMargin());
-        assertEquals(
-                mContext.getColor(android.R.color.holo_blue_light),
-                styleCustomColor.getBackgroundColor());
-
-        Preference preferenceWithStandardStyle =
-                mPreferenceScreen.findPreference("test_preference_standard");
-        int preferenceStandardIndex = visiblePreferences.indexOf(preferenceWithStandardStyle);
-        assertNotEquals(
-                "Preference 'test_preference_standard' not found in visible preferences.",
-                -1,
-                preferenceStandardIndex);
-
-        // Check the preference with a backgroundStyle standard.
-        PreferenceStyle styleStandard = preferenceStyles.get(preferenceStandardIndex);
-        assertEquals(mDefaultRadius, styleStandard.getTopRadius(), 0);
-        assertEquals(mDefaultRadius, styleStandard.getBottomRadius(), 0);
-        assertEquals(mVerticalMargin, styleStandard.getTopMargin());
-        assertEquals(mVerticalMargin + mSectionBottomMargin, styleStandard.getBottomMargin());
-        assertEquals(mBackgroundColor, styleStandard.getBackgroundColor());
-
-        Preference preferenceWithNoneStyle =
-                mPreferenceScreen.findPreference("test_preference_none");
-        int preferenceNoneIndex = visiblePreferences.indexOf(preferenceWithNoneStyle);
-        assertNotEquals(
-                "Preference 'test_preference_none' not found in visible preferences.",
-                -1,
-                preferenceNoneIndex);
-
-        // Check the preference with a backgroundStyle none.
-        PreferenceStyle styleNone = preferenceStyles.get(preferenceNoneIndex);
-        assertSame(PreferenceStyle.EMPTY, styleNone);
+                "Preference '" + key + "' not found in visible preferences.", -1, preferenceIndex);
+        return mPreferenceStyles.get(preferenceIndex);
     }
 }
