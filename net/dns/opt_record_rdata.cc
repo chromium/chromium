@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -16,11 +18,13 @@
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
+#include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/types/optional_util.h"
+#include "net/base/features.h"
 #include "net/dns/public/dns_protocol.h"
 
 namespace net {
@@ -35,6 +39,41 @@ std::vector<uint8_t> SerializeEdeOpt(uint16_t info_code,
   CHECK(writer.Write(base::as_byte_span(extra_text)));
   CHECK_EQ(writer.remaining(), 0u);
   return buf;
+}
+
+std::optional<std::string> ExtractFilteringDetailsString(
+    base::Value::Dict& dict,
+    std::string_view key) {
+  std::optional<base::Value> val = dict.Extract(key);
+  if (!val || !val->is_string()) {
+    return std::nullopt;
+  }
+  std::string s = std::move(*val).TakeString();
+  if (!base::IsStringUTF8(s)) {  // TODO(crbug.com/396483553): Add proper I-JSON
+                                 // validation once spec is finalized.
+    return std::nullopt;
+  }
+  return s;
+}
+
+// Parses the Filtering Details (ro/inc) from the EDE extra text.
+std::optional<OptRecordRdata::EdeOpt::FilteringDetails> ParseFilteringDetails(
+    std::string_view json) {
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_RFC);
+  if (!value || !value->is_dict()) {
+    return std::nullopt;
+  }
+  base::Value::Dict& dict = value->GetDict();
+  auto ro = ExtractFilteringDetailsString(dict, "ro");
+  auto inc = ExtractFilteringDetailsString(dict, "inc");
+  if (ro && inc) {
+    OptRecordRdata::EdeOpt::FilteringDetails meta;
+    meta.resolver_operator_id = std::move(*ro);
+    meta.filtering_incident_id = std::move(*inc);
+    return meta;
+  }
+  return std::nullopt;
 }
 }  // namespace
 
@@ -59,6 +98,18 @@ OptRecordRdata::EdeOpt::EdeOpt(uint16_t info_code, std::string extra_text)
       extra_text_(std::move(extra_text)) {
   CHECK(base::IsStringUTF8(extra_text_));
 }
+OptRecordRdata::EdeOpt::FilteringDetails::FilteringDetails() = default;
+OptRecordRdata::EdeOpt::FilteringDetails::~FilteringDetails() = default;
+OptRecordRdata::EdeOpt::FilteringDetails::FilteringDetails(
+    const FilteringDetails&) = default;
+OptRecordRdata::EdeOpt::FilteringDetails&
+OptRecordRdata::EdeOpt::FilteringDetails::operator=(const FilteringDetails&) =
+    default;
+OptRecordRdata::EdeOpt::FilteringDetails::FilteringDetails(
+    FilteringDetails&&) noexcept = default;
+OptRecordRdata::EdeOpt::FilteringDetails&
+OptRecordRdata::EdeOpt::FilteringDetails::operator=(
+    FilteringDetails&&) noexcept = default;
 
 OptRecordRdata::EdeOpt::~EdeOpt() = default;
 
@@ -78,9 +129,12 @@ std::unique_ptr<OptRecordRdata::EdeOpt> OptRecordRdata::EdeOpt::Create(
   if (!base::IsStringUTF8(base::as_string_view(extra_text))) {
     return nullptr;
   }
-
-  return std::make_unique<EdeOpt>(
+  auto ede = std::make_unique<EdeOpt>(
       info_code, std::string(base::as_string_view(extra_text)));
+  if (base::FeatureList::IsEnabled(net::features::kDnsFilteringDetails)) {
+    ede->filtering_details_ = ParseFilteringDetails(ede->extra_text());
+  }
+  return ede;
 }
 
 uint16_t OptRecordRdata::EdeOpt::GetCode() const {

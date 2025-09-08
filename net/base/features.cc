@@ -825,4 +825,6 @@ BASE_FEATURE_PARAM(std::string,
                    /*name=*/"wildcard_quic_hints",
                    /*default_value=*/"");
 
+BASE_FEATURE(kDnsFilteringDetails, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features
